@@ -1,13 +1,24 @@
 from cynanBot import CynanBot
-from secrets import TWITCH_AUTH_KEY
 from secrets import TWITCH_CLIENT_ID
+from secrets import TWITCH_IRC_TOKEN
+from user import User
 
-print("CynanBot is starting...")
+users = [
+    User(
+        twitchHandle = "Imyt",
+        picOfTheDayFile = "/home/declan/potd.txt"
+    ),
+    User(
+        twitchHandle = "smCharles",
+        picOfTheDayFile = "/home/charles/potd.txt"
+    )
+]
 
 cynanBot = CynanBot(
-    ircToken = TWITCH_AUTH_KEY,
+    ircToken = TWITCH_IRC_TOKEN,
     clientId = TWITCH_CLIENT_ID,
-    initialChannels = [ "smCharles" ]
+    users = users
 )
 
+print("Starting CynanBot...")
 cynanBot.run()
