@@ -28,6 +28,13 @@ class CynanBot(commands.Bot):
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
+    def __getUserForCommand(self, ctx):
+        for user in self.users:
+            if user.twitchHandle.lower() == ctx.channel.name.lower():
+                return user
+
+        raise RuntimeError(f'Unable to find user for channel \"{ctx.channel.name}\"')
+
     ################################
     ## Twitch commands below here ##
     ################################
