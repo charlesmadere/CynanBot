@@ -20,12 +20,12 @@ class User:
             potdText = file.read().replace('\n', '').lstrip().rstrip()
 
         if len(potdText) == 0 or potdText.isspace():
-            raise RuntimeError('POTD text is empty or blank')
+            raise ValueError('POTD text is empty or blank')
 
         potdParsed = urlparse(potdText)
         potdUrl = potdParsed.geturl()
 
         if len(potdUrl) == 0 or potdUrl.isspace():
-            raise RuntimeError('POTD URL is empty or blank')
+            raise ValueError('POTD URL is empty or blank')
 
         return potdUrl
