@@ -26,6 +26,6 @@ class User:
         potdUrl = potdParsed.geturl()
 
         if len(potdUrl) == 0 or potdUrl.isspace():
-            raise RuntimeError('POTD URL is nil or empty or blank')
+            raise RuntimeError('POTD URL is empty or blank')
 
         return potdUrl
