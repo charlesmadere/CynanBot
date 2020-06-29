@@ -1,8 +1,9 @@
 from cynanBot import CynanBot
+from secretKeys import TWITCH_ACCESS_TOKEN
 from secretKeys import TWITCH_CLIENT_ID
 from secretKeys import TWITCH_CLIENT_SECRET
 from secretKeys import TWITCH_IRC_TOKEN
-from secretKeys import TWITCH_PUB_SUB_TOKEN
+from secretKeys import TWITCH_REFRESH_TOKEN
 from user import User
 
 users = [
@@ -20,7 +21,8 @@ cynanBot = CynanBot(
     ircToken = TWITCH_IRC_TOKEN,
     clientId = TWITCH_CLIENT_ID,
     clientSecret = TWITCH_CLIENT_SECRET,
-    pubSubId = TWITCH_PUB_SUB_TOKEN,
+    accessToken = TWITCH_ACCESS_TOKEN,
+    refreshToken = TWITCH_REFRESH_TOKEN,
     users = users
 )
 

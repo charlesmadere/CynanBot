@@ -12,7 +12,8 @@ class CynanBot(commands.Bot):
         ircToken: str,
         clientId: str,
         clientSecret: str,
-        pubSubId: str,
+        accessToken: str,
+        refreshToken: str,
         users: List[User]
     ):
         super().__init__(
@@ -26,7 +27,8 @@ class CynanBot(commands.Bot):
         self.ircToken = ircToken
         self.clientId = clientId
         self.clientSecret = clientSecret
-        self.pubSubId = pubSubId
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
         self.users = users
 
     async def event_message(self, message):
@@ -48,7 +50,7 @@ class CynanBot(commands.Bot):
     def __fetchChannelIdForUser(self, user: User):
         headers = {
             'Client-ID': self.clientId,
-            'Authorization': f'Bearer {self.pubSubId}'
+            'Authorization': f'Bearer {self.accessToken}'
         }
 
         rawResponse = requests.get(
@@ -58,17 +60,11 @@ class CynanBot(commands.Bot):
 
         print(self.clientId)
         print(self.ircToken)
-        print(self.pubSubId)
+        print(self.accessToken)
         print(rawResponse.content)
 
         jsonResponse = json.loads(rawResponse.content)
         return jsonResponse['data'][0]['id']
-
-    def __fetchPubSubToken(self):
-        rawResponse = requests.post(
-            f'https://id.twitch.tv/oauth2/token?client_id={self.clientId}&client_secret={self.clientSecret}&code={self.pubSubId}&grant_type=authorization_code&redirect_uri=http://localhost'
-        )
-        print(rawResponse)
 
     def __getUserForCommand(self, ctx):
         channelName = ctx.channel.name.lower()
