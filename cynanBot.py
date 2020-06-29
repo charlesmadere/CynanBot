@@ -37,10 +37,6 @@ class CynanBot(commands.Bot):
 
         raise RuntimeError(f'Unable to find user for channel \"{channelName}\"')
 
-    ################################
-    ## Twitch commands below here ##
-    ################################
-
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
         await ctx.send(f'{self.nick} says hello {ctx.author.name}!')
