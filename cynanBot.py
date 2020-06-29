@@ -41,11 +41,10 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         # subscribe to pubhub channel points events
-        # await self.pubsub_subscribe(
-        #     self.clientId,
-        #     [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
-        # )
-        self.__fetchPubSubToken()
+        await self.pubsub_subscribe(
+            self.clientId,
+            [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
+        )
 
     def __fetchChannelIdForUser(self, user: User):
         headers = {
