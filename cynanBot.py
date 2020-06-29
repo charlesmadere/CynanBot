@@ -11,6 +11,7 @@ class CynanBot(commands.Bot):
         self,
         ircToken: str,
         clientId: str,
+        clientSecret: str,
         pubSubId: str,
         users: List[User]
     ):
@@ -24,6 +25,7 @@ class CynanBot(commands.Bot):
 
         self.ircToken = ircToken
         self.clientId = clientId
+        self.clientSecret = clientSecret
         self.pubSubId = pubSubId
         self.users = users
         self.channelIds = dict()
