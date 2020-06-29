@@ -23,7 +23,6 @@ class CynanBot(commands.Bot):
         self.channelIds = dict()
 
     async def event_message(self, message):
-        print(message.content)
         await self.handle_commands(message)
 
     async def event_ready(self):
