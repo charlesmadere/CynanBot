@@ -41,10 +41,8 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         # subscribe to pubhub channel points events
-        await self.pubsub_subscribe(
-            self.clientId,
-            [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
-        )
+        topics = [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
+        await self.pubsub_subscribe(self.accessToken, *topics)
 
     def __fetchChannelIdForUser(self, user: User):
         headers = {
@@ -56,11 +54,6 @@ class CynanBot(commands.Bot):
             f'https://api.twitch.tv/helix/users?login={user.twitchHandle}',
             headers = headers
         )
-
-        print(self.clientId)
-        print(self.ircToken)
-        print(self.accessToken)
-        print(rawResponse.content)
 
         jsonResponse = json.loads(rawResponse.content)
         return jsonResponse['data'][0]['id']
