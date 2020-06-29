@@ -1,3 +1,5 @@
+import json
+import requests
 from twitchio.ext import commands
 from typing import List
 from user import User
@@ -9,6 +11,7 @@ class CynanBot(commands.Bot):
         self,
         ircToken: str,
         clientId: str,
+        pubSubId: str,
         users: List[User]
     ):
         super().__init__(
@@ -19,8 +22,12 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.twitchHandle for user in users ]
         )
 
+        self.ircToken = ircToken
+        self.clientId = clientId
+        self.pubSubId = pubSubId
         self.users = users
         self.channelIds = dict()
+        # await self.pubsub_subscribe(authToken, topic)
 
     async def event_message(self, message):
         await self.handle_commands(message)
@@ -29,8 +36,18 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
     def __fetchChannelIdForUser(self, user: User):
-        # TODO
-        raise NotImplementedError()
+        headers = {
+            'Client-ID': self.clientId,
+            'Authorization': f'Bearer {self.ircToken}'
+        }
+
+        rawResponse = requests.get(
+            f'https://api.twitch.tv/helix/users?login={user.twitchHandle}',
+            headers = headers
+        )
+
+        jsonResponse = json.loads(rawResponse.content)
+        return jsonResponse['data'][0]['id']
 
     def __getChannelIdForUser(self, user: User):
         if user in self.channelIds:

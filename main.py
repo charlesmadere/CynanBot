@@ -18,6 +18,7 @@ users = [
 cynanBot = CynanBot(
     ircToken = TWITCH_IRC_TOKEN,
     clientId = TWITCH_CLIENT_ID,
+    pubSubId = TWITCH_PUB_SUB_TOKEN,
     users = users
 )
 
