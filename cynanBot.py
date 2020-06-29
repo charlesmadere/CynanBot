@@ -20,6 +20,7 @@ class CynanBot(commands.Bot):
         )
 
         self.users = users
+        self.channelIds = dict()
 
     async def event_message(self, message):
         print(message.content)
@@ -27,6 +28,18 @@ class CynanBot(commands.Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
+
+    def __fetchChannelIdForUser(self, user: User):
+        # TODO
+        raise NotImplementedError()
+
+    def __getChannelIdForUser(self, user: User):
+        if user in self.channelIds:
+            return self.channelIds[user]
+
+        channelId = self.__fetchChannelIdForUser(user)
+        self.channelIds[user] = channelId
+        return channelId
 
     def __getUserForCommand(self, ctx):
         channelName = ctx.channel.name.lower()
