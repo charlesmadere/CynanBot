@@ -1,5 +1,6 @@
 from cynanBot import CynanBot
 from secretKeys import TWITCH_CLIENT_ID
+from secretKeys import TWITCH_CLIENT_SECRET
 from secretKeys import TWITCH_IRC_TOKEN
 from secretKeys import TWITCH_PUB_SUB_TOKEN
 from user import User

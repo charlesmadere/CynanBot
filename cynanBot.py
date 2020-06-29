@@ -28,19 +28,26 @@ class CynanBot(commands.Bot):
         self.clientSecret = clientSecret
         self.pubSubId = pubSubId
         self.users = users
-        self.channelIds = dict()
-        # await self.pubsub_subscribe(authToken, topic)
 
     async def event_message(self, message):
         await self.handle_commands(message)
 
+    async def event_raw_pubsub(self, data):
+        print(data)
+
     async def event_ready(self):
         print(f'{self.nick} is ready!')
+
+        # subscribe to pubhub channel points events
+        await self.pubsub_subscribe(
+            self.clientId,
+            [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
+        )
 
     def __fetchChannelIdForUser(self, user: User):
         headers = {
             'Client-ID': self.clientId,
-            'Authorization': f'Bearer {self.ircToken}'
+            'Authorization': f'Bearer {self.pubSubId}'
         }
 
         rawResponse = requests.get(
@@ -48,16 +55,19 @@ class CynanBot(commands.Bot):
             headers = headers
         )
 
+        print(self.clientId)
+        print(self.ircToken)
+        print(self.pubSubId)
+        print(rawResponse.content)
+
         jsonResponse = json.loads(rawResponse.content)
         return jsonResponse['data'][0]['id']
 
-    def __getChannelIdForUser(self, user: User):
-        if user in self.channelIds:
-            return self.channelIds[user]
-
-        channelId = self.__fetchChannelIdForUser(user)
-        self.channelIds[user] = channelId
-        return channelId
+    def __fetchPubSubToken(self):
+        rawResponse = requests.post(
+            f'https://id.twitch.tv/oauth2/token?client_id={self.clientId}&client_secret={self.clientSecret}&code={self.pubSubId}&grant_type=authorization_code&redirect_uri=http://localhost'
+        )
+        print(rawResponse)
 
     def __getUserForCommand(self, ctx):
         channelName = ctx.channel.name.lower()
