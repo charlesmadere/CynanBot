@@ -1,6 +1,7 @@
 from cynanBot import CynanBot
 from secrets import TWITCH_CLIENT_ID
 from secrets import TWITCH_IRC_TOKEN
+from secrets import TWITCH_PUB_SUB_TOKEN
 from user import User
 
 users = [
