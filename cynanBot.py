@@ -39,14 +39,11 @@ class CynanBot(commands.Bot):
         elif 'type' not in data:
             print(f'Received a response without a type: {data}')
             return
-        elif data['type'] == 'PONG':
-            print(f'Received PONG: {data}')
+        elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
+            print(f'Received a general response: {data}')
             return
-        elif data['type'] == 'RESPONSE':
-            print(f'Received RESPONSE: {data}')
-            return
-        elif data['type'] != 'MESSAGE':
-            print(f'Received something unexpected: {data}')
+        elif data['type'] != 'MESSAGE' or 'message' not in data:
+            print(f'Received an unexpected response: {data}')
             return
 
         jsonResponse = json.loads(data['data']['message'])
@@ -74,7 +71,7 @@ class CynanBot(commands.Bot):
             return
 
         userThatRedeemed = redemptionJson['user']['login']
-        print(f'Sending POTD to {userThatRedeemed} in {twitchUser.twitchHandle}')
+        print(f'Sending POTD for {twitchUser.twitchHandle} to {userThatRedeemed}')
 
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
         await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {twitchUser.fetchPicOfTheDay()}')
