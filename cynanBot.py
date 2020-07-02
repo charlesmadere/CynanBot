@@ -74,7 +74,12 @@ class CynanBot(commands.Bot):
         print(f'Sending POTD for {twitchUser.twitchHandle} to {userThatRedeemed}')
 
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
-        await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {twitchUser.fetchPicOfTheDay()}')
+
+        try:
+            picOfTheDay = twitchUser.fetchPicOfTheDay()
+            await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
+        except ValueError:
+            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD is broken!')
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
