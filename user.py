@@ -7,10 +7,12 @@ class User:
     def __init__(
         self,
         twitchHandle: str,
+        rewardId: str,
         picOfTheDayFile: str
     ):
         self.twitchHandle = twitchHandle
         self.__picOfTheDayFile = picOfTheDayFile
+        self.rewardId = rewardId
         self.__channelId = None
 
         if not path.exists(picOfTheDayFile):

@@ -12,6 +12,7 @@ users = [
     # ),
     User(
         twitchHandle = "smCharles",
+        rewardId = "fc83a5e8-4ff9-459b-ba98-64454964b5f8",
         picOfTheDayFile = "/home/charles/potd.txt"
     )
 ]
@@ -21,7 +22,6 @@ cynanBot = CynanBot(
     clientId = TWITCH_CLIENT_ID,
     accessToken = TWITCH_ACCESS_TOKEN,
     refreshToken = TWITCH_REFRESH_TOKEN,
-    rewardId = "fc83a5e8-4ff9-459b-ba98-64454964b5f8",
     users = users
 )
 

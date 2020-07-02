@@ -13,7 +13,6 @@ class CynanBot(commands.Bot):
         clientId: str,
         accessToken: str,
         refreshToken: str,
-        rewardId: str,
         users: List[User]
     ):
         super().__init__(
@@ -28,7 +27,6 @@ class CynanBot(commands.Bot):
         self.__clientId = clientId
         self.__accessToken = accessToken
         self.__refreshToken = refreshToken
-        self.__rewardId = rewardId
         self.__users = users
 
     async def event_message(self, message):
@@ -57,10 +55,6 @@ class CynanBot(commands.Bot):
             return
 
         redemptionJson = jsonResponse['data']['redemption']
-
-        if redemptionJson['reward']['id'].lower() != self.__rewardId:
-            return
-
         channelId = redemptionJson['channel_id']
         twitchUser = None
 
@@ -74,6 +68,10 @@ class CynanBot(commands.Bot):
 
         if twitchUser == None:
             raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
+
+        if redemptionJson['reward']['id'].lower() != twitchUser.rewardId:
+            # this user has redeemed a non-POTD reward
+            return
 
         userThatRedeemed = redemptionJson['user']['login']
         print(f'Sending POTD to {userThatRedeemed} in {twitchUser.twitchHandle}')
