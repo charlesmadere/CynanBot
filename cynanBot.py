@@ -11,9 +11,9 @@ class CynanBot(commands.Bot):
         self,
         ircToken: str,
         clientId: str,
-        clientSecret: str,
         accessToken: str,
         refreshToken: str,
+        rewardId: str,
         users: List[User]
     ):
         super().__init__(
@@ -24,48 +24,56 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.twitchHandle for user in users ]
         )
 
-        self.ircToken = ircToken
-        self.clientId = clientId
-        self.clientSecret = clientSecret
-        self.accessToken = accessToken
-        self.refreshToken = refreshToken
-        self.users = users
+        self.__ircToken = ircToken
+        self.__clientId = clientId
+        self.__accessToken = accessToken
+        self.__refreshToken = refreshToken
+        self.__rewardId = rewardId
+        self.__users = users
 
     async def event_message(self, message):
         await self.handle_commands(message)
 
     async def event_raw_pubsub(self, data):
-        print(data)
+        dirtyJson = json.loads(data)
+        messageJson = json.loads(dirtyJson.data['data']['message'])
+
+        if messageJson['type'].lower() != 'reward-redeemed':
+            return
+
+        redemptionJson = messageJson['data']['redemption']
+
+        if redemptionJson['reward']['id'].lower() != self.__rewardId:
+            return
+
+        channelId = redemptionJson['channel_id']
+        twitchChannel = None
+
+        for user in self.__users:
+            if channelId == user.fetchChannelId():
+                twitchChannel = user.twitchHandle
+                break
+
+        if twitchChannel == None:
+            raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
+
+        userThatRedeemed = redemptionJson['user']['login']
+        # TODO
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
+        channelIds = [
+            user.fetchChannelId(
+                clientId = self.__clientId,
+                accessToken = self.__accessToken
+            ) for user in self.__users
+        ]
+
+        topics = [ f'channel-points-channel-v1.{channelId}' for channelId in channelIds ]
+
         # subscribe to pubhub channel points events
-        topics = [ f'channel-points-channel-v1.{self.__fetchChannelIdForUser(user)}' for user in self.users ]
-        await self.pubsub_subscribe(self.accessToken, *topics)
-
-    def __fetchChannelIdForUser(self, user: User):
-        headers = {
-            'Client-ID': self.clientId,
-            'Authorization': f'Bearer {self.accessToken}'
-        }
-
-        rawResponse = requests.get(
-            f'https://api.twitch.tv/helix/users?login={user.twitchHandle}',
-            headers = headers
-        )
-
-        jsonResponse = json.loads(rawResponse.content)
-        return jsonResponse['data'][0]['id']
-
-    def __getUserForCommand(self, ctx):
-        channelName = ctx.channel.name.lower()
-
-        for user in self.users:
-            if user.twitchHandle.lower() == channelName:
-                return user
-
-        raise RuntimeError(f'Unable to find user for channel \"{channelName}\"')
+        await self.pubsub_subscribe(self.__accessToken, *topics)
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):

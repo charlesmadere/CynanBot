@@ -1,3 +1,5 @@
+import json
+import requests
 from os import path
 from urllib.parse import urlparse
 
@@ -7,16 +9,36 @@ class User:
         twitchHandle: str,
         picOfTheDayFile: str
     ):
-        self.twitchHandle = twitchHandle
-        self.picOfTheDayFile = picOfTheDayFile
+        self.__twitchHandle = twitchHandle
+        self.__picOfTheDayFile = picOfTheDayFile
+        self.__channelId = None
 
         if not path.exists(picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
-    def getPicOfTheDay(self):
+    def fetchChannelId(self, clientId: str, accessToken: str):
+        if self.__channelId != None:
+            return self.__channelId
+
+        headers = {
+            'Client-ID': clientId,
+            'Authorization': f'Bearer {accessToken}'
+        }
+
+        rawResponse = requests.get(
+            f'https://api.twitch.tv/helix/users?login={self.__twitchHandle}',
+            headers = headers
+        )
+
+        jsonResponse = json.loads(rawResponse.content)
+        channelId = jsonResponse['data'][0]['id']
+
+        return channelId
+
+    def fetchPicOfTheDay(self):
         potdText = ""
 
-        with open(self.picOfTheDayFile, 'r') as file:
+        with open(self.__picOfTheDayFile, 'r') as file:
             potdText = file.read().replace('\n', '').lstrip().rstrip()
 
         if len(potdText) == 0 or potdText.isspace():
