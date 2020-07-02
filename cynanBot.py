@@ -35,13 +35,25 @@ class CynanBot(commands.Bot):
         await self.handle_commands(message)
 
     async def event_raw_pubsub(self, data):
-        dirtyJson = json.loads(data)
-        messageJson = json.loads(dirtyJson.data['data']['message'])
-
-        if messageJson['type'].lower() != 'reward-redeemed':
+        if 'error' in data and len(data['error']) >= 1:
+            print(f'Received an error: {data}')
+            return
+        elif 'type' not in data:
+            print(f'Received a response without a type: {data}')
+            return
+        elif data['type'] == 'RESPONSE':
+            print(f'Received RESPONSE: {data}')
+            return
+        elif data['type'] != 'MESSAGE':
+            print(f'Received something unexpected: {data}')
             return
 
-        redemptionJson = messageJson['data']['redemption']
+        jsonResponse = json.loads(data['data']['message'])
+
+        if jsonResponse['type'].lower() != 'reward-redeemed':
+            return
+
+        redemptionJson = jsonResponse['data']['redemption']
 
         if redemptionJson['reward']['id'].lower() != self.__rewardId:
             return
@@ -50,7 +62,10 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__users:
-            if channelId == user.fetchChannelId():
+            if channelId == user.fetchChannelId(
+                clientId = self.__clientId,
+                accessToken = self.__accessToken
+            ):
                 twitchUser = user
                 break
 
