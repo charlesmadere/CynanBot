@@ -73,6 +73,8 @@ class CynanBot(commands.Bot):
             raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
 
         userThatRedeemed = redemptionJson['user']['login']
+        print(f'Sending POTD to {userThatRedeemed} in {twitchUser.twitchHandle}')
+
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
         await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {twitchUser.fetchPicOfTheDay()}')
 
