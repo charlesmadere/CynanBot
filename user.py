@@ -9,7 +9,7 @@ class User:
         twitchHandle: str,
         picOfTheDayFile: str
     ):
-        self.__twitchHandle = twitchHandle
+        self.twitchHandle = twitchHandle
         self.__picOfTheDayFile = picOfTheDayFile
         self.__channelId = None
 
@@ -26,7 +26,7 @@ class User:
         }
 
         rawResponse = requests.get(
-            f'https://api.twitch.tv/helix/users?login={self.__twitchHandle}',
+            f'https://api.twitch.tv/helix/users?login={self.twitchHandle}',
             headers = headers
         )
 

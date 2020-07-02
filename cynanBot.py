@@ -47,14 +47,14 @@ class CynanBot(commands.Bot):
             return
 
         channelId = redemptionJson['channel_id']
-        twitchChannel = None
+        twitchUser = None
 
         for user in self.__users:
             if channelId == user.fetchChannelId():
-                twitchChannel = user.twitchHandle
+                twitchUser = user
                 break
 
-        if twitchChannel == None:
+        if twitchUser == None:
             raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
 
         userThatRedeemed = redemptionJson['user']['login']
