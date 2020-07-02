@@ -11,8 +11,6 @@ class CynanBot(commands.Bot):
         self,
         ircToken: str,
         clientId: str,
-        accessToken: str,
-        refreshToken: str,
         users: List[User]
     ):
         super().__init__(
@@ -23,10 +21,7 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.twitchHandle for user in users ]
         )
 
-        self.__ircToken = ircToken
         self.__clientId = clientId
-        self.__accessToken = accessToken
-        self.__refreshToken = refreshToken
         self.__users = users
 
     async def event_message(self, message):
@@ -56,10 +51,7 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__users:
-            if channelId == user.fetchChannelId(
-                clientId = self.__clientId,
-                accessToken = self.__accessToken
-            ):
+            if channelId == user.fetchChannelId(self.__clientId):
                 twitchUser = user
                 break
 
@@ -71,7 +63,7 @@ class CynanBot(commands.Bot):
             return
 
         userThatRedeemed = redemptionJson['user']['login']
-        print(f'Sending POTD for {twitchUser.twitchHandle} to {userThatRedeemed}')
+        print(f'Sending POTD for {twitchUser.twitchHandle} to {userThatRedeemed}...')
 
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
 
@@ -84,13 +76,7 @@ class CynanBot(commands.Bot):
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
-        channelIds = [
-            user.fetchChannelId(
-                clientId = self.__clientId,
-                accessToken = self.__accessToken
-            ) for user in self.__users
-        ]
-
+        channelIds = [ user.fetchChannelId(self.__clientId) for user in self.__users ]
         topics = [ f'channel-points-channel-v1.{channelId}' for channelId in channelIds ]
 
         # subscribe to pubhub channel points events

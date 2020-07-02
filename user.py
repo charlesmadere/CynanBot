@@ -7,24 +7,28 @@ class User:
     def __init__(
         self,
         twitchHandle: str,
-        rewardId: str,
-        picOfTheDayFile: str
+        picOfTheDayFile: str,
+        accessToken: str,
+        refreshToken: str,
+        rewardId: str
     ):
         self.twitchHandle = twitchHandle
         self.__picOfTheDayFile = picOfTheDayFile
-        self.rewardId = rewardId
+        self.__accessToken = accessToken
+        self.__refreshToken = refreshToken
+        self.__rewardId = rewardId
         self.__channelId = None
 
         if not path.exists(picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
-    def fetchChannelId(self, clientId: str, accessToken: str):
+    def fetchChannelId(self, clientId: str):
         if self.__channelId != None:
             return self.__channelId
 
         headers = {
             'Client-ID': clientId,
-            'Authorization': f'Bearer {accessToken}'
+            'Authorization': f'Bearer {self.__accessToken}'
         }
 
         rawResponse = requests.get(

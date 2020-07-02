@@ -12,16 +12,16 @@ users = [
     # ),
     User(
         twitchHandle = "smCharles",
+        picOfTheDayFile = "/home/charles/potd.txt",
+        accessToken = TWITCH_ACCESS_TOKEN,
+        refreshToken = TWITCH_REFRESH_TOKEN,
         rewardId = "fc83a5e8-4ff9-459b-ba98-64454964b5f8",
-        picOfTheDayFile = "/home/charles/potd.txt"
     )
 ]
 
 cynanBot = CynanBot(
     ircToken = TWITCH_IRC_TOKEN,
     clientId = TWITCH_CLIENT_ID,
-    accessToken = TWITCH_ACCESS_TOKEN,
-    refreshToken = TWITCH_REFRESH_TOKEN,
     users = users
 )
 
