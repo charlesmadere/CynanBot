@@ -41,6 +41,9 @@ class CynanBot(commands.Bot):
         elif 'type' not in data:
             print(f'Received a response without a type: {data}')
             return
+        elif data['type'] == 'PONG':
+            print(f'Received PONG: {data}')
+            return
         elif data['type'] == 'RESPONSE':
             print(f'Received RESPONSE: {data}')
             return
