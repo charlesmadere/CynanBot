@@ -74,7 +74,7 @@ class CynanBot(commands.Bot):
 
         userThatRedeemed = redemptionJson['user']['login']
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
-        twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {twitchUser.fetchPicOfTheDay()}')
+        await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {twitchUser.fetchPicOfTheDay()}')
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
