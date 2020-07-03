@@ -1,6 +1,5 @@
 import json
 import requests
-import sys
 from twitchio.ext import commands
 from typing import List
 from user import User
@@ -61,10 +60,9 @@ class CynanBot(commands.Bot):
 
         if len(twitchUser.rewardId) == 0:
             # The runner of this script hasn't yet found their rewardId for POTD. So let's just
-            # print it out and then terminate the program.
+            # print out as much helpful data as possible and then return.
             rewardId = redemptionJson['reward']['id']
             print(f'The rewardId is: \"{rewardId}\", and the JSON is: \"{redemptionJson}\"')
-            sys.exit(1)
             return
 
         if redemptionJson['reward']['id'] != twitchUser.rewardId:
