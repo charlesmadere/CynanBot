@@ -29,16 +29,16 @@ class CynanBot(commands.Bot):
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
-            print(f'Received an error: {data}')
+            print(f'Received a pub sub error: {data}')
             return
         elif 'type' not in data:
-            print(f'Received a response without a type: {data}')
+            print(f'Received a pub sub response without a type: {data}')
             return
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
-            print(f'Received a general response: {data}')
+            print(f'Received a general pub sub response: {data}')
             return
         elif data['type'] != 'MESSAGE' or 'message' not in data:
-            print(f'Received an unexpected response: {data}')
+            print(f'Received an unexpected pub sub response: {data}')
             return
 
         jsonResponse = json.loads(data['data']['message'])
@@ -56,9 +56,9 @@ class CynanBot(commands.Bot):
                 break
 
         if twitchUser == None:
-            raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
+            raise RuntimeError(f'Unable to find Twitch User with channel ID: \"{channelId}\"')
 
-        if len(twitchUser.rewardId) == 0:
+        if twitchUser.rewardId == None or len(twitchUser.rewardId) == 0:
             # The runner of this script hasn't yet found their rewardId for POTD. So let's just
             # print out as much helpful data as possible and then return.
             rewardId = redemptionJson['reward']['id']
