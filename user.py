@@ -14,7 +14,7 @@ class User:
     ):
         self.twitchHandle = twitchHandle
         self.__picOfTheDayFile = picOfTheDayFile
-        self.__accessToken = accessToken
+        self.accessToken = accessToken
         self.__refreshToken = refreshToken
         self.__rewardId = rewardId
         self.__channelId = None
@@ -28,21 +28,29 @@ class User:
 
         headers = {
             'Client-ID': clientId,
-            'Authorization': f'Bearer {self.__accessToken}'
+            'Authorization': f'Bearer {self.accessToken}'
         }
 
         rawResponse = requests.get(
-            f'https://api.twitch.tv/helix/users?login={self.twitchHandle}',
+            url = f'https://api.twitch.tv/helix/users?login={self.twitchHandle}',
             headers = headers
         )
 
         jsonResponse = json.loads(rawResponse.content)
         channelId = jsonResponse['data'][0]['id']
 
+        if len(channelId) == 0 or channelId.isspace():
+            raise ValueError(f'Unable to fetch channel ID: {jsonResponse}')
+        else:
+            self.__channelId = channelId
+
         return channelId
 
     def fetchPicOfTheDay(self):
         potdText = ""
+
+        if not path.exists(self.__picOfTheDayFile):
+            raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = file.read().replace('\n', '').lstrip().rstrip()

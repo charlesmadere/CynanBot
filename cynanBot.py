@@ -1,5 +1,6 @@
 import json
 import requests
+import sys
 from twitchio.ext import commands
 from typing import List
 from user import User
@@ -43,7 +44,7 @@ class CynanBot(commands.Bot):
 
         jsonResponse = json.loads(data['data']['message'])
 
-        if jsonResponse['type'].lower() != 'reward-redeemed':
+        if jsonResponse['type'] != 'reward-redeemed':
             return
 
         redemptionJson = jsonResponse['data']['redemption']
@@ -51,14 +52,22 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__users:
-            if channelId == user.fetchChannelId(self.__clientId):
+            if channelId == user.fetchChannelId(clientId = self.__clientId):
                 twitchUser = user
                 break
 
         if twitchUser == None:
             raise RuntimeError(f'Unable to find channel with ID \"{channelId}\"')
 
-        if redemptionJson['reward']['id'].lower() != twitchUser.rewardId:
+        if len(twitchUser.rewardId) == 0:
+            # The runner of this script hasn't yet found their rewardId for POTD. So let's just
+            # print it out and then terminate the program.
+            rewardId = redemptionJson['reward']['id']
+            print(f'The rewardId is: \"{rewardId}\", and the JSON is: \"{redemptionJson}\"')
+            sys.exit(1)
+            return
+
+        if redemptionJson['reward']['id'] != twitchUser.rewardId:
             # this user has redeemed a non-POTD reward
             return
 
@@ -70,17 +79,22 @@ class CynanBot(commands.Bot):
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
             await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
+        except FileNotFoundError:
+            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD file is missing!')
         except ValueError:
-            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD is broken!')
+            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD content is malformed!')
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
-        channelIds = [ user.fetchChannelId(self.__clientId) for user in self.__users ]
-        topics = [ f'channel-points-channel-v1.{channelId}' for channelId in channelIds ]
+        for user in self.__users:
+            channelId = user.fetchChannelId(clientId = self.__clientId)
 
-        # subscribe to pubhub channel points events
-        await self.pubsub_subscribe(self.__accessToken, *topics)
+            # we could subscribe to multiple topics, but for now, just channel points
+            topics = [ f'channel-points-channel-v1.{channelId}' ]
+
+            # subscribe to pubhub channel points events
+            await self.pubsub_subscribe(user.accessToken, *topics)
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
