@@ -16,7 +16,7 @@ class User:
         self.__picOfTheDayFile = picOfTheDayFile
         self.accessToken = accessToken
         self.__refreshToken = refreshToken
-        self.__rewardId = rewardId
+        self.rewardId = rewardId
         self.__channelId = None
 
         if not path.exists(picOfTheDayFile):
