@@ -1,28 +1,19 @@
 from cynanBot import CynanBot
-from secretKeys import TWITCH_ACCESS_TOKEN
 from secretKeys import TWITCH_CLIENT_ID
 from secretKeys import TWITCH_IRC_TOKEN
-from secretKeys import TWITCH_REFRESH_TOKEN
-from user import User
+from users import USERS
 
-users = [
-    # User(
-    #     twitchHandle = "Imyt",
-    #     picOfTheDayFile = "/home/declan/potd.txt"
-    # ),
-    User(
-        twitchHandle = "smCharles",
-        rewardId = "fc83a5e8-4ff9-459b-ba98-64454964b5f8",
-        picOfTheDayFile = "/home/charles/potd.txt"
-    )
-]
+if TWITCH_CLIENT_ID == None or len(TWITCH_CLIENT_ID) == 0 or TWITCH_CLIENT_ID.isspace():
+    raise ValueError('secretKeys.TWITCH_CLIENT_ID can\'t be empty!')
+elif TWITCH_IRC_TOKEN == None or len(TWITCH_IRC_TOKEN) == 0 or TWITCH_IRC_TOKEN.isspace():
+    raise ValueError('secretKeys.TWITCH_IRC_TOKEN can\'t be empty!')
+elif USERS == None or len(USERS) == 0:
+    raise ValueError('USERS list can\'t be empty!')
 
 cynanBot = CynanBot(
     ircToken = TWITCH_IRC_TOKEN,
     clientId = TWITCH_CLIENT_ID,
-    accessToken = TWITCH_ACCESS_TOKEN,
-    refreshToken = TWITCH_REFRESH_TOKEN,
-    users = users
+    users = USERS
 )
 
 print("Starting CynanBot...")
