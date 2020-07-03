@@ -37,7 +37,7 @@ class CynanBot(commands.Bot):
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
             print(f'Received a general pub sub response: {data}')
             return
-        elif data['type'] != 'MESSAGE' or 'message' not in data:
+        elif data['type'] != 'MESSAGE' or 'data' not in data or 'message' not in data['data']:
             print(f'Received an unexpected pub sub response: {data}')
             return
 
