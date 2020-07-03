@@ -39,12 +39,12 @@ class User:
         jsonResponse = json.loads(data.content)
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            raise ValueError(f'Received an error: {jsonResponse}')
+            raise ValueError(f'Received an error for {self.twitchHandle}: {jsonResponse}')
 
         channelId = jsonResponse['data'][0]['id']
 
         if len(channelId) == 0 or channelId.isspace():
-            raise ValueError(f'Unable to fetch channel ID: {jsonResponse}')
+            raise ValueError(f'Unable to fetch channel ID for {self.twitchHandle}: {jsonResponse}')
         else:
             self.__channelId = channelId
 
