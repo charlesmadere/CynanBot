@@ -31,12 +31,16 @@ class User:
             'Authorization': f'Bearer {self.accessToken}'
         }
 
-        rawResponse = requests.get(
+        data = requests.get(
             url = f'https://api.twitch.tv/helix/users?login={self.twitchHandle}',
             headers = headers
         )
 
-        jsonResponse = json.loads(rawResponse.content)
+        jsonResponse = json.loads(data.content)
+
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+            raise ValueError(f'Received an error: {jsonResponse}')
+
         channelId = jsonResponse['data'][0]['id']
 
         if len(channelId) == 0 or channelId.isspace():
