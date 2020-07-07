@@ -96,4 +96,4 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'{self.nick} says hello {ctx.author.name}!')
+        await ctx.send(f'Hello @{ctx.author.name}!')
