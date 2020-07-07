@@ -58,7 +58,7 @@ class CynanBot(commands.Bot):
         if twitchUser == None:
             raise RuntimeError(f'Unable to find Twitch User with channel ID: \"{channelId}\"')
 
-        if twitchUser.rewardId == None or len(twitchUser.rewardId) == 0:
+        if twitchUser.rewardId == None or len(twitchUser.rewardId) == 0 or twitchUser.rewardId.isspace():
             # The runner of this script hasn't yet found their rewardId for POTD. So let's just
             # print out as much helpful data as possible and then return.
             rewardId = redemptionJson['reward']['id']
