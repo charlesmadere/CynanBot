@@ -70,17 +70,17 @@ class CynanBot(commands.Bot):
             return
 
         userThatRedeemed = redemptionJson['user']['login']
-        print(f'Sending POTD for {twitchUser.twitchHandle} to {userThatRedeemed}...')
+        print(f'Sending {twitchUser.twitchHandle}\'s POTD to {userThatRedeemed}...')
 
         twitchChannel = self.get_channel(twitchUser.twitchHandle)
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
-            await twitchChannel.send(f'{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
+            await twitchChannel.send(f'@{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
         except FileNotFoundError:
-            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD file is missing!')
+            await twitchChannel.send(f'@{twitchUser.twitchHandle} POTD file is missing!')
         except ValueError:
-            await twitchChannel.send(f'{twitchUser.twitchHandle} POTD content is malformed!')
+            await twitchChannel.send(f'@{twitchUser.twitchHandle} POTD content is malformed!')
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
