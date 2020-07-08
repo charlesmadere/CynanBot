@@ -45,9 +45,8 @@ class User:
 
         if len(channelId) == 0 or channelId.isspace():
             raise ValueError(f'Unable to fetch channel ID for {self.twitchHandle}: {jsonResponse}')
-        else:
-            self.__channelId = channelId
 
+        self.__channelId = channelId
         return channelId
 
     def fetchPicOfTheDay(self):
