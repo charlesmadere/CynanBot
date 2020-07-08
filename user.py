@@ -1,6 +1,6 @@
 import json
+import os
 import requests
-from os import path
 from urllib.parse import urlparse
 
 class User:
@@ -19,7 +19,7 @@ class User:
         self.rewardId = rewardId
         self.__channelId = None
 
-        if not path.exists(picOfTheDayFile):
+        if not os.path.exists(picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
     def fetchChannelId(self, clientId: str):
@@ -52,7 +52,7 @@ class User:
     def fetchPicOfTheDay(self):
         potdText = ""
 
-        if not path.exists(self.__picOfTheDayFile):
+        if not os.path.exists(self.__picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
