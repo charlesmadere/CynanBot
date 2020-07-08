@@ -30,7 +30,12 @@ class CynanBot(commands.Bot):
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
             print(f'Received a pub sub error: {data}')
-            return
+
+            if data['error'] == 'ERR_BADAUTH':
+                print('Refreshing access token...')
+                # TODO
+            else:
+                return
         elif 'type' not in data:
             print(f'Received a pub sub response without a type: {data}')
             return
