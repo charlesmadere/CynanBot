@@ -127,7 +127,6 @@ class AuthHelper():
         if not os.path.exists(self.__authFile):
             raise FileNotFoundError(f'Authentication file not found: \"{self.__authFile}\"')
 
-        jsonContents = None
         with open(self.__authFile, 'r') as file:
             jsonContents = json.load(file)
 
