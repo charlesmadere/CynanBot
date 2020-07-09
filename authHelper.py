@@ -129,7 +129,7 @@ class AuthHelper():
 
         jsonContents = None
         with open(self.__authFile, 'r') as file:
-            jsonContents = json.loads(file)
+            jsonContents = json.load(file)
 
         if jsonContents == None:
             raise IOError(f'Error reading from authentication file: \"{self.__authFile}\"')

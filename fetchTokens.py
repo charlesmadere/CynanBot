@@ -23,7 +23,7 @@ if TWITCH_CLIENT_ID == None or TWITCH_CLIENT_SECRET == None:
     authFileJson = None
 
     with open('authFile.json', 'r') as file:
-        authFileJson = json.loads(file)
+        authFileJson = json.load(file)
 
     TWITCH_CLIENT_ID = authFileJson['clientId']
     TWITCH_CLIENT_SECRET = authFileJson['clientSecret']

@@ -32,7 +32,7 @@ class ChannelIdsRepository():
         jsonContents = None
 
         with open(self.__repositoryFile, 'r') as file:
-            jsonContents = json.loads(file)
+            jsonContents = json.load(file)
 
         if jsonContents == None:
             raise IOError(f'Error reading from channel IDs file: \"{self.__repositoryFile}\"')
