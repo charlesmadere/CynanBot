@@ -1,3 +1,5 @@
+from authHelper import AuthHelper
+from channelIdsRepository import ChannelIdsRepository
 import json
 import os
 import requests
@@ -6,47 +8,52 @@ from urllib.parse import urlparse
 class User:
     def __init__(
         self,
-        twitchHandle: str,
+        authHelper: AuthHelper,
+        channelIdsRepository: ChannelIdsRepository,
+        handle: str,
         picOfTheDayFile: str,
-        accessToken: str,
-        refreshToken: str,
         rewardId: str
     ):
-        self.twitchHandle = twitchHandle
+        self.__authHelper = authHelper
+        self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
-        self.accessToken = accessToken
-        self.__refreshToken = refreshToken
-        self.rewardId = rewardId
-        self.__channelId = None
+        self.__rewardId = rewardId
+        self.__channelIdsRepository = channelIdsRepository
 
         if not os.path.exists(picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
-    def fetchChannelId(self, clientId: str):
-        if self.__channelId != None:
-            return self.__channelId
+    def fetchChannelId(self):
+        channelId = self.__channelIdsRepository.getChannelId(handle = self.getHandle())
+
+        if channelId != None:
+            return channelId
 
         headers = {
-            'Client-ID': clientId,
-            'Authorization': f'Bearer {self.accessToken}'
+            'Client-ID': self.__authHelper.getClientId(),
+            'Authorization': f'Bearer {self.getAccessToken()}'
         }
 
-        data = requests.get(
-            url = f'https://api.twitch.tv/helix/users?login={self.twitchHandle}',
+        rawResponse = requests.get(
+            url = f'https://api.twitch.tv/helix/users?login={self.getHandle()}',
             headers = headers
         )
 
-        jsonResponse = json.loads(data.content)
+        jsonResponse = json.loads(rawResponse.content)
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            raise ValueError(f'Received an error when fetching channel ID for {self.twitchHandle}: {jsonResponse}')
+            raise ValueError(f'Received an error when fetching channel ID for {self.getHandle()}: {jsonResponse}')
 
         channelId = jsonResponse['data'][0]['id']
 
-        if len(channelId) == 0 or channelId.isspace():
-            raise ValueError(f'Unable to fetch channel ID for {self.twitchHandle}: {jsonResponse}')
+        if channelId == None or len(channelId) == 0 or channelId.isspace():
+            raise ValueError(f'Unable to fetch channel ID for {self.getHandle()}: {jsonResponse}')
 
-        self.__channelId = channelId
+        self.__channelIdsRepository.setChannelId(
+            handle = self.getHandle(),
+            channelId = channelId
+        )
+
         return channelId
 
     def fetchPicOfTheDay(self):
@@ -68,3 +75,12 @@ class User:
             raise ValueError('POTD URL is empty or blank')
 
         return potdUrl
+
+    def getAccessToken(self):
+        return self.__authHelper.getAccessToken(self.getHandle())
+
+    def getHandle(self):
+        return self.__handle
+
+    def getRewardId(self):
+        return self.__rewardId
