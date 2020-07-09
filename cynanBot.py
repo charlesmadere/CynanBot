@@ -57,7 +57,7 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__authHelper.getUsers():
-            if channelId == user.fetchChannelId():
+            if channelId == user.fetchChannelId(self.__authHelper.getClientId()):
                 twitchUser = user
                 break
 
@@ -73,7 +73,7 @@ class CynanBot(commands.Bot):
             print(f'The rewardId is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
             return
 
-        if redemptionJson['reward']['id'] != twitchUser.rewardId:
+        if redemptionJson['reward']['id'] != twitchUser.getRewardId():
             # this user has redeemed a non-POTD reward
             return
 
@@ -94,7 +94,7 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         for user in self.__authHelper.getUsers():
-            channelId = user.fetchChannelId()
+            channelId = user.fetchChannelId(self.__authHelper.getClientId())
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{channelId}' ]

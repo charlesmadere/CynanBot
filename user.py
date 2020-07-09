@@ -1,4 +1,3 @@
-from authHelper import AuthHelper
 from channelIdsRepository import ChannelIdsRepository
 import json
 import os
@@ -8,13 +7,13 @@ from urllib.parse import urlparse
 class User:
     def __init__(
         self,
-        authHelper: AuthHelper,
         channelIdsRepository: ChannelIdsRepository,
+        accessToken: str,
         handle: str,
         picOfTheDayFile: str,
         rewardId: str
     ):
-        self.__authHelper = authHelper
+        self.__accessToken = accessToken
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
         self.__rewardId = rewardId
@@ -23,14 +22,14 @@ class User:
         if not os.path.exists(picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
-    def fetchChannelId(self):
+    def fetchChannelId(self, clientId: str):
         channelId = self.__channelIdsRepository.getChannelId(handle = self.getHandle())
 
         if channelId != None:
             return channelId
 
         headers = {
-            'Client-ID': self.__authHelper.getClientId(),
+            'Client-ID': clientId,
             'Authorization': f'Bearer {self.getAccessToken()}'
         }
 
@@ -66,18 +65,18 @@ class User:
             potdText = file.read().replace('\n', '').lstrip().rstrip()
 
         if len(potdText) == 0 or potdText.isspace():
-            raise ValueError('POTD text is empty or blank')
+            raise ValueError('POTD text is malformed!')
 
         potdParsed = urlparse(potdText)
         potdUrl = potdParsed.geturl()
 
-        if len(potdUrl) == 0 or potdUrl.isspace():
-            raise ValueError('POTD URL is empty or blank')
+        if potdUrl == None or len(potdUrl) == 0 or potdUrl.isspace():
+            raise ValueError('POTD URL is malformed!')
 
         return potdUrl
 
     def getAccessToken(self):
-        return self.__authHelper.getAccessToken(self.getHandle())
+        return self.__accessToken
 
     def getHandle(self):
         return self.__handle

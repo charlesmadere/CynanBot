@@ -1,3 +1,4 @@
+from channelIdsRepository import ChannelIdsRepository
 import json
 import os
 import requests
@@ -21,7 +22,7 @@ from user import User
 class AuthHelper():
     def __init__(
         self,
-        channelIdsRepository: channelIdsRepository,
+        channelIdsRepository: ChannelIdsRepository,
         authFile: str = "authFile.json"
     ):
         self.__channelIdsRepository = channelIdsRepository
@@ -113,8 +114,8 @@ class AuthHelper():
         for key in usersJson:
             userJson = usersJson[key]
             user = User(
-                authHelper = self,
                 channelIdsRepository = self.__channelIdsRepository,
+                accessToken = userJson['accessToken'],
                 handle = key,
                 picOfTheDayFile = userJson['picOfTheDayFile'],
                 rewardId = userJson['rewardId']
