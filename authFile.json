@@ -1,0 +1,13 @@
+{
+    "clientId": "",
+    "clientSecret": "",
+    "ircAuthToken": "",
+    "users": {
+        "cynanBot": {
+            "accessToken": "",
+            "picOfTheDayFile": "",
+            "refreshToken": "",
+            "rewardId": ""
+        }
+    }
+}

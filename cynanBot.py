@@ -1,3 +1,4 @@
+from authHelper import AuthHelper
 import json
 import requests
 from twitchio.ext import commands
@@ -7,22 +8,16 @@ from user import User
 # https://github.com/TwitchIO/TwitchIO
 
 class CynanBot(commands.Bot):
-    def __init__(
-        self,
-        ircToken: str,
-        clientId: str,
-        users: List[User]
-    ):
+    def __init__(self, authHelper: AuthHelper):
         super().__init__(
-            irc_token = ircToken,
-            client_id = clientId,
+            irc_token = authHelper.getIrcAuthToken(),
+            client_id = authHelper.getClientId(),
             nick = 'CynanBot',
             prefix = '!',
-            initial_channels = [ user.twitchHandle for user in users ]
+            initial_channels = [ user.getHandle() for user in authHelper.getUsers() ]
         )
 
-        self.__clientId = clientId
-        self.__users = users
+        self.__authHelper = authHelper
 
     async def event_message(self, message):
         await self.handle_commands(message)
@@ -30,6 +25,17 @@ class CynanBot(commands.Bot):
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
             print(f'Received a pub sub error: {data}')
+
+            if data['error'] != 'ERR_BADAUTH':
+                return
+
+            print('Validating access tokens...')
+            self.__authHelper.validateAccessTokens()
+
+            print('Refreshing access tokens...')
+            self.__authHelper.refreshAccessTokens()
+
+            print('Finished validating and refreshing tokens')
             return
         elif 'type' not in data:
             print(f'Received a pub sub response without a type: {data}')
@@ -50,19 +56,21 @@ class CynanBot(commands.Bot):
         channelId = redemptionJson['channel_id']
         twitchUser = None
 
-        for user in self.__users:
-            if channelId == user.fetchChannelId(clientId = self.__clientId):
+        for user in self.__authHelper.getUsers():
+            if channelId == user.fetchChannelId():
                 twitchUser = user
                 break
 
         if twitchUser == None:
-            raise RuntimeError(f'Unable to find Twitch User with channel ID: \"{channelId}\"')
+            raise RuntimeError(f'Unable to find User with channel ID: \"{channelId}\"')
 
-        if twitchUser.rewardId == None or len(twitchUser.rewardId) == 0 or twitchUser.rewardId.isspace():
+        rewardId = twitchUser.getRewardId()
+
+        if rewardId == None or len(rewardId) == 0 or rewardId.isspace():
             # The runner of this script hasn't yet found their rewardId for POTD. So let's just
             # print out as much helpful data as possible and then return.
-            rewardId = redemptionJson['reward']['id']
-            print(f'The rewardId is: \"{rewardId}\", and the JSON is: \"{redemptionJson}\"')
+            newRewardId = redemptionJson['reward']['id']
+            print(f'The rewardId is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
             return
 
         if redemptionJson['reward']['id'] != twitchUser.rewardId:
@@ -70,29 +78,29 @@ class CynanBot(commands.Bot):
             return
 
         userThatRedeemed = redemptionJson['user']['login']
-        print(f'Sending {twitchUser.twitchHandle}\'s POTD to {userThatRedeemed}...')
+        print(f'Sending {twitchUser.getHandle()}\'s POTD to {userThatRedeemed}...')
 
-        twitchChannel = self.get_channel(twitchUser.twitchHandle)
+        twitchChannel = self.get_channel(twitchUser.getHandle())
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
             await twitchChannel.send(f'@{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
         except FileNotFoundError:
-            await twitchChannel.send(f'@{twitchUser.twitchHandle} POTD file is missing!')
+            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD file is missing!')
         except ValueError:
-            await twitchChannel.send(f'@{twitchUser.twitchHandle} POTD content is malformed!')
+            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD content is malformed!')
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
-        for user in self.__users:
-            channelId = user.fetchChannelId(clientId = self.__clientId)
+        for user in self.__authHelper.getUsers():
+            channelId = user.fetchChannelId()
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{channelId}' ]
 
             # subscribe to pubhub channel points events
-            await self.pubsub_subscribe(user.accessToken, *topics)
+            await self.pubsub_subscribe(user.getAccessToken(), *topics)
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
