@@ -51,4 +51,4 @@ class ChannelIdsRepository():
         with open(self.__repositoryFile, 'w') as file:
             json.dump(jsonContents, file, indent = 4, sort_keys = True)
 
-        print(f'Saved new {handle} channel ID')
+        print(f'Saved new {handle} channel ID: \"{channelId}\"')
