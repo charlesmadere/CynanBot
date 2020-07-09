@@ -19,11 +19,23 @@ TWITCH_CLIENT_SECRET = None
 # https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor+channel:read:redemptions
 TWITCH_CODE_SECRET = None
 
+if TWITCH_CLIENT_ID == None or TWITCH_CLIENT_SECRET == None:
+    authFileJson = None
+
+    with open('authFile.json', 'r') as file:
+        authFileJson = json.loads(file)
+
+    TWITCH_CLIENT_ID = authFileJson['clientId']
+    TWITCH_CLIENT_SECRET = authFileJson['clientSecret']
+
 if TWITCH_CLIENT_SECRET == None or TWITCH_CLIENT_SECRET == None or TWITCH_CODE_SECRET == None:
     raise ValueError('TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, and TWITCH_CODE_SECRET must all be set!')
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
 rawResponse = requests.post(url)
 jsonResponse = json.loads(rawResponse.content)
-print(f'accessToken: \"{jsonResponse['access_token']}\"')
-print(f'refreshToken: \"{jsonResponse['refresh_token']}\"')
+accessToken = jsonResponse['access_token']
+refreshToken = jsonResponse['refresh_token']
+print(f'accessToken: \"{accessToken}\"')
+print(f'refreshToken: \"{refreshToken}\"')
+print(f'all json: {jsonResponse}')
