@@ -38,4 +38,3 @@ accessToken = jsonResponse['access_token']
 refreshToken = jsonResponse['refresh_token']
 print(f'accessToken: \"{accessToken}\"')
 print(f'refreshToken: \"{refreshToken}\"')
-print(f'all json: {jsonResponse}')
