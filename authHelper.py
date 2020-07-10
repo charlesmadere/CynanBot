@@ -201,4 +201,4 @@ class AuthHelper():
             jsonResponse = json.loads(rawResponse.content)
 
             if 'client_id' not in jsonResponse or len(jsonResponse['client_id']) == 0:
-                raise ValueError(f'Received malformed \"client_id\" for {user}: {rawResponse}')
+                raise ValueError(f'Received malformed \"client_id\" for {user.getHandle()}: {jsonResponse}')
