@@ -164,7 +164,7 @@ class AuthHelper():
                 'client_id': self.getClientId(),
                 'client_secret': self.getClientSecret(),
                 'grant_type': 'refresh_token',
-                'refresh_token': usersJson['refreshToken']
+                'refresh_token': usersJson[handle]['refreshToken']
             }
 
             rawResponse = requests.post(
@@ -174,9 +174,9 @@ class AuthHelper():
 
             jsonResponse = json.loads(rawResponse.content)
 
-            if 'access_token' not in jsonResponse or len(jsonResponse['access_token'] == 0):
+            if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
                 raise ValueError(f'Received malformed \"access_token\" for {handle}: {rawResponse}')
-            elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token'] == 0):
+            elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
                 raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {rawResponse}')
 
             usersJson[handle]['accessToken'] = jsonResponse['access_token']
