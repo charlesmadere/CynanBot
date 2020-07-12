@@ -29,8 +29,6 @@ class ChannelIdsRepository():
         if not os.path.exists(self.__repositoryFile):
             return dict()
 
-        jsonContents = None
-
         with open(self.__repositoryFile, 'r') as file:
             jsonContents = json.load(file)
 
