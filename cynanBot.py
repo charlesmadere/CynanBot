@@ -19,6 +19,9 @@ class CynanBot(commands.Bot):
 
         self.__authHelper = authHelper
 
+    async def event_command_error(self, ctx, error):
+        pass
+
     async def event_message(self, message):
         await self.handle_commands(message)
 
