@@ -52,7 +52,7 @@ class AuthHelper():
             self.__ircAuthToken = ircAuthToken
 
         users = self.__readUsersJson()
-        print(f'Finished reading from authentication file ({authFile}). There are {len(users)} user(s).')
+        print(f'Finished reading from authentication file \"{authFile}\". There are {len(users)} user(s).')
 
     def getAccessToken(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
@@ -81,12 +81,12 @@ class AuthHelper():
 
     def getRefreshToken(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
-            raise ValueError('handle argument is malformed!')
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         userJson = self.__readUserJson(handle)
 
         if 'refreshToken' not in userJson:
-            raise RuntimeError(f'User \"{handle}\" has no \"refreshToken\" in their JSON!')
+            raise ValueError(f'User \"{handle}\" has no \"refreshToken\" field in their JSON!')
 
         refreshToken = userJson['refreshToken']
 
@@ -97,7 +97,7 @@ class AuthHelper():
 
     def getUser(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
-            raise ValueError('handle argument is malformed!')
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         users = self.getUsers()
 
@@ -175,9 +175,9 @@ class AuthHelper():
             jsonResponse = json.loads(rawResponse.content)
 
             if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
-                raise ValueError(f'Received malformed \"access_token\" for {handle}: {rawResponse}')
+                raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
             elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
-                raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {rawResponse}')
+                raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
 
             usersJson[handle]['accessToken'] = jsonResponse['access_token']
             usersJson[handle]['refreshToken'] = jsonResponse['refresh_token']
