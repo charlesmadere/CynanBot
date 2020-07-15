@@ -56,17 +56,17 @@ class AuthHelper():
 
     def getAccessToken(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
-            raise ValueError('handle argument is malformed!')
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         userJson = self.__readUserJson(handle)
 
         if 'accessToken' not in userJson:
-            raise RuntimeError(f'User \"{handle}\" has no \"accessToken\" in their JSON!')
+            raise RuntimeError(f'User \"{handle}\" has no \"accessToken\" field in their JSON!')
 
         accessToken = userJson['accessToken']
 
         if accessToken == None or len(accessToken) == 0 or accessToken.isspace():
-            raise ValueError('User \"{handle}\" has an invalid access token!')
+            raise ValueError(f'User \"{handle}\" has an invalid access token: \"{accessToken}\"')
 
         return accessToken
 
@@ -91,7 +91,7 @@ class AuthHelper():
         refreshToken = userJson['refreshToken']
 
         if refreshToken == None or len(refreshToken) == 0 or refreshToken.isspace():
-            raise ValueError(f'User \"{handle}\" has an invalid refresh token!')
+            raise ValueError(f'User \"{handle}\" has an invalid refresh token: \"{refreshToken}\"')
 
         return refreshToken
 

@@ -23,6 +23,9 @@ class User:
             raise FileNotFoundError(f'POTD file not found: \"{picOfTheDayFile}\"')
 
     def fetchChannelId(self, clientId: str):
+        if clientId == None or len(clientId) == 0 or clientId.isspace():
+            raise ValueError(f'clientId argument is malformed: \"{clientId}\"')
+
         channelId = self.__channelIdsRepository.getChannelId(handle = self.getHandle())
 
         if channelId != None:
@@ -71,7 +74,7 @@ class User:
         potdUrl = potdParsed.geturl()
 
         if potdUrl == None or len(potdUrl) == 0 or potdUrl.isspace():
-            raise ValueError('POTD URL is malformed!')
+            raise ValueError(f'POTD URL is malformed: \"{potdUrl}\"')
 
         return potdUrl
 
