@@ -1,4 +1,5 @@
 from authHelper import AuthHelper
+from datetime import datetime
 import json
 import requests
 from twitchio.ext import commands
@@ -108,3 +109,9 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
         await ctx.send(f'Hello @{ctx.author.name}!')
+
+    @commands.command(name = 'time')
+    async def command_time(self, ctx):
+        now = datetime.now()
+        formattedTime = now.strftime("%B %d, %Y %H:%M")
+        await ctx.send(f'The local time is: {formattedTime}')
