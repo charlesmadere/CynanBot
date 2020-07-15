@@ -1,5 +1,6 @@
 from authHelper import AuthHelper
 from datetime import datetime
+from datetime import timedelta
 import json
 import requests
 from twitchio.ext import commands
@@ -19,6 +20,7 @@ class CynanBot(commands.Bot):
         )
 
         self.__authHelper = authHelper
+        self.__lastCynanMessageTime = datetime.now() - timedelta(hours = 8)
 
     async def event_command_error(self, ctx, error):
         pass
