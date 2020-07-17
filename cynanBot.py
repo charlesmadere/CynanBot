@@ -148,5 +148,5 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'time')
     async def command_time(self, ctx):
         now = datetime.now()
-        formattedTime = now.strftime("%B %d, %Y %H:%M")
+        formattedTime = now.strftime("%A, %b %d, %Y %I:%M:%S%p")
         await ctx.send(f'The local time is: {formattedTime}')
