@@ -2,9 +2,9 @@ import json
 import os
 
 class ChannelIdsRepository():
-    def __init__(self, repositoryFile: str = "channelIds.json"):
+    def __init__(self, repositoryFile: str = 'channelIds.json'):
         if repositoryFile == None or len(repositoryFile) == 0 or repositoryFile.isspace():
-            raise ValueError('repositoryFile argument is malformed!')
+            raise ValueError(f'repositoryFile argument is malformed: \"{repositoryFile}\"')
 
         self.__repositoryFile = repositoryFile
 

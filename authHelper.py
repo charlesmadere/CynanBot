@@ -28,7 +28,7 @@ class AuthHelper():
         self.__channelIdsRepository = channelIdsRepository
 
         if authFile == None or len(authFile) == 0 or authFile.isspace():
-            raise ValueError('authFile argument is malformed!')
+            raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
         self.__authFile = authFile
         jsonContents = self.__readAuthFileJson()
