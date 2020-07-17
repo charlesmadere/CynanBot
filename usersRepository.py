@@ -19,10 +19,8 @@ class UsersRepository():
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__usersFile = usersFile
-        users = self.getUsers()
-        print(f'Finished reading from users file \"{usersFile}\". There are {len(users)} user(s).')
 
-    def getUser(self, handle):
+    def getUser(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
