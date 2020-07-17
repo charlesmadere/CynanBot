@@ -4,13 +4,19 @@ from datetime import timedelta
 import json
 import requests
 from twitchio.ext import commands
-from typing import List
 from user import User
+from usersRepository import UsersRepository
+from userTokensRepository import UserTokensRepository
 
 # https://github.com/TwitchIO/TwitchIO
 
 class CynanBot(commands.Bot):
-    def __init__(self, authHelper: AuthHelper):
+    def __init__(
+        self,
+        authHelper: AuthHelper,
+        usersRepository: UsersRepository,
+        userTokensRepository: UserTokensRepository
+    ):
         super().__init__(
             irc_token = authHelper.getIrcAuthToken(),
             client_id = authHelper.getClientId(),
@@ -20,9 +26,12 @@ class CynanBot(commands.Bot):
         )
 
         self.__authHelper = authHelper
+        self.__usersRepository = usersRepository
+        self.__userTokensRepository = userTokensRepository
         self.__lastCynanMessageTime = datetime.now() - timedelta(hours = 8)
 
     async def event_command_error(self, ctx, error):
+        # prevents exceptions caused by people using commands for other bots
         pass
 
     async def event_message(self, message):
@@ -36,10 +45,16 @@ class CynanBot(commands.Bot):
                 return
 
             print('Validating access tokens...')
-            self.__authHelper.validateAccessTokens()
+            self.__authHelper.validateAccessTokens(
+                usersRepository = self.__usersRepository,
+                userTokensRepository = self.__userTokensRepository
+            )
 
             print('Refreshing access tokens...')
-            self.__authHelper.refreshAccessTokens()
+            self.__authHelper.refreshAccessTokens(
+                usersRepository = self.__usersRepository,
+                userTokensRepository = self.__userTokensRepository
+            )
 
             print('Finished validating and refreshing tokens')
             return
@@ -99,7 +114,7 @@ class CynanBot(commands.Bot):
     async def event_ready(self):
         print(f'{self.nick} is ready!')
 
-        for user in self.__authHelper.getUsers():
+        for user in self.__usersRepository.getUsers():
             channelId = user.fetchChannelId(self.__authHelper.getClientId())
 
             # we could subscribe to multiple topics, but for now, just channel points
