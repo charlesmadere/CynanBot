@@ -38,6 +38,15 @@ class CynanBot(commands.Bot):
         pass
 
     async def event_message(self, message):
+        if message.author.name.lower() == 'CynanMachae'.lower():
+            now = datetime.now()
+            delta = now - timedelta(minutes = 30)
+
+            if delta > self.__lastCynanMessageTime:
+                self.__lastCynanMessageTime = now
+                await message.channel.send_me('waves to @CynanMachae')
+                print('Sent CynanMachae a little message ;)')
+
         await self.handle_commands(message)
 
     async def event_raw_pubsub(self, data):
