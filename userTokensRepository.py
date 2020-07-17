@@ -20,14 +20,14 @@ class UserTokensRepository():
         self.__userTokensFile = userTokensFile
 
     def getAccessToken(self, handle: str):
-        userJson = self.__getUserJson(handle)
+        userJson = self.__readJson(handle)
         return userJson['accessToken']
 
     def getRefreshToken(self, handle: str):
-        userJson = self.__getUserJson(handle)
+        userJson = self.__readJson(handle)
         return userJson['refreshToken']
 
-    def __getUserJson(self, handle: str):
+    def __readJson(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
