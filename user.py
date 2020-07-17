@@ -17,7 +17,9 @@ class User:
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
         self.__rewardId = rewardId
-        self.__timeZone = timeZone
+
+        # will try to figure out something here at some point...
+        self.__timeZone = None
 
     def fetchPicOfTheDay(self):
         if not os.path.exists(self.__picOfTheDayFile):
