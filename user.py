@@ -6,11 +6,13 @@ class User:
         self,
         handle: str,
         picOfTheDayFile: str,
-        rewardId: str
+        rewardId: str,
+        timeZone: str
     ):
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
         self.__rewardId = rewardId
+        self.__timeZone = timeZone
 
     def fetchPicOfTheDay(self):
         potdText = ""

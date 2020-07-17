@@ -1,4 +1,5 @@
 from authHelper import AuthHelper
+from channelIdsRepository import ChannelIdsRepository
 from datetime import datetime
 from datetime import timedelta
 import json
@@ -14,6 +15,7 @@ class CynanBot(commands.Bot):
     def __init__(
         self,
         authHelper: AuthHelper,
+        channelIdsRepository: ChannelIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository
     ):
@@ -26,6 +28,7 @@ class CynanBot(commands.Bot):
         )
 
         self.__authHelper = authHelper
+        self.__channelIdsRepository = channelIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
         self.__lastCynanMessageTime = datetime.now() - timedelta(hours = 8)
@@ -44,15 +47,17 @@ class CynanBot(commands.Bot):
             if data['error'] != 'ERR_BADAUTH':
                 return
 
+            users = self.__usersRepository.getUsers()
+
             print('Validating access tokens...')
             self.__authHelper.validateAccessTokens(
-                usersRepository = self.__usersRepository,
+                users = users,
                 userTokensRepository = self.__userTokensRepository
             )
 
             print('Refreshing access tokens...')
             self.__authHelper.refreshAccessTokens(
-                usersRepository = self.__usersRepository,
+                users = users,
                 userTokensRepository = self.__userTokensRepository
             )
 
@@ -77,8 +82,14 @@ class CynanBot(commands.Bot):
         channelId = redemptionJson['channel_id']
         twitchUser = None
 
-        for user in self.__authHelper.getUsers():
-            if channelId == user.fetchChannelId(self.__authHelper.getClientId()):
+        for user in self.__usersRepository.getUsers():
+            userChannelId = self.__channelIdsRepository.fetchChannelId(
+                handle = user.getHandle(),
+                clientId = self.__authHelper.getClientId(),
+                accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+            )
+
+            if channelId == userChannelId:
                 twitchUser = user
                 break
 
@@ -115,7 +126,11 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         for user in self.__usersRepository.getUsers():
-            channelId = user.fetchChannelId(self.__authHelper.getClientId())
+            channelId = self.__channelIdsRepository.fetchChannelId(
+                handle = user.getHandle(),
+                clientId = self.__authHelper.getClientId(),
+                accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+            )
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{channelId}' ]

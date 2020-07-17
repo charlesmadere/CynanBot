@@ -1,8 +1,9 @@
 import json
 import os
 import requests
+from typing import List
+from user import User
 from userTokensRepository import UserTokensRepository
-from usersRepository import UsersRepository
 
 # The authentication file should be formatted like this:
 # {
@@ -57,11 +58,9 @@ class AuthHelper():
 
     def refreshAccessTokens(
         self,
-        userTokensRepository: UserTokensRepository,
-        usersRepository: UsersRepository
+        users: List[User],
+        userTokensRepository: UserTokensRepository
     ):
-        users = usersRepository.getUsers()
-
         for user in users:
             handle = user.getHandle()
             refreshToken = userTokensRepository.getRefreshToken(handle)
@@ -95,11 +94,9 @@ class AuthHelper():
 
     def validateAccessTokens(
         self,
-        userTokensRepository: UserTokensRepository,
-        usersRepository: UsersRepository
+        users: List[User],
+        userTokensRepository: UserTokensRepository
     ):
-        users = usersRepository.getUsers()
-
         for user in users:
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)

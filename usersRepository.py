@@ -1,5 +1,6 @@
 import json
 import os
+from user import User
 
 # The users repository file should be formatted like this:
 # {
@@ -45,6 +46,7 @@ class UsersRepository():
         users = []
         for handle in jsonContents:
             user = User(
+                handle = handle,
                 picOfTheDayFile = jsonContents[handle]['picOfTheDayFile'],
                 rewardId = jsonContents[handle]['rewardId'],
                 timeZone = jsonContents[handle]['timeZone']
