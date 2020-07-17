@@ -1,16 +1,22 @@
 import json
 import os
 
-class ChannelIdsRepository():
-    def __init__(self, repositoryFile: str = 'channelIds.json'):
-        if repositoryFile == None or len(repositoryFile) == 0 or repositoryFile.isspace():
-            raise ValueError(f'repositoryFile argument is malformed: \"{repositoryFile}\"')
+# The channel IDs repository file should be formatted like this:
+# {
+#   "cynanBot": "",
+#   "anotherUser": ""
+# }
 
-        self.__repositoryFile = repositoryFile
+class ChannelIdsRepository():
+    def __init__(self, channelIdsFile: str = 'channelIdsRepository.json'):
+        if channelIdsFile == None or len(channelIdsFile) == 0 or channelIdsFile.isspace():
+            raise ValueError(f'channelIdsFile argument is malformed: \"{channelIdsFile}\"')
+
+        self.__channelIdsFile = channelIdsFile
 
     def getChannelId(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
-            raise ValueError('handle argument is malformed!')
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         jsonContents = self.__readChannelIdsFileJson()
         channelId = None
@@ -26,27 +32,27 @@ class ChannelIdsRepository():
             return channelId
 
     def __readChannelIdsFileJson(self):
-        if not os.path.exists(self.__repositoryFile):
+        if not os.path.exists(self.__channelIdsFile):
             return dict()
 
-        with open(self.__repositoryFile, 'r') as file:
+        with open(self.__channelIdsFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents == None:
-            raise IOError(f'Error reading from channel IDs file: \"{self.__repositoryFile}\"')
+            raise IOError(f'Error reading from channel IDs file: \"{self.__channelIdsFile}\"')
 
         return jsonContents
 
     def setChannelId(self, handle: str, channelId: str):
         if handle == None or len(handle) == 0 or handle.isspace():
-            raise ValueError('handle argument is malformed!')
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif channelId == None or len(channelId) == 0 or channelId.isspace():
-            raise ValueError('channelId argument is malformed!')
+            raise ValueError(f'channelId argument is malformed: \"{channelId}\"')
 
         jsonContents = self.__readChannelIdsFileJson()
         jsonContents[handle] = channelId
 
-        with open(self.__repositoryFile, 'w') as file:
+        with open(self.__channelIdsFile, 'w') as file:
             json.dump(jsonContents, file, indent = 4, sort_keys = True)
 
-        print(f'Saved new {handle} channel ID: \"{channelId}\"')
+        print(f'Saved new channel ID ({channelId}) for {handle}')
