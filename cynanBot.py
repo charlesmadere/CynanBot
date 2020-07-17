@@ -24,7 +24,7 @@ class CynanBot(commands.Bot):
             client_id = authHelper.getClientId(),
             nick = 'CynanBot',
             prefix = '!',
-            initial_channels = [ user.getHandle() for user in authHelper.getUsers() ]
+            initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
         self.__authHelper = authHelper
@@ -126,17 +126,20 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         for user in self.__usersRepository.getUsers():
+            handle = user.getHandle()
+            accessToken = self.__userTokensRepository.getAccessToken(handle)
+
             channelId = self.__channelIdsRepository.fetchChannelId(
-                handle = user.getHandle(),
+                handle = handle,
                 clientId = self.__authHelper.getClientId(),
-                accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+                accessToken = accessToken
             )
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{channelId}' ]
 
             # subscribe to pubhub channel points events
-            await self.pubsub_subscribe(user.getAccessToken(), *topics)
+            await self.pubsub_subscribe(accessToken, *topics)
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
