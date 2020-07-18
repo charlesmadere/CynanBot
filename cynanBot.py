@@ -1,8 +1,8 @@
 from authHelper import AuthHelper
 from channelIdsRepository import ChannelIdsRepository
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import json
+import random
 import requests
 from twitchio.ext import commands
 from user import User
@@ -31,46 +31,30 @@ class CynanBot(commands.Bot):
         self.__channelIdsRepository = channelIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
-        self.__lastCynanMessageTime = datetime.now() - timedelta(hours = 8)
+
+        now = datetime.now()
+        self.__lastCynanMessageTime = now - timedelta(hours = 8)
+        self.__lastDeerForceMessageTime = now - timedelta(hours = 8)
 
     async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
         pass
 
     async def event_message(self, message):
-        if message.author.name.lower() == 'CynanMachae'.lower():
-            now = datetime.now()
-            delta = now - timedelta(minutes = 30)
-
-            if delta > self.__lastCynanMessageTime:
-                self.__lastCynanMessageTime = now
-                await message.channel.send_me('waves to @CynanMachae')
-                print('Sent CynanMachae a little message ;)')
-
-        await self.handle_commands(message)
+        if message.content == 'D e e R F o r C e':
+            await self.__handleDeerForceMessage(message)
+        elif message.author.name.lower() == 'CynanMachae'.lower():
+            await self.__handleMessageFromCynan(message)
+        else:
+            await self.handle_commands(message)
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
             print(f'Received a pub sub error: {data}')
 
-            if data['error'] != 'ERR_BADAUTH':
-                return
+            if data['error'] == 'ERR_BADAUTH':
+                self.__validateAndRefreshTokens()
 
-            users = self.__usersRepository.getUsers()
-
-            print('Validating access tokens...')
-            self.__authHelper.validateAccessTokens(
-                users = users,
-                userTokensRepository = self.__userTokensRepository
-            )
-
-            print('Refreshing access tokens...')
-            self.__authHelper.refreshAccessTokens(
-                users = users,
-                userTokensRepository = self.__userTokensRepository
-            )
-
-            print('Finished validating and refreshing tokens')
             return
         elif 'type' not in data:
             print(f'Received a pub sub response without a type: {data}')
@@ -150,11 +134,39 @@ class CynanBot(commands.Bot):
             # subscribe to pubhub channel points events
             await self.pubsub_subscribe(accessToken, *topics)
 
+    async def __handleDeerForceMessage(self, message):
+        now = datetime.now()
+        delta = now - timedelta(minutes = 20)
+
+        if delta > self.__lastDeerForceMessageTime:
+            self.__lastDeerForceMessageTime = now
+            await message.channel.send('D e e R F o r C e')
+
+    async def __handleMessageFromCynan(self, message):
+        now = datetime.now()
+        delta = now - timedelta(minutes = 30)
+
+        if delta > self.__lastCynanMessageTime:
+            self.__lastCynanMessageTime = now
+            await message.channel.send_me('waves to @CynanMachae')
+
+    def __validateAndRefreshTokens(self):
+        print('Validating and refreshing tokens...')
+
+        self.__authHelper.validateAndRefreshAccessTokens(
+            users = self.__usersRepository.getUsers(),
+            userTokensRepository = self.__userTokensRepository
+        )
+
+        print('Finished validating and refreshing tokens')
+
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'Hello @{ctx.author.name}!')
+        await ctx.send(f'hello @{ctx.author.name} !')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
-        formattedTime = datetime.now().strftime("%A, %b %d, %Y %I:%M%p")
-        await ctx.send(f'The local time for {ctx.channel.name} is: {formattedTime}')
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        now = datetime.now(user.getTimeZone())
+        formattedTime = now.strftime("%A, %b %d, %Y %I:%M%p")
+        await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')

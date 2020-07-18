@@ -56,47 +56,52 @@ class AuthHelper():
 
         return jsonContents
 
-    def refreshAccessTokens(
+    def __refreshAccessToken(
+        self,
+        handle: str,
+        userTokensRepository: UserTokensRepository
+    ):
+        refreshToken = userTokensRepository.getRefreshToken(handle)
+
+        params = {
+            'client_id': self.getClientId(),
+            'client_secret': self.getClientSecret(),
+            'grant_type': 'refresh_token',
+            'refresh_token': refreshToken
+        }
+
+        rawResponse = requests.post(
+            url = 'https://id.twitch.tv/oauth2/token',
+            params = params
+        )
+
+        jsonResponse = json.loads(rawResponse.content)
+
+        if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
+            raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
+        elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
+            raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
+
+        userTokensRepository.setTokens(
+            handle = handle,
+            accessToken = jsonResponse['access_token'],
+            refreshToken = jsonResponse['refresh_token']
+        )
+
+    def validateAndRefreshAccessTokens(
         self,
         users: List[User],
         userTokensRepository: UserTokensRepository
     ):
-        for user in users:
-            handle = user.getHandle()
-            refreshToken = userTokensRepository.getRefreshToken(handle)
+        if userTokensRepository == None:
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
-            params = {
-                'client_id': self.getClientId(),
-                'client_secret': self.getClientSecret(),
-                'grant_type': 'refresh_token',
-                'refresh_token': refreshToken
-            }
+        if users == None or len(users) == 0:
+            print(f'Given an empty list of users, skipping access token validation')
+            return
 
-            rawResponse = requests.post(
-                url = 'https://id.twitch.tv/oauth2/token',
-                params = params
-            )
+        print(f'Validating access tokens for {len(users)} user(s)...')
 
-            jsonResponse = json.loads(rawResponse.content)
-
-            if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
-                raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
-            elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
-                raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
-
-            userTokensRepository.setTokens(
-                handle = handle,
-                accessToken = jsonResponse['access_token'],
-                refreshToken = jsonResponse['refresh_token']
-            )
-
-        print(f'Finished refreshing access tokens for {len(users)} user(s)')
-
-    def validateAccessTokens(
-        self,
-        users: List[User],
-        userTokensRepository: UserTokensRepository
-    ):
         for user in users:
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
@@ -113,6 +118,9 @@ class AuthHelper():
             jsonResponse = json.loads(rawResponse.content)
 
             if 'client_id' not in jsonResponse or len(jsonResponse['client_id']) == 0:
-                raise ValueError(f'Received malformed \"client_id\" for {handle}: {jsonResponse}')
+                print(f'Refreshing access token for {handle}...')
 
-        print(f'Finished validating access tokens for {len(users)} user(s)')
+                self.__refreshAccessToken(
+                    handle = handle,
+                    userTokensRepository = userTokensRepository
+                )
