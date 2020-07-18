@@ -1,4 +1,5 @@
 import os
+import pytz
 from urllib.parse import urlparse
 
 class User:
@@ -18,8 +19,10 @@ class User:
         self.__picOfTheDayFile = picOfTheDayFile
         self.__rewardId = rewardId
 
-        # will try to figure out something here at some point...
-        self.__timeZone = None
+        if timeZone == None or len(timeZone) == 0 or timeZone.isspace():
+            self.__timeZone = None
+        else:
+            self.__timeZone = pytz.timezone(timeZone)
 
     def fetchPicOfTheDay(self):
         if not os.path.exists(self.__picOfTheDayFile):
@@ -46,3 +49,6 @@ class User:
 
     def getRewardId(self):
         return self.__rewardId
+
+    def getTimeZone(self):
+        return self.__timeZone
