@@ -43,10 +43,13 @@ class CynanBot(commands.Bot):
     async def event_message(self, message):
         if message.content == 'D e e R F o r C e':
             await self.__handleDeerForceMessage(message)
-        elif message.author.name.lower() == 'CynanMachae'.lower():
-            await self.__handleMessageFromCynan(message)
-        else:
-            await self.handle_commands(message)
+            return
+
+        if message.author.name.lower() == 'CynanMachae'.lower():
+            if await self.__handleMessageFromCynan(message):
+                return
+
+        await self.handle_commands(message)
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
@@ -149,6 +152,9 @@ class CynanBot(commands.Bot):
         if delta > self.__lastCynanMessageTime:
             self.__lastCynanMessageTime = now
             await message.channel.send_me('waves to @CynanMachae')
+            return True
+        else:
+            return False
 
     def __validateAndRefreshTokens(self):
         print('Validating and refreshing tokens...')
