@@ -34,7 +34,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         self.__lastCynanMessageTime = now - timedelta(hours = 8)
-        self.__lastDeerForceMessageTime = now - timedelta(hours = 8)
+        self.__lastDeerForceMessageTimes = dict()
 
     async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
@@ -140,9 +140,14 @@ class CynanBot(commands.Bot):
     async def __handleDeerForceMessage(self, message):
         now = datetime.now()
         delta = now - timedelta(minutes = 20)
+        user = self.__usersRepository.getUser(message.channel.name)
 
-        if delta > self.__lastDeerForceMessageTime:
-            self.__lastDeerForceMessageTime = now
+        lastDeerForceMessageTime = None
+        if user.getHandle() in self.__lastDeerForceMessageTimes:
+            lastDeerForceMessageTime = self.__lastDeerForceMessageTimes[user.getHandle()]
+
+        if lastDeerForceMessageTime == None or delta > lastDeerForceMessageTime:
+            self.__lastDeerForceMessageTimes[user.getHandle()] = now
             await message.channel.send('D e e R F o r C e')
 
     async def __handleMessageFromCynan(self, message):
