@@ -71,7 +71,7 @@ class CynanBot(commands.Bot):
 
         jsonResponse = json.loads(data['data']['message'])
 
-        if jsonResponse['type'] != 'reward-redeemed':
+        if jsonResponse['type'] == 'reward-redeemed':
             await self.__handleRewardRedeemed(jsonResponse)
 
     async def event_ready(self):
