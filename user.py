@@ -7,7 +7,7 @@ class User:
         self,
         handle: str,
         picOfTheDayFile: str,
-        rewardId: str,
+        picOfTheDayRewardId: str,
         timeZone: str
     ):
         if handle == None or len(handle) == 0 or handle.isspace():
@@ -17,7 +17,7 @@ class User:
 
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
-        self.__rewardId = rewardId
+        self.__picOfTheDayRewardId = picOfTheDayRewardId
 
         if timeZone == None or len(timeZone) == 0 or timeZone.isspace():
             self.__timeZone = None
@@ -47,8 +47,8 @@ class User:
     def getHandle(self):
         return self.__handle
 
-    def getRewardId(self):
-        return self.__rewardId
+    def getPicOfTheDayRewardId(self):
+        return self.__picOfTheDayRewardId
 
     def getTimeZone(self):
         return self.__timeZone

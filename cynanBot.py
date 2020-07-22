@@ -117,6 +117,22 @@ class CynanBot(commands.Bot):
         else:
             return False
 
+    async def __handlePotdRewardRedeemed(
+        self,
+        userThatRedeemed: str,
+        twitchUser: User,
+        twitchChannel
+    ):
+        print(f'Sending {twitchUser.getHandle()}\'s POTD to {userThatRedeemed}...')
+
+        try:
+            picOfTheDay = twitchUser.fetchPicOfTheDay()
+            await twitchChannel.send(f'@{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
+        except FileNotFoundError:
+            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD file is missing!')
+        except ValueError:
+            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD content is malformed!')
+
     async def __handleRewardRedeemed(self, jsonResponse):
         redemptionJson = jsonResponse['data']['redemption']
         twitchChannelId = redemptionJson['channel_id']
@@ -136,32 +152,20 @@ class CynanBot(commands.Bot):
         if twitchUser == None:
             raise RuntimeError(f'Unable to find User with channel ID: \"{twitchChannelId}\"')
 
-        rewardId = twitchUser.getRewardId()
+        potdRewardId = twitchUser.getPicOfTheDayRewardId()
 
-        if rewardId == None or len(rewardId) == 0 or rewardId.isspace():
-            # The runner of this script hasn't yet found their rewardId for POTD. So let's just
+        if potdRewardId == None or len(potdRewardId) == 0 or potdRewardId.isspace():
+            # The runner of this script hasn't yet found their Reward ID for POTD. So let's just
             # print out as much helpful data as possible and then return.
             newRewardId = redemptionJson['reward']['id']
-            print(f'The rewardId is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
-            return
-
-        if redemptionJson['reward']['id'] != twitchUser.getRewardId():
-            # This user has redeemed a non-POTD reward. Possibly in the future we'll support some
-            # different reward redemptions.
+            print(f'The Reward ID is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
             return
 
         userThatRedeemed = redemptionJson['user']['login']
-        print(f'Sending {twitchUser.getHandle()}\'s POTD to {userThatRedeemed}...')
-
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
-        try:
-            picOfTheDay = twitchUser.fetchPicOfTheDay()
-            await twitchChannel.send(f'@{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
-        except FileNotFoundError:
-            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD file is missing!')
-        except ValueError:
-            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD content is malformed!')
+        if redemptionJson['reward']['id'] == potdRewardId:
+            await self.__handlePotdRewardRedeemed(userThatRedeemed, twitchUser, twitchChannel)
 
     def __validateAndRefreshTokens(self):
         print('Validating and refreshing tokens...')

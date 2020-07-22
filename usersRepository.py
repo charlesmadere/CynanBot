@@ -6,7 +6,7 @@ from user import User
 # {
 #   "cynanBot": {
 #     "picOfTheDayFile": "",
-#     "rewardId": "",
+#     "picOfTheDayRewardId": "",
 #     "timeZone": ""
 #   },
 #   "anotherUser": {
@@ -48,7 +48,7 @@ class UsersRepository():
             user = User(
                 handle = handle,
                 picOfTheDayFile = jsonContents[handle]['picOfTheDayFile'],
-                rewardId = jsonContents[handle]['rewardId'],
+                picOfTheDayRewardId = jsonContents[handle]['picOfTheDayRewardId'],
                 timeZone = jsonContents[handle]['timeZone']
             )
             users.append(user)
