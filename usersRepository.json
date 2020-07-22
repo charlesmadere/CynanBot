@@ -1,7 +1,10 @@
 {
     "userHandle": {
         "picOfTheDayFile": "/path/blah/potd.txt",
-        "rewardId": "",
+        "picOfTheDayRewardId": "",
         "timeZone": ""
+    },
+    "anotherUser": {
+        // ...
     }
 }
