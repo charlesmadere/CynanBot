@@ -180,6 +180,14 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'time')
     async def command_time(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        now = datetime.now(user.getTimeZone())
-        formattedTime = now.strftime("%A, %b %d, %Y %I:%M%p")
-        await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
+        timeZone = user.getTimeZone()
+        timeFormat = "%A, %b %d, %Y %I:%M%p"
+
+        if timeZone == None:
+            now = datetime.now()
+            formattedTime = now.strftime(timeFormat)
+            await ctx.send(f'the system time for {self.nick} is {formattedTime}')
+        else:
+            now = datetime.now(timeZone)
+            formattedTime = now.strftime(timeFormat)
+            await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
