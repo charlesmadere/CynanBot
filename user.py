@@ -3,6 +3,8 @@ import pytz
 from urllib.parse import urlparse
 
 class User:
+    __timeZones = dict()
+
     def __init__(
         self,
         handle: str,
@@ -22,7 +24,10 @@ class User:
         if timeZone == None or len(timeZone) == 0 or timeZone.isspace():
             self.__timeZone = None
         else:
-            self.__timeZone = pytz.timezone(timeZone)
+            if timeZone not in self.__timeZones:
+                self.__timeZones[timeZone] = pytz.timezone(timeZone)
+
+            self.__timeZone = self.__timeZones[timeZone]
 
     def fetchPicOfTheDay(self):
         if not os.path.exists(self.__picOfTheDayFile):
