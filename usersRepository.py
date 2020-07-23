@@ -45,13 +45,22 @@ class UsersRepository():
 
         users = []
         for handle in jsonContents:
-            user = User(
+            userJson = jsonContents[handle]
+
+            picOfTheDayRewardId = None
+            if 'picOfTheDayRewardId' in userJson:
+                picOfTheDayRewardId = userJson['picOfTheDayRewardId']
+
+            timeZone = None
+            if 'timeZone' in userJson:
+                timeZone = userJson['timeZone']
+
+            users.append(User(
                 handle = handle,
-                picOfTheDayFile = jsonContents[handle]['picOfTheDayFile'],
-                picOfTheDayRewardId = jsonContents[handle]['picOfTheDayRewardId'],
-                timeZone = jsonContents[handle]['timeZone']
-            )
-            users.append(user)
+                picOfTheDayFile = userJson['picOfTheDayFile'],
+                picOfTheDayRewardId = picOfTheDayRewardId,
+                timeZone = timeZone
+            ))
 
         if len(users) == 0:
             raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
