@@ -27,6 +27,11 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
+        if channelIdsRepository == None:
+            raise ValueError(f'channelIdsRepository argument is malformed: \"{channelIdsRepository}\"')
+        elif userTokensRepository == None:
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+
         self.__authHelper = authHelper
         self.__channelIdsRepository = channelIdsRepository
         self.__usersRepository = usersRepository
