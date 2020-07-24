@@ -53,7 +53,7 @@ class UserTokensRepository():
             raise ValueError(f'accessToken argument is malformed: \"{accessToken}\"')
         elif refreshToken == None or len(refreshToken) == 0 or refreshToken.isspace():
             raise ValueError(f'refreshToken argument is malformed: \"{refreshToken}\"')
-        
+
         if not os.path.exists(self.__userTokensFile):
             raise FileNotFoundError(f'User tokens file not found: \"{self.__userTokensFile}\"')
 
