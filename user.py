@@ -33,8 +33,6 @@ class User:
         if not os.path.exists(self.__picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
-        potdText = None
-
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = file.read().replace('\n', '').lstrip().rstrip()
 
