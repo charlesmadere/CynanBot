@@ -1,5 +1,6 @@
 import json
 import os
+from timeZoneRepository import TimeZoneRepository
 from user import User
 
 # The users repository file should be formatted like this:
@@ -15,11 +16,18 @@ from user import User
 # }
 
 class UsersRepository():
-    def __init__(self, usersFile: str = 'usersRepository.json'):
+    def __init__(
+        self,
+        usersFile: str = 'usersRepository.json',
+        timeZoneRepository: TimeZoneRepository
+    ):
         if usersFile == None or len(usersFile) == 0 or usersFile.isspace():
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
+        elif timeZoneRepository == None:
+            raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__usersFile = usersFile
+        self.__timeZoneRepository = timeZoneRepository
 
     def getUser(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
@@ -31,7 +39,7 @@ class UsersRepository():
             if handle.lower() == user.getHandle().lower():
                 return user
 
-        raise RuntimeError(f'Unable to find user with handle: \"{handle}\"')
+        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
 
     def getUsers(self):
         if not os.path.exists(self.__usersFile):
@@ -59,7 +67,7 @@ class UsersRepository():
                 handle = handle,
                 picOfTheDayFile = userJson['picOfTheDayFile'],
                 picOfTheDayRewardId = picOfTheDayRewardId,
-                timeZone = timeZone
+                timeZone = self.__timeZoneRepository.getTimeZone(timeZone)
             ))
 
         if len(users) == 0:
