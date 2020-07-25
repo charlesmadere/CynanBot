@@ -18,8 +18,8 @@ from user import User
 class UsersRepository():
     def __init__(
         self,
-        usersFile: str = 'usersRepository.json',
-        timeZoneRepository: TimeZoneRepository
+        timeZoneRepository: TimeZoneRepository,
+        usersFile: str = 'usersRepository.json'
     ):
         if usersFile == None or len(usersFile) == 0 or usersFile.isspace():
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
