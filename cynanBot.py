@@ -184,7 +184,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'hello @{ctx.author.name} !')
+        await ctx.send(f'my commands: !cynanbot, !time')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
