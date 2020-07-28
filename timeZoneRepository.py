@@ -9,7 +9,7 @@ class TimeZoneRepository():
             return None
         elif timeZone in self.__timeZones:
             return self.__timeZones[timeZone]
-        else:
-            newTimeZone = pytz.timezone(timeZone)
-            self.__timeZones[timeZone] = newTimeZone
-            return newTimeZone
+
+        newTimeZone = pytz.timezone(timeZone)
+        self.__timeZones[timeZone] = newTimeZone
+        return newTimeZone
