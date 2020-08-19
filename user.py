@@ -4,9 +4,12 @@ from urllib.parse import urlparse
 class User:
     def __init__(
         self,
+        discord: str,
         handle: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
+        speedrunProfile: str,
+        twitter: str,
         timeZone
     ):
         if handle == None or len(handle) == 0 or handle.isspace():
@@ -14,9 +17,12 @@ class User:
         elif picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
+        self.__discord = discord
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
+        self.__speedrunProfile = speedrunProfile
+        self.__twitter = twitter
         self.__timeZone = timeZone
 
     def fetchPicOfTheDay(self):
@@ -37,11 +43,20 @@ class User:
 
         return potdUrl
 
+    def getDiscord(self):
+        return self.__discord
+
     def getHandle(self):
         return self.__handle
 
     def getPicOfTheDayRewardId(self):
         return self.__picOfTheDayRewardId
 
+    def getSpeedrunProfile(self):
+        return self.__speedrunProfile
+
     def getTimeZone(self):
         return self.__timeZone
+
+    def getTwitter(self):
+        return self.__twitter

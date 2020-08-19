@@ -55,18 +55,33 @@ class UsersRepository():
         for handle in jsonContents:
             userJson = jsonContents[handle]
 
+            discord = None
+            if 'discord' in userJson:
+                discord = userJson['discord']
+
             picOfTheDayRewardId = None
             if 'picOfTheDayRewardId' in userJson:
                 picOfTheDayRewardId = userJson['picOfTheDayRewardId']
+
+            speedrunProfile = None
+            if 'speedrunProfile' in userJson:
+                speedrunProfile = userJson['speedrunProfile']
+
+            twitter = None
+            if 'twitter' in userJson:
+                twitter = userJson['twitter']
 
             timeZone = None
             if 'timeZone' in userJson:
                 timeZone = userJson['timeZone']
 
             users.append(User(
+                discord = discord,
                 handle = handle,
                 picOfTheDayFile = userJson['picOfTheDayFile'],
                 picOfTheDayRewardId = picOfTheDayRewardId,
+                speedrunProfile = speedrunProfile,
+                twitter = twitter,
                 timeZone = self.__timeZoneRepository.getTimeZone(timeZone)
             ))
 

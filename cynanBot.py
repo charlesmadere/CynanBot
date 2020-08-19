@@ -184,7 +184,27 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'my commands: !cynanbot, !time')
+        await ctx.send(f'my commands: !cynanbot, !discord, !pbs, !time, !twitter')
+
+    @commands.command(name = 'discord')
+    async def command_discord(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        discord = user.getDiscord()
+
+        if discord == None or len(discord) == 0 or discord.isspace():
+            await ctx.send(f'{user.getHandle()} has no discord link available')
+        else:
+            await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+
+    @commands.command(name = 'pbs')
+    async def command_pbs(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        speedrunProfile = user.getSpeedrunProfile()
+
+        if speedrunProfile == None or len(speedrunProfile) == 0 or speedrunProfile.isspace():
+            await ctx.send(f'{user.getHandle()} has no speedrun profile link available')
+        else:
+            await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
@@ -200,3 +220,13 @@ class CynanBot(commands.Bot):
             now = datetime.now(timeZone)
             formattedTime = now.strftime(timeFormat)
             await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
+
+    @commands.command(name = 'twitter')
+    async def command_twitter(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        twitter = user.getTwitter()
+
+        if twitter == None or len(twitter) == 0 or twitter.isspace():
+            await ctx.send(f'{user.getHandle()} has no twitter link available')
+        else:
+            await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')

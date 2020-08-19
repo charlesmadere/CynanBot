@@ -1,8 +1,11 @@
 {
     "userHandle": {
-        "picOfTheDayFile": "/path/blah/potd.txt",
+        "discord": "https://discord.gg/linkToInviteURL",
+        "picOfTheDayFile": "/home/userHandle/potd.txt",
         "picOfTheDayRewardId": "",
-        "timeZone": ""
+        "speedrunProfile": "https://www.speedrun.com/user/someHandle",
+        "timeZone": "",
+        "twitter": "https://twitter.com/userHandle"
     },
     "anotherUser": {
         // ...
