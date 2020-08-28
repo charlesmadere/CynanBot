@@ -9,16 +9,57 @@ class AnalogueStoreRepository():
 
     def fetchStoreStock(self):
         now = datetime.now()
-        delta = now - timedelta(hours = 8)
+        delta = now - timedelta(hours = 1)
 
         if delta > self.__cacheTime or len(self.__storeStock) == 0:
             self.__cacheTime = now
-            self.__refreshStoreStock()
+            self.__storeStock = self.__refreshStoreStock()
 
         return self.__storeStock
 
     def __refreshStoreStock(self):
         rawResponse = requests.get('https://www.analogue.co/store')
-        tree = html.fromstring(rawResponse.content)
+        htmlTree = html.fromstring(rawResponse.content)
 
-        
+        if htmlTree == None:
+            print(f'htmlTree is malformed: {htmlTree}')
+            return ""
+
+        productTrees = htmlTree.find_class('store_product-header__1rLY-')
+
+        if productTrees == None:
+            print(f'productTrees is malformed: {productTrees}')
+            return ""
+        elif len(productTrees) == 0:
+            print(f'productTrees is empty: {productTrees}')
+            return ""
+
+        inStockProducts = ""
+
+        for productTree in productTrees:
+            nameTrees = productTree.find_class('store_title__3eCzb')
+
+            if nameTrees == None or len(nameTrees) != 1:
+                continue
+
+            name = nameTrees[0].text
+
+            if name == None or len(name) == 0 or name.isspace():
+                continue
+
+            name = name.strip()
+
+            if name == None or len(name) == 0 or name.isspace():
+                continue
+            elif '8BitDo'.lower() in name.lower():
+                continue
+
+            outOfStockElement = productTree.find_class('button_Disabled__2CEbR')
+
+            if outOfStockElement == None or len(outOfStockElement) == 0:
+                if len(inStockProducts) != 0:
+                    inStockProducts = f'{inStockProducts}, '
+
+                inStockProducts = inStockProducts + name
+
+        return inStockProducts

@@ -208,7 +208,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'my commands: !cynanbot, !discord, !pbs, !time, !twitter')
+        await ctx.send(f'my commands: !analogue, !cynanbot, !discord, !pbs, !time, !twitter')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
