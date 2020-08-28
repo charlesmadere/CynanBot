@@ -190,7 +190,7 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
         now = datetime.now()
-        delta = now - timedelta(minutes = 15)
+        delta = now - timedelta(seconds = 30)
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         lastAnalogueStockMessageTime = None
