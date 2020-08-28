@@ -1,3 +1,4 @@
+from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from channelIdsRepository import ChannelIdsRepository
 from datetime import datetime, timedelta
@@ -14,6 +15,7 @@ from userTokensRepository import UserTokensRepository
 class CynanBot(commands.Bot):
     def __init__(
         self,
+        analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         channelIdsRepository: ChannelIdsRepository,
         usersRepository: UsersRepository,
@@ -27,18 +29,21 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if channelIdsRepository == None:
+        if analogueStoreRepository == None:
+            raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
+        elif channelIdsRepository == None:
             raise ValueError(f'channelIdsRepository argument is malformed: \"{channelIdsRepository}\"')
         elif userTokensRepository == None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
+        self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__channelIdsRepository = channelIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
 
-        now = datetime.now()
-        self.__lastCynanMessageTime = now - timedelta(hours = 8)
+        self.__lastAnalogueStockMessageTimes = dict()
+        self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
 
     async def event_command_error(self, ctx, error):
@@ -182,9 +187,28 @@ class CynanBot(commands.Bot):
 
         print('Finished validating and refreshing tokens')
 
+    @commands.command(name = 'analogue')
+    async def command_analogue(self, ctx):
+        now = datetime.now()
+        delta = now - timedelta(minutes = 15)
+        user = self.__userTokensRepository.getUser(ctx.channel.name)
+
+        lastAnalogueStockMessageTime = None
+        if user.getHandle() in self.__lastAnalogueStockMessageTimes:
+            lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes[user.getHandle()]
+
+        if lastAnalogueStockMessageTime == None or delta > lastAnalogueStockMessageTime:
+            self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
+            storeStock = self.__analogueStoreRepository.fetchStoreStock()
+
+            if storeStock == None or len(storeStock) == 0 or storeStock.isspace():
+                await ctx.send(f'Error reading products from Analogue store')
+            else:
+                await ctx.send(f'Analogue products in stock: {storeStock}')
+
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'my commands: !cynanbot, !discord, !pbs, !time, !twitter')
+        await ctx.send(f'my commands: !analogue, !cynanbot, !discord, !pbs, !time, !twitter')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
