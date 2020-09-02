@@ -3,18 +3,6 @@ import os
 from timeZoneRepository import TimeZoneRepository
 from user import User
 
-# The users repository file should be formatted like this:
-# {
-#   "cynanBot": {
-#     "picOfTheDayFile": "",
-#     "picOfTheDayRewardId": "",
-#     "timeZone": ""
-#   },
-#   "anotherUser": {
-#     // ...
-#   }
-# }
-
 class UsersRepository():
     def __init__(
         self,
@@ -55,6 +43,18 @@ class UsersRepository():
         for handle in jsonContents:
             userJson = jsonContents[handle]
 
+            isAnalogueEnabled = False
+            if 'analogueEnabled' in userJson:
+                isAnalogueEnabled = userJson['analogueEnabled']
+
+            isJpWordOfTheDayEnabled = False
+            if 'jpWordOfTheDayEnabled' in userJson:
+                isJpWordOfTheDayEnabled = userJson['jpWordOfTheDayEnabled']
+
+            isPicOfTheDayEnabled = False
+            if 'picOfTheDayEnabled' in userJson:
+                isPicOfTheDayEnabled = userJson['picOfTheDayEnabled']
+
             discord = None
             if 'discord' in userJson:
                 discord = userJson['discord']
@@ -76,6 +76,9 @@ class UsersRepository():
                 timeZone = userJson['timeZone']
 
             users.append(User(
+                isAnalogueEnabled = isAnalogueEnabled,
+                isJpWordOfTheDayEnabled = isJpWordOfTheDayEnabled,
+                isPicOfTheDayEnabled = isPicOfTheDayEnabled,
                 discord = discord,
                 handle = handle,
                 picOfTheDayFile = userJson['picOfTheDayFile'],

@@ -4,6 +4,9 @@ from urllib.parse import urlparse
 class User:
     def __init__(
         self,
+        isAnalogueEnabled: bool,
+        isJpWordOfTheDayEnabled: bool,
+        isPicOfTheDayEnabled: bool,
         discord: str,
         handle: str,
         picOfTheDayFile: str,
@@ -17,6 +20,9 @@ class User:
         elif picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
+        self.__isAnalogueEnabled = isAnalogueEnabled
+        self.__isJpWordOfTheDayEnabled = isJpWordOfTheDayEnabled
+        self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
@@ -30,7 +36,7 @@ class User:
             raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
-            potdText = file.read().replace('\n', '').lstrip().rstrip()
+            potdText = file.read().replace('\n', '').strip()
 
         if potdText == None or len(potdText) == 0 or potdText.isspace():
             raise ValueError(f'POTD text is malformed: \"{potdText}\"')
@@ -60,3 +66,12 @@ class User:
 
     def getTwitter(self):
         return self.__twitter
+
+    def isAnalogueEnabled(self):
+        return self.__isAnalogueEnabled
+
+    def isJpWordOfTheDayEnabled(self):
+        return self.__isJpWordOfTheDayEnabled
+
+    def isPicOfTheDayEnabled(self):
+        return self.__isPicOfTheDayEnabled

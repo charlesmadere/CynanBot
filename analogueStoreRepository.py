@@ -34,7 +34,7 @@ class AnalogueStoreRepository():
             print(f'productTrees is empty: {productTrees}')
             return ""
 
-        inStockProducts = ""
+        inStockProducts = list()
 
         for productTree in productTrees:
             nameTrees = productTree.find_class('store_title__3eCzb')
@@ -52,14 +52,23 @@ class AnalogueStoreRepository():
             if name == None or len(name) == 0 or name.isspace():
                 continue
             elif '8BitDo'.lower() in name.lower():
+                # don't show 8BitDo products in the final stock listing
                 continue
 
             outOfStockElement = productTree.find_class('button_Disabled__2CEbR')
 
             if outOfStockElement == None or len(outOfStockElement) == 0:
-                if len(inStockProducts) != 0:
-                    inStockProducts = f'{inStockProducts}, '
+                inStockProducts.append(name)
 
-                inStockProducts = inStockProducts + name
+        if len(inStockProducts) == 0:
+            return ""
 
-        return inStockProducts
+        stockString = None
+
+        for inStockProduct in inStockProducts:
+            if stockString == None:
+                stockString = inStockProduct
+            else:
+                stockString = f'{stockString}, {inStockProduct}'
+
+        return stockString

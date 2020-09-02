@@ -9,6 +9,7 @@ from twitchio.ext import commands
 from user import User
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
+from wordOfTheDayRepository import WordOfTheDayRepository
 
 # https://github.com/TwitchIO/TwitchIO
 
@@ -19,7 +20,8 @@ class CynanBot(commands.Bot):
         authHelper: AuthHelper,
         channelIdsRepository: ChannelIdsRepository,
         usersRepository: UsersRepository,
-        userTokensRepository: UserTokensRepository
+        userTokensRepository: UserTokensRepository,
+        wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
             irc_token = authHelper.getIrcAuthToken(),
@@ -35,16 +37,20 @@ class CynanBot(commands.Bot):
             raise ValueError(f'channelIdsRepository argument is malformed: \"{channelIdsRepository}\"')
         elif userTokensRepository == None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+        elif wordOfTheDayRepository == None:
+            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__channelIdsRepository = channelIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
+        self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__lastAnalogueStockMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
+        self.__lastJpWordMessageTimes = dict()
 
     async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
@@ -164,8 +170,11 @@ class CynanBot(commands.Bot):
 
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
 
+        if not twitchUser.isPicOfTheDayEnabled():
+            return
+
         if potdRewardId == None or len(potdRewardId) == 0 or potdRewardId.isspace():
-            # The runner of this script hasn't yet found their Reward ID for POTD. So let's just
+            # This twitch user hasn't yet found their Reward ID for POTD. So let's just
             # print out as much helpful data as possible and then return.
             newRewardId = redemptionJson['reward']['id']
             print(f'The Reward ID is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
@@ -189,11 +198,15 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
-        now = datetime.now()
-        delta = now - timedelta(seconds = 30)
         user = self.__usersRepository.getUser(ctx.channel.name)
 
+        if not user.isAnalogueEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(minutes = 1)
         lastAnalogueStockMessageTime = None
+
         if user.getHandle() in self.__lastAnalogueStockMessageTimes:
             lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes[user.getHandle()]
 
@@ -201,14 +214,32 @@ class CynanBot(commands.Bot):
             self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
             storeStock = self.__analogueStoreRepository.fetchStoreStock()
 
-            if storeStock == None or len(storeStock) == 0 or storeStock.isspace():
+            if storeStock == None or len(storeStock) == 0:
                 await ctx.send(f'Error reading products from Analogue store')
             else:
                 await ctx.send(f'Analogue products in stock: {storeStock}')
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
-        await ctx.send(f'my commands: !analogue, !cynanbot, !discord, !pbs, !time, !twitter')
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        commands = [ '!cynanbot', '!discord', '!pbs', '!time', '!twitter' ]
+
+        if user.isAnalogueEnabled():
+            commands.append('!analogue')
+
+        if user.isJpWordOfTheDayEnabled():
+            commands.append('!jpword')
+
+        commands.sort()
+        commandsString = None
+
+        for command in commands:
+            if commandsString == None:
+                commandsString = command
+            else:
+                commandsString = f'{commandsString}, {command}'
+
+        await ctx.send(f'my commands: {commandsString}')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
@@ -219,6 +250,29 @@ class CynanBot(commands.Bot):
             await ctx.send(f'{user.getHandle()} has no discord link available')
         else:
             await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+
+    @commands.command(name = 'jpword')
+    async def command_jpword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJpWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(minutes = 1)
+        lastJpWordMessageTime = None
+
+        if user.getHandle() in self.__lastJpWordMessageTimes:
+            lastJpWordMessageTime = self.__lastJpWordMessageTimes[user.getHandle()]
+
+        if lastJpWordMessageTime == None or delta > lastJpWordMessageTime:
+            self.__lastJpWordMessageTimes[user.getHandle()] = now
+            jpWord = self.__wordOfTheDayRepository.fetchJpWord()
+
+            if jpWord == None:
+                await ctx.send('Error fetching Japanese word of the day')
+            else:
+                await ctx.send(f'{jpWord.getWord()} ({jpWord.getRomaji()}) — {jpWord.getDefinition()}')
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):

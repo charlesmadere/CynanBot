@@ -1,17 +1,6 @@
 import json
 import os
 
-# The user tokens file should be formatted like this:
-# {
-#   "cynanBot": {
-#     "accessToken": "",
-#     "refreshToken": "",
-#   },
-#   "anotherUser": {
-#     // ...
-#   }
-# }
-
 class UserTokensRepository():
     def __init__(self, userTokensFile: str = 'userTokensRepository.json'):
         if userTokensFile == None or len(userTokensFile) == 0 or userTokensFile.isspace():
