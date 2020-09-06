@@ -1,10 +1,14 @@
 {
     "userHandle": {
+        "analogueEnabled": true,
         "discord": "https://discord.gg/linkToInviteURL",
+        "esWordOfTheDayEnabled": true,
+        "jaWordOfTheDayEnabled": true,
+        "picOfTheDayEnabled": true,
         "picOfTheDayFile": "/home/userHandle/potd.txt",
-        "picOfTheDayRewardId": "",
+        "picOfTheDayRewardId": "DB66F35F-19DC-99EA-50E6-97AEF5F439CA",
         "speedrunProfile": "https://www.speedrun.com/user/someHandle",
-        "timeZone": "",
+        "timeZone": "America/Los_Angeles",
         "twitter": "https://twitter.com/userHandle"
     },
     "anotherUser": {
