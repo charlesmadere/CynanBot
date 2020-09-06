@@ -1,6 +1,6 @@
 from wotd import Wotd
 
-class JpWotd(Wotd):
+class JaWotd(Wotd):
     def __init__(self,
         definition: str,
         englishExample: str,

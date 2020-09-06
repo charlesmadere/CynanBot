@@ -47,9 +47,13 @@ class UsersRepository():
             if 'analogueEnabled' in userJson:
                 isAnalogueEnabled = userJson['analogueEnabled']
 
-            isJpWordOfTheDayEnabled = False
-            if 'jpWordOfTheDayEnabled' in userJson:
-                isJpWordOfTheDayEnabled = userJson['jpWordOfTheDayEnabled']
+            isEsWordOfTheDayEnabled = False
+            if 'esWordOfTheDayEnabled' in userJson:
+                isEsWordOfTheDayEnabled = userJson['esWordOfTheDayEnabled']
+
+            isJaWordOfTheDayEnabled = False
+            if 'jaWordOfTheDayEnabled' in userJson:
+                isJaWordOfTheDayEnabled = userJson['jaWordOfTheDayEnabled']
 
             isPicOfTheDayEnabled = False
             if 'picOfTheDayEnabled' in userJson:
@@ -58,6 +62,14 @@ class UsersRepository():
             discord = None
             if 'discord' in userJson:
                 discord = userJson['discord']
+
+            picOfTheDayFile = None
+            if isPicOfTheDayEnabled:
+                if 'picOfTheDayFile' in userJson:
+                    picOfTheDayFile = userJson['picOfTheDayFile']
+
+                if picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
+                    raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
             picOfTheDayRewardId = None
             if 'picOfTheDayRewardId' in userJson:
@@ -77,11 +89,12 @@ class UsersRepository():
 
             users.append(User(
                 isAnalogueEnabled = isAnalogueEnabled,
-                isJpWordOfTheDayEnabled = isJpWordOfTheDayEnabled,
+                isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
+                isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
                 isPicOfTheDayEnabled = isPicOfTheDayEnabled,
                 discord = discord,
                 handle = handle,
-                picOfTheDayFile = userJson['picOfTheDayFile'],
+                picOfTheDayFile = picOfTheDayFile,
                 picOfTheDayRewardId = picOfTheDayRewardId,
                 speedrunProfile = speedrunProfile,
                 twitter = twitter,

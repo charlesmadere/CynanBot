@@ -50,7 +50,7 @@ class CynanBot(commands.Bot):
         self.__lastAnalogueStockMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
-        self.__lastJpWotdMessageTimes = dict()
+        self.__lastWotdMessageTimes = dict()
 
     async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
@@ -229,8 +229,11 @@ class CynanBot(commands.Bot):
         if user.isAnalogueEnabled():
             commands.append('!analogue')
 
-        if user.isJpWordOfTheDayEnabled():
-            commands.append('!jpword')
+        if user.isEsWordOfTheDayEnabled():
+            commands.append('!esword')
+
+        if user.isJaWordOfTheDayEnabled():
+            commands.append('!jaword')
 
         commands.sort()
         commandsString = ', '.join(commands)
@@ -247,30 +250,55 @@ class CynanBot(commands.Bot):
         else:
             await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
 
-    @commands.command(name = 'jpword')
-    async def command_jpword(self, ctx):
+    @commands.command(name = 'esword')
+    async def command_esword(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isJpWordOfTheDayEnabled():
+        if not user.isEsWordOfTheDayEnabled():
             return
 
         now = datetime.now()
         delta = now - timedelta(minutes = 1)
-        lastJpWotdMessageTime = None
+        lastWotdMessageTime = None
 
-        if user.getHandle() in self.__lastJpWotdMessageTimes:
-            lastJpWotdMessageTime = self.__lastJpWotdMessageTimes[user.getHandle()]
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
 
-        if lastJpWotdMessageTime == None or delta > lastJpWotdMessageTime:
-            self.__lastJpWotdMessageTimes[user.getHandle()] = now
-            jpWotd = self.__wordOfTheDayRepository.fetchJpWotd()
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            esWotd = self.__wordOfTheDayRepository.fetchEsWotd()
 
-            if jpWotd == None:
-                await ctx.send('Error fetching Japanese word of the day')
-            elif jpWotd.hasExamples():
-                await ctx.send(f'{jpWotd.getWord()} ({jpWotd.getRomaji()}) — {jpWotd.getDefinition()}. Example: {jpWotd.getForeignExample()} {jpWotd.getEnglishExample()}')
+            if esWotd == None:
+                await ctx.send('Error fetching Spanish word of the day')
+            elif esWotd.hasExamples():
+                await ctx.send(f'{esWotd.getWord()} — {esWotd.getDefinition()}. Example: {esWotd.getForeignExample()} {esWotd.getEnglishExample()}')
             else:
-                await ctx.send(f'{jpWotd.getWord()} ({jpWotd.getRomaji()}) — {jpWotd.getDefinition()}')
+                await ctx.send(f'{esWotd.getWord()} — {esWotd.getDefinition()}')
+
+    @commands.command(name = 'jaword')
+    async def command_jaword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJaWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(minutes = 1)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            jaWotd = self.__wordOfTheDayRepository.fetchJaWotd()
+
+            if jaWotd == None:
+                await ctx.send('Error fetching Japanese word of the day')
+            elif jaWotd.hasExamples():
+                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getRomaji()}) — {jaWotd.getDefinition()}. Example: {jaWotd.getForeignExample()} {jaWotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getRomaji()}) — {jaWotd.getDefinition()}')
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):

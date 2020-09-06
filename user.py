@@ -5,7 +5,8 @@ class User:
     def __init__(
         self,
         isAnalogueEnabled: bool,
-        isJpWordOfTheDayEnabled: bool,
+        isEsWordOfTheDayEnabled: bool,
+        isJaWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
         discord: str,
         handle: str,
@@ -21,7 +22,8 @@ class User:
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
-        self.__isJpWordOfTheDayEnabled = isJpWordOfTheDayEnabled
+        self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
+        self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
@@ -70,8 +72,11 @@ class User:
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled
 
-    def isJpWordOfTheDayEnabled(self):
-        return self.__isJpWordOfTheDayEnabled
+    def isEsWordOfTheDayEnabled(self):
+        return self.__isEsWordOfTheDayEnabled
+
+    def isJaWordOfTheDayEnabled(self):
+        return self.__isJaWordOfTheDayEnabled
 
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled
