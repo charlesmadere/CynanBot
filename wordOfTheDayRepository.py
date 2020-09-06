@@ -38,6 +38,7 @@ class WordOfTheDayRepository():
         return xmltodict.parse(rawResponse.content)['xml']['words']
 
     def __refreshEsWotd(self):
+        print('Refreshing Spanish (ES) WOTD...')
         xmlTree = self.__fetchWotdXml('es')
 
         word = None
@@ -68,6 +69,7 @@ class WordOfTheDayRepository():
             return None
 
     def __refreshJaWotd(self):
+        print('Refreshing Japanese (JA) WOTD...')
         xmlTree = self.__fetchWotdXml('ja')
 
         word = None

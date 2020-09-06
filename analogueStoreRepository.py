@@ -18,6 +18,7 @@ class AnalogueStoreRepository():
         return self.__storeStock
 
     def __refreshStoreStock(self):
+        print('Refreshing Analogue store stock...')
         rawResponse = requests.get('https://www.analogue.co/store')
         htmlTree = html.fromstring(rawResponse.content)
 
