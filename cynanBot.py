@@ -235,6 +235,9 @@ class CynanBot(commands.Bot):
         if user.isJaWordOfTheDayEnabled():
             commands.append('!jaword')
 
+        if user.isZhWordOfTheDayEnabled():
+            commands.append('!zhword')
+
         commands.sort()
         commandsString = ', '.join(commands)
 
@@ -334,3 +337,28 @@ class CynanBot(commands.Bot):
             await ctx.send(f'{user.getHandle()} has no twitter link available')
         else:
             await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
+
+    @commands.command(name = 'zhword')
+    async def command_zhword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isZhWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            zhWotd = self.__wordOfTheDayRepository.fetchZhWotd()
+
+            if zhWotd == None:
+                await ctx.send('Error fetching Mandarin Chinese word of the day')
+            elif zhWotd.hasExamples():
+                await ctx.send(f'{zhWotd.getWord()} ({zhWotd.getTransliteration()}) — {zhWotd.getDefinition()}. Example: {zhWotd.getForeignExample()}{zhWotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{zhWotd.getWord()} ({zhWotd.getTransliteration()}) — {zhWotd.getDefinition()}')

@@ -59,6 +59,10 @@ class UsersRepository():
             if 'picOfTheDayEnabled' in userJson:
                 isPicOfTheDayEnabled = userJson['picOfTheDayEnabled']
 
+            isZhWordOfTheDayEnabled = False
+            if 'zhWordOfTheDayEnabled' in userJson:
+                isZhWordOfTheDayEnabled = userJson['zhWordOfTheDayEnabled']
+
             discord = None
             if 'discord' in userJson:
                 discord = userJson['discord']
@@ -92,6 +96,7 @@ class UsersRepository():
                 isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
                 isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
                 isPicOfTheDayEnabled = isPicOfTheDayEnabled,
+                isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled,
                 discord = discord,
                 handle = handle,
                 picOfTheDayFile = picOfTheDayFile,

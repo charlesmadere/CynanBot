@@ -8,6 +8,7 @@ class User:
         isEsWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
+        isZhWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
         picOfTheDayFile: str,
@@ -25,6 +26,7 @@ class User:
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
+        self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
         self.__picOfTheDayFile = picOfTheDayFile
@@ -82,3 +84,6 @@ class User:
 
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled
+
+    def isZhWordOfTheDayEnabled(self):
+        return self.__isZhWordOfTheDayEnabled

@@ -12,6 +12,8 @@ class WordOfTheDayRepository():
         self.__esCacheTime = cacheTime
         self.__jaWotd = None
         self.__jaCacheTime = cacheTime
+        self.__zhWotd = None
+        self.__zhCacheTime = cacheTime
 
     def fetchEsWotd(self):
         now = datetime.now()
@@ -32,6 +34,16 @@ class WordOfTheDayRepository():
             self.__jaWotd = self.__refreshJaWotd()
 
         return self.__jaWotd
+
+    def fetchZhWotd(self):
+        now = datetime.now()
+        delta = now - timedelta(minutes = 30)
+
+        if delta > self.__zhCacheTime or self.__zhWotd == None:
+            self.__zhCacheTime = now
+            self.__zhWotd = self.__refreshZhWotd()
+
+        return self.__zhWotd
 
     def __fetchWotdXml(self, lang: str):
         rawResponse = requests.get(f'https://wotd.transparent.com/rss/{lang}-widget.xml?t=0')
@@ -102,4 +114,40 @@ class WordOfTheDayRepository():
             )
         except ValueError:
             print('Japanese word of the day is malformed!')
+            return None
+
+    def __refreshZhWotd(self):
+        print('Refreshing Mandarin Chinese (ZH) WOTD...')
+        xmlTree = self.__fetchWotdXml('zh')
+
+        word = None
+        if 'word' in xmlTree:
+            word = xmlTree['word'].strip()
+
+        definition = None
+        if 'translation' in xmlTree:
+            definition = xmlTree['translation'].strip()
+
+        transliteration = None
+        if 'wotd:transliteratedWord' in xmlTree:
+            transliteration = xmlTree['wotd:transliteratedWord'].strip()
+
+        englishExample = None
+        if 'enphrase' in xmlTree:
+            englishExample = xmlTree['enphrase'].strip()
+
+        foreignExample = None
+        if 'fnphrase' in xmlTree:
+            foreignExample = xmlTree['fnphrase'].strip()
+
+        try:
+            return TransliteratableWotd(
+                word = word,
+                definition = definition,
+                englishExample = englishExample,
+                foreignExample = foreignExample,
+                transliteration = transliteration
+            )
+        except ValueError:
+            print('Mandarin Chinese word of the day is malformed!')
             return None
