@@ -18,7 +18,7 @@ class User:
     ):
         if handle == None or len(handle) == 0 or handle.isspace():
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
+        elif isPicOfTheDayEnabled and (picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace()):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
@@ -34,7 +34,9 @@ class User:
         self.__timeZone = timeZone
 
     def fetchPicOfTheDay(self):
-        if not os.path.exists(self.__picOfTheDayFile):
+        if not self.__isPicOfTheDayEnabled:
+            raise RuntimeError(f'POTD is disabled for {self.__handle}')
+        elif not os.path.exists(self.__picOfTheDayFile):
             raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
