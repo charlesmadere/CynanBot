@@ -89,7 +89,7 @@ class WordOfTheDayRepository():
                 foreignExample = foreignExample
             )
         except ValueError:
-            print('Spanish word of the day is malformed!')
+            print('Spanish (ES) word of the day is malformed!')
             return None
 
     def __refreshFrWotd(self):
@@ -156,7 +156,7 @@ class WordOfTheDayRepository():
                 transliteration = transliteration
             )
         except ValueError:
-            print('Japanese word of the day is malformed!')
+            print('Japanese (JA) word of the day is malformed!')
             return None
 
     def __refreshZhWotd(self):
@@ -192,5 +192,5 @@ class WordOfTheDayRepository():
                 transliteration = transliteration
             )
         except ValueError:
-            print('Mandarin Chinese word of the day is malformed!')
+            print('Mandarin Chinese (ZN) word of the day is malformed!')
             return None
