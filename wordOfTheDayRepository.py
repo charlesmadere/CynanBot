@@ -1,48 +1,55 @@
 from datetime import datetime, timedelta
-from jpWord import JpWord
+from jpWotd import JpWotd
 import requests
 import xmltodict
 
 class WordOfTheDayRepository():
     def __init__(self):
-        self.__jpWord = None
+        self.__jpWotd = None
         self.__jpCacheTime = datetime.now() - timedelta(days = 1)
 
-    def fetchJpWord(self):
+    def fetchJpWotd(self):
         now = datetime.now()
         delta = now - timedelta(minutes = 30)
 
-        if delta > self.__jpCacheTime or self.__jpWord == None:
+        if delta > self.__jpCacheTime or self.__jpWotd == None:
             self.__jpCacheTime = now
-            self.__jpWord = self.__refreshJpWord()
+            self.__jpWotd = self.__refreshJpWotd()
 
-        return self.__jpWord
+        return self.__jpWotd
 
-    def __refreshJpWord(self):
+    def __refreshJpWotd(self):
         rawResponse = requests.get('https://wotd.transparent.com/rss/ja-widget.xml?t=0')
         xmlTree = xmltodict.parse(rawResponse.content)['xml']['words']
 
         word = None
         if 'word' in xmlTree:
-            word = xmlTree['word']
+            word = xmlTree['word'].strip()
 
-        translation = None
+        definition = None
         if 'translation' in xmlTree:
-            translation = xmlTree['translation']
+            definition = xmlTree['translation'].strip()
 
-        transliteration = None
+        romaji = None
         if 'wotd:transliteratedWord' in xmlTree:
-            transliteration = xmlTree['wotd:transliteratedWord']
+            romaji = xmlTree['wotd:transliteratedWord'].strip()
 
-        if word == None or len(word) == 0 or word.isspace():
-            return None
-        elif translation == None or len(translation) == 0 or translation.isspace():
-            return None
-        elif transliteration == None or len(transliteration) == 0 or transliteration.isspace():
-            return None
+        englishExample = None
+        if 'enphrase' in xmlTree:
+            englishExample = xmlTree['enphrase'].strip()
 
-        return JpWord(
-            word = word,
-            definition = translation,
-            romaji = transliteration
-        )
+        foreignExample = None
+        if 'fnphrase' in xmlTree:
+            foreignExample = xmlTree['fnphrase'].strip()
+
+        try:
+            return JpWotd(
+                word = word,
+                definition = definition,
+                englishExample = englishExample,
+                foreignExample = foreignExample,
+                romaji = romaji
+            )
+        except ValueError:
+            print('Japanese word of the day is malformed!')
+            return None
