@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from transliteratableWotd import TransliteratableWotd
 import requests
+from transliteratableWotd import TransliteratableWotd
 from wotd import Wotd
 import xmltodict
 
