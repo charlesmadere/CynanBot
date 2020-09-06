@@ -258,7 +258,7 @@ class CynanBot(commands.Bot):
             return
 
         now = datetime.now()
-        delta = now - timedelta(minutes = 1)
+        delta = now - timedelta(seconds = 30)
         lastWotdMessageTime = None
 
         if user.getHandle() in self.__lastWotdMessageTimes:
@@ -283,7 +283,7 @@ class CynanBot(commands.Bot):
             return
 
         now = datetime.now()
-        delta = now - timedelta(minutes = 1)
+        delta = now - timedelta(seconds = 30)
         lastWotdMessageTime = None
 
         if user.getHandle() in self.__lastWotdMessageTimes:
