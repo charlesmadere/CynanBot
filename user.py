@@ -6,6 +6,7 @@ class User:
         self,
         isAnalogueEnabled: bool,
         isEsWordOfTheDayEnabled: bool,
+        isFrWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
         isZhWordOfTheDayEnabled: bool,
@@ -24,6 +25,7 @@ class User:
 
         self.__isAnalogueEnabled = isAnalogueEnabled
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
+        self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
@@ -78,6 +80,9 @@ class User:
 
     def isEsWordOfTheDayEnabled(self):
         return self.__isEsWordOfTheDayEnabled
+
+    def isFrWordOfTheDayEnabled(self):
+        return self.__isFrWordOfTheDayEnabled
 
     def isJaWordOfTheDayEnabled(self):
         return self.__isJaWordOfTheDayEnabled

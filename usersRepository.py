@@ -51,6 +51,10 @@ class UsersRepository():
             if 'esWordOfTheDayEnabled' in userJson:
                 isEsWordOfTheDayEnabled = userJson['esWordOfTheDayEnabled']
 
+            isFrWordOfTheDayEnabled = False
+            if 'frWordOfTheDayEnabled' in userJson:
+                isFrWordOfTheDayEnabled = userJson['frWordOfTheDayEnabled']
+
             isJaWordOfTheDayEnabled = False
             if 'jaWordOfTheDayEnabled' in userJson:
                 isJaWordOfTheDayEnabled = userJson['jaWordOfTheDayEnabled']
@@ -94,6 +98,7 @@ class UsersRepository():
             users.append(User(
                 isAnalogueEnabled = isAnalogueEnabled,
                 isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
+                isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
                 isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
                 isPicOfTheDayEnabled = isPicOfTheDayEnabled,
                 isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled,

@@ -10,6 +10,8 @@ class WordOfTheDayRepository():
 
         self.__esWotd = None
         self.__esCacheTime = cacheTime
+        self.__frWotd = None
+        self.__frCacheTime = cacheTime
         self.__jaWotd = None
         self.__jaCacheTime = cacheTime
         self.__zhWotd = None
@@ -24,6 +26,16 @@ class WordOfTheDayRepository():
             self.__esWotd = self.__refreshEsWotd()
 
         return self.__esWotd
+
+    def fetchFrWotd(self):
+        now = datetime.now()
+        delta = now - timedelta(minutes = 30)
+
+        if delta > self.__frCacheTime or self.__frWotd == None:
+            self.__frCacheTime = now
+            self.__frWotd = self.__refreshFrWotd()
+
+        return self.__frWotd
 
     def fetchJaWotd(self):
         now = datetime.now()
@@ -78,6 +90,37 @@ class WordOfTheDayRepository():
             )
         except ValueError:
             print('Spanish word of the day is malformed!')
+            return None
+
+    def __refreshFrWotd(self):
+        print('Refreshing French (FR) WOTD...')
+        xmlTree = self.__fetchWotdXml('fr')
+
+        word = None
+        if 'word' in xmlTree:
+            word = xmlTree['word'].strip()
+
+        definition = None
+        if 'translation' in xmlTree:
+            definition = xmlTree['translation'].strip()
+
+        englishExample = None
+        if 'enphrase' in xmlTree:
+            englishExample = xmlTree['enphrase'].strip()
+
+        foreignExample = None
+        if 'fnphrase' in xmlTree:
+            foreignExample = xmlTree['fnphrase'].strip()
+
+        try:
+            return Wotd(
+                word = word,
+                definition = definition,
+                englishExample = englishExample,
+                foreignExample = foreignExample
+            )
+        except ValueError:
+            print('French (FR) word of the day is malformed!')
             return None
 
     def __refreshJaWotd(self):
