@@ -4,7 +4,7 @@ import requests
 
 class AnalogueStoreRepository():
     def __init__(self):
-        self.__storeStock = ""
+        self.__storeStock = None
         self.__cacheTime = datetime.now() - timedelta(days = 1)
 
     def fetchStoreStock(self):
@@ -23,16 +23,16 @@ class AnalogueStoreRepository():
 
         if htmlTree == None:
             print(f'htmlTree is malformed: {htmlTree}')
-            return ""
+            return None
 
         productTrees = htmlTree.find_class('store_product-header__1rLY-')
 
         if productTrees == None:
             print(f'productTrees is malformed: {productTrees}')
-            return ""
+            return None
         elif len(productTrees) == 0:
             print(f'productTrees is empty: {productTrees}')
-            return ""
+            return None
 
         inStockProducts = list()
 
@@ -63,12 +63,4 @@ class AnalogueStoreRepository():
         if len(inStockProducts) == 0:
             return ""
 
-        stockString = None
-
-        for inStockProduct in inStockProducts:
-            if stockString == None:
-                stockString = inStockProduct
-            else:
-                stockString = f'{stockString}, {inStockProduct}'
-
-        return stockString
+        return ', '.join(inStockProducts)

@@ -214,8 +214,10 @@ class CynanBot(commands.Bot):
             self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
             storeStock = self.__analogueStoreRepository.fetchStoreStock()
 
-            if storeStock == None or len(storeStock) == 0:
-                await ctx.send(f'Error reading products from Analogue store')
+            if storeStock == None:
+                await ctx.send('Error reading products from Analogue store')
+            elif len(storeStock) == 0:
+                await ctx.send('Analogue store has nothing in stock')
             else:
                 await ctx.send(f'Analogue products in stock: {storeStock}')
 
