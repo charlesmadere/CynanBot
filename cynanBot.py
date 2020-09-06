@@ -296,9 +296,9 @@ class CynanBot(commands.Bot):
             if jaWotd == None:
                 await ctx.send('Error fetching Japanese word of the day')
             elif jaWotd.hasExamples():
-                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getRomaji()}) — {jaWotd.getDefinition()}. Example: {jaWotd.getForeignExample()} {jaWotd.getEnglishExample()}')
+                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getTransliteration()}) — {jaWotd.getDefinition()}. Example: {jaWotd.getForeignExample()} {jaWotd.getEnglishExample()}')
             else:
-                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getRomaji()}) — {jaWotd.getDefinition()}')
+                await ctx.send(f'{jaWotd.getWord()} ({jaWotd.getTransliteration()}) — {jaWotd.getDefinition()}')
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):

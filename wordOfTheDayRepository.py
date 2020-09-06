@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from jaWotd import JaWotd
+from transliteratableWotd import TransliteratableWotd
 import requests
 from wotd import Wotd
 import xmltodict
@@ -78,9 +78,9 @@ class WordOfTheDayRepository():
         if 'translation' in xmlTree:
             definition = xmlTree['translation'].strip()
 
-        romaji = None
+        transliteration = None
         if 'wotd:transliteratedWord' in xmlTree:
-            romaji = xmlTree['wotd:transliteratedWord'].strip()
+            transliteration = xmlTree['wotd:transliteratedWord'].strip()
 
         englishExample = None
         if 'enphrase' in xmlTree:
@@ -91,12 +91,12 @@ class WordOfTheDayRepository():
             foreignExample = xmlTree['fnphrase'].strip()
 
         try:
-            return JaWotd(
+            return TransliteratableWotd(
                 word = word,
                 definition = definition,
                 englishExample = englishExample,
                 foreignExample = foreignExample,
-                romaji = romaji
+                transliteration = transliteration
             )
         except ValueError:
             print('Japanese word of the day is malformed!')
