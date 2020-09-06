@@ -224,7 +224,7 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        commands = [ '!cynanbot', '!discord', '!pbs', '!time', '!twitter' ]
+        commands = [ '!cynanbot', '!cynansource', '!discord', '!pbs', '!time', '!twitter' ]
 
         if user.isAnalogueEnabled():
             commands.append('!analogue')
@@ -242,6 +242,10 @@ class CynanBot(commands.Bot):
         commandsString = ', '.join(commands)
 
         await ctx.send(f'my commands: {commandsString}')
+
+    @commands.command(name = 'cynansource')
+    async def command_cynansource(self, ctx):
+        await ctx.send('my source code is available here: https://github.com/charlesmadere/cynanbot')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
