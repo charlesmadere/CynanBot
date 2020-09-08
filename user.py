@@ -5,10 +5,17 @@ class User:
     def __init__(
         self,
         isAnalogueEnabled: bool,
+        isDeWordOfTheDayEnabled: bool,
         isEsWordOfTheDayEnabled: bool,
         isFrWordOfTheDayEnabled: bool,
+        isItWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
+        isKoWordOfTheDayEnabled: bool,
+        isNoWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
+        isPtWordOfTheDayEnabled: bool,
+        isRuWordOfTheDayEnabled: bool,
+        isSvWordOfTheDayEnabled: bool,
         isZhWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
@@ -24,10 +31,17 @@ class User:
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
+        self.__isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
         self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
+        self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
+        self.__isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled
+        self.__isNoWordOfTheDayEnabled = isNoWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
+        self.__isPtWordOfTheDayEnabled = isPtWordOfTheDayEnabled
+        self.__isRuWordOfTheDayEnabled = isRuWordOfTheDayEnabled
+        self.__isSvWordOfTheDayEnabled = isSvWordOfTheDayEnabled
         self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
@@ -78,17 +92,38 @@ class User:
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled
 
+    def isDeWordOfTheDayEnabled(self):
+        return self.__isDeWordOfTheDayEnabled
+
     def isEsWordOfTheDayEnabled(self):
         return self.__isEsWordOfTheDayEnabled
 
     def isFrWordOfTheDayEnabled(self):
         return self.__isFrWordOfTheDayEnabled
 
+    def isItWordOfTheDayEnabled(self):
+        return self.__isItWordOfTheDayEnabled
+
     def isJaWordOfTheDayEnabled(self):
         return self.__isJaWordOfTheDayEnabled
 
+    def isKoWordOfTheDayEnabled(self):
+        return self.__isKoWordOfTheDayEnabled
+
+    def isNoWordOfTheDayEnabled(self):
+        return self.__isNoWordOfTheDayEnabled
+
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled
+
+    def isPtWordOfTheDayEnabled(self):
+        return self.__isPtWordOfTheDayEnabled
+
+    def isRuWordOfTheDayEnabled(self):
+        return self.__isRuWordOfTheDayEnabled
+
+    def isSvWordOfTheDayEnabled(self):
+        return self.__isSvWordOfTheDayEnabled
 
     def isZhWordOfTheDayEnabled(self):
         return self.__isZhWordOfTheDayEnabled

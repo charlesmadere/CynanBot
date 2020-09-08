@@ -5,192 +5,112 @@ from wotd import Wotd
 import xmltodict
 
 class WordOfTheDayRepository():
-    def __init__(self):
-        cacheTime = datetime.now() - timedelta(days = 1)
+    def __init__(
+        self,
+        cacheTimeDelta = timedelta(hours = 1)
+    ):
+        self.__cacheTimeDelta = cacheTimeDelta
+        self.__cacheTimes = dict()
+        self.__wotds = dict()
 
-        self.__esWotd = None
-        self.__esCacheTime = cacheTime
-        self.__frWotd = None
-        self.__frCacheTime = cacheTime
-        self.__jaWotd = None
-        self.__jaCacheTime = cacheTime
-        self.__zhWotd = None
-        self.__zhCacheTime = cacheTime
+    def fetchDeWotd(self):
+        return self.__fetchWotd('de')
 
     def fetchEsWotd(self):
-        now = datetime.now()
-        delta = now - timedelta(minutes = 30)
-
-        if delta > self.__esCacheTime or self.__esWotd == None:
-            self.__esCacheTime = now
-            self.__esWotd = self.__refreshEsWotd()
-
-        return self.__esWotd
+        return self.__fetchWotd('es')
 
     def fetchFrWotd(self):
-        now = datetime.now()
-        delta = now - timedelta(minutes = 30)
+        return self.__fetchWotd('fr')
 
-        if delta > self.__frCacheTime or self.__frWotd == None:
-            self.__frCacheTime = now
-            self.__frWotd = self.__refreshFrWotd()
-
-        return self.__frWotd
+    def fetchItWotd(self):
+        return self.__fetchWotd('it')
 
     def fetchJaWotd(self):
-        now = datetime.now()
-        delta = now - timedelta(minutes = 30)
+        return self.__fetchWotd('ja')
 
-        if delta > self.__jaCacheTime or self.__jaWotd == None:
-            self.__jaCacheTime = now
-            self.__jaWotd = self.__refreshJaWotd()
+    def fetchKoWotd(self):
+        return self.__fetchWotd('korean')
 
-        return self.__jaWotd
+    def fetchNoWotd(self):
+        return self.__fetchWotd('norwegian')
+
+    def fetchPtWotd(self):
+        return self.__fetchWotd('pt')
+
+    def fetchRuWotd(self):
+        return self.__fetchWotd('ru')
+
+    def fetchSvWotd(self):
+        return self.__fetchWotd('swedish')
 
     def fetchZhWotd(self):
+        return self.__fetchWotd('zh')
+
+    def __fetchWotd(self, lang: str):
+        if lang == None or len(lang) == 0 or lang.isspace():
+            raise ValueError(f'lang argument is malformed: \"{lang}\"')
+
         now = datetime.now()
-        delta = now - timedelta(minutes = 30)
 
-        if delta > self.__zhCacheTime or self.__zhWotd == None:
-            self.__zhCacheTime = now
-            self.__zhWotd = self.__refreshZhWotd()
+        if lang in self.__wotds and lang in self.__cacheTimes:
+            cacheTimeDelta = self.__cacheTimes[lang] - self.__cacheTimeDelta
 
-        return self.__zhWotd
+            if cacheTimeDelta <= now - self.__cacheTimeDelta:
+                return self.__wotds[lang]
 
-    def __fetchWotdXml(self, lang: str):
+        print(f'Refreshing \"{lang}\" word of the day...')
+        self.__cacheTimes[lang] = now
+
         rawResponse = requests.get(f'https://wotd.transparent.com/rss/{lang}-widget.xml?t=0')
-        return xmltodict.parse(rawResponse.content)['xml']['words']
+        xmlTree = xmltodict.parse(rawResponse.content)['xml']['words']
 
-    def __refreshEsWotd(self):
-        print('Refreshing Spanish (ES) WOTD...')
-        xmlTree = self.__fetchWotdXml('es')
+        if xmlTree == None:
+            print(f'xmlTree for \"{lang}\" is malformed: \"{xmlTree}\"')
+            return None
+        elif len(xmlTree) == 0:
+            print(f'xmlTree for \"{lang}\" is empty: \"{xmlTree}\"')
+            return None
 
         word = None
         if 'word' in xmlTree:
-            word = xmlTree['word'].strip()
+            word = xmlTree['word']
 
         definition = None
         if 'translation' in xmlTree:
-            definition = xmlTree['translation'].strip()
+            definition = xmlTree['translation']
 
         englishExample = None
         if 'enphrase' in xmlTree:
-            englishExample = xmlTree['enphrase'].strip()
+            englishExample = xmlTree['enphrase']
 
         foreignExample = None
         if 'fnphrase' in xmlTree:
-            foreignExample = xmlTree['fnphrase'].strip()
-
-        try:
-            return Wotd(
-                word = word,
-                definition = definition,
-                englishExample = englishExample,
-                foreignExample = foreignExample
-            )
-        except ValueError:
-            print('Spanish (ES) word of the day is malformed!')
-            return None
-
-    def __refreshFrWotd(self):
-        print('Refreshing French (FR) WOTD...')
-        xmlTree = self.__fetchWotdXml('fr')
-
-        word = None
-        if 'word' in xmlTree:
-            word = xmlTree['word'].strip()
-
-        definition = None
-        if 'translation' in xmlTree:
-            definition = xmlTree['translation'].strip()
-
-        englishExample = None
-        if 'enphrase' in xmlTree:
-            englishExample = xmlTree['enphrase'].strip()
-
-        foreignExample = None
-        if 'fnphrase' in xmlTree:
-            foreignExample = xmlTree['fnphrase'].strip()
-
-        try:
-            return Wotd(
-                word = word,
-                definition = definition,
-                englishExample = englishExample,
-                foreignExample = foreignExample
-            )
-        except ValueError:
-            print('French (FR) word of the day is malformed!')
-            return None
-
-    def __refreshJaWotd(self):
-        print('Refreshing Japanese (JA) WOTD...')
-        xmlTree = self.__fetchWotdXml('ja')
-
-        word = None
-        if 'word' in xmlTree:
-            word = xmlTree['word'].strip()
-
-        definition = None
-        if 'translation' in xmlTree:
-            definition = xmlTree['translation'].strip()
+            foreignExample = xmlTree['fnphrase']
 
         transliteration = None
         if 'wotd:transliteratedWord' in xmlTree:
-            transliteration = xmlTree['wotd:transliteratedWord'].strip()
+            transliteration = xmlTree['wotd:transliteratedWord']
 
-        englishExample = None
-        if 'enphrase' in xmlTree:
-            englishExample = xmlTree['enphrase'].strip()
-
-        foreignExample = None
-        if 'fnphrase' in xmlTree:
-            foreignExample = xmlTree['fnphrase'].strip()
+        wotd = None
 
         try:
-            return TransliteratableWotd(
-                word = word,
-                definition = definition,
-                englishExample = englishExample,
-                foreignExample = foreignExample,
-                transliteration = transliteration
-            )
+            if transliteration == None or len(transliteration) == 0:
+                wotd = Wotd(
+                    word = word,
+                    definition = definition,
+                    englishExample = englishExample,
+                    foreignExample = foreignExample
+                )
+            else:
+                wotd = TransliteratableWotd(
+                    word = word,
+                    definition = definition,
+                    englishExample = englishExample,
+                    foreignExample = foreignExample,
+                    transliteration = transliteration
+                )
         except ValueError:
-            print('Japanese (JA) word of the day is malformed!')
-            return None
+            print(f'Failed to fetch \"{lang}\" word of the day')
 
-    def __refreshZhWotd(self):
-        print('Refreshing Mandarin Chinese (ZH) WOTD...')
-        xmlTree = self.__fetchWotdXml('zh')
-
-        word = None
-        if 'word' in xmlTree:
-            word = xmlTree['word'].strip()
-
-        definition = None
-        if 'translation' in xmlTree:
-            definition = xmlTree['translation'].strip()
-
-        transliteration = None
-        if 'wotd:transliteratedWord' in xmlTree:
-            transliteration = xmlTree['wotd:transliteratedWord'].strip()
-
-        englishExample = None
-        if 'enphrase' in xmlTree:
-            englishExample = xmlTree['enphrase'].strip()
-
-        foreignExample = None
-        if 'fnphrase' in xmlTree:
-            foreignExample = xmlTree['fnphrase'].strip()
-
-        try:
-            return TransliteratableWotd(
-                word = word,
-                definition = definition,
-                englishExample = englishExample,
-                foreignExample = foreignExample,
-                transliteration = transliteration
-            )
-        except ValueError:
-            print('Mandarin Chinese (ZN) word of the day is malformed!')
-            return None
+        self.__wotds[lang] = wotd
+        return wotd

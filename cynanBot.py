@@ -229,14 +229,35 @@ class CynanBot(commands.Bot):
         if user.isAnalogueEnabled():
             commands.append('!analogue')
 
+        if user.isDeWordOfTheDayEnabled():
+            commands.append('!deword')
+
         if user.isEsWordOfTheDayEnabled():
             commands.append('!esword')
 
         if user.isFrWordOfTheDayEnabled():
             commands.append('!frword')
 
+        if user.isItWordOfTheDayEnabled():
+            commands.append('!itword')
+
         if user.isJaWordOfTheDayEnabled():
             commands.append('!jaword')
+
+        if user.isKoWordOfTheDayEnabled():
+            commands.append('!koword')
+
+        if user.isNoWordOfTheDayEnabled():
+            commands.append('!noword')
+
+        if user.isPtWordOfTheDayEnabled():
+            commands.append('!ptword')
+
+        if user.isRuWordOfTheDayEnabled():
+            commands.append('!ruword')
+
+        if user.isSvWordOfTheDayEnabled():
+            commands.append('!svword')
 
         if user.isZhWordOfTheDayEnabled():
             commands.append('!zhword')
@@ -249,6 +270,31 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
         await ctx.send('my source code is available here: https://github.com/charlesmadere/cynanbot')
+
+    @commands.command(name = 'deword')
+    async def command_deword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isDeWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchDeWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Dutch (DU) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
@@ -310,6 +356,31 @@ class CynanBot(commands.Bot):
             else:
                 await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
 
+    @commands.command(name = 'itword')
+    async def command_itword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isItWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchItWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Italian (IT) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
+
     @commands.command(name = 'jaword')
     async def command_jaword(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -331,9 +402,59 @@ class CynanBot(commands.Bot):
             if wotd == None:
                 await ctx.send('Error fetching Japanese (JA) word of the day')
             elif wotd.hasExamples():
-                await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()}{wotd.getEnglishExample()}')
+                await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
             else:
                 await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}')
+
+    @commands.command(name = 'koword')
+    async def command_koword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isKoWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchKoWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Korean (KO) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
+
+    @commands.command(name = 'noword')
+    async def command_noword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isNoWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchNoWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Norwegian (NO) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):
@@ -344,6 +465,81 @@ class CynanBot(commands.Bot):
             await ctx.send(f'{user.getHandle()} has no speedrun profile link available')
         else:
             await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+
+    @commands.command(name = 'ptword')
+    async def command_ptword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isPtWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchPtWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Portuguese (PT) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
+
+    @commands.command(name = 'ruword')
+    async def command_ruword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isRuWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchRuWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Russian (RU) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
+
+    @commands.command(name = 'svword')
+    async def command_svword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isSvWordOfTheDayEnabled():
+            return
+
+        now = datetime.now()
+        delta = now - timedelta(seconds = 30)
+        lastWotdMessageTime = None
+
+        if user.getHandle() in self.__lastWotdMessageTimes:
+            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+
+        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+            self.__lastWotdMessageTimes[user.getHandle()] = now
+            wotd = self.__wordOfTheDayRepository.fetchSvWotd()
+
+            if wotd == None:
+                await ctx.send('Error fetching Swedish (SV) word of the day')
+            elif wotd.hasExamples():
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            else:
+                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
@@ -391,6 +587,6 @@ class CynanBot(commands.Bot):
             if wotd == None:
                 await ctx.send('Error fetching Mandarin Chinese (ZH) word of the day')
             elif wotd.hasExamples():
-                await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()}{wotd.getEnglishExample()}')
+                await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
             else:
                 await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}')
