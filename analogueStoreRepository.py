@@ -11,7 +11,7 @@ class AnalogueStoreRepository():
         now = datetime.now()
         delta = now - timedelta(hours = 1)
 
-        if delta > self.__cacheTime or len(self.__storeStock) == 0:
+        if delta > self.__cacheTime or self.__storeStock == None:
             self.__cacheTime = now
             self.__storeStock = self.__refreshStoreStock()
 
