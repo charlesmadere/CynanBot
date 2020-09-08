@@ -3,13 +3,17 @@ from lxml import html
 import requests
 
 class AnalogueStoreRepository():
-    def __init__(self):
+    def __init__(
+        self,
+        cacheTimeDelta = timedelta(hours = 1)
+    ):
+        self.__cacheTime = datetime.now() - cacheTimeDelta
+        self.__cacheTimeDelta = cacheTimeDelta
         self.__storeStock = None
-        self.__cacheTime = datetime.now() - timedelta(days = 1)
 
     def fetchStoreStock(self):
         now = datetime.now()
-        delta = now - timedelta(hours = 1)
+        delta = now - self.__cacheTimeDelta
 
         if delta > self.__cacheTime or self.__storeStock == None:
             self.__cacheTime = now
