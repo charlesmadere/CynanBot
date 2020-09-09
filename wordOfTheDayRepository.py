@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import requests
-from transliteratableWotd import TransliteratableWotd
 from wotd import Wotd
 import xmltodict
 
@@ -94,21 +93,13 @@ class WordOfTheDayRepository():
         wotd = None
 
         try:
-            if transliteration == None or len(transliteration) == 0:
-                wotd = Wotd(
-                    word = word,
-                    definition = definition,
-                    englishExample = englishExample,
-                    foreignExample = foreignExample
-                )
-            else:
-                wotd = TransliteratableWotd(
-                    word = word,
-                    definition = definition,
-                    englishExample = englishExample,
-                    foreignExample = foreignExample,
-                    transliteration = transliteration
-                )
+            wotd = Wotd(
+                word = word,
+                definition = definition,
+                englishExample = englishExample,
+                foreignExample = foreignExample,
+                transliteration = transliteration
+            )
         except ValueError:
             print(f'Failed to fetch \"{lang}\" word of the day')
 

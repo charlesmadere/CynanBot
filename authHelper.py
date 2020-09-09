@@ -121,6 +121,9 @@ class AuthHelper():
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
 
+            if accessToken == None:
+                continue
+
             headers = {
                 'Authorization': f'OAuth {accessToken}'
             }

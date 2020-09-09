@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 import json
 import random
 import requests
-from transliteratableWotd import TransliteratableWotd
 from twitchio.ext import commands
 from user import User
 from usersRepository import UsersRepository
@@ -113,20 +112,26 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
 
         for user in self.__usersRepository.getUsers():
-            handle = user.getHandle()
-            accessToken = self.__userTokensRepository.getAccessToken(handle)
+            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+
+            if accessToken == None:
+                continue
 
             channelId = self.__channelIdsRepository.fetchChannelId(
-                handle = handle,
+                handle = user.getHandle(),
                 clientId = self.__authHelper.getClientId(),
                 accessToken = accessToken
             )
+
+            print(f'Subscribing to events for {user.getHandle()}...')
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{channelId}' ]
 
             # subscribe to pubhub channel points events
             await self.pubsub_subscribe(accessToken, *topics)
+
+        print('Finished subscribing to events')
 
     async def __handleDeerForceMessage(self, message):
         now = datetime.now()
@@ -174,10 +179,15 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__usersRepository.getUsers():
+            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+
+            if accessToken == None:
+                continue
+
             userChannelId = self.__channelIdsRepository.fetchChannelId(
                 handle = user.getHandle(),
                 clientId = self.__authHelper.getClientId(),
-                accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+                accessToken = accessToken
             )
 
             if twitchChannelId.lower() == userChannelId.lower():
@@ -206,17 +216,21 @@ class CynanBot(commands.Bot):
             await self.__handlePotdRewardRedeemed(userThatRedeemed, twitchUser, twitchChannel)
 
     async def __handleWordOfTheDay(self, ctx, wotd: Wotd):
+        message = ""
+
         if wotd == None:
-            await ctx.send('Error fetching word of the day')
+            message = 'Error fetching word of the day'
         elif wotd.hasExamples():
-            if isinstance(wotd, TransliteratableWotd):
-                await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
+            if wotd.hasTransliteration():
+                message = f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
             else:    
-                await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}')
-        elif isinstance(wotd, TransliteratableWotd):
-            await ctx.send(f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}')
+                message = f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
+        elif wotd.hasTransliteration():
+            message = f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
         else:
-            await ctx.send(f'{wotd.getWord()} — {wotd.getDefinition()}')
+            message = f'{wotd.getWord()} — {wotd.getDefinition()}'
+
+        await ctx.send(message)
 
     def __validateAndRefreshTokens(self):
         print('Validating and refreshing tokens...')
@@ -256,7 +270,16 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        commands = [ '!cynanbot', '!cynansource', '!discord', '!pbs', '!time', '!twitter' ]
+        commands = [ '!cynanbot', '!cynansource', '!time' ]
+
+        if user.hasDiscord():
+            commands.append('!discord')
+
+        if user.hasSpeedrunProfile():
+            commands.append('!pbs')
+
+        if user.hasTwitter():
+            commands.append('!twitter')
 
         if user.isAnalogueEnabled():
             commands.append('!analogue')
@@ -318,12 +341,12 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        discord = user.getDiscord()
 
-        if discord == None or len(discord) == 0 or discord.isspace():
-            await ctx.send(f'{user.getHandle()} has no discord link available')
-        else:
-            await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+        if not user.hasDiscord():
+            return
+
+        discord = user.getDiscord()
+        await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
 
     @commands.command(name = 'esword')
     async def command_esword(self, ctx):
@@ -400,12 +423,12 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        speedrunProfile = user.getSpeedrunProfile()
 
-        if speedrunProfile == None or len(speedrunProfile) == 0 or speedrunProfile.isspace():
-            await ctx.send(f'{user.getHandle()} has no speedrun profile link available')
-        else:
-            await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        if not user.hasSpeedrunProfile():
+            return
+
+        speedrunProfile = user.getSpeedrunProfile()
+        await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
 
     @commands.command(name = 'ptword')
     async def command_ptword(self, ctx):
@@ -461,12 +484,12 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        twitter = user.getTwitter()
 
-        if twitter == None or len(twitter) == 0 or twitter.isspace():
-            await ctx.send(f'{user.getHandle()} has no twitter link available')
-        else:
-            await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
+        if not user.hasTwitter():
+            return
+
+        twitter = user.getTwitter()
+        await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
 
     @commands.command(name = 'zhword')
     async def command_zhword(self, ctx):

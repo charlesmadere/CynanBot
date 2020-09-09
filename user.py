@@ -89,6 +89,15 @@ class User:
     def getTwitter(self):
         return self.__twitter
 
+    def hasDiscord(self):
+        return self.__discord != None and len(self.__discord) != 0
+
+    def hasSpeedrunProfile(self):
+        return self.__speedrunProfile != None and len(self.__speedrunProfile) != 0
+
+    def hasTwitter(self):
+        return self.__twitter != None and len(self.__twitter) != 0
+
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled
 

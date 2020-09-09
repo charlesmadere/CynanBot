@@ -4,6 +4,7 @@ class Wotd():
         definition: str,
         englishExample: str,
         foreignExample: str,
+        transliteration: str,
         word: str
     ):
         if definition == None or len(definition) == 0 or definition.isspace():
@@ -14,6 +15,7 @@ class Wotd():
         self.__definition = definition
         self.__englishExample = englishExample
         self.__foreignExample = foreignExample
+        self.__transliteration = transliteration
         self.__word = word
 
     def getDefinition(self):
@@ -25,6 +27,9 @@ class Wotd():
     def getForeignExample(self):
         return self.__foreignExample
 
+    def getTransliteration(self):
+        return self.__transliteration
+
     def getWord(self):
         return self.__word
 
@@ -33,3 +38,6 @@ class Wotd():
             self.__englishExample != None and len(self.__englishExample) != 0 and not self.__englishExample.isspace() and
             self.__foreignExample != None and len(self.__foreignExample) != 0 and not self.__foreignExample.isspace()
         )
+
+    def hasTransliteration(self):
+        return self.__transliteration != None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()

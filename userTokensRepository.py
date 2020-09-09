@@ -10,11 +10,33 @@ class UserTokensRepository():
 
     def getAccessToken(self, handle: str):
         userJson = self.__readJson(handle)
-        return userJson['accessToken']
+
+        if userJson == None:
+            return None
+        elif 'accessToken' not in userJson:
+            raise ValueError(f'JSON for {handle} is missing \"accessToken\": {userJson}')
+
+        accessToken = userJson['accessToken']
+
+        if accessToken == None or len(accessToken) == 0 or accessToken.isspace():
+            raise ValueError(f'accessToken for {handle} is malformed: \"{accessToken}\"')
+
+        return accessToken
 
     def getRefreshToken(self, handle: str):
         userJson = self.__readJson(handle)
-        return userJson['refreshToken']
+
+        if userJson == None:
+            return None
+        elif 'refreshToken' not in userJson:
+            raise ValueError(f'JSON for {handle} is missing \"refreshToken\": {userJson}')
+
+        refreshToken = userJson['refreshToken']
+
+        if refreshToken == None or len(refreshToken) == 0 or refreshToken.isspace():
+            raise ValueError(f'refreshToken for {handle} is malformed: \"{refreshToken}\"')
+
+        return refreshToken
 
     def __readJson(self, handle: str):
         if handle == None or len(handle) == 0 or handle.isspace():
@@ -33,7 +55,7 @@ class UserTokensRepository():
             if handle.lower() == key.lower():
                 return jsonContents[key]
 
-        raise RuntimeError(f'Unable to find user with handle: \"{handle}\"')
+        return None
 
     def setTokens(self, handle: str, accessToken: str, refreshToken: str):
         if handle == None or len(handle) == 0 or handle.isspace():
