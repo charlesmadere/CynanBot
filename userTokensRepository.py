@@ -27,7 +27,7 @@ class UserTokensRepository():
         userJson = self.__readJson(handle)
 
         if userJson == None:
-            return None
+            raise RuntimeError(f'No user token JSON for {handle} found')
         elif 'refreshToken' not in userJson:
             raise ValueError(f'JSON for {handle} is missing \"refreshToken\": {userJson}')
 

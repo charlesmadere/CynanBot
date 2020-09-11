@@ -4,17 +4,21 @@ class Wotd():
         definition: str,
         englishExample: str,
         foreignExample: str,
+        language: str,
         transliteration: str,
         word: str
     ):
         if definition == None or len(definition) == 0 or definition.isspace():
             raise ValueError(f'definition argument is malformed: \"{definition}\"')
+        elif language == None or len(language) == 0 or language.isspace():
+            raise ValueError(f'language argument is malformed: \"{language}\"')
         elif word == None or len(word) == 0 or word.isspace():
             raise ValueError(f'word argument is malformed: \"{word}\"')
 
         self.__definition = definition
         self.__englishExample = englishExample
         self.__foreignExample = foreignExample
+        self.__language = language
         self.__transliteration = transliteration
         self.__word = word
 
@@ -26,6 +30,9 @@ class Wotd():
 
     def getForeignExample(self):
         return self.__foreignExample
+
+    def getLanguage(self):
+        return self.__language
 
     def getTransliteration(self):
         return self.__transliteration

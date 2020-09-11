@@ -49,16 +49,13 @@ class WordOfTheDayRepository():
         if lang == None or len(lang) == 0 or lang.isspace():
             raise ValueError(f'lang argument is malformed: \"{lang}\"')
 
-        now = datetime.now()
-
         if lang in self.__wotds and lang in self.__cacheTimes:
-            cacheTimeDelta = self.__cacheTimes[lang] - self.__cacheTimeDelta
+            cacheTime = self.__cacheTimes[lang] + self.__cacheTimeDelta
 
-            if cacheTimeDelta <= now - self.__cacheTimeDelta:
+            if cacheTime > datetime.now():
                 return self.__wotds[lang]
 
         print(f'Refreshing \"{lang}\" word of the day...')
-        self.__cacheTimes[lang] = now
 
         rawResponse = requests.get(f'https://wotd.transparent.com/rss/{lang}-widget.xml?t=0')
         xmlTree = xmltodict.parse(rawResponse.content)['xml']['words']
@@ -86,6 +83,10 @@ class WordOfTheDayRepository():
         if 'fnphrase' in xmlTree:
             foreignExample = xmlTree['fnphrase']
 
+        language = None
+        if 'langname' in xmlTree:
+            language = xmlTree['langname']
+
         transliteration = None
         if 'wotd:transliteratedWord' in xmlTree:
             transliteration = xmlTree['wotd:transliteratedWord']
@@ -97,11 +98,18 @@ class WordOfTheDayRepository():
                 word = word,
                 definition = definition,
                 englishExample = englishExample,
+                language = language,
                 foreignExample = foreignExample,
                 transliteration = transliteration
             )
         except ValueError:
             print(f'Failed to fetch \"{lang}\" word of the day')
 
-        self.__wotds[lang] = wotd
+        if wotd == None:
+            del self.__wotds[lang]
+            del self.__cacheTimes[lang]
+        else:
+            self.__wotds[lang] = wotd
+            self.__cacheTimes[lang] = datetime.now()
+
         return wotd

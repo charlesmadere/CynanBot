@@ -58,7 +58,7 @@ class CynanBot(commands.Bot):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         now = datetime.now()
-        delta = now - timedelta(seconds = 30)
+        delta = now - timedelta(seconds = 15)
         lastWotdMessageTime = None
 
         if user.getHandle() in self.__lastWotdMessageTimes:
@@ -148,7 +148,7 @@ class CynanBot(commands.Bot):
 
     async def __handleMessageFromCynan(self, message):
         now = datetime.now()
-        delta = now - timedelta(minutes = 30)
+        delta = now - timedelta(hours = 1)
 
         if delta > self.__lastCynanMessageTime:
             self.__lastCynanMessageTime = now
@@ -222,13 +222,13 @@ class CynanBot(commands.Bot):
             message = 'Error fetching word of the day'
         elif wotd.hasExamples():
             if wotd.hasTransliteration():
-                message = f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
+                message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
             else:    
-                message = f'{wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
+                message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
         elif wotd.hasTransliteration():
-            message = f'{wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
+            message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
         else:
-            message = f'{wotd.getWord()} — {wotd.getDefinition()}'
+            message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}'
 
         await ctx.send(message)
 
@@ -265,7 +265,8 @@ class CynanBot(commands.Bot):
             elif len(storeStock) == 0:
                 await ctx.send('Analogue store has nothing in stock')
             else:
-                await ctx.send(f'Analogue products in stock: {storeStock}')
+                storeStockString = ', '.join(storeStock)
+                await ctx.send(f'Analogue products in stock: {storeStockString}')
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):

@@ -19,35 +19,42 @@ class AuthHelper():
 
         self.__authFile = authFile
 
-        jsonContents = self.__readJson()
-        clientId = None
-        clientSecret = None
-        ircAuthToken = None
+        if not os.path.exists(self.__authFile):
+            raise FileNotFoundError(f'Auth file not found: \"{self.__authFile}\"')
 
+        with open(self.__authFile, 'r') as file:
+            jsonContents = json.load(file)
+
+        if jsonContents == None:
+            raise IOError(f'Error reading from auth file: \"{self.__authFile}\"')
+        elif len(jsonContents) == 0:
+            raise ValueError(f'JSON contents of auth file ({authFile}) is empty')
+
+        clientId = None
         if 'clientId' in jsonContents:
             clientId = jsonContents['clientId']
-        else:
-            raise ValueError(f'Auth file ({authFile}) is missing \"clientId\"')
-
-        if 'clientSecret' in jsonContents:
-            clientSecret = jsonContents['clientSecret']
-        else:
-            raise ValueError(f'Auth file ({authFile}) is missing \"clientSecret\"')
-
-        if 'ircAuthToken' in jsonContents:
-            ircAuthToken = jsonContents['ircAuthToken']
-        else:
-            raise ValueError(f'Auth file ({authFile}) is missing \"ircAuthToken\"')
 
         if clientId == None or len(clientId) == 0 or clientId.isspace():
             raise ValueError(f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
-        elif clientSecret == None or len(clientSecret) == 0 or clientSecret.isspace():
-            raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
-        elif ircAuthToken == None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
-            raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
 
         self.__clientId = clientId
+
+        clientSecret = None
+        if 'clientSecret' in jsonContents:
+            clientSecret = jsonContents['clientSecret']
+
+        if clientSecret == None or len(clientSecret) == 0 or clientSecret.isspace():
+            raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
+
         self.__clientSecret = clientSecret
+
+        ircAuthToken = None
+        if 'ircAuthToken' in jsonContents:
+            ircAuthToken = jsonContents['ircAuthToken']
+
+        if ircAuthToken == None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
+            raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
+
         self.__ircAuthToken = ircAuthToken
 
     def getClientId(self):
@@ -58,18 +65,6 @@ class AuthHelper():
 
     def getIrcAuthToken(self):
         return self.__ircAuthToken
-
-    def __readJson(self):
-        if not os.path.exists(self.__authFile):
-            raise FileNotFoundError(f'Auth file not found: \"{self.__authFile}\"')
-
-        with open(self.__authFile, 'r') as file:
-            jsonContents = json.load(file)
-
-        if jsonContents == None:
-            raise IOError(f'Error reading from auth file: \"{self.__authFile}\"')
-
-        return jsonContents
 
     def __refreshAccessToken(
         self,
@@ -135,7 +130,7 @@ class AuthHelper():
 
             jsonResponse = json.loads(rawResponse.content)
 
-            if 'client_id' not in jsonResponse or len(jsonResponse['client_id']) == 0:
+            if 'client_id' not in jsonResponse or jsonResponse['client_id'] == None or len(jsonResponse['client_id']) == 0:
                 print(f'Refreshing access token for {handle}...')
 
                 self.__refreshAccessToken(
