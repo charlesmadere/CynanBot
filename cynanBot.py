@@ -288,6 +288,12 @@ class CynanBot(commands.Bot):
         if user.isDeWordOfTheDayEnabled():
             commands.append('!deword')
 
+        if user.isEnEsWordOfTheDayEnabled():
+            commands.append('!engword')
+
+        if user.isEnPtWordOfTheDayEnabled():
+            commands.append('!enptword')
+
         if user.isEsWordOfTheDayEnabled():
             commands.append('!esword')
 
@@ -348,6 +354,30 @@ class CynanBot(commands.Bot):
 
         discord = user.getDiscord()
         await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+
+    @commands.command(name = 'engword')
+    async def command_engword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isEnEsWordOfTheDayEnabled():
+            return
+        elif not self.__canSendWordOfTheDay(user):
+            return
+
+        wotd = self.__wordOfTheDayRepository.fetchEnEsWotd()
+        await self.__handleWordOfTheDay(ctx, wotd)
+
+    @commands.command(name = 'enptword')
+    async def command_esword(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isEnPtWordOfTheDayEnabled():
+            return
+        elif not self.__canSendWordOfTheDay(user):
+            return
+
+        wotd = self.__wordOfTheDayRepository.fetchEnPtWotd()
+        await self.__handleWordOfTheDay(ctx, wotd)
 
     @commands.command(name = 'esword')
     async def command_esword(self, ctx):

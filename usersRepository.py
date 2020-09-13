@@ -25,57 +25,21 @@ class UsersRepository():
         elif len(userJson) == 0:
             raise ValueError(f'userJson argument is empty: \"{userJson}\"')
 
-        isAnalogueEnabled = False
-        if 'analogueEnabled' in userJson:
-            isAnalogueEnabled = userJson['analogueEnabled']
-
-        isDeWordOfTheDayEnabled = False
-        if 'deWordOfTheDayEnabled' in userJson:
-            isDeWordOfTheDayEnabled = userJson['deWordOfTheDayEnabled']
-
-        isEsWordOfTheDayEnabled = False
-        if 'esWordOfTheDayEnabled' in userJson:
-            isEsWordOfTheDayEnabled = userJson['esWordOfTheDayEnabled']
-
-        isFrWordOfTheDayEnabled = False
-        if 'frWordOfTheDayEnabled' in userJson:
-            isFrWordOfTheDayEnabled = userJson['frWordOfTheDayEnabled']
-
-        isItWordOfTheDayEnabled = False
-        if 'itWordOfTheDayEnabled' in userJson:
-            isItWordOfTheDayEnabled = userJson['itWordOfTheDayEnabled']
-
-        isJaWordOfTheDayEnabled = False
-        if 'jaWordOfTheDayEnabled' in userJson:
-            isJaWordOfTheDayEnabled = userJson['jaWordOfTheDayEnabled']
-
-        isKoWordOfTheDayEnabled = False
-        if 'koWordOfTheDayEnabled' in userJson:
-            isKoWordOfTheDayEnabled = userJson['koWordOfTheDayEnabled']
-
-        isNoWordOfTheDayEnabled = False
-        if 'noWordOfTheDayEnabled' in userJson:
-            isNoWordOfTheDayEnabled = userJson['noWordOfTheDayEnabled']
-
-        isPicOfTheDayEnabled = False
-        if 'picOfTheDayEnabled' in userJson:
-            isPicOfTheDayEnabled = userJson['picOfTheDayEnabled']
-
-        isPtWordOfTheDayEnabled = False
-        if 'ptWordOfTheDayEnabled' in userJson:
-            isPtWordOfTheDayEnabled = userJson['ptWordOfTheDayEnabled']
-
-        isRuWordOfTheDayEnabled = False
-        if 'ruWordOfTheDayEnabled' in userJson:
-            isRuWordOfTheDayEnabled = userJson['ruWordOfTheDayEnabled']
-
-        isSvWordOfTheDayEnabled = False
-        if 'svWordOfTheDayEnabled' in userJson:
-            isSvWordOfTheDayEnabled = userJson['svWordOfTheDayEnabled']
-
-        isZhWordOfTheDayEnabled = False
-        if 'zhWordOfTheDayEnabled' in userJson:
-            isZhWordOfTheDayEnabled = userJson['zhWordOfTheDayEnabled']
+        isAnalogueEnabled = self.__readJsonBoolean(userJson, 'analogueEnabled')
+        isDeWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'deWordOfTheDayEnabled')
+        isEnEsWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'enEsWordOfTheDayEnabled')
+        isEnPtWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'enPtWordOfTheDayEnabled')
+        isEsWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'esWordOfTheDayEnabled')
+        isFrWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'frWordOfTheDayEnabled')
+        isItWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'itWordOfTheDayEnabled')
+        isJaWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'jaWordOfTheDayEnabled')
+        isKoWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'koWordOfTheDayEnabled')
+        isNoWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'noWordOfTheDayEnabled')
+        isPicOfTheDayEnabled = self.__readJsonBoolean(userJson, 'picOfTheDayEnabled')
+        isPtWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'ptWordOfTheDayEnabled')
+        isRuWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'ruWordOfTheDayEnabled')
+        isSvWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'svWordOfTheDayEnabled')
+        isZhWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'zhWordOfTheDayEnabled')
 
         discord = None
         if 'discord' in userJson:
@@ -108,6 +72,8 @@ class UsersRepository():
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
             isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled,
+            isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled,
+            isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled,
             isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
             isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
             isItWordOfTheDayEnabled = isItWordOfTheDayEnabled,
@@ -159,3 +125,13 @@ class UsersRepository():
             raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
 
         return users
+
+    def __readJsonBoolean(self, userJson: dict, key: str, defaultValue: bool = False):
+        if userJson == None:
+            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
+        elif key == None or len(key) == 0 or key.isspace():
+            raise ValueError(f'key argument is malformed: \"{key}\"')
+        elif key in userJson and userJson[key] != None:
+            return userJson[key]
+        else:
+            return defaultValue

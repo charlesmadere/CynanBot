@@ -15,6 +15,12 @@ class WordOfTheDayRepository():
     def fetchDeWotd(self):
         return self.__fetchWotd('de')
 
+    def fetchEnEsWotd(self):
+        return self.__fetchWotd('en-es')
+
+    def fetchEnPtWotd(self):
+        return self.__fetchWotd('en-pt')
+
     def fetchEsWotd(self):
         return self.__fetchWotd('es')
 
