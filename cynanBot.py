@@ -368,7 +368,7 @@ class CynanBot(commands.Bot):
         await self.__handleWordOfTheDay(ctx, wotd)
 
     @commands.command(name = 'enptword')
-    async def command_esword(self, ctx):
+    async def command_enptword(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isEnPtWordOfTheDayEnabled():
