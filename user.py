@@ -27,9 +27,9 @@ class User:
         twitter: str,
         timeZone
     ):
-        if handle == None or len(handle) == 0 or handle.isspace():
+        if handle == None or len(handle) == 0:
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif isPicOfTheDayEnabled and (picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace()):
+        elif isPicOfTheDayEnabled and (picOfTheDayFile == None or len(picOfTheDayFile) == 0):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
@@ -98,6 +98,9 @@ class User:
 
     def hasSpeedrunProfile(self):
         return self.__speedrunProfile != None and len(self.__speedrunProfile) != 0
+
+    def hasTimeZone(self):
+        return self.__timeZone != None
 
     def hasTwitter(self):
         return self.__twitter != None and len(self.__twitter) != 0

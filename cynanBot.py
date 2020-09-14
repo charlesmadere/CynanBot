@@ -271,13 +271,16 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        commands = [ '!cynanbot', '!cynansource', '!time' ]
+        commands = [ '!cynanbot', '!cynansource' ]
 
         if user.hasDiscord():
             commands.append('!discord')
 
         if user.hasSpeedrunProfile():
             commands.append('!pbs')
+
+        if user.hasTimeZone():
+            commands.append('!time')
 
         if user.hasTwitter():
             commands.append('!twitter')
@@ -500,17 +503,13 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'time')
     async def command_time(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        timeZone = user.getTimeZone()
-        timeFormat = "%A, %b %d, %Y %I:%M%p"
 
-        if timeZone == None:
-            now = datetime.now()
-            formattedTime = now.strftime(timeFormat)
-            await ctx.send(f'the system time for {self.nick} is {formattedTime}')
-        else:
-            now = datetime.now(timeZone)
-            formattedTime = now.strftime(timeFormat)
-            await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
+        if not user.hasTimeZone():
+            return
+
+        now = datetime.now(user.getTimeZone())
+        formattedTime = now.strftime("%A, %b %d, %Y %I:%M%p")
+        await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
