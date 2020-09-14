@@ -12,12 +12,9 @@ class AnalogueStoreRepository():
         self.__storeStock = None
 
     def fetchStoreStock(self):
-        now = datetime.now()
-        delta = now - self.__cacheTimeDelta
-
-        if delta > self.__cacheTime or self.__storeStock == None:
-            self.__cacheTime = now
+        if self.__cacheTime + self.__cacheTimeDelta < datetime.now() or self.__storeStock == None:
             self.__storeStock = self.__refreshStoreStock()
+            self.__cacheTime = datetime.now()
 
         return self.__storeStock
 
