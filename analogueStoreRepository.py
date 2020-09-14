@@ -65,7 +65,4 @@ class AnalogueStoreRepository():
             if outOfStockElement == None or len(outOfStockElement) == 0:
                 inStockProducts.append(name)
 
-        if len(inStockProducts) == 0:
-            return ""
-
-        return ', '.join(inStockProducts)
+        return inStockProducts
