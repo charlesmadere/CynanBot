@@ -197,23 +197,21 @@ class CynanBot(commands.Bot):
         if twitchUser == None:
             raise RuntimeError(f'Unable to find User with channel ID: \"{twitchChannelId}\"')
 
+        if not twitchUser.isIncreaseCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled():
+            return
+
+        increaseCutenessRewardId = twitchUser.getIncreaseCutenessRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
-
-        if not twitchUser.isPicOfTheDayEnabled():
-            return
-
-        if potdRewardId == None or len(potdRewardId) == 0 or potdRewardId.isspace():
-            # This twitch user hasn't yet found their Reward ID for POTD. So let's just
-            # print out as much helpful data as possible and then return.
-            newRewardId = redemptionJson['reward']['id']
-            print(f'The Reward ID is: \"{newRewardId}\", and the JSON is: \"{redemptionJson}\"')
-            return
-
+        rewardId = redemptionJson['reward']['id']
         userThatRedeemed = redemptionJson['user']['login']
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
-        if redemptionJson['reward']['id'] == potdRewardId:
+        if rewardId == potdRewardId and twitchUser.isPicOfTheDayEnabled():
             await self.__handlePotdRewardRedeemed(userThatRedeemed, twitchUser, twitchChannel)
+        elif rewardId == increaseCutenessRewardId and twitchUser.isIncreaseCutenessEnabled():
+            await twitchChannel.send(f'✨✨ @{userThatRedeemed} has increased cuteness! ✨ Their cuteness has increased! ✨✨')
+        else:
+            print(f'The Reward ID is: \"{rewardId}\", and the JSON is: \"{redemptionJson}\"')
 
     async def __handleWordOfTheDay(self, ctx, wotd: Wotd):
         message = ""

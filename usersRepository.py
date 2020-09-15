@@ -31,6 +31,7 @@ class UsersRepository():
         isEnPtWordOfTheDayEnabled = userJson.get('enPtWordOfTheDayEnabled', False)
         isEsWordOfTheDayEnabled = userJson.get('esWordOfTheDayEnabled', False)
         isFrWordOfTheDayEnabled = userJson.get('frWordOfTheDayEnabled', False)
+        isIncreaseCutenessEnabled = userJson.get('increaseCutenessEnabled', False)
         isItWordOfTheDayEnabled = userJson.get('itWordOfTheDayEnabled', False)
         isJaWordOfTheDayEnabled = userJson.get('jaWordOfTheDayEnabled', False)
         isKoWordOfTheDayEnabled = userJson.get('koWordOfTheDayEnabled', False)
@@ -42,6 +43,10 @@ class UsersRepository():
         isZhWordOfTheDayEnabled = userJson.get('zhWordOfTheDayEnabled', False)
 
         discord = userJson.get('discord')
+
+        increaseCutenessRewardId = None
+        if isIncreaseCutenessEnabled:
+            increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
 
         picOfTheDayFile = None
         picOfTheDayRewardId = None
@@ -66,6 +71,7 @@ class UsersRepository():
             isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled,
             isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
             isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
+            isIncreaseCutenessEnabled = isIncreaseCutenessEnabled,
             isItWordOfTheDayEnabled = isItWordOfTheDayEnabled,
             isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
             isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled,
@@ -77,6 +83,7 @@ class UsersRepository():
             isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled,
             discord = discord,
             handle = handle,
+            increaseCutenessRewardId = increaseCutenessRewardId,
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,
             speedrunProfile = speedrunProfile,

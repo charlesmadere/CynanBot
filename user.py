@@ -10,6 +10,7 @@ class User:
         isEnPtWordOfTheDayEnabled: bool,
         isEsWordOfTheDayEnabled: bool,
         isFrWordOfTheDayEnabled: bool,
+        isIncreaseCutenessEnabled: bool,
         isItWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
         isKoWordOfTheDayEnabled: bool,
@@ -21,6 +22,7 @@ class User:
         isZhWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
+        increaseCutenessRewardId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
         speedrunProfile: str,
@@ -38,6 +40,7 @@ class User:
         self.__isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
         self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
+        self.__isIncreaseCutenessEnabled = isIncreaseCutenessEnabled
         self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled
@@ -49,6 +52,7 @@ class User:
         self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
+        self.__increaseCutenessRewardId = increaseCutenessRewardId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
         self.__speedrunProfile = speedrunProfile
@@ -80,6 +84,9 @@ class User:
 
     def getHandle(self):
         return self.__handle
+
+    def getIncreaseCutenessRewardId(self):
+        return self.__increaseCutenessRewardId
 
     def getPicOfTheDayRewardId(self):
         return self.__picOfTheDayRewardId
@@ -122,6 +129,9 @@ class User:
 
     def isFrWordOfTheDayEnabled(self):
         return self.__isFrWordOfTheDayEnabled
+
+    def isIncreaseCutenessEnabled(self):
+        return self.__isIncreaseCutenessEnabled
 
     def isItWordOfTheDayEnabled(self):
         return self.__isItWordOfTheDayEnabled
