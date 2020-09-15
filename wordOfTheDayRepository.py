@@ -92,7 +92,7 @@ class WordOfTheDayRepository():
                 transliteration = transliteration
             )
         except ValueError:
-            print(f'Failed to fetch \"{lang}\" word of the day')
+            print(f'Word Of The Day for \"{lang}\" has a data error')
 
         if wotd == None:
             self.__wotds.pop(lang, None)
