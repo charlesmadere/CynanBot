@@ -95,8 +95,8 @@ class WordOfTheDayRepository():
             print(f'Failed to fetch \"{lang}\" word of the day')
 
         if wotd == None:
-            del self.__wotds[lang]
-            del self.__cacheTimes[lang]
+            self.__wotds.pop(lang, None)
+            self.__cacheTimes.pop(lang, None)
         else:
             self.__wotds[lang] = wotd
             self.__cacheTimes[lang] = datetime.now()
