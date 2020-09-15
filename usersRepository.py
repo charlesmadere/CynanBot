@@ -59,10 +59,7 @@ class UsersRepository():
 
         speedrunProfile = userJson.get('speedrunProfile')
         twitter = userJson.get('twitter')
-
-        timeZone = None
-        if 'timeZone' in userJson:
-            timeZone = self.__timeZoneRepository.getTimeZone(userJson['timeZone'])
+        timeZone = self.__timeZoneRepository.getTimeZone(userJson.get('timeZone'))
 
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
