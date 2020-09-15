@@ -73,29 +73,12 @@ class WordOfTheDayRepository():
             print(f'xmlTree for \"{lang}\" is empty: \"{xmlTree}\"')
             return None
 
-        word = None
-        if 'word' in xmlTree:
-            word = xmlTree['word']
-
-        definition = None
-        if 'translation' in xmlTree:
-            definition = xmlTree['translation']
-
-        englishExample = None
-        if 'enphrase' in xmlTree:
-            englishExample = xmlTree['enphrase']
-
-        foreignExample = None
-        if 'fnphrase' in xmlTree:
-            foreignExample = xmlTree['fnphrase']
-
-        language = None
-        if 'langname' in xmlTree:
-            language = xmlTree['langname']
-
-        transliteration = None
-        if 'wotd:transliteratedWord' in xmlTree:
-            transliteration = xmlTree['wotd:transliteratedWord']
+        word = xmlTree.get('word')
+        definition = xmlTree.get('translation')
+        englishExample = xmlTree.get('enphrase')
+        foreignExample = xmlTree.get('fnphrase')
+        language = xmlTree.get('langname')
+        transliteration = xmlTree.get('wotd:transliteratedWord')
 
         wotd = None
 

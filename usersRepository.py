@@ -25,45 +25,35 @@ class UsersRepository():
         elif len(userJson) == 0:
             raise ValueError(f'userJson argument is empty: \"{userJson}\"')
 
-        isAnalogueEnabled = self.__readJsonBoolean(userJson, 'analogueEnabled')
-        isDeWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'deWordOfTheDayEnabled')
-        isEnEsWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'enEsWordOfTheDayEnabled')
-        isEnPtWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'enPtWordOfTheDayEnabled')
-        isEsWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'esWordOfTheDayEnabled')
-        isFrWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'frWordOfTheDayEnabled')
-        isItWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'itWordOfTheDayEnabled')
-        isJaWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'jaWordOfTheDayEnabled')
-        isKoWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'koWordOfTheDayEnabled')
-        isNoWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'noWordOfTheDayEnabled')
-        isPicOfTheDayEnabled = self.__readJsonBoolean(userJson, 'picOfTheDayEnabled')
-        isPtWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'ptWordOfTheDayEnabled')
-        isRuWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'ruWordOfTheDayEnabled')
-        isSvWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'svWordOfTheDayEnabled')
-        isZhWordOfTheDayEnabled = self.__readJsonBoolean(userJson, 'zhWordOfTheDayEnabled')
+        isAnalogueEnabled = userJson.get('analogueEnabled', False)
+        isDeWordOfTheDayEnabled = userJson.get('deWordOfTheDayEnabled', False)
+        isEnEsWordOfTheDayEnabled = userJson.get('enEsWordOfTheDayEnabled', False)
+        isEnPtWordOfTheDayEnabled = userJson.get('enPtWordOfTheDayEnabled', False)
+        isEsWordOfTheDayEnabled = userJson.get('esWordOfTheDayEnabled', False)
+        isFrWordOfTheDayEnabled = userJson.get('frWordOfTheDayEnabled', False)
+        isItWordOfTheDayEnabled = userJson.get('itWordOfTheDayEnabled', False)
+        isJaWordOfTheDayEnabled = userJson.get('jaWordOfTheDayEnabled', False)
+        isKoWordOfTheDayEnabled = userJson.get('koWordOfTheDayEnabled', False)
+        isNoWordOfTheDayEnabled = userJson.get('noWordOfTheDayEnabled', False)
+        isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
+        isPtWordOfTheDayEnabled = userJson.get('ptWordOfTheDayEnabled', False)
+        isRuWordOfTheDayEnabled = userJson.get('ruWordOfTheDayEnabled', False)
+        isSvWordOfTheDayEnabled = userJson.get('svWordOfTheDayEnabled', False)
+        isZhWordOfTheDayEnabled = userJson.get('zhWordOfTheDayEnabled', False)
 
-        discord = None
-        if 'discord' in userJson:
-            discord = userJson['discord']
+        discord = userJson.get('discord')
 
         picOfTheDayFile = None
+        picOfTheDayRewardId = None
         if isPicOfTheDayEnabled:
-            if 'picOfTheDayFile' in userJson:
-                picOfTheDayFile = userJson['picOfTheDayFile']
+            picOfTheDayFile = userJson.get('picOfTheDayFile')
+            picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
 
             if picOfTheDayFile == None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
-        picOfTheDayRewardId = None
-        if 'picOfTheDayRewardId' in userJson:
-            picOfTheDayRewardId = userJson['picOfTheDayRewardId']
-
-        speedrunProfile = None
-        if 'speedrunProfile' in userJson:
-            speedrunProfile = userJson['speedrunProfile']
-
-        twitter = None
-        if 'twitter' in userJson:
-            twitter = userJson['twitter']
+        speedrunProfile = userJson.get('speedrunProfile')
+        twitter = userJson.get('twitter')
 
         timeZone = None
         if 'timeZone' in userJson:
@@ -125,13 +115,3 @@ class UsersRepository():
             raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
 
         return users
-
-    def __readJsonBoolean(self, userJson: dict, key: str, defaultValue: bool = False):
-        if userJson == None:
-            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
-        elif key == None or len(key) == 0 or key.isspace():
-            raise ValueError(f'key argument is malformed: \"{key}\"')
-        elif key in userJson and userJson[key] != None:
-            return userJson[key]
-        else:
-            return defaultValue

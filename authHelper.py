@@ -30,27 +30,19 @@ class AuthHelper():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of auth file ({authFile}) is empty')
 
-        clientId = None
-        if 'clientId' in jsonContents:
-            clientId = jsonContents['clientId']
+        clientId = jsonContents.get('clientId')
 
         if clientId == None or len(clientId) == 0 or clientId.isspace():
             raise ValueError(f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
 
         self.__clientId = clientId
-
-        clientSecret = None
-        if 'clientSecret' in jsonContents:
-            clientSecret = jsonContents['clientSecret']
+        clientSecret = jsonContents.get('clientSecret')
 
         if clientSecret == None or len(clientSecret) == 0 or clientSecret.isspace():
             raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
 
         self.__clientSecret = clientSecret
-
-        ircAuthToken = None
-        if 'ircAuthToken' in jsonContents:
-            ircAuthToken = jsonContents['ircAuthToken']
+        ircAuthToken = jsonContents.get('ircAuthToken')
 
         if ircAuthToken == None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
             raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
@@ -110,15 +102,22 @@ class AuthHelper():
             print(f'Given an empty list of users, skipping access token validation')
             return
 
-        print(f'Validating access tokens for {len(users)} user(s)...')
+        userTokens = dict()
 
         for user in users:
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
 
-            if accessToken == None:
-                continue
+            if accessToken != None:
+                userTokens[handle] = accessToken
 
+        if len(userTokens) == 0:
+            print('There are no users with an access token, skipping access token validation')
+            return
+
+        print(f'Validating access tokens for {len(userTokens)} user(s)...')
+
+        for handle, accessToken in userTokens.items():
             headers = {
                 'Authorization': f'OAuth {accessToken}'
             }
