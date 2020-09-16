@@ -64,13 +64,13 @@ class CynanBot(commands.Bot):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         now = datetime.now()
-        delta = now - timedelta(seconds = 15)
+        delta = timedelta(seconds = 15)
         lastWotdMessageTime = None
 
         if user.getHandle() in self.__lastWotdMessageTimes:
             lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
 
-        if lastWotdMessageTime == None or delta > lastWotdMessageTime:
+        if lastWotdMessageTime == None or now > lastWotdMessageTime + delta:
             self.__lastWotdMessageTimes[user.getHandle()] = now
             return True
         else:
@@ -140,15 +140,16 @@ class CynanBot(commands.Bot):
         print('Finished subscribing to events')
 
     async def __handleDeerForceMessage(self, message):
-        now = datetime.now()
-        delta = now - timedelta(minutes = 20)
         user = self.__usersRepository.getUser(message.channel.name)
 
+        now = datetime.now()
+        delta = timedelta(minutes = 20)
         lastDeerForceMessageTime = None
+
         if user.getHandle() in self.__lastDeerForceMessageTimes:
             lastDeerForceMessageTime = self.__lastDeerForceMessageTimes[user.getHandle()]
 
-        if lastDeerForceMessageTime == None or delta > lastDeerForceMessageTime:
+        if lastDeerForceMessageTime == None or now > lastDeerForceMessageTime + delta:
             self.__lastDeerForceMessageTimes[user.getHandle()] = now
             await message.channel.send('D e e R F o r C e')
 
@@ -172,9 +173,9 @@ class CynanBot(commands.Bot):
 
     async def __handleMessageFromCynan(self, message):
         now = datetime.now()
-        delta = now - timedelta(hours = 1)
+        delta = timedelta(hours = 1)
 
-        if delta > self.__lastCynanMessageTime:
+        if now > self.__lastCynanMessageTime + delta:
             self.__lastCynanMessageTime = now
             await message.channel.send_me('waves to @CynanMachae')
             return True
@@ -280,13 +281,13 @@ class CynanBot(commands.Bot):
             return
 
         now = datetime.now()
-        delta = now - timedelta(minutes = 1)
+        delta = timedelta(minutes = 1)
         lastAnalogueStockMessageTime = None
 
         if user.getHandle() in self.__lastAnalogueStockMessageTimes:
             lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes[user.getHandle()]
 
-        if lastAnalogueStockMessageTime == None or delta > lastAnalogueStockMessageTime:
+        if lastAnalogueStockMessageTime == None or now > lastAnalogueStockMessageTime + delta:
             self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
             storeStock = self.__analogueStoreRepository.fetchStoreStock()
 
@@ -388,11 +389,11 @@ class CynanBot(commands.Bot):
         commands.sort()
         commandsString = ', '.join(commands)
 
-        await ctx.send(f'my commands: {commandsString}')
+        await ctx.send(f'My commands: {commandsString}')
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
-        await ctx.send('my source code is available here: https://github.com/charlesmadere/cynanbot')
+        await ctx.send('My source code is available here: https://github.com/charlesmadere/cynanbot')
 
     @commands.command(name = 'deword')
     async def command_deword(self, ctx):
@@ -498,7 +499,7 @@ class CynanBot(commands.Bot):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchKoWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)        
+        await self.__handleWordOfTheDay(ctx, wotd)
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
