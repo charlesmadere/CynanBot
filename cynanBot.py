@@ -167,7 +167,7 @@ class CynanBot(commands.Bot):
                 userName = userNameThatRedeemed
             )
 
-            await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness! ✨ Their cuteness has increased to {cuteness}! ✨✨')
+            await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness! ✨ Their cuteness has increased to {cuteness} ✨✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed})')
 
