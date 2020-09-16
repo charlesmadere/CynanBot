@@ -5,12 +5,12 @@ class User:
     def __init__(
         self,
         isAnalogueEnabled: bool,
+        isCutenessEnabled: bool,
         isDeWordOfTheDayEnabled: bool,
         isEnEsWordOfTheDayEnabled: bool,
         isEnPtWordOfTheDayEnabled: bool,
         isEsWordOfTheDayEnabled: bool,
         isFrWordOfTheDayEnabled: bool,
-        isIncreaseCutenessEnabled: bool,
         isItWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
         isKoWordOfTheDayEnabled: bool,
@@ -35,12 +35,12 @@ class User:
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
+        self.__isCutenessEnabled = isCutenessEnabled
         self.__isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled
         self.__isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled
         self.__isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
         self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
-        self.__isIncreaseCutenessEnabled = isIncreaseCutenessEnabled
         self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled
@@ -115,6 +115,9 @@ class User:
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled
 
+    def isCutenessEnabled(self):
+        return self.__isCutenessEnabled
+
     def isDeWordOfTheDayEnabled(self):
         return self.__isDeWordOfTheDayEnabled
 
@@ -129,9 +132,6 @@ class User:
 
     def isFrWordOfTheDayEnabled(self):
         return self.__isFrWordOfTheDayEnabled
-
-    def isIncreaseCutenessEnabled(self):
-        return self.__isIncreaseCutenessEnabled
 
     def isItWordOfTheDayEnabled(self):
         return self.__isItWordOfTheDayEnabled

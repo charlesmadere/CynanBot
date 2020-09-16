@@ -26,12 +26,12 @@ class UsersRepository():
             raise ValueError(f'userJson argument is empty: \"{userJson}\"')
 
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
+        isCutenessEnabled = userJson.get('cutenessEnabled', False)
         isDeWordOfTheDayEnabled = userJson.get('deWordOfTheDayEnabled', False)
         isEnEsWordOfTheDayEnabled = userJson.get('enEsWordOfTheDayEnabled', False)
         isEnPtWordOfTheDayEnabled = userJson.get('enPtWordOfTheDayEnabled', False)
         isEsWordOfTheDayEnabled = userJson.get('esWordOfTheDayEnabled', False)
         isFrWordOfTheDayEnabled = userJson.get('frWordOfTheDayEnabled', False)
-        isIncreaseCutenessEnabled = userJson.get('increaseCutenessEnabled', False)
         isItWordOfTheDayEnabled = userJson.get('itWordOfTheDayEnabled', False)
         isJaWordOfTheDayEnabled = userJson.get('jaWordOfTheDayEnabled', False)
         isKoWordOfTheDayEnabled = userJson.get('koWordOfTheDayEnabled', False)
@@ -45,7 +45,7 @@ class UsersRepository():
         discord = userJson.get('discord')
 
         increaseCutenessRewardId = None
-        if isIncreaseCutenessEnabled:
+        if isCutenessEnabled:
             increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
 
         picOfTheDayFile = None
@@ -63,12 +63,12 @@ class UsersRepository():
 
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
+            isCutenessEnabled = isCutenessEnabled,
             isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled,
             isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled,
             isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled,
             isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
             isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
-            isIncreaseCutenessEnabled = isIncreaseCutenessEnabled,
             isItWordOfTheDayEnabled = isItWordOfTheDayEnabled,
             isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
             isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled,
