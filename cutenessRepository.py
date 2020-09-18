@@ -74,6 +74,8 @@ class CutenessRepository():
         )
 
         connection.commit()
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
+
         return cuteness
 
     def fetchLeaderboard(self, size: int = 10):
