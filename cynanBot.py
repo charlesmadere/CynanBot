@@ -1,6 +1,5 @@
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
-from channelIdsRepository import ChannelIdsRepository
 from cutenessRepository import CutenessRepository
 from datetime import datetime, timedelta
 import json
@@ -8,6 +7,7 @@ import random
 import requests
 from twitchio.ext import commands
 from user import User
+from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
@@ -20,8 +20,8 @@ class CynanBot(commands.Bot):
         self,
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
-        channelIdsRepository: ChannelIdsRepository,
         cutenessRepository: CutenessRepository,
+        userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
         wordOfTheDayRepository: WordOfTheDayRepository
@@ -36,10 +36,10 @@ class CynanBot(commands.Bot):
 
         if analogueStoreRepository == None:
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
-        elif channelIdsRepository == None:
-            raise ValueError(f'channelIdsRepository argument is malformed: \"{channelIdsRepository}\"')
         elif cutenessRepository == None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif userIdsRepository == None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository == None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
         elif wordOfTheDayRepository == None:
@@ -47,14 +47,15 @@ class CynanBot(commands.Bot):
 
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
-        self.__channelIdsRepository = channelIdsRepository
         self.__cutenessRepository = cutenessRepository
+        self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__lastAnalogueStockMessageTimes = dict()
         self.__lastCutenessLeaderboardMessageTimes = dict()
+        self.__lastCutenessRedeemedMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
         self.__lastWotdMessageTimes = dict()
@@ -76,9 +77,9 @@ class CynanBot(commands.Bot):
         else:
             return False
 
-    async def event_command_error(self, ctx, error):
-        # prevents exceptions caused by people using commands for other bots
-        pass
+    # async def event_command_error(self, ctx, error):
+    #     # prevents exceptions caused by people using commands for other bots
+    #     pass
 
     async def event_message(self, message):
         if message.content == 'D e e R F o r C e':
@@ -123,8 +124,8 @@ class CynanBot(commands.Bot):
             if accessToken == None:
                 continue
 
-            channelId = self.__channelIdsRepository.fetchChannelId(
-                handle = user.getHandle(),
+            userId = self.__userIdsRepository.fetchUserId(
+                userName = user.getHandle(),
                 clientId = self.__authHelper.getClientId(),
                 accessToken = accessToken
             )
@@ -132,7 +133,7 @@ class CynanBot(commands.Bot):
             print(f'Subscribing to events for {user.getHandle()}...')
 
             # we could subscribe to multiple topics, but for now, just channel points
-            topics = [ f'channel-points-channel-v1.{channelId}' ]
+            topics = [ f'channel-points-channel-v1.{userId}' ]
 
             # subscribe to pubhub channel points events
             await self.pubsub_subscribe(accessToken, *topics)
@@ -157,27 +158,37 @@ class CynanBot(commands.Bot):
         self,
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
+        twitchUser: User,
         twitchChannel
     ):
         print(f'Increasing {userNameThatRedeemed}\'s cuteness...')
 
+        now = datetime.now()
+        delta = timedelta(seconds = 20)
+        lastCutenessRedeemedMessageTime = None
+
+        if twitchUser.getHandle() in self.__lastCutenessRedeemedMessageTimes:
+            lastCutenessRedeemedMessageTime = self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()]
+
         try:
-            cuteness = self.__cutenessRepository.getIncrementedCuteness(
+            cuteness = self.__cutenessRepository.fetchIncrementedCuteness(
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
             )
 
-            await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness! ✨ Their cuteness has increased to {cuteness} ✨✨')
+            if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
+                self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()] = now
+                await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness! ✨ Their cuteness has increased to {cuteness} ✨✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed})')
 
     async def __handleMessageFromCynan(self, message):
         now = datetime.now()
-        delta = timedelta(hours = 1)
+        delta = timedelta(hours = 3)
 
         if now > self.__lastCynanMessageTime + delta:
             self.__lastCynanMessageTime = now
-            await message.channel.send_me('waves to @CynanMachae')
+            await message.channel.send_me('waves to @CynanMachae 👋')
             return True
         else:
             return False
@@ -200,7 +211,7 @@ class CynanBot(commands.Bot):
 
     async def __handleRewardRedeemed(self, jsonResponse):
         redemptionJson = jsonResponse['data']['redemption']
-        twitchChannelId = redemptionJson['channel_id']
+        twitchUserId = redemptionJson['channel_id']
         twitchUser = None
 
         for user in self.__usersRepository.getUsers():
@@ -209,18 +220,18 @@ class CynanBot(commands.Bot):
             if accessToken == None:
                 continue
 
-            userChannelId = self.__channelIdsRepository.fetchChannelId(
-                handle = user.getHandle(),
+            userId = self.__userIdsRepository.fetchUserId(
+                userName = user.getHandle(),
                 clientId = self.__authHelper.getClientId(),
                 accessToken = accessToken
             )
 
-            if twitchChannelId.lower() == userChannelId.lower():
+            if twitchUserId.lower() == userId.lower():
                 twitchUser = user
                 break
 
         if twitchUser == None:
-            raise RuntimeError(f'Unable to find User with channel ID: \"{twitchChannelId}\"')
+            raise RuntimeError(f'Unable to find User with ID: \"{twitchUserId}\"')
 
         if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled():
             return
@@ -241,6 +252,7 @@ class CynanBot(commands.Bot):
             await self.__handleIncreaseCutenessRewardRedeemed(
                 userIdThatRedeemed = redemptionJson['user']['id'],
                 userNameThatRedeemed = userThatRedeemed,
+                twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
         else:
@@ -315,7 +327,7 @@ class CynanBot(commands.Bot):
 
         if lastCutenessLeaderboardMessageTime == None or now > lastCutenessLeaderboardMessageTime + delta:
             self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
-            leaderboard = self.__cutenessRepository.getLeaderboard()
+            leaderboard = self.__cutenessRepository.fetchLeaderboard()
 
             if len(leaderboard) == 0:
                 await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
@@ -511,11 +523,15 @@ class CynanBot(commands.Bot):
         userId = str(ctx.author.id)
 
         try:
-            cuteness = self.__cutenessRepository.getCuteness(
+            cuteness = self.__cutenessRepository.fetchCuteness(
                 userId = userId,
                 userName = ctx.author.name
             )
-            await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cuteness} ✨')
+
+            if cuteness == 0:
+                await ctx.send(f'😿 {ctx.author.name}\'s cuteness is {cuteness} 😿')
+            else:
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cuteness} ✨')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId})')
 

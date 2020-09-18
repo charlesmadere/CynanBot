@@ -1,51 +1,60 @@
+from backingDatabase import BackingDatabase
 import sqlite3
+from userIdsRepository import UserIdsRepository
 
 class CutenessRepository():
-    def __init__(self, cutenessDatabase: str = 'cutenessDatabase.sqlite'):
-        if cutenessDatabase == None or len(cutenessDatabase) == 0 or cutenessDatabase.isspace():
-            raise ValueError(f'cutenessDatabase argument is malformed: \"{cutenessDatabase}\"')
 
-        self.__databaseConnection = sqlite3.connect(cutenessDatabase)
+    def __init__(
+        self,
+        backingDatabase: BackingDatabase,
+        userIdsRepository: UserIdsRepository
+    ):
+        if backingDatabase == None:
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif userIdsRepository == None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__databaseConnection.execute(
+        self.__backingDatabase = backingDatabase
+        self.__userIdsRepository = userIdsRepository
+
+        connection = backingDatabase.getConnection()
+        connection.execute(
             '''
                 CREATE TABLE IF NOT EXISTS cuteness (
                     cuteness INTEGER NOT NULL DEFAULT 0,
-                    userId TEXT NOT NULL PRIMARY KEY,
-                    userName TEXT NOT NULL
+                    userId TEXT NOT NULL PRIMARY KEY
                 )
             '''
         )
+        connection.commit()
 
-        self.__databaseConnection.commit()
-
-    def getCuteness(self, userId: str, userName: str):
+    def fetchCuteness(self, userId: str, userName: str):
         if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        cursor = self.__databaseConnection.cursor()
+        cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute('SELECT cuteness FROM cuteness WHERE userId = ?', ( userId, ))
         row = cursor.fetchone()
 
         cuteness = 0
-        if row == None:
-            cursor.execute('INSERT INTO cuteness (userId, userName) VALUES (?, ?)', ( userId, userName ))
-        else:
+        if row != None:
             cuteness = row[0]
-            cursor.execute('UPDATE cuteness SET userName = ? WHERE userId = ?', ( userName, userId ))
 
-        self.__databaseConnection.commit()
+        cursor.close()
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
+
         return cuteness
 
-    def getIncrementedCuteness(self, userId: str, userName: str):
+    def fetchIncrementedCuteness(self, userId: str, userName: str):
         if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        cursor = self.__databaseConnection.cursor()
+        connection = self.__backingDatabase.getConnection()
+        cursor = connection.cursor()
         cursor.execute('SELECT cuteness FROM cuteness WHERE userId = ?', ( userId, ))
         row = cursor.fetchone()
 
@@ -55,26 +64,30 @@ class CutenessRepository():
 
         cuteness = cuteness + 1
 
-        if row == None:
-            cursor.execute('INSERT INTO cuteness (cuteness, userId, userName) VALUES (?, ?, ?)', ( cuteness, userId, userName ))
-        else:
-            cursor.execute('UPDATE cuteness SET cuteness = ?, userName = ? WHERE userId = ?', ( cuteness, userName, userId ))
+        cursor.execute(
+            '''
+                INSERT INTO cuteness (cuteness, userId)
+                VALUES (?, ?)
+                ON CONFLICT(userId) DO UPDATE SET cuteness = excluded.cuteness
+            ''',
+            ( cuteness, userId )
+        )
 
-        self.__databaseConnection.commit()
+        connection.commit()
         return cuteness
 
-    def getLeaderboard(self, size: int = 5):
+    def fetchLeaderboard(self, size: int = 10):
         if size == None:
             raise ValueError(f'size argument is malformed: \"{size}\"')
         elif size < 1 or size > 10:
             raise ValueError(f'size argument is out of bounds: \"{size}\"')
 
-        cursor = self.__databaseConnection.cursor()
+        cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
-                SELECT userName, cuteness FROM cuteness
+                SELECT cuteness, userId FROM cuteness
                 WHERE cuteness IS NOT NULL AND cuteness >= 1
-                ORDER BY cuteness DESC, userName ASC
+                ORDER BY cuteness DESC
                 LIMIT ?
             ''',
             ( size, )
@@ -89,7 +102,9 @@ class CutenessRepository():
         rank = 1
 
         for row in rows:
-            leaderboard.append(f'#{rank} {row[0]} ({row[1]})')
+            userName = self.__userIdsRepository.fetchUserName(row[1])
+            leaderboard.append(f'#{rank} {userName} ({row[0]})')
             rank = rank + 1
 
+        cursor.close()
         return leaderboard
