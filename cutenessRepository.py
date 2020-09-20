@@ -74,6 +74,7 @@ class CutenessRepository():
         )
 
         connection.commit()
+        cursor.close()
         self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         return cuteness
