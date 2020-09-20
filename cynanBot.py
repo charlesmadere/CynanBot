@@ -77,9 +77,9 @@ class CynanBot(commands.Bot):
         else:
             return False
 
-    # async def event_command_error(self, ctx, error):
-    #     # prevents exceptions caused by people using commands for other bots
-    #     pass
+    async def event_command_error(self, ctx, error):
+        # prevents exceptions caused by people using commands for other bots
+        pass
 
     async def event_message(self, message):
         if message.content == 'D e e R F o r C e':
