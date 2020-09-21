@@ -36,6 +36,7 @@ class UserIdsRepository():
         if userName == None or len(userName) == 0 or userName.isspace():
             raise RuntimeError(f'userName for userId \"{userId}\" is malformed: \"{userName}\"')
 
+        cursor.close()
         return userName
 
     def fetchUserId(self, userName: str, clientId: str, accessToken: str):
@@ -94,3 +95,4 @@ class UserIdsRepository():
             ( userId, userName )
         )
         connection.commit()
+        cursor.close()
