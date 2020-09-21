@@ -51,8 +51,17 @@ class UserIdsRepository():
         cursor.execute('SELECT userId FROM userIds WHERE userName = ?', ( userName, ))
         row = cursor.fetchone()
 
+        userId = None
         if row != None:
-            return row[0]
+            userId = row[0]
+
+        cursor.close()
+
+        if userId != None:
+            if len(userId) == 0 or userId.isspace():
+                raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
+            else:
+                return userId
 
         headers = {
             'Client-ID': clientId,
