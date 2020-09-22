@@ -4,6 +4,7 @@ from timeZoneRepository import TimeZoneRepository
 from user import User
 
 class UsersRepository():
+
     def __init__(
         self,
         timeZoneRepository: TimeZoneRepository,

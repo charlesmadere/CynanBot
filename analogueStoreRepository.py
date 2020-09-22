@@ -3,6 +3,7 @@ from lxml import html
 import requests
 
 class AnalogueStoreRepository():
+
     def __init__(
         self,
         cacheTimeDelta = timedelta(hours = 1)

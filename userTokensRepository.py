@@ -2,6 +2,7 @@ import json
 import os
 
 class UserTokensRepository():
+
     def __init__(self, userTokensFile: str = 'userTokensRepository.json'):
         if userTokensFile == None or len(userTokensFile) == 0 or userTokensFile.isspace():
             raise ValueError(f'userTokens argument is malformed: \"{userTokensFile}\"')

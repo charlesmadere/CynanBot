@@ -13,6 +13,7 @@ from userTokensRepository import UserTokensRepository
 # }
 
 class AuthHelper():
+
     def __init__(self, authFile: str = "authFile.json"):
         if authFile == None or len(authFile) == 0 or authFile.isspace():
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')

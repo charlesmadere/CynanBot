@@ -2,6 +2,7 @@ import os
 from urllib.parse import urlparse
 
 class User:
+
     def __init__(
         self,
         isAnalogueEnabled: bool,

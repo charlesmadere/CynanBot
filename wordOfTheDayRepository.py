@@ -4,6 +4,7 @@ from wotd import Wotd
 import xmltodict
 
 class WordOfTheDayRepository():
+
     def __init__(
         self,
         cacheTimeDelta = timedelta(hours = 1)

@@ -16,6 +16,7 @@ from wotd import Wotd
 # https://github.com/TwitchIO/TwitchIO
 
 class CynanBot(commands.Bot):
+
     def __init__(
         self,
         analogueStoreRepository: AnalogueStoreRepository,

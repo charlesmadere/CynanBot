@@ -1,4 +1,5 @@
 class Wotd():
+
     def __init__(
         self,
         definition: str,
