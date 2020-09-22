@@ -179,7 +179,7 @@ class CynanBot(commands.Bot):
 
             if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
                 self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()] = now
-                await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness! ✨ Their cuteness has increased to {cuteness} ✨✨')
+                await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cuteness} ✨✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed})')
 
@@ -257,7 +257,7 @@ class CynanBot(commands.Bot):
                 twitchChannel = twitchChannel
             )
         else:
-            print(f'The Reward ID is: \"{rewardId}\", and the JSON is: \"{redemptionJson}\"')
+            print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def __handleWordOfTheDay(self, ctx, wotd: Wotd):
         message = ""
