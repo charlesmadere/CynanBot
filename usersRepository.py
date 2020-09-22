@@ -45,8 +45,10 @@ class UsersRepository():
 
         discord = userJson.get('discord')
 
+        increaseCutenessDoubleRewardId = None
         increaseCutenessRewardId = None
         if isCutenessEnabled:
+            increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
 
         picOfTheDayFile = None
@@ -81,6 +83,7 @@ class UsersRepository():
             isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled,
             discord = discord,
             handle = handle,
+            increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
             increaseCutenessRewardId = increaseCutenessRewardId,
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,

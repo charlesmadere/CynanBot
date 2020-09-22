@@ -23,6 +23,7 @@ class User:
         isZhWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
+        increaseCutenessDoubleRewardId: str,
         increaseCutenessRewardId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
@@ -53,6 +54,7 @@ class User:
         self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
+        self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
         self.__increaseCutenessRewardId = increaseCutenessRewardId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
@@ -85,6 +87,9 @@ class User:
 
     def getHandle(self):
         return self.__handle
+
+    def getIncreaseCutenessDoubleRewardId(self):
+        return self.__increaseCutenessDoubleRewardId
 
     def getIncreaseCutenessRewardId(self):
         return self.__increaseCutenessRewardId

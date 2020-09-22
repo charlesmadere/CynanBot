@@ -47,11 +47,13 @@ class CutenessRepository():
 
         return cuteness
 
-    def fetchIncrementedCuteness(self, userId: str, userName: str):
+    def fetchIncrementedCuteness(self, userId: str, userName: str, isDoublePoints: bool = False):
         if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif isDoublePoints == None:
+            raise ValueError(f'isDoublePoints argument is malformed: \"{isDoublePoints}\"')
 
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
@@ -62,7 +64,10 @@ class CutenessRepository():
         if row != None:
             cuteness = row[0]
 
-        cuteness = cuteness + 1
+        if isDoublePoints:
+            cuteness = cuteness + 2
+        else:
+            cuteness = cuteness + 1
 
         cursor.execute(
             '''
