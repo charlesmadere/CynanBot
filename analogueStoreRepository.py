@@ -52,9 +52,7 @@ class AnalogueStoreRepository():
 
             name = name.strip()
 
-            if name == None or len(name) == 0 or name.isspace():
-                continue
-            elif '8BitDo'.lower() in name.lower():
+            if '8BitDo'.lower() in name.lower():
                 # don't show 8BitDo products in the final stock listing
                 continue
 
