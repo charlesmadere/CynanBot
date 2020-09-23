@@ -14,8 +14,8 @@ class UserIdsRepository():
         connection.execute(
             '''
                 CREATE TABLE IF NOT EXISTS userIds (
-                    userId TEXT NOT NULL PRIMARY KEY,
-                    userName TEXT NOT NULL
+                    userId TEXT NOT NULL PRIMARY KEY COLLATE NOCASE,
+                    userName TEXT NOT NULL COLLATE NOCASE
                 )
             '''
         )

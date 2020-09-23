@@ -2,6 +2,7 @@ from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
 from datetime import datetime, timedelta
+from jishoHelper import JishoHelper
 import json
 import random
 import requests
@@ -22,6 +23,7 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
+        jishoHelper: JishoHelper,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
@@ -161,7 +163,7 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(f'Enabling double cuteness points for {twitchUser.getHandle()}\'s channel...')
+        print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
 
         now = datetime.now()
         delta = timedelta(minutes = 5)
@@ -176,7 +178,7 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(f'Increasing {userNameThatRedeemed}\'s cuteness...')
+        print(f'Increasing cuteness for {userNameThatRedeemed} in {twitchUser.getHandle()}...')
 
         now = datetime.now()
         delta = timedelta(seconds = 20)
@@ -191,9 +193,10 @@ class CynanBot(commands.Bot):
 
         try:
             cuteness = self.__cutenessRepository.fetchIncrementedCuteness(
+                isDoublePoints = isDoublePoints,
+                twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed,
-                isDoublePoints = isDoublePoints
             )
 
             if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
@@ -219,7 +222,7 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(f'Sending {twitchUser.getHandle()}\'s POTD to {userThatRedeemed}...')
+        print(f'Sending POTD to {userThatRedeemed} in {twitchUser.getHandle()}...')
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
@@ -353,7 +356,9 @@ class CynanBot(commands.Bot):
 
         if lastCutenessLeaderboardMessageTime == None or now > lastCutenessLeaderboardMessageTime + delta:
             self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
-            leaderboard = self.__cutenessRepository.fetchLeaderboard()
+            leaderboard = self.__cutenessRepository.fetchLeaderboard(
+                twitchChannel = user.getHandle()
+            )
 
             if len(leaderboard) == 0:
                 await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
@@ -550,6 +555,7 @@ class CynanBot(commands.Bot):
 
         try:
             cuteness = self.__cutenessRepository.fetchCuteness(
+                twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = ctx.author.name
             )
@@ -559,7 +565,7 @@ class CynanBot(commands.Bot):
             else:
                 await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cuteness} ✨')
         except ValueError:
-            print(f'Error retrieving cuteness for {ctx.author.name} ({userId})')
+            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {ctx.channel.id}')
 
     @commands.command(name = 'noword')
     async def command_noword(self, ctx):
