@@ -30,11 +30,8 @@ class AnalogueStoreRepository():
 
         productTrees = htmlTree.find_class('store_product-header__1rLY-')
 
-        if productTrees == None:
+        if productTrees == None or len(productTrees) == 0:
             print(f'productTrees is malformed: {productTrees}')
-            return None
-        elif len(productTrees) == 0:
-            print(f'productTrees is empty: {productTrees}')
             return None
 
         inStockProducts = list()
