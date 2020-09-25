@@ -22,13 +22,13 @@ class JishoHelper():
             return None
 
         parentElements = htmlTree.find_class('concept_light-representation')
-        if parentElements == None or len(parentElements) != 1:
-            print(f'No parent elements')
+        if parentElements == None or len(parentElements) == 0:
+            print(f'parentElements is malformed: \"{parentElements}\"')
             return None
 
         textElements = parentElements[0].find_class('text')
         if textElements == None or len(textElements) != 1:
-            print(f'No text elements')
+            print(f'textElements is malformed: \"{textElements}\"')
             return None
 
         word = textElements[0].text_content()
@@ -40,7 +40,7 @@ class JishoHelper():
 
         definitionElements = htmlTree.find_class('meaning-meaning')
         if definitionElements == None or len(definitionElements) == 0:
-            print(f'No definition elements')
+            print(f'definitionElements is malformed: \"{definitionElements}\"')
             return None
 
         definitions = list()
@@ -54,7 +54,7 @@ class JishoHelper():
             if definition == None or len(definition) == 0 or definition.isspace():
                 continue
 
-            definitions.append(definition.strip())
+            definitions.append(f'({len(definitions) + 1}) {definition.strip()}')
 
         if len(definitions) == 0:
             print(f'Found no definitions')

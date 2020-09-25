@@ -51,6 +51,7 @@ class CynanBot(commands.Bot):
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
+        self.__jishoHelper = jishoHelper
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
@@ -397,6 +398,9 @@ class CynanBot(commands.Bot):
         if user.isJaWordOfTheDayEnabled():
             commands.append('!jaword')
 
+        if user.isJishoEnabled():
+            commands.append('!jisho')
+
         if user.isKoWordOfTheDayEnabled():
             commands.append('!koword')
 
@@ -517,6 +521,36 @@ class CynanBot(commands.Bot):
 
         wotd = self.__wordOfTheDayRepository.fetchJaWotd()
         await self.__handleWordOfTheDay(ctx, wotd)
+
+    @commands.command(name = 'jisho')
+    async def command_jisho(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJishoEnabled():
+            return
+
+        splits = ctx.message.content.split()
+
+        if len(splits) == 1:
+            await ctx.send('A search term is necessary for the !jisho command')
+            return
+
+        query = splits[1]
+
+        try:
+            result = self.__jishoHelper.search(query)
+
+            if result == None:
+                await ctx.send(f'Error searching Jisho for \"{query}\"')
+            else:
+                definitions = ' '.join(result.getDefinitions())
+
+                if result.hasFurigana():
+                    await ctx.send(f'({result.getFurigana()}) {result.getWord()} — {definitions}')
+                else:
+                    await ctx.send(f'{result.getWord()} — {definitions}')
+        except ValueError:
+            print(f'JishoHelper query is malformed: \"{query}\"')
 
     @commands.command(name = 'koword')
     async def command_koword(self, ctx):
