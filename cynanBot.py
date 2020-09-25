@@ -70,10 +70,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         delta = timedelta(seconds = 15)
-        lastWotdMessageTime = None
-
-        if user.getHandle() in self.__lastWotdMessageTimes:
-            lastWotdMessageTime = self.__lastWotdMessageTimes[user.getHandle()]
+        lastWotdMessageTime = self.__lastWotdMessageTimes.get(user.getHandle())
 
         if lastWotdMessageTime == None or now > lastWotdMessageTime + delta:
             self.__lastWotdMessageTimes[user.getHandle()] = now
@@ -149,10 +146,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         delta = timedelta(minutes = 20)
-        lastDeerForceMessageTime = None
-
-        if user.getHandle() in self.__lastDeerForceMessageTimes:
-            lastDeerForceMessageTime = self.__lastDeerForceMessageTimes[user.getHandle()]
+        lastDeerForceMessageTime = self.__lastDeerForceMessageTimes.get(user.getHandle())
 
         if lastDeerForceMessageTime == None or now > lastDeerForceMessageTime + delta:
             self.__lastDeerForceMessageTimes[user.getHandle()] = now
@@ -182,10 +176,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         delta = timedelta(seconds = 20)
-        lastCutenessRedeemedMessageTime = None
-
-        if twitchUser.getHandle() in self.__lastCutenessRedeemedMessageTimes:
-            lastCutenessRedeemedMessageTime = self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()]
+        lastCutenessRedeemedMessageTime = self.__lastCutenessRedeemedMessageTimes.get(twitchUser.getHandle())
 
         isDoublePoints = False
         if twitchUser.getHandle() in self.__cutenessDoubleEndTimes:
@@ -323,10 +314,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         delta = timedelta(minutes = 1)
-        lastAnalogueStockMessageTime = None
-
-        if user.getHandle() in self.__lastAnalogueStockMessageTimes:
-            lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes[user.getHandle()]
+        lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes.get(user.getHandle())
 
         if lastAnalogueStockMessageTime == None or now > lastAnalogueStockMessageTime + delta:
             self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
@@ -349,13 +337,11 @@ class CynanBot(commands.Bot):
 
         now = datetime.now()
         delta = timedelta(seconds = 30)
-        lastCutenessLeaderboardMessageTime = None
-
-        if user.getHandle() in self.__lastCutenessLeaderboardMessageTimes:
-            lastCutenessLeaderboardMessageTime = self.__lastCutenessLeaderboardMessageTimes[user.getHandle()]
+        lastCutenessLeaderboardMessageTime = self.__lastCutenessLeaderboardMessageTimes.get(user.getHandle())
 
         if lastCutenessLeaderboardMessageTime == None or now > lastCutenessLeaderboardMessageTime + delta:
             self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
+
             leaderboard = self.__cutenessRepository.fetchLeaderboard(
                 twitchChannel = user.getHandle()
             )
