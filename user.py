@@ -14,6 +14,7 @@ class User:
         isFrWordOfTheDayEnabled: bool,
         isItWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
+        isJishoEnabled: bool,
         isKoWordOfTheDayEnabled: bool,
         isNoWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
@@ -45,6 +46,7 @@ class User:
         self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
         self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
+        self.__isJishoEnabled = isJishoEnabled
         self.__isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled
         self.__isNoWordOfTheDayEnabled = isNoWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
@@ -144,6 +146,9 @@ class User:
 
     def isJaWordOfTheDayEnabled(self):
         return self.__isJaWordOfTheDayEnabled
+
+    def isJishoEnabled(self):
+        return self.__isJishoEnabled
 
     def isKoWordOfTheDayEnabled(self):
         return self.__isKoWordOfTheDayEnabled
