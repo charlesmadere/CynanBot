@@ -73,7 +73,7 @@ class UserIdsRepository():
             headers = headers
         )
 
-        jsonResponse = json.loads(rawResponse.content)
+        jsonResponse = rawResponse.json()
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             raise RuntimeError(f'Received an error when fetching user ID for {userName}: {jsonResponse}')

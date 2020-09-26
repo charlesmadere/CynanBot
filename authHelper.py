@@ -78,7 +78,7 @@ class AuthHelper():
             params = params
         )
 
-        jsonResponse = json.loads(rawResponse.content)
+        jsonResponse = rawResponse.json()
 
         if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
             raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
@@ -128,7 +128,7 @@ class AuthHelper():
                 headers = headers
             )
 
-            jsonResponse = json.loads(rawResponse.content)
+            jsonResponse = rawResponse.json()
 
             if 'client_id' not in jsonResponse or jsonResponse['client_id'] == None or len(jsonResponse['client_id']) == 0:
                 print(f'Refreshing access token for {handle}...')

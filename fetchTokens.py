@@ -33,7 +33,7 @@ if TWITCH_CLIENT_SECRET == None or TWITCH_CLIENT_SECRET == None or TWITCH_CODE_S
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
 rawResponse = requests.post(url)
-jsonResponse = json.loads(rawResponse.content)
+jsonResponse = rawResponse.json()
 accessToken = jsonResponse['access_token']
 refreshToken = jsonResponse['refresh_token']
 print(f'accessToken: \"{accessToken}\"')
