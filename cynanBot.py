@@ -3,6 +3,7 @@ from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
 from datetime import datetime, timedelta
 from jishoHelper import JishoHelper
+from jishoResult import JishoResult
 import json
 import random
 import requests
@@ -63,6 +64,7 @@ class CynanBot(commands.Bot):
         self.__lastCutenessRedeemedMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
+        self.__lastJishoMessageTimes = dict()
         self.__lastWotdMessageTimes = dict()
 
     def __canSendWordOfTheDay(self, user: User):
@@ -529,6 +531,14 @@ class CynanBot(commands.Bot):
         if not user.isJishoEnabled():
             return
 
+        now = datetime.now()
+        delta = timedelta(seconds = 15)
+        lastJishoMessageTime = self.__lastJishoMessageTimes.get(user.getHandle())
+
+        if lastJishoMessageTime != None and now <= lastJishoMessageTime + delta:
+            return
+
+        self.__lastJishoMessageTimes[user.getHandle()] = now
         splits = ctx.message.content.split()
 
         if len(splits) == 1:
