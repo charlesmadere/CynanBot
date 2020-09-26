@@ -11,14 +11,14 @@ class JishoHelper():
         if query == None or len(query) == 0 or query.isspace():
             raise ValueError(f'query argument is malformed: \"{query}\"')
 
+        query = query.strip()
         print(f'Looking up \"{query}\"...')
 
-        query = query.strip()
         rawResponse = requests.get(f'https://jisho.org/search/{query}')
         htmlTree = html.fromstring(rawResponse.content)
 
         if htmlTree == None:
-            print(f'htmlTree is malformed: {htmlTree}')
+            print(f'htmlTree is malformed: \"{htmlTree}\"')
             return None
 
         parentElements = htmlTree.find_class('concept_light-representation')
@@ -56,15 +56,20 @@ class JishoHelper():
 
             definitions.append(f'({len(definitions) + 1}) {definition.strip()}')
 
+            if len(definitions) >= 3:
+                # keep from adding tons of definitions
+                break
+
         if len(definitions) == 0:
-            print(f'Found no definitions')
+            print(f'Found no definitions within definitionElements: \"{definitionElements}\"')
             return None
 
+        furigana = None
         furiganaElement = htmlTree.find_class('kanji-1-up')
-        if furiganaElement != None and len(furiganaElement) == 1:
+        if furiganaElement != None and len(furiganaElement) != 0:
             furigana = furiganaElement[0].text_content()
 
-            if furigana == None or len(furigana) == 0:
+            if furigana == None or len(furigana) == 0 or furigana.isspace():
                 furigana = None
             else:
                 furigana = furigana.strip()
