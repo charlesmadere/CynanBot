@@ -560,7 +560,7 @@ class CynanBot(commands.Bot):
                 else:
                     await ctx.send(f'{result.getWord()} — {definitions}')
         except ValueError:
-            print(f'JishoHelper query is malformed: \"{query}\"')
+            print(f'JishoHelper search query is malformed: \"{query}\"')
 
     @commands.command(name = 'koword')
     async def command_koword(self, ctx):
