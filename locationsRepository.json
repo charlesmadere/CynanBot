@@ -2,46 +2,67 @@
     "1850147": {
         "lat": 35.689499,
         "lon": 139.691711,
-        "name": "Tokyo"
+        "name": "Tokyo",
+        "timeZone": "Asia/Tokyo"
     },
     "1853908": {
         "lat": 35.950001,
         "lon": 137.266663,
-        "name": "Osaka"
+        "name": "Osaka",
+        "timeZone": "Japan"
     },
     "2128295": {
         "lat": 43.064171,
         "lon": 141.346939,
-        "name": "Sapporo"
+        "name": "Sapporo",
+        "timeZone": "Japan"
+    },
+    "2643743": {
+        "lat": 51.50853,
+        "lon": -0.12574,
+        "name": "London",
+        "timeZone": "Europe/London"
+    },
+    "3895114": {
+        "lat": -30.0,
+        "lon": -71.0,
+        "name": "Republic of Chile",
+        "timeZone": "Chile/Continental"
     },
     "4335045": {
         "lat": 29.954651,
         "lon": -90.075073,
-        "name": "New Orleans"
+        "name": "New Orleans",
+        "timeZone": "US/Central"
     },
     "4887398": {
         "lat": 41.850029,
         "lon": -87.650047,
-        "name": "Chicago"
+        "name": "Chicago",
+        "timeZone": "America/Chicago"
     },
     "5128581": {
         "lat": 40.714272,
         "lon": -74.005966,
-        "name": "New York City"
+        "name": "New York City",
+        "timeZone": "America/New_York"
     },
     "5368361": {
         "lat": 34.052231,
         "lon": -118.243683,
-        "name": "Los Angeles"
+        "name": "Los Angeles",
+        "timeZone": "America/Los_Angeles"
     },
     "5391959": {
         "lat": 37.774929,
         "lon": -122.419418,
-        "name": "San Francisco"
+        "name": "San Francisco",
+        "timeZone": "America/Los_Angeles"
     },
     "5809844": {
         "lat": 47.606209,
         "lon": -122.332069,
-        "name": "Seattle"
+        "name": "Seattle",
+        "timeZone": "US/Pacific"
     }
 }

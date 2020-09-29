@@ -1,3 +1,4 @@
+from datetime import tzinfo
 import os
 from urllib.parse import urlparse
 
@@ -26,11 +27,12 @@ class User:
         handle: str,
         increaseCutenessDoubleRewardId: str,
         increaseCutenessRewardId: str,
+        locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
         speedrunProfile: str,
         twitter: str,
-        timeZone
+        timeZone: tzinfo
     ):
         if handle == None or len(handle) == 0:
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
@@ -58,6 +60,7 @@ class User:
         self.__handle = handle
         self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
         self.__increaseCutenessRewardId = increaseCutenessRewardId
+        self.__locationId = locationId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
         self.__speedrunProfile = speedrunProfile
@@ -96,6 +99,9 @@ class User:
     def getIncreaseCutenessRewardId(self):
         return self.__increaseCutenessRewardId
 
+    def getLocationId(self):
+        return self.__locationId
+
     def getPicOfTheDayRewardId(self):
         return self.__picOfTheDayRewardId
 
@@ -110,6 +116,9 @@ class User:
 
     def hasDiscord(self):
         return self.__discord != None and len(self.__discord) != 0
+
+    def hasLocationId(self):
+        return self.__locationId != None and len(self.__locationId) != 0
 
     def hasSpeedrunProfile(self):
         return self.__speedrunProfile != None and len(self.__speedrunProfile) != 0

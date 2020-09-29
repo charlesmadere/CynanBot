@@ -9,46 +9,48 @@ from userTokensRepository import UserTokensRepository
 # {
 #    "clientId": "", (taken from "Client ID" at https://dev.twitch.tv/console/apps/)
 #    "clientSecret": "", (taken from "Client Secret" at https://dev.twitch.tv/console/apps/)
-#    "ircAuthToken": "", (generated from https://twitchapps.com/tmi/)
+#    "ircAuthToken": "", (generated from https://twitchapps.com/tmi/),
+#    "oneWeatherApiKey": "" (from https://openweathermap.org/)
 # }
 
 class AuthHelper():
 
-    def __init__(self, authFile: str = "authFile.json"):
+    def __init__(self, authFile: str = 'authFile.json'):
         if authFile == None or len(authFile) == 0 or authFile.isspace():
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
         self.__authFile = authFile
 
-        if not os.path.exists(self.__authFile):
-            raise FileNotFoundError(f'Auth file not found: \"{self.__authFile}\"')
+        if not os.path.exists(authFile):
+            raise FileNotFoundError(f'Auth file not found: \"{authFile}\"')
 
-        with open(self.__authFile, 'r') as file:
+        with open(authFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents == None:
-            raise IOError(f'Error reading from auth file: \"{self.__authFile}\"')
+            raise IOError(f'Error reading from auth file: \"{authFile}\"')
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of auth file ({authFile}) is empty')
 
         clientId = jsonContents.get('clientId')
-
         if clientId == None or len(clientId) == 0 or clientId.isspace():
             raise ValueError(f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
-
         self.__clientId = clientId
-        clientSecret = jsonContents.get('clientSecret')
 
+        clientSecret = jsonContents.get('clientSecret')
         if clientSecret == None or len(clientSecret) == 0 or clientSecret.isspace():
             raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
-
         self.__clientSecret = clientSecret
-        ircAuthToken = jsonContents.get('ircAuthToken')
 
+        ircAuthToken = jsonContents.get('ircAuthToken')
         if ircAuthToken == None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
             raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
-
         self.__ircAuthToken = ircAuthToken
+
+        oneWeatherApiKey = jsonContents.get('oneWeatherApiKey')
+        if oneWeatherApiKey == None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
+            print(f'No value for oneWeatherApiKey: \"{oneWeatherApiKey}\"')
+        self.__oneWeatherApiKey = oneWeatherApiKey
 
     def getClientId(self):
         return self.__clientId
@@ -58,6 +60,9 @@ class AuthHelper():
 
     def getIrcAuthToken(self):
         return self.__ircAuthToken
+
+    def getOneWeatherApiKey(self):
+        return self.__oneWeatherApiKey
 
     def __refreshAccessToken(
         self,

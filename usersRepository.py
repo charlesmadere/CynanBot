@@ -52,6 +52,8 @@ class UsersRepository():
             increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
 
+        locationId = userJson.get('locationId')
+
         picOfTheDayFile = None
         picOfTheDayRewardId = None
         if isPicOfTheDayEnabled:
@@ -87,6 +89,7 @@ class UsersRepository():
             handle = handle,
             increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
             increaseCutenessRewardId = increaseCutenessRewardId,
+            locationId = locationId,
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,
             speedrunProfile = speedrunProfile,

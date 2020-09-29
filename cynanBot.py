@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 import json
+from location import Location
+from locationsRepository import LocationsRepository
 import random
 import requests
 from twitchio.ext import commands
@@ -12,6 +14,8 @@ from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
+from weatherReport import WeatherReport
+from weatherRepository import WeatherRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
 from wotd import Wotd
 
@@ -25,9 +29,11 @@ class CynanBot(commands.Bot):
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
         jishoHelper: JishoHelper,
+        locationsRepository: LocationsRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
+        weatherRepository: WeatherRepository,
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
@@ -42,10 +48,14 @@ class CynanBot(commands.Bot):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository == None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif locationsRepository == None:
+            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif userIdsRepository == None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository == None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+        elif weatherRepository == None:
+            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif wordOfTheDayRepository == None:
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
@@ -53,9 +63,11 @@ class CynanBot(commands.Bot):
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
         self.__jishoHelper = jishoHelper
+        self.__locationsRepository = locationsRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
+        self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__cutenessDoubleEndTimes = dict()
@@ -65,6 +77,7 @@ class CynanBot(commands.Bot):
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = dict()
         self.__lastJishoMessageTimes = dict()
+        self.__lastWeatherMessageTimes = dict()
         self.__lastWotdMessageTimes = dict()
 
     def __canSendWordOfTheDay(self, user: User):
@@ -81,9 +94,9 @@ class CynanBot(commands.Bot):
         else:
             return False
 
-    async def event_command_error(self, ctx, error):
+    #async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
-        pass
+        #pass
 
     async def event_message(self, message):
         if message.content == 'D e e R F o r C e':
@@ -362,6 +375,9 @@ class CynanBot(commands.Bot):
 
         if user.hasDiscord():
             commands.append('!discord')
+
+        if user.hasLocationId():
+            commands.append('!weather')
 
         if user.hasSpeedrunProfile():
             commands.append('!pbs')
@@ -675,6 +691,49 @@ class CynanBot(commands.Bot):
 
         twitter = user.getTwitter()
         await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
+
+    @commands.command(name = 'weather')
+    async def command_weather(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.hasLocationId():
+            return
+
+        now = datetime.now()
+        delta = timedelta(minutes = 1)
+        lastWeatherMessageTime = self.__lastWeatherMessageTimes.get(user.getHandle())
+
+        if lastWeatherMessageTime != None and now <= lastWeatherMessageTime + delta:
+            return
+
+        self.__lastWeatherMessageTimes[user.getHandle()] = now
+        location = self.__locationsRepository.getLocation(user.getLocationId())
+        weatherReport = self.__weatherRepository.fetchWeather(location)
+
+        if weatherReport == None:
+            await ctx.send('Error fetching weather')
+            return
+
+        temperature = f'Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F) '
+        humidity = f'and humidity is {weatherReport.getHumidity()}%. '
+
+        conditions = ''
+        if weatherReport.hasConditions():    
+            conditionsJoin = ', '.join(weatherReport.getConditions())
+            conditions = f'Current conditions: {conditionsJoin}. '
+
+        alerts = ''
+        if weatherReport.hasAlerts():
+            alertsJoin = ', '.join(weatherReport.getAlerts())
+
+        tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperature()}°C ({weatherReport.getTomorrowsLowTemperatureImperial()}°F) and a high of {weatherReport.getTomorrowsHighTemperature()}°C ({weatherReport.getTomorrowsHighTemperatureImperial()}°F). '
+
+        tomorrowsConditions = ''
+        if weatherReport.hasTomorrowsConditions():
+            tomorrowsConditionsJoin = ', '.join(weatherReport.getTomorrowsConditions())
+            tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin} '
+
+        await ctx.send(f'{temperature}{humidity}{conditions}{alerts}{tomorrowsTemps}{tomorrowsConditions}')
 
     @commands.command(name = 'zhword')
     async def command_zhword(self, ctx):

@@ -4,25 +4,37 @@ from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from jishoHelper import JishoHelper
+from locationsRepository import LocationsRepository
 from timeZoneRepository import TimeZoneRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
+from weatherRepository import WeatherRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
 
 analogueStoreRepository = AnalogueStoreRepository()
 authHelper = AuthHelper()
 backingDatabase = BackingDatabase()
 jishoHelper = JishoHelper()
-userIdsRepository = UserIdsRepository(backingDatabase = backingDatabase)
+userIdsRepository = UserIdsRepository(
+    backingDatabase = backingDatabase
+)
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     leaderboardSize = 10,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
-usersRepository = UsersRepository(timeZoneRepository = timeZoneRepository)
+locationsRepository = LocationsRepository(
+    timeZoneRepository = timeZoneRepository
+)
+usersRepository = UsersRepository(
+    timeZoneRepository = timeZoneRepository
+)
 userTokensRepository = UserTokensRepository()
+weatherRepository = WeatherRepository(
+    authHelper = authHelper
+)
 wordOfTheDayRepository = WordOfTheDayRepository()
 
 cynanBot = CynanBot(
@@ -30,9 +42,11 @@ cynanBot = CynanBot(
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
     jishoHelper = jishoHelper,
+    locationsRepository = locationsRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     userTokensRepository = userTokensRepository,
+    weatherRepository = weatherRepository,
     wordOfTheDayRepository = wordOfTheDayRepository
 )
 
