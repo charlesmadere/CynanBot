@@ -15,12 +15,16 @@ class LocationsRepository():
         elif timeZoneRepository == None:
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
+        self.__locationsCache = dict()
         self.__locationsFile = locationsFile
         self.__timeZoneRepository = timeZoneRepository
 
     def getLocation(self, id_: str):
         if id_ == None or len(id_) == 0 or id_.isspace():
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
+
+        if id_.lower() in self.__locationsCache:
+            return self.__locationsCache[id_.lower()]
 
         if not os.path.exists(self.__locationsFile):
             raise FileNotFoundError(f'Locations file not found: \"{self.__locationsFile}\"')
@@ -36,7 +40,7 @@ class LocationsRepository():
                 timeZoneStr = jsonContents[locationId]['timeZone']
                 timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
 
-                return Location(
+                location = Location(
                     lat = jsonContents[locationId]['lat'],
                     lon = jsonContents[locationId]['lon'],
                     id_ = locationId,
@@ -44,4 +48,7 @@ class LocationsRepository():
                     timeZone = timeZone
                 )
 
-        raise RuntimeError(f'Unable to find location with ID \"{location}\" in locations file: \"{self.__locationsFile}\"')
+                self.__locationsCache[id_.lower()] = location
+                return location
+
+        raise RuntimeError(f'Unable to find location with ID \"{id_}\" in locations file: \"{self.__locationsFile}\"')
