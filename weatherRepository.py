@@ -18,7 +18,37 @@ class WeatherRepository():
         self.__authHelper = authHelper
         self.__cacheTimeDelta = cacheTimeDelta
         self.__cacheTimes = dict()
+        self.__conditionIcons = self.__createConditionIconsDict()
         self.__weatherReports = dict()
+
+    def __createConditionIconsDict(self):
+        icons = dict()
+        icons['200'] = '⛈'
+        icons['201'] = icons['200']
+        icons['202'] = icons['200']
+        icons['210'] = '🌩'
+        icons['211'] = icons['210']
+        icons['212'] = icons['210']
+        icons['230'] = icons['200']
+        icons['231'] = icons['230']
+        icons['232'] = icons['230']
+        icons['300'] = '☔️'
+        icons['301'] = icons['300']
+        icons['500'] = '🌧'
+        icons['501'] = icons['500']
+        icons['502'] = icons['500']
+        icons['503'] = icons['500']
+        icons['503'] = icons['500']
+        icons['600'] = '❅'
+        icons['601'] = icons['600']
+        icons['602'] = icons['600']
+        icons['741'] = '🌫'
+        icons['781'] = '🌪'
+        icons['802'] = '☁️'
+        icons['803'] = icons['802']
+        icons['804'] = icons['802']
+
+        return icons
 
     def fetchWeather(self, location: Location):
         if location == None:
@@ -48,9 +78,9 @@ class WeatherRepository():
         temperature = currentJson['temp']
 
         conditions = list()
-        if 'weather' in jsonResponse and len(jsonResponse['weather']) >= 1:
-            for conditionJson in jsonResponse['weather']:
-                conditions.append(conditionJson['description'])
+        if 'weather' in currentJson and len(currentJson['weather']) >= 1:
+            for conditionJson in currentJson['weather']:
+                conditions.append(self.__prettifyCondition(conditionJson))
 
         alerts = list()
         if 'alerts' in jsonResponse and len(jsonResponse['alerts']) >= 1:
@@ -64,7 +94,7 @@ class WeatherRepository():
                     else:
                         alerts.append(f'Alert from {senderName}: {event}.')
 
-        tomorrowsJson = jsonResponse['daily'][0]
+        tomorrowsJson = jsonResponse['daily'][1]
         tomorrowsHighTemperature = tomorrowsJson['temp']['max']
         tomorrowsLowTemperature = tomorrowsJson['temp']['min']
 
@@ -97,3 +127,15 @@ class WeatherRepository():
             self.__cacheTimes[location.getId()] = datetime.now()
 
         return weatherReport
+
+    def __prettifyCondition(self, conditionJson: dict):
+        conditionIcon = ''
+        if 'id' in conditionJson:
+            id_ = str(conditionJson['id'])
+
+            if id_ in self.__conditionIcons:
+                icon = self.__conditionIcons[id_]
+                conditionIcon = f'{icon} '
+
+        conditionDescription = conditionJson['description']
+        return f'{conditionIcon}{conditionDescription}'

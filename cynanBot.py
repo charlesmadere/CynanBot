@@ -94,9 +94,9 @@ class CynanBot(commands.Bot):
         else:
             return False
 
-    #async def event_command_error(self, ctx, error):
+    async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
-        #pass
+        pass
 
     async def event_message(self, message):
         if message.content == 'D e e R F o r C e':
@@ -714,26 +714,28 @@ class CynanBot(commands.Bot):
             await ctx.send('Error fetching weather')
             return
 
-        temperature = f'Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F) '
-        humidity = f'and humidity is {weatherReport.getHumidity()}%. '
+        temperature = f'🌡 Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F), '
+        humidity = f'humidity is {weatherReport.getHumidity()}%, '
+        pressure = f'and pressure is {weatherReport.getPressure()}hPa. '
 
         conditions = ''
-        if weatherReport.hasConditions():    
+        if weatherReport.hasConditions():
             conditionsJoin = ', '.join(weatherReport.getConditions())
             conditions = f'Current conditions: {conditionsJoin}. '
 
         alerts = ''
         if weatherReport.hasAlerts():
-            alertsJoin = ', '.join(weatherReport.getAlerts())
+            alertsJoin = ' '.join(weatherReport.getAlerts())
+            alerts = f'🚨 {alertsJoin}'
 
         tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperature()}°C ({weatherReport.getTomorrowsLowTemperatureImperial()}°F) and a high of {weatherReport.getTomorrowsHighTemperature()}°C ({weatherReport.getTomorrowsHighTemperatureImperial()}°F). '
 
         tomorrowsConditions = ''
         if weatherReport.hasTomorrowsConditions():
             tomorrowsConditionsJoin = ', '.join(weatherReport.getTomorrowsConditions())
-            tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin} '
+            tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin}. '
 
-        await ctx.send(f'{temperature}{humidity}{conditions}{alerts}{tomorrowsTemps}{tomorrowsConditions}')
+        await ctx.send(f'{temperature}{humidity}{pressure}{conditions}{alerts}{tomorrowsTemps}{tomorrowsConditions}')
 
     @commands.command(name = 'zhword')
     async def command_zhword(self, ctx):
