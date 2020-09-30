@@ -83,7 +83,7 @@ class CutenessRepository():
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        isStashio = twitchChannel.lower() == 'stashiocat'
+        isStashio = userName.lower() == 'stashiocat'
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
         cursor.execute(
