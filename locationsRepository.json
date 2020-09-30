@@ -1,4 +1,10 @@
 {
+    "": {
+        "lat": 37.583328,
+        "lon": 127.0,
+        "name": "Seoul",
+        "timeZone": "Asia/Seoul"
+    },
     "1850147": {
         "lat": 35.689499,
         "lon": 139.691711,
@@ -58,6 +64,12 @@
         "lon": -122.419418,
         "name": "San Francisco",
         "timeZone": "America/Los_Angeles"
+    },
+    "5506956": {
+        "lat": 36.174969,
+        "lon": -115.137222,
+        "name": "Las Vegas",
+        "timeZone": "US/Mountain"
     },
     "5809844": {
         "lat": 47.606209,
