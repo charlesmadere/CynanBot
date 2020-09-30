@@ -84,6 +84,7 @@ class CutenessRepository():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         isStashio = userName.lower() == 'stashiocat'
+        isDrGF = userName.lower() == 'dr_girl_friend'
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
         cursor.execute(
@@ -101,6 +102,9 @@ class CutenessRepository():
 
         if isStashio:
             cuteness = cuteness + 50
+        elif isDrGF:
+            if cuteness > 1:
+                cuteness = cuteness - 1
         elif isDoublePoints:
             cuteness = cuteness + 2
         else:
