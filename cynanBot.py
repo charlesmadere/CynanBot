@@ -723,11 +723,6 @@ class CynanBot(commands.Bot):
             conditionsJoin = ', '.join(weatherReport.getConditions())
             conditions = f'Current conditions: {conditionsJoin}. '
 
-        alerts = ''
-        if weatherReport.hasAlerts():
-            alertsJoin = ' '.join(weatherReport.getAlerts())
-            alerts = f'🚨 {alertsJoin}'
-
         tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperature()}°C ({weatherReport.getTomorrowsLowTemperatureImperial()}°F) and a high of {weatherReport.getTomorrowsHighTemperature()}°C ({weatherReport.getTomorrowsHighTemperatureImperial()}°F). '
 
         tomorrowsConditions = ''
@@ -735,7 +730,12 @@ class CynanBot(commands.Bot):
             tomorrowsConditionsJoin = ', '.join(weatherReport.getTomorrowsConditions())
             tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin}. '
 
-        await ctx.send(f'{temperature}{humidity}{pressure}{conditions}{alerts}{tomorrowsTemps}{tomorrowsConditions}')
+        alerts = ''
+        if weatherReport.hasAlerts():
+            alertsJoin = ' '.join(weatherReport.getAlerts())
+            alerts = f'🚨 {alertsJoin}'
+
+        await ctx.send(f'{temperature}{humidity}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}')
 
     @commands.command(name = 'zhword')
     async def command_zhword(self, ctx):
