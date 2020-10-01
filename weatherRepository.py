@@ -100,7 +100,7 @@ class WeatherRepository():
                     else:
                         alerts.append(f'Alert from {senderName}: {event}.')
 
-        tomorrowsJson = jsonResponse['daily'][1]
+        tomorrowsJson = jsonResponse['daily'][0]
         tomorrowsHighTemperature = tomorrowsJson['temp']['max']
         tomorrowsLowTemperature = tomorrowsJson['temp']['min']
 
