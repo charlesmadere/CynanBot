@@ -13,7 +13,9 @@ class WeatherRepository():
         cacheTimeDelta = timedelta(hours = 1, minutes = 30)
     ):
         if authHelper == None:
-            raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
+            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        elif cacheTimeDelta == None:
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__authHelper = authHelper
         self.__cacheTimeDelta = cacheTimeDelta
