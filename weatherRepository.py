@@ -23,6 +23,16 @@ class WeatherRepository():
         self.__conditionIcons = self.__createConditionIconsDict()
         self.__weatherReports = dict()
 
+    def __chooseTomorrowFromForecast(self, jsonResponse: dict):
+        currentSunrise = jsonResponse['current']['sunrise']
+        currentSunset = jsonResponse['current']['sunset']
+
+        for dayJson in jsonResponse['daily']:
+            if dayJson['sunrise'] > currentSunrise and dayJson['sunset'] > currentSunset:
+                return dayJson
+
+        raise RuntimeError(f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
+
     def __createConditionIconsDict(self):
         icons = dict()
         icons['200'] = '⛈'
@@ -102,7 +112,7 @@ class WeatherRepository():
                     else:
                         alerts.append(f'Alert from {senderName}: {event}.')
 
-        tomorrowsJson = jsonResponse['daily'][0]
+        tomorrowsJson = self.__chooseTomorrowFromForecast(jsonResponse)
         tomorrowsHighTemperature = tomorrowsJson['temp']['max']
         tomorrowsLowTemperature = tomorrowsJson['temp']['min']
 
