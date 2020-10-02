@@ -68,6 +68,26 @@ class WeatherRepository():
 
         return icons
 
+    #########################################################
+    # retrieve air quality from https://api-docs.iqair.com/ #
+    #########################################################
+    def __fetchAirQuality(self, location: Location):
+        iqAirApiKey = self.__authHelper.getIqAirApiKey()
+        if iqAirApiKey == None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
+            print(f'iqAirApiKey is missing: \"{iqAirApiKey}\"')
+            return None
+
+        requestUrl = "https://api.airvisual.com/v2/nearest_city?key={}&lat={}&lon={}".format(
+            iqAirApiKey, location.getLatitude(), location.getLongitude())
+
+        rawResponse = requests.get(requestUrl)
+        jsonResponse = rawResponse.json()
+
+        if jsonResponse['status'] != 'success':
+            return None
+
+        return jsonResponse['data']['current']['pollution']['aqius']
+
     def fetchWeather(self, location: Location):
         if location == None:
             raise ValueError(f'location argument is malformed: \"{location}\"')
@@ -79,6 +99,10 @@ class WeatherRepository():
                 return self.__weatherReports[location.getId()]
 
         print(f'Refreshing weather for \"{location.getId()}\"...')
+
+        ############################################################################
+        # retrieve weather report from https://openweathermap.org/api/one-call-api #
+        ############################################################################
 
         oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
         if oneWeatherApiKey == None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
@@ -121,10 +145,12 @@ class WeatherRepository():
             for conditionJson in tomorrowsJson['weather']:
                 tomorrowsConditions.append(conditionJson['description'])
 
+        airQuality = self.__fetchAirQuality(location)
         weatherReport = None
 
         try:
             weatherReport = WeatherReport(
+                airQuality = airQuality,
                 humidity = humidity,
                 pressure = pressure,
                 temperature = temperature,

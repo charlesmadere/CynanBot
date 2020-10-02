@@ -5,6 +5,7 @@ class WeatherReport():
 
     def __init__(
         self,
+        airQuality: int,
         humidity: float,
         pressure: float,
         temperature: float,
@@ -25,6 +26,7 @@ class WeatherReport():
         elif tomorrowsLowTemperature == None or math.isnan(tomorrowsLowTemperature):
             raise ValueError(f'tomorrowsLowTemperature argument is malformed: \"{tomorrowsLowTemperature}\"')
 
+        self.__airQuality = airQuality
         self.__humidity = int(round(humidity))
         self.__pressure = int(round(pressure))
         self.__temperature = temperature
@@ -36,6 +38,9 @@ class WeatherReport():
 
     def __cToF(self, celsius: float):
         return (celsius * (9 / 5)) + 32
+
+    def getAirQuality(self):
+        return self.__airQuality
 
     def getAlerts(self):
         return self.__alerts
@@ -69,6 +74,9 @@ class WeatherReport():
 
     def getTomorrowsHighTemperatureImperial(self):
         return int(round(self.__cToF(self.__tomorrowsHighTemperature)))
+
+    def hasAirQuality(self):
+        return self.__airQuality != None
 
     def hasAlerts(self):
         return self.__alerts != None and len(self.__alerts) >= 1

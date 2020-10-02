@@ -716,6 +716,11 @@ class CynanBot(commands.Bot):
 
         temperature = f'🌡 Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F), '
         humidity = f'humidity is {weatherReport.getHumidity()}%, '
+
+        airQuality = ''
+        if weatherReport.hasAirQuality():
+            airQuality = f'air quality is {weatherReport.getAirQuality()}, '
+
         pressure = f'and pressure is {weatherReport.getPressure()}hPa. '
 
         conditions = ''
@@ -735,7 +740,7 @@ class CynanBot(commands.Bot):
             alertsJoin = ' '.join(weatherReport.getAlerts())
             alerts = f'🚨 {alertsJoin}'
 
-        await ctx.send(f'{temperature}{humidity}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}')
+        await ctx.send(f'{temperature}{humidity}{airQuality}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}')
 
     @commands.command(name = 'zhword')
     async def command_zhword(self, ctx):

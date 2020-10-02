@@ -9,6 +9,7 @@ from userTokensRepository import UserTokensRepository
 # {
 #    "clientId": "", (taken from "Client ID" at https://dev.twitch.tv/console/apps/)
 #    "clientSecret": "", (taken from "Client Secret" at https://dev.twitch.tv/console/apps/)
+#    "iqAirApiKey": "", (from https://www.iqair.com/us/dashboard/api)
 #    "ircAuthToken": "", (generated from https://twitchapps.com/tmi/),
 #    "oneWeatherApiKey": "" (from https://openweathermap.org/)
 # }
@@ -42,6 +43,11 @@ class AuthHelper():
             raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
         self.__clientSecret = clientSecret
 
+        iqAirApiKey = jsonContents.get('iqAirApiKey')
+        if iqAirApiKey == None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
+            print(f'No value for iqAirApiKey: \"{iqAirApiKey}\"')
+        self.__iqAirApiKey = iqAirApiKey
+
         ircAuthToken = jsonContents.get('ircAuthToken')
         if ircAuthToken == None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
             raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
@@ -57,6 +63,9 @@ class AuthHelper():
 
     def getClientSecret(self):
         return self.__clientSecret
+
+    def getIqAirApiKey(self):
+        return self.__iqAirApiKey
 
     def getIrcAuthToken(self):
         return self.__ircAuthToken
