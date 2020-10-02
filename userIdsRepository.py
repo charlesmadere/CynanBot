@@ -21,31 +21,14 @@ class UserIdsRepository():
         )
         connection.commit()
 
-    def fetchUserName(self, userId: str):
-        if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute('SELECT userName FROM userIds WHERE userId = ?', ( userId, ))
-        row = cursor.fetchone()
-
-        if row == None:
-            raise RuntimeError(f'No userName for userId \"{userId}\" found')
-
-        userName = row[0]
-        if userName == None or len(userName) == 0 or userName.isspace():
-            raise RuntimeError(f'userName for userId \"{userId}\" is malformed: \"{userName}\"')
-
-        cursor.close()
-        return userName
-
-    def fetchUserId(self, userName: str, clientId: str, accessToken: str):
+    def fetchUserId(
+        self,
+        userName: str,
+        clientId: str = None,
+        accessToken: str = None
+    ):
         if userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif clientId == None or len(clientId) == 0 or clientId.isspace():
-            raise ValueError(f'clientId argument is malformed: \"{clientId}\"')
-        elif accessToken == None or len(accessToken) == 0 or accessToken.isspace():
-            raise ValueError(f'accessToken argument is malformed: \"{accessToken}\"')
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute('SELECT userId FROM userIds WHERE userName = ?', ( userName, ))
@@ -62,6 +45,13 @@ class UserIdsRepository():
                 raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
             else:
                 return userId
+
+        print(f'Performing network call to fetch user ID for {userName}...')
+
+        if clientId == None or len(clientId) == 0 or clientId.isspace():
+            raise ValueError(f'clientId argument is malformed: \"{clientId}\"')
+        elif accessToken == None or len(accessToken) == 0 or accessToken.isspace():
+            raise ValueError(f'accessToken argument is malformed: \"{accessToken}\"')
 
         headers = {
             'Client-ID': clientId,
@@ -86,6 +76,24 @@ class UserIdsRepository():
         self.setUser(userId = userId, userName = userName)
 
         return userId
+
+    def fetchUserName(self, userId: str):
+        if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+
+        cursor = self.__backingDatabase.getConnection().cursor()
+        cursor.execute('SELECT userName FROM userIds WHERE userId = ?', ( userId, ))
+        row = cursor.fetchone()
+
+        if row == None:
+            raise RuntimeError(f'No userName for userId \"{userId}\" found')
+
+        userName = row[0]
+        if userName == None or len(userName) == 0 or userName.isspace():
+            raise RuntimeError(f'userName for userId \"{userId}\" is malformed: \"{userName}\"')
+
+        cursor.close()
+        return userName
 
     def setUser(self, userId: str, userName: str):
         if userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
