@@ -170,6 +170,8 @@ class CynanBot(commands.Bot):
 
     async def __handleIncreaseCutenessDoubleRewardRedeemed(
         self,
+        userIdThatRedeemed: str,
+        userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
@@ -179,7 +181,18 @@ class CynanBot(commands.Bot):
         delta = timedelta(minutes = 5)
         self.__cutenessDoubleEndTimes[twitchUser.getHandle()] = now + delta
 
-        await twitchChannel.send('✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨')
+        try:
+            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = 3,
+                twitchChannel = twitchUser.getHandle(),
+                userId = userIdThatRedeemed,
+                userName = userNameThatRedeemed
+            )
+
+            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {cuteness} ✨')
+        except ValueError:
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+            await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
@@ -188,29 +201,28 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(f'Increasing cuteness for {userNameThatRedeemed} in {twitchUser.getHandle()}...')
-
         now = datetime.now()
         delta = timedelta(seconds = 20)
         lastCutenessRedeemedMessageTime = self.__lastCutenessRedeemedMessageTimes.get(twitchUser.getHandle())
 
-        isDoublePoints = False
-        if twitchUser.getHandle() in self.__cutenessDoubleEndTimes:
-            isDoublePoints = now <= self.__cutenessDoubleEndTimes[twitchUser.getHandle()]
+        incrementAmount = 1
+        if twitchUser.getHandle() in self.__cutenessDoubleEndTimes and now <= self.__cutenessDoubleEndTimes[twitchUser.getHandle()]:
+            incrementAmount = 2
 
         try:
-            cuteness = self.__cutenessRepository.fetchIncrementedCuteness(
-                isDoublePoints = isDoublePoints,
+            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed,
+                userName = userNameThatRedeemed
             )
 
             if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
                 self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()] = now
-                await twitchChannel.send(f'✨✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cuteness} ✨✨')
+                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cuteness} ✨')
         except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed})')
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+            await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleMessageFromCynan(self, message):
         now = datetime.now()
@@ -225,15 +237,15 @@ class CynanBot(commands.Bot):
 
     async def __handlePotdRewardRedeemed(
         self,
-        userThatRedeemed: str,
+        userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
-        print(f'Sending POTD to {userThatRedeemed} in {twitchUser.getHandle()}...')
+        print(f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
-            await twitchChannel.send(f'@{userThatRedeemed} here\'s the POTD: {picOfTheDay}')
+            await twitchChannel.send(f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
         except FileNotFoundError:
             await twitchChannel.send(f'@{twitchUser.getHandle()} POTD file is missing!')
         except ValueError:
@@ -270,24 +282,27 @@ class CynanBot(commands.Bot):
         increaseCutenessRewardId = twitchUser.getIncreaseCutenessRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
         rewardId = redemptionJson['reward']['id']
-        userThatRedeemed = redemptionJson['user']['login']
+        userIdThatRedeemed = redemptionJson['user']['id']
+        userNameThatRedeemed = redemptionJson['user']['login']
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
             await self.__handlePotdRewardRedeemed(
-                userThatRedeemed = userThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
         elif twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
             await self.__handleIncreaseCutenessRewardRedeemed(
-                userIdThatRedeemed = redemptionJson['user']['id'],
-                userNameThatRedeemed = userThatRedeemed,
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
         elif twitchUser.isCutenessEnabled() and rewardId == increaseCutenessDoubleRewardId:
             await self.__handleIncreaseCutenessDoubleRewardRedeemed(
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )

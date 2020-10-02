@@ -67,15 +67,15 @@ class CutenessRepository():
 
         return cuteness
 
-    def fetchIncrementedCuteness(
+    def fetchCutenessIncrementedBy(
         self,
-        isDoublePoints: bool,
+        incrementAmount: int,
         twitchChannel: str,
         userId: str,
         userName: str
     ):
-        if isDoublePoints == None:
-            raise ValueError(f'isDoublePoints argument is malformed: \"{isDoublePoints}\"')
+        if incrementAmount == None:
+            raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
         elif twitchChannel == None or len(twitchChannel) == 0 or twitchChannel.isspace():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif userId == None or len(userId) == 0 or userId.isspace() or userId == '0':
@@ -98,10 +98,7 @@ class CutenessRepository():
         if row != None:
             cuteness = row[0]
 
-        if isDoublePoints:
-            cuteness = cuteness + 2
-        else:
-            cuteness = cuteness + 1
+        cuteness = cuteness + incrementAmount
 
         cursor.execute(
             '''
@@ -122,15 +119,17 @@ class CutenessRepository():
         if twitchChannel == None or len(twitchChannel) == 0 or twitchChannel.isspace():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
+        twitchChannelUserId = self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
                 SELECT cuteness, userId FROM cuteness
-                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1
+                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1 AND userId != ?
                 ORDER BY cuteness DESC
                 LIMIT ?
             ''',
-            ( twitchChannel, self.__leaderboardSize )
+            ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
