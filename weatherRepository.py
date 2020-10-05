@@ -83,7 +83,7 @@ class WeatherRepository():
         rawResponse = requests.get(requestUrl)
         jsonResponse = rawResponse.json()
 
-        if jsonResponse['status'] != 'success':
+        if jsonResponse.get('status') != 'success':
             return None
 
         return jsonResponse['data']['current']['pollution']['aqius']
