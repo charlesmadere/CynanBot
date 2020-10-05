@@ -76,5 +76,11 @@
         "lon": -122.332069,
         "name": "Seattle",
         "timeZone": "US/Pacific"
+    },
+    "6691319": {
+        "lat": 47.375999,
+        "lon": -71.123367,
+        "name": "Capitale-Nationale",
+        "timeZone": "Canada/Eastern"
     }
 }
