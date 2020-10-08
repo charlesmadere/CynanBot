@@ -99,7 +99,7 @@ class CynanBot(commands.Bot):
         pass
 
     async def event_message(self, message):
-        if message.content == 'D e e R F o r C e':
+        if message.content.lower() == 'd e e r f o r c e':
             await self.__handleDeerForceMessage(message)
             return
 
