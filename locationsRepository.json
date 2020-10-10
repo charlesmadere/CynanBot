@@ -29,6 +29,18 @@
         "name": "London",
         "timeZone": "Europe/London"
     },
+    "2673722": {
+        "lat": 59.5,
+        "lon": 18.0,
+        "name": "Stockholm",
+        "timeZone": "Europe/Stockholm"
+    },
+    "3143244": {
+        "lat": 59.912731,
+        "lon": 10.74609,
+        "name": "Oslo",
+        "timeZone": "Europe/Oslo"
+    },
     "3895114": {
         "lat": -30.0,
         "lon": -71.0,
@@ -76,6 +88,12 @@
         "lon": -122.332069,
         "name": "Seattle",
         "timeZone": "US/Pacific"
+    },
+    "6455259": {
+        "lat": 48.856461,
+        "lon": 2.35236,
+        "name": "Paris",
+        "timeZone": "Europe/Paris"
     },
     "6691319": {
         "lat": 47.375999,
