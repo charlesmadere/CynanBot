@@ -410,6 +410,9 @@ class CynanBot(commands.Bot):
             commands.append('!cuteness')
             commands.append('!mycuteness')
 
+            if ctx.author.is_mod:
+                commands.append('!givecuteness')
+
         if user.isDeWordOfTheDayEnabled():
             commands.append('!deword')
 
@@ -424,9 +427,6 @@ class CynanBot(commands.Bot):
 
         if user.isFrWordOfTheDayEnabled():
             commands.append('!frword')
-
-        if user.isGiveCutenessEnabled() and ctx.author.is_mod:
-            commands.append('!givecuteness')
 
         if user.isItWordOfTheDayEnabled():
             commands.append('!itword')
@@ -536,9 +536,12 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx):
+        if not ctx.author.is_mod:
+            return
+
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isGiveCutenessEnabled() or not ctx.author.is_mod:
+        if not user.isCutenessEnabled():
             return
 
         splits = ctx.message.content.split()

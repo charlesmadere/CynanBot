@@ -33,7 +33,6 @@ class UsersRepository():
         isEnPtWordOfTheDayEnabled = userJson.get('enPtWordOfTheDayEnabled', False)
         isEsWordOfTheDayEnabled = userJson.get('esWordOfTheDayEnabled', False)
         isFrWordOfTheDayEnabled = userJson.get('frWordOfTheDayEnabled', False)
-        isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
         isItWordOfTheDayEnabled = userJson.get('itWordOfTheDayEnabled', False)
         isJaWordOfTheDayEnabled = userJson.get('jaWordOfTheDayEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
@@ -76,7 +75,6 @@ class UsersRepository():
             isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled,
             isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
             isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
-            isGiveCutenessEnabled = isGiveCutenessEnabled,
             isItWordOfTheDayEnabled = isItWordOfTheDayEnabled,
             isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
             isJishoEnabled = isJishoEnabled,
