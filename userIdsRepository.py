@@ -46,12 +46,14 @@ class UserIdsRepository():
             else:
                 return userId
 
-        print(f'Performing network call to fetch user ID for {userName}...')
-
         if clientId == None or len(clientId) == 0 or clientId.isspace():
+            print(f'Can\'t lookup user ID for \"{userName}\", as clientId is malformed: \"{clientId}\"')
             raise ValueError(f'clientId argument is malformed: \"{clientId}\"')
         elif accessToken == None or len(accessToken) == 0 or accessToken.isspace():
+            print(f'Can\'t lookup user ID for \"{userName}\", as accessToken is malformed: \"{accessToken}\"')
             raise ValueError(f'accessToken argument is malformed: \"{accessToken}\"')
+
+        print(f'Performing network call to fetch user ID for {userName}...')
 
         headers = {
             'Client-ID': clientId,
