@@ -100,6 +100,9 @@ class CutenessRepository():
 
         cuteness = cuteness + incrementAmount
 
+        if cuteness < 0:
+            cuteness = 0
+
         cursor.execute(
             '''
                 INSERT INTO cuteness (cuteness, twitchChannel, userId)

@@ -425,6 +425,9 @@ class CynanBot(commands.Bot):
         if user.isFrWordOfTheDayEnabled():
             commands.append('!frword')
 
+        if user.isGiveCutenessEnabled() and ctx.author.is_mod:
+            commands.append('!givecuteness')
+
         if user.isItWordOfTheDayEnabled():
             commands.append('!itword')
 
@@ -530,6 +533,58 @@ class CynanBot(commands.Bot):
 
         wotd = self.__wordOfTheDayRepository.fetchFrWotd()
         await self.__handleWordOfTheDay(ctx, wotd)
+
+    @commands.command(name = 'givecuteness')
+    async def command_givecuteness(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isGiveCutenessEnabled() or not ctx.author.is_mod:
+            return
+
+        splits = ctx.message.content.split()
+
+        if len(splits) != 3:
+            await ctx.send(f'Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        userName = splits[1]
+        if userName == None or len(userName) == 0 or userName.isspace():
+            print(f'Username is malformed: \"{userName}\"')
+            await ctx.send(f'Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        incrementAmountStr = splits[2]
+        if incrementAmountStr == None or len(incrementAmountStr) == 0 or incrementAmountStr.isspace():
+            print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
+            await ctx.send(f'Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        try:
+            incrementAmount = int(incrementAmountStr)
+        except SyntaxError:
+            print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
+            await ctx.send(f'Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        try:
+            userId = self.__userIdsRepository.fetchUserId(userName = userName)
+        except ValueError:
+            print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
+            await ctx.send(f'Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+            return
+
+        try:
+            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = incrementAmount,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = userName
+            )
+
+            await ctx.send(f'✨ Cuteness for {userName} is now {cuteness} ✨')
+        except ValueError:
+            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({ctx.author.id}) in {user.getHandle()}')
+            await ctx.send(f'Error incrementing cuteness for {userName}')
 
     @commands.command(name = 'itword')
     async def command_itword(self, ctx):
