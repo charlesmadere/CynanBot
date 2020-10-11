@@ -645,7 +645,7 @@ class CynanBot(commands.Bot):
             result = self.__jishoHelper.search(query)
 
             if result == None:
-                await ctx.send(f'Error searching Jisho for \"{query}\"')
+                await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
                 definitions = ' '.join(result.getDefinitions())
 
