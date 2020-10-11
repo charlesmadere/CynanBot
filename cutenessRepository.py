@@ -1,4 +1,5 @@
 from backingDatabase import BackingDatabase
+import locale
 from userIdsRepository import UserIdsRepository
 
 class CutenessRepository():
@@ -145,7 +146,8 @@ class CutenessRepository():
 
         for row in rows:
             userName = self.__userIdsRepository.fetchUserName(row[1])
-            leaderboard.append(f'#{rank} {userName} ({row[0]})')
+            rankStr = locale.format_string("#%d", rank, grouping = True)
+            leaderboard.append(f'{rankStr} {userName} ({row[0]})')
             rank = rank + 1
 
         cursor.close()

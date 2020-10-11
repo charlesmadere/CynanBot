@@ -4,6 +4,7 @@ from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from jishoHelper import JishoHelper
+import locale
 from locationsRepository import LocationsRepository
 from timeZoneRepository import TimeZoneRepository
 from userIdsRepository import UserIdsRepository
@@ -11,6 +12,8 @@ from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from weatherRepository import WeatherRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
+
+locale.setlocale(locale.LC_ALL, 'en_US')
 
 analogueStoreRepository = AnalogueStoreRepository()
 authHelper = AuthHelper()

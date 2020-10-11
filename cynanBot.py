@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 import json
+import locale
 from location import Location
 from locationsRepository import LocationsRepository
 import random
@@ -189,7 +190,8 @@ class CynanBot(commands.Bot):
                 userName = userNameThatRedeemed
             )
 
-            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {cuteness} ✨')
+            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
+            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {cutenessStr} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
@@ -219,7 +221,9 @@ class CynanBot(commands.Bot):
 
             if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
                 self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()] = now
-                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cuteness} ✨')
+
+                cutenessStr = locale.format_string("%d", cuteness, grouping = True)
+                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cutenessStr} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
@@ -584,7 +588,8 @@ class CynanBot(commands.Bot):
                 userName = userName
             )
 
-            await ctx.send(f'✨ Cuteness for {userName} is now {cuteness} ✨')
+            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
+            await ctx.send(f'✨ Cuteness for {userName} is now {cutenessStr} ✨')
         except ValueError:
             print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({ctx.author.id}) in {user.getHandle()}')
             await ctx.send(f'Error incrementing cuteness for {userName}')
@@ -679,10 +684,12 @@ class CynanBot(commands.Bot):
                 userName = ctx.author.name
             )
 
+            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
+
             if cuteness == 0:
-                await ctx.send(f'😿 {ctx.author.name}\'s cuteness is {cuteness} 😿')
+                await ctx.send(f'😿 {ctx.author.name}\'s cuteness is {cutenessStr} 😿')
             else:
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cuteness} ✨')
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr} ✨')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {ctx.channel.id}')
 
