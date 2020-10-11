@@ -13,7 +13,7 @@ from userTokensRepository import UserTokensRepository
 from weatherRepository import WeatherRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
 
-locale.setlocale(locale.LC_ALL, 'en_US')
+locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 analogueStoreRepository = AnalogueStoreRepository()
 authHelper = AuthHelper()
