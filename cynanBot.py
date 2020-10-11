@@ -636,7 +636,7 @@ class CynanBot(commands.Bot):
         splits = ctx.message.content.split()
 
         if len(splits) == 1:
-            await ctx.send('⚠ A search term is necessary for the !jisho command')
+            await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
         query = splits[1]
@@ -655,6 +655,7 @@ class CynanBot(commands.Bot):
                     await ctx.send(f'{result.getWord()} — {definitions}')
         except ValueError:
             print(f'⚠ JishoHelper search query is malformed: \"{query}\"')
+            await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
     @commands.command(name = 'koword')
     async def command_koword(self, ctx):
