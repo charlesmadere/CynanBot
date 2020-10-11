@@ -194,7 +194,7 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {cutenessStr} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
+            await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
@@ -226,7 +226,7 @@ class CynanBot(commands.Bot):
                 await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cutenessStr} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchChannel.send(f'Error increasing cuteness for {userNameThatRedeemed}')
+            await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleMessageFromCynan(self, message):
         now = datetime.now()
@@ -251,9 +251,9 @@ class CynanBot(commands.Bot):
             picOfTheDay = twitchUser.fetchPicOfTheDay()
             await twitchChannel.send(f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
         except FileNotFoundError:
-            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD file is missing!')
+            await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
         except ValueError:
-            await twitchChannel.send(f'@{twitchUser.getHandle()} POTD content is malformed!')
+            await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
 
     async def __handleRewardRedeemed(self, jsonResponse):
         redemptionJson = jsonResponse['data']['redemption']
@@ -317,7 +317,7 @@ class CynanBot(commands.Bot):
         message = ""
 
         if wotd == None:
-            message = 'Error fetching word of the day'
+            message = '⚠ Error fetching word of the day'
         elif wotd.hasExamples():
             if wotd.hasTransliteration():
                 message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
@@ -356,7 +356,7 @@ class CynanBot(commands.Bot):
             storeStock = self.__analogueStoreRepository.fetchStoreStock()
 
             if storeStock == None:
-                await ctx.send('Error reading products from Analogue store')
+                await ctx.send('⚠ Error reading products from Analogue store')
             elif len(storeStock) == 0:
                 await ctx.send('Analogue store has nothing in stock')
             else:
@@ -551,33 +551,33 @@ class CynanBot(commands.Bot):
         splits = ctx.message.content.split()
 
         if len(splits) != 3:
-            await ctx.send(f'Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName = splits[1]
         if userName == None or len(userName) == 0 or userName.isspace():
             print(f'Username is malformed: \"{userName}\"')
-            await ctx.send(f'Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await ctx.send(f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr = splits[2]
         if incrementAmountStr == None or len(incrementAmountStr) == 0 or incrementAmountStr.isspace():
             print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
-            await ctx.send(f'Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except SyntaxError:
             print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
-            await ctx.send(f'Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             userId = self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
             print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
-            await ctx.send(f'Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+            await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
         try:
@@ -591,8 +591,8 @@ class CynanBot(commands.Bot):
             cutenessStr = locale.format_string("%d", cuteness, grouping = True)
             await ctx.send(f'✨ Cuteness for {userName} is now {cutenessStr} ✨')
         except ValueError:
-            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({ctx.author.id}) in {user.getHandle()}')
-            await ctx.send(f'Error incrementing cuteness for {userName}')
+            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
+            await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
 
     @commands.command(name = 'itword')
     async def command_itword(self, ctx):
@@ -636,7 +636,7 @@ class CynanBot(commands.Bot):
         splits = ctx.message.content.split()
 
         if len(splits) == 1:
-            await ctx.send('A search term is necessary for the !jisho command')
+            await ctx.send('⚠ A search term is necessary for the !jisho command')
             return
 
         query = splits[1]
@@ -654,7 +654,7 @@ class CynanBot(commands.Bot):
                 else:
                     await ctx.send(f'{result.getWord()} — {definitions}')
         except ValueError:
-            print(f'JishoHelper search query is malformed: \"{query}\"')
+            print(f'⚠ JishoHelper search query is malformed: \"{query}\"')
 
     @commands.command(name = 'koword')
     async def command_koword(self, ctx):
@@ -691,7 +691,8 @@ class CynanBot(commands.Bot):
             else:
                 await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr} ✨')
         except ValueError:
-            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {ctx.channel.id}')
+            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
     @commands.command(name = 'noword')
     async def command_noword(self, ctx):
@@ -791,7 +792,7 @@ class CynanBot(commands.Bot):
         weatherReport = self.__weatherRepository.fetchWeather(location)
 
         if weatherReport == None:
-            await ctx.send('Error fetching weather')
+            await ctx.send('⚠ Error fetching weather')
             return
 
         temperature = f'🌡 Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F), '
