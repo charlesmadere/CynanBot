@@ -753,7 +753,7 @@ class CynanBot(commands.Bot):
 
         now = datetime.now(user.getTimeZone())
         formattedTime = now.strftime("%A, %b %d, %Y %I:%M%p")
-        await ctx.send(f'the local time for {user.getHandle()} is {formattedTime}')
+        await ctx.send(f'🕰 The local time for {user.getHandle()} is {formattedTime}')
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
