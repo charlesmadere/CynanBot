@@ -144,7 +144,7 @@ class AuthHelper():
 
             jsonResponse = rawResponse.json()
 
-            if 'client_id' not in jsonResponse or jsonResponse['client_id'] == None or len(jsonResponse['client_id']) == 0:
+            if jsonResponse.get('client_id') == None or len(jsonResponse['client_id']) == 0:
                 print(f'Refreshing access token for {handle}...')
 
                 self.__refreshAccessToken(
