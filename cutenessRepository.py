@@ -8,6 +8,7 @@ class CutenessRepository():
         self,
         backingDatabase: BackingDatabase,
         leaderboardSize: int,
+        localLeaderboardSize: int,
         userIdsRepository: UserIdsRepository
     ):
         if backingDatabase == None:
@@ -16,11 +17,16 @@ class CutenessRepository():
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 1 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
+        elif localLeaderboardSize == None:
+            raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
+        elif localLeaderboardSize < 1 or localLeaderboardSize > 6:
+            raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
         elif userIdsRepository == None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__backingDatabase = backingDatabase
         self.__leaderboardSize = leaderboardSize
+        self.__localLeaderboardSize = localLeaderboardSize
         self.__userIdsRepository = userIdsRepository
 
         connection = backingDatabase.getConnection()

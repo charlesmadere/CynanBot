@@ -25,6 +25,7 @@ userIdsRepository = UserIdsRepository(
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     leaderboardSize = 10,
+    localLeaderboardSize = 6,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
