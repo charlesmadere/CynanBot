@@ -679,7 +679,7 @@ class CynanBot(commands.Bot):
         userId = str(ctx.author.id)
 
         try:
-            cuteness = self.__cutenessRepository.fetchCuteness(
+            cuteness, localLeaderboard = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = ctx.author.name
@@ -689,8 +689,11 @@ class CynanBot(commands.Bot):
 
             if cuteness == 0:
                 await ctx.send(f'😿 {ctx.author.name}\'s cuteness is {cutenessStr} 😿')
-            else:
+            elif localLeaderboard == None or len(localLeaderboard) == 0:
                 await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr} ✨')
+            else:
+                leaderboardStr = ', '.join(localLeaderboard)
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr}, and their local leaderboard is: {leaderboardStr} ✨')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')

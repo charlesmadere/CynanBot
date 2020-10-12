@@ -42,7 +42,7 @@ class CutenessRepository():
         )
         connection.commit()
 
-    def fetchCuteness(
+    def fetchCutenessAndLocalLeaderboard(
         self,
         twitchChannel: str,
         userId: str,
@@ -68,13 +68,44 @@ class CutenessRepository():
         row = cursor.fetchone()
 
         if row == None:
-            return 0
+            cursor.close()
+            return ( 0, None )
 
         cuteness = row[0]
 
-        cursor.close()
+        cursor.execute(
+            '''
+                SELECT cuteness, userId FROM cuteness
+                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1
+                ORDER BY ABS(? - ABS(cuteness)) ASC
+                LIMIT ?
+            ''',
+            ( twitchChannel, cuteness, self.__localLeaderboardSize )
+        )
 
-        return cuteness
+        rows = cursor.fetchmany(size = self.__localLeaderboardSize)
+
+        if len(rows) == 0:
+            cursor.close()
+            return ( cuteness, None )
+
+        sortedRows = sorted(rows, key = lambda row: row[0], reverse = True)
+        localLeaderboard = list()
+
+        for row in sortedRows:
+            # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
+            # that would cause us to not always have a person's username persisted in the database
+            # alongside their user ID. So for any users that cause this exception to be raised,
+            # we'll just ignore them.
+            try:
+                userName = self.__userIdsRepository.fetchUserName(row[1])
+                cuteStr = locale.format_string("%d", row[0], grouping = True)
+                localLeaderboard.append(f'{userName} ({cuteStr})')
+            except RuntimeError:
+                print(f'Encountered a user ID that has no username: \"{row[1]}\"')
+
+        cursor.close()
+        return ( cuteness, localLeaderboard )
 
     def fetchCutenessIncrementedBy(
         self,
@@ -156,7 +187,8 @@ class CutenessRepository():
         for row in rows:
             userName = self.__userIdsRepository.fetchUserName(row[1])
             rankStr = locale.format_string("#%d", rank, grouping = True)
-            leaderboard.append(f'{rankStr} {userName} ({row[0]})')
+            cuteStr = locale.format_string("%d", row[0], grouping = True)
+            leaderboard.append(f'{rankStr} {userName} ({cuteStr})')
             rank = rank + 1
 
         cursor.close()
