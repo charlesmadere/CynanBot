@@ -55,6 +55,8 @@ class CutenessRepository():
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
+
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
@@ -70,7 +72,6 @@ class CutenessRepository():
             cuteness = row[0]
 
         cursor.close()
-        self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         return cuteness
 
@@ -89,6 +90,8 @@ class CutenessRepository():
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userName == None or len(userName) == 0 or userName.isspace():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
@@ -121,7 +124,6 @@ class CutenessRepository():
 
         connection.commit()
         cursor.close()
-        self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         return cuteness
 
