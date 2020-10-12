@@ -67,9 +67,10 @@ class CutenessRepository():
         )
         row = cursor.fetchone()
 
-        cuteness = 0
-        if row != None:
-            cuteness = row[0]
+        if row == None:
+            return 0
+
+        cuteness = row[0]
 
         cursor.close()
 
@@ -148,6 +149,7 @@ class CutenessRepository():
         leaderboard = list()
 
         if len(rows) == 0:
+            cursor.close()
             return leaderboard
 
         rank = 1
