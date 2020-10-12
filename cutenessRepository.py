@@ -125,7 +125,6 @@ class CutenessRepository():
 
         connection.commit()
         cursor.close()
-
         return cuteness
 
     def fetchLeaderboard(self, twitchChannel: str):
