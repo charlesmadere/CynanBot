@@ -41,6 +41,7 @@ class CutenessRepository():
             '''
         )
         connection.commit()
+        connection.close()
 
     def fetchCuteness(
         self,

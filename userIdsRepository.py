@@ -20,6 +20,7 @@ class UserIdsRepository():
             '''
         )
         connection.commit()
+        connection.close()
 
     def fetchUserId(
         self,
