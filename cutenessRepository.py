@@ -42,6 +42,31 @@ class CutenessRepository():
         )
         connection.commit()
 
+    def fetchCuteness(self, twitchChannel: str, userName: str):
+        if twitchChannel == None or len(twitchChannel) == 0 or twitchChannel.isspace():
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif userName == None or len(userName) == 0 or userName.isspace():
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        userId = self.__userIdsRepository.fetchUserId(userName = userName)
+
+        cursor = self.__backingDatabase.getConnection().cursor()
+        cursor.execute(
+            '''
+                SELECT cuteness FROM cuteness
+                WHERE twitchChannel = ? AND userId = ?
+            ''',
+            ( twitchChannel, userId )
+        )
+        row = cursor.fetchone()
+
+        cuteness = None
+        if row != None:
+            cuteness = row[0]
+
+        cursor.close()
+        return cuteness
+
     def fetchCutenessAndLocalLeaderboard(
         self,
         twitchChannel: str,

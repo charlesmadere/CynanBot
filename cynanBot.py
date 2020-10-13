@@ -376,18 +376,39 @@ class CynanBot(commands.Bot):
         delta = timedelta(seconds = 30)
         lastCutenessLeaderboardMessageTime = self.__lastCutenessLeaderboardMessageTimes.get(user.getHandle())
 
-        if lastCutenessLeaderboardMessageTime == None or now > lastCutenessLeaderboardMessageTime + delta:
-            self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
+        if lastCutenessLeaderboardMessageTime != None and now <= lastCutenessLeaderboardMessageTime + delta:
+            return
 
-            leaderboard = self.__cutenessRepository.fetchLeaderboard(
-                twitchChannel = user.getHandle()
-            )
+        self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
+        splits = ctx.message.content.split()
+
+        userName = None
+        if len(splits) == 2:
+            userName = splits[1]
+
+        if userName == None or len(userName) == 0 or userName.isspace():
+            leaderboard = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
 
             if len(leaderboard) == 0:
                 await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
             else:
                 leaderboardString = ', '.join(leaderboard)
                 await ctx.send(f'✨ Cuteness leaderboard — {leaderboardString} ✨')
+        else:
+            try:
+                cuteness = self.__cutenessRepository.fetchCuteness(
+                    twitchChannel = user.getHandle(),
+                    userName = userName
+                )
+
+                if cuteness == None or cuteness == 0:
+                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
+                else:
+                    cutenessStr = locale.format_string("%d", cuteness, grouping = True)
+                    await ctx.send(f'✨ {userName}\'s cuteness: {cutenessStr} ✨')
+            except ValueError:
+                print(f'Unable to find \"{userName}\" in the cuteness database')
+                await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
 
     @commands.command(name = 'cynanbot')
     async def command_cynanbot(self, ctx):
