@@ -568,7 +568,7 @@ class CynanBot(commands.Bot):
 
         try:
             incrementAmount = int(incrementAmountStr)
-        except SyntaxError:
+        except (SyntaxError, ValueError):
             print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
             await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
