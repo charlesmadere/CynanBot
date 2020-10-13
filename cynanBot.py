@@ -351,17 +351,19 @@ class CynanBot(commands.Bot):
         delta = timedelta(minutes = 1)
         lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes.get(user.getHandle())
 
-        if lastAnalogueStockMessageTime == None or now > lastAnalogueStockMessageTime + delta:
-            self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
-            storeStock = self.__analogueStoreRepository.fetchStoreStock()
+        if lastAnalogueStockMessageTime != None and now <= lastAnalogueStockMessageTime + delta:
+            return
 
-            if storeStock == None:
-                await ctx.send('⚠ Error reading products from Analogue store')
-            elif len(storeStock) == 0:
-                await ctx.send('Analogue store has nothing in stock')
-            else:
-                storeStockString = ', '.join(storeStock)
-                await ctx.send(f'Analogue products in stock: {storeStockString}')
+        self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
+        storeStock = self.__analogueStoreRepository.fetchStoreStock()
+
+        if storeStock == None:
+            await ctx.send('⚠ Error reading products from Analogue store')
+        elif len(storeStock) == 0:
+            await ctx.send('🍃 Analogue store has nothing in stock')
+        else:
+            storeStockString = ', '.join(storeStock)
+            await ctx.send(f'Analogue products in stock: {storeStockString}')
 
     @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx):
