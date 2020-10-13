@@ -53,6 +53,12 @@
         "name": "New Orleans",
         "timeZone": "US/Central"
     },
+    "4671654": {
+        "lat": 30.267151,
+        "lon": -97.743057,
+        "name": "Austin",
+        "timeZone": "America/Chicago"
+    },
     "4887398": {
         "lat": 41.850029,
         "lon": -87.650047,
@@ -82,6 +88,12 @@
         "lon": -115.137222,
         "name": "Las Vegas",
         "timeZone": "US/Mountain"
+    },
+    "5746545": {
+        "lat": 45.523449,
+        "lon": -122.676208,
+        "name": "Portland",
+        "timeZone": "US/Pacific"
     },
     "5809844": {
         "lat": 47.606209,
