@@ -15,15 +15,15 @@ class WeatherReport():
         conditions: List[str],
         tomorrowsConditions: List[str]
     ):
-        if humidity == None or math.isnan(humidity):
+        if humidity == None or not math.isfinite(humidity):
             raise ValueError(f'humidity argument is malformed: \"{humidity}\"')
-        elif pressure == None or math.isnan(pressure):
+        elif pressure == None or not math.isfinite(pressure):
             raise ValueError(f'pressure argument is malformed: \"{pressure}\"')
-        elif temperature == None or math.isnan(temperature):
+        elif temperature == None or not math.isfinite(temperature):
             raise ValueError(f'temperature argument is malformed: \"{temperature}\"')
-        elif tomorrowsHighTemperature == None or math.isnan(tomorrowsHighTemperature):
+        elif tomorrowsHighTemperature == None or not math.isfinite(tomorrowsHighTemperature):
             raise ValueError(f'tomorrowsHighTemperature argument is malformed: \"{tomorrowsHighTemperature}\"')
-        elif tomorrowsLowTemperature == None or math.isnan(tomorrowsLowTemperature):
+        elif tomorrowsLowTemperature == None or not math.isfinite(tomorrowsLowTemperature):
             raise ValueError(f'tomorrowsLowTemperature argument is malformed: \"{tomorrowsLowTemperature}\"')
 
         self.__airQuality = airQuality
