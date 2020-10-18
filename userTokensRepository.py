@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class UserTokensRepository():
 
     def __init__(self, userTokensFile: str = 'userTokensRepository.json'):

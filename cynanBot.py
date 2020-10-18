@@ -1,16 +1,18 @@
+import json
+import locale
+import random
+from datetime import datetime, timedelta
+
+import requests
+from twitchio.ext import commands
+
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
-from datetime import datetime, timedelta
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
-import json
-import locale
 from location import Location
 from locationsRepository import LocationsRepository
-import random
-import requests
-from twitchio.ext import commands
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
@@ -20,7 +22,6 @@ from weatherRepository import WeatherRepository
 from wordOfTheDayRepository import WordOfTheDayRepository
 from wotd import Wotd
 
-# https://github.com/TwitchIO/TwitchIO
 
 class CynanBot(commands.Bot):
 

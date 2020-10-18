@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class BackingDatabase():
 
     def __init__(self, databaseFile: str = 'database.sqlite'):

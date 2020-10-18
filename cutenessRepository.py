@@ -1,6 +1,8 @@
-from backingDatabase import BackingDatabase
 import locale
+
+from backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
+
 
 class CutenessRepository():
 

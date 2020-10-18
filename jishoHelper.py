@@ -1,6 +1,8 @@
-from jishoResult import JishoResult
-from lxml import html
 import requests
+from lxml import html
+
+from jishoResult import JishoResult
+
 
 class JishoHelper():
 

@@ -1,9 +1,12 @@
 import json
 import os
-import requests
 from typing import List
+
+import requests
+
 from user import User
 from userTokensRepository import UserTokensRepository
+
 
 # The authentication file should be formatted like this:
 # {

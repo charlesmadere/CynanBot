@@ -1,5 +1,7 @@
 import json
+
 import requests
+
 
 # This file is meant to be run separately from the others in this repository. It retrieves some 
 # important keys / tokens that are required in order for CynanBot to authenticate with Twitch and

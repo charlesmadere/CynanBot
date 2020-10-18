@@ -1,6 +1,9 @@
-from backingDatabase import BackingDatabase
 import json
+
 import requests
+
+from backingDatabase import BackingDatabase
+
 
 class UserIdsRepository():
 

@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
+
 import requests
-from wotd import Wotd
 import xmltodict
+
+from wotd import Wotd
+
 
 class WordOfTheDayRepository():
 

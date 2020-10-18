@@ -1,9 +1,12 @@
-from authHelper import AuthHelper
-from datetime import datetime, timedelta
 import json
-from location import Location
+from datetime import datetime, timedelta
+
 import requests
+
+from authHelper import AuthHelper
+from location import Location
 from weatherReport import WeatherReport
+
 
 class WeatherRepository():
 

@@ -1,7 +1,9 @@
 import json
 import os
+
 from timeZoneRepository import TimeZoneRepository
 from user import User
+
 
 class UsersRepository():
 

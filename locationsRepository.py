@@ -1,7 +1,9 @@
 import json
-from location import Location
 import os
+
+from location import Location
 from timeZoneRepository import TimeZoneRepository
+
 
 class LocationsRepository():
 

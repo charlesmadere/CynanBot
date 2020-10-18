@@ -1,6 +1,7 @@
-from datetime import tzinfo
 import os
+from datetime import tzinfo
 from urllib.parse import urlparse
+
 
 class User:
 

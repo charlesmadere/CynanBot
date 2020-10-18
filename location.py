@@ -1,5 +1,6 @@
-from datetime import tzinfo
 import math
+from datetime import tzinfo
+
 
 class Location():
 

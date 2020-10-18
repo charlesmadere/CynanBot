@@ -1,6 +1,7 @@
 import math
 from typing import List
 
+
 class WeatherReport():
 
     def __init__(

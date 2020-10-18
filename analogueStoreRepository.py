@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
-from lxml import html
+
 import requests
+from lxml import html
+
 
 class AnalogueStoreRepository():
 
