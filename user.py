@@ -8,6 +8,7 @@ class User:
     def __init__(
         self,
         isAnalogueEnabled: bool,
+        isCatJamEnabled: bool,
         isCutenessEnabled: bool,
         isDeWordOfTheDayEnabled: bool,
         isEnEsWordOfTheDayEnabled: bool,
@@ -41,6 +42,7 @@ class User:
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
+        self.__isCatJamEnabled = isCatJamEnabled
         self.__isCutenessEnabled = isCutenessEnabled
         self.__isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled
         self.__isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled
@@ -132,6 +134,9 @@ class User:
 
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled
+
+    def isCatJamEnabled(self):
+        return self.__isCatJamEnabled
 
     def isCutenessEnabled(self):
         return self.__isCutenessEnabled

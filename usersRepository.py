@@ -29,6 +29,7 @@ class UsersRepository():
             raise ValueError(f'userJson argument is empty: \"{userJson}\"')
 
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
+        isCatJamEnabled = userJson.get('catJamEnabled', False)
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
         isDeWordOfTheDayEnabled = userJson.get('deWordOfTheDayEnabled', False)
         isEnEsWordOfTheDayEnabled = userJson.get('enEsWordOfTheDayEnabled', False)
@@ -71,6 +72,7 @@ class UsersRepository():
 
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
+            isCatJamEnabled = isCatJamEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled,
             isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled,

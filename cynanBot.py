@@ -74,6 +74,7 @@ class CynanBot(commands.Bot):
 
         self.__cutenessDoubleEndTimes = dict()
         self.__lastAnalogueStockMessageTimes = dict()
+        self.__lastCatJamMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastCutenessLeaderboardMessageTimes = dict()
         self.__lastCutenessRedeemedMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
@@ -108,6 +109,9 @@ class CynanBot(commands.Bot):
         if message.author.name.lower() == 'cynanmachae'.lower():
             if await self.__handleMessageFromCynan(message):
                 return
+
+        if await self.__handleCatJamMessage(message):
+            return
 
         await self.handle_commands(message)
 
@@ -158,6 +162,26 @@ class CynanBot(commands.Bot):
             await self.pubsub_subscribe(accessToken, *topics)
 
         print('Finished subscribing to events')
+
+    async def __handleCatJamMessage(self, message):
+        user = self.__usersRepository.getUser(message.channel.name)
+
+        if not user.isCatJamEnabled():
+            return False
+
+        splits = message.content.split()
+
+        if 'catJAM' not in splits:
+            return False
+
+        now = datetime.now()
+
+        if self.__lastCatJamMessageTime > now + timedelta(minutes = 30):
+            self.__lastCatJamMessageTime = now
+            await message.channel.send('catJAM')
+            return True
+        else:
+            return False
 
     async def __handleDeerForceMessage(self, message):
         user = self.__usersRepository.getUser(message.channel.name)
