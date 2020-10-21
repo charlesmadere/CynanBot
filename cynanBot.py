@@ -101,14 +101,12 @@ class CynanBot(commands.Bot):
         # prevents exceptions caused by people using commands for other bots
         pass
 
-    async def event_message(self, message):
-        if message.content.lower() == 'd e e r f o r c e':
-            await self.__handleDeerForceMessage(message)
+    async def event_message(self, message):        
+        if await self.__handleMessageFromCynan(message):
             return
 
-        if message.author.name.lower() == 'cynanmachae'.lower():
-            if await self.__handleMessageFromCynan(message):
-                return
+        if await self.__handleDeerForceMessage(message):
+            return
 
         if await self.__handleCatJamMessage(message):
             return
@@ -188,6 +186,9 @@ class CynanBot(commands.Bot):
     async def __handleDeerForceMessage(self, message):
         user = self.__usersRepository.getUser(message.channel.name)
 
+        if message.content.strip().lower() != 'd e e r f o r c e':
+            return False
+
         now = datetime.now()
         delta = timedelta(minutes = 20)
         lastDeerForceMessageTime = self.__lastDeerForceMessageTimes.get(user.getHandle())
@@ -195,6 +196,9 @@ class CynanBot(commands.Bot):
         if lastDeerForceMessageTime == None or now > lastDeerForceMessageTime + delta:
             self.__lastDeerForceMessageTimes[user.getHandle()] = now
             await message.channel.send('D e e R F o r C e')
+            return True
+        else:
+            return False
 
     async def __handleIncreaseCutenessDoubleRewardRedeemed(
         self,
@@ -256,6 +260,9 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleMessageFromCynan(self, message):
+        if message.author.name.lower() != 'cynanmachae'.lower():
+            return False
+
         now = datetime.now()
         delta = timedelta(hours = 3)
 
