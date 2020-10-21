@@ -105,7 +105,7 @@ class CynanBot(commands.Bot):
             await self.__handleDeerForceMessage(message)
             return
 
-        if message.author.name.lower() == 'CynanMachae'.lower():
+        if message.author.name.lower() == 'cynanmachae'.lower():
             if await self.__handleMessageFromCynan(message):
                 return
 
