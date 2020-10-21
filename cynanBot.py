@@ -74,7 +74,7 @@ class CynanBot(commands.Bot):
 
         self.__cutenessDoubleEndTimes = dict()
         self.__lastAnalogueStockMessageTimes = dict()
-        self.__lastCatJamMessageTime = datetime.now() - timedelta(days = 1)
+        self.__lastCatJamMessageTimes = dict()
         self.__lastCutenessLeaderboardMessageTimes = dict()
         self.__lastCutenessRedeemedMessageTimes = dict()
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
@@ -175,9 +175,11 @@ class CynanBot(commands.Bot):
             return False
 
         now = datetime.now()
+        delta = timedelta(minutes = 20)
+        lastCatJamMessageTime = self.__lastCatJamMessageTimes.get(user.getHandle())
 
-        if self.__lastCatJamMessageTime > now + timedelta(minutes = 30):
-            self.__lastCatJamMessageTime = now
+        if lastCatJamMessageTime == None or now > lastCatJamMessageTime + delta:
+            self.__lastCatJamMessageTimes[user.getHandle()] = now
             await message.channel.send('catJAM')
             return True
         else:
