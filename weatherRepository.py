@@ -1,10 +1,11 @@
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
 
 from authHelper import AuthHelper
 from location import Location
+from timedDict import TimedDict
 from weatherReport import WeatherReport
 
 
@@ -21,10 +22,8 @@ class WeatherRepository():
             raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__authHelper = authHelper
-        self.__cacheTimeDelta = cacheTimeDelta
-        self.__cacheTimes = dict()
+        self.__cache = TimedDict(timeDelta = cacheTimeDelta)
         self.__conditionIcons = self.__createConditionIconsDict()
-        self.__weatherReports = dict()
 
     def __chooseTomorrowFromForecast(self, jsonResponse: dict):
         currentSunrise = jsonResponse['current']['sunrise']
@@ -37,6 +36,9 @@ class WeatherRepository():
         raise RuntimeError(f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
 
     def __createConditionIconsDict(self):
+        # This dictionary is built from the Weather Condition Codes listed here:
+        # https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
+
         icons = dict()
         icons['200'] = '⛈'
         icons['201'] = icons['200']
@@ -44,9 +46,10 @@ class WeatherRepository():
         icons['210'] = '🌩'
         icons['211'] = icons['210']
         icons['212'] = icons['210']
+        icons['221'] = icons['200']
         icons['230'] = icons['200']
-        icons['231'] = icons['230']
-        icons['232'] = icons['230']
+        icons['231'] = icons['200']
+        icons['232'] = icons['200']
         icons['300'] = '☔️'
         icons['301'] = icons['300']
         icons['302'] = icons['300']
@@ -71,14 +74,15 @@ class WeatherRepository():
 
         return icons
 
-    #########################################################
-    # retrieve air quality from https://api-docs.iqair.com/ #
-    #########################################################
     def __fetchAirQuality(self, location: Location):
         iqAirApiKey = self.__authHelper.getIqAirApiKey()
         if iqAirApiKey == None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
             print(f'iqAirApiKey is missing: \"{iqAirApiKey}\"')
             return None
+
+        # Retrieve air quality from: https://api-docs.iqair.com/
+        # Doing this requires an API key, which you can get here:
+        # https://www.iqair.com/us/commercial/air-quality-monitors/airvisual-platform/api
 
         requestUrl = "https://api.airvisual.com/v2/nearest_city?key={}&lat={}&lon={}".format(
             iqAirApiKey, location.getLatitude(), location.getLongitude())
@@ -95,17 +99,16 @@ class WeatherRepository():
         if location == None:
             raise ValueError(f'location argument is malformed: \"{location}\"')
 
-        if location.getId() in self.__weatherReports and location.getId() in self.__cacheTimes:
-            cacheTime = self.__cacheTimes[location.getId()] + self.__cacheTimeDelta
+        cacheValue = self.__cache[location.getId()]
 
-            if cacheTime > datetime.now():
-                return self.__weatherReports[location.getId()]
+        if cacheValue != None:
+            return cacheValue
 
         print(f'Refreshing weather for \"{location.getId()}\"...')
 
-        ############################################################################
-        # retrieve weather report from https://openweathermap.org/api/one-call-api #
-        ############################################################################
+        # Retrieve weather report from https://openweathermap.org/api/one-call-api
+        # Doing this requires an API key, which you can get here:
+        # https://openweathermap.org/api
 
         oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
         if oneWeatherApiKey == None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
@@ -167,11 +170,9 @@ class WeatherRepository():
             print(f'Weather Report for \"{location.getId()}\" has a data error')
 
         if weatherReport == None:
-            self.__weatherReports.pop(location.getId(), None)
-            self.__cacheTimes.pop(location.getId(), None)
+            del self.__cache[location.getId()]
         else:
-            self.__weatherReports[location.getId()] = weatherReport
-            self.__cacheTimes[location.getId()] = datetime.now()
+            self.__cache[location.getId()] = weatherReport
 
         return weatherReport
 

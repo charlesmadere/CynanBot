@@ -1,8 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
 import xmltodict
 
+from timedDict import TimedDict
 from wotd import Wotd
 
 
@@ -12,9 +13,10 @@ class WordOfTheDayRepository():
         self,
         cacheTimeDelta = timedelta(hours = 1)
     ):
-        self.__cacheTimeDelta = cacheTimeDelta
-        self.__cacheTimes = dict()
-        self.__wotds = dict()
+        if cacheTimeDelta == None:
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+
+        self.__cache = TimedDict(timeDelta = cacheTimeDelta)
 
     def fetchDeWotd(self):
         return self.__fetchWotd('de')
@@ -59,13 +61,16 @@ class WordOfTheDayRepository():
         if lang == None or len(lang) == 0 or lang.isspace():
             raise ValueError(f'lang argument is malformed: \"{lang}\"')
 
-        if lang in self.__wotds and lang in self.__cacheTimes:
-            cacheTime = self.__cacheTimes[lang] + self.__cacheTimeDelta
+        cacheValue = self.__cache[lang]
 
-            if cacheTime > datetime.now():
-                return self.__wotds[lang]
+        if cacheValue != None:
+            return cacheValue
 
-        print(f'Refreshing \"{lang}\" word of the day...')
+        print(f'Refreshing word of the day for \"{lang}\"...')
+
+        ##############################################################################
+        # retrieve word of the day from https://www.transparent.com/word-of-the-day/ #
+        ##############################################################################
 
         rawResponse = requests.get(f'https://wotd.transparent.com/rss/{lang}-widget.xml?t=0')
         xmlTree = xmltodict.parse(rawResponse.content)['xml']['words']
@@ -99,10 +104,8 @@ class WordOfTheDayRepository():
             print(f'Word Of The Day for \"{lang}\" has a data error')
 
         if wotd == None:
-            self.__wotds.pop(lang, None)
-            self.__cacheTimes.pop(lang, None)
+            del self.__cache[lang]
         else:
-            self.__wotds[lang] = wotd
-            self.__cacheTimes[lang] = datetime.now()
+            self.__cache[lang] = wotd
 
         return wotd
