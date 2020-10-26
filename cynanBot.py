@@ -73,15 +73,15 @@ class CynanBot(commands.Bot):
         self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
-        self.__cutenessDoubleEndTimes = dict()
-        self.__lastAnalogueStockMessageTimes = dict()
-        self.__lastCatJamMessageTimes = dict()
-        self.__lastCutenessLeaderboardMessageTimes = dict()
-        self.__lastCutenessRedeemedMessageTimes = dict()
+        self.__cutenessDoubleEndTimes = TimedDict(timedelta(minutes = 5))
+        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
-        self.__lastDeerForceMessageTimes = dict()
-        self.__lastJishoMessageTimes = dict()
-        self.__lastWeatherMessageTimes = dict()
+        self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
+        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
     async def event_command_error(self, ctx, error):
@@ -158,13 +158,7 @@ class CynanBot(commands.Bot):
 
         if 'catJAM' not in splits:
             return False
-
-        now = datetime.now()
-        delta = timedelta(minutes = 20)
-        lastCatJamMessageTime = self.__lastCatJamMessageTimes.get(user.getHandle())
-
-        if lastCatJamMessageTime == None or now > lastCatJamMessageTime + delta:
-            self.__lastCatJamMessageTimes[user.getHandle()] = now
+        elif self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
             await message.channel.send('catJAM')
             return True
         else:
@@ -175,13 +169,7 @@ class CynanBot(commands.Bot):
 
         if message.content.strip().lower() != 'd e e r f o r c e':
             return False
-
-        now = datetime.now()
-        delta = timedelta(minutes = 20)
-        lastDeerForceMessageTime = self.__lastDeerForceMessageTimes.get(user.getHandle())
-
-        if lastDeerForceMessageTime == None or now > lastDeerForceMessageTime + delta:
-            self.__lastDeerForceMessageTimes[user.getHandle()] = now
+        elif self.__lastDeerForceMessageTimes.isReadyAndUpdate(user.getHandle()):
             await message.channel.send('D e e R F o r C e')
             return True
         else:
@@ -196,9 +184,7 @@ class CynanBot(commands.Bot):
     ):
         print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
 
-        now = datetime.now()
-        delta = timedelta(minutes = 5)
-        self.__cutenessDoubleEndTimes[twitchUser.getHandle()] = now + delta
+        self.__cutenessDoubleEndTimes.update(twitchUser.getHandle())
 
         try:
             cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
@@ -221,12 +207,9 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        now = datetime.now()
-        delta = timedelta(seconds = 20)
-        lastCutenessRedeemedMessageTime = self.__lastCutenessRedeemedMessageTimes.get(twitchUser.getHandle())
-
         incrementAmount = 1
-        if twitchUser.getHandle() in self.__cutenessDoubleEndTimes and now <= self.__cutenessDoubleEndTimes[twitchUser.getHandle()]:
+
+        if not self.__cutenessDoubleEndTimes.isReady(twitchUser.getHandle()):
             incrementAmount = 2
 
         try:
@@ -237,9 +220,7 @@ class CynanBot(commands.Bot):
                 userName = userNameThatRedeemed
             )
 
-            if lastCutenessRedeemedMessageTime == None or now > lastCutenessRedeemedMessageTime + delta:
-                self.__lastCutenessRedeemedMessageTimes[twitchUser.getHandle()] = now
-
+            if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
                 cutenessStr = locale.format_string("%d", cuteness, grouping = True)
                 await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cutenessStr} ✨')
         except ValueError:
@@ -251,7 +232,7 @@ class CynanBot(commands.Bot):
             return False
 
         now = datetime.now()
-        delta = timedelta(hours = 3)
+        delta = timedelta(hours = 4)
 
         if now > self.__lastCynanMessageTime + delta:
             self.__lastCynanMessageTime = now
@@ -367,16 +348,11 @@ class CynanBot(commands.Bot):
 
         if not user.isAnalogueEnabled():
             return
-
-        now = datetime.now()
-        delta = timedelta(minutes = 1)
-        lastAnalogueStockMessageTime = self.__lastAnalogueStockMessageTimes.get(user.getHandle())
-
-        if lastAnalogueStockMessageTime != None and now <= lastAnalogueStockMessageTime + delta:
+        elif not self.__lastAnalogueStockMessageTimes.isReady(user.getHandle()):
             return
 
-        self.__lastAnalogueStockMessageTimes[user.getHandle()] = now
         storeStock = self.__analogueStoreRepository.fetchStoreStock()
+        self.__lastAnalogueStockMessageTimes.update(user.getHandle())
 
         if storeStock == None:
             await ctx.send('⚠ Error reading products from Analogue store')
@@ -392,15 +368,9 @@ class CynanBot(commands.Bot):
 
         if not user.isCutenessEnabled():
             return
-
-        now = datetime.now()
-        delta = timedelta(seconds = 30)
-        lastCutenessLeaderboardMessageTime = self.__lastCutenessLeaderboardMessageTimes.get(user.getHandle())
-
-        if lastCutenessLeaderboardMessageTime != None and now <= lastCutenessLeaderboardMessageTime + delta:
+        elif not self.__lastCutenessLeaderboardMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        self.__lastCutenessLeaderboardMessageTimes[user.getHandle()] = now
         splits = ctx.message.content.split()
 
         userName = None
@@ -668,15 +638,9 @@ class CynanBot(commands.Bot):
 
         if not user.isJishoEnabled():
             return
-
-        now = datetime.now()
-        delta = timedelta(seconds = 15)
-        lastJishoMessageTime = self.__lastJishoMessageTimes.get(user.getHandle())
-
-        if lastJishoMessageTime != None and now <= lastJishoMessageTime + delta:
+        elif not self.__lastJishoMessageTimes.isReady(user.getHandle()):
             return
 
-        self.__lastJishoMessageTimes[user.getHandle()] = now
         splits = ctx.message.content.split()
 
         if len(splits) == 1:
@@ -687,6 +651,7 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__jishoHelper.search(query)
+            self.__lastJishoMessageTimes.update(user.getHandle())
 
             if result == None:
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
@@ -827,17 +792,12 @@ class CynanBot(commands.Bot):
 
         if not user.hasLocationId():
             return
-
-        now = datetime.now()
-        delta = timedelta(minutes = 1)
-        lastWeatherMessageTime = self.__lastWeatherMessageTimes.get(user.getHandle())
-
-        if lastWeatherMessageTime != None and now <= lastWeatherMessageTime + delta:
+        elif not self.__lastWeatherMessageTimes.isReady(user.getHandle()):
             return
 
-        self.__lastWeatherMessageTimes[user.getHandle()] = now
         location = self.__locationsRepository.getLocation(user.getLocationId())
         weatherReport = self.__weatherRepository.fetchWeather(location)
+        self.__lastWeatherMessageTimes.update(user.getHandle())
 
         if weatherReport == None:
             await ctx.send('⚠ Error fetching weather')
