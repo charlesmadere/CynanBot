@@ -10,6 +10,9 @@ class AnalogueStoreRepository():
         self,
         cacheTimeDelta = timedelta(hours = 1)
     ):
+        if cacheTimeDelta == None:
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+
         self.__cacheTime = datetime.now() - cacheTimeDelta
         self.__cacheTimeDelta = cacheTimeDelta
         self.__storeStock = None
