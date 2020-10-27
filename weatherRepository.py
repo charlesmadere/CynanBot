@@ -40,37 +40,44 @@ class WeatherRepository():
         # https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
 
         icons = dict()
-        icons['200'] = '⛈'
+        icons['200'] = '⛈️'
         icons['201'] = icons['200']
         icons['202'] = icons['200']
-        icons['210'] = '🌩'
+        icons['210'] = '🌩️'
         icons['211'] = icons['210']
-        icons['212'] = icons['210']
+        icons['212'] = icons['211']
         icons['221'] = icons['200']
         icons['230'] = icons['200']
         icons['231'] = icons['200']
         icons['232'] = icons['200']
-        icons['300'] = '☔️'
+        icons['300'] = '☔'
         icons['301'] = icons['300']
-        icons['302'] = icons['300']
+        icons['310'] = icons['300']
+        icons['311'] = icons['300']
+        icons['313'] = icons['300']
         icons['500'] = icons['300']
-        icons['501'] = '🌧'
+        icons['501'] = '🌧️'
         icons['502'] = icons['501']
         icons['503'] = icons['501']
         icons['504'] = icons['501']
-        icons['600'] = '❅'
+        icons['520'] = icons['501']
+        icons['521'] = icons['501']
+        icons['522'] = icons['501']
+        icons['531'] = icons['501']
+        icons['600'] = '❄️'
         icons['601'] = icons['600']
-        icons['602'] = icons['600']
-        icons['711'] = '🌫'
+        icons['602'] = '🌨️'
+        icons['711'] = '🌫️'
         icons['721'] = icons['711']
         icons['731'] = icons['711']
         icons['741'] = icons['711']
         icons['762'] = '🌋'
         icons['771'] = '🌬'
-        icons['781'] = '🌪'
-        icons['802'] = '☁️'
-        icons['803'] = icons['802']
-        icons['804'] = icons['802']
+        icons['781'] = '🌪️'
+        icons['801'] = '☁️'
+        icons['802'] = icons['801']
+        icons['803'] = icons['801']
+        icons['804'] = icons['801']
 
         return icons
 
