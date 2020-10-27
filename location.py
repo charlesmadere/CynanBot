@@ -5,9 +5,9 @@ from datetime import tzinfo
 class Location():
 
     def __init__(self, lat: float, lon: float, id_: str, name: str, timeZone: tzinfo):
-        if lat == None or math.isnan(lat):
+        if lat == None or not math.isfinite(lat):
             raise ValueError(f'lat argument is malformed: \"{lat}\"')
-        elif lon == None or math.isnan(lon):
+        elif lon == None or not math.isfinite(lon):
             raise ValueError(f'lon argument is malformed: \"{lon}\"')
         elif id_ == None or len(id_) == 0 or id_.isspace():
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
