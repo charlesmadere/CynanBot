@@ -124,6 +124,8 @@ class CutenessRepository():
             # that would cause us to not always have a person's username persisted in the database
             # alongside their user ID. So for any users that cause this exception to be raised,
             # we'll just ignore them.
+            # If we were to ever start from scratch with a brand new database, this try-except
+            # would be completely extranneous.
             try:
                 userName = self.__userIdsRepository.fetchUserName(row[1])
                 cuteStr = locale.format_string("%d", row[0], grouping = True)
