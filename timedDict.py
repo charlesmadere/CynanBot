@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class TimedDict():
 
     def __init__(self, timeDelta):
