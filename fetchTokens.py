@@ -38,5 +38,6 @@ rawResponse = requests.post(url)
 jsonResponse = rawResponse.json()
 accessToken = jsonResponse['access_token']
 refreshToken = jsonResponse['refresh_token']
+print(f'Put the below values in whichever JSON file you use for UserTokensRepository.')
 print(f'accessToken: \"{accessToken}\"')
 print(f'refreshToken: \"{refreshToken}\"')
