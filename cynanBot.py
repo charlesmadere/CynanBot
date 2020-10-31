@@ -9,6 +9,7 @@ from twitchio.ext import commands
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
+from hashRepository import HashRepository
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 from location import Location
@@ -31,6 +32,7 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
+        hashRepository: HashRepository,
         jishoHelper: JishoHelper,
         locationsRepository: LocationsRepository,
         userIdsRepository: UserIdsRepository,
@@ -51,6 +53,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository == None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif hashRepository == None:
+            raise ValueError(f'hashRepository argument is malformed: \"{hashRepository}\"')
         elif jishoHelper == None:
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif locationsRepository == None:
@@ -67,6 +71,7 @@ class CynanBot(commands.Bot):
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
+        self.__hashRepository = hashRepository
         self.__jishoHelper = jishoHelper
         self.__locationsRepository = locationsRepository
         self.__userIdsRepository = userIdsRepository

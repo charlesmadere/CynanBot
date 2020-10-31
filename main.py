@@ -5,6 +5,7 @@ from authHelper import AuthHelper
 from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
+from hashRepository import HashRepository
 from jishoHelper import JishoHelper
 from locationsRepository import LocationsRepository
 from timeZoneRepository import TimeZoneRepository
@@ -47,6 +48,7 @@ cynanBot = CynanBot(
     analogueStoreRepository = analogueStoreRepository,
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
+    hashRepository = hashRepository,
     jishoHelper = jishoHelper,
     locationsRepository = locationsRepository,
     userIdsRepository = userIdsRepository,
