@@ -51,6 +51,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository == None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif jishoHelper == None:
+            raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif locationsRepository == None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif userIdsRepository == None:
