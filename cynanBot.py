@@ -2,6 +2,7 @@ import json
 import locale
 import random
 from datetime import datetime, timedelta
+from typing import List
 
 import requests
 from twitchio.ext import commands
@@ -132,33 +133,7 @@ class CynanBot(commands.Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
-        print('Subscribing to events...')
-
-        for user in self.__usersRepository.getUsers():
-            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
-
-            if accessToken == None:
-                continue
-
-            userId = self.__userIdsRepository.fetchUserId(
-                userName = user.getHandle(),
-                clientId = self.__authHelper.getClientId(),
-                accessToken = accessToken
-            )
-
-            # we could subscribe to multiple topics, but for now, just channel points
-            topics = [ f'channel-points-channel-v1.{userId}' ]
-
-            # subscribe to pubhub channel points events
-            nonce = await self.pubsub_subscribe(accessToken, *topics)
-
-            # save the nonce, we'll need to use it later if the token used for this user's
-            # connection has to be refreshed
-            self.__nonceRepository.setNonce(user.getHandle(), nonce)
-
-            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")...')
-
-        print('Finished subscribing to events')
+        self.__subscribeToEvents(self.__usersRepository.getUsers())
 
     async def __handleCatJamMessage(self, message):
         user = self.__usersRepository.getUser(message.channel.name)
@@ -343,6 +318,37 @@ class CynanBot(commands.Bot):
             message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}'
 
         await ctx.send(message)
+
+    def __subscribeToEvents(self, users: List[User]):
+        if users == None or len(users) == 0:
+            print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
+            return
+
+        for user in users:
+            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+
+            if accessToken == None:
+                continue
+
+            userId = self.__userIdsRepository.fetchUserId(
+                userName = user.getHandle(),
+                clientId = self.__authHelper.getClientId(),
+                accessToken = accessToken
+            )
+
+            # we could subscribe to multiple topics, but for now, just channel points
+            topics = [ f'channel-points-channel-v1.{userId}' ]
+
+            # subscribe to pubhub channel points events
+            nonce = await self.pubsub_subscribe(accessToken, *topics)
+
+            # save the nonce, we'll need to use it later if the token used for this user's
+            # connection has to be refreshed
+            self.__nonceRepository.setNonce(user.getHandle(), nonce)
+
+            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")...')
+
+        print(f'Finished subscribing to events for {len(users)} user(s)')
 
     def __validateAndRefreshTokens(self, nonce: str):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
