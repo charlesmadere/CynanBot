@@ -4,6 +4,7 @@ from typing import List
 
 import requests
 
+from nonceRepository import NonceRepository
 from user import User
 from userTokensRepository import UserTokensRepository
 
@@ -19,10 +20,17 @@ from userTokensRepository import UserTokensRepository
 
 class AuthHelper():
 
-    def __init__(self, authFile: str = 'authFile.json'):
-        if authFile == None or len(authFile) == 0 or authFile.isspace():
+    def __init__(
+        self,
+        nonceRepository: NonceRepository,
+        authFile: str = 'authFile.json'
+    ):
+        if nonceRepository == None:
+            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
+        elif authFile == None or len(authFile) == 0 or authFile.isspace():
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
+        self.__nonceRepository = nonceRepository
         self.__authFile = authFile
 
         if not os.path.exists(authFile):
@@ -111,6 +119,7 @@ class AuthHelper():
     def validateAndRefreshAccessTokens(
         self,
         users: List[User],
+        nonce: str,
         userTokensRepository: UserTokensRepository
     ):
         if userTokensRepository == None:
@@ -126,14 +135,14 @@ class AuthHelper():
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
 
-            if accessToken != None:
+            if accessToken != None and ((nonce == None or len(nonce) == 0 or nonce.isspace()) or nonce == self.__nonceRepository.getNonce(handle)):
                 userTokens[handle] = accessToken
 
         if len(userTokens) == 0:
             print('There are no users with an access token, skipping access token validation')
             return
 
-        print(f'Validating access tokens for {len(userTokens)} user(s)...')
+        print(f'Validating access tokens for {len(userTokens)} user(s) (nonce: \"{nonce}\")...')
 
         for handle, accessToken in userTokens.items():
             headers = {

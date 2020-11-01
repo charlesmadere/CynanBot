@@ -5,9 +5,9 @@ from authHelper import AuthHelper
 from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
-from hashRepository import HashRepository
 from jishoHelper import JishoHelper
 from locationsRepository import LocationsRepository
+from nonceRepository import NonceRepository
 from timeZoneRepository import TimeZoneRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
@@ -19,7 +19,8 @@ from wordOfTheDayRepository import WordOfTheDayRepository
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 analogueStoreRepository = AnalogueStoreRepository()
-authHelper = AuthHelper()
+nonceRepository = NonceRepository()
+authHelper = AuthHelper(nonceRepository = nonceRepository)
 backingDatabase = BackingDatabase()
 jishoHelper = JishoHelper()
 userIdsRepository = UserIdsRepository(
@@ -48,9 +49,9 @@ cynanBot = CynanBot(
     analogueStoreRepository = analogueStoreRepository,
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
-    hashRepository = hashRepository,
     jishoHelper = jishoHelper,
     locationsRepository = locationsRepository,
+    nonceRepository = nonceRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     userTokensRepository = userTokensRepository,

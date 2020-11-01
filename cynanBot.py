@@ -9,11 +9,11 @@ from twitchio.ext import commands
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
-from hashRepository import HashRepository
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 from location import Location
 from locationsRepository import LocationsRepository
+from nonceRepository import NonceRepository
 from timedDict import TimedDict
 from user import User
 from userIdsRepository import UserIdsRepository
@@ -32,9 +32,9 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
-        hashRepository: HashRepository,
         jishoHelper: JishoHelper,
         locationsRepository: LocationsRepository,
+        nonceRepository: NonceRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
@@ -53,12 +53,12 @@ class CynanBot(commands.Bot):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository == None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif hashRepository == None:
-            raise ValueError(f'hashRepository argument is malformed: \"{hashRepository}\"')
         elif jishoHelper == None:
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif locationsRepository == None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+        elif nonceRepository == None:
+            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif userIdsRepository == None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository == None:
@@ -71,9 +71,9 @@ class CynanBot(commands.Bot):
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
-        self.__hashRepository = hashRepository
         self.__jishoHelper = jishoHelper
         self.__locationsRepository = locationsRepository
+        self.__nonceRepository = nonceRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
@@ -112,7 +112,7 @@ class CynanBot(commands.Bot):
             print(f'Received a pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
-                self.__validateAndRefreshTokens()
+                self.__validateAndRefreshTokens(nonce = data.get('nonce'))
 
             return
         elif 'type' not in data:
@@ -151,7 +151,11 @@ class CynanBot(commands.Bot):
             topics = [ f'channel-points-channel-v1.{userId}' ]
 
             # subscribe to pubhub channel points events
-            await self.pubsub_subscribe(accessToken, *topics)
+            nonce = await self.pubsub_subscribe(accessToken, *topics)
+
+            # save the nonce, we'll need to use it later if the token used for this user's
+            # connection has to be refreshed
+            self.__nonceRepository.setNonce(user.getHandle(), nonce)
 
         print('Finished subscribing to events')
 
@@ -339,8 +343,8 @@ class CynanBot(commands.Bot):
 
         await ctx.send(message)
 
-    def __validateAndRefreshTokens(self):
-        print('Validating and refreshing tokens...')
+    def __validateAndRefreshTokens(self, nonce: str):
+        print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
 
         self.__authHelper.validateAndRefreshAccessTokens(
             users = self.__usersRepository.getUsers(),
