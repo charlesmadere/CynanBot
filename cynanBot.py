@@ -132,6 +132,7 @@ class CynanBot(commands.Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
+        print('Subscribing to events...')
 
         for user in self.__usersRepository.getUsers():
             accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
@@ -145,8 +146,6 @@ class CynanBot(commands.Bot):
                 accessToken = accessToken
             )
 
-            print(f'Subscribing to events for {user.getHandle()}...')
-
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{userId}' ]
 
@@ -156,6 +155,8 @@ class CynanBot(commands.Bot):
             # save the nonce, we'll need to use it later if the token used for this user's
             # connection has to be refreshed
             self.__nonceRepository.setNonce(user.getHandle(), nonce)
+
+            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")...')
 
         print('Finished subscribing to events')
 
