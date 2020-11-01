@@ -1,6 +1,7 @@
 {
     "clientId": "",
     "clientSecret": "",
+    "iqAirApiKey": "",
     "ircAuthToken": "",
     "oneWeatherApiKey": ""
 }
