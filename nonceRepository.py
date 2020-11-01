@@ -13,8 +13,11 @@ class NonceRepository():
     def setNonce(self, key: str, nonce: str):
         if key == None or len(key) == 0 or key.isspace():
             raise ValueError(f'key argument is malformed: \"{key}\"')
-        elif nonce == None or len(nonce) == 0:
-            raise ValueError(f'nonce argument is malformed: \"{nonce}\"')
+
+        if nonce == None or len(nonce) == 0 or nonce.isspace():
+            print(f'key \"{key}\" has an invalid nonce: \"{nonce}\"')
+            self.__cache.pop(key, None)
+            return
 
         key = key.lower()
         self.__cache[key] = nonce
