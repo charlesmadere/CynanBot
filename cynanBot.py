@@ -133,7 +133,7 @@ class CynanBot(commands.Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
-        self.__subscribeToEvents(self.__usersRepository.getUsers())
+        await self.__subscribeToEvents(self.__usersRepository.getUsers())
 
     async def __handleCatJamMessage(self, message):
         user = self.__usersRepository.getUser(message.channel.name)
@@ -319,7 +319,7 @@ class CynanBot(commands.Bot):
 
         await ctx.send(message)
 
-    def __subscribeToEvents(self, users: List[User]):
+    async def __subscribeToEvents(self, users: List[User]):
         if users == None or len(users) == 0:
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
