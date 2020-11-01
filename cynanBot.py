@@ -143,9 +143,7 @@ class CynanBot(commands.Bot):
 
         splits = message.content.split()
 
-        if 'catJAM' not in splits:
-            return False
-        elif self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if 'catJAM' in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
             await message.channel.send('catJAM')
             return True
         else:
