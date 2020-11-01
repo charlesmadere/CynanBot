@@ -361,7 +361,7 @@ class CynanBot(commands.Bot):
             userTokensRepository = self.__userTokensRepository
         )
 
-        print('Finished validating and refreshing tokens')
+        print(f'Finished validating and refreshing tokens (nonce: \"{nonce}\")')
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
