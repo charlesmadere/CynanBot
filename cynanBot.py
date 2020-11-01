@@ -352,7 +352,7 @@ class CynanBot(commands.Bot):
 
         print(f'Finished subscribing to events for {count} user(s)')
 
-    def __validateAndRefreshTokensAndResubscribe(self, nonce: str):
+    async def __validateAndRefreshTokensAndResubscribe(self, nonce: str):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
 
         users = self.__usersRepository.getUsers()
@@ -370,7 +370,7 @@ class CynanBot(commands.Bot):
                 resubscribeUsers.append(user)
 
         self.__subscribeToEvents(resubscribeUsers)
-        print(f'Finished validating and refreshing tokens (nonce: \"{nonce}\")')
+        print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
