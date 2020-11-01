@@ -113,7 +113,7 @@ class CynanBot(commands.Bot):
             print(f'Received a pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
-                self.__validateAndRefreshTokens(nonce = data.get('nonce'))
+                self.__validateAndRefreshTokensAndResubscribe(nonce = data.get('nonce'))
 
             return
         elif 'type' not in data:
@@ -352,15 +352,24 @@ class CynanBot(commands.Bot):
 
         print(f'Finished subscribing to events for {count} user(s)')
 
-    def __validateAndRefreshTokens(self, nonce: str):
+    def __validateAndRefreshTokensAndResubscribe(self, nonce: str):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
 
+        users = self.__usersRepository.getUsers()
+
         self.__authHelper.validateAndRefreshAccessTokens(
-            users = self.__usersRepository.getUsers(),
+            users = users,
             nonce = nonce,
             userTokensRepository = self.__userTokensRepository
         )
 
+        resubscribeUsers = list()
+
+        for user in users:
+            if (nonce == None or len(nonce) == 0 or nonce.isspace()) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
+                resubscribeUsers.append(user)
+
+        self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing tokens (nonce: \"{nonce}\")')
 
     @commands.command(name = 'analogue')
