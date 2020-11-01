@@ -324,11 +324,15 @@ class CynanBot(commands.Bot):
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 
+        count = 0
+
         for user in users:
             accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
 
             if accessToken == None:
                 continue
+            else:
+                count = count + 1
 
             userId = self.__userIdsRepository.fetchUserId(
                 userName = user.getHandle(),
@@ -346,9 +350,9 @@ class CynanBot(commands.Bot):
             # connection has to be refreshed
             self.__nonceRepository.setNonce(user.getHandle(), nonce)
 
-            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")...')
+            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")')
 
-        print(f'Finished subscribing to events for {len(users)} user(s)')
+        print(f'Finished subscribing to events for {count} user(s)')
 
     def __validateAndRefreshTokens(self, nonce: str):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
