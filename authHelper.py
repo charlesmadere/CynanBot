@@ -89,6 +89,11 @@ class AuthHelper():
         handle: str,
         userTokensRepository: UserTokensRepository
     ):
+        if handle == None or len(handle) == 0 or handle.isspace():
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+        elif userTokensRepository == None:
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+
         refreshToken = userTokensRepository.getRefreshToken(handle)
 
         params = {
