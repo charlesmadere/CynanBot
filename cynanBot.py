@@ -349,6 +349,7 @@ class CynanBot(commands.Bot):
 
         self.__authHelper.validateAndRefreshAccessTokens(
             users = self.__usersRepository.getUsers(),
+            nonce = nonce,
             userTokensRepository = self.__userTokensRepository
         )
 
