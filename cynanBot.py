@@ -113,23 +113,18 @@ class CynanBot(commands.Bot):
             print(f'Received a pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
-                self.__validateAndRefreshTokensAndResubscribe(nonce = data.get('nonce'))
-
-            return
+                await self.__validateAndRefreshTokensAndResubscribe(nonce = data.get('nonce'))
         elif 'type' not in data:
             print(f'Received a pub sub response without a type: {data}')
-            return
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
             print(f'Received a general pub sub response: {data}')
-            return
         elif data['type'] != 'MESSAGE' or 'data' not in data or 'message' not in data['data']:
             print(f'Received an unexpected pub sub response: {data}')
-            return
+        else:
+            jsonResponse = json.loads(data['data']['message'])
 
-        jsonResponse = json.loads(data['data']['message'])
-
-        if jsonResponse['type'] == 'reward-redeemed':
-            await self.__handleRewardRedeemed(jsonResponse)
+            if jsonResponse['type'] == 'reward-redeemed':
+                await self.__handleRewardRedeemed(jsonResponse)
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
