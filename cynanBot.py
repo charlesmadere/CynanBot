@@ -364,7 +364,7 @@ class CynanBot(commands.Bot):
             if (nonce == None or len(nonce) == 0 or nonce.isspace()) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
                 resubscribeUsers.append(user)
 
-        self.__subscribeToEvents(resubscribeUsers)
+        await self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
     @commands.command(name = 'analogue')
