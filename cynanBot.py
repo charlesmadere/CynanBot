@@ -453,7 +453,7 @@ class CynanBot(commands.Bot):
             commands.append('!cuteness')
             commands.append('!mycuteness')
 
-            if ctx.author.is_mod:
+            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
                 commands.append('!givecuteness')
 
         if user.isDeWordOfTheDayEnabled():
@@ -584,7 +584,7 @@ class CynanBot(commands.Bot):
 
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isCutenessEnabled():
+        if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
             return
 
         splits = ctx.message.content.split()

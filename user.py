@@ -15,6 +15,7 @@ class User:
         isEnPtWordOfTheDayEnabled: bool,
         isEsWordOfTheDayEnabled: bool,
         isFrWordOfTheDayEnabled: bool,
+        isGiveCutenessEnabled: bool,
         isItWordOfTheDayEnabled: bool,
         isJaWordOfTheDayEnabled: bool,
         isJishoEnabled: bool,
@@ -49,6 +50,7 @@ class User:
         self.__isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled
         self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
         self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
+        self.__isGiveCutenessEnabled = isGiveCutenessEnabled
         self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
         self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isJishoEnabled = isJishoEnabled
@@ -155,6 +157,9 @@ class User:
 
     def isFrWordOfTheDayEnabled(self):
         return self.__isFrWordOfTheDayEnabled
+
+    def isGiveCutenessEnabled(self):
+        return self.__isGiveCutenessEnabled
 
     def isItWordOfTheDayEnabled(self):
         return self.__isItWordOfTheDayEnabled
