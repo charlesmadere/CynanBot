@@ -1,3 +1,6 @@
+import locale
+import urllib
+
 import requests
 from lxml import html
 
@@ -16,7 +19,10 @@ class JishoHelper():
         query = query.strip()
         print(f'Looking up \"{query}\"...')
 
-        rawResponse = requests.get(f'https://jisho.org/search/{query}')
+        encodedQuery = urllib.parse.quote(query)
+        url = f'https://jisho.org/search/{encodedQuery}'
+
+        rawResponse = requests.get(url)
         htmlTree = html.fromstring(rawResponse.content)
 
         if htmlTree == None:
@@ -56,7 +62,8 @@ class JishoHelper():
             if definition == None or len(definition) == 0 or definition.isspace():
                 continue
 
-            definitions.append(f'({len(definitions) + 1}) {definition.strip()}')
+            number = locale.format_string("%d", len(definitions) + 1, grouping = True)
+            definitions.append(f'({number}) {definition.strip()}')
 
             if len(definitions) >= 3:
                 # keep from adding tons of definitions
@@ -67,9 +74,9 @@ class JishoHelper():
             return None
 
         furigana = None
-        furiganaElement = htmlTree.find_class('kanji-1-up')
-        if furiganaElement != None and len(furiganaElement) != 0:
-            furigana = furiganaElement[0].text_content()
+        furiganaElements = htmlTree.find_class('furigana')
+        if furiganaElements != None and len(furiganaElements) >= 1:
+            furigana = furiganaElements[0].text_content()
 
             if furigana == None or len(furigana) == 0 or furigana.isspace():
                 furigana = None
@@ -79,5 +86,6 @@ class JishoHelper():
         return JishoResult(
             definitions = definitions,
             furigana = furigana,
+            url = url,
             word = word
         )
