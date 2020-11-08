@@ -1,6 +1,6 @@
 import os
+import urllib
 from datetime import tzinfo
-from urllib.parse import urlparse
 
 
 class User:
@@ -82,7 +82,7 @@ class User:
         if potdText == None or len(potdText) == 0 or potdText.isspace():
             raise ValueError(f'POTD text is malformed: \"{potdText}\"')
 
-        potdParsed = urlparse(potdText)
+        potdParsed = urllib.parse.urlparse(potdText)
         potdUrl = potdParsed.geturl()
 
         if potdUrl == None or len(potdUrl) == 0 or potdUrl.isspace():
