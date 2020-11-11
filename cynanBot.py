@@ -411,6 +411,9 @@ class CynanBot(commands.Bot):
                 leaderboardString = ', '.join(leaderboard)
                 await ctx.send(f'✨ Cuteness leaderboard — {leaderboardString} ✨')
         else:
+            if userName[0] == '@':
+                userName = userName[1:len(userName)]
+
             try:
                 cuteness = self.__cutenessRepository.fetchCuteness(
                     twitchChannel = user.getHandle(),
@@ -611,6 +614,9 @@ class CynanBot(commands.Bot):
             print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
             await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
+
+        if userName[0] == '@':
+            userName = userName[1:len(userName)]
 
         try:
             userId = self.__userIdsRepository.fetchUserId(userName = userName)
