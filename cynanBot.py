@@ -835,7 +835,8 @@ class CynanBot(commands.Bot):
         if weatherReport.hasAirQuality():
             airQuality = f'air quality is {weatherReport.getAirQuality()}, '
 
-        pressure = f'and pressure is {weatherReport.getPressure()}hPa. '
+        pressureValue = locale.format_string("%d", weatherReport.getPressure(), grouping = True)
+        pressure = f'and pressure is {pressureValue} hPa. '
 
         conditions = ''
         if weatherReport.hasConditions():
