@@ -9,7 +9,7 @@ from twitchio.ext import commands
 
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
-from cutenessRepository import CutenessRepository
+from cutenessRepository import CutenessRepository, CutenessResult, LeaderboardResult
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 from location import Location
@@ -167,15 +167,14 @@ class CynanBot(commands.Bot):
         self.__cutenessDoubleEndTimes.update(twitchUser.getHandle())
 
         try:
-            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = 3,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
             )
 
-            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
-            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {cutenessStr} ✨')
+            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
@@ -193,7 +192,7 @@ class CynanBot(commands.Bot):
             incrementAmount = 2
 
         try:
-            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
@@ -201,8 +200,7 @@ class CynanBot(commands.Bot):
             )
 
             if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-                cutenessStr = locale.format_string("%d", cuteness, grouping = True)
-                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {cutenessStr} ✨')
+                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
@@ -403,28 +401,26 @@ class CynanBot(commands.Bot):
             userName = splits[1]
 
         if userName == None or len(userName) == 0 or userName.isspace():
-            leaderboard = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
+            result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
 
-            if len(leaderboard) == 0:
-                await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
+            if result.hasEntries():
+                await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
             else:
-                leaderboardString = ', '.join(leaderboard)
-                await ctx.send(f'✨ Cuteness leaderboard — {leaderboardString} ✨')
+                await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
         else:
             if userName[0] == '@':
                 userName = userName[1:len(userName)]
 
             try:
-                cuteness = self.__cutenessRepository.fetchCuteness(
+                result = self.__cutenessRepository.fetchCuteness(
                     twitchChannel = user.getHandle(),
                     userName = userName
                 )
 
-                if cuteness == None or cuteness == 0:
-                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
+                if result.hasCuteness():
+                    await ctx.send(f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
                 else:
-                    cutenessStr = locale.format_string("%d", cuteness, grouping = True)
-                    await ctx.send(f'✨ {userName}\'s cuteness: {cutenessStr} ✨')
+                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
             except ValueError:
                 print(f'Unable to find \"{userName}\" in the cuteness database')
                 await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
@@ -626,15 +622,14 @@ class CynanBot(commands.Bot):
             return
 
         try:
-            cuteness = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = userName
             )
 
-            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
-            await ctx.send(f'✨ Cuteness for {userName} is now {cutenessStr} ✨')
+            await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
@@ -719,21 +714,18 @@ class CynanBot(commands.Bot):
         userId = str(ctx.author.id)
 
         try:
-            cuteness, localLeaderboard = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
+            result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = ctx.author.name
             )
 
-            cutenessStr = locale.format_string("%d", cuteness, grouping = True)
-
-            if cuteness == 0:
-                await ctx.send(f'😿 {ctx.author.name}\'s cuteness is {cutenessStr} 😿')
-            elif localLeaderboard == None or len(localLeaderboard) == 0:
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr} ✨')
+            if result.hasCuteness() and result.hasLocalLeaderboard():
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
+            elif result.hasCuteness() and result.getCuteness() > 0:
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
             else:
-                leaderboardStr = ', '.join(localLeaderboard)
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {cutenessStr}, and their local leaderboard is: {leaderboardStr} ✨')
+                await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')

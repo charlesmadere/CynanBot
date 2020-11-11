@@ -1,4 +1,5 @@
 import locale
+from typing import List
 
 from backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
@@ -67,7 +68,12 @@ class CutenessRepository():
             cuteness = row[0]
 
         cursor.close()
-        return cuteness
+        return CutenessResult(
+            cuteness = cuteness,
+            localLeaderboard = None,
+            userId = userId,
+            userName = userName
+        )
 
     def fetchCutenessAndLocalLeaderboard(
         self,
@@ -96,7 +102,12 @@ class CutenessRepository():
 
         if row == None:
             cursor.close()
-            return ( 0, None )
+            return CutenessResult(
+                cuteness = 0,
+                localLeaderboard = None,
+                userId = userId,
+                userName = userName
+            )
 
         cuteness = row[0]
 
@@ -114,7 +125,12 @@ class CutenessRepository():
 
         if len(rows) == 0:
             cursor.close()
-            return ( cuteness, None )
+            return CutenessResult(
+                cuteness = cuteness,
+                localLeaderboard = None,
+                userId = userId,
+                userName = userName
+            )
 
         sortedRows = sorted(rows, key = lambda row: row[0], reverse = True)
         localLeaderboard = list()
@@ -123,18 +139,28 @@ class CutenessRepository():
             # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
             # that would cause us to not always have a person's username persisted in the database
             # alongside their user ID. So for any users that cause this exception to be raised,
-            # we'll just ignore them.
+            # we'll just ignore them and continue, as there's nothing more we can do to recover.
+            #
             # If we were to ever start from scratch with a brand new database, this try-except
-            # would be completely extranneous.
+            # would be completely extranneous, and could be removed.
             try:
                 userName = self.__userIdsRepository.fetchUserName(row[1])
-                cuteStr = locale.format_string("%d", row[0], grouping = True)
-                localLeaderboard.append(f'{userName} ({cuteStr})')
+                localLeaderboard.append(LocalLeaderboardEntry(
+                    cuteness = row[0],
+                    userId = row[1],
+                    userName = userName
+                ))
             except RuntimeError:
+                # Just log the error and continue, there's nothing more we can do to recover.
                 print(f'Encountered a user ID that has no username: \"{row[1]}\"')
 
         cursor.close()
-        return ( cuteness, localLeaderboard )
+        return CutenessResult(
+            cuteness = cuteness,
+            localLeaderboard = localLeaderboard,
+            userId = userId,
+            userName = userName
+        )
 
     def fetchCutenessIncrementedBy(
         self,
@@ -185,7 +211,12 @@ class CutenessRepository():
 
         connection.commit()
         cursor.close()
-        return cuteness
+        return CutenessResult(
+            cuteness = cuteness,
+            localLeaderboard = None,
+            userId = userId,
+            userName = userName
+        )
 
     def fetchLeaderboard(self, twitchChannel: str):
         if twitchChannel == None or len(twitchChannel) == 0 or twitchChannel.isspace():
@@ -205,20 +236,191 @@ class CutenessRepository():
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
-        leaderboard = list()
+        entries = list()
 
         if len(rows) == 0:
             cursor.close()
-            return leaderboard
+            return LeaderboardResult(
+                entries = entries
+            )
 
         rank = 1
 
         for row in rows:
             userName = self.__userIdsRepository.fetchUserName(row[1])
-            rankStr = locale.format_string("#%d", rank, grouping = True)
-            cuteStr = locale.format_string("%d", row[0], grouping = True)
-            leaderboard.append(f'{rankStr} {userName} ({cuteStr})')
+            entries.append(LeaderboardEntry(
+                cuteness = row[0],
+                rank = rank,
+                userId = row[1],
+                userName = userName
+            ))
             rank = rank + 1
 
         cursor.close()
-        return leaderboard
+        return LeaderboardResult(
+            entries = entries
+        )
+
+
+class CutenessResult():
+
+    def __init__(
+        self,
+        cuteness: int,
+        localLeaderboard: List[LocalLeaderboardEntry],
+        userId: str,
+        userName: str
+    ):
+        if userId == None or len(userId) == 0 or userId.isspace():
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif userName == None or len(userName) == 0 or userName.isspace():
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__localLeaderboard = localLeaderboard
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self):
+        return self.__cuteness
+
+    def getCutenessStr(self):
+        return locale.format_string("%d", self.__cuteness, grouping = True)
+
+    def getLocalLeaderboard(self):
+        return self.__localLeaderboard
+
+    def getLocalLeaderboardStr(self, delimiter: str = ', '):
+        if delimiter == None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not self.hasLocalLeaderboard():
+            return ''
+
+        strings = list()
+
+        for entry in self.__localLeaderboard:
+            strings.append(entry.toStr())
+
+        return delimiter.join(strings)
+
+    def getUserId(self):
+        return self.__userId
+
+    def getUserName(self):
+        return self.__userName
+
+    def hasCuteness(self):
+        return self.__cuteness != None
+
+    def hasLocalLeaderboard(self):
+        return self.__localLeaderboard != None and len(self.__localLeaderboard) >= 1
+
+
+class LeaderboardResult():
+
+    def __init__(
+        self,
+        entries: List[LeaderboardEntry]
+    ):
+        self.__entries = entries
+
+    def getEntries(self):
+        return self.__entries
+
+    def hasEntries(self):
+        return self.__entries != None and len(self.__entries) >= 1
+
+    def toStr(self, delimiter: str = ', '):
+        if delimiter == None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not self.hasEntries():
+            return ''
+
+        strings = list()
+
+        for entry in self.__entries:
+            strings.append(entry.toStr())
+
+        return delimiter.join(strings)
+
+
+class LeaderboardEntry():
+
+    def __init__(
+        self,
+        cuteness: int,
+        rank: int,
+        userId: str,
+        userName: str
+    ):
+        if cuteness == None:
+            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
+        elif rank == None:
+            raise ValueError(f'rank argument is malformed: \"{rank}\"')
+        elif userId == None or len(userId) == 0 or userId.isspace():
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif userName == None or len(userName) == 0 or userName.isspace():
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__rank = rank
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self):
+        return self.__cuteness
+
+    def getCutenessStr(self):
+        return locale.format_string("%d", self.__cuteness, grouping = True)
+
+    def getRank(self):
+        return self.__rank
+
+    def getRankStr(self):
+        return locale.format_string("%d", self.__rank, grouping = True)
+
+    def getUserId(self):
+        return self.__userId
+
+    def getUserName(self):
+        return self.__userName
+
+    def toStr(self):
+        return f'{self.getRankStr()} {self.getUserName()} ({self.getCutenessStr()})'
+
+
+class LocalLeaderboardEntry():
+
+    def __init__(
+        self,
+        cuteness: int,
+        userId: str,
+        userName: str
+    ):
+        if cuteness == None:
+            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
+        elif userId == None or len(userId) == 0 or userId.isspace():
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif userName == None or len(userName) == 0 or userName.isspace():
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self):
+        return self.__cuteness
+
+    def getCutenessStr(self):
+        return locale.format_string("%d", self.__cuteness, grouping = True)
+
+    def getUserId(self):
+        return self.__userId
+
+    def getUserName(self):
+        return self.__userName
+
+    def toStr(self):
+        return f'{self.getUserName()} ({self.getCutenessStr()})'
