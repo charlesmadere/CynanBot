@@ -722,7 +722,7 @@ class CynanBot(commands.Bot):
 
             if result.hasCuteness() and result.hasLocalLeaderboard():
                 await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
-            elif result.hasCuteness() and result.getCuteness() > 0:
+            elif result.hasCuteness():
                 await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
             else:
                 await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')

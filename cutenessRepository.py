@@ -267,7 +267,7 @@ class CutenessResult():
     def __init__(
         self,
         cuteness: int,
-        localLeaderboard: List[LocalLeaderboardEntry],
+        localLeaderboard: List,
         userId: str,
         userName: str
     ):
@@ -311,7 +311,7 @@ class CutenessResult():
         return self.__userName
 
     def hasCuteness(self):
-        return self.__cuteness != None
+        return self.__cuteness != None and self.__cuteness >= 1
 
     def hasLocalLeaderboard(self):
         return self.__localLeaderboard != None and len(self.__localLeaderboard) >= 1
@@ -321,7 +321,7 @@ class LeaderboardResult():
 
     def __init__(
         self,
-        entries: List[LeaderboardEntry]
+        entries: List
     ):
         self.__entries = entries
 
