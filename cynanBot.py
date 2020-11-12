@@ -826,22 +826,21 @@ class CynanBot(commands.Bot):
             await ctx.send('⚠ Error fetching weather')
             return
 
-        temperature = f'🌡 Temperature is {weatherReport.getTemperature()}°C ({weatherReport.getTemperatureImperial()}°F), '
+        temperature = f'🌡 Temperature is {weatherReport.getTemperatureStr()}°C ({weatherReport.getTemperatureImperialStr()}°F), '
         humidity = f'humidity is {weatherReport.getHumidity()}%, '
 
         airQuality = ''
         if weatherReport.hasAirQuality():
-            airQuality = f'air quality is {weatherReport.getAirQuality()}, '
+            airQuality = f'air quality is {weatherReport.getAirQualityStr()}, '
 
-        pressureValue = locale.format_string("%d", weatherReport.getPressure(), grouping = True)
-        pressure = f'and pressure is {pressureValue} hPa. '
+        pressure = f'and pressure is {weatherReport.getPressureStr()} hPa. '
 
         conditions = ''
         if weatherReport.hasConditions():
             conditionsJoin = ', '.join(weatherReport.getConditions())
             conditions = f'Current conditions: {conditionsJoin}. '
 
-        tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperature()}°C ({weatherReport.getTomorrowsLowTemperatureImperial()}°F) and a high of {weatherReport.getTomorrowsHighTemperature()}°C ({weatherReport.getTomorrowsHighTemperatureImperial()}°F). '
+        tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperatureStr()}°C ({weatherReport.getTomorrowsLowTemperatureImperialStr()}°F) and a high of {weatherReport.getTomorrowsHighTemperatureStr()}°C ({weatherReport.getTomorrowsHighTemperatureImperialStr()}°F). '
 
         tomorrowsConditions = ''
         if weatherReport.hasTomorrowsConditions():

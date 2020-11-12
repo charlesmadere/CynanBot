@@ -1,3 +1,4 @@
+import locale
 import math
 from typing import List
 
@@ -43,6 +44,9 @@ class WeatherReport():
     def getAirQuality(self):
         return self.__airQuality
 
+    def getAirQualityStr(self):
+        return locale.format_string("%d", self.getAirQuality(), grouping = True)
+
     def getAlerts(self):
         return self.__alerts
 
@@ -55,11 +59,20 @@ class WeatherReport():
     def getPressure(self):
         return self.__pressure
 
+    def getPressureStr(self):
+        return locale.format_string("%d", self.getPressure(), grouping = True)
+
     def getTemperature(self):
         return int(round(self.__temperature))
 
+    def getTemperatureStr(self):
+        return locale.format_string("%d", self.getTemperature(), grouping = True)
+
     def getTemperatureImperial(self):
         return int(round(self.__cToF(self.__temperature)))
+
+    def getTemperatureImperialStr(self):
+        return locale.format_string("%d", self.getTemperatureImperial(), grouping = True)
 
     def getTomorrowsConditions(self):
         return self.__tomorrowsConditions
@@ -67,14 +80,26 @@ class WeatherReport():
     def getTomorrowsLowTemperature(self):
         return int(round(self.__tomorrowsLowTemperature))
 
+    def getTomorrowsLowTemperatureStr(self):
+        return locale.format_string("%d", self.getTomorrowsLowTemperature(), grouping = True)
+
     def getTomorrowsLowTemperatureImperial(self):
         return int(round(self.__cToF(self.__tomorrowsLowTemperature)))
+
+    def getTomorrowsLowTemperatureImperialStr(self):
+        return locale.format_string("%d", self.getTomorrowsLowTemperatureImperial(), grouping = True)
 
     def getTomorrowsHighTemperature(self):
         return int(round(self.__tomorrowsHighTemperature))
 
+    def getTomorrowsHighTemperatureStr(self):
+        return locale.format_string("%d", self.getTomorrowsHighTemperature(), grouping = True)
+
     def getTomorrowsHighTemperatureImperial(self):
         return int(round(self.__cToF(self.__tomorrowsHighTemperature)))
+
+    def getTomorrowsHighTemperatureImperialStr(self):
+        return locale.format_string("%d", self.getTomorrowsHighTemperatureImperial(), grouping = True)
 
     def hasAirQuality(self):
         return self.__airQuality != None
