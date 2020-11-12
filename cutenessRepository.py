@@ -388,7 +388,7 @@ class LeaderboardEntry():
         return self.__userName
 
     def toStr(self):
-        return f'{self.getRankStr()} {self.getUserName()} ({self.getCutenessStr()})'
+        return f'#{self.getRankStr()} {self.__userName} ({self.getCutenessStr()})'
 
 
 class LocalLeaderboardEntry():
@@ -423,4 +423,4 @@ class LocalLeaderboardEntry():
         return self.__userName
 
     def toStr(self):
-        return f'{self.getUserName()} ({self.getCutenessStr()})'
+        return f'{self.__userName} ({self.getCutenessStr()})'
