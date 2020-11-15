@@ -319,10 +319,7 @@ class CutenessResult():
 
 class LeaderboardResult():
 
-    def __init__(
-        self,
-        entries: List
-    ):
+    def __init__(self, entries: List):
         self.__entries = entries
 
     def getEntries(self):
