@@ -9,7 +9,8 @@ from twitchio.ext import commands
 
 from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
-from cutenessRepository import CutenessRepository, CutenessResult, LeaderboardResult
+from cutenessRepository import (CutenessRepository, CutenessResult,
+                                LeaderboardResult)
 from jishoHelper import JishoHelper
 from jishoResult import JishoResult
 from location import Location
@@ -22,7 +23,8 @@ from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from weatherReport import WeatherReport
 from weatherRepository import WeatherRepository
-from wordOfTheDayRepository import WordOfTheDayRepository
+from wordOfTheDayRepository import (LanguageEntry, LanguageList,
+                                    WordOfTheDayRepository)
 from wotd import Wotd
 
 
@@ -455,47 +457,11 @@ class CynanBot(commands.Bot):
             if user.isGiveCutenessEnabled() and ctx.author.is_mod:
                 commands.append('!givecuteness')
 
-        if user.isDeWordOfTheDayEnabled():
-            commands.append('!deword')
-
-        if user.isEnEsWordOfTheDayEnabled():
-            commands.append('!engword')
-
-        if user.isEnPtWordOfTheDayEnabled():
-            commands.append('!enptword')
-
-        if user.isEsWordOfTheDayEnabled():
-            commands.append('!esword')
-
-        if user.isFrWordOfTheDayEnabled():
-            commands.append('!frword')
-
-        if user.isItWordOfTheDayEnabled():
-            commands.append('!itword')
-
-        if user.isJaWordOfTheDayEnabled():
-            commands.append('!jaword')
-
         if user.isJishoEnabled():
             commands.append('!jisho')
 
-        if user.isKoWordOfTheDayEnabled():
-            commands.append('!koword')
-
-        if user.isNoWordOfTheDayEnabled():
-            commands.append('!noword')
-
-        if user.isPtWordOfTheDayEnabled():
-            commands.append('!ptword')
-
-        if user.isRuWordOfTheDayEnabled():
-            commands.append('!ruword')
-
-        if user.isSvWordOfTheDayEnabled():
-            commands.append('!svword')
-
-        if user.isZhWordOfTheDayEnabled():
-            commands.append('!zhword')
+        if user.isWordOfTheDayEnabled():
+            commands.append('!word')
 
         commands.sort()
         commandsString = ', '.join(commands)
@@ -506,18 +472,6 @@ class CynanBot(commands.Bot):
     async def command_cynansource(self, ctx):
         await ctx.send('My source code is available here: https://github.com/charlesmadere/cynanbot')
 
-    @commands.command(name = 'deword')
-    async def command_deword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isDeWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchDeWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -527,54 +481,6 @@ class CynanBot(commands.Bot):
 
         discord = user.getDiscord()
         await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
-
-    @commands.command(name = 'engword')
-    async def command_engword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isEnEsWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchEnEsWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'enptword')
-    async def command_enptword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isEnPtWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchEnPtWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'esword')
-    async def command_esword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isEsWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchEsWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'frword')
-    async def command_frword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isFrWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchFrWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
 
     @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx):
@@ -634,30 +540,6 @@ class CynanBot(commands.Bot):
             print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
 
-    @commands.command(name = 'itword')
-    async def command_itword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isItWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchItWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'jaword')
-    async def command_jaword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isJaWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchJaWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -692,18 +574,6 @@ class CynanBot(commands.Bot):
             print(f'JishoHelper search query is malformed: \"{query}\"')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
-    @commands.command(name = 'koword')
-    async def command_koword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isKoWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchKoWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -730,18 +600,6 @@ class CynanBot(commands.Bot):
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
-    @commands.command(name = 'noword')
-    async def command_noword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isNoWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchNoWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -751,42 +609,6 @@ class CynanBot(commands.Bot):
 
         speedrunProfile = user.getSpeedrunProfile()
         await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
-
-    @commands.command(name = 'ptword')
-    async def command_ptword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isPtWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchPtWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'ruword')
-    async def command_ruword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isRuWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchRuWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
-
-    @commands.command(name = 'svword')
-    async def command_svword(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isSvWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        wotd = self.__wordOfTheDayRepository.fetchSvWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
@@ -854,14 +676,56 @@ class CynanBot(commands.Bot):
 
         await ctx.send(f'{temperature}{humidity}{airQuality}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}')
 
-    @commands.command(name = 'zhword')
-    async def command_zhword(self, ctx):
+    @commands.command(name = 'word')
+    async def command_word(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isZhWordOfTheDayEnabled():
+        if not user.isWordOfTheDayEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReady(user.getHandle()):
             return
 
-        wotd = self.__wordOfTheDayRepository.fetchZhWotd()
-        await self.__handleWordOfTheDay(ctx, wotd)
+        splits = ctx.message.content.split()
+        languageList = self.__wordOfTheDayRepository.getLanguageList()
+
+        if len(splits) == 1:
+            example = languageList.getLanguages()[0].getCommandName()
+            languages = languageList.toCommandNameStr()
+            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
+            return
+
+        language = splits[1].strip()
+        languageEntry = None
+
+        try:
+            languageEntry = languageList.getLanguageForCommand(language)
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving language entry for \"{language}\"')
+
+        if languageEntry == None:
+            languages = languageList.toCommandNameStr()
+            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languages}')
+            return
+
+        wotd = None
+
+        try:
+            wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
+        except ValueError:
+            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\"')
+
+        message = ''
+
+        if wotd == None:
+            message = f'⚠ Error fetching word of the day for {languageEntry.getApiName()}'
+        elif wotd.hasExamples():
+            if wotd.hasTransliteration():
+                message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
+            else:    
+                message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
+        elif wotd.hasTransliteration():
+            message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
+        else:
+            message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}'
+
+        await ctx.send(message)

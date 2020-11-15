@@ -31,22 +31,10 @@ class UsersRepository():
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
         isCatJamEnabled = userJson.get('catJamEnabled', False)
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
-        isDeWordOfTheDayEnabled = userJson.get('deWordOfTheDayEnabled', False)
-        isEnEsWordOfTheDayEnabled = userJson.get('enEsWordOfTheDayEnabled', False)
-        isEnPtWordOfTheDayEnabled = userJson.get('enPtWordOfTheDayEnabled', False)
-        isEsWordOfTheDayEnabled = userJson.get('esWordOfTheDayEnabled', False)
-        isFrWordOfTheDayEnabled = userJson.get('frWordOfTheDayEnabled', False)
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
-        isItWordOfTheDayEnabled = userJson.get('itWordOfTheDayEnabled', False)
-        isJaWordOfTheDayEnabled = userJson.get('jaWordOfTheDayEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
-        isKoWordOfTheDayEnabled = userJson.get('koWordOfTheDayEnabled', False)
-        isNoWordOfTheDayEnabled = userJson.get('noWordOfTheDayEnabled', False)
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
-        isPtWordOfTheDayEnabled = userJson.get('ptWordOfTheDayEnabled', False)
-        isRuWordOfTheDayEnabled = userJson.get('ruWordOfTheDayEnabled', False)
-        isSvWordOfTheDayEnabled = userJson.get('svWordOfTheDayEnabled', False)
-        isZhWordOfTheDayEnabled = userJson.get('zhWordOfTheDayEnabled', False)
+        isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
 
         discord = userJson.get('discord')
 
@@ -75,22 +63,10 @@ class UsersRepository():
             isAnalogueEnabled = isAnalogueEnabled,
             isCatJamEnabled = isCatJamEnabled,
             isCutenessEnabled = isCutenessEnabled,
-            isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled,
-            isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled,
-            isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled,
-            isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled,
-            isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
-            isItWordOfTheDayEnabled = isItWordOfTheDayEnabled,
-            isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled,
             isJishoEnabled = isJishoEnabled,
-            isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled,
-            isNoWordOfTheDayEnabled = isNoWordOfTheDayEnabled,
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
-            isPtWordOfTheDayEnabled = isPtWordOfTheDayEnabled,
-            isRuWordOfTheDayEnabled = isRuWordOfTheDayEnabled,
-            isSvWordOfTheDayEnabled = isSvWordOfTheDayEnabled,
-            isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled,
+            isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             discord = discord,
             handle = handle,
             increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,

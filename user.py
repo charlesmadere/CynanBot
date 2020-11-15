@@ -10,22 +10,10 @@ class User:
         isAnalogueEnabled: bool,
         isCatJamEnabled: bool,
         isCutenessEnabled: bool,
-        isDeWordOfTheDayEnabled: bool,
-        isEnEsWordOfTheDayEnabled: bool,
-        isEnPtWordOfTheDayEnabled: bool,
-        isEsWordOfTheDayEnabled: bool,
-        isFrWordOfTheDayEnabled: bool,
         isGiveCutenessEnabled: bool,
-        isItWordOfTheDayEnabled: bool,
-        isJaWordOfTheDayEnabled: bool,
         isJishoEnabled: bool,
-        isKoWordOfTheDayEnabled: bool,
-        isNoWordOfTheDayEnabled: bool,
         isPicOfTheDayEnabled: bool,
-        isPtWordOfTheDayEnabled: bool,
-        isRuWordOfTheDayEnabled: bool,
-        isSvWordOfTheDayEnabled: bool,
-        isZhWordOfTheDayEnabled: bool,
+        isWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
         increaseCutenessDoubleRewardId: str,
@@ -45,22 +33,10 @@ class User:
         self.__isAnalogueEnabled = isAnalogueEnabled
         self.__isCatJamEnabled = isCatJamEnabled
         self.__isCutenessEnabled = isCutenessEnabled
-        self.__isDeWordOfTheDayEnabled = isDeWordOfTheDayEnabled
-        self.__isEnEsWordOfTheDayEnabled = isEnEsWordOfTheDayEnabled
-        self.__isEnPtWordOfTheDayEnabled = isEnPtWordOfTheDayEnabled
-        self.__isEsWordOfTheDayEnabled = isEsWordOfTheDayEnabled
-        self.__isFrWordOfTheDayEnabled = isFrWordOfTheDayEnabled
         self.__isGiveCutenessEnabled = isGiveCutenessEnabled
-        self.__isItWordOfTheDayEnabled = isItWordOfTheDayEnabled
-        self.__isJaWordOfTheDayEnabled = isJaWordOfTheDayEnabled
         self.__isJishoEnabled = isJishoEnabled
-        self.__isKoWordOfTheDayEnabled = isKoWordOfTheDayEnabled
-        self.__isNoWordOfTheDayEnabled = isNoWordOfTheDayEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
-        self.__isPtWordOfTheDayEnabled = isPtWordOfTheDayEnabled
-        self.__isRuWordOfTheDayEnabled = isRuWordOfTheDayEnabled
-        self.__isSvWordOfTheDayEnabled = isSvWordOfTheDayEnabled
-        self.__isZhWordOfTheDayEnabled = isZhWordOfTheDayEnabled
+        self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
         self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
@@ -143,50 +119,14 @@ class User:
     def isCutenessEnabled(self):
         return self.__isCutenessEnabled
 
-    def isDeWordOfTheDayEnabled(self):
-        return self.__isDeWordOfTheDayEnabled
-
-    def isEnEsWordOfTheDayEnabled(self):
-        return self.__isEnEsWordOfTheDayEnabled
-
-    def isEnPtWordOfTheDayEnabled(self):
-        return self.__isEnPtWordOfTheDayEnabled
-
-    def isEsWordOfTheDayEnabled(self):
-        return self.__isEsWordOfTheDayEnabled
-
-    def isFrWordOfTheDayEnabled(self):
-        return self.__isFrWordOfTheDayEnabled
-
     def isGiveCutenessEnabled(self):
         return self.__isGiveCutenessEnabled
-
-    def isItWordOfTheDayEnabled(self):
-        return self.__isItWordOfTheDayEnabled
-
-    def isJaWordOfTheDayEnabled(self):
-        return self.__isJaWordOfTheDayEnabled
 
     def isJishoEnabled(self):
         return self.__isJishoEnabled
 
-    def isKoWordOfTheDayEnabled(self):
-        return self.__isKoWordOfTheDayEnabled
-
-    def isNoWordOfTheDayEnabled(self):
-        return self.__isNoWordOfTheDayEnabled
-
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled
 
-    def isPtWordOfTheDayEnabled(self):
-        return self.__isPtWordOfTheDayEnabled
-
-    def isRuWordOfTheDayEnabled(self):
-        return self.__isRuWordOfTheDayEnabled
-
-    def isSvWordOfTheDayEnabled(self):
-        return self.__isSvWordOfTheDayEnabled
-
-    def isZhWordOfTheDayEnabled(self):
-        return self.__isZhWordOfTheDayEnabled
+    def isWordOfTheDayEnabled(self):
+        return self.__isWordOfTheDayEnabled
