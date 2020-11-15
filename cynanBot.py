@@ -391,7 +391,7 @@ class CynanBot(commands.Bot):
 
         if not user.isCutenessEnabled():
             return
-        elif not self.__lastCutenessLeaderboardMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastCutenessLeaderboardMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = ctx.message.content.split()
@@ -512,7 +512,7 @@ class CynanBot(commands.Bot):
 
         if not user.isDeWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchDeWotd()
@@ -534,7 +534,7 @@ class CynanBot(commands.Bot):
 
         if not user.isEnEsWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchEnEsWotd()
@@ -546,7 +546,7 @@ class CynanBot(commands.Bot):
 
         if not user.isEnPtWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchEnPtWotd()
@@ -558,7 +558,7 @@ class CynanBot(commands.Bot):
 
         if not user.isEsWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchEsWotd()
@@ -570,7 +570,7 @@ class CynanBot(commands.Bot):
 
         if not user.isFrWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchFrWotd()
@@ -640,7 +640,7 @@ class CynanBot(commands.Bot):
 
         if not user.isItWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchItWotd()
@@ -652,7 +652,7 @@ class CynanBot(commands.Bot):
 
         if not user.isJaWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchJaWotd()
@@ -664,7 +664,7 @@ class CynanBot(commands.Bot):
 
         if not user.isJishoEnabled():
             return
-        elif not self.__lastJishoMessageTimes.isReady(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastJishoMessageTimes.isReady(user.getHandle()):
             return
 
         splits = ctx.message.content.split()
@@ -698,7 +698,7 @@ class CynanBot(commands.Bot):
 
         if not user.isKoWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchKoWotd()
@@ -736,7 +736,7 @@ class CynanBot(commands.Bot):
 
         if not user.isNoWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchNoWotd()
@@ -758,7 +758,7 @@ class CynanBot(commands.Bot):
 
         if not user.isPtWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchPtWotd()
@@ -770,7 +770,7 @@ class CynanBot(commands.Bot):
 
         if not user.isRuWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchRuWotd()
@@ -782,7 +782,7 @@ class CynanBot(commands.Bot):
 
         if not user.isSvWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchSvWotd()
@@ -860,7 +860,7 @@ class CynanBot(commands.Bot):
 
         if not user.isZhWordOfTheDayEnabled():
             return
-        elif not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         wotd = self.__wordOfTheDayRepository.fetchZhWotd()
