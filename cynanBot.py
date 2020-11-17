@@ -11,8 +11,7 @@ from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
-from jishoHelper import JishoHelper
-from jishoResult import JishoResult
+from jishoHelper import JishoHelper, JishoResult
 from location import Location
 from locationsRepository import LocationsRepository
 from nonceRepository import NonceRepository
@@ -564,12 +563,7 @@ class CynanBot(commands.Bot):
             if result == None:
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
-                definitions = ' '.join(result.getDefinitions())
-
-                if result.hasFurigana():
-                    await ctx.send(f'({result.getFurigana()}) {result.getWord()} — {definitions}')
-                else:
-                    await ctx.send(f'{result.getWord()} — {definitions}')
+                await ctx.send(f'{result.toStr()}')
         except ValueError:
             print(f'JishoHelper search query is malformed: \"{query}\"')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
