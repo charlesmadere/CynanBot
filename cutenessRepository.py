@@ -390,12 +390,7 @@ class LeaderboardEntry():
 
 class LocalLeaderboardEntry():
 
-    def __init__(
-        self,
-        cuteness: int,
-        userId: str,
-        userName: str
-    ):
+    def __init__(self, cuteness: int, userId: str, userName: str):
         if cuteness == None:
             raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
         elif userId == None or len(userId) == 0 or userId.isspace():
