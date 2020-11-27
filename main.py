@@ -6,6 +6,7 @@ from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from jishoHelper import JishoHelper
+from jokesRepository import JokesRepository
 from locationsRepository import LocationsRepository
 from nonceRepository import NonceRepository
 from timeZoneRepository import TimeZoneRepository
@@ -23,6 +24,7 @@ nonceRepository = NonceRepository()
 authHelper = AuthHelper(nonceRepository = nonceRepository)
 backingDatabase = BackingDatabase()
 jishoHelper = JishoHelper()
+JokesRepository = JokesRepository()
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase
 )
@@ -50,6 +52,7 @@ cynanBot = CynanBot(
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
     jishoHelper = jishoHelper,
+    jokesRepository = JokesRepository,
     locationsRepository = locationsRepository,
     nonceRepository = nonceRepository,
     userIdsRepository = userIdsRepository,

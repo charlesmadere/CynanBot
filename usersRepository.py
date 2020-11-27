@@ -33,6 +33,7 @@ class UsersRepository():
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
+        isJokesEnabled = userJson.get('jokesEnabled', False)
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
 
@@ -65,6 +66,7 @@ class UsersRepository():
             isCutenessEnabled = isCutenessEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
+            isJokesEnabled = isJokesEnabled,
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             discord = discord,

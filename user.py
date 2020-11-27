@@ -12,6 +12,7 @@ class User:
         isCutenessEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
+        isJokesEnabled: bool,
         isPicOfTheDayEnabled: bool,
         isWordOfTheDayEnabled: bool,
         discord: str,
@@ -35,6 +36,7 @@ class User:
         self.__isCutenessEnabled = isCutenessEnabled
         self.__isGiveCutenessEnabled = isGiveCutenessEnabled
         self.__isJishoEnabled = isJishoEnabled
+        self.__isJokesEnabled = isJokesEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__discord = discord
@@ -124,6 +126,9 @@ class User:
 
     def isJishoEnabled(self):
         return self.__isJishoEnabled
+
+    def isJokesEnabled(self):
+        return self.__isJokesEnabled
 
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled

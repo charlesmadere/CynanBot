@@ -12,6 +12,7 @@ from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
 from jishoHelper import JishoHelper, JishoResult
+from jokesRepository import JokeResponse, JokesRepository
 from location import Location
 from locationsRepository import LocationsRepository
 from nonceRepository import NonceRepository
@@ -35,6 +36,7 @@ class CynanBot(commands.Bot):
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
         jishoHelper: JishoHelper,
+        jokesRepository: JokesRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         userIdsRepository: UserIdsRepository,
@@ -57,6 +59,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif jishoHelper == None:
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
+        elif jokesRepository == None:
+            raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
         elif locationsRepository == None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif nonceRepository == None:
@@ -74,6 +78,7 @@ class CynanBot(commands.Bot):
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
         self.__jishoHelper = jishoHelper
+        self.__jokesRepository = jokesRepository
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__userIdsRepository = userIdsRepository
@@ -90,6 +95,7 @@ class CynanBot(commands.Bot):
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
+        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
@@ -459,6 +465,9 @@ class CynanBot(commands.Bot):
         if user.isJishoEnabled():
             commands.append('!jisho')
 
+        if user.isJokesEnabled():
+            commands.append('!joke')
+
         if user.isWordOfTheDayEnabled():
             commands.append('!word')
 
@@ -561,12 +570,34 @@ class CynanBot(commands.Bot):
             self.__lastJishoMessageTimes.update(user.getHandle())
 
             if result == None:
+                print(f'Failed searching Jisho for \"{query}\" in {user.getHandle()}')
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
                 await ctx.send(f'{result.toStr()}')
         except ValueError:
             print(f'JishoHelper search query is malformed: \"{query}\"')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
+
+    @commands.command(name = 'joke')
+    async def command_joke(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJokesEnabled():
+            return
+        elif not self.__lastJokeMessageTimes.isReady(user.getHandle()):
+            return
+
+        try:
+            result = self.__jokesRepository.fetchJoke()
+
+            if result == None:
+                print(f'Error fetching joke of the day in {user.getHandle()}')
+                await ctx.send('⚠ Error fetching joke of the day')
+            else:
+                await ctx.send(f'{result.toStr()}')
+        except ValueError:
+            print(f'Error fetching joke of the day in {user.getHandle()}')
+            await ctx.send('⚠ Error fetching joke of the day')
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
