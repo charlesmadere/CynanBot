@@ -145,6 +145,7 @@ class LanguageList():
         for entry in self.__entries:
             apiNames.append(entry.getApiName())
 
+        apiNames.sort()
         return delimiter.join(apiNames)
 
     def toCommandNameStr(self, delimiter: str = ', '):
@@ -156,4 +157,5 @@ class LanguageList():
         for entry in self.__entries:
             commandNames.append(entry.getCommandName())
 
+        commandNames.sort()
         return delimiter.join(commandNames)
