@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 import requests
 
+import utils
+
 
 class JokesRepository():
 
@@ -33,58 +35,73 @@ class JokesRepository():
 
         successJson = jsonResponse.get('success')
         if successJson == None or len(successJson) == 0:
+            print(f'Joke JSON has malformed \'success\' data: \"{jsonResponse}\"')
             return None
 
-        jokesResponse = jsonResponse['contents']['jokes']
-        if len(jokesResponse) == 0:
+        jokesResponse = jsonResponse.get('contents').get('jokes')
+        if jokesResponse == None or len(jokesResponse) == 0:
+            print(f'Joke JSON is malformed: \"{jsonResponse}\"')
             return None
 
         jokeResponse = jokesResponse[0]['joke']
 
-        if jokeResponse.get('clean') != '1':
-            cleanValue = jokeResponse['clean']
-            print(f'Rejecting joke because \'clean\' value is not 1: \"{cleanValue}\"')
-            return None
-        elif jokeResponse.get('racial') != '0':
-            racialValue = jokeResponse['racial']
-            print(f'Rejecting joke because \'racial\' value is not 0: \"{racialValue}\"')
-            return None
-
-        text = jokeResponse['text']
-
-        if text == None or len(text) == 0 or text.isspace():
-            print(f'Rejecting joke because \'text\' value is malformed: \"{text}\"')
-            return None
-
-        text = text.replace('\r\n', ' ').strip()
-
-        return JokeResponse(
-            length = int(jokeResponse['length']),
-            text = text,
-            title = jokeResponse['title'].strip()
+        joke = JokeResponse(
+            clean = utils.getIntFromDict(jokeResponse, 'clean'),
+            length = utils.getIntFromDict(jokeResponse, 'length'),
+            racial = utils.getIntFromDict(jokeResponse, 'racial'),
+            _id = utils.getStrFromDict(jokeResponse, 'id'),
+            text = utils.getStrFromDict(jokeResponse, 'text', True),
+            title = utils.getStrFromDict(jokeResponse, 'title')
         )
+
+        if joke.getClean() != 1 or joke.getRacial() != 0:
+            print(f'Rejecting joke because of incorrect \'clean\' or \'racial\' values: \"{jokeResponse}\"')
+            return None
+
+        return joke
 
 class JokeResponse():
 
     def __init__(
         self,
+        clean: int,
         length: int,
+        racial: int,
+        _id: str,
         text: str,
         title: str
     ):
-        if length == None or length < 1:
+        if clean == None:
+            raise ValueError(f'clean argument is malformed: \"{clean}\"')
+        elif length == None:
             raise ValueError(f'length argument is malformed: \"{length}\"')
+        elif racial == None:
+            raise ValueError(f'racial argument is malformed: \"{racial}\"')
+        elif _id == None or len(_id) == 0 or _id.isspace():
+            raise ValueError(f'_id argument is malformed: \"{_id}\"')
         elif text == None or len(text) == 0 or text.isspace():
             raise ValueError(f'text argument is malformed: \"{text}\"')
         elif title == None or len(title) == 0 or title.isspace():
             raise ValueError(f'title argument is malformed: \"{title}\"')
 
+        self.__clean = clean
         self.__length = length
+        self.__racial = racial
+        self.__id = _id
         self.__text = text
         self.__title = title
 
+    def getClean(self):
+        return self.__clean
+
+    def getId(self):
+        return self.__id
+
     def getLength(self):
         return self.__length
+
+    def getRacial(self):
+        return self.__racial
 
     def getText(self):
         return self.__text
