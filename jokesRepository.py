@@ -54,7 +54,7 @@ class JokesRepository():
             title = utils.getStrFromDict(jokeResponse, 'title')
         )
 
-        if joke.getClean() != 1 or joke.getRacial() != 0:
+        if joke.getClean() != 0 and joke.getClean() != 1 or joke.getRacial() != 0:
             print(f'Rejecting joke because of incorrect \'clean\' or \'racial\' values: \"{jokeResponse}\"')
             return None
 
