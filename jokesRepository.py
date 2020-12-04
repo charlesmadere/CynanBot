@@ -54,6 +54,9 @@ class JokesRepository():
             title=utils.getStrFromDict(jokeResponse, 'title')
         )
 
+        # I used to also check the joke's `clean` value, and return None if it was != 0. But then I found that
+        # sometimes a joke that was clearly "clean" would sometimes have a `clean` value of 0. AND THEN now I've
+        # also seen some clean jokes with a `clean` value of null. So whatever, let's just ignore that field.
         if joke.getRacial() != 0:
             print(f'Rejecting joke because of incorrect \'racial\' values: \"{jokeResponse}\"')
             return None
