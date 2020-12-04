@@ -6,7 +6,7 @@ def getIntFromDict(d: dict, key: str, defaultValue: int = None):
 
     value = None
 
-    if key in d:
+    if key in d and d[key] is not None:
         value = d[key]
     elif defaultValue is not None:
         value = defaultValue
@@ -23,7 +23,7 @@ def getStrFromDict(d: dict, key: str, defaultValue: str = None, clean: bool = Fa
 
     value = None
 
-    if key in d:
+    if key in d and d[key] is not None:
         value = d[key]
     elif defaultValue is not None:
         value = defaultValue
