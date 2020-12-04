@@ -1,5 +1,8 @@
 {
     "editor.defaultFormatter": "vscode.python",
     "files.autoSave": "afterDelay",
-    "editor.wordWrapColumn": 100
+    "editor.wordWrapColumn": 120,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    }
 }

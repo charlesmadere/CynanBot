@@ -14,15 +14,17 @@ class WeatherRepository():
     def __init__(
         self,
         authHelper: AuthHelper,
-        cacheTimeDelta = timedelta(hours = 1, minutes = 30)
+        cacheTimeDelta=timedelta(hours=1, minutes=30)
     ):
-        if authHelper == None:
-            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
-        elif cacheTimeDelta == None:
-            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+        if authHelper is None:
+            raise ValueError(
+                f'authHelper argument is malformed: \"{authHelper}\"')
+        elif cacheTimeDelta is None:
+            raise ValueError(
+                f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__authHelper = authHelper
-        self.__cache = TimedDict(timeDelta = cacheTimeDelta)
+        self.__cache = TimedDict(timeDelta=cacheTimeDelta)
         self.__conditionIcons = self.__createConditionIconsDict()
 
     def __chooseTomorrowFromForecast(self, jsonResponse: dict):
@@ -33,7 +35,8 @@ class WeatherRepository():
             if dayJson['sunrise'] > currentSunrise and dayJson['sunset'] > currentSunset:
                 return dayJson
 
-        raise RuntimeError(f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
+        raise RuntimeError(
+            f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
 
     def __createConditionIconsDict(self):
         # This dictionary is built from the Weather Condition Codes listed here:
@@ -83,7 +86,7 @@ class WeatherRepository():
 
     def __fetchAirQuality(self, location: Location):
         iqAirApiKey = self.__authHelper.getIqAirApiKey()
-        if iqAirApiKey == None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
+        if iqAirApiKey is None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
             print(f'iqAirApiKey is missing: \"{iqAirApiKey}\"')
             return None
 
@@ -103,12 +106,12 @@ class WeatherRepository():
         return jsonResponse['data']['current']['pollution']['aqius']
 
     def fetchWeather(self, location: Location):
-        if location == None:
+        if location is None:
             raise ValueError(f'location argument is malformed: \"{location}\"')
 
         cacheValue = self.__cache[location.getId()]
 
-        if cacheValue != None:
+        if cacheValue is not None:
             return cacheValue
 
         print(f'Refreshing weather for \"{location.getId()}\"...')
@@ -118,8 +121,9 @@ class WeatherRepository():
         # https://openweathermap.org/api
 
         oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
-        if oneWeatherApiKey == None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
-            raise RuntimeError(f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
+        if oneWeatherApiKey is None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
+            raise RuntimeError(
+                f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
 
         requestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric".format(
             oneWeatherApiKey, location.getLatitude(), location.getLongitude())
@@ -143,8 +147,8 @@ class WeatherRepository():
                 event = alertJson.get('event')
                 senderName = alertJson.get('sender_name')
 
-                if event != None and len(event) >= 1:
-                    if senderName == None or len(senderName) == 0:
+                if event is not None and len(event) >= 1:
+                    if senderName is None or len(senderName) == 0:
                         alerts.append(f'Alert: {event}.')
                     else:
                         alerts.append(f'Alert from {senderName}: {event}.')
@@ -163,20 +167,21 @@ class WeatherRepository():
 
         try:
             weatherReport = WeatherReport(
-                airQuality = airQuality,
-                humidity = humidity,
-                pressure = pressure,
-                temperature = temperature,
-                tomorrowsHighTemperature = tomorrowsHighTemperature,
-                tomorrowsLowTemperature = tomorrowsLowTemperature,
-                alerts = alerts,
-                conditions = conditions,
-                tomorrowsConditions = tomorrowsConditions
+                airQuality=airQuality,
+                humidity=humidity,
+                pressure=pressure,
+                temperature=temperature,
+                tomorrowsHighTemperature=tomorrowsHighTemperature,
+                tomorrowsLowTemperature=tomorrowsLowTemperature,
+                alerts=alerts,
+                conditions=conditions,
+                tomorrowsConditions=tomorrowsConditions
             )
         except ValueError:
-            print(f'Weather Report for \"{location.getId()}\" has a data error')
+            print(
+                f'Weather Report for \"{location.getId()}\" has a data error')
 
-        if weatherReport == None:
+        if weatherReport is None:
             del self.__cache[location.getId()]
         else:
             self.__cache[location.getId()] = weatherReport

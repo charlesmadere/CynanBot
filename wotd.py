@@ -9,11 +9,12 @@ class Wotd():
         transliteration: str,
         word: str
     ):
-        if definition == None or len(definition) == 0 or definition.isspace():
-            raise ValueError(f'definition argument is malformed: \"{definition}\"')
-        elif language == None or len(language) == 0 or language.isspace():
+        if definition is None or len(definition) == 0 or definition.isspace():
+            raise ValueError(
+                f'definition argument is malformed: \"{definition}\"')
+        elif language is None or len(language) == 0 or language.isspace():
             raise ValueError(f'language argument is malformed: \"{language}\"')
-        elif word == None or len(word) == 0 or word.isspace():
+        elif word is None or len(word) == 0 or word.isspace():
             raise ValueError(f'word argument is malformed: \"{word}\"')
 
         self.__definition = definition
@@ -43,9 +44,10 @@ class Wotd():
 
     def hasExamples(self):
         return (
-            self.__englishExample != None and len(self.__englishExample) != 0 and not self.__englishExample.isspace() and
-            self.__foreignExample != None and len(self.__foreignExample) != 0 and not self.__foreignExample.isspace()
+            self.__englishExample is not None and len(self.__englishExample) != 0 and not self.__englishExample.isspace() and
+            self.__foreignExample is not None and len(
+                self.__foreignExample) != 0 and not self.__foreignExample.isspace()
         )
 
     def hasTransliteration(self):
-        return self.__transliteration != None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()
+        return self.__transliteration is not None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()

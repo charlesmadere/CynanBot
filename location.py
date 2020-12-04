@@ -5,15 +5,15 @@ from datetime import tzinfo
 class Location():
 
     def __init__(self, lat: float, lon: float, id_: str, name: str, timeZone: tzinfo):
-        if lat == None or not math.isfinite(lat):
+        if lat is None or not math.isfinite(lat):
             raise ValueError(f'lat argument is malformed: \"{lat}\"')
-        elif lon == None or not math.isfinite(lon):
+        elif lon is None or not math.isfinite(lon):
             raise ValueError(f'lon argument is malformed: \"{lon}\"')
-        elif id_ == None or len(id_) == 0 or id_.isspace():
+        elif id_ is None or len(id_) == 0 or id_.isspace():
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
-        elif name == None or len(name) == 0 or name.isspace():
+        elif name is None or len(name) == 0 or name.isspace():
             raise ValueError(f'name argument is malformed: \"{name}\"')
-        elif timeZone == None:
+        elif timeZone is None:
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__id_ = id_

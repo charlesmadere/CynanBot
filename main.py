@@ -21,45 +21,45 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 analogueStoreRepository = AnalogueStoreRepository()
 nonceRepository = NonceRepository()
-authHelper = AuthHelper(nonceRepository = nonceRepository)
+authHelper = AuthHelper(nonceRepository=nonceRepository)
 backingDatabase = BackingDatabase()
 jishoHelper = JishoHelper()
 JokesRepository = JokesRepository()
 userIdsRepository = UserIdsRepository(
-    backingDatabase = backingDatabase
+    backingDatabase=backingDatabase
 )
 cutenessRepository = CutenessRepository(
-    backingDatabase = backingDatabase,
-    leaderboardSize = 10,
-    localLeaderboardSize = 5,
-    userIdsRepository = userIdsRepository
+    backingDatabase=backingDatabase,
+    leaderboardSize=10,
+    localLeaderboardSize=5,
+    userIdsRepository=userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
 locationsRepository = LocationsRepository(
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository=timeZoneRepository
 )
 usersRepository = UsersRepository(
-    timeZoneRepository = timeZoneRepository
+    timeZoneRepository=timeZoneRepository
 )
 userTokensRepository = UserTokensRepository()
 weatherRepository = WeatherRepository(
-    authHelper = authHelper
+    authHelper=authHelper
 )
 wordOfTheDayRepository = WordOfTheDayRepository()
 
 cynanBot = CynanBot(
-    analogueStoreRepository = analogueStoreRepository,
-    authHelper = authHelper,
-    cutenessRepository = cutenessRepository,
-    jishoHelper = jishoHelper,
-    jokesRepository = JokesRepository,
-    locationsRepository = locationsRepository,
-    nonceRepository = nonceRepository,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-    userTokensRepository = userTokensRepository,
-    weatherRepository = weatherRepository,
-    wordOfTheDayRepository = wordOfTheDayRepository
+    analogueStoreRepository=analogueStoreRepository,
+    authHelper=authHelper,
+    cutenessRepository=cutenessRepository,
+    jishoHelper=jishoHelper,
+    jokesRepository=JokesRepository,
+    locationsRepository=locationsRepository,
+    nonceRepository=nonceRepository,
+    userIdsRepository=userIdsRepository,
+    usersRepository=usersRepository,
+    userTokensRepository=userTokensRepository,
+    weatherRepository=weatherRepository,
+    wordOfTheDayRepository=wordOfTheDayRepository
 )
 
 print("Starting CynanBot...")
