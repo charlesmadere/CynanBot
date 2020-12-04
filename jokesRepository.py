@@ -13,8 +13,7 @@ class JokesRepository():
         cacheTimeDelta=timedelta(hours=1)
     ):
         if cacheTimeDelta is None:
-            raise ValueError(
-                f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__cacheTime = datetime.now() - cacheTimeDelta
         self.__cacheTimeDelta = cacheTimeDelta
@@ -36,8 +35,7 @@ class JokesRepository():
 
         successJson = jsonResponse.get('success')
         if successJson is None or len(successJson) == 0:
-            print(
-                f'Joke JSON has malformed \'success\' data: \"{jsonResponse}\"')
+            print(f'Joke JSON has malformed \'success\' data: \"{jsonResponse}\"')
             return None
 
         jokesResponse = jsonResponse.get('contents').get('jokes')
@@ -48,17 +46,16 @@ class JokesRepository():
         jokeResponse = jokesResponse[0]['joke']
 
         joke = JokeResponse(
-            clean=utils.getIntFromDict(jokeResponse, 'clean'),
+            clean=utils.getIntFromDict(jokeResponse, 'clean', defaultValue=0),
             length=utils.getIntFromDict(jokeResponse, 'length'),
-            racial=utils.getIntFromDict(jokeResponse, 'racial'),
+            racial=utils.getIntFromDict(jokeResponse, 'racial', defaultValue=0),
             _id=utils.getStrFromDict(jokeResponse, 'id'),
-            text=utils.getStrFromDict(jokeResponse, 'text', True),
+            text=utils.getStrFromDict(jokeResponse, 'text', clean=True),
             title=utils.getStrFromDict(jokeResponse, 'title')
         )
 
-        if joke.getClean() != 0 and joke.getClean() != 1 or joke.getRacial() != 0:
-            print(
-                f'Rejecting joke because of incorrect \'clean\' or \'racial\' values: \"{jokeResponse}\"')
+        if joke.getRacial() != 0:
+            print(f'Rejecting joke because of incorrect \'racial\' values: \"{jokeResponse}\"')
             return None
 
         return joke
