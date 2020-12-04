@@ -4,8 +4,9 @@ from datetime import datetime
 class TimedDict():
 
     def __init__(self, timeDelta):
-        if timeDelta == None:
-            raise ValueError(f'timeDelta argument is malformed: \"{timeDelta}\"')
+        if timeDelta is None:
+            raise ValueError(
+                f'timeDelta argument is malformed: \"{timeDelta}\"')
 
         self.__timeDelta = timeDelta
         self.__times = dict()
@@ -27,7 +28,7 @@ class TimedDict():
         return self.__values[key]
 
     def isReady(self, key):
-        return self[key] == None
+        return self[key] is None
 
     def isReadyAndUpdate(self, key):
         if self.isReady(key):
