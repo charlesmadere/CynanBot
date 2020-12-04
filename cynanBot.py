@@ -416,6 +416,50 @@ class CynanBot(commands.Bot):
             storeStockString = ', '.join(storeStock)
             await ctx.send(f'Analogue products in stock: {storeStockString}')
 
+    @commands.command(name='commands')
+    async def command_commands(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        commands = [ '!cynansource' ]
+
+        if user.hasDiscord():
+            commands.append('!discord')
+
+        if user.hasLocationId():
+            commands.append('!weather')
+
+        if user.hasSpeedrunProfile():
+            commands.append('!pbs')
+
+        if user.hasTimeZone():
+            commands.append('!time')
+
+        if user.hasTwitter():
+            commands.append('!twitter')
+
+        if user.isAnalogueEnabled():
+            commands.append('!analogue')
+
+        if user.isCutenessEnabled():
+            commands.append('!cuteness')
+            commands.append('!mycuteness')
+
+            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
+                commands.append('!givecuteness')
+
+        if user.isJishoEnabled():
+            commands.append('!jisho')
+
+        if user.isJokesEnabled():
+            commands.append('!joke')
+
+        if user.isWordOfTheDayEnabled():
+            commands.append('!word')
+
+        commands.sort()
+        commandsString = ', '.join(commands)
+
+        await ctx.send(f'My commands: {commandsString}')
+
     @commands.command(name='cuteness')
     async def command_cuteness(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -457,50 +501,6 @@ class CynanBot(commands.Bot):
                 print(
                     f'Unable to find \"{userName}\" in the cuteness database')
                 await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
-
-    @commands.command(name='cynanbot')
-    async def command_cynanbot(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-        commands = ['!cynanbot', '!cynansource']
-
-        if user.hasDiscord():
-            commands.append('!discord')
-
-        if user.hasLocationId():
-            commands.append('!weather')
-
-        if user.hasSpeedrunProfile():
-            commands.append('!pbs')
-
-        if user.hasTimeZone():
-            commands.append('!time')
-
-        if user.hasTwitter():
-            commands.append('!twitter')
-
-        if user.isAnalogueEnabled():
-            commands.append('!analogue')
-
-        if user.isCutenessEnabled():
-            commands.append('!cuteness')
-            commands.append('!mycuteness')
-
-            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
-                commands.append('!givecuteness')
-
-        if user.isJishoEnabled():
-            commands.append('!jisho')
-
-        if user.isJokesEnabled():
-            commands.append('!joke')
-
-        if user.isWordOfTheDayEnabled():
-            commands.append('!word')
-
-        commands.sort()
-        commandsString = ', '.join(commands)
-
-        await ctx.send(f'My commands: {commandsString}')
 
     @commands.command(name='cynansource')
     async def command_cynansource(self, ctx):
