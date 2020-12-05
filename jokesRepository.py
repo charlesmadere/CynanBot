@@ -46,9 +46,9 @@ class JokesRepository():
         jokeResponse = jokesResponse[0]['joke']
 
         joke = JokeResponse(
-            clean=utils.getIntFromDict(jokeResponse, 'clean', defaultValue=0),
+            clean=utils.getIntFromDict(jokeResponse, 'clean', fallback=0),
             length=utils.getIntFromDict(jokeResponse, 'length'),
-            racial=utils.getIntFromDict(jokeResponse, 'racial', defaultValue=0),
+            racial=utils.getIntFromDict(jokeResponse, 'racial', fallback=0),
             _id=utils.getStrFromDict(jokeResponse, 'id'),
             text=utils.getStrFromDict(jokeResponse, 'text', clean=True),
             title=utils.getStrFromDict(jokeResponse, 'title')
