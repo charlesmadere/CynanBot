@@ -131,8 +131,7 @@ class JishoResult():
 
     def toStr(self, definitionDelimiter: str = ' '):
         if definitionDelimiter is None:
-            raise ValueError(
-                f'definitionDelimiter argument is malformed: \"{definitionDelimiter}\"')
+            raise ValueError(f'definitionDelimiter argument is malformed: \"{definitionDelimiter}\"')
 
         furigana = ''
         if self.hasFurigana():
