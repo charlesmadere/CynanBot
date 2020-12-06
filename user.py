@@ -29,8 +29,7 @@ class User:
         if handle is None or len(handle) == 0:
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif isPicOfTheDayEnabled and (picOfTheDayFile is None or len(picOfTheDayFile) == 0):
-            raise ValueError(
-                f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
+            raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled
         self.__isCatJamEnabled = isCatJamEnabled
@@ -100,19 +99,19 @@ class User:
         return self.__twitter
 
     def hasDiscord(self):
-        return self.__discord is not None and len(self.__discord) != 0
+        return self.__discord is not None and len(self.__discord) >= 1
 
     def hasLocationId(self):
-        return self.__locationId is not None and len(self.__locationId) != 0
+        return self.__locationId is not None and len(self.__locationId) >= 1
 
     def hasSpeedrunProfile(self):
-        return self.__speedrunProfile is not None and len(self.__speedrunProfile) != 0
+        return self.__speedrunProfile is not None and len(self.__speedrunProfile) >= 1
 
     def hasTimeZone(self):
         return self.__timeZone is not None
 
     def hasTwitter(self):
-        return self.__twitter is not None and len(self.__twitter) != 0
+        return self.__twitter is not None and len(self.__twitter) >= 1
 
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled

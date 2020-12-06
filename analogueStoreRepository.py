@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
+from typing import List
 
 import requests
 from lxml import html
+
+import utils
 
 
 class AnalogueStoreRepository():
@@ -11,8 +14,7 @@ class AnalogueStoreRepository():
         cacheTimeDelta=timedelta(hours=1)
     ):
         if cacheTimeDelta is None:
-            raise ValueError(
-                f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__cacheTime = datetime.now() - cacheTimeDelta
         self.__cacheTimeDelta = cacheTimeDelta
@@ -40,29 +42,119 @@ class AnalogueStoreRepository():
             print(f'productTrees is malformed: {productTrees}')
             return None
 
-        inStockProducts = list()
+        products = list()
 
         for productTree in productTrees:
-            nameTrees = productTree.find_class('store_title__3eCzb')
-
-            if nameTrees is None or len(nameTrees) != 1:
+            productTrees = productTree.find_class('store_title__3eCzb')
+            if productTrees is None or len(productTrees) != 1:
                 continue
 
-            name = nameTrees[0].text
-
-            if name is None or len(name) == 0 or name.isspace():
+            nameAndPrice = productTrees[0].text_content()
+            if nameAndPrice is None:
                 continue
 
-            name = name.strip()
-
-            if '8BitDo'.lower() in name.lower():
+            nameAndPrice = utils.cleanStr(nameAndPrice)
+            if len(nameAndPrice) == 0:
+                continue
+            elif '8BitDo'.lower() in nameAndPrice.lower():
                 # don't show 8BitDo products in the final stock listing
                 continue
 
-            outOfStockElement = productTree.find_class(
-                'button_Disabled__2CEbR')
+            name = None
+            price = None
+            indexOfDollar = nameAndPrice.find('$')
 
-            if outOfStockElement is None or len(outOfStockElement) == 0:
-                inStockProducts.append(name)
+            if indexOfDollar == -1:
+                name = utils.cleanStr(nameAndPrice)
+            else:
+                name = utils.cleanStr(nameAndPrice[0:indexOfDollar])
+                price = utils.cleanStr(nameAndPrice[indexOfDollar:len(nameAndPrice)])
 
-        return inStockProducts
+            if name[len(name) - 1] == '1':
+                name = name[0:len(name) - 1]
+
+            inStock = True
+            outOfStockElement = productTree.find_class('button_Disabled__2CEbR')
+            if outOfStockElement is not None and len(outOfStockElement) >= 1:
+                inStock = False
+
+            products.append(AnalogueStoreProduct(
+                inStock=inStock,
+                name=name,
+                price=price
+            ))
+
+        return AnalogueStoreStock(
+            products=products
+        )
+
+
+class AnalogueStoreProduct():
+
+    def __init__(self, inStock: bool, name: str, price: str):
+        if inStock is None:
+            raise ValueError(f'inStock argument is malformed: \"{inStock}\"')
+        elif name is None or len(name) == 0 or name.isspace():
+            raise ValueError(f'name argument is malformed: \"{name}\"')
+
+        self.__inStock = inStock
+        self.__name = name
+        self.__price = price
+
+    def getName(self):
+        return self.__name
+
+    def getPrice(self):
+        return self.__price
+
+    def hasPrice(self):
+        return self.__price is not None and len(self.__price) >= 1 and not self.__price.isspace()
+
+    def inStock(self):
+        return self.__inStock
+
+    def toStr(self):
+        return self.__name
+
+
+class AnalogueStoreStock():
+
+    def __init__(self, products: List):
+        if products == None:
+            raise ValueError(f'products argument is malformed: \"{products}\"')
+
+        self.__products = products
+
+    def getProducts(self):
+        return self.__products
+
+    def hasProducts(self):
+        return len(self.__products) >= 1
+
+    def toStr(self, inStockProductsOnly: bool = True, delimiter: str = ', '):
+        if inStockProductsOnly is None:
+            raise ValueError(f'inStockProductsOnly argument is malformed: \"{inStockProductsOnly}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not self.hasProducts():
+            return '🍃 Analogue store is empty'
+
+        productStrings = list()
+
+        for product in self.__products:
+            if inStockProductsOnly:
+                if product.inStock():
+                    productStrings.append(product.toStr())
+            else:
+                productStrings.append(product.toStr())
+
+        if inStockProductsOnly and len(productStrings) == 0:
+            return '🍃 Analogue store has nothing in stock'
+
+        productsString = delimiter.join(productStrings)
+
+        if inStockProductsOnly:
+            return f'Analogue products in stock: {productsString}'
+        else:
+            return f'Analogue products: {productsString}'

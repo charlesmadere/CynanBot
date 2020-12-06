@@ -7,7 +7,7 @@ from typing import List
 import requests
 from twitchio.ext import commands
 
-from analogueStoreRepository import AnalogueStoreRepository
+from analogueStoreRepository import AnalogueStoreRepository, AnalogueStoreStock
 from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
@@ -405,16 +405,18 @@ class CynanBot(commands.Bot):
         elif not self.__lastAnalogueStockMessageTimes.isReady(user.getHandle()):
             return
 
-        storeStock = self.__analogueStoreRepository.fetchStoreStock()
-        self.__lastAnalogueStockMessageTimes.update(user.getHandle())
+        try:
+            result = self.__analogueStoreRepository.fetchStoreStock()
+            self.__lastAnalogueStockMessageTimes.update(user.getHandle())
 
-        if storeStock is None:
-            await ctx.send('⚠ Error reading products from Analogue store')
-        elif len(storeStock) == 0:
-            await ctx.send('🍃 Analogue store has nothing in stock')
-        else:
-            storeStockString = ', '.join(storeStock)
-            await ctx.send(f'Analogue products in stock: {storeStockString}')
+            if result is None:
+                print(f'Error fetching Analogue stock in {user.getHandle()}')
+                await ctx.send('⚠ Error fetching Analogue stock')
+            else:
+                await ctx.send(result.toStr())
+        except ValueError:
+            print(f'Error fetching Analogue stock in {user.getHandle()}')
+            await ctx.send('⚠ Error fetching Analogue stock')
 
     @commands.command(name='commands')
     async def command_commands(self, ctx):

@@ -5,6 +5,8 @@ from typing import List
 import requests
 from lxml import html
 
+import utils
+
 
 class JishoHelper():
 
@@ -22,8 +24,8 @@ class JishoHelper():
         url = f'https://jisho.org/search/{encodedQuery}'
 
         rawResponse = requests.get(url)
-        htmlTree = html.fromstring(rawResponse.content)
 
+        htmlTree = html.fromstring(rawResponse.content)
         if htmlTree is None:
             print(f'htmlTree is malformed: \"{htmlTree}\"')
             return None
@@ -39,11 +41,14 @@ class JishoHelper():
             return None
 
         word = textElements[0].text_content()
-        if word is None or len(word) == 0 or word.isspace():
+        if word is None:
             print(f'word is malformed: \"{word}\"')
             return None
 
-        word = word.strip()
+        word = utils.cleanStr(word)
+        if len(word) == 0:
+            print(f'word is malformed: \"{word}\"')
+            return None
 
         definitionElements = htmlTree.find_class('meaning-meaning')
         if definitionElements is None or len(definitionElements) == 0:
@@ -58,11 +63,14 @@ class JishoHelper():
                 continue
 
             definition = definitionElement.text_content()
-            if definition is None or len(definition) == 0 or definition.isspace():
+            if definition is None:
                 continue
 
-            number = locale.format_string(
-                "%d", len(definitions) + 1, grouping=True)
+            definition = utils.cleanStr(definition)
+            if len(definition) == 0:
+                continue
+
+            number = locale.format_string("%d", len(definitions) + 1, grouping=True)
             definitions.append(f'#{number} {definition.strip()}')
 
             if len(definitions) >= 3:
@@ -70,8 +78,7 @@ class JishoHelper():
                 break
 
         if len(definitions) == 0:
-            print(
-                f'Found no definitions within definitionElements: \"{definitionElements}\"')
+            print(f'Found no definitions within definitionElements: \"{definitionElements}\"')
             return None
 
         furigana = None
@@ -79,10 +86,8 @@ class JishoHelper():
         if furiganaElements is not None and len(furiganaElements) >= 1:
             furigana = furiganaElements[0].text_content()
 
-            if furigana is None or len(furigana) == 0 or furigana.isspace():
-                furigana = None
-            else:
-                furigana = furigana.strip()
+            if furigana is not None:
+                furigana = utils.cleanStr(furigana)
 
         return JishoResult(
             definitions=definitions,
@@ -102,8 +107,7 @@ class JishoResult():
         word: str
     ):
         if definitions is None or len(definitions) == 0:
-            raise ValueError(
-                f'definitions argument is malformed: \"{definitions}\"')
+            raise ValueError(f'definitions argument is malformed: \"{definitions}\"')
         elif url is None or len(url) == 0 or url.isspace():
             raise ValueError(f'url argument is malformed: \"{url}\"')
         elif word is None or len(word) == 0 or word.isspace():
@@ -127,7 +131,7 @@ class JishoResult():
         return self.__word
 
     def hasFurigana(self):
-        return self.__furigana is not None and len(self.__furigana) != 0 and not self.__furigana.isspace()
+        return self.__furigana is not None and len(self.__furigana) >= 1 and not self.__furigana.isspace()
 
     def toStr(self, definitionDelimiter: str = ' '):
         if definitionDelimiter is None:
@@ -138,5 +142,4 @@ class JishoResult():
             furigana = f'({self.__furigana}) '
 
         definitions = definitionDelimiter.join(self.__definitions)
-
         return f'{furigana}{self.__word} — {definitions}'

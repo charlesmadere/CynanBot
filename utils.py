@@ -1,3 +1,9 @@
+def cleanStr(s: str):
+    if s is None:
+        raise ValueError(f's argument is malformed: \"{s}\"')
+
+    return s.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ').strip()
+
 def getIntFromDict(d: dict, key: str, fallback: int = None):
     if d is None:
         raise ValueError(f'd argument is malformed: \"{d}\"')
@@ -39,6 +45,6 @@ def getStrFromDict(d: dict, key: str, fallback: str = None, clean: bool = False)
         value = str(value)
 
     if clean:
-        value = value.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ').strip()
+        value = cleanStr(value)
 
     return value
