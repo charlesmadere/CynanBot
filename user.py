@@ -2,6 +2,8 @@ import os
 import urllib
 from datetime import tzinfo
 
+import utils
+
 
 class User:
 
@@ -58,7 +60,7 @@ class User:
                 f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
-            potdText = file.read().replace('\n', '').strip()
+            potdText = utils.cleanStr(file.read())
 
         if potdText is None or len(potdText) == 0 or potdText.isspace():
             raise ValueError(f'POTD text is malformed: \"{potdText}\"')

@@ -753,7 +753,7 @@ class CynanBot(commands.Bot):
             await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
             return
 
-        language = splits[1].strip()
+        language = splits[1]
         languageEntry = None
 
         try:

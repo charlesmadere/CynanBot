@@ -71,7 +71,7 @@ class JishoHelper():
                 continue
 
             number = locale.format_string("%d", len(definitions) + 1, grouping=True)
-            definitions.append(f'#{number} {definition.strip()}')
+            definitions.append(f'#{number} {definition}')
 
             if len(definitions) >= 3:
                 # keep from adding tons of definitions
