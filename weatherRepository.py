@@ -17,11 +17,9 @@ class WeatherRepository():
         cacheTimeDelta=timedelta(hours=1, minutes=30)
     ):
         if authHelper is None:
-            raise ValueError(
-                f'authHelper argument is malformed: \"{authHelper}\"')
+            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
         elif cacheTimeDelta is None:
-            raise ValueError(
-                f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__authHelper = authHelper
         self.__cache = TimedDict(timeDelta=cacheTimeDelta)
@@ -35,8 +33,7 @@ class WeatherRepository():
             if dayJson['sunrise'] > currentSunrise and dayJson['sunset'] > currentSunset:
                 return dayJson
 
-        raise RuntimeError(
-            f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
+        raise RuntimeError(f'Unable to find viable tomorrow data in JSON response: \"{jsonResponse}\"')
 
     def __createConditionIconsDict(self):
         # This dictionary is built from the Weather Condition Codes listed here:
@@ -122,8 +119,7 @@ class WeatherRepository():
 
         oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
         if oneWeatherApiKey is None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
-            raise RuntimeError(
-                f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
+            raise RuntimeError(f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
 
         requestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric".format(
             oneWeatherApiKey, location.getLatitude(), location.getLongitude())
