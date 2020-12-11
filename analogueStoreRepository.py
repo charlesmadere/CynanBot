@@ -113,8 +113,24 @@ class AnalogueStoreProduct():
     def inStock(self):
         return self.__inStock
 
-    def toStr(self):
-        return self.__name
+    def toStr(self, includePrice: bool = False, includeStockInfo: bool = False):
+        if includePrice is None:
+            raise ValueError(f'includePrice argument is malformed: \"{includePrice}\"')
+        elif includeStockInfo is None:
+            raise ValueError(f'includeStockInfo argument is malformed: \"{includeStockInfo}\"')
+
+        priceText = ''
+        if includePrice and self.hasPrice():
+            priceText = f' {self.__price}'
+
+        stockInfoText = ''
+        if includeStockInfo:
+            if self.inStock():
+                stockInfoText = ' (in stock)'
+            else:
+                stockInfoText = ' (out of stock)'
+
+        return f'{self.__name}{priceText}{stockInfoText}'
 
 
 class AnalogueStoreStock():
@@ -131,8 +147,10 @@ class AnalogueStoreStock():
     def hasProducts(self):
         return len(self.__products) >= 1
 
-    def toStr(self, inStockProductsOnly: bool = True, delimiter: str = ', '):
-        if inStockProductsOnly is None:
+    def toStr(self, includePrices: bool = False, inStockProductsOnly: bool = True, delimiter: str = ', '):
+        if includePrices is None:
+            raise ValueError(f'includePrices argument is malformed: \"{includePrices}\"')
+        elif inStockProductsOnly is None:
             raise ValueError(f'inStockProductsOnly argument is malformed: \"{inStockProductsOnly}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -145,9 +163,9 @@ class AnalogueStoreStock():
         for product in self.__products:
             if inStockProductsOnly:
                 if product.inStock():
-                    productStrings.append(product.toStr())
+                    productStrings.append(product.toStr(includePrice=includePrices, includeStockInfo=False))
             else:
-                productStrings.append(product.toStr())
+                productStrings.append(product.toStr(includePrice=includePrices, includeStockInfo=True))
 
         if inStockProductsOnly and len(productStrings) == 0:
             return '🍃 Analogue store has nothing in stock'
