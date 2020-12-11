@@ -5,7 +5,6 @@ import requests
 import xmltodict
 
 from timedDict import TimedDict
-from wotd import Wotd
 
 
 class WordOfTheDayRepository():
@@ -15,8 +14,7 @@ class WordOfTheDayRepository():
         cacheTimeDelta=timedelta(hours=1)
     ):
         if cacheTimeDelta is None:
-            raise ValueError(
-                f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__cache = TimedDict(timeDelta=cacheTimeDelta)
         self.__languageList = self.__createLanguageList()
@@ -43,16 +41,14 @@ class WordOfTheDayRepository():
 
     def fetchWotd(self, languageEntry):
         if languageEntry is None:
-            raise ValueError(
-                f'languageEntry argument is malformed: \"{languageEntry}\"')
+            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
         cacheValue = self.__cache[languageEntry]
 
         if cacheValue is not None:
             return cacheValue
 
-        print(
-            f'Refreshing word of the day for \"{languageEntry.getCommandName()}\"...')
+        print(f'Refreshing word of the day for \"{languageEntry.getCommandName()}\"...')
 
         ##############################################################################
         # retrieve word of the day from https://www.transparent.com/word-of-the-day/ #
@@ -63,12 +59,10 @@ class WordOfTheDayRepository():
         xmlTree = xmltodict.parse(rawResponse.content)['xml']['words']
 
         if xmlTree is None:
-            print(
-                f'xmlTree for \"{languageEntry.getCommandName()}\" is malformed: \"{xmlTree}\"')
+            print(f'xmlTree for \"{languageEntry.getCommandName()}\" is malformed: \"{xmlTree}\"')
             return None
         elif len(xmlTree) == 0:
-            print(
-                f'xmlTree for \"{languageEntry.getCommandName()}\" is empty: \"{xmlTree}\"')
+            print(f'xmlTree for \"{languageEntry.getCommandName()}\" is empty: \"{xmlTree}\"')
             return None
 
         word = xmlTree.get('word')
@@ -90,8 +84,7 @@ class WordOfTheDayRepository():
                 transliteration=transliteration
             )
         except ValueError:
-            print(
-                f'Word Of The Day for \"{languageEntry.getCommandName()}\" has a data error')
+            print(f'Word Of The Day for \"{languageEntry.getCommandName()}\" has a data error')
 
         if wotd is None:
             del self.__cache[languageEntry]
@@ -110,8 +103,7 @@ class LanguageEntry():
         if apiName is None or len(apiName) == 0 or apiName.isspace():
             raise ValueError(f'apiName argument is malformed: \"{apiName}\"')
         elif commandName is None or len(commandName) == 0 or commandName.isspace():
-            raise ValueError(
-                f'commandName argument is malformed: \"{commandName}\"')
+            raise ValueError(f'commandName argument is malformed: \"{commandName}\"')
 
         self.__apiName = apiName
         self.__commandName = commandName
@@ -146,8 +138,7 @@ class LanguageList():
 
     def toApiNameStr(self, delimiter: str = ', '):
         if delimiter is None:
-            raise ValueError(
-                f'delimiter argument is malformed: \"{delimiter}\"')
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         apiNames = list()
 
@@ -159,8 +150,7 @@ class LanguageList():
 
     def toCommandNameStr(self, delimiter: str = ', '):
         if delimiter is None:
-            raise ValueError(
-                f'delimiter argument is malformed: \"{delimiter}\"')
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         commandNames = list()
 
@@ -169,3 +159,56 @@ class LanguageList():
 
         commandNames.sort()
         return delimiter.join(commandNames)
+
+
+class Wotd():
+
+    def __init__(
+        self,
+        definition: str,
+        englishExample: str,
+        foreignExample: str,
+        language: str,
+        transliteration: str,
+        word: str
+    ):
+        if definition is None or len(definition) == 0 or definition.isspace():
+            raise ValueError(f'definition argument is malformed: \"{definition}\"')
+        elif language is None or len(language) == 0 or language.isspace():
+            raise ValueError(f'language argument is malformed: \"{language}\"')
+        elif word is None or len(word) == 0 or word.isspace():
+            raise ValueError(f'word argument is malformed: \"{word}\"')
+
+        self.__definition = definition
+        self.__englishExample = englishExample
+        self.__foreignExample = foreignExample
+        self.__language = language
+        self.__transliteration = transliteration
+        self.__word = word
+
+    def getDefinition(self):
+        return self.__definition
+
+    def getEnglishExample(self):
+        return self.__englishExample
+
+    def getForeignExample(self):
+        return self.__foreignExample
+
+    def getLanguage(self):
+        return self.__language
+
+    def getTransliteration(self):
+        return self.__transliteration
+
+    def getWord(self):
+        return self.__word
+
+    def hasExamples(self):
+        return (
+            self.__englishExample is not None and len(self.__englishExample) != 0 and not self.__englishExample.isspace() and
+            self.__foreignExample is not None and len(self.__foreignExample) != 0 and not self.__foreignExample.isspace()
+        )
+
+    def hasTransliteration(self):
+        return self.__transliteration is not None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()

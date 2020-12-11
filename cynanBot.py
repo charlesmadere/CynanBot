@@ -13,19 +13,16 @@ from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
 from jishoHelper import JishoHelper, JishoResult
 from jokesRepository import JokeResponse, JokesRepository
-from location import Location
-from locationsRepository import LocationsRepository
+from locationsRepository import Location, LocationsRepository
 from nonceRepository import NonceRepository
 from timedDict import TimedDict
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
-from weatherReport import WeatherReport
-from weatherRepository import WeatherRepository
+from weatherRepository import WeatherReport, WeatherRepository
 from wordOfTheDayRepository import (LanguageEntry, LanguageList,
-                                    WordOfTheDayRepository)
-from wotd import Wotd
+                                    WordOfTheDayRepository, Wotd)
 
 
 class CynanBot(commands.Bot):
