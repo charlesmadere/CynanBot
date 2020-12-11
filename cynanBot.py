@@ -47,40 +47,29 @@ class CynanBot(commands.Bot):
             client_id=authHelper.getClientId(),
             nick='CynanBot',
             prefix='!',
-            initial_channels=[user.getHandle()
-                              for user in usersRepository.getUsers()]
+            initial_channels=[ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
         if analogueStoreRepository is None:
-            raise ValueError(
-                f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
+            raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository is None:
-            raise ValueError(
-                f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif jishoHelper is None:
-            raise ValueError(
-                f'jishHelper argument is malformed: \"{jishoHelper}\"')
+            raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif jokesRepository is None:
-            raise ValueError(
-                f'jokesRepository argument is malformed: \"{jokesRepository}\"')
+            raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
         elif locationsRepository is None:
-            raise ValueError(
-                f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif nonceRepository is None:
-            raise ValueError(
-                f'nonceRepository argument is malformed: \"{nonceRepository}\"')
+            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif userIdsRepository is None:
-            raise ValueError(
-                f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository is None:
-            raise ValueError(
-                f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
         elif weatherRepository is None:
-            raise ValueError(
-                f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif wordOfTheDayRepository is None:
-            raise ValueError(
-                f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
@@ -98,10 +87,8 @@ class CynanBot(commands.Bot):
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(minutes=5))
         self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes=1))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes=20))
-        self.__lastCutenessLeaderboardMessageTimes = TimedDict(
-            timedelta(seconds=30))
-        self.__lastCutenessRedeemedMessageTimes = TimedDict(
-            timedelta(seconds=30))
+        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds=30))
+        self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds=30))
         self.__lastCynanMessageTime = datetime.now() - timedelta(days=1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes=20))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds=15))
