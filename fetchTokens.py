@@ -31,8 +31,7 @@ if TWITCH_CLIENT_ID is None or TWITCH_CLIENT_SECRET is None:
     TWITCH_CLIENT_SECRET = authFileJson['clientSecret']
 
 if TWITCH_CLIENT_SECRET is None or TWITCH_CLIENT_SECRET is None or TWITCH_CODE_SECRET is None:
-    raise ValueError(
-        'TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, and TWITCH_CODE_SECRET must all be set!')
+    raise ValueError('TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, and TWITCH_CODE_SECRET must all be set!')
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
 rawResponse = requests.post(url)

@@ -94,7 +94,7 @@ class AnalogueStoreProduct():
     def __init__(self, inStock: bool, name: str, price: str):
         if inStock is None:
             raise ValueError(f'inStock argument is malformed: \"{inStock}\"')
-        elif name is None or len(name) == 0 or name.isspace():
+        elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
 
         self.__inStock = inStock
@@ -108,7 +108,7 @@ class AnalogueStoreProduct():
         return self.__price
 
     def hasPrice(self):
-        return self.__price is not None and len(self.__price) >= 1 and not self.__price.isspace()
+        return utils.isValidStr(self.__price)
 
     def inStock(self):
         return self.__inStock

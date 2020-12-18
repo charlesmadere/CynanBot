@@ -14,7 +14,7 @@ class JishoHelper():
         pass
 
     def search(self, query: str):
-        if query is None or len(query) == 0 or query.isspace():
+        if not utils.isValidStr(query):
             raise ValueError(f'query argument is malformed: \"{query}\"')
 
         query = query.strip()
@@ -108,9 +108,9 @@ class JishoResult():
     ):
         if definitions is None or len(definitions) == 0:
             raise ValueError(f'definitions argument is malformed: \"{definitions}\"')
-        elif url is None or len(url) == 0 or url.isspace():
+        elif not utils.isValidStr(url):
             raise ValueError(f'url argument is malformed: \"{url}\"')
-        elif word is None or len(word) == 0 or word.isspace():
+        elif not utils.isValidStr(word):
             raise ValueError(f'word argument is malformed: \"{word}\"')
 
         self.__definitions = definitions
@@ -131,7 +131,7 @@ class JishoResult():
         return self.__word
 
     def hasFurigana(self):
-        return self.__furigana is not None and len(self.__furigana) >= 1 and not self.__furigana.isspace()
+        return utils.isValidStr(self.__furigana)
 
     def toStr(self, definitionDelimiter: str = ' '):
         if definitionDelimiter is None:

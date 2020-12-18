@@ -3,6 +3,7 @@ import math
 from datetime import tzinfo
 from os import path
 
+import utils
 from timeZoneRepository import TimeZoneRepository
 
 
@@ -13,7 +14,7 @@ class LocationsRepository():
         timeZoneRepository: TimeZoneRepository,
         locationsFile: str = 'locationsRepository.json'
     ):
-        if locationsFile is None or len(locationsFile) == 0 or locationsFile.isspace():
+        if not utils.isValidStr(locationsFile):
             raise ValueError(f'locationsFile argument is malformed: \"{locationsFile}\"')
         elif timeZoneRepository is None:
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
@@ -23,7 +24,7 @@ class LocationsRepository():
         self.__timeZoneRepository = timeZoneRepository
 
     def getLocation(self, id_: str):
-        if id_ is None or len(id_) == 0 or id_.isspace():
+        if not utils.isValidStr(id_):
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
 
         if id_.lower() in self.__locationsCache:
@@ -64,9 +65,9 @@ class Location():
             raise ValueError(f'lat argument is malformed: \"{lat}\"')
         elif lon is None or not math.isfinite(lon):
             raise ValueError(f'lon argument is malformed: \"{lon}\"')
-        elif id_ is None or len(id_) == 0 or id_.isspace():
+        elif not utils.isValidStr(id_):
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
-        elif name is None or len(name) == 0 or name.isspace():
+        elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
         elif timeZone is None:
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')

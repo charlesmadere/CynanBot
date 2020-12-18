@@ -27,7 +27,7 @@ def getIntFromDict(d: dict, key: str, fallback: int = None):
 def getStrFromDict(d: dict, key: str, fallback: str = None, clean: bool = False):
     if d is None:
         raise ValueError(f'd argument is malformed: \"{d}\"')
-    elif key is None or len(key) == 0 or key.isspace():
+    elif not isValidStr(key):
         raise ValueError(f'key argument is malformed: \"{key}\"')
     elif clean is None:
         raise ValueError(f'clean argument is malformed: \"{clean}\"')
@@ -48,3 +48,6 @@ def getStrFromDict(d: dict, key: str, fallback: str = None, clean: bool = False)
         value = cleanStr(value)
 
     return value
+
+def isValidStr(s: str):
+    return s is not None and len(s) >= 1 and not s.isspace()

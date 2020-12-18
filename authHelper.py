@@ -4,6 +4,7 @@ from typing import List
 
 import requests
 
+import utils
 from nonceRepository import NonceRepository
 from user import User
 from userTokensRepository import UserTokensRepository
@@ -26,9 +27,8 @@ class AuthHelper():
         authFile: str = 'authFile.json'
     ):
         if nonceRepository is None:
-            raise ValueError(
-                f'nonceRepository argument is malformed: \"{nonceRepository}\"')
-        elif authFile is None or len(authFile) == 0 or authFile.isspace():
+            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
+        elif not utils.isValidStr(authFile):
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
         self.__nonceRepository = nonceRepository
@@ -43,34 +43,30 @@ class AuthHelper():
         if jsonContents is None:
             raise IOError(f'Error reading from auth file: \"{authFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(
-                f'JSON contents of auth file ({authFile}) is empty')
+            raise ValueError(f'JSON contents of auth file ({authFile}) is empty')
 
         clientId = jsonContents.get('clientId')
-        if clientId is None or len(clientId) == 0 or clientId.isspace():
-            raise ValueError(
-                f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
+        if not utils.isValidStr(clientId):
+            raise ValueError(f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
         self.__clientId = clientId
 
         clientSecret = jsonContents.get('clientSecret')
-        if clientSecret is None or len(clientSecret) == 0 or clientSecret.isspace():
-            raise ValueError(
-                f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
+        if not utils.isValidStr(clientSecret):
+            raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
         self.__clientSecret = clientSecret
 
         iqAirApiKey = jsonContents.get('iqAirApiKey')
-        if iqAirApiKey is None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
+        if not utils.isValidStr(iqAirApiKey):
             print(f'No value for iqAirApiKey: \"{iqAirApiKey}\"')
         self.__iqAirApiKey = iqAirApiKey
 
         ircAuthToken = jsonContents.get('ircAuthToken')
-        if ircAuthToken is None or len(ircAuthToken) == 0 or ircAuthToken.isspace():
-            raise ValueError(
-                f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
+        if not utils.isValidStr(ircAuthToken):
+            raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
         self.__ircAuthToken = ircAuthToken
 
         oneWeatherApiKey = jsonContents.get('oneWeatherApiKey')
-        if oneWeatherApiKey is None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
+        if not utils.isValidStr(oneWeatherApiKey):
             print(f'No value for oneWeatherApiKey: \"{oneWeatherApiKey}\"')
         self.__oneWeatherApiKey = oneWeatherApiKey
 
@@ -94,11 +90,10 @@ class AuthHelper():
         handle: str,
         userTokensRepository: UserTokensRepository
     ):
-        if handle is None or len(handle) == 0 or handle.isspace():
+        if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif userTokensRepository is None:
-            raise ValueError(
-                f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
         refreshToken = userTokensRepository.getRefreshToken(handle)
 
@@ -117,11 +112,9 @@ class AuthHelper():
         jsonResponse = rawResponse.json()
 
         if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
-            raise ValueError(
-                f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
+            raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
         elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
-            raise ValueError(
-                f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
+            raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
 
         userTokensRepository.setTokens(
             handle=handle,
@@ -136,8 +129,7 @@ class AuthHelper():
         userTokensRepository: UserTokensRepository
     ):
         if userTokensRepository is None:
-            raise ValueError(
-                f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
+            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
         if users is None or len(users) == 0:
             print(f'Given an empty list of users, skipping access token validation')
@@ -153,12 +145,10 @@ class AuthHelper():
                 userTokens[handle] = accessToken
 
         if len(userTokens) == 0:
-            print(
-                'There are no users with an access token, skipping access token validation')
+            print('There are no users with an access token, skipping access token validation')
             return
 
-        print(
-            f'Validating access tokens for {len(userTokens)} user(s) (nonce: \"{nonce}\")...')
+        print(f'Validating access tokens for {len(userTokens)} user(s) (nonce: \"{nonce}\")...')
 
         for handle, accessToken in userTokens.items():
             headers = {

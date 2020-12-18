@@ -1,6 +1,7 @@
 import json
 import os
 
+import utils
 from timeZoneRepository import TimeZoneRepository
 from user import User
 
@@ -14,14 +15,14 @@ class UsersRepository():
     ):
         if timeZoneRepository is None:
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif usersFile is None or len(usersFile) == 0 or usersFile.isspace():
+        elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__timeZoneRepository = timeZoneRepository
         self.__usersFile = usersFile
 
     def __createUser(self, handle: str, userJson: dict):
-        if handle is None or len(handle) == 0 or handle.isspace():
+        if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif userJson is None:
             raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
@@ -79,7 +80,7 @@ class UsersRepository():
         )
 
     def getUser(self, handle: str):
-        if handle is None or len(handle) == 0 or handle.isspace():
+        if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         users = self.getUsers()

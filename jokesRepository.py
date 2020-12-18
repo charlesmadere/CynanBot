@@ -81,11 +81,11 @@ class JokeResponse():
             raise ValueError(f'length argument is malformed: \"{length}\"')
         elif racial is None:
             raise ValueError(f'racial argument is malformed: \"{racial}\"')
-        elif _id is None or len(_id) == 0 or _id.isspace():
+        elif not utils.isValidStr(_id):
             raise ValueError(f'_id argument is malformed: \"{_id}\"')
-        elif text is None or len(text) == 0 or text.isspace():
+        elif not utils.isValidStr(text):
             raise ValueError(f'text argument is malformed: \"{text}\"')
-        elif title is None or len(title) == 0 or title.isspace():
+        elif not utils.isValidStr(title):
             raise ValueError(f'title argument is malformed: \"{title}\"')
 
         self.__clean = clean
