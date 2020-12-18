@@ -114,4 +114,4 @@ class JokeResponse():
         return self.__title
 
     def toStr(self):
-        return f'Joke of the Day — {self.__text}'
+        return f'Joke of the Day — {self.__text} 🥁'
