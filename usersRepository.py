@@ -13,11 +13,9 @@ class UsersRepository():
         usersFile: str = 'usersRepository.json'
     ):
         if timeZoneRepository is None:
-            raise ValueError(
-                f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+            raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif usersFile is None or len(usersFile) == 0 or usersFile.isspace():
-            raise ValueError(
-                f'usersFile argument is malformed: \"{usersFile}\"')
+            raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__timeZoneRepository = timeZoneRepository
         self.__usersFile = usersFile
@@ -38,17 +36,17 @@ class UsersRepository():
         isJokesEnabled = userJson.get('jokesEnabled', False)
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
-
         discord = userJson.get('discord')
+        locationId = userJson.get('locationId')
+        speedrunProfile = userJson.get('speedrunProfile')
+        twitter = userJson.get('twitter')
+        timeZone = self.__timeZoneRepository.getTimeZone(userJson.get('timeZone'))
 
         increaseCutenessDoubleRewardId = None
         increaseCutenessRewardId = None
         if isCutenessEnabled:
-            increaseCutenessDoubleRewardId = userJson.get(
-                'increaseCutenessDoubleRewardId')
+            increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
-
-        locationId = userJson.get('locationId')
 
         picOfTheDayFile = None
         picOfTheDayRewardId = None
@@ -57,13 +55,7 @@ class UsersRepository():
             picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
 
             if picOfTheDayFile is None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
-                raise ValueError(
-                    f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
-
-        speedrunProfile = userJson.get('speedrunProfile')
-        twitter = userJson.get('twitter')
-        timeZone = self.__timeZoneRepository.getTimeZone(
-            userJson.get('timeZone'))
+                raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         return User(
             isAnalogueEnabled=isAnalogueEnabled,
@@ -96,20 +88,17 @@ class UsersRepository():
             if handle.lower() == user.getHandle().lower():
                 return user
 
-        raise RuntimeError(
-            f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
+        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
 
     def getUsers(self):
         if not os.path.exists(self.__usersFile):
-            raise FileNotFoundError(
-                f'Users file not found: \"{self.__usersFile}\"')
+            raise FileNotFoundError(f'Users file not found: \"{self.__usersFile}\"')
 
         with open(self.__usersFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents is None:
-            raise IOError(
-                f'Error reading from users file: \"{self.__usersFile}\"')
+            raise IOError(f'Error reading from users file: \"{self.__usersFile}\"')
 
         users = []
         for handle in jsonContents:
@@ -117,7 +106,6 @@ class UsersRepository():
             users.append(self.__createUser(handle, userJson))
 
         if len(users) == 0:
-            raise RuntimeError(
-                f'Unable to read in any users from users file: \"{self.__usersFile}\"')
+            raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
 
         return users

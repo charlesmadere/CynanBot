@@ -5,8 +5,7 @@ class TimedDict():
 
     def __init__(self, timeDelta):
         if timeDelta is None:
-            raise ValueError(
-                f'timeDelta argument is malformed: \"{timeDelta}\"')
+            raise ValueError(f'timeDelta argument is malformed: \"{timeDelta}\"')
 
         self.__timeDelta = timeDelta
         self.__times = dict()
