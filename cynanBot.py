@@ -384,6 +384,9 @@ class CynanBot(commands.Bot):
         elif not self.__lastAnalogueStockMessageTimes.isReady(user.getHandle()):
             return
 
+        splits = ctx.message.content.split()
+        includePrices = len(splits) >= 2 and splits[1].lower() == 'includePrices'.lower()
+
         try:
             result = self.__analogueStoreRepository.fetchStoreStock()
             self.__lastAnalogueStockMessageTimes.update(user.getHandle())
@@ -392,7 +395,7 @@ class CynanBot(commands.Bot):
                 print(f'Error fetching Analogue stock in {user.getHandle()}')
                 await ctx.send('⚠ Error fetching Analogue stock')
             else:
-                await ctx.send(result.toStr())
+                await ctx.send(result.toStr(includePrices=includePrices))
         except ValueError:
             print(f'Error fetching Analogue stock in {user.getHandle()}')
             await ctx.send('⚠ Error fetching Analogue stock')
