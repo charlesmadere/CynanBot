@@ -328,8 +328,7 @@ class CynanBot(commands.Bot):
         count = 0
 
         for user in users:
-            accessToken = self.__userTokensRepository.getAccessToken(
-                user.getHandle())
+            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
 
             if accessToken is None:
                 continue
