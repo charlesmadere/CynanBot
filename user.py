@@ -1,6 +1,7 @@
 import os
 import urllib
 from datetime import tzinfo
+from typing import List
 
 import utils
 
@@ -62,14 +63,14 @@ class User:
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = utils.cleanStr(file.read())
 
-        if potdText is None or len(potdText) == 0 or potdText.isspace():
+        if not utils.isValidStr(potdText):
             raise ValueError(f'POTD text is malformed: \"{potdText}\"')
 
         potdParsed = urllib.parse.urlparse(potdText)
         potdUrl = potdParsed.geturl()
 
-        if potdUrl is None or len(potdUrl) == 0 or potdUrl.isspace():
-            raise ValueError(f'POTD URL is malformed: \"{potdUrl}\"')
+        if not utils.isValidStr(potdUrl):
+            raise ValueError(f'POTD text ({potdText}) can\'t be parsed into URL: \"{potdUrl}\"')
 
         return potdUrl
 
@@ -101,19 +102,19 @@ class User:
         return self.__twitter
 
     def hasDiscord(self):
-        return self.__discord is not None and len(self.__discord) >= 1
+        return utils.isValidStr(self.__discord)
 
     def hasLocationId(self):
-        return self.__locationId is not None and len(self.__locationId) >= 1
+        return utils.isValidStr(self.__locationId)
 
     def hasSpeedrunProfile(self):
-        return self.__speedrunProfile is not None and len(self.__speedrunProfile) >= 1
+        return utils.isValidStr(self.__speedrunProfile)
 
     def hasTimeZone(self):
         return self.__timeZone is not None
 
     def hasTwitter(self):
-        return self.__twitter is not None and len(self.__twitter) >= 1
+        return utils.isValidStr(self.__twitter)
 
     def isAnalogueEnabled(self):
         return self.__isAnalogueEnabled

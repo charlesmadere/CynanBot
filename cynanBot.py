@@ -7,6 +7,7 @@ from typing import List
 import requests
 from twitchio.ext import commands
 
+import utils
 from analogueStoreRepository import AnalogueStoreRepository, AnalogueStoreStock
 from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
@@ -232,8 +233,7 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(
-            f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
+        print(f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
@@ -373,7 +373,7 @@ class CynanBot(commands.Bot):
         resubscribeUsers = list()
 
         for user in users:
-            if (nonce is None or len(nonce) == 0 or nonce.isspace()) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
+            if not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
                 resubscribeUsers.append(user)
 
         await self.__subscribeToEvents(resubscribeUsers)
@@ -461,7 +461,7 @@ class CynanBot(commands.Bot):
         if len(splits) == 2:
             userName = splits[1]
 
-        if userName is None or len(userName) == 0 or userName.isspace():
+        if not utils.isValidStr(userName):
             result = self.__cutenessRepository.fetchLeaderboard(
                 user.getHandle())
 
@@ -519,13 +519,13 @@ class CynanBot(commands.Bot):
             return
 
         userName = splits[1]
-        if userName is None or len(userName) == 0 or userName.isspace():
+        if not utils.isValidStr(userName):
             print(f'Username is malformed: \"{userName}\"')
             await ctx.send(f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr = splits[2]
-        if incrementAmountStr is None or len(incrementAmountStr) == 0 or incrementAmountStr.isspace():
+        if not utils.isValidStr(incrementAmountStr):
             print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
             await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return

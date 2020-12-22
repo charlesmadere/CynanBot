@@ -1,4 +1,8 @@
+from typing import List
+
 import pytz
+
+import utils
 
 
 # A listing of pytz timezones can be found here:
@@ -10,7 +14,7 @@ class TimeZoneRepository():
         self.__timeZones = dict()
 
     def getTimeZone(self, timeZone: str):
-        if timeZone is None or len(timeZone) == 0 or timeZone.isspace():
+        if not utils.isValidStr(timeZone):
             return None
         elif timeZone in self.__timeZones:
             return self.__timeZones[timeZone]

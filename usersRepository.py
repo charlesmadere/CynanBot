@@ -55,7 +55,7 @@ class UsersRepository():
             picOfTheDayFile = userJson.get('picOfTheDayFile')
             picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
 
-            if picOfTheDayFile is None or len(picOfTheDayFile) == 0 or picOfTheDayFile.isspace():
+            if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         return User(
