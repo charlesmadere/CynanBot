@@ -301,8 +301,7 @@ class CynanBot(commands.Bot):
                 twitchChannel=twitchChannel
             )
         else:
-            print(
-                f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
+            print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def __handleWordOfTheDay(self, ctx, wotd: Wotd):
         message = ""
@@ -323,8 +322,7 @@ class CynanBot(commands.Bot):
 
     async def __subscribeToEvents(self, users: List[User]):
         if users is None or len(users) == 0:
-            print(
-                f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
+            print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 
         count = 0
@@ -354,8 +352,7 @@ class CynanBot(commands.Bot):
             # connection has to be refreshed
             self.__nonceRepository.setNonce(user.getHandle(), nonce)
 
-            print(
-                f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")')
+            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")')
 
         print(f'Finished subscribing to events for {count} user(s)')
 
@@ -377,8 +374,7 @@ class CynanBot(commands.Bot):
                 resubscribeUsers.append(user)
 
         await self.__subscribeToEvents(resubscribeUsers)
-        print(
-            f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
+        print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
     @commands.command(name='analogue')
     async def command_analogue(self, ctx):
