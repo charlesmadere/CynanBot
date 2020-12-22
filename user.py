@@ -27,7 +27,7 @@ class User:
         picOfTheDayRewardId: str,
         speedrunProfile: str,
         twitter: str,
-        timeZone: tzinfo
+        timeZones: List[tzinfo]
     ):
         if handle is None or len(handle) == 0:
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
@@ -51,7 +51,7 @@ class User:
         self.__picOfTheDayRewardId = picOfTheDayRewardId
         self.__speedrunProfile = speedrunProfile
         self.__twitter = twitter
-        self.__timeZone = timeZone
+        self.__timeZones = timeZones
 
     def fetchPicOfTheDay(self):
         if not self.__isPicOfTheDayEnabled:
@@ -95,8 +95,8 @@ class User:
     def getSpeedrunProfile(self):
         return self.__speedrunProfile
 
-    def getTimeZone(self):
-        return self.__timeZone
+    def getTimeZones(self):
+        return self.__timeZones
 
     def getTwitter(self):
         return self.__twitter
@@ -110,8 +110,8 @@ class User:
     def hasSpeedrunProfile(self):
         return utils.isValidStr(self.__speedrunProfile)
 
-    def hasTimeZone(self):
-        return self.__timeZone is not None
+    def hasTimeZones(self):
+        return self.__timeZones is not None and len(self.__timeZones) >= 1
 
     def hasTwitter(self):
         return utils.isValidStr(self.__twitter)

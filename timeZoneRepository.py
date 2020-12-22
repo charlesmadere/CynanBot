@@ -22,3 +22,20 @@ class TimeZoneRepository():
         newTimeZone = pytz.timezone(timeZone)
         self.__timeZones[timeZone] = newTimeZone
         return newTimeZone
+
+    def getTimeZones(self, timeZones: List[str]):
+        if timeZones is None or len(timeZones) == 0:
+            return None
+
+        newTimeZones = list()
+
+        for timeZone in timeZones:
+            newTimeZone = self.getTimeZone(timeZone)
+
+            if newTimeZone is not None:
+                newTimeZones.append(newTimeZone)
+
+        if len(newTimeZones) == 0:
+            return None
+        else:
+            return newTimeZones

@@ -656,12 +656,26 @@ class CynanBot(commands.Bot):
     async def command_time(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.hasTimeZone():
+        if not user.hasTimeZones():
             return
 
-        now = datetime.now(user.getTimeZone())
-        formattedTime = now.strftime("%A, %b %d, %Y %I:%M%p")
-        await ctx.send(f'🕰️ The local time for {user.getHandle()} is {formattedTime}')
+        timeZones = user.getTimeZones()
+        first = True
+        text = ''
+
+        for timeZone in timeZones:
+            localTime = datetime.now(timeZone)
+
+            if first:
+                first = False
+                formattedTime = utils.formatTime(localTime)
+                text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
+            else:
+                formattedTime = utils.formatTimeShort(localTime)
+                timeZoneName = timeZone.tzname(datetime.now())
+                text = f'{text} {timeZoneName} time is {formattedTime}.'
+
+        await ctx.send(text)
 
     @commands.command(name='twitter')
     async def command_twitter(self, ctx):

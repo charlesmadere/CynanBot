@@ -4,6 +4,18 @@ def cleanStr(s: str):
 
     return s.replace('\r\n', ' ').replace('\r', ' ').replace('\n', ' ').strip()
 
+def formatTime(time):
+    if time is None:
+        raise ValueError(f'time argument is malformed: \"{time}\"')
+
+    return time.strftime("%A, %b %d, %Y %I:%M%p")
+
+def formatTimeShort(time):
+    if time is None:
+        raise ValueError(f'time argument is malformed: \"{time}\"')
+
+    return time.strftime("%b %d %I:%M%p")
+
 def getIntFromDict(d: dict, key: str, fallback: int = None):
     if d is None:
         raise ValueError(f'd argument is malformed: \"{d}\"')

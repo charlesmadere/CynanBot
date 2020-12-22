@@ -41,7 +41,13 @@ class UsersRepository():
         locationId = userJson.get('locationId')
         speedrunProfile = userJson.get('speedrunProfile')
         twitter = userJson.get('twitter')
-        timeZone = self.__timeZoneRepository.getTimeZone(userJson.get('timeZone'))
+
+        timeZones = None
+        if 'timeZones' in userJson:
+            timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
+        elif 'timeZone' in userJson:
+            timeZones = list()
+            timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
         increaseCutenessDoubleRewardId = None
         increaseCutenessRewardId = None
@@ -76,7 +82,7 @@ class UsersRepository():
             picOfTheDayRewardId=picOfTheDayRewardId,
             speedrunProfile=speedrunProfile,
             twitter=twitter,
-            timeZone=timeZone
+            timeZones=timeZones
         )
 
     def getUser(self, handle: str):
