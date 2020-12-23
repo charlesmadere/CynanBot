@@ -16,6 +16,26 @@ def formatTimeShort(time):
 
     return time.strftime("%b %d %I:%M%p")
 
+def getCleanedSplits(s: str):
+    splits = list()
+
+    if not isValidStr(s):
+        return splits
+
+    words = s.split()
+
+    if splits is None or len(splits) == 0:
+        return words
+
+    for split in splits:
+        if split is not None:
+            split = cleanStr(split)
+
+        if isValidStr(split):
+            words.append(split)
+
+    return words
+
 def getIntFromDict(d: dict, key: str, fallback: int = None):
     if d is None:
         raise ValueError(f'd argument is malformed: \"{d}\"')

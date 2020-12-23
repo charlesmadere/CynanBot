@@ -308,3 +308,35 @@ class WeatherReport():
 
     def hasTomorrowsConditions(self):
         return self.__tomorrowsConditions is not None and len(self.__tomorrowsConditions) >= 1
+
+    def toStr(self, delimiter: str = ', '):
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        temperature = f'🌡 Temperature is {self.getTemperatureStr()}°C ({self.getTemperatureImperialStr()}°F), '
+        humidity = f'humidity is {self.getHumidity()}%, '
+
+        airQuality = ''
+        if self.hasAirQuality():
+            airQuality = f'air quality is {self.getAirQualityStr()}, '
+
+        pressure = f'and pressure is {self.getPressureStr()} hPa. '
+
+        conditions = ''
+        if self.hasConditions():
+            conditionsJoin = delimiter.join(self.getConditions())
+            conditions = f'Current conditions: {conditionsJoin}. '
+
+        tomorrowsTemps = f'Tomorrow has a low of {self.getTomorrowsLowTemperatureStr()}°C ({self.getTomorrowsLowTemperatureImperialStr()}°F) and a high of {self.getTomorrowsHighTemperatureStr()}°C ({self.getTomorrowsHighTemperatureImperialStr()}°F). '
+
+        tomorrowsConditions = ''
+        if self.hasTomorrowsConditions():
+            tomorrowsConditionsJoin = delimiter.join(self.getTomorrowsConditions())
+            tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin}. '
+
+        alerts = ''
+        if self.hasAlerts():
+            alertsJoin = ' '.join(self.getAlerts())
+            alerts = f'🚨 {alertsJoin}'
+
+        return f'{temperature}{humidity}{airQuality}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}'

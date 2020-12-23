@@ -141,7 +141,7 @@ class CynanBot(commands.Bot):
         if not user.isCatJamEnabled():
             return False
 
-        splits = message.content.split()
+        splits = utils.getCleanedSplits(message.content)
 
         if 'catJAM' in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
             await message.channel.send('catJAM')
@@ -384,8 +384,8 @@ class CynanBot(commands.Bot):
         elif not self.__lastAnalogueStockMessageTimes.isReady(user.getHandle()):
             return
 
-        splits = ctx.message.content.split()
-        includePrices = len(splits) >= 2 and splits[1].lower() == 'includePrices'.lower()
+        splits = utils.getCleanedSplits(ctx.message.content)
+        includePrices = 'includePrices' in splits
 
         try:
             result = self.__analogueStoreRepository.fetchStoreStock()
@@ -453,15 +453,14 @@ class CynanBot(commands.Bot):
         elif not ctx.author.is_mod and not self.__lastCutenessLeaderboardMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = ctx.message.content.split()
+        splits = utils.getCleanedSplits(ctx.message.content)
 
         userName = None
         if len(splits) == 2:
             userName = splits[1]
 
         if not utils.isValidStr(userName):
-            result = self.__cutenessRepository.fetchLeaderboard(
-                user.getHandle())
+            result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
 
             if result.hasEntries():
                 await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
@@ -509,7 +508,7 @@ class CynanBot(commands.Bot):
         if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
             return
 
-        splits = ctx.message.content.split()
+        splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) != 3:
             await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
@@ -566,7 +565,7 @@ class CynanBot(commands.Bot):
         elif not ctx.author.is_mod and not self.__lastJishoMessageTimes.isReady(user.getHandle()):
             return
 
-        splits = ctx.message.content.split()
+        splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) == 1:
             await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
@@ -694,36 +693,8 @@ class CynanBot(commands.Bot):
 
         if weatherReport is None:
             await ctx.send('⚠ Error fetching weather')
-            return
-
-        temperature = f'🌡 Temperature is {weatherReport.getTemperatureStr()}°C ({weatherReport.getTemperatureImperialStr()}°F), '
-        humidity = f'humidity is {weatherReport.getHumidity()}%, '
-
-        airQuality = ''
-        if weatherReport.hasAirQuality():
-            airQuality = f'air quality is {weatherReport.getAirQualityStr()}, '
-
-        pressure = f'and pressure is {weatherReport.getPressureStr()} hPa. '
-
-        conditions = ''
-        if weatherReport.hasConditions():
-            conditionsJoin = ', '.join(weatherReport.getConditions())
-            conditions = f'Current conditions: {conditionsJoin}. '
-
-        tomorrowsTemps = f'Tomorrow has a low of {weatherReport.getTomorrowsLowTemperatureStr()}°C ({weatherReport.getTomorrowsLowTemperatureImperialStr()}°F) and a high of {weatherReport.getTomorrowsHighTemperatureStr()}°C ({weatherReport.getTomorrowsHighTemperatureImperialStr()}°F). '
-
-        tomorrowsConditions = ''
-        if weatherReport.hasTomorrowsConditions():
-            tomorrowsConditionsJoin = ', '.join(
-                weatherReport.getTomorrowsConditions())
-            tomorrowsConditions = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin}. '
-
-        alerts = ''
-        if weatherReport.hasAlerts():
-            alertsJoin = ' '.join(weatherReport.getAlerts())
-            alerts = f'🚨 {alertsJoin}'
-
-        await ctx.send(f'{temperature}{humidity}{airQuality}{pressure}{conditions}{tomorrowsTemps}{tomorrowsConditions}{alerts}')
+        else:
+            await ctx.send(weatherReport.toStr())
 
     @commands.command(name='word')
     async def command_word(self, ctx):
@@ -734,7 +705,7 @@ class CynanBot(commands.Bot):
         elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReady(user.getHandle()):
             return
 
-        splits = ctx.message.content.split()
+        splits = utils.getCleanedSplits(ctx.message.content)
         languageList = self.__wordOfTheDayRepository.getLanguageList()
 
         if len(splits) == 1:
@@ -763,18 +734,7 @@ class CynanBot(commands.Bot):
         except ValueError:
             print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\"')
 
-        message = ''
-
         if wotd is None:
-            message = f'⚠ Error fetching word of the day for {languageEntry.getApiName()}'
-        elif wotd.hasExamples():
-            if wotd.hasTransliteration():
-                message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
-            else:
-                message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
-        elif wotd.hasTransliteration():
-            message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
+            await ctx.send(f'⚠ Error fetching word of the day for {languageEntry.getApiName()}')
         else:
-            message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}'
-
-        await ctx.send(message)
+            await ctx.send(wotd.toStr())

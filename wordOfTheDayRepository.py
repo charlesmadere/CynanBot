@@ -212,3 +212,14 @@ class Wotd():
 
     def hasTransliteration(self):
         return self.__transliteration is not None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()
+
+    def toStr(self):
+        if self.hasExamples():
+            if self.hasTransliteration():
+                return f'({self.getLanguage()}) {self.getWord()} ({self.getTransliteration()}) — {self.getDefinition()}. Example: {self.getForeignExample()} {self.getEnglishExample()}'
+            else:
+                return f'({self.getLanguage()}) {self.getWord()} — {self.getDefinition()}. Example: {self.getForeignExample()} {self.getEnglishExample()}'
+        elif self.hasTransliteration():
+            return f'({self.getLanguage()}) {self.getWord()} ({self.getTransliteration()}) — {self.getDefinition()}'
+        else:
+            return f'({self.getLanguage()}) {self.getWord()} — {self.getDefinition()}'
