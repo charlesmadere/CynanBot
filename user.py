@@ -57,8 +57,7 @@ class User:
         if not self.__isPicOfTheDayEnabled:
             raise RuntimeError(f'POTD is disabled for {self.__handle}')
         elif not os.path.exists(self.__picOfTheDayFile):
-            raise FileNotFoundError(
-                f'POTD file not found: \"{self.__picOfTheDayFile}\"')
+            raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = utils.cleanStr(file.read())
