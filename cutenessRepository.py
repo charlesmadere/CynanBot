@@ -1,6 +1,7 @@
 import locale
 from typing import List
 
+import utils
 from backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
 
@@ -15,23 +16,17 @@ class CutenessRepository():
         userIdsRepository: UserIdsRepository
     ):
         if backingDatabase is None:
-            raise ValueError(
-                f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif leaderboardSize is None:
-            raise ValueError(
-                f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
+            raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 1 or leaderboardSize > 10:
-            raise ValueError(
-                f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
+            raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
         elif localLeaderboardSize is None:
-            raise ValueError(
-                f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
+            raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
         elif localLeaderboardSize < 1 or localLeaderboardSize > 6:
-            raise ValueError(
-                f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
+            raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
         elif userIdsRepository is None:
-            raise ValueError(
-                f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__backingDatabase = backingDatabase
         self.__leaderboardSize = leaderboardSize
@@ -52,10 +47,9 @@ class CutenessRepository():
         connection.commit()
 
     def fetchCuteness(self, twitchChannel: str, userName: str):
-        if twitchChannel is None or len(twitchChannel) == 0 or twitchChannel.isspace():
-            raise ValueError(
-                f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         userId = self.__userIdsRepository.fetchUserId(userName=userName)
@@ -88,12 +82,11 @@ class CutenessRepository():
         userId: str,
         userName: str
     ):
-        if twitchChannel is None or len(twitchChannel) == 0 or twitchChannel.isspace():
-            raise ValueError(
-                f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif userId is None or len(userId) == 0 or userId.isspace() or userId == '0':
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(userId) or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__userIdsRepository.setUser(userId=userId, userName=userName)
@@ -160,8 +153,7 @@ class CutenessRepository():
                 ))
             except RuntimeError:
                 # Just log the error and continue, there's nothing more we can do to recover.
-                print(
-                    f'Encountered a user ID that has no username: \"{row[1]}\"')
+                print(f'Encountered a user ID that has no username: \"{row[1]}\"')
 
         cursor.close()
         return CutenessResult(
@@ -179,14 +171,12 @@ class CutenessRepository():
         userName: str
     ):
         if incrementAmount is None:
-            raise ValueError(
-                f'incrementAmount argument is malformed: \"{incrementAmount}\"')
-        elif twitchChannel is None or len(twitchChannel) == 0 or twitchChannel.isspace():
-            raise ValueError(
-                f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif userId is None or len(userId) == 0 or userId.isspace() or userId == '0':
+            raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(userId) or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__userIdsRepository.setUser(userId=userId, userName=userName)
@@ -230,9 +220,8 @@ class CutenessRepository():
         )
 
     def fetchLeaderboard(self, twitchChannel: str):
-        if twitchChannel is None or len(twitchChannel) == 0 or twitchChannel.isspace():
-            raise ValueError(
-                f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         twitchChannelUserId = self.__userIdsRepository.fetchUserId(
             userName=twitchChannel)
@@ -284,9 +273,9 @@ class CutenessResult():
         userId: str,
         userName: str
     ):
-        if userId is None or len(userId) == 0 or userId.isspace():
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cuteness = cuteness
@@ -305,8 +294,7 @@ class CutenessResult():
 
     def getLocalLeaderboardStr(self, delimiter: str = ', '):
         if delimiter is None:
-            raise ValueError(
-                f'delimiter argument is malformed: \"{delimiter}\"')
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not self.hasLocalLeaderboard():
             return ''
@@ -370,9 +358,9 @@ class LeaderboardEntry():
             raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
         elif rank is None:
             raise ValueError(f'rank argument is malformed: \"{rank}\"')
-        elif userId is None or len(userId) == 0 or userId.isspace():
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cuteness = cuteness
@@ -407,9 +395,9 @@ class LocalLeaderboardEntry():
     def __init__(self, cuteness: int, userId: str, userName: str):
         if cuteness is None:
             raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        elif userId is None or len(userId) == 0 or userId.isspace():
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userName is None or len(userName) == 0 or userName.isspace():
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cuteness = cuteness
