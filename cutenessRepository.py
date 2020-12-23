@@ -344,8 +344,7 @@ class LeaderboardResult():
 
     def toStr(self, delimiter: str = ', '):
         if delimiter is None:
-            raise ValueError(
-                f'delimiter argument is malformed: \"{delimiter}\"')
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not self.hasEntries():
             return ''

@@ -6,6 +6,7 @@ from typing import List
 
 import requests
 
+import utils
 from authHelper import AuthHelper
 from locationsRepository import Location
 from timedDict import TimedDict
@@ -85,7 +86,7 @@ class WeatherRepository():
 
     def __fetchAirQuality(self, location: Location):
         iqAirApiKey = self.__authHelper.getIqAirApiKey()
-        if iqAirApiKey is None or len(iqAirApiKey) == 0 or iqAirApiKey.isspace():
+        if not utils.isValidStr(iqAirApiKey):
             print(f'iqAirApiKey is missing: \"{iqAirApiKey}\"')
             return None
 
@@ -120,7 +121,7 @@ class WeatherRepository():
         # https://openweathermap.org/api
 
         oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
-        if oneWeatherApiKey is None or len(oneWeatherApiKey) == 0 or oneWeatherApiKey.isspace():
+        if not utils.isValidStr(oneWeatherApiKey):
             raise RuntimeError(f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
 
         requestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric".format(
