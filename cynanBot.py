@@ -482,8 +482,7 @@ class CynanBot(commands.Bot):
                 else:
                     await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
             except ValueError:
-                print(
-                    f'Unable to find \"{userName}\" in the cuteness database')
+                print(f'Unable to find \"{userName}\" in the cuteness database')
                 await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
 
     @commands.command(name='cynansource')
@@ -531,8 +530,7 @@ class CynanBot(commands.Bot):
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, ValueError):
-            print(
-                f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
+            print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
             await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -542,8 +540,7 @@ class CynanBot(commands.Bot):
         try:
             userId = self.__userIdsRepository.fetchUserId(userName=userName)
         except ValueError:
-            print(
-                f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
+            print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
             await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
@@ -557,8 +554,7 @@ class CynanBot(commands.Bot):
 
             await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except ValueError:
-            print(
-                f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
+            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
 
     @commands.command(name='jisho')
@@ -583,8 +579,7 @@ class CynanBot(commands.Bot):
             self.__lastJishoMessageTimes.update(user.getHandle())
 
             if result is None:
-                print(
-                    f'Failed searching Jisho for \"{query}\" in {user.getHandle()}')
+                print(f'Failed searching Jisho for \"{query}\" in {user.getHandle()}')
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
                 await ctx.send(f'{result.toStr()}')
@@ -636,8 +631,7 @@ class CynanBot(commands.Bot):
             else:
                 await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')
         except ValueError:
-            print(
-                f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
     @commands.command(name='pbs')
