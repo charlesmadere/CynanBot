@@ -582,7 +582,7 @@ class CynanBot(commands.Bot):
                 print(f'Failed searching Jisho for \"{query}\" in {user.getHandle()}')
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
-                await ctx.send(f'{result.toStr()}')
+                await ctx.send(result.toStr())
         except ValueError:
             print(f'JishoHelper search query is malformed: \"{query}\"')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
@@ -761,8 +761,7 @@ class CynanBot(commands.Bot):
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
         except ValueError:
-            print(
-                f'Error fetching word of the day for \"{languageEntry.getApiName()}\"')
+            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\"')
 
         message = ''
 
