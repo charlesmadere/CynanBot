@@ -141,7 +141,7 @@ class AuthHelper():
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
 
-            if accessToken is not None and ((nonce is None or len(nonce) == 0 or nonce.isspace()) or nonce == self.__nonceRepository.getNonce(handle)):
+            if accessToken is not None and (not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(handle)):
                 userTokens[handle] = accessToken
 
         if len(userTokens) == 0:

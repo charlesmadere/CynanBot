@@ -4,6 +4,7 @@ from typing import List
 import requests
 import xmltodict
 
+import utils
 from timedDict import TimedDict
 
 
@@ -100,9 +101,9 @@ class WordOfTheDayRepository():
 class LanguageEntry():
 
     def __init__(self, apiName: str, commandName: str):
-        if apiName is None or len(apiName) == 0 or apiName.isspace():
+        if not utils.isValidStr(apiName):
             raise ValueError(f'apiName argument is malformed: \"{apiName}\"')
-        elif commandName is None or len(commandName) == 0 or commandName.isspace():
+        elif not utils.isValidStr(commandName):
             raise ValueError(f'commandName argument is malformed: \"{commandName}\"')
 
         self.__apiName = apiName
@@ -127,7 +128,7 @@ class LanguageList():
         return self.__entries
 
     def getLanguageForCommand(self, command: str):
-        if command is None or len(command) == 0 or command.isspace():
+        if not utils.isValidStr(command):
             raise ValueError(f'command argument is malformed: \"{command}\"')
 
         for entry in self.__entries:
@@ -172,11 +173,11 @@ class Wotd():
         transliteration: str,
         word: str
     ):
-        if definition is None or len(definition) == 0 or definition.isspace():
+        if not utils.isValidStr(definition):
             raise ValueError(f'definition argument is malformed: \"{definition}\"')
-        elif language is None or len(language) == 0 or language.isspace():
+        elif not utils.isValidStr(language):
             raise ValueError(f'language argument is malformed: \"{language}\"')
-        elif word is None or len(word) == 0 or word.isspace():
+        elif not utils.isValidStr(word):
             raise ValueError(f'word argument is malformed: \"{word}\"')
 
         self.__definition = definition
@@ -205,13 +206,10 @@ class Wotd():
         return self.__word
 
     def hasExamples(self):
-        return (
-            self.__englishExample is not None and len(self.__englishExample) != 0 and not self.__englishExample.isspace() and
-            self.__foreignExample is not None and len(self.__foreignExample) != 0 and not self.__foreignExample.isspace()
-        )
+        return utils.isValidStr(self.__englishExample) and utils.isValidStr(self.__foreignExample)
 
     def hasTransliteration(self):
-        return self.__transliteration is not None and len(self.__transliteration) != 0 and not self.__transliteration.isspace()
+        return utils.isValidStr(self.__transliteration)
 
     def toStr(self):
         if self.hasExamples():

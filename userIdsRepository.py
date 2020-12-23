@@ -45,10 +45,10 @@ class UserIdsRepository():
         cursor.close()
 
         if userId is not None:
-            if len(userId) == 0 or userId.isspace():
-                raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
-            else:
+            if utils.isValidStr(userId):
                 return userId
+            else:
+                raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
 
         if not utils.isValidStr(clientId):
             print(f'Can\'t lookup user ID for \"{userName}\", as clientId is malformed: \"{clientId}\"')
