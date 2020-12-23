@@ -38,27 +38,32 @@ class JokesRepository():
             print(f'Joke JSON has malformed \'success\' data: \"{jsonResponse}\"')
             return None
 
-        jokesResponse = jsonResponse.get('contents').get('jokes')
-        if jokesResponse is None or len(jokesResponse) == 0:
-            print(f'Joke JSON is malformed: \"{jsonResponse}\"')
+        contentsJson = jsonResponse.get('contents')
+        if contentsJson is None or len(contentsJson) == 0:
+            print(f'Joke JSON has malformed \'contents\' data: \"{jsonResponse}\"')
             return None
 
-        jokeResponse = jokesResponse[0]['joke']
+        jokesJson = contentsJson.get('jokes')
+        if jokesJson is None or len(jokesJson) == 0:
+            print(f'Joke JSON has malformed \'jokes\' data: \"{jsonResponse}\"')
+            return None
+
+        jokeJson = jokesJson[0]['joke']
 
         joke = JokeResponse(
-            clean=utils.getIntFromDict(jokeResponse, 'clean', fallback=0),
-            length=utils.getIntFromDict(jokeResponse, 'length'),
-            racial=utils.getIntFromDict(jokeResponse, 'racial', fallback=0),
-            _id=utils.getStrFromDict(jokeResponse, 'id'),
-            text=utils.getStrFromDict(jokeResponse, 'text', clean=True),
-            title=utils.getStrFromDict(jokeResponse, 'title')
+            clean=utils.getIntFromDict(jokeJson, 'clean', fallback=0),
+            length=utils.getIntFromDict(jokeJson, 'length'),
+            racial=utils.getIntFromDict(jokeJson, 'racial', fallback=0),
+            _id=utils.getStrFromDict(jokeJson, 'id'),
+            text=utils.getStrFromDict(jokeJson, 'text', clean=True),
+            title=utils.getStrFromDict(jokeJson, 'title')
         )
 
         # I used to also check the joke's `clean` value, and return None if it was != 0. But then I found that
         # sometimes a joke that was clearly "clean" would sometimes have a `clean` value of 0. AND THEN now I've
         # also seen some clean jokes with a `clean` value of null. So whatever, let's just ignore that field.
         if joke.getRacial() != 0:
-            print(f'Rejecting joke because of incorrect \'racial\' values: \"{jokeResponse}\"')
+            print(f'Rejecting joke because of incorrect \'racial\' value: \"{jokeJson}\"')
             return None
 
         return joke
