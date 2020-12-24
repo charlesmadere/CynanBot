@@ -414,7 +414,7 @@ class CynanBot(commands.Bot):
         if user.hasSpeedrunProfile():
             commands.append('!pbs')
 
-        if user.hasTimeZone():
+        if user.hasTimeZones():
             commands.append('!time')
 
         if user.hasTwitter():
