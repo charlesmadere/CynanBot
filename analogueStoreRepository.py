@@ -121,7 +121,7 @@ class AnalogueStoreProduct():
 
         priceText = ''
         if includePrice and self.hasPrice():
-            priceText = f' {self.__price}'
+            priceText = f' ({self.__price})'
 
         stockInfoText = ''
         if includeStockInfo:
