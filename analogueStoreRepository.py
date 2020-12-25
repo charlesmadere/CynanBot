@@ -119,18 +119,23 @@ class AnalogueStoreProduct():
         elif includeStockInfo is None:
             raise ValueError(f'includeStockInfo argument is malformed: \"{includeStockInfo}\"')
 
-        priceText = ''
-        if includePrice and self.hasPrice():
-            priceText = f' ({self.__price})'
+        priceAndStockText = ''
+        if includePrice or includeStockInfo:
+            if includePrice and self.hasPrice():
+                if includeStockInfo:
+                    if self.inStock():
+                        priceAndStockText = f' (in stock, {self.__price})'
+                    else:
+                        priceAndStockText = f' (out of stock, {self.__price})'
+                else:
+                    priceAndStockText = f' ({self.__price})'
+            elif includeStockInfo:
+                if self.inStock():
+                    priceAndStockText = f' (in stock)'
+                else:
+                    priceAndStockText = f' (out of stock)'
 
-        stockInfoText = ''
-        if includeStockInfo:
-            if self.inStock():
-                stockInfoText = ' (in stock)'
-            else:
-                stockInfoText = ' (out of stock)'
-
-        return f'{self.__name}{priceText}{stockInfoText}'
+        return f'{self.__name}{priceAndStockText}'
 
 
 class AnalogueStoreStock():
