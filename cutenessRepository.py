@@ -69,6 +69,7 @@ class CutenessRepository():
             cuteness = row[0]
 
         cursor.close()
+
         return CutenessResult(
             cuteness=cuteness,
             localLeaderboard=None,
@@ -156,6 +157,7 @@ class CutenessRepository():
                 print(f'Encountered a user ID that has no username: \"{row[1]}\"')
 
         cursor.close()
+
         return CutenessResult(
             cuteness=cuteness,
             localLeaderboard=localLeaderboard,
@@ -212,6 +214,7 @@ class CutenessRepository():
 
         connection.commit()
         cursor.close()
+
         return CutenessResult(
             cuteness=cuteness,
             localLeaderboard=None,
@@ -259,6 +262,7 @@ class CutenessRepository():
             rank = rank + 1
 
         cursor.close()
+
         return LeaderboardResult(
             entries=entries
         )
