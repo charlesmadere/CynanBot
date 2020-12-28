@@ -167,8 +167,7 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        print(
-            f'Enabling double cuteness points in {twitchUser.getHandle()}...')
+        print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
 
         self.__cutenessDoubleEndTimes.update(twitchUser.getHandle())
 
@@ -182,8 +181,7 @@ class CynanBot(commands.Bot):
 
             await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
         except ValueError:
-            print(
-                f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleIncreaseCutenessRewardRedeemed(
@@ -209,8 +207,7 @@ class CynanBot(commands.Bot):
             if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
                 await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {result.getCutenessStr()} ✨')
         except ValueError:
-            print(
-                f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleMessageFromCynan(self, message):
@@ -249,8 +246,7 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__usersRepository.getUsers():
-            accessToken = self.__userTokensRepository.getAccessToken(
-                user.getHandle())
+            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
 
             if accessToken is None:
                 continue
@@ -266,8 +262,7 @@ class CynanBot(commands.Bot):
                 break
 
         if twitchUser is None:
-            raise RuntimeError(
-                f'Unable to find User with ID: \"{twitchUserId}\"')
+            raise RuntimeError(f'Unable to find User with ID: \"{twitchUserId}\"')
 
         if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled():
             return
@@ -280,13 +275,7 @@ class CynanBot(commands.Bot):
         userNameThatRedeemed = redemptionJson['user']['login']
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
-        if twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
-            await self.__handlePotdRewardRedeemed(
-                userNameThatRedeemed=userNameThatRedeemed,
-                twitchUser=twitchUser,
-                twitchChannel=twitchChannel
-            )
-        elif twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
+        if twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
             await self.__handleIncreaseCutenessRewardRedeemed(
                 userIdThatRedeemed=userIdThatRedeemed,
                 userNameThatRedeemed=userNameThatRedeemed,
@@ -300,25 +289,14 @@ class CynanBot(commands.Bot):
                 twitchUser=twitchUser,
                 twitchChannel=twitchChannel
             )
+        elif twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
+            await self.__handlePotdRewardRedeemed(
+                userNameThatRedeemed=userNameThatRedeemed,
+                twitchUser=twitchUser,
+                twitchChannel=twitchChannel
+            )
         else:
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
-
-    async def __handleWordOfTheDay(self, ctx, wotd: Wotd):
-        message = ""
-
-        if wotd is None:
-            message = '⚠ Error fetching word of the day'
-        elif wotd.hasExamples():
-            if wotd.hasTransliteration():
-                message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
-            else:
-                message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}. Example: {wotd.getForeignExample()} {wotd.getEnglishExample()}'
-        elif wotd.hasTransliteration():
-            message = f'({wotd.getLanguage()}) {wotd.getWord()} ({wotd.getTransliteration()}) — {wotd.getDefinition()}'
-        else:
-            message = f'({wotd.getLanguage()}) {wotd.getWord()} — {wotd.getDefinition()}'
-
-        await ctx.send(message)
 
     async def __subscribeToEvents(self, users: List[User]):
         if users is None or len(users) == 0:
