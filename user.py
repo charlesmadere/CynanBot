@@ -17,6 +17,7 @@ class User:
         isJishoEnabled: bool,
         isJokesEnabled: bool,
         isPicOfTheDayEnabled: bool,
+        isPkmnEnabled: bool,
         isWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
@@ -25,6 +26,8 @@ class User:
         locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
+        pkmnEvolveRewardId: str,
+        pkmnShinyRewardId: str,
         speedrunProfile: str,
         twitter: str,
         timeZones: List[tzinfo]
@@ -41,6 +44,7 @@ class User:
         self.__isJishoEnabled = isJishoEnabled
         self.__isJokesEnabled = isJokesEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
+        self.__isPkmnEnabled = isPkmnEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
@@ -49,6 +53,8 @@ class User:
         self.__locationId = locationId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
+        self.__pkmnEvolveRewardId = pkmnEvolveRewardId
+        self.__pkmnShinyRewardId = pkmnShinyRewardId
         self.__speedrunProfile = speedrunProfile
         self.__twitter = twitter
         self.__timeZones = timeZones
@@ -90,6 +96,12 @@ class User:
 
     def getPicOfTheDayRewardId(self):
         return self.__picOfTheDayRewardId
+
+    def getPkmnEvolveRewardId(self):
+        return self.__pkmnEvolveRewardId
+
+    def getPkmnShinyRewardId(self):
+        return self.__pkmnShinyRewardId
 
     def getSpeedrunProfile(self):
         return self.__speedrunProfile
@@ -135,6 +147,9 @@ class User:
 
     def isPicOfTheDayEnabled(self):
         return self.__isPicOfTheDayEnabled
+
+    def isPkmnEnabled(self):
+        return self.__isPkmnEnabled
 
     def isWordOfTheDayEnabled(self):
         return self.__isWordOfTheDayEnabled

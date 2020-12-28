@@ -270,6 +270,9 @@ class CynanBot(commands.Bot):
         increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
         increaseCutenessRewardId = twitchUser.getIncreaseCutenessRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
+        pkmnEvolveRewardId = twitchUser.getPkmnEvolveRewardId()
+        pkmnShinyRewardId = twitchUser.getPkmnShinyRewardId()
+
         rewardId = redemptionJson['reward']['id']
         userIdThatRedeemed = redemptionJson['user']['id']
         userNameThatRedeemed = redemptionJson['user']['login']
@@ -295,6 +298,10 @@ class CynanBot(commands.Bot):
                 twitchUser=twitchUser,
                 twitchChannel=twitchChannel
             )
+        elif twitchUser.isPkmnEnabled() and rewardId == pkmnEvolveRewardId:
+            await twitchChannel.send(f'!freeevolve {userNameThatRedeemed}')
+        elif twitchUser.isPkmnEnabled() and rewardId == pkmnShinyRewardId:
+            await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
         else:
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 

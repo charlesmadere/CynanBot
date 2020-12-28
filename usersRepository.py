@@ -36,6 +36,7 @@ class UsersRepository():
         isJishoEnabled = userJson.get('jishoEnabled', False)
         isJokesEnabled = userJson.get('jokesEnabled', False)
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
+        isPkmnEnabled = userJson.get('pkmnEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
         discord = userJson.get('discord')
         locationId = userJson.get('locationId')
@@ -64,6 +65,12 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
+        pkmnEvolveRewardId = None
+        pkmnShinyRewardId = None
+        if isPkmnEnabled:
+            pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
+            pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
+
         return User(
             isAnalogueEnabled=isAnalogueEnabled,
             isCatJamEnabled=isCatJamEnabled,
@@ -72,6 +79,7 @@ class UsersRepository():
             isJishoEnabled=isJishoEnabled,
             isJokesEnabled=isJokesEnabled,
             isPicOfTheDayEnabled=isPicOfTheDayEnabled,
+            isPkmnEnabled=isPkmnEnabled,
             isWordOfTheDayEnabled=isWordOfTheDayEnabled,
             discord=discord,
             handle=handle,
@@ -80,6 +88,8 @@ class UsersRepository():
             locationId=locationId,
             picOfTheDayFile=picOfTheDayFile,
             picOfTheDayRewardId=picOfTheDayRewardId,
+            pkmnEvolveRewardId=pkmnEvolveRewardId,
+            pkmnShinyRewardId=pkmnShinyRewardId,
             speedrunProfile=speedrunProfile,
             twitter=twitter,
             timeZones=timeZones
