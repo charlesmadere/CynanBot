@@ -441,7 +441,7 @@ class CynanBot(commands.Bot):
         splits = utils.getCleanedSplits(ctx.message.content)
 
         userName = None
-        if len(splits) == 2:
+        if len(splits) >= 2:
             userName = splits[1]
 
         if not utils.isValidStr(userName):
@@ -494,7 +494,7 @@ class CynanBot(commands.Bot):
 
         splits = utils.getCleanedSplits(ctx.message.content)
 
-        if len(splits) != 3:
+        if len(splits) < 3:
             await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -550,7 +550,7 @@ class CynanBot(commands.Bot):
 
         splits = utils.getCleanedSplits(ctx.message.content)
 
-        if len(splits) == 1:
+        if len(splits) < 2:
             await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
@@ -691,7 +691,7 @@ class CynanBot(commands.Bot):
         splits = utils.getCleanedSplits(ctx.message.content)
         languageList = self.__wordOfTheDayRepository.getLanguageList()
 
-        if len(splits) == 1:
+        if len(splits) < 2:
             example = languageList.getLanguages()[0].getCommandName()
             languages = languageList.toCommandNameStr()
             await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
