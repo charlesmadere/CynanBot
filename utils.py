@@ -83,3 +83,11 @@ def getStrFromDict(d: dict, key: str, fallback: str = None, clean: bool = False)
 
 def isValidStr(s: str):
     return s is not None and len(s) >= 1 and not s.isspace()
+
+def removePreceedingAt(s: str):
+    if not isValidStr(s):
+        return s
+    elif s[0] != '@':
+        return s
+    else:
+        return s[1:len(s)]

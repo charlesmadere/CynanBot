@@ -452,8 +452,7 @@ class CynanBot(commands.Bot):
             else:
                 await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
         else:
-            if userName[0] == '@':
-                userName = userName[1:len(userName)]
+            userName = utils.removePreceedingAt(userName)
 
             try:
                 result = self.__cutenessRepository.fetchCuteness(
@@ -518,8 +517,7 @@ class CynanBot(commands.Bot):
             await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
-        if userName[0] == '@':
-            userName = userName[1:len(userName)]
+        userName = utils.removePreceedingAt(userName)
 
         try:
             userId = self.__userIdsRepository.fetchUserId(userName=userName)
