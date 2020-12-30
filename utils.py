@@ -1,3 +1,6 @@
+from typing import List
+
+
 def cleanStr(s: str):
     if s is None:
         raise ValueError(f's argument is malformed: \"{s}\"')
@@ -80,6 +83,9 @@ def getStrFromDict(d: dict, key: str, fallback: str = None, clean: bool = False)
         value = cleanStr(value)
 
     return value
+
+def isValidList(l: List):
+    return l is not None and len(l) >= 1
 
 def isValidStr(s: str):
     return s is not None and len(s) >= 1 and not s.isspace()

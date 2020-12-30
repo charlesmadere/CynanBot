@@ -131,7 +131,7 @@ class AuthHelper():
         if userTokensRepository is None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
-        if users is None or len(users) == 0:
+        if not utils.isValidList(users):
             print(f'Given an empty list of users, skipping access token validation')
             return
 

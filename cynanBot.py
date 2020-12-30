@@ -309,7 +309,7 @@ class CynanBot(commands.Bot):
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def __subscribeToEvents(self, users: List[User]):
-        if users is None or len(users) == 0:
+        if not utils.isValidList(users):
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 
