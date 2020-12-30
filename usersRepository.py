@@ -65,9 +65,11 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
+        pkmnCatchRewardId = None
         pkmnEvolveRewardId = None
         pkmnShinyRewardId = None
         if isPkmnEnabled:
+            pkmnCatchRewardId = userJson.get('pkmnCatchRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
             pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
 
@@ -88,6 +90,7 @@ class UsersRepository():
             locationId=locationId,
             picOfTheDayFile=picOfTheDayFile,
             picOfTheDayRewardId=picOfTheDayRewardId,
+            pkmnCatchRewardId=pkmnCatchRewardId,
             pkmnEvolveRewardId=pkmnEvolveRewardId,
             pkmnShinyRewardId=pkmnShinyRewardId,
             speedrunProfile=speedrunProfile,
