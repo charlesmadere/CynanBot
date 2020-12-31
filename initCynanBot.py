@@ -61,5 +61,5 @@ cynanBot = CynanBot(
     wordOfTheDayRepository=wordOfTheDayRepository
 )
 
-print("Starting CynanBot...")
+print('Starting CynanBot...')
 cynanBot.run()
