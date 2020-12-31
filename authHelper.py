@@ -43,7 +43,7 @@ class AuthHelper():
         if jsonContents is None:
             raise IOError(f'Error reading from auth file: \"{authFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of auth file ({authFile}) is empty')
+            raise ValueError(f'JSON contents of auth file \"{authFile}\" is empty')
 
         clientId = jsonContents.get('clientId')
         if not utils.isValidStr(clientId):
