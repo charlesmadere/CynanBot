@@ -276,7 +276,7 @@ class CynanBot(commands.Bot):
 
         rewardId = redemptionJson['reward']['id']
         userIdThatRedeemed = redemptionJson['user']['id']
-        userNameThatRedeemed = redemptionJson['user']['login']
+        userNameThatRedeemed = redemptionJson['user']['display_name']
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
