@@ -11,7 +11,8 @@ import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
-from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.analogueStoreRepository import (AnalogueStoreRepository,
+                                                    AnalogueStoreStock)
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.wordOfTheDayRepository import (LanguageEntry, LanguageList,
                                                    WordOfTheDayRepository,
