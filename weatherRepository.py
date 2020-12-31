@@ -5,11 +5,11 @@ from datetime import timedelta
 from typing import List
 
 import requests
-from authHelper import AuthHelper
-from locationsRepository import Location
 
-import utils
-from timedDict import TimedDict
+import CynanBotCommon.utils as utils
+from authHelper import AuthHelper
+from CynanBotCommon.timedDict import TimedDict
+from locationsRepository import Location
 
 
 class WeatherRepository():
