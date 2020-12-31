@@ -5,10 +5,10 @@ from datetime import timedelta
 from typing import List
 
 import requests
-
-import utils
 from authHelper import AuthHelper
 from locationsRepository import Location
+
+import utils
 from timedDict import TimedDict
 
 

@@ -4,20 +4,11 @@ from typing import List
 
 import requests
 
-import utils
+import CynanBotCommon.utils as utils
 from nonceRepository import NonceRepository
 from user import User
 from userTokensRepository import UserTokensRepository
 
-
-# The authentication file should be formatted like this:
-# {
-#    "clientId": "", (taken from "Client ID" at https://dev.twitch.tv/console/apps/)
-#    "clientSecret": "", (taken from "Client Secret" at https://dev.twitch.tv/console/apps/)
-#    "iqAirApiKey": "", (from https://www.iqair.com/us/dashboard/api)
-#    "ircAuthToken": "", (generated from https://twitchapps.com/tmi/),
-#    "oneWeatherApiKey": "" (from https://openweathermap.org/)
-# }
 
 class AuthHelper():
 
@@ -131,7 +122,7 @@ class AuthHelper():
         if userTokensRepository is None:
             raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
 
-        if not utils.isValidList(users):
+        if not utils.hasItems(users):
             print(f'Given an empty list of users, skipping access token validation')
             return
 

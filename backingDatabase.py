@@ -1,6 +1,6 @@
 import sqlite3
 
-import utils
+import CynanBotCommon.utils as utils
 
 
 class BackingDatabase():

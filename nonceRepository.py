@@ -1,4 +1,4 @@
-import utils
+import CynanBotCommon.utils as utils
 
 
 class NonceRepository():

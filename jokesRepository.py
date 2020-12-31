@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-import utils
+import CynanBotCommon.utils as utils
 
 
 class JokesRepository():

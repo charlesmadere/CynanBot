@@ -2,7 +2,7 @@ import json
 
 import requests
 
-import utils
+import CynanBotCommon.utils as utils
 from backingDatabase import BackingDatabase
 
 

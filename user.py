@@ -3,7 +3,7 @@ import urllib
 from datetime import tzinfo
 from typing import List
 
-import utils
+import CynanBotCommon.utils as utils
 
 
 class User:
@@ -33,9 +33,9 @@ class User:
         twitter: str,
         timeZones: List[tzinfo]
     ):
-        if handle is None or len(handle) == 0:
+        if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif isPicOfTheDayEnabled and (picOfTheDayFile is None or len(picOfTheDayFile) == 0):
+        elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled = isAnalogueEnabled

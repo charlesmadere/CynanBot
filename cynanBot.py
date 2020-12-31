@@ -7,23 +7,24 @@ from typing import List
 import requests
 from twitchio.ext import commands
 
-import utils
-from analogueStoreRepository import AnalogueStoreRepository, AnalogueStoreStock
+import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
+from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.wordOfTheDayRepository import (LanguageEntry, LanguageList,
+                                                   WordOfTheDayRepository,
+                                                   Wotd)
 from jishoHelper import JishoHelper, JishoResult
 from jokesRepository import JokeResponse, JokesRepository
 from locationsRepository import Location, LocationsRepository
 from nonceRepository import NonceRepository
-from timedDict import TimedDict
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from weatherRepository import WeatherReport, WeatherRepository
-from wordOfTheDayRepository import (LanguageEntry, LanguageList,
-                                    WordOfTheDayRepository, Wotd)
 
 
 class CynanBot(commands.Bot):
@@ -309,7 +310,7 @@ class CynanBot(commands.Bot):
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def __subscribeToEvents(self, users: List[User]):
-        if not utils.isValidList(users):
+        if not utils.hasItems(users):
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 

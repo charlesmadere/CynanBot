@@ -1,10 +1,11 @@
 import locale
 
-from analogueStoreRepository import AnalogueStoreRepository
 from authHelper import AuthHelper
 from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
+from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from jishoHelper import JishoHelper
 from jokesRepository import JokesRepository
 from locationsRepository import LocationsRepository
@@ -14,8 +15,6 @@ from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from weatherRepository import WeatherRepository
-from wordOfTheDayRepository import WordOfTheDayRepository
-
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 

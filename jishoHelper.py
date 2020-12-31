@@ -5,7 +5,7 @@ from typing import List
 import requests
 from lxml import html
 
-import utils
+import CynanBotCommon.utils as utils
 
 
 class JishoHelper():
@@ -31,7 +31,7 @@ class JishoHelper():
             return None
 
         parentElements = htmlTree.find_class('concept_light-representation')
-        if parentElements is None or len(parentElements) == 0:
+        if not utils.hasItems(parentElements):
             print(f'parentElements is malformed: \"{parentElements}\"')
             return None
 
@@ -51,7 +51,7 @@ class JishoHelper():
             return None
 
         definitionElements = htmlTree.find_class('meaning-meaning')
-        if definitionElements is None or len(definitionElements) == 0:
+        if not utils.hasItems(definitionElements):
             print(f'definitionElements is malformed: \"{definitionElements}\"')
             return None
 
@@ -83,7 +83,7 @@ class JishoHelper():
 
         furigana = None
         furiganaElements = htmlTree.find_class('furigana')
-        if furiganaElements is not None and len(furiganaElements) >= 1:
+        if utils.hasItems(furiganaElements):
             furigana = furiganaElements[0].text_content()
 
             if furigana is not None:
@@ -106,7 +106,7 @@ class JishoResult():
         url: str,
         word: str
     ):
-        if definitions is None or len(definitions) == 0:
+        if not utils.hasItems(definitions):
             raise ValueError(f'definitions argument is malformed: \"{definitions}\"')
         elif not utils.isValidStr(url):
             raise ValueError(f'url argument is malformed: \"{url}\"')

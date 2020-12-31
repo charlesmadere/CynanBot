@@ -3,7 +3,7 @@ import math
 from datetime import tzinfo
 from os import path
 
-import utils
+import CynanBotCommon.utils as utils
 from timeZoneRepository import TimeZoneRepository
 
 
