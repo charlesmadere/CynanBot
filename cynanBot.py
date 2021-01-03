@@ -266,7 +266,7 @@ class CynanBot(commands.Bot):
         if twitchUser is None:
             raise RuntimeError(f'Unable to find User with ID: \"{twitchUserId}\"')
 
-        if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled():
+        if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled():
             return
 
         increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
