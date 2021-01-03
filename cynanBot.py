@@ -341,7 +341,7 @@ class CynanBot(commands.Bot):
             # connection has to be refreshed
             self.__nonceRepository.setNonce(user.getHandle(), nonce)
 
-            print(f'Subscribed to events for {user.getHandle()} (nonce: \"{nonce}\")')
+            print(f'Subscribed to events for {user.getHandle()} (userId: \"{userId}\", nonce: \"{nonce}\")')
 
         print(f'Finished subscribing to events for {count} user(s)')
 
