@@ -13,7 +13,7 @@ class UserTokensRepository():
         self.__userTokensFile = userTokensFile
 
     def getAccessToken(self, handle: str):
-        userJson = self.__readJson(handle)
+        userJson = self.__readJsonForHandle(handle)
 
         if userJson is None:
             return None
@@ -28,7 +28,7 @@ class UserTokensRepository():
         return accessToken
 
     def getRefreshToken(self, handle: str):
-        userJson = self.__readJson(handle)
+        userJson = self.__readJsonForHandle(handle)
 
         if userJson is None:
             raise RuntimeError(f'No user token JSON for {handle} found')
@@ -42,10 +42,7 @@ class UserTokensRepository():
 
         return refreshToken
 
-    def __readJson(self, handle: str):
-        if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
-
+    def __readJson(self):
         if not os.path.exists(self.__userTokensFile):
             raise FileNotFoundError(f'User tokens file not found: \"{self.__userTokensFile}\"')
 
@@ -54,6 +51,16 @@ class UserTokensRepository():
 
         if jsonContents is None:
             raise IOError(f'Error reading from user tokens file: \"{self.__userTokensFile}\"')
+        elif len(jsonContents) == 0:
+            raise ValueError(f'JSON contents of user tokens file \"{self.__userTokensFile}\" is empty')
+
+        return jsonContents
+
+    def __readJsonForHandle(self, handle: str):
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        jsonContents = self.__readJson()
 
         for key in jsonContents:
             if handle.lower() == key.lower():
