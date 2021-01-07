@@ -153,10 +153,9 @@ class CynanBot(commands.Bot):
 
     async def __handleDeerForceMessage(self, message):
         user = self.__usersRepository.getUser(message.channel.name)
+        text = utils.cleanStr(message.content)
 
-        if message.content.strip().lower() != 'd e e r f o r c e':
-            return False
-        elif self.__lastDeerForceMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if text.lower() == 'd e e r f o r c e' and self.__lastDeerForceMessageTimes.isReadyAndUpdate(user.getHandle()):
             await message.channel.send('D e e R F o r C e')
             return True
         else:

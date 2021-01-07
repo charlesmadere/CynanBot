@@ -70,16 +70,11 @@ class User:
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = utils.cleanStr(file.read())
 
-        if not utils.isValidStr(potdText):
+        if not utils.isValidUrl(potdText):
             raise ValueError(f'POTD text is malformed: \"{potdText}\"')
 
         potdParsed = urllib.parse.urlparse(potdText)
-        potdUrl = potdParsed.geturl()
-
-        if not utils.isValidStr(potdUrl):
-            raise ValueError(f'POTD text ({potdText}) can\'t be parsed into URL: \"{potdUrl}\"')
-
-        return potdUrl
+        return potdParsed.geturl()
 
     def getDiscord(self):
         return self.__discord

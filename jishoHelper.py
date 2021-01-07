@@ -40,12 +40,7 @@ class JishoHelper():
             print(f'textElements is malformed: \"{textElements}\"')
             return None
 
-        word = textElements[0].text_content()
-        if word is None:
-            print(f'word is malformed: \"{word}\"')
-            return None
-
-        word = utils.cleanStr(word)
+        word = utils.cleanStr(textElements[0].text_content())
         if len(word) == 0:
             print(f'word is malformed: \"{word}\"')
             return None
@@ -62,11 +57,7 @@ class JishoHelper():
             if breakUnitElements is None or len(breakUnitElements) != 0:
                 continue
 
-            definition = definitionElement.text_content()
-            if definition is None:
-                continue
-
-            definition = utils.cleanStr(definition)
+            definition = utils.cleanStr(definitionElement.text_content())
             if len(definition) == 0:
                 continue
 
@@ -84,10 +75,7 @@ class JishoHelper():
         furigana = None
         furiganaElements = htmlTree.find_class('furigana')
         if utils.hasItems(furiganaElements):
-            furigana = furiganaElements[0].text_content()
-
-            if furigana is not None:
-                furigana = utils.cleanStr(furigana)
+            furigana = utils.cleanStr(furiganaElements[0].text_content())
 
         return JishoResult(
             definitions=definitions,
