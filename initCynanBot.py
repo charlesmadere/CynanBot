@@ -5,8 +5,8 @@ from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
-from jishoHelper import JishoHelper
 from jokesRepository import JokesRepository
 from locationsRepository import LocationsRepository
 from nonceRepository import NonceRepository
@@ -15,6 +15,7 @@ from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
 from weatherRepository import WeatherRepository
+
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 

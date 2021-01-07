@@ -13,11 +13,11 @@ from cutenessRepository import (CutenessRepository, CutenessResult,
                                 LeaderboardResult)
 from CynanBotCommon.analogueStoreRepository import (AnalogueStoreRepository,
                                                     AnalogueStoreStock)
+from CynanBotCommon.jishoHelper import JishoHelper, JishoResult
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.wordOfTheDayRepository import (LanguageEntry, LanguageList,
                                                    WordOfTheDayRepository,
                                                    Wotd)
-from jishoHelper import JishoHelper, JishoResult
 from jokesRepository import JokeResponse, JokesRepository
 from locationsRepository import Location, LocationsRepository
 from nonceRepository import NonceRepository
