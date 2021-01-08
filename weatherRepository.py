@@ -1,6 +1,5 @@
 import json
 import locale
-import math
 from datetime import timedelta
 from typing import List
 
@@ -213,15 +212,15 @@ class WeatherReport():
         conditions: List[str],
         tomorrowsConditions: List[str]
     ):
-        if humidity is None or not math.isfinite(humidity):
+        if not utils.isValidNum(humidity):
             raise ValueError(f'humidity argument is malformed: \"{humidity}\"')
-        elif pressure is None or not math.isfinite(pressure):
+        elif not utils.isValidNum(pressure):
             raise ValueError(f'pressure argument is malformed: \"{pressure}\"')
-        elif temperature is None or not math.isfinite(temperature):
+        elif not utils.isValidNum(temperature):
             raise ValueError(f'temperature argument is malformed: \"{temperature}\"')
-        elif tomorrowsHighTemperature is None or not math.isfinite(tomorrowsHighTemperature):
+        elif not utils.isValidNum(tomorrowsHighTemperature):
             raise ValueError(f'tomorrowsHighTemperature argument is malformed: \"{tomorrowsHighTemperature}\"')
-        elif tomorrowsLowTemperature is None or not math.isfinite(tomorrowsLowTemperature):
+        elif not utils.isValidNum(tomorrowsLowTemperature):
             raise ValueError(f'tomorrowsLowTemperature argument is malformed: \"{tomorrowsLowTemperature}\"')
 
         self.__airQuality = airQuality

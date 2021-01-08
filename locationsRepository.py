@@ -1,5 +1,4 @@
 import json
-import math
 from datetime import tzinfo
 from os import path
 
@@ -61,9 +60,9 @@ class LocationsRepository():
 class Location():
 
     def __init__(self, lat: float, lon: float, id_: str, name: str, timeZone: tzinfo):
-        if lat is None or not math.isfinite(lat):
+        if not utils.isValidNum(lat):
             raise ValueError(f'lat argument is malformed: \"{lat}\"')
-        elif lon is None or not math.isfinite(lon):
+        elif not utils.isValidNum(lon):
             raise ValueError(f'lon argument is malformed: \"{lon}\"')
         elif not utils.isValidStr(id_):
             raise ValueError(f'id_ argument is malformed: \"{id_}\"')
