@@ -134,10 +134,12 @@ class CutenessRepository():
                 userName=userName
             )
 
-        sortedRows = sorted(rows, key=lambda row: row[0], reverse=True)
+        # sorts cuteness into highest to lowest order
+        rows.sort(key=lambda x: x[0], reverse=True)
+
         localLeaderboard = list()
 
-        for row in sortedRows:
+        for row in rows:
             # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
             # that would cause us to not always have a person's username persisted in the database
             # alongside their user ID. So for any users that cause this exception to be raised,
