@@ -117,16 +117,16 @@ class CynanBot(commands.Bot):
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
-            print(f'Received a pub sub error: {data} ({utils.getNowTimeText()})')
+            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
                 await self.__validateAndRefreshTokensAndResubscribe(nonce=data.get('nonce'))
         elif 'type' not in data:
-            print(f'Received a pub sub response without a type: {data} ({utils.getNowTimeText()})')
+            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub event without \"type\": {data}')
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
-            print(f'Received a general pub sub response: {data} ({utils.getNowTimeText()})')
+            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub event: {data}')
         elif data['type'] != 'MESSAGE' or 'data' not in data or 'message' not in data['data']:
-            print(f'Received an unexpected pub sub response: {data} ({utils.getNowTimeText()})')
+            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received unusual pub sub event: {data}')
         else:
             jsonResponse = json.loads(data['data']['message'])
 
