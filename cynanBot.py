@@ -273,6 +273,7 @@ class CynanBot(commands.Bot):
         increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
         increaseCutenessRewardId = twitchUser.getIncreaseCutenessRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
+        pkmnBattleRewardId = twitchUser.getPkmnBattleRewardId()
         pkmnCatchRewardId = twitchUser.getPkmnCatchRewardId()
         pkmnEvolveRewardId = twitchUser.getPkmnEvolveRewardId()
         pkmnShinyRewardId = twitchUser.getPkmnShinyRewardId()

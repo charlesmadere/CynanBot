@@ -26,6 +26,7 @@ class User:
         locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
+        pkmnBattleRewardId: str,
         pkmnCatchRewardId: str,
         pkmnEvolveRewardId: str,
         pkmnShinyRewardId: str,
@@ -54,6 +55,7 @@ class User:
         self.__locationId = locationId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
+        self.__pkmnBattleRewardId = pkmnBattleRewardId
         self.__pkmnCatchRewardId = pkmnCatchRewardId
         self.__pkmnEvolveRewardId = pkmnEvolveRewardId
         self.__pkmnShinyRewardId = pkmnShinyRewardId
@@ -93,6 +95,9 @@ class User:
 
     def getPicOfTheDayRewardId(self):
         return self.__picOfTheDayRewardId
+
+    def getPkmnBattleRewardId(self):
+        return self.__pkmnBattleRewardId
 
     def getPkmnCatchRewardId(self):
         return self.__pkmnCatchRewardId
