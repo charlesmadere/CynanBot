@@ -225,6 +225,37 @@ class CynanBot(commands.Bot):
         else:
             return False
 
+    async def __handlePkmnBattleRewardRedeemed(
+        self,
+        redemptionMessage: str,
+        userNameThatRedeemed: str,
+        twitchUser: User,
+        twitchChannel
+    ):
+        splits = utils.getCleanedSplits(redemptionMessage)
+
+        if not utils.hasItems(splits):
+            await twitchChannel.send(f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
+            return
+
+        opponentUserName = splits[0]
+        chatters = await self.get_chatters(twitchUser.getHandle())
+
+        if not utils.hasItems(chatters.all):
+            await twitchChannel.send('⚠ an error occurred when trying to retrieve this channel\'s chatters')
+            return
+
+        opponentFound = False
+        for chatter in chatters.all:
+            if opponentUserName.lower() == chatter.lower():
+                opponentFound = True
+                break
+
+        if opponentFound:
+            await twitchChannel.send(f'!battle {userNameThatRedeemed} {opponentUserName}')
+        else:
+            await twitchChannel.send(f'⚠ @{userNameThatRedeemed} unable to find the person you specified. Please check your spelling and try again')
+
     async def __handlePotdRewardRedeemed(
         self,
         userNameThatRedeemed: str,
@@ -281,6 +312,7 @@ class CynanBot(commands.Bot):
         rewardId = redemptionJson['reward']['id']
         userIdThatRedeemed = redemptionJson['user']['id']
         userNameThatRedeemed = redemptionJson['user']['display_name']
+        redemptionMessage = utils.cleanStr(redemptionJson['user_input'])
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
@@ -299,6 +331,13 @@ class CynanBot(commands.Bot):
             )
         elif twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
             await self.__handlePotdRewardRedeemed(
+                userNameThatRedeemed=userNameThatRedeemed,
+                twitchUser=twitchUser,
+                twitchChannel=twitchChannel
+            )
+        elif twitchUser.isPkmnEnabled() and rewardId == pkmnBattleRewardId:
+            await self.__handlePkmnBattleRewardRedeemed(
+                redemptionMessage=redemptionMessage,
                 userNameThatRedeemed=userNameThatRedeemed,
                 twitchUser=twitchUser,
                 twitchChannel=twitchChannel
