@@ -265,6 +265,8 @@ class CynanBot(commands.Bot):
         if twitchUser is None:
             raise RuntimeError(f'Unable to find User with ID: \"{twitchUserId}\"')
 
+        # Don't forget to check this if statement if you're having trouble with redemption reward
+        # monitoring for specific users!
         if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled():
             return
 
