@@ -239,22 +239,7 @@ class CynanBot(commands.Bot):
             return
 
         opponentUserName = splits[0]
-        chatters = await self.get_chatters(twitchUser.getHandle())
-
-        if not utils.hasItems(chatters.all):
-            await twitchChannel.send('⚠ an error occurred when trying to retrieve this channel\'s chatters')
-            return
-
-        opponentFound = False
-        for chatter in chatters.all:
-            if opponentUserName.lower() == chatter.lower():
-                opponentFound = True
-                break
-
-        if opponentFound:
-            await twitchChannel.send(f'!battle {userNameThatRedeemed} {opponentUserName}')
-        else:
-            await twitchChannel.send(f'⚠ @{userNameThatRedeemed} unable to find the person you specified. Please check your spelling and try again')
+        await twitchChannel.send(f'!battle {userNameThatRedeemed} {opponentUserName}')
 
     async def __handlePotdRewardRedeemed(
         self,
