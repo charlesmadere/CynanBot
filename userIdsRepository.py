@@ -66,7 +66,8 @@ class UserIdsRepository():
 
         rawResponse = requests.get(
             url=f'https://api.twitch.tv/helix/users?login={userName}',
-            headers=headers
+            headers=headers,
+            timeout=utils.getDefaultTimeout()
         )
 
         jsonResponse = rawResponse.json()

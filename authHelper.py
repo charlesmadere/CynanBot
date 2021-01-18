@@ -148,7 +148,8 @@ class AuthHelper():
 
             rawResponse = requests.get(
                 url='https://id.twitch.tv/oauth2/validate',
-                headers=headers
+                headers=headers,
+                timeout=utils.getDefaultTimeout()
             )
 
             jsonResponse = rawResponse.json()

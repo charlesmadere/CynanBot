@@ -96,7 +96,7 @@ class WeatherRepository():
         requestUrl = "https://api.airvisual.com/v2/nearest_city?key={}&lat={}&lon={}".format(
             iqAirApiKey, location.getLatitude(), location.getLongitude())
 
-        rawResponse = requests.get(requestUrl)
+        rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
         jsonResponse = rawResponse.json()
 
         if jsonResponse.get('status') != 'success':
@@ -126,7 +126,7 @@ class WeatherRepository():
         requestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric".format(
             oneWeatherApiKey, location.getLatitude(), location.getLongitude())
 
-        rawResponse = requests.get(requestUrl)
+        rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
         jsonResponse = rawResponse.json()
 
         currentJson = jsonResponse['current']
