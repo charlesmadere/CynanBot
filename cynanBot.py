@@ -238,7 +238,7 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
             return
 
-        opponentUserName = splits[0]
+        opponentUserName = utils.removePreceedingAt(splits[0])
         await twitchChannel.send(f'!battle {userNameThatRedeemed} {opponentUserName}')
 
     async def __handlePotdRewardRedeemed(
