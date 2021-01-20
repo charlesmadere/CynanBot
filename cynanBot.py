@@ -258,6 +258,9 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
 
     async def __handleRewardRedeemed(self, jsonResponse):
+        if jsonResponse is None:
+            raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
+
         redemptionJson = jsonResponse['data']['redemption']
         twitchUserId = redemptionJson['channel_id']
         twitchUser = None
