@@ -15,15 +15,23 @@ class AuthHelper():
     def __init__(
         self,
         nonceRepository: NonceRepository,
-        authFile: str = 'authFile.json'
+        authFile: str = 'authFile.json',
+        oauth2TokenUrl: str = 'https://id.twitch.tv/oauth2/token',
+        oauth2ValidateUrl: str = 'https://id.twitch.tv/oauth2/validate'
     ):
         if nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif not utils.isValidStr(authFile):
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
+        elif not utils.isValidUrl(oauth2TokenUrl):
+            raise ValueError(f'oauth2TokenUrl argument is malformed: \"{oauth2TokenUrl}\"')
+        elif not utils.isValidUrl(oauth2ValidateUrl):
+            raise ValueError(f'oauth2ValidateUrl argument is malformed: \"{oauth2ValidateUrl}\"')
 
         self.__nonceRepository = nonceRepository
         self.__authFile = authFile
+        self.__oauth2TokenUrl = oauth2TokenUrl
+        self.__oauth2ValidateUrl = oauth2ValidateUrl
 
         if not os.path.exists(authFile):
             raise FileNotFoundError(f'Auth file not found: \"{authFile}\"')
@@ -96,7 +104,7 @@ class AuthHelper():
         }
 
         rawResponse = requests.post(
-            url='https://id.twitch.tv/oauth2/token',
+            url=self.__oauth2TokenUrl,
             params=params
         )
 
@@ -147,7 +155,7 @@ class AuthHelper():
             }
 
             rawResponse = requests.get(
-                url='https://id.twitch.tv/oauth2/validate',
+                url=self.__oauth2ValidateUrl,
                 headers=headers,
                 timeout=utils.getDefaultTimeout()
             )
