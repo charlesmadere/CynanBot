@@ -132,7 +132,7 @@ class WeatherRepository():
         if cacheValue is not None:
             return cacheValue
 
-        print(f'Refreshing weather for \"{location.getId()}\"...')
+        print(f'Refreshing weather for \"{location.getId()}\"... ({utils.getNowTimeText()})')
 
         # Retrieve weather report from https://openweathermap.org/api/one-call-api
         # Doing this requires an API key, which you can get here:
