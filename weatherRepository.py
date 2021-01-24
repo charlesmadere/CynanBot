@@ -4,6 +4,8 @@ from datetime import timedelta
 from typing import List
 
 import requests
+from requests import ConnectionError, HTTPError, Timeout
+from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
@@ -15,15 +17,20 @@ class WeatherRepository():
 
     def __init__(
         self,
-        authHelper: AuthHelper,
-        cacheTimeDelta=timedelta(hours=1, minutes=30)
+        iqAirApiKey: str,
+        oneWeatherApiKey: str,
+        cacheTimeDelta: timedelta = timedelta(hours=1, minutes=30)
     ):
-        if authHelper is None:
-            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        if not utils.isValidStr(oneWeatherApiKey):
+            raise ValueError(f'oneWeatherApiKey argument is malformed: \"{oneWeatherApiKey}\"')
         elif cacheTimeDelta is None:
             raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
-        self.__authHelper = authHelper
+        if not utils.isValidStr(iqAirApiKey):
+            print(f'IQAir API key is malformed: \"{iqAirApiKey}\". This will not prevent us from fetching weather, but it will prevent us from fetching the current air quality conditions at the given location.')
+
+        self.__iqAirApiKey = iqAirApiKey
+        self.__oneWeatherApiKey = oneWeatherApiKey
         self.__cache = TimedDict(timeDelta=cacheTimeDelta)
         self.__conditionIcons = self.__createConditionIconsDict()
 
@@ -84,9 +91,10 @@ class WeatherRepository():
         return icons
 
     def __fetchAirQuality(self, location: Location):
-        iqAirApiKey = self.__authHelper.getIqAirApiKey()
-        if not utils.isValidStr(iqAirApiKey):
-            print(f'iqAirApiKey is missing: \"{iqAirApiKey}\"')
+        if location is None:
+            raise ValueError(f'location argument is malformed: \"{location}\"')
+
+        if not utils.isValidStr(self.__iqAirApiKey):
             return None
 
         # Retrieve air quality from: https://api-docs.iqair.com/
@@ -94,9 +102,20 @@ class WeatherRepository():
         # https://www.iqair.com/us/commercial/air-quality-monitors/airvisual-platform/api
 
         requestUrl = "https://api.airvisual.com/v2/nearest_city?key={}&lat={}&lon={}".format(
-            iqAirApiKey, location.getLatitude(), location.getLongitude())
+            self.__iqAirApiKey, location.getLatitude(), location.getLongitude())
 
-        rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
+        
+        rawResponse = None
+
+        try:
+            rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
+        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, Timeout) as e:
+            print(f'Exception occurred when attempting to fetch air quality from IQAir: {e}')
+
+        if rawResponse is None:
+            print(f'rawResponse is malformed: \"{rawResponse}\"')
+            return None
+
         jsonResponse = rawResponse.json()
 
         if jsonResponse.get('status') != 'success':
@@ -119,14 +138,21 @@ class WeatherRepository():
         # Doing this requires an API key, which you can get here:
         # https://openweathermap.org/api
 
-        oneWeatherApiKey = self.__authHelper.getOneWeatherApiKey()
-        if not utils.isValidStr(oneWeatherApiKey):
-            raise RuntimeError(f'oneWeatherApiKey is malformed: \"{oneWeatherApiKey}\"')
-
         requestUrl = "https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric".format(
-            oneWeatherApiKey, location.getLatitude(), location.getLongitude())
+            self.__oneWeatherApiKey, location.getLatitude(), location.getLongitude())
 
-        rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
+        rawResponse = None
+
+        try:
+            rawResponse = requests.get(url=requestUrl, timeout=utils.getDefaultTimeout())
+        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, Timeout) as e:
+            print(f'Exception occurred when attempting to fetch weather conditions from Open Weather: {e}')
+
+        if rawResponse is None:
+            print(f'rawResponse is malformed: \"{rawResponse}\"')
+            del self.__cache[location.getId()]
+            return None
+
         jsonResponse = rawResponse.json()
 
         currentJson = jsonResponse['current']

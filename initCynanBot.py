@@ -43,7 +43,8 @@ usersRepository = UsersRepository(
 )
 userTokensRepository = UserTokensRepository()
 weatherRepository = WeatherRepository(
-    authHelper=authHelper
+    iqAirApiKey=authHelper.getIqAirApiKey(),
+    oneWeatherApiKey=authHelper.getOneWeatherApiKey()
 )
 wordOfTheDayRepository = WordOfTheDayRepository()
 
