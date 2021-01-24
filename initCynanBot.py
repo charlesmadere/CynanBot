@@ -6,8 +6,8 @@ from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
-from jokesRepository import JokesRepository
 from locationsRepository import LocationsRepository
 from nonceRepository import NonceRepository
 from timeZoneRepository import TimeZoneRepository
