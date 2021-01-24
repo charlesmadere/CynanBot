@@ -609,7 +609,7 @@ class CynanBot(commands.Bot):
 
         if not user.isJokesEnabled():
             return
-        elif not self.__lastJokeMessageTimes.isReady(user.getHandle()):
+        elif not self.__lastJokeMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         try:
