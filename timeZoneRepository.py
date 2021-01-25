@@ -24,7 +24,7 @@ class TimeZoneRepository():
         return newTimeZone
 
     def getTimeZones(self, timeZones: List[str]):
-        if timeZones is None or len(timeZones) == 0:
+        if not utils.hasItems(timeZones):
             return None
 
         newTimeZones = list()
