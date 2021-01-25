@@ -16,8 +16,8 @@ class WeatherRepository():
 
     def __init__(
         self,
-        iqAirApiKey: str,
         oneWeatherApiKey: str,
+        iqAirApiKey: str = None,
         cacheTimeDelta: timedelta = timedelta(hours=1, minutes=30)
     ):
         if not utils.isValidStr(oneWeatherApiKey):
@@ -26,7 +26,7 @@ class WeatherRepository():
             raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         if not utils.isValidStr(iqAirApiKey):
-            print(f'IQAir API key is malformed: \"{iqAirApiKey}\". This will not prevent us from fetching weather, but it will prevent us from fetching the current air quality conditions at the given location.')
+            print(f'IQAir API key is malformed: \"{iqAirApiKey}\". This won\'t prevent us from fetching weather, but it will prevent us from fetching the current air quality conditions at the given location.')
 
         self.__iqAirApiKey = iqAirApiKey
         self.__oneWeatherApiKey = oneWeatherApiKey
