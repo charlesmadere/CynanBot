@@ -8,7 +8,6 @@ from requests import ConnectionError, HTTPError, Timeout
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import CynanBotCommon.utils as utils
-from authHelper import AuthHelper
 from CynanBotCommon.timedDict import TimedDict
 from locationsRepository import Location
 
