@@ -96,6 +96,7 @@ class CynanBot(commands.Bot):
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes=20))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds=15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes=1))
+        self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes=20))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes=1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds=15))
 
@@ -111,6 +112,9 @@ class CynanBot(commands.Bot):
             return
 
         if await self.__handleCatJamMessage(message):
+            return
+
+        if await self.__handleRatJamMessage(message):
             return
 
         await self.handle_commands(message)
@@ -256,6 +260,20 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
         except ValueError:
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
+
+    async def __handleRatJamMessage(self, message):
+        user = self.__usersRepository.getUser(message.channel.name)
+
+        if not user.isRatJamEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if 'ratJAM' in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
+            await message.channel.send('ratJAM')
+            return True
+        else:
+            return False
 
     async def __handleRewardRedeemed(self, jsonResponse):
         if jsonResponse is None:

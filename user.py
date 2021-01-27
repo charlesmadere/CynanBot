@@ -18,6 +18,7 @@ class User:
         isJokesEnabled: bool,
         isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
+        isRatJamEnabled: bool,
         isWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
@@ -47,6 +48,7 @@ class User:
         self.__isJokesEnabled = isJokesEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isPkmnEnabled = isPkmnEnabled
+        self.__isRatJamEnabled = isRatJamEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
@@ -155,6 +157,9 @@ class User:
 
     def isPkmnEnabled(self):
         return self.__isPkmnEnabled
+
+    def isRatJamEnabled(self):
+        return self.__isRatJamEnabled
 
     def isWordOfTheDayEnabled(self):
         return self.__isWordOfTheDayEnabled
