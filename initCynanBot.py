@@ -1,10 +1,10 @@
 import locale
 
 from authHelper import AuthHelper
-from backingDatabase import BackingDatabase
 from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.nonceRepository import NonceRepository

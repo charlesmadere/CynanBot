@@ -2,7 +2,7 @@ import locale
 from typing import List
 
 import CynanBotCommon.utils as utils
-from backingDatabase import BackingDatabase
+from CynanBotCommon.backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
 
 

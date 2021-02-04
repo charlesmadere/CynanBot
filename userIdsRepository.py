@@ -3,7 +3,7 @@ import json
 import requests
 
 import CynanBotCommon.utils as utils
-from backingDatabase import BackingDatabase
+from CynanBotCommon.backingDatabase import BackingDatabase
 
 
 class UserIdsRepository():
