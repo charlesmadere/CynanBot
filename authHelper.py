@@ -5,7 +5,7 @@ from typing import List
 import requests
 
 import CynanBotCommon.utils as utils
-from nonceRepository import NonceRepository
+from CynanBotCommon.nonceRepository import NonceRepository
 from user import User
 from userTokensRepository import UserTokensRepository
 

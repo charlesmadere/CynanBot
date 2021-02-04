@@ -7,9 +7,9 @@ from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
+from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from locationsRepository import LocationsRepository
-from nonceRepository import NonceRepository
 from timeZoneRepository import TimeZoneRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
