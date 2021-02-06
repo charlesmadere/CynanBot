@@ -114,7 +114,7 @@ class UsersRepository():
 
         for key in jsonContents:
             if handle.lower() == key.lower():
-                return self.__createUser(handle, jsonContents[handle])
+                return self.__createUser(handle, jsonContents[key])
 
         raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
 
@@ -122,8 +122,8 @@ class UsersRepository():
         jsonContents = self.__readJson()
 
         users = []
-        for handle in jsonContents:
-            user = self.__createUser(handle, jsonContents[handle])
+        for key in jsonContents:
+            user = self.__createUser(key, jsonContents[key])
             users.append(user)
 
         if not utils.hasItems(users):
