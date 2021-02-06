@@ -69,19 +69,19 @@ class AuthHelper():
             print(f'No value for oneWeatherApiKey: \"{oneWeatherApiKey}\"')
         self.__oneWeatherApiKey = oneWeatherApiKey
 
-    def getClientId(self):
+    def getClientId(self) -> str:
         return self.__clientId
 
-    def getClientSecret(self):
+    def getClientSecret(self) -> str:
         return self.__clientSecret
 
-    def getIqAirApiKey(self):
+    def getIqAirApiKey(self) -> str:
         return self.__iqAirApiKey
 
-    def getIrcAuthToken(self):
+    def getIrcAuthToken(self) -> str:
         return self.__ircAuthToken
 
-    def getOneWeatherApiKey(self):
+    def getOneWeatherApiKey(self) -> str:
         return self.__oneWeatherApiKey
 
     def __refreshAccessToken(

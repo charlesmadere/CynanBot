@@ -6,23 +6,19 @@ from twitchio.ext import commands
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
-from cutenessRepository import (CutenessRepository, CutenessResult,
-                                LeaderboardResult)
-from CynanBotCommon.analogueStoreRepository import (AnalogueStoreRepository,
-                                                    AnalogueStoreStock)
-from CynanBotCommon.jishoHelper import JishoHelper, JishoResult
-from CynanBotCommon.jokesRepository import JokeResponse, JokesRepository
+from cutenessRepository import CutenessRepository
+from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.jokesRepository import JokesRepository
+from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.wordOfTheDayRepository import (LanguageEntry, LanguageList,
-                                                   WordOfTheDayRepository,
-                                                   Wotd)
-from locationsRepository import Location, LocationsRepository
+from CynanBotCommon.weatherRepository import WeatherRepository
+from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
-from weatherRepository import WeatherReport, WeatherRepository
 
 
 class CynanBot(commands.Bot):
@@ -43,11 +39,11 @@ class CynanBot(commands.Bot):
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
-            irc_token=authHelper.getIrcAuthToken(),
-            client_id=authHelper.getClientId(),
-            nick='CynanBot',
-            prefix='!',
-            initial_channels=[ user.getHandle() for user in usersRepository.getUsers() ]
+            irc_token = authHelper.getIrcAuthToken(),
+            client_id = authHelper.getClientId(),
+            nick = 'CynanBot',
+            prefix = '!',
+            initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
         if analogueStoreRepository is None:
@@ -118,16 +114,16 @@ class CynanBot(commands.Bot):
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
-            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub error: {data}')
+            print(f'({utils.getNowTimeText(includeSeconds = True)}) Received pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
                 await self.__validateAndRefreshTokensAndResubscribe(nonce=data.get('nonce'))
         elif 'type' not in data:
-            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub event without \"type\": {data}')
+            print(f'({utils.getNowTimeText(includeSeconds = True)}) Received pub sub event without \"type\": {data}')
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
-            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received pub sub event: {data}')
+            print(f'({utils.getNowTimeText(includeSeconds = True)}) Received pub sub event: {data}')
         elif data['type'] != 'MESSAGE' or 'data' not in data or 'message' not in data['data']:
-            print(f'({utils.getNowTimeText(includeSeconds=True)}) Received unusual pub sub event: {data}')
+            print(f'({utils.getNowTimeText(includeSeconds = True)}) Received unusual pub sub event: {data}')
         else:
             jsonResponse = json.loads(data['data']['message'])
 
@@ -138,7 +134,7 @@ class CynanBot(commands.Bot):
         print(f'{self.nick} is ready!')
         await self.__subscribeToEvents(self.__usersRepository.getUsers())
 
-    async def __handleCatJamMessage(self, message):
+    async def __handleCatJamMessage(self, message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
 
         if not user.isCatJamEnabled():
@@ -152,7 +148,7 @@ class CynanBot(commands.Bot):
         else:
             return False
 
-    async def __handleDeerForceMessage(self, message):
+    async def __handleDeerForceMessage(self, message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
         text = utils.cleanStr(message.content)
 
@@ -212,7 +208,7 @@ class CynanBot(commands.Bot):
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
-    async def __handleMessageFromCynan(self, message):
+    async def __handleMessageFromCynan(self, message) -> bool:
         if message.author.name.lower() != 'cynanmachae'.lower():
             return False
 
@@ -258,7 +254,7 @@ class CynanBot(commands.Bot):
         except ValueError:
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
 
-    async def __handleRatJamMessage(self, message):
+    async def __handleRatJamMessage(self, message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
 
         if not user.isRatJamEnabled():
@@ -287,9 +283,9 @@ class CynanBot(commands.Bot):
                 continue
 
             userId = self.__userIdsRepository.fetchUserId(
-                userName=user.getHandle(),
-                clientId=self.__authHelper.getClientId(),
-                accessToken=accessToken
+                userName = user.getHandle(),
+                clientId = self.__authHelper.getClientId(),
+                accessToken = accessToken
             )
 
             if twitchUserId.lower() == userId.lower():
@@ -320,30 +316,30 @@ class CynanBot(commands.Bot):
 
         if twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
             await self.__handleIncreaseCutenessRewardRedeemed(
-                userIdThatRedeemed=userIdThatRedeemed,
-                userNameThatRedeemed=userNameThatRedeemed,
-                twitchUser=twitchUser,
-                twitchChannel=twitchChannel
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
             )
         elif twitchUser.isCutenessEnabled() and rewardId == increaseCutenessDoubleRewardId:
             await self.__handleIncreaseCutenessDoubleRewardRedeemed(
-                userIdThatRedeemed=userIdThatRedeemed,
-                userNameThatRedeemed=userNameThatRedeemed,
-                twitchUser=twitchUser,
-                twitchChannel=twitchChannel
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
             )
         elif twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
             await self.__handlePotdRewardRedeemed(
-                userNameThatRedeemed=userNameThatRedeemed,
-                twitchUser=twitchUser,
-                twitchChannel=twitchChannel
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnBattleRewardId:
             await self.__handlePkmnBattleRewardRedeemed(
-                redemptionMessage=redemptionMessage,
-                userNameThatRedeemed=userNameThatRedeemed,
-                twitchUser=twitchUser,
-                twitchChannel=twitchChannel
+                redemptionMessage = redemptionMessage,
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnCatchRewardId:
             await twitchChannel.send(f'!catch {userNameThatRedeemed}')
@@ -395,9 +391,9 @@ class CynanBot(commands.Bot):
         users = self.__usersRepository.getUsers()
 
         self.__authHelper.validateAndRefreshAccessTokens(
-            users=users,
-            nonce=nonce,
-            userTokensRepository=self.__userTokensRepository
+            users = users,
+            nonce = nonce,
+            userTokensRepository = self.__userTokensRepository
         )
 
         resubscribeUsers = list()
@@ -429,7 +425,7 @@ class CynanBot(commands.Bot):
                 print(f'Error fetching Analogue stock in {user.getHandle()}')
                 await ctx.send('⚠ Error fetching Analogue stock')
             else:
-                await ctx.send(result.toStr(includePrices=includePrices))
+                await ctx.send(result.toStr(includePrices = includePrices))
         except ValueError:
             print(f'Error fetching Analogue stock in {user.getHandle()}')
             await ctx.send('⚠ Error fetching Analogue stock')
@@ -505,8 +501,8 @@ class CynanBot(commands.Bot):
 
             try:
                 result = self.__cutenessRepository.fetchCuteness(
-                    twitchChannel=user.getHandle(),
-                    userName=userName
+                    twitchChannel = user.getHandle(),
+                    userName = userName
                 )
 
                 if result.hasCuteness():
@@ -577,10 +573,10 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount=incrementAmount,
-                twitchChannel=user.getHandle(),
-                userId=userId,
-                userName=userName
+                incrementAmount = incrementAmount,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = userName
             )
 
             await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
@@ -650,9 +646,9 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
-                twitchChannel=user.getHandle(),
-                userId=userId,
-                userName=ctx.author.name
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = ctx.author.name
             )
 
             if result.hasCuteness() and result.hasLocalLeaderboard():

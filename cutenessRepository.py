@@ -6,6 +6,167 @@ from CynanBotCommon.backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
 
 
+class CutenessLeaderboardEntry():
+
+    def __init__(
+        self,
+        cuteness: int,
+        rank: int,
+        userId: str,
+        userName: str
+    ):
+        if not utils.isValidNum(cuteness):
+            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
+        elif not utils.isValidNum(rank):
+            raise ValueError(f'rank argument is malformed: \"{rank}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__rank = rank
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self) -> int:
+        return self.__cuteness
+
+    def getCutenessStr(self) -> str:
+        return locale.format_string("%d", self.__cuteness, grouping=True)
+
+    def getRank(self) -> int:
+        return self.__rank
+
+    def getRankStr(self) -> str:
+        return locale.format_string("%d", self.__rank, grouping=True)
+
+    def getUserId(self) -> str:
+        return self.__userId
+
+    def getUserName(self) -> str:
+        return self.__userName
+
+    def toStr(self) -> str:
+        return f'#{self.getRankStr()} {self.__userName} ({self.getCutenessStr()})'
+
+
+class CutenessLocalLeaderboardEntry():
+
+    def __init__(
+        self,
+        cuteness: int,
+        userId: str,
+        userName: str
+    ):
+        if not utils.isValidNum(cuteness):
+            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self) -> int:
+        return self.__cuteness
+
+    def getCutenessStr(self) -> str:
+        return locale.format_string("%d", self.__cuteness, grouping=True)
+
+    def getUserId(self) -> str:
+        return self.__userId
+
+    def getUserName(self) -> str:
+        return self.__userName
+
+    def toStr(self) -> str:
+        return f'{self.__userName} ({self.getCutenessStr()})'
+
+
+class CutenessResult():
+
+    def __init__(
+        self,
+        cuteness: int,
+        localLeaderboard: List[CutenessLocalLeaderboardEntry],
+        userId: str,
+        userName: str
+    ):
+        if not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        self.__cuteness = cuteness
+        self.__localLeaderboard = localLeaderboard
+        self.__userId = userId
+        self.__userName = userName
+
+    def getCuteness(self) -> int:
+        return self.__cuteness
+
+    def getCutenessStr(self) -> str:
+        return locale.format_string("%d", self.__cuteness, grouping=True)
+
+    def getLocalLeaderboard(self) -> List[CutenessLocalLeaderboardEntry]:
+        return self.__localLeaderboard
+
+    def getLocalLeaderboardStr(self, delimiter: str = ', ') -> str:
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not self.hasLocalLeaderboard():
+            return ''
+
+        strings = list()
+
+        for entry in self.__localLeaderboard:
+            strings.append(entry.toStr())
+
+        return delimiter.join(strings)
+
+    def getUserId(self) -> str:
+        return self.__userId
+
+    def getUserName(self) -> str:
+        return self.__userName
+
+    def hasCuteness(self) -> bool:
+        return utils.isValidNum(self.__cuteness) and self.__cuteness >= 1
+
+    def hasLocalLeaderboard(self) -> bool:
+        return utils.hasItems(self.__localLeaderboard)
+
+
+class CutenessLeaderboardResult():
+
+    def __init__(self, entries: List[CutenessLeaderboardEntry]):
+        self.__entries = entries
+
+    def getEntries(self) -> List[CutenessLeaderboardEntry]:
+        return self.__entries
+
+    def hasEntries(self) -> bool:
+        return utils.hasItems(self.__entries)
+
+    def toStr(self, delimiter: str = ', ') -> str:
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not self.hasEntries():
+            return ''
+
+        strings = list()
+
+        for entry in self.__entries:
+            strings.append(entry.toStr())
+
+        return delimiter.join(strings)
+
+
 class CutenessRepository():
 
     def __init__(
@@ -17,7 +178,7 @@ class CutenessRepository():
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif leaderboardSize is None:
+        elif not utils.isValidNum(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 1 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
@@ -44,9 +205,10 @@ class CutenessRepository():
                 )
             '''
         )
+
         connection.commit()
 
-    def fetchCuteness(self, twitchChannel: str, userName: str):
+    def fetchCuteness(self, twitchChannel: str, userName: str) -> CutenessResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userName):
@@ -62,6 +224,7 @@ class CutenessRepository():
             ''',
             (twitchChannel, userId)
         )
+
         row = cursor.fetchone()
 
         cuteness = None
@@ -71,10 +234,10 @@ class CutenessRepository():
         cursor.close()
 
         return CutenessResult(
-            cuteness=cuteness,
-            localLeaderboard=None,
-            userId=userId,
-            userName=userName
+            cuteness = cuteness,
+            localLeaderboard = None,
+            userId = userId,
+            userName = userName
         )
 
     def fetchCutenessAndLocalLeaderboard(
@@ -82,7 +245,7 @@ class CutenessRepository():
         twitchChannel: str,
         userId: str,
         userName: str
-    ):
+    ) -> CutenessResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId) or userId == '0':
@@ -100,15 +263,16 @@ class CutenessRepository():
             ''',
             (twitchChannel, userId)
         )
+
         row = cursor.fetchone()
 
         if row is None:
             cursor.close()
             return CutenessResult(
-                cuteness=0,
-                localLeaderboard=None,
-                userId=userId,
-                userName=userName
+                cuteness = 0,
+                localLeaderboard = None,
+                userId = userId,
+                userName = userName
             )
 
         cuteness = row[0]
@@ -123,19 +287,19 @@ class CutenessRepository():
             (twitchChannel, userId, cuteness, self.__localLeaderboardSize)
         )
 
-        rows = cursor.fetchmany(size=self.__localLeaderboardSize)
+        rows = cursor.fetchmany(size = self.__localLeaderboardSize)
 
         if len(rows) == 0:
             cursor.close()
             return CutenessResult(
-                cuteness=cuteness,
-                localLeaderboard=None,
-                userId=userId,
-                userName=userName
+                cuteness = cuteness,
+                localLeaderboard = None,
+                userId = userId,
+                userName = userName
             )
 
         # sorts cuteness into highest to lowest order
-        rows.sort(key=lambda x: x[0], reverse=True)
+        rows.sort(key = lambda x: x[0], reverse = True)
 
         localLeaderboard = list()
 
@@ -149,10 +313,10 @@ class CutenessRepository():
             # would be completely extranneous, and could be removed.
             try:
                 userName = self.__userIdsRepository.fetchUserName(row[1])
-                localLeaderboard.append(LocalLeaderboardEntry(
-                    cuteness=row[0],
-                    userId=row[1],
-                    userName=userName
+                localLeaderboard.append(CutenessLocalLeaderboardEntry(
+                    cuteness = row[0],
+                    userId = row[1],
+                    userName = userName
                 ))
             except RuntimeError:
                 # Just log the error and continue, there's nothing more we can do to recover.
@@ -161,10 +325,10 @@ class CutenessRepository():
         cursor.close()
 
         return CutenessResult(
-            cuteness=cuteness,
-            localLeaderboard=localLeaderboard,
-            userId=userId,
-            userName=userName
+            cuteness = cuteness,
+            localLeaderboard = localLeaderboard,
+            userId = userId,
+            userName = userName
         )
 
     def fetchCutenessIncrementedBy(
@@ -173,7 +337,7 @@ class CutenessRepository():
         twitchChannel: str,
         userId: str,
         userName: str
-    ):
+    ) -> CutenessResult:
         if incrementAmount is None:
             raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -194,6 +358,7 @@ class CutenessRepository():
             ''',
             (twitchChannel, userId)
         )
+
         row = cursor.fetchone()
 
         cuteness = 0
@@ -218,18 +383,19 @@ class CutenessRepository():
         cursor.close()
 
         return CutenessResult(
-            cuteness=cuteness,
-            localLeaderboard=None,
-            userId=userId,
-            userName=userName
+            cuteness = cuteness,
+            localLeaderboard = None,
+            userId = userId,
+            userName = userName
         )
 
-    def fetchLeaderboard(self, twitchChannel: str):
+    def fetchLeaderboard(self, twitchChannel: str) -> CutenessLeaderboardResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         twitchChannelUserId = self.__userIdsRepository.fetchUserId(
-            userName=twitchChannel)
+            userName = twitchChannel
+        )
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
@@ -247,180 +413,24 @@ class CutenessRepository():
 
         if len(rows) == 0:
             cursor.close()
-            return LeaderboardResult(
-                entries=entries
+            return CutenessLeaderboardResult(
+                entries = entries
             )
 
         rank = 1
 
         for row in rows:
             userName = self.__userIdsRepository.fetchUserName(row[1])
-            entries.append(LeaderboardEntry(
-                cuteness=row[0],
-                rank=rank,
-                userId=row[1],
-                userName=userName
+            entries.append(CutenessLeaderboardEntry(
+                cuteness = row[0],
+                rank = rank,
+                userId = row[1],
+                userName = userName
             ))
             rank = rank + 1
 
         cursor.close()
 
-        return LeaderboardResult(
-            entries=entries
+        return CutenessLeaderboardResult(
+            entries = entries
         )
-
-
-class CutenessResult():
-
-    def __init__(
-        self,
-        cuteness: int,
-        localLeaderboard: List,
-        userId: str,
-        userName: str
-    ):
-        if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness = cuteness
-        self.__localLeaderboard = localLeaderboard
-        self.__userId = userId
-        self.__userName = userName
-
-    def getCuteness(self):
-        return self.__cuteness
-
-    def getCutenessStr(self):
-        return locale.format_string("%d", self.__cuteness, grouping=True)
-
-    def getLocalLeaderboard(self):
-        return self.__localLeaderboard
-
-    def getLocalLeaderboardStr(self, delimiter: str = ', '):
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasLocalLeaderboard():
-            return ''
-
-        strings = list()
-
-        for entry in self.__localLeaderboard:
-            strings.append(entry.toStr())
-
-        return delimiter.join(strings)
-
-    def getUserId(self):
-        return self.__userId
-
-    def getUserName(self):
-        return self.__userName
-
-    def hasCuteness(self):
-        return self.__cuteness is not None and self.__cuteness >= 1
-
-    def hasLocalLeaderboard(self):
-        return self.__localLeaderboard is not None and len(self.__localLeaderboard) >= 1
-
-
-class LeaderboardResult():
-
-    def __init__(self, entries: List):
-        self.__entries = entries
-
-    def getEntries(self):
-        return self.__entries
-
-    def hasEntries(self):
-        return self.__entries is not None and len(self.__entries) >= 1
-
-    def toStr(self, delimiter: str = ', '):
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasEntries():
-            return ''
-
-        strings = list()
-
-        for entry in self.__entries:
-            strings.append(entry.toStr())
-
-        return delimiter.join(strings)
-
-
-class LeaderboardEntry():
-
-    def __init__(
-        self,
-        cuteness: int,
-        rank: int,
-        userId: str,
-        userName: str
-    ):
-        if cuteness is None:
-            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        elif rank is None:
-            raise ValueError(f'rank argument is malformed: \"{rank}\"')
-        elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness = cuteness
-        self.__rank = rank
-        self.__userId = userId
-        self.__userName = userName
-
-    def getCuteness(self):
-        return self.__cuteness
-
-    def getCutenessStr(self):
-        return locale.format_string("%d", self.__cuteness, grouping=True)
-
-    def getRank(self):
-        return self.__rank
-
-    def getRankStr(self):
-        return locale.format_string("%d", self.__rank, grouping=True)
-
-    def getUserId(self):
-        return self.__userId
-
-    def getUserName(self):
-        return self.__userName
-
-    def toStr(self):
-        return f'#{self.getRankStr()} {self.__userName} ({self.getCutenessStr()})'
-
-
-class LocalLeaderboardEntry():
-
-    def __init__(self, cuteness: int, userId: str, userName: str):
-        if cuteness is None:
-            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness = cuteness
-        self.__userId = userId
-        self.__userName = userName
-
-    def getCuteness(self):
-        return self.__cuteness
-
-    def getCutenessStr(self):
-        return locale.format_string("%d", self.__cuteness, grouping=True)
-
-    def getUserId(self):
-        return self.__userId
-
-    def getUserName(self):
-        return self.__userName
-
-    def toStr(self):
-        return f'{self.__userName} ({self.getCutenessStr()})'

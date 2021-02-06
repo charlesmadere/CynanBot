@@ -63,9 +63,9 @@ class UserIdsRepository():
         }
 
         rawResponse = requests.get(
-            url=f'https://api.twitch.tv/helix/users?login={userName}',
-            headers=headers,
-            timeout=utils.getDefaultTimeout()
+            url = f'https://api.twitch.tv/helix/users?login={userName}',
+            headers = headers,
+            timeout = utils.getDefaultTimeout()
         )
 
         jsonResponse = rawResponse.json()
@@ -78,7 +78,7 @@ class UserIdsRepository():
         if not utils.isValidStr(userId):
             raise ValueError(f'Unable to fetch user ID for {userName}: {jsonResponse}')
 
-        self.setUser(userId=userId, userName=userName)
+        self.setUser(userId = userId, userName = userName)
 
         return userId
 
