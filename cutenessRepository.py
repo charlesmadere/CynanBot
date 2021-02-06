@@ -33,13 +33,13 @@ class CutenessLeaderboardEntry():
         return self.__cuteness
 
     def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping=True)
+        return locale.format_string("%d", self.__cuteness, grouping = True)
 
     def getRank(self) -> int:
         return self.__rank
 
     def getRankStr(self) -> str:
-        return locale.format_string("%d", self.__rank, grouping=True)
+        return locale.format_string("%d", self.__rank, grouping = True)
 
     def getUserId(self) -> str:
         return self.__userId
@@ -74,7 +74,7 @@ class CutenessLocalLeaderboardEntry():
         return self.__cuteness
 
     def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping=True)
+        return locale.format_string("%d", self.__cuteness, grouping = True)
 
     def getUserId(self) -> str:
         return self.__userId
@@ -109,7 +109,7 @@ class CutenessResult():
         return self.__cuteness
 
     def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping=True)
+        return locale.format_string("%d", self.__cuteness, grouping = True)
 
     def getLocalLeaderboard(self) -> List[CutenessLocalLeaderboardEntry]:
         return self.__localLeaderboard
@@ -214,7 +214,7 @@ class CutenessRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        userId = self.__userIdsRepository.fetchUserId(userName=userName)
+        userId = self.__userIdsRepository.fetchUserId(userName = userName)
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
@@ -253,7 +253,7 @@ class CutenessRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__userIdsRepository.setUser(userId=userId, userName=userName)
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
@@ -347,7 +347,7 @@ class CutenessRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__userIdsRepository.setUser(userId=userId, userName=userName)
+        self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
@@ -408,7 +408,7 @@ class CutenessRepository():
             (twitchChannel, twitchChannelUserId, self.__leaderboardSize)
         )
 
-        rows = cursor.fetchmany(size=self.__leaderboardSize)
+        rows = cursor.fetchmany(size = self.__leaderboardSize)
         entries = list()
 
         if len(rows) == 0:

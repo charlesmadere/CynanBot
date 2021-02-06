@@ -91,6 +91,6 @@ class UserTokensRepository():
         }
 
         with open(self.__userTokensFile, 'w') as file:
-            json.dump(jsonContents, file, indent=4, sort_keys=True)
+            json.dump(jsonContents, file, indent = 4, sort_keys = True)
 
         print(f'Saved new user tokens for {handle}')

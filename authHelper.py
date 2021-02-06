@@ -104,8 +104,8 @@ class AuthHelper():
         }
 
         rawResponse = requests.post(
-            url=self.__oauth2TokenUrl,
-            params=params
+            url = self.__oauth2TokenUrl,
+            params = params
         )
 
         jsonResponse = rawResponse.json()
@@ -116,9 +116,9 @@ class AuthHelper():
             raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
 
         userTokensRepository.setTokens(
-            handle=handle,
-            accessToken=jsonResponse['access_token'],
-            refreshToken=jsonResponse['refresh_token']
+            handle = handle,
+            accessToken = jsonResponse['access_token'],
+            refreshToken = jsonResponse['refresh_token']
         )
 
     def validateAndRefreshAccessTokens(
@@ -155,9 +155,9 @@ class AuthHelper():
             }
 
             rawResponse = requests.get(
-                url=self.__oauth2ValidateUrl,
-                headers=headers,
-                timeout=utils.getDefaultTimeout()
+                url = self.__oauth2ValidateUrl,
+                headers = headers,
+                timeout = utils.getDefaultTimeout()
             )
 
             jsonResponse = rawResponse.json()
@@ -166,6 +166,6 @@ class AuthHelper():
                 print(f'Refreshing access token for {handle}...')
 
                 self.__refreshAccessToken(
-                    handle=handle,
-                    userTokensRepository=userTokensRepository
+                    handle = handle,
+                    userTokensRepository = userTokensRepository
                 )

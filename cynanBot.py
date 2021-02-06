@@ -80,18 +80,18 @@ class CynanBot(commands.Bot):
         self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
-        self.__cutenessDoubleEndTimes = TimedDict(timedelta(minutes=5))
-        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes=1))
-        self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes=20))
-        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds=30))
-        self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds=30))
-        self.__lastCynanMessageTime = datetime.now() - timedelta(days=1)
-        self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes=20))
-        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds=15))
-        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes=1))
-        self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes=20))
-        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes=1))
-        self.__lastWotdMessageTimes = TimedDict(timedelta(seconds=15))
+        self.__cutenessDoubleEndTimes = TimedDict(timedelta(minutes = 5))
+        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
+        self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
+        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
     async def event_command_error(self, ctx, error):
         # prevents exceptions caused by people using commands for other bots
@@ -117,7 +117,7 @@ class CynanBot(commands.Bot):
             print(f'({utils.getNowTimeText(includeSeconds = True)}) Received pub sub error: {data}')
 
             if data['error'] == 'ERR_BADAUTH':
-                await self.__validateAndRefreshTokensAndResubscribe(nonce=data.get('nonce'))
+                await self.__validateAndRefreshTokensAndResubscribe(nonce = data.get('nonce'))
         elif 'type' not in data:
             print(f'({utils.getNowTimeText(includeSeconds = True)}) Received pub sub event without \"type\": {data}')
         elif data['type'] == 'PONG' or data['type'] == 'RESPONSE':
@@ -171,10 +171,10 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount=3,
-                twitchChannel=twitchUser.getHandle(),
-                userId=userIdThatRedeemed,
-                userName=userNameThatRedeemed
+                incrementAmount = 3,
+                twitchChannel = twitchUser.getHandle(),
+                userId = userIdThatRedeemed,
+                userName = userNameThatRedeemed
             )
 
             await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
@@ -196,10 +196,10 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount=incrementAmount,
-                twitchChannel=twitchUser.getHandle(),
-                userId=userIdThatRedeemed,
-                userName=userNameThatRedeemed
+                incrementAmount = incrementAmount,
+                twitchChannel = twitchUser.getHandle(),
+                userId = userIdThatRedeemed,
+                userName = userNameThatRedeemed
             )
 
             if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
@@ -213,9 +213,9 @@ class CynanBot(commands.Bot):
             return False
 
         now = datetime.now()
-        delta = timedelta(hours=4)
+        timeDelta = timedelta(hours = 4)
 
-        if now > self.__lastCynanMessageTime + delta:
+        if now > self.__lastCynanMessageTime + timeDelta:
             self.__lastCynanMessageTime = now
             await message.channel.send_me('waves to @CynanMachae 👋')
             return True
@@ -366,9 +366,9 @@ class CynanBot(commands.Bot):
                 count = count + 1
 
             userId = self.__userIdsRepository.fetchUserId(
-                userName=user.getHandle(),
-                clientId=self.__authHelper.getClientId(),
-                accessToken=accessToken
+                userName = user.getHandle(),
+                clientId = self.__authHelper.getClientId(),
+                accessToken = accessToken
             )
 
             # we could subscribe to multiple topics, but for now, just channel points
@@ -565,7 +565,7 @@ class CynanBot(commands.Bot):
         userName = utils.removePreceedingAt(userName)
 
         try:
-            userId = self.__userIdsRepository.fetchUserId(userName=userName)
+            userId = self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
             print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
             await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
@@ -584,7 +584,7 @@ class CynanBot(commands.Bot):
             print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
 
-    @commands.command(name='jisho')
+    @commands.command(name = 'jisho')
     async def command_jisho(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -614,7 +614,7 @@ class CynanBot(commands.Bot):
             print(f'JishoHelper search query is malformed: \"{query}\"')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
-    @commands.command(name='joke')
+    @commands.command(name = 'joke')
     async def command_joke(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 

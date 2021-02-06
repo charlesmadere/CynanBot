@@ -21,7 +21,9 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 analogueStoreRepository = AnalogueStoreRepository()
 nonceRepository = NonceRepository()
-authHelper = AuthHelper(nonceRepository=nonceRepository)
+authHelper = AuthHelper(
+    nonceRepository = nonceRepository
+)
 backingDatabase = BackingDatabase()
 jishoHelper = JishoHelper()
 jokesRepository = JokesRepository()
