@@ -12,7 +12,7 @@ class UserTokensRepository():
 
         self.__userTokensFile = userTokensFile
 
-    def getAccessToken(self, handle: str):
+    def getAccessToken(self, handle: str) -> str:
         userJson = self.__readJsonForHandle(handle)
 
         if userJson is None:
@@ -27,7 +27,7 @@ class UserTokensRepository():
 
         return accessToken
 
-    def getRefreshToken(self, handle: str):
+    def getRefreshToken(self, handle: str) -> str:
         userJson = self.__readJsonForHandle(handle)
 
         if userJson is None:
@@ -42,7 +42,7 @@ class UserTokensRepository():
 
         return refreshToken
 
-    def __readJson(self):
+    def __readJson(self) -> dict:
         if not os.path.exists(self.__userTokensFile):
             raise FileNotFoundError(f'User tokens file not found: \"{self.__userTokensFile}\"')
 
@@ -56,7 +56,7 @@ class UserTokensRepository():
 
         return jsonContents
 
-    def __readJsonForHandle(self, handle: str):
+    def __readJsonForHandle(self, handle: str) -> dict:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 

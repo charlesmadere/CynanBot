@@ -442,7 +442,7 @@ class CynanBot(commands.Bot):
         if user.hasDiscord():
             commands.append('!discord')
 
-        if user.hasLocationId():
+        if user.hasLocationId() and user.isWeatherEnabled():
             commands.append('!weather')
 
         if user.hasSpeedrunProfile():
@@ -714,7 +714,7 @@ class CynanBot(commands.Bot):
     async def command_weather(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.hasLocationId():
+        if not user.hasLocationId() or not user.isWeatherEnabled():
             return
         elif not self.__lastWeatherMessageTimes.isReady(user.getHandle()):
             return

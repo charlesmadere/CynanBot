@@ -1,5 +1,6 @@
 import json
 import os
+from typing import List
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -38,6 +39,7 @@ class UsersRepository():
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
         isPkmnEnabled = userJson.get('pkmnEnabled', False)
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
+        isWeatherEnabled = userJson.get('weatherEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
         discord = userJson.get('discord')
         locationId = userJson.get('locationId')
@@ -86,6 +88,7 @@ class UsersRepository():
             isPicOfTheDayEnabled=isPicOfTheDayEnabled,
             isPkmnEnabled=isPkmnEnabled,
             isRatJamEnabled=isRatJamEnabled,
+            isWeatherEnabled=isWeatherEnabled,
             isWordOfTheDayEnabled=isWordOfTheDayEnabled,
             discord=discord,
             handle=handle,
@@ -103,19 +106,32 @@ class UsersRepository():
             timeZones=timeZones
         )
 
-    def getUser(self, handle: str):
+    def getUser(self, handle: str) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
-        users = self.getUsers()
+        jsonContents = self.__readJson()
 
-        for user in users:
-            if handle.lower() == user.getHandle().lower():
-                return user
+        for key in jsonContents:
+            if handle.lower() == key.lower():
+                return self.__createUser(handle, jsonContents[handle])
 
         raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
 
-    def getUsers(self):
+    def getUsers(self) -> List[User]:
+        jsonContents = self.__readJson()
+
+        users = []
+        for handle in jsonContents:
+            user = self.__createUser(handle, jsonContents[handle])
+            users.append(user)
+
+        if not utils.hasItems(users):
+            raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
+
+        return users
+
+    def __readJson(self) -> dict:
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users file not found: \"{self.__usersFile}\"')
 
@@ -124,13 +140,7 @@ class UsersRepository():
 
         if jsonContents is None:
             raise IOError(f'Error reading from users file: \"{self.__usersFile}\"')
+        elif len(jsonContents) == 0:
+            raise ValueError(f'JSON contents of users file \"{self.__usersFile}\" is empty')
 
-        users = []
-        for handle in jsonContents:
-            userJson = jsonContents[handle]
-            users.append(self.__createUser(handle, userJson))
-
-        if len(users) == 0:
-            raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
-
-        return users
+        return jsonContents

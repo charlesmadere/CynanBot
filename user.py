@@ -19,6 +19,7 @@ class User:
         isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
         isRatJamEnabled: bool,
+        isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         discord: str,
         handle: str,
@@ -49,6 +50,7 @@ class User:
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isPkmnEnabled = isPkmnEnabled
         self.__isRatJamEnabled = isRatJamEnabled
+        self.__isWeatherEnabled = isWeatherEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__discord = discord
         self.__handle = handle
@@ -65,7 +67,7 @@ class User:
         self.__twitter = twitter
         self.__timeZones = timeZones
 
-    def fetchPicOfTheDay(self):
+    def fetchPicOfTheDay(self) -> str:
         if not self.__isPicOfTheDayEnabled:
             raise RuntimeError(f'POTD is disabled for {self.__handle}')
         elif not os.path.exists(self.__picOfTheDayFile):
@@ -80,86 +82,89 @@ class User:
         potdParsed = urllib.parse.urlparse(potdText)
         return potdParsed.geturl()
 
-    def getDiscord(self):
+    def getDiscord(self) -> str:
         return self.__discord
 
-    def getHandle(self):
+    def getHandle(self) -> str:
         return self.__handle
 
-    def getIncreaseCutenessDoubleRewardId(self):
+    def getIncreaseCutenessDoubleRewardId(self) -> str:
         return self.__increaseCutenessDoubleRewardId
 
-    def getIncreaseCutenessRewardId(self):
+    def getIncreaseCutenessRewardId(self) -> str:
         return self.__increaseCutenessRewardId
 
-    def getLocationId(self):
+    def getLocationId(self) -> str:
         return self.__locationId
 
-    def getPicOfTheDayRewardId(self):
+    def getPicOfTheDayRewardId(self) -> str:
         return self.__picOfTheDayRewardId
 
-    def getPkmnBattleRewardId(self):
+    def getPkmnBattleRewardId(self) -> str:
         return self.__pkmnBattleRewardId
 
-    def getPkmnCatchRewardId(self):
+    def getPkmnCatchRewardId(self) -> str:
         return self.__pkmnCatchRewardId
 
-    def getPkmnEvolveRewardId(self):
+    def getPkmnEvolveRewardId(self) -> str:
         return self.__pkmnEvolveRewardId
 
-    def getPkmnShinyRewardId(self):
+    def getPkmnShinyRewardId(self) -> str:
         return self.__pkmnShinyRewardId
 
-    def getSpeedrunProfile(self):
+    def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
-    def getTimeZones(self):
+    def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
-    def getTwitter(self):
+    def getTwitter(self) -> str:
         return self.__twitter
 
-    def hasDiscord(self):
+    def hasDiscord(self) -> bool:
         return utils.isValidStr(self.__discord)
 
-    def hasLocationId(self):
+    def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
 
-    def hasSpeedrunProfile(self):
+    def hasSpeedrunProfile(self) -> bool:
         return utils.isValidStr(self.__speedrunProfile)
 
-    def hasTimeZones(self):
-        return self.__timeZones is not None and len(self.__timeZones) >= 1
+    def hasTimeZones(self) -> bool:
+        return utils.hasItems(self.__timeZones)
 
-    def hasTwitter(self):
+    def hasTwitter(self) -> bool:
         return utils.isValidStr(self.__twitter)
 
-    def isAnalogueEnabled(self):
+    def isAnalogueEnabled(self) -> bool:
         return self.__isAnalogueEnabled
 
-    def isCatJamEnabled(self):
+    def isCatJamEnabled(self) -> bool:
         return self.__isCatJamEnabled
 
-    def isCutenessEnabled(self):
+    def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
 
-    def isGiveCutenessEnabled(self):
+    def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
 
-    def isJishoEnabled(self):
+    def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled
 
-    def isJokesEnabled(self):
+    def isJokesEnabled(self) -> bool:
         return self.__isJokesEnabled
 
-    def isPicOfTheDayEnabled(self):
+    def isPicOfTheDayEnabled(self) -> bool:
         return self.__isPicOfTheDayEnabled
 
-    def isPkmnEnabled(self):
+    def isPkmnEnabled(self) -> bool:
         return self.__isPkmnEnabled
 
-    def isRatJamEnabled(self):
+    def isRatJamEnabled(self) -> bool:
         return self.__isRatJamEnabled
 
-    def isWordOfTheDayEnabled(self):
+    def isWeatherEnabled(self) -> bool:
+        return self.__isWeatherEnabled
+
+    def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
