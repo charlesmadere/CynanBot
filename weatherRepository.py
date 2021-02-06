@@ -1,4 +1,3 @@
-import json
 import locale
 from datetime import timedelta
 from typing import List

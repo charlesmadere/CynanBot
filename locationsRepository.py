@@ -3,7 +3,7 @@ from datetime import tzinfo
 from os import path
 
 import CynanBotCommon.utils as utils
-from timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 
 
 class LocationsRepository():

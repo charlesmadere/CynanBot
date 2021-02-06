@@ -8,9 +8,9 @@ from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.nonceRepository import NonceRepository
+from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from locationsRepository import LocationsRepository
-from timeZoneRepository import TimeZoneRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository

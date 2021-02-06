@@ -2,7 +2,7 @@ import json
 import os
 
 import CynanBotCommon.utils as utils
-from timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from user import User
 
 
