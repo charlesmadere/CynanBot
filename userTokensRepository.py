@@ -8,7 +8,7 @@ class UserTokensRepository():
 
     def __init__(self, userTokensFile: str = 'userTokensRepository.json'):
         if not utils.isValidStr(userTokensFile):
-            raise ValueError(f'userTokens argument is malformed: \"{userTokensFile}\"')
+            raise ValueError(f'userTokensFile argument is malformed: \"{userTokensFile}\"')
 
         self.__userTokensFile = userTokensFile
 
