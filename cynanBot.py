@@ -405,7 +405,7 @@ class CynanBot(commands.Bot):
         await self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
-    @commands.command(name='analogue')
+    @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -430,7 +430,7 @@ class CynanBot(commands.Bot):
             print(f'Error fetching Analogue stock in {user.getHandle()}')
             await ctx.send('⚠ Error fetching Analogue stock')
 
-    @commands.command(name='commands')
+    @commands.command(name = 'commands')
     async def command_commands(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
         commands = [ '!cynansource' ]
@@ -474,7 +474,7 @@ class CynanBot(commands.Bot):
 
         await ctx.send(f'My commands: {commandsString}')
 
-    @commands.command(name='cuteness')
+    @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -513,11 +513,11 @@ class CynanBot(commands.Bot):
                 print(f'Unable to find \"{userName}\" in the cuteness database')
                 await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
 
-    @commands.command(name='cynansource')
+    @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
         await ctx.send('My source code is available here: https://github.com/charlesmadere/cynanbot')
 
-    @commands.command(name='discord')
+    @commands.command(name = 'discord')
     async def command_discord(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -527,7 +527,7 @@ class CynanBot(commands.Bot):
         discord = user.getDiscord()
         await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
 
-    @commands.command(name='givecuteness')
+    @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx):
         if not ctx.author.is_mod:
             return
@@ -635,7 +635,7 @@ class CynanBot(commands.Bot):
             print(f'Error fetching joke of the day in {user.getHandle()}')
             await ctx.send('⚠ Error fetching joke of the day')
 
-    @commands.command(name='mycuteness')
+    @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -661,7 +661,7 @@ class CynanBot(commands.Bot):
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
-    @commands.command(name='pbs')
+    @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -671,7 +671,7 @@ class CynanBot(commands.Bot):
         speedrunProfile = user.getSpeedrunProfile()
         await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
 
-    @commands.command(name='time')
+    @commands.command(name = 'time')
     async def command_time(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -696,7 +696,7 @@ class CynanBot(commands.Bot):
 
         await ctx.send(text)
 
-    @commands.command(name='twitter')
+    @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -706,7 +706,7 @@ class CynanBot(commands.Bot):
         twitter = user.getTwitter()
         await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
 
-    @commands.command(name='weather')
+    @commands.command(name = 'weather')
     async def command_weather(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -724,7 +724,7 @@ class CynanBot(commands.Bot):
         else:
             await ctx.send(weatherReport.toStr())
 
-    @commands.command(name='word')
+    @commands.command(name = 'word')
     async def command_word(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
