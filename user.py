@@ -13,6 +13,7 @@ class User:
         isAnalogueEnabled: bool,
         isCatJamEnabled: bool,
         isCutenessEnabled: bool,
+        isDiccionarioEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
         isJokesEnabled: bool,
@@ -44,6 +45,7 @@ class User:
         self.__isAnalogueEnabled = isAnalogueEnabled
         self.__isCatJamEnabled = isCatJamEnabled
         self.__isCutenessEnabled = isCutenessEnabled
+        self.__isDiccionarioEnabled = isDiccionarioEnabled
         self.__isGiveCutenessEnabled = isGiveCutenessEnabled
         self.__isJishoEnabled = isJishoEnabled
         self.__isJokesEnabled = isJokesEnabled
@@ -144,6 +146,9 @@ class User:
 
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
+
+    def isDiccionarioEnabled(self) -> bool:
+        return self.__isDiccionarioEnabled
 
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled

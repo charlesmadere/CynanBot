@@ -8,6 +8,7 @@ import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -28,6 +29,7 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
+        enEsDictionary: EnEsDictionary,
         jishoHelper: JishoHelper,
         jokesRepository: JokesRepository,
         locationsRepository: LocationsRepository,
@@ -50,6 +52,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif enEsDictionary is None:
+            raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
         elif jishoHelper is None:
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif jokesRepository is None:
@@ -70,6 +74,7 @@ class CynanBot(commands.Bot):
         self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
+        self.__enEsDictionary = enEsDictionary
         self.__jishoHelper = jishoHelper
         self.__jokesRepository = jokesRepository
         self.__locationsRepository = locationsRepository
@@ -87,6 +92,7 @@ class CynanBot(commands.Bot):
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
@@ -457,6 +463,9 @@ class CynanBot(commands.Bot):
             if user.isGiveCutenessEnabled() and ctx.author.is_mod:
                 commands.append('!givecuteness')
 
+        if user.isDiccionarioEnabled():
+            commands.append('!diccionario')
+
         if user.isJishoEnabled():
             commands.append('!jisho')
 
@@ -516,6 +525,36 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
         await ctx.send('My source code is available here: https://github.com/charlesmadere/cynanbot')
+
+    @commands.command(name = 'diccionario')
+    async def command_diccionario(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isDiccionarioEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastDiccionarioMessageTimes.isReady(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) < 2:
+            await ctx.send('⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
+            return
+
+        query = splits[1]
+
+        try:
+            result = self.__enEsDictionary.search(query)
+            self.__lastDiccionarioMessageTimes.update(user.getHandle())
+
+            if result is None:
+                print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
+                await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
+            else:
+                await ctx.send(result.toStr())
+        except ValueError:
+            print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):

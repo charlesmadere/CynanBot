@@ -5,6 +5,7 @@ from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
+from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -19,14 +20,11 @@ from userTokensRepository import UserTokensRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
-analogueStoreRepository = AnalogueStoreRepository()
 nonceRepository = NonceRepository()
 authHelper = AuthHelper(
     nonceRepository = nonceRepository
 )
 backingDatabase = BackingDatabase()
-jishoHelper = JishoHelper()
-jokesRepository = JokesRepository()
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase
 )
@@ -37,32 +35,32 @@ cutenessRepository = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
-locationsRepository = LocationsRepository(
-    timeZoneRepository = timeZoneRepository
-)
-usersRepository = UsersRepository(
-    timeZoneRepository = timeZoneRepository
-)
-userTokensRepository = UserTokensRepository()
-weatherRepository = WeatherRepository(
-    iqAirApiKey = authHelper.getIqAirApiKey(),
-    oneWeatherApiKey = authHelper.getOneWeatherApiKey()
-)
-wordOfTheDayRepository = WordOfTheDayRepository()
 
 cynanBot = CynanBot(
-    analogueStoreRepository = analogueStoreRepository,
+    analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
-    jishoHelper = jishoHelper,
-    jokesRepository = jokesRepository,
-    locationsRepository = locationsRepository,
+    enEsDictionary = EnEsDictionary(
+        merriamWebsterApiKey = authHelper.getMerriamWebsterApiKey()
+    ),
+    jishoHelper = JishoHelper(),
+    jokesRepository = JokesRepository(),
+    locationsRepository = LocationsRepository(
+        timeZoneRepository = timeZoneRepository
+    ),
     nonceRepository = nonceRepository,
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository,
-    userTokensRepository = userTokensRepository,
-    weatherRepository = weatherRepository,
-    wordOfTheDayRepository = wordOfTheDayRepository
+    userIdsRepository = UserIdsRepository(
+        backingDatabase = backingDatabase
+    ),
+    usersRepository = UsersRepository(
+        timeZoneRepository = timeZoneRepository
+    ),
+    userTokensRepository = UserTokensRepository(),
+    weatherRepository = WeatherRepository(
+        iqAirApiKey = authHelper.getIqAirApiKey(),
+        oneWeatherApiKey = authHelper.getOneWeatherApiKey()
+    ),
+    wordOfTheDayRepository = WordOfTheDayRepository()
 )
 
 print('Starting CynanBot...')

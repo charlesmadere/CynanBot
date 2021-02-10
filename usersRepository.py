@@ -33,6 +33,7 @@ class UsersRepository():
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
         isCatJamEnabled = userJson.get('catJamEnabled', False)
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
+        isDiccionarioEnabled = userJson.get('diccionarioEnabled', False)
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
         isJokesEnabled = userJson.get('jokesEnabled', False)
@@ -82,6 +83,7 @@ class UsersRepository():
             isAnalogueEnabled = isAnalogueEnabled,
             isCatJamEnabled = isCatJamEnabled,
             isCutenessEnabled = isCutenessEnabled,
+            isDiccionarioEnabled = isDiccionarioEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,

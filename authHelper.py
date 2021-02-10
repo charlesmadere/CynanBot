@@ -64,6 +64,11 @@ class AuthHelper():
             raise ValueError(f'Auth file ({authFile}) has malformed ircAuthToken: \"{ircAuthToken}\"')
         self.__ircAuthToken = ircAuthToken
 
+        merriamWebsterApikey = jsonContents.get('merriamWebsterApiKey')
+        if not utils.isValidStr(merriamWebsterApikey):
+            raise ValueError(f'Auth file ({authFile}) has malformed merriamWebsterApiKey: \"{merriamWebsterApikey}\"')
+        self.__merriamWebsterApiKey = merriamWebsterApikey
+
         oneWeatherApiKey = jsonContents.get('oneWeatherApiKey')
         if not utils.isValidStr(oneWeatherApiKey):
             print(f'No value for oneWeatherApiKey: \"{oneWeatherApiKey}\"')
@@ -80,6 +85,9 @@ class AuthHelper():
 
     def getIrcAuthToken(self) -> str:
         return self.__ircAuthToken
+
+    def getMerriamWebsterApiKey(self) -> str:
+        return self.__merriamWebsterApiKey
 
     def getOneWeatherApiKey(self) -> str:
         return self.__oneWeatherApiKey
