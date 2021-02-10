@@ -606,12 +606,12 @@ class CynanBot(commands.Bot):
             self.__lastJishoMessageTimes.update(user.getHandle())
 
             if result is None:
-                print(f'Failed searching Jisho for \"{query}\" in {user.getHandle()}')
+                print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
                 await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
             else:
                 await ctx.send(result.toStr())
         except ValueError:
-            print(f'JishoHelper search query is malformed: \"{query}\"')
+            print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
     @commands.command(name = 'joke')
