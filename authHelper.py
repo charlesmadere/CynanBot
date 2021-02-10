@@ -56,12 +56,12 @@ class AuthHelper():
 
         iqAirApiKey = jsonContents.get('iqAirApiKey')
         if not utils.isValidStr(iqAirApiKey):
-            print(f'No value for iqAirApiKey: \"{iqAirApiKey}\"')
+            print(f'Auth file ({authFile}) has no value for iqAirApiKey: \"{iqAirApiKey}\"')
         self.__iqAirApiKey = iqAirApiKey
 
         ircAuthToken = jsonContents.get('ircAuthToken')
         if not utils.isValidStr(ircAuthToken):
-            raise ValueError(f'Auth file ({ircAuthToken}) has malformed ircAuthToken: \"{ircAuthToken}\"')
+            raise ValueError(f'Auth file ({authFile}) has malformed ircAuthToken: \"{ircAuthToken}\"')
         self.__ircAuthToken = ircAuthToken
 
         oneWeatherApiKey = jsonContents.get('oneWeatherApiKey')
