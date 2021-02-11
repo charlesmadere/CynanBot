@@ -546,13 +546,8 @@ class CynanBot(commands.Bot):
         try:
             result = self.__enEsDictionary.search(query)
             self.__lastDiccionarioMessageTimes.update(user.getHandle())
-
-            if result is None:
-                print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
-                await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
-            else:
-                await ctx.send(result.toStr())
-        except ValueError:
+            await ctx.send(result.toStr())
+        except (RuntimeError, ValueError):
             print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
             await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
 
@@ -643,13 +638,8 @@ class CynanBot(commands.Bot):
         try:
             result = self.__jishoHelper.search(query)
             self.__lastJishoMessageTimes.update(user.getHandle())
-
-            if result is None:
-                print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
-                await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
-            else:
-                await ctx.send(result.toStr())
-        except ValueError:
+            await ctx.send(result.toStr())
+        except (RuntimeError, ValueError):
             print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
