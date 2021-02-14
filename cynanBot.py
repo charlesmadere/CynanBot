@@ -770,8 +770,8 @@ class CynanBot(commands.Bot):
         languageList = self.__wordOfTheDayRepository.getLanguageList()
 
         if len(splits) < 2:
-            example = languageList.getLanguages()[0].getCommandName()
-            languages = languageList.toCommandNameStr()
+            example = languageList.getLanguages()[0].getPrimaryCommandName()
+            languages = languageList.toCommandNamesStr()
             await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
             return
 
@@ -784,7 +784,7 @@ class CynanBot(commands.Bot):
             print(f'Error retrieving language entry for \"{language}\"')
 
         if languageEntry is None:
-            languages = languageList.toCommandNameStr()
+            languages = languageList.toCommandNamesStr()
             await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languages}')
             return
 
