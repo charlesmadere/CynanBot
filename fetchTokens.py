@@ -27,8 +27,9 @@ if TWITCH_CLIENT_ID is None or TWITCH_CLIENT_SECRET is None:
     with open('authFile.json', 'r') as file:
         authFileJson = json.load(file)
 
-    TWITCH_CLIENT_ID = authFileJson['clientId']
-    TWITCH_CLIENT_SECRET = authFileJson['clientSecret']
+    if authFileJson is not None:
+        TWITCH_CLIENT_ID = authFileJson.get('clientId')
+        TWITCH_CLIENT_SECRET = authFileJson.get('clientSecret')
 
 if TWITCH_CLIENT_SECRET is None or TWITCH_CLIENT_SECRET is None or TWITCH_CODE_SECRET is None:
     raise ValueError('TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, and TWITCH_CODE_SECRET must all be set!')

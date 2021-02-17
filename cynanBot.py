@@ -378,7 +378,7 @@ class CynanBot(commands.Bot):
             )
 
             # we could subscribe to multiple topics, but for now, just channel points
-            topics = [f'channel-points-channel-v1.{userId}']
+            topics = [ f'channel-points-channel-v1.{userId}' ]
 
             # subscribe to pubhub channel points events
             nonce = await self.pubsub_subscribe(accessToken, *topics)

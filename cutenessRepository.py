@@ -393,9 +393,7 @@ class CutenessRepository():
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelUserId = self.__userIdsRepository.fetchUserId(
-            userName = twitchChannel
-        )
+        twitchChannelUserId = self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
