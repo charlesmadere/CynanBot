@@ -169,7 +169,7 @@ class AuthHelper():
             jsonResponse = rawResponse.json()
 
             if jsonResponse.get('client_id') is None or len(jsonResponse['client_id']) == 0:
-                print(f'Refreshing access token for {handle}...')
+                print(f'Refreshing access token for \"{handle}\"...')
 
                 self.__refreshAccessToken(
                     handle = handle,
