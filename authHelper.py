@@ -151,20 +151,18 @@ class AuthHelper():
             if accessToken is not None and (not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(handle)):
                 userTokens[handle] = accessToken
 
-        if len(userTokens) == 0:
+        if not utils.hasItems(userTokens):
             print('There are no users with an access token, skipping access token validation')
             return
 
         print(f'Validating access tokens for {len(userTokens)} user(s) (nonce: \"{nonce}\")...')
 
         for handle, accessToken in userTokens.items():
-            headers = {
-                'Authorization': f'OAuth {accessToken}'
-            }
-
             rawResponse = requests.get(
                 url = self.__oauth2ValidateUrl,
-                headers = headers,
+                headers = {
+                    'Authorization': f'OAuth {accessToken}'
+                },
                 timeout = utils.getDefaultTimeout()
             )
 
