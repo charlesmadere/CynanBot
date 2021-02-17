@@ -1,4 +1,6 @@
 import requests
+from requests import ConnectionError, HTTPError, Timeout
+from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backingDatabase import BackingDatabase
@@ -57,16 +59,19 @@ class UserIdsRepository():
 
         print(f'Performing network call to fetch user ID for {userName}...')
 
-        headers = {
-            'Client-ID': clientId,
-            'Authorization': f'Bearer {accessToken}'
-        }
-
-        rawResponse = requests.get(
-            url = f'https://api.twitch.tv/helix/users?login={userName}',
-            headers = headers,
-            timeout = utils.getDefaultTimeout()
-        )
+        rawResponse = None
+        try:
+            rawResponse = requests.get(
+                url = f'https://api.twitch.tv/helix/users?login={userName}',
+                headers = {
+                    'Client-ID': clientId,
+                    'Authorization': f'Bearer {accessToken}'
+                },
+                timeout = utils.getDefaultTimeout()
+            )
+        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, Timeout) as e:
+            print(f'Exception occurred when attempting to fetch user ID for {userName}: {e}')
+            raise RuntimeError(f'Exception occurred when attempting to fetch user ID for {userName}: {e}')
 
         jsonResponse = rawResponse.json()
 
