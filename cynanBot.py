@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import List
 
 from twitchio.ext import commands
+from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
@@ -100,8 +101,10 @@ class CynanBot(commands.Bot):
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
     async def event_command_error(self, ctx, error):
-        # prevents exceptions caused by people using commands for other bots
-        pass
+        if isinstance(error, CommandNotFound):
+            return
+        else:
+            raise error
 
     async def event_message(self, message):
         if await self.__handleMessageFromCynan(message):
