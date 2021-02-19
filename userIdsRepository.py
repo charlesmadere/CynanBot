@@ -35,7 +35,7 @@ class UserIdsRepository():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute('SELECT userId FROM userIds WHERE userName = ?', (userName, ))
+        cursor.execute('SELECT userId FROM userIds WHERE userName = ?', ( userName, ))
         row = cursor.fetchone()
 
         userId = None
@@ -92,7 +92,7 @@ class UserIdsRepository():
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute('SELECT userName FROM userIds WHERE userId = ?', (userId, ))
+        cursor.execute('SELECT userName FROM userIds WHERE userId = ?', ( userId, ))
         row = cursor.fetchone()
 
         if row is None:
@@ -119,7 +119,7 @@ class UserIdsRepository():
                 VALUES (?, ?)
                 ON CONFLICT(userId) DO UPDATE SET userName = excluded.userName
             ''',
-            (userId, userName)
+            ( userId, userName )
         )
         connection.commit()
         cursor.close()

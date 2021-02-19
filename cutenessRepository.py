@@ -222,7 +222,7 @@ class CutenessRepository():
                 SELECT cuteness FROM cuteness
                 WHERE twitchChannel = ? AND userId = ?
             ''',
-            (twitchChannel, userId)
+            ( twitchChannel, userId )
         )
 
         row = cursor.fetchone()
@@ -261,7 +261,7 @@ class CutenessRepository():
                 SELECT cuteness FROM cuteness
                 WHERE twitchChannel = ? AND userId = ?
             ''',
-            (twitchChannel, userId)
+            ( twitchChannel, userId )
         )
 
         row = cursor.fetchone()
@@ -284,7 +284,7 @@ class CutenessRepository():
                 ORDER BY ABS(? - ABS(cuteness)) ASC
                 LIMIT ?
             ''',
-            (twitchChannel, userId, cuteness, self.__localLeaderboardSize)
+            ( twitchChannel, userId, cuteness, self.__localLeaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__localLeaderboardSize)
@@ -356,7 +356,7 @@ class CutenessRepository():
                 SELECT cuteness FROM cuteness
                 WHERE twitchChannel = ? AND userId = ?
             ''',
-            (twitchChannel, userId)
+            ( twitchChannel, userId )
         )
 
         row = cursor.fetchone()
@@ -376,7 +376,7 @@ class CutenessRepository():
                 VALUES (?, ?, ?)
                 ON CONFLICT (twitchChannel, userId) DO UPDATE SET cuteness = excluded.cuteness
             ''',
-            (cuteness, twitchChannel, userId)
+            ( cuteness, twitchChannel, userId )
         )
 
         connection.commit()
@@ -403,7 +403,7 @@ class CutenessRepository():
                 ORDER BY cuteness DESC
                 LIMIT ?
             ''',
-            (twitchChannel, twitchChannelUserId, self.__leaderboardSize)
+            ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
