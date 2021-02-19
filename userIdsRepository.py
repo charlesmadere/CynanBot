@@ -117,7 +117,7 @@ class UserIdsRepository():
             '''
                 INSERT INTO userIds (userId, userName)
                 VALUES (?, ?)
-                ON CONFLICT(userId) DO UPDATE SET userName = excluded.userName
+                ON CONFLICT (userId) DO UPDATE SET userName = excluded.userName
             ''',
             ( userId, userName )
         )
