@@ -64,7 +64,7 @@ class UserIdsRepository():
             rawResponse = requests.get(
                 url = f'https://api.twitch.tv/helix/users?login={userName}',
                 headers = {
-                    'Client-ID': clientId,
+                    'Client-Id': clientId,
                     'Authorization': f'Bearer {accessToken}'
                 },
                 timeout = utils.getDefaultTimeout()
