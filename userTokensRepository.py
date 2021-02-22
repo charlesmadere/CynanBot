@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Dict
 
 import CynanBotCommon.utils as utils
 
@@ -42,7 +43,7 @@ class UserTokensRepository():
 
         return refreshToken
 
-    def __readJson(self) -> dict:
+    def __readJson(self) -> Dict:
         if not os.path.exists(self.__userTokensFile):
             raise FileNotFoundError(f'User tokens file not found: \"{self.__userTokensFile}\"')
 
@@ -56,7 +57,7 @@ class UserTokensRepository():
 
         return jsonContents
 
-    def __readJsonForHandle(self, handle: str) -> dict:
+    def __readJsonForHandle(self, handle: str) -> Dict:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 

@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import Dict, List
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -133,7 +133,7 @@ class UsersRepository():
 
         return users
 
-    def __readJson(self) -> dict:
+    def __readJson(self) -> Dict:
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users file not found: \"{self.__usersFile}\"')
 
