@@ -91,7 +91,7 @@ class CynanBot(commands.Bot):
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
-        self.__lastCynanMessageTime = datetime.now() - timedelta(days = 1)
+        self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
@@ -221,7 +221,7 @@ class CynanBot(commands.Bot):
         if message.author.name.lower() != 'cynanmachae'.lower():
             return False
 
-        now = datetime.now()
+        now = datetime.utcnow()
         timeDelta = timedelta(hours = 4)
 
         if now > self.__lastCynanMessageTime + timeDelta:
