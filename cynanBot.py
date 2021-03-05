@@ -727,7 +727,7 @@ class CynanBot(commands.Bot):
         name = ' '.join(splits[1:])
 
         try:
-            move = self.__pokepediaRepository.searchMove(name)
+            move = self.__pokepediaRepository.searchMoves(name)
             moveStrList = move.toStrList()
 
             for moveStr in moveStrList:
