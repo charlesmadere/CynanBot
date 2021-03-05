@@ -10,6 +10,7 @@ from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
+from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -49,6 +50,7 @@ cynanBot = CynanBot(
         timeZoneRepository = timeZoneRepository
     ),
     nonceRepository = nonceRepository,
+    pokepediaRepository = PokepediaRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase
     ),

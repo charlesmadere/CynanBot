@@ -14,6 +14,7 @@ from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
+from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -35,6 +36,7 @@ class CynanBot(commands.Bot):
         jokesRepository: JokesRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
+        pokepediaRepository: PokepediaRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
@@ -63,6 +65,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
+        elif pokepediaRepository is None:
+            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository is None:
@@ -80,6 +84,7 @@ class CynanBot(commands.Bot):
         self.__jokesRepository = jokesRepository
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
+        self.__pokepediaRepository = pokepediaRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
@@ -475,6 +480,9 @@ class CynanBot(commands.Bot):
         if user.isJokesEnabled():
             commands.append('!joke')
 
+        if user.isPokepediaEnabled():
+            commands.append('!pkmove')
+
         if user.isWeatherEnabled():
             commands.append('!weather')
 
@@ -544,7 +552,7 @@ class CynanBot(commands.Bot):
             await ctx.send('⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
             return
 
-        query = splits[1]
+        query = ' '.join(splits[1:])
 
         try:
             result = self.__enEsDictionary.search(query)
@@ -702,6 +710,31 @@ class CynanBot(commands.Bot):
 
         speedrunProfile = user.getSpeedrunProfile()
         await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+
+    @commands.command(name = 'pkmove')
+    async def command_pkmove(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isPokepediaEnabled():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) < 2:
+            await ctx.send('⚠ A name is necessary for the !pkmove command. Example: !pkmove fire spin')
+            return
+
+        name = ' '.join(splits[1:])
+
+        try:
+            move = self.__pokepediaRepository.searchMove(name)
+            moveStrList = move.toStrList()
+
+            for moveStr in moveStrList:
+                await ctx.send(moveStr)
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving Pokemon move \"{name}\"')
+            await ctx.send(f'⚠ Error retrieving Pokemon move \"{name}\"')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):

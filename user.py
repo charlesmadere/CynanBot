@@ -19,6 +19,7 @@ class User:
         isJokesEnabled: bool,
         isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
+        isPokepediaEnabled: bool,
         isRatJamEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
@@ -51,6 +52,7 @@ class User:
         self.__isJokesEnabled = isJokesEnabled
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isPkmnEnabled = isPkmnEnabled
+        self.__isPokepediaEnabled = isPokepediaEnabled
         self.__isRatJamEnabled = isRatJamEnabled
         self.__isWeatherEnabled = isWeatherEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
@@ -164,6 +166,9 @@ class User:
 
     def isPkmnEnabled(self) -> bool:
         return self.__isPkmnEnabled
+
+    def isPokepediaEnabled(self) -> bool:
+        return self.__isPokepediaEnabled
 
     def isRatJamEnabled(self) -> bool:
         return self.__isRatJamEnabled
