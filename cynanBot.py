@@ -740,7 +740,7 @@ class CynanBot(commands.Bot):
         text = ''
 
         for timeZone in timeZones:
-            localTime = datetime.utcnow(timeZone)
+            localTime = datetime.now(timeZone)
 
             if first:
                 first = False
