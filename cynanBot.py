@@ -824,10 +824,7 @@ class CynanBot(commands.Bot):
 
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-        except ValueError:
-            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\"')
-
-        if wotd is None:
-            await ctx.send(f'⚠ Error fetching word of the day for {languageEntry.getApiName()}')
-        else:
             await ctx.send(wotd.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getApiName()}\"')
