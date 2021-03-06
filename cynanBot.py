@@ -665,12 +665,7 @@ class CynanBot(commands.Bot):
 
         try:
             result = self.__jokesRepository.fetchJoke()
-
-            if result is None:
-                print(f'Error fetching joke of the day in {user.getHandle()}')
-                await ctx.send('⚠ Error fetching joke of the day')
-            else:
-                await ctx.send(result.toStr())
+            await ctx.send(result.toStr())
         except ValueError:
             print(f'Error fetching joke of the day in {user.getHandle()}')
             await ctx.send('⚠ Error fetching joke of the day')
