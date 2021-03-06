@@ -101,6 +101,7 @@ class CynanBot(commands.Bot):
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastPkMoveMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
@@ -705,6 +706,8 @@ class CynanBot(commands.Bot):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isPokepediaEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastPkMoveMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
