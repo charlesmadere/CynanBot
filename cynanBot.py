@@ -740,7 +740,7 @@ class CynanBot(commands.Bot):
         text = ''
 
         for timeZone in timeZones:
-            localTime = datetime.now(timeZone)
+            localTime = datetime.utcnow(timeZone)
 
             if first:
                 first = False
@@ -748,7 +748,7 @@ class CynanBot(commands.Bot):
                 text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(datetime.now())
+                timeZoneName = timeZone.tzname(datetime.utcnow())
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await ctx.send(text)
