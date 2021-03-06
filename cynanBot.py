@@ -806,14 +806,9 @@ class CynanBot(commands.Bot):
         try:
             languageEntry = languageList.getLanguageForCommand(language)
         except (RuntimeError, ValueError):
-            print(f'Error retrieving language entry for \"{language}\"')
-
-        if languageEntry is None:
-            languages = languageList.toCommandNamesStr()
-            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languages}')
+            print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languageList.toCommandNamesStr()}')
             return
-
-        wotd = None
 
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
