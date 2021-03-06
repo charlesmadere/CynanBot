@@ -776,17 +776,18 @@ class CynanBot(commands.Bot):
             return
 
         if not user.hasLocationId():
-            await ctx.send(f'⚠ {user.getHandle} has no Location ID')
+            await ctx.send(f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
-        location = self.__locationsRepository.getLocation(user.getLocationId())
-        weatherReport = self.__weatherRepository.fetchWeather(location)
         self.__lastWeatherMessageTimes.update(user.getHandle())
+        location = self.__locationsRepository.getLocation(user.getLocationId())
 
-        if weatherReport is None:
-            await ctx.send('⚠ Error fetching weather')
-        else:
+        try:
+            weatherReport = self.__weatherRepository.fetchWeather(location)
             await ctx.send(weatherReport.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error fetching weather for \"{user.getLocationId()}\" in {user.getHandle()}')
+            await ctx.send('⚠ Error fetching weather')
 
     @commands.command(name = 'word')
     async def command_word(self, ctx):
