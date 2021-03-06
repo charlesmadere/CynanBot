@@ -734,7 +734,7 @@ class CynanBot(commands.Bot):
                 await ctx.send(moveStr)
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon move \"{name}\"')
-            await ctx.send(f'⚠ Error retrieving Pokemon move \"{name}\"')
+            await ctx.send(f'⚠ Error retrieving Pokémon move \"{name}\"')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
