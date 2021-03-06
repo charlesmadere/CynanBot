@@ -425,10 +425,8 @@ class CynanBot(commands.Bot):
 
         if not user.isAnalogueEnabled():
             return
-        elif not self.__lastAnalogueStockMessageTimes.isReady(user.getHandle()):
+        elif not self.__lastAnalogueStockMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
-
-        self.__lastAnalogueStockMessageTimes.update(user.getHandle())
 
         splits = utils.getCleanedSplits(ctx.message.content)
         includePrices = 'includePrices' in splits
@@ -641,10 +639,10 @@ class CynanBot(commands.Bot):
             return
 
         query = splits[1]
+        self.__lastJishoMessageTimes.update(user.getHandle())
 
         try:
             result = self.__jishoHelper.search(query)
-            self.__lastJishoMessageTimes.update(user.getHandle())
             await ctx.send(result.toStr())
         except (RuntimeError, ValueError):
             print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
@@ -768,14 +766,13 @@ class CynanBot(commands.Bot):
 
         if not user.isWeatherEnabled():
             return
-        elif not self.__lastWeatherMessageTimes.isReady(user.getHandle()):
+        elif not self.__lastWeatherMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         if not user.hasLocationId():
             await ctx.send(f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
-        self.__lastWeatherMessageTimes.update(user.getHandle())
         location = self.__locationsRepository.getLocation(user.getLocationId())
 
         try:
@@ -791,7 +788,7 @@ class CynanBot(commands.Bot):
 
         if not user.isWordOfTheDayEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReady(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
