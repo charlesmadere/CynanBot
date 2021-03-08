@@ -12,6 +12,7 @@ from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from userIdsRepository import UserIdsRepository
@@ -51,6 +52,7 @@ cynanBot = CynanBot(
     ),
     nonceRepository = nonceRepository,
     pokepediaRepository = PokepediaRepository(),
+    triviaRepository = TriviaRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase
     ),
