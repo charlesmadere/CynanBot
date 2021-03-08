@@ -1,3 +1,4 @@
+import asyncio
 import json
 from datetime import datetime, timedelta
 from typing import List
@@ -16,6 +17,7 @@ from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.triviaRepository import TriviaRepository, TriviaResponse
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from user import User
@@ -37,6 +39,7 @@ class CynanBot(commands.Bot):
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
+        triviaRepository: TriviaRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
@@ -67,6 +70,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif triviaRepository is None:
+            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository is None:
@@ -85,6 +90,7 @@ class CynanBot(commands.Bot):
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__pokepediaRepository = pokepediaRepository
+        self.__triviaRepository = triviaRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
@@ -103,6 +109,7 @@ class CynanBot(commands.Bot):
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
@@ -478,6 +485,9 @@ class CynanBot(commands.Bot):
         if user.isPokepediaEnabled():
             commands.append('!pkmove')
 
+        if user.isTriviaEnabled():
+            commands.append('!trivia')
+
         if user.isWeatherEnabled():
             commands.append('!weather')
 
@@ -752,6 +762,39 @@ class CynanBot(commands.Bot):
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await ctx.send(text)
+
+    @commands.command(name = 'trivia')
+    async def command_trivia(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTriviaEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastTriviaMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        try:
+            response = self.__triviaRepository.fetchTrivia()
+            await ctx.send(response.toPromptStr())
+
+            asyncio.create_task(self.__sendTriviaAnswer(
+                ctx = ctx,
+                delay = self.__triviaRepository.getWaitBeforeAnswerSeconds(),
+                answer = response.toAnswerStr()
+            ))
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving trivia')
+            await ctx.send('⚠ Error retrieving trivia')
+
+    async def __sendTriviaAnswer(self, ctx, delay: int, answer: str):
+        if ctx is None:
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not utils.isValidNum(delay):
+            raise ValueError(f'delay argument is malformed: \"{delay}\"')
+        elif not utils.isValidStr(answer):
+            raise ValueError(f'answer argument is malformed: \"{answer}\"')
+
+        await asyncio.sleep(delay)
+        await ctx.send(answer)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
