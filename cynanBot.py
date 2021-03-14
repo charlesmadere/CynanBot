@@ -97,7 +97,7 @@ class CynanBot(commands.Bot):
         self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
-        self.__cutenessDoubleEndTimes = TimedDict(timedelta(minutes = 5))
+        self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
         self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 30))
@@ -199,10 +199,21 @@ class CynanBot(commands.Bot):
                 userName = userNameThatRedeemed
             )
 
-            await twitchChannel.send(f'✨ Double cuteness points enabled for the next 5 minutes! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
+            await twitchChannel.send(f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
+
+        asyncio.create_task(self.__increaseCutenessDoubleRewardEnded(
+            twitchChannel = twitchChannel
+        ))
+
+    async def __increaseCutenessDoubleRewardEnded(self, twitchChannel):
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        await asyncio.sleep(self.__cutenessRepository.getDoubleCutenessTimeSeconds())
+        await twitchChannel.send(f'Double cuteness has ended! 😿')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,

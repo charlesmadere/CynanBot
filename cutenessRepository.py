@@ -174,7 +174,8 @@ class CutenessRepository():
         backingDatabase: BackingDatabase,
         leaderboardSize: int,
         localLeaderboardSize: int,
-        userIdsRepository: UserIdsRepository
+        userIdsRepository: UserIdsRepository,
+        doubleCutenessTimeSeconds: int = 300
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -182,17 +183,22 @@ class CutenessRepository():
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 1 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
-        elif localLeaderboardSize is None:
+        elif not utils.isValidNum(localLeaderboardSize):
             raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
-        elif localLeaderboardSize < 1 or localLeaderboardSize > 6:
+        elif localLeaderboardSize < 3 or localLeaderboardSize > 6:
             raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidNum(doubleCutenessTimeSeconds):
+            raise ValueError(f'doubleCutenessTimeSeconds argument is malformed: \"{doubleCutenessTimeSeconds}\"')
+        elif doubleCutenessTimeSeconds < 30 or doubleCutenessTimeSeconds > 600:
+            raise ValueError(f'doubleCutenessTimeSeconds argument is out of bounds \"{doubleCutenessTimeSeconds}\"')
 
         self.__backingDatabase = backingDatabase
         self.__leaderboardSize = leaderboardSize
         self.__localLeaderboardSize = localLeaderboardSize
         self.__userIdsRepository = userIdsRepository
+        self.__doubleCutenessTimeSeconds = doubleCutenessTimeSeconds
 
         connection = backingDatabase.getConnection()
         connection.execute(
@@ -432,3 +438,9 @@ class CutenessRepository():
         return CutenessLeaderboardResult(
             entries = entries
         )
+
+    def getDoubleCutenessTimeSeconds(self) -> int:
+        return self.__doubleCutenessTimeSeconds
+
+    def getDoubleCutenessTimeSecondsStr(self) -> str:
+        return locale.format_string("%d", self.__doubleCutenessTimeSeconds, grouping = True)
