@@ -200,20 +200,15 @@ class CynanBot(commands.Bot):
             )
 
             await twitchChannel.send(f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
+
+            asyncio.create_task(self.__sendDelayMessage(
+                channel = twitchChannel,
+                delay = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
+                message = 'Double cuteness has ended! 😿'
+            ))
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
-
-        asyncio.create_task(self.__increaseCutenessDoubleRewardEnded(
-            twitchChannel = twitchChannel
-        ))
-
-    async def __increaseCutenessDoubleRewardEnded(self, twitchChannel):
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        await asyncio.sleep(self.__cutenessRepository.getDoubleCutenessTimeSeconds())
-        await twitchChannel.send(f'Double cuteness has ended! 😿')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
@@ -382,6 +377,17 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
         else:
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
+
+    async def __sendDelayMessage(self, channel, delay: int, message: str):
+        if channel is None:
+            raise ValueError(f'channel argument is malformed: \"{channel}\"')
+        elif not utils.isValidNum(delay):
+            raise ValueError(f'delay argument is malformed: \"{delay}\"')
+        elif not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        await asyncio.sleep(delay)
+        await channel.send(message)
 
     async def __subscribeToEvents(self, users: List[User]):
         if not utils.hasItems(users):
@@ -787,25 +793,14 @@ class CynanBot(commands.Bot):
             response = self.__triviaRepository.fetchTrivia()
             await ctx.send(response.toPromptStr())
 
-            asyncio.create_task(self.__sendTriviaAnswer(
-                ctx = ctx,
+            asyncio.create_task(self.__sendDelayMessage(
+                channel = ctx,
                 delay = self.__triviaRepository.getWaitBeforeAnswerSeconds(),
-                answer = response.toAnswerStr()
+                message = response.toAnswerStr()
             ))
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia')
             await ctx.send('⚠ Error retrieving trivia')
-
-    async def __sendTriviaAnswer(self, ctx, delay: int, answer: str):
-        if ctx is None:
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif not utils.isValidNum(delay):
-            raise ValueError(f'delay argument is malformed: \"{delay}\"')
-        elif not utils.isValidStr(answer):
-            raise ValueError(f'answer argument is malformed: \"{answer}\"')
-
-        await asyncio.sleep(delay)
-        await ctx.send(answer)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
