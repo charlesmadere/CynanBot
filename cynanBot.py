@@ -661,7 +661,6 @@ class CynanBot(commands.Bot):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
-
         if len(splits) < 2:
             await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
@@ -738,19 +737,18 @@ class CynanBot(commands.Bot):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
-
         if len(splits) < 2:
-            await ctx.send('⚠ A name is necessary for the !pkmove command. Example: !pkmove fire spin')
+            await ctx.send('⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
             return
 
         name = ' '.join(splits[1:])
 
         try:
             move = self.__pokepediaRepository.searchMoves(name)
-            moveStrList = move.toStrList()
+            strList = move.toStrList()
 
-            for moveStr in moveStrList:
-                await ctx.send(moveStr)
+            for s in strList:
+                await ctx.send(s)
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon move \"{name}\"')
             await ctx.send(f'⚠ Error retrieving Pokémon move \"{name}\"')
