@@ -501,6 +501,7 @@ class CynanBot(commands.Bot):
             commands.append('!joke')
 
         if user.isPokepediaEnabled():
+            commands.append('!pkmon')
             commands.append('!pkmove')
 
         if user.isTriviaEnabled():
