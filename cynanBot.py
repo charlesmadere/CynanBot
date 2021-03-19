@@ -107,7 +107,8 @@ class CynanBot(commands.Bot):
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
-        self.__lastPkMoveMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
@@ -726,6 +727,32 @@ class CynanBot(commands.Bot):
 
         speedrunProfile = user.getSpeedrunProfile()
         await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+
+    @commands.command(name = 'pkmon')
+    async def command_pkmon(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isPokepediaEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastPkMonMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            await ctx.send('⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
+            return
+
+        name = splits[1]
+
+        try:
+            mon = self.__pokepediaRepository.searchPokemon(name)
+            strList = mon.toStrList()
+
+            for s in strList:
+                await ctx.send(s)
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving Pokemon \"{name}\"')
+            await ctx.send(f'⚠ Error retrieving Pokémon \"{name}\"')
 
     @commands.command(name = 'pkmove')
     async def command_pkmove(self, ctx):
