@@ -16,6 +16,7 @@ from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaRepository import TriviaRepository, TriviaResponse
 from CynanBotCommon.weatherRepository import WeatherRepository
@@ -39,6 +40,7 @@ class CynanBot(commands.Bot):
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
+        tamaleGuyRepository: TamaleGuyRepository,
         triviaRepository: TriviaRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -70,6 +72,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif tamaleGuyRepository is None:
+            raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
         elif triviaRepository is None:
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif userIdsRepository is None:
@@ -90,6 +94,7 @@ class CynanBot(commands.Bot):
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__pokepediaRepository = pokepediaRepository
+        self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaRepository = triviaRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
@@ -110,6 +115,7 @@ class CynanBot(commands.Bot):
         self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
@@ -504,6 +510,9 @@ class CynanBot(commands.Bot):
             commands.append('!pkmon')
             commands.append('!pkmove')
 
+        if user.isTamalesEnabled():
+            commands.append('!tamales')
+
         if user.isTriviaEnabled():
             commands.append('!trivia')
 
@@ -780,6 +789,22 @@ class CynanBot(commands.Bot):
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon move \"{name}\"')
             await ctx.send(f'⚠ Error retrieving Pokémon move \"{name}\"')
+
+    @commands.command(name = 'tamales')
+    async def command_tamales(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTamalesEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastTamalesMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        try:
+            storeStock = self.__tamaleGuyRepository.fetchStoreStock()
+            await ctx.send(storeStock.toStr())
+        except (RuntimeError, ValueError):
+            print('Error retrieving Tamale Guy store stock')
+            await ctx.send('⚠ Error retrieving Tamale Guy store stock')
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):

@@ -41,6 +41,7 @@ class UsersRepository():
         isPkmnEnabled = userJson.get('pkmnEnabled', False)
         isPokepediaEnabled = userJson.get('pokepediaEnabled', False)
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
+        isTamalesEnabled = userJson.get('tamalesEnabled', False)
         isTriviaEnabled = userJson.get('triviaEnabled', False)
         isWeatherEnabled = userJson.get('weatherEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
@@ -93,6 +94,7 @@ class UsersRepository():
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRatJamEnabled = isRatJamEnabled,
+            isTamalesEnabled = isTamalesEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
