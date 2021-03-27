@@ -131,7 +131,7 @@ class UsersRepository():
     def getUsers(self) -> List[User]:
         jsonContents = self.__readJson()
 
-        users = []
+        users = list()
         for key in jsonContents:
             user = self.__createUser(key, jsonContents[key])
             users.append(user)
