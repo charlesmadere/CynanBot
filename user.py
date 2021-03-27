@@ -92,7 +92,7 @@ class User:
         potdParsed = urllib.parse.urlparse(potdText)
         return potdParsed.geturl()
 
-    def getDiscord(self) -> str:
+    def getDiscordUrl(self) -> str:
         return self.__discord
 
     def getHandle(self) -> str:
@@ -128,7 +128,10 @@ class User:
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
-    def getTwitter(self) -> str:
+    def getTwitchUrl(self) -> str:
+        return f'https://twitch.tv/{self.__handle.lower()}'
+
+    def getTwitterUrl(self) -> str:
         return self.__twitter
 
     def hasDiscord(self) -> bool:

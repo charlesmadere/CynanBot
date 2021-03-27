@@ -651,7 +651,7 @@ class CynanBot(commands.Bot):
         if not user.hasDiscord():
             return
 
-        discord = user.getDiscord()
+        discord = user.getDiscordUrl()
         await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
 
     @commands.command(name = 'givecuteness')
@@ -909,7 +909,7 @@ class CynanBot(commands.Bot):
         if not user.hasTwitter():
             return
 
-        twitter = user.getTwitter()
+        twitter = user.getTwitterUrl()
         await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
 
     @commands.command(name = 'weather')
