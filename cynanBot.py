@@ -1,6 +1,7 @@
 import asyncio
 import json
 from datetime import datetime, timedelta
+from json.decoder import JSONDecodeError
 from typing import List
 
 from twitchio.ext import commands
@@ -154,9 +155,13 @@ class CynanBot(commands.Bot):
         elif data['type'] != 'MESSAGE' or 'data' not in data or 'message' not in data['data']:
             print(f'({utils.getNowTimeText(includeSeconds = True)}) Received unusual pub sub event: {data}')
         else:
-            jsonResponse = json.loads(data['data']['message'])
+            jsonResponse = None
+            try:
+                jsonResponse = json.loads(data['data']['message'])
+            except JSONDecodeError as e:
+                print(f'Exception occurred when attempting to decode pub sub message into JSON: {e}')
 
-            if jsonResponse['type'] == 'reward-redeemed':
+            if jsonResponse is not None and jsonResponse.get('type') == 'reward-redeemed':
                 await self.__handleRewardRedeemed(jsonResponse)
 
     async def event_ready(self):
