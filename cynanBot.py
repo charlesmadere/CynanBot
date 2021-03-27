@@ -2,7 +2,7 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import List
+from typing import Dict, List
 
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import CommandNotFound
@@ -164,6 +164,21 @@ class CynanBot(commands.Bot):
             if jsonResponse is not None and jsonResponse.get('type') == 'reward-redeemed':
                 await self.__handleRewardRedeemed(jsonResponse)
 
+    async def event_raw_usernotice(self, channel, tags: Dict):
+        msgId = tags.get('msg-id')
+
+        if not utils.isValidStr(msgId):
+            return
+
+        user = self.__usersRepository.getUser(channel.name)
+
+        if msgId == 'raid':
+            await self.__handleRaidLinkMessaging(
+                tags = tags,
+                user = user,
+                twitchChannel = channel
+            )
+
     async def event_ready(self):
         print(f'{self.nick} is ready!')
         await self.__subscribeToEvents(self.__usersRepository.getUsers())
@@ -293,6 +308,33 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
         except ValueError:
             await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
+
+    async def __handleRaidLinkMessaging(
+        self,
+        tags: Dict,
+        user: User,
+        twitchChannel
+    ):
+        if tags is None:
+            raise ValueError(f'tags argument is malformed: \"{tags}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        if not user.isRaidLinkMessagingEnabled():
+            return
+
+        # TODO: remove this debug stuff when we figure out what properties to look for in `tags`
+        print(f'PRINTING OUT DEBUG INFORMATION FOR {user.getHandle()}!!!')
+        print(tags)
+        print('FINISHED PRINTING OUT DEBUG INFORMATION!!!')
+
+        asyncio.create_task(self.__sendDelayedMessage(
+            messageable = twitchChannel,
+            delaySeconds = 8,
+            message = 'thank you for the raid!~ ✨'
+        ))
 
     async def __handleRatJamMessage(self, message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
