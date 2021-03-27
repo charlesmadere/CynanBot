@@ -325,15 +325,25 @@ class CynanBot(commands.Bot):
         if not user.isRaidLinkMessagingEnabled():
             return
 
-        # TODO: remove this debug stuff when we figure out what properties to look for in `tags`
-        print(f'PRINTING OUT DEBUG INFORMATION FOR {user.getHandle()}!!!')
-        print(tags)
-        print('FINISHED PRINTING OUT DEBUG INFORMATION!!!')
+        raidedByName = tags.get('msg-param-displayName')
+        if not utils.isValidStr(raidedByName):
+            raidedByName = tags['login']
+
+        raidSize = tags.get('msg-param-viewerCount')
+        messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {user.getTwitchUrl()} Thank you! ✨'
+
+        message = None
+        if utils.isValidNum(raidSize) and raidSize >= 5:
+            message = f'Thank you for the raid of {raidSize} @{raidedByName}! {messageSuffix}'
+        else:
+            message = f'Thank you for the raid @{raidedByName}!'
+
+        print(f'{user.getHandle()} was raided by {raidedByName} ({utils.getNowTimeText()})')
 
         asyncio.create_task(self.__sendDelayedMessage(
             messageable = twitchChannel,
-            delaySeconds = 8,
-            message = 'thank you for the raid!~ ✨'
+            delaySeconds = 30,
+            message = message
         ))
 
     async def __handleRatJamMessage(self, message) -> bool:
