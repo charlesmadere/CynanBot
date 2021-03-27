@@ -215,7 +215,7 @@ class CynanBot(commands.Bot):
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = twitchChannel,
-                delay = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
+                delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
                 message = 'Double cuteness has ended! 😿'
             ))
         except ValueError:
@@ -390,15 +390,17 @@ class CynanBot(commands.Bot):
         else:
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
-    async def __sendDelayedMessage(self, messageable, delay: int, message: str):
+    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidNum(delay):
-            raise ValueError(f'delay argument is malformed: \"{delay}\"')
+        elif not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        await asyncio.sleep(delay)
+        await asyncio.sleep(delaySeconds)
         await messageable.send(message)
 
     async def __subscribeToEvents(self, users: List[User]):
@@ -851,7 +853,7 @@ class CynanBot(commands.Bot):
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = ctx,
-                delay = self.__triviaRepository.getWaitBeforeAnswerSeconds(),
+                delaySeconds = self.__triviaRepository.getWaitBeforeAnswerSeconds(),
                 message = response.toAnswerStr()
             ))
         except (RuntimeError, ValueError):
