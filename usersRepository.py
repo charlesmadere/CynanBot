@@ -40,6 +40,7 @@ class UsersRepository():
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
         isPkmnEnabled = userJson.get('pkmnEnabled', False)
         isPokepediaEnabled = userJson.get('pokepediaEnabled', False)
+        isRaidLinkMessagingEnabled = userJson.get('raidLinkMessagingEnabled', False)
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
         isTamalesEnabled = userJson.get('tamalesEnabled', False)
         isTriviaEnabled = userJson.get('triviaEnabled', False)
@@ -93,6 +94,7 @@ class UsersRepository():
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
+            isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
             isRatJamEnabled = isRatJamEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTriviaEnabled = isTriviaEnabled,
