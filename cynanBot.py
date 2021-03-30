@@ -1,5 +1,6 @@
 import asyncio
 import json
+import locale
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
 from typing import Dict, List
@@ -327,6 +328,8 @@ class CynanBot(commands.Bot):
 
         raidedByName = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
+            raidedByName = tags.get('display-name')
+        if not utils.isValidStr(raidedByName):
             raidedByName = tags['login']
 
         raidSize = tags.get('msg-param-viewerCount')
@@ -334,15 +337,16 @@ class CynanBot(commands.Bot):
 
         message = None
         if utils.isValidNum(raidSize) and raidSize >= 5:
-            message = f'Thank you for the raid of {raidSize} @{raidedByName}! {messageSuffix}'
+            raidSizeStr = locale.format_string("%d", raidSize, grouping = True)
+            message = f'Thank you for the raid of {raidSizeStr} {raidedByName}! {messageSuffix}'
         else:
-            message = f'Thank you for the raid @{raidedByName}!'
+            message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
         print(f'{user.getHandle()} was raided by {raidedByName} ({utils.getNowTimeText()})')
 
         asyncio.create_task(self.__sendDelayedMessage(
             messageable = twitchChannel,
-            delaySeconds = 30,
+            delaySeconds = 45,
             message = message
         ))
 
