@@ -20,7 +20,7 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaRepository import TriviaRepository, TriviaResponse
+from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from user import User
