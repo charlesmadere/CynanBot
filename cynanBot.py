@@ -346,7 +346,7 @@ class CynanBot(commands.Bot):
 
         asyncio.create_task(self.__sendDelayedMessage(
             messageable = twitchChannel,
-            delaySeconds = 45,
+            delaySeconds = 60,
             message = message
         ))
 
