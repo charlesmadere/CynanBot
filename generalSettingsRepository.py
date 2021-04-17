@@ -20,6 +20,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'raidLinkMessagingDelay')
 
+    def getWaitForTriviaAnswerDelay(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')
+
     def __readJson(self) -> Dict:
         if not os.path.exists(self.__generalSettingsFile):
             raise FileNotFoundError(f'General settings file not found: \"{self.__generalSettingsFile}\"')

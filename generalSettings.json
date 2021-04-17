@@ -1,3 +1,4 @@
 {
-    "raidLinkMessagingDelay": 60
+    "raidLinkMessagingDelay": 60,
+    "waitForTriviaAnswerDelay": 30
 }

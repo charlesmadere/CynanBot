@@ -926,7 +926,7 @@ class CynanBot(commands.Bot):
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = ctx,
-                delaySeconds = self.__triviaRepository.getWaitBeforeAnswerSeconds(),
+                delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
                 message = response.toAnswerStr()
             ))
         except (RuntimeError, ValueError):
