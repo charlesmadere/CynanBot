@@ -23,6 +23,7 @@ from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
@@ -39,6 +40,7 @@ class CynanBot(commands.Bot):
         enEsDictionary: EnEsDictionary,
         jishoHelper: JishoHelper,
         jokesRepository: JokesRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
@@ -68,6 +70,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif jokesRepository is None:
             raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
+        elif generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif locationsRepository is None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif nonceRepository is None:
@@ -93,6 +97,7 @@ class CynanBot(commands.Bot):
         self.__enEsDictionary = enEsDictionary
         self.__jishoHelper = jishoHelper
         self.__jokesRepository = jokesRepository
+        self.__generalSettingsRepository = generalSettingsRepository
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__pokepediaRepository = pokepediaRepository
@@ -346,7 +351,7 @@ class CynanBot(commands.Bot):
 
         asyncio.create_task(self.__sendDelayedMessage(
             messageable = twitchChannel,
-            delaySeconds = 45,
+            delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
         ))
 

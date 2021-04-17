@@ -16,6 +16,7 @@ from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 from userTokensRepository import UserTokensRepository
@@ -48,6 +49,7 @@ cynanBot = CynanBot(
     ),
     jishoHelper = JishoHelper(),
     jokesRepository = JokesRepository(),
+    generalSettingsRepository = GeneralSettingsRepository(),
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
