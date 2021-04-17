@@ -20,6 +20,7 @@ class User:
         isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
+        isRaceEnabled: bool,
         isRaidLinkMessagingEnabled: bool,
         isRatJamEnabled: bool,
         isTamalesEnabled: bool,
@@ -56,6 +57,7 @@ class User:
         self.__isPicOfTheDayEnabled = isPicOfTheDayEnabled
         self.__isPkmnEnabled = isPkmnEnabled
         self.__isPokepediaEnabled = isPokepediaEnabled
+        self.__isRaceEnabled = isRaceEnabled
         self.__isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled
         self.__isRatJamEnabled = isRatJamEnabled
         self.__isTamalesEnabled = isTamalesEnabled
@@ -178,6 +180,9 @@ class User:
 
     def isPokepediaEnabled(self) -> bool:
         return self.__isPokepediaEnabled
+
+    def isRaceEnabled(self) -> bool:
+        return self.__isRaceEnabled
 
     def isRaidLinkMessagingEnabled(self) -> bool:
         return self.__isRaidLinkMessagingEnabled

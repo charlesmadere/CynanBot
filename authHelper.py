@@ -148,8 +148,12 @@ class AuthHelper():
             handle = user.getHandle()
             accessToken = userTokensRepository.getAccessToken(handle)
 
-            if accessToken is not None and (not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(handle)):
-                userTokens[handle] = accessToken
+            if utils.isValidStr(accessToken):
+                if utils.isValidStr(nonce):
+                    if nonce == self.__nonceRepository.getNonce(handle):
+                        userTokens[handle] = accessToken
+                else:
+                    userTokens[handle] = accessToken
 
         if not utils.hasItems(userTokens):
             print('There are no users with an access token, skipping access token validation')

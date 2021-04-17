@@ -121,6 +121,7 @@ class CynanBot(commands.Bot):
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2, seconds = 30))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
@@ -857,6 +858,17 @@ class CynanBot(commands.Bot):
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon move \"{name}\"')
             await ctx.send(f'⚠ Error retrieving Pokémon move \"{name}\"')
+
+    @commands.command(name = 'race')
+    async def command_race(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isRaceEnabled() or not ctx.author.is_mod:
+            return
+        elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        await ctx.send('!race')
 
     @commands.command(name = 'tamales')
     async def command_tamales(self, ctx):
