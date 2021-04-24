@@ -121,7 +121,7 @@ class CynanBot(commands.Bot):
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
-        self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2, seconds = 30))
+        self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
