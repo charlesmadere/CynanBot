@@ -13,6 +13,7 @@ from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
+from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -38,6 +39,7 @@ class CynanBot(commands.Bot):
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
         enEsDictionary: EnEsDictionary,
+        funtoonRepository: FuntoonRepository,
         jishoHelper: JishoHelper,
         jokesRepository: JokesRepository,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -66,6 +68,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif enEsDictionary is None:
             raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
+        elif funtoonRepository is None:
+            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif jishoHelper is None:
             raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
         elif jokesRepository is None:
@@ -95,6 +99,7 @@ class CynanBot(commands.Bot):
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
         self.__enEsDictionary = enEsDictionary
+        self.__funtoonRepository = funtoonRepository
         self.__jishoHelper = jishoHelper
         self.__jokesRepository = jokesRepository
         self.__generalSettingsRepository = generalSettingsRepository
@@ -297,7 +302,12 @@ class CynanBot(commands.Bot):
             return
 
         opponentUserName = utils.removePreceedingAt(splits[0])
-        await twitchChannel.send(f'!battle {userNameThatRedeemed} {opponentUserName}')
+
+        self.__funtoonRepository.pkmnBattle(
+            userThatRedeemed = userNameThatRedeemed,
+            userToBattle = opponentUserName,
+            twitchChannel = twitchUser.getHandle()
+        )
 
     async def __handlePotdRewardRedeemed(
         self,
@@ -443,7 +453,10 @@ class CynanBot(commands.Bot):
                 twitchChannel = twitchChannel
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnCatchRewardId:
-            await twitchChannel.send(f'!catch {userNameThatRedeemed}')
+            self.__funtoonRepository.pkmnCatch(
+                userThatRedeemed = userNameThatRedeemed,
+                twitchChannel = twitchUser.getHandle()
+            )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnEvolveRewardId:
             await twitchChannel.send(f'!freeevolve {userNameThatRedeemed}')
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnShinyRewardId:

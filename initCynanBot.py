@@ -6,6 +6,7 @@ from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.enEsDictionary import EnEsDictionary
+from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -47,6 +48,7 @@ cynanBot = CynanBot(
     enEsDictionary = EnEsDictionary(
         merriamWebsterApiKey = authHelper.getMerriamWebsterApiKey()
     ),
+    funtoonRepository = FuntoonRepository(),
     jishoHelper = JishoHelper(),
     jokesRepository = JokesRepository(),
     generalSettingsRepository = GeneralSettingsRepository(),
