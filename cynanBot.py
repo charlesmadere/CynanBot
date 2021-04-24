@@ -163,6 +163,7 @@ class CynanBot(commands.Bot):
             print(f'({utils.getNowTimeText(includeSeconds = True)}) Received unusual pub sub event: {data}')
         else:
             jsonResponse = None
+
             try:
                 jsonResponse = json.loads(data['data']['message'])
             except JSONDecodeError as e:
