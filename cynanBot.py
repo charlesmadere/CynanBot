@@ -276,9 +276,8 @@ class CynanBot(commands.Bot):
             return False
 
         now = datetime.utcnow()
-        timeDelta = timedelta(hours = 4)
 
-        if now > self.__lastCynanMessageTime + timeDelta:
+        if now > self.__lastCynanMessageTime + timedelta(hours = 4):
             self.__lastCynanMessageTime = now
             await message.channel.send_me('waves to @CynanMachae 👋')
             return True
@@ -293,7 +292,6 @@ class CynanBot(commands.Bot):
         twitchChannel
     ):
         splits = utils.getCleanedSplits(redemptionMessage)
-
         if not utils.hasItems(splits):
             await twitchChannel.send(f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
             return
