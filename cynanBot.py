@@ -309,6 +309,20 @@ class CynanBot(commands.Bot):
             twitchChannel = twitchUser.getHandle()
         )
 
+    async def __handlePkmnCatchRewardRedeemed(
+        self,
+        userNameThatRedeemed: str,
+        twitchUser: User,
+        twitchChannel
+    ):
+        if self.__funtoonRepository.pkmnCatch(
+            userThatRedeemed = userNameThatRedeemed,
+            twitchChannel = twitchUser.getHandle()
+        ):
+            return
+
+        await twitchChannel.send(f'!catch {userNameThatRedeemed}')
+
     async def __handlePotdRewardRedeemed(
         self,
         userNameThatRedeemed: str,
@@ -453,9 +467,10 @@ class CynanBot(commands.Bot):
                 twitchChannel = twitchChannel
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnCatchRewardId:
-            self.__funtoonRepository.pkmnCatch(
-                userThatRedeemed = userNameThatRedeemed,
-                twitchChannel = twitchUser.getHandle()
+            await self.__handlePkmnCatchRewardRedeemed(
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnEvolveRewardId:
             await twitchChannel.send(f'!freeevolve {userNameThatRedeemed}')
