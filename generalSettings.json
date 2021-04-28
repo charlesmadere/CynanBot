@@ -1,4 +1,5 @@
 {
+    "funtoonApiEnabled": false,
     "raidLinkMessagingDelay": 60,
     "waitForTriviaAnswerDelay": 30
 }

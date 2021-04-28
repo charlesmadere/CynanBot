@@ -315,11 +315,12 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
-        if self.__funtoonRepository.pkmnCatch(
-            userThatRedeemed = userNameThatRedeemed,
-            twitchChannel = twitchUser.getHandle()
-        ):
-            return
+        if self.__generalSettingsRepository.isFuntoonApiEnabled():
+            if self.__funtoonRepository.pkmnCatch(
+                userThatRedeemed = userNameThatRedeemed,
+                twitchChannel = twitchUser.getHandle()
+            ):
+                return
 
         await twitchChannel.send(f'!catch {userNameThatRedeemed}')
 
