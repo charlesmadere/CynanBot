@@ -51,7 +51,7 @@ class UserIdsRepository():
                 raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
 
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken is malformed: \"{twitchAccessToken}\"'))
+            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchClientId):
             raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchClientId is malformed: \"{twitchClientId}\"')
 
