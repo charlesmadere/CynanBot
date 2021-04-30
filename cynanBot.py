@@ -520,13 +520,7 @@ class CynanBot(commands.Bot):
         subscribeUsers = dict()
 
         for user in users:
-            twitchAccessToken = None
-
-            try:
-                twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-            except ValueError:
-                # ignore, this just means the given user has no Twitch access token
-                pass
+            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
 
             if utils.isValidStr(twitchAccessToken):
                 subscribeUsers[user] = twitchAccessToken
