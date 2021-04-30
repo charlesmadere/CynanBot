@@ -29,7 +29,6 @@ from generalSettingsRepository import GeneralSettingsRepository
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
-from userTokensRepository import UserTokensRepository
 
 
 class CynanBot(commands.Bot):
@@ -52,7 +51,6 @@ class CynanBot(commands.Bot):
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        userTokensRepository: UserTokensRepository,
         weatherRepository: WeatherRepository,
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
@@ -92,8 +90,6 @@ class CynanBot(commands.Bot):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif userTokensRepository is None:
-            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
         elif weatherRepository is None:
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif wordOfTheDayRepository is None:
@@ -115,7 +111,6 @@ class CynanBot(commands.Bot):
         self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
-        self.__userTokensRepository = userTokensRepository
         self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
@@ -561,18 +556,22 @@ class CynanBot(commands.Bot):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
 
         users = self.__usersRepository.getUsers()
-
-        self.__authHelper.validateAndRefreshAccessTokens(
-            users = users,
-            nonce = nonce,
-            userTokensRepository = self.__userTokensRepository
-        )
-
         resubscribeUsers = list()
 
         for user in users:
             if not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
                 resubscribeUsers.append(user)
+
+        if not utils.hasItems(resubscribeUsers):
+            print(f'Found no users to validate and refresh tokens for (nonce: \"{nonce}\")')
+            return
+
+        for user in resubscribeUsers:
+            self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                twitchClientId = self.__authHelper.requireTwitchClientId(),
+                twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
+                twitchHandle = user.getHandle()
+            )
 
         await self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')

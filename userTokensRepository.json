@@ -1,9 +1,0 @@
-{
-    "userHandle": {
-        "accessToken": "",
-        "refreshToken": ""
-    },
-    "anotherUser": {
-        // ...
-    }
-}

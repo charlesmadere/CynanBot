@@ -1,37 +1,20 @@
 import json
 import os
-from typing import Dict, List
-
-import requests
+from typing import Dict
 
 import CynanBotCommon.utils as utils
-from CynanBotCommon.nonceRepository import NonceRepository
-from user import User
-from userTokensRepository import UserTokensRepository
 
 
 class AuthHelper():
 
     def __init__(
         self,
-        nonceRepository: NonceRepository,
-        authFile: str = 'authFile.json',
-        oauth2TokenUrl: str = 'https://id.twitch.tv/oauth2/token',
-        oauth2ValidateUrl: str = 'https://id.twitch.tv/oauth2/validate'
+        authFile: str = 'authFile.json'
     ):
-        if nonceRepository is None:
-            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
-        elif not utils.isValidStr(authFile):
+        if not utils.isValidStr(authFile):
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
-        elif not utils.isValidUrl(oauth2TokenUrl):
-            raise ValueError(f'oauth2TokenUrl argument is malformed: \"{oauth2TokenUrl}\"')
-        elif not utils.isValidUrl(oauth2ValidateUrl):
-            raise ValueError(f'oauth2ValidateUrl argument is malformed: \"{oauth2ValidateUrl}\"')
 
-        self.__nonceRepository = nonceRepository
         self.__authFile = authFile
-        self.__oauth2TokenUrl = oauth2TokenUrl
-        self.__oauth2ValidateUrl = oauth2ValidateUrl
 
     def getIqAirApiKey(self) -> str:
         jsonContents = self.__readJson()
@@ -109,91 +92,3 @@ class AuthHelper():
             raise ValueError(f'\"twitchClientSecret\" in auth file \"{self.__authFile}\" is malformed: \"{twitchClientSecret}\"')
 
         return twitchClientSecret
-
-    def __refreshAccessToken(
-        self,
-        handle: str,
-        userTokensRepository: UserTokensRepository
-    ):
-        if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif userTokensRepository is None:
-            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
-
-        refreshToken = userTokensRepository.getRefreshToken(handle)
-
-        params = {
-            'client_id': self.requireTwitchClientId(),
-            'client_secret': self.requireTwitchClientSecret(),
-            'grant_type': 'refresh_token',
-            'refresh_token': refreshToken
-        }
-
-        rawResponse = requests.post(
-            url = self.__oauth2TokenUrl,
-            params = params
-        )
-
-        jsonResponse = rawResponse.json()
-
-        if 'access_token' not in jsonResponse or len(jsonResponse['access_token']) == 0:
-            raise ValueError(f'Received malformed \"access_token\" for {handle}: {jsonResponse}')
-        elif 'refresh_token' not in jsonResponse or len(jsonResponse['refresh_token']) == 0:
-            raise ValueError(f'Received malformed \"refresh_token\" for {handle}: {jsonResponse}')
-
-        userTokensRepository.setTokens(
-            handle = handle,
-            accessToken = jsonResponse['access_token'],
-            refreshToken = jsonResponse['refresh_token']
-        )
-
-    def validateAndRefreshAccessTokens(
-        self,
-        users: List[User],
-        nonce: str,
-        userTokensRepository: UserTokensRepository
-    ):
-        if userTokensRepository is None:
-            raise ValueError(f'userTokensRepository argument is malformed: \"{userTokensRepository}\"')
-
-        if not utils.hasItems(users):
-            print(f'Given an empty list of users, skipping access token validation')
-            return
-
-        userTokens = dict()
-
-        for user in users:
-            handle = user.getHandle()
-            accessToken = userTokensRepository.getAccessToken(handle)
-
-            if utils.isValidStr(accessToken):
-                if utils.isValidStr(nonce):
-                    if nonce == self.__nonceRepository.getNonce(handle):
-                        userTokens[handle] = accessToken
-                else:
-                    userTokens[handle] = accessToken
-
-        if not utils.hasItems(userTokens):
-            print('There are no users with an access token, skipping access token validation')
-            return
-
-        print(f'Validating access tokens for {len(userTokens)} user(s) (nonce: \"{nonce}\")...')
-
-        for handle, accessToken in userTokens.items():
-            rawResponse = requests.get(
-                url = self.__oauth2ValidateUrl,
-                headers = {
-                    'Authorization': f'OAuth {accessToken}'
-                },
-                timeout = utils.getDefaultTimeout()
-            )
-
-            jsonResponse = rawResponse.json()
-
-            if jsonResponse.get('client_id') is None or len(jsonResponse['client_id']) == 0:
-                print(f'Refreshing access token for \"{handle}\"...')
-
-                self.__refreshAccessToken(
-                    handle = handle,
-                    userTokensRepository = userTokensRepository
-                )

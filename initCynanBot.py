@@ -21,15 +21,12 @@ from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
-from userTokensRepository import UserTokensRepository
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 nonceRepository = NonceRepository()
-authHelper = AuthHelper(
-    nonceRepository = nonceRepository
-)
+authHelper = AuthHelper()
 backingDatabase = BackingDatabase()
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase
@@ -67,7 +64,6 @@ cynanBot = CynanBot(
     usersRepository = UsersRepository(
         timeZoneRepository = timeZoneRepository
     ),
-    userTokensRepository = UserTokensRepository(),
     weatherRepository = WeatherRepository(
         iqAirApiKey = authHelper.requireIqAirApiKey(),
         oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
