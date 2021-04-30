@@ -423,14 +423,14 @@ class CynanBot(commands.Bot):
         twitchUser = None
 
         for user in self.__usersRepository.getUsers():
-            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
 
-            if not utils.isValidStr(accessToken):
+            if not utils.isValidStr(twitchAccessToken):
                 continue
 
             userId = self.__userIdsRepository.fetchUserId(
                 userName = user.getHandle(),
-                twitchAccessToken = accessToken,
+                twitchAccessToken = twitchAccessToken,
                 twitchClientId = self.__authHelper.requireTwitchClientId(),
             )
 
@@ -522,27 +522,32 @@ class CynanBot(commands.Bot):
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 
-        count = 0
+        subscribeUsers = dict()
 
         for user in users:
-            accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
+            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
 
-            if accessToken is None:
-                continue
-            else:
-                count = count + 1
+            if utils.isValidStr(twitchAccessToken):
+                subscribeUsers[user] = twitchAccessToken
 
+        if not utils.hasItems(subscribeUsers):
+            print(f'Found no users with a Twitch access token, not subscribing to any events')
+            return
+
+        print(f'Subscribing to events for {len(subscribeUsers)} user(s)...')
+
+        for user in subscribeUsers:
             userId = self.__userIdsRepository.fetchUserId(
                 userName = user.getHandle(),
-                clientId = self.__authHelper.requireTwitchClientId(),
-                accessToken = accessToken
+                twitchAccessToken = subscribeUsers[user],
+                twitchClientId = self.__authHelper.requireTwitchClientId()
             )
 
             # we could subscribe to multiple topics, but for now, just channel points
             topics = [ f'channel-points-channel-v1.{userId}' ]
 
             # subscribe to pubhub channel points events
-            nonce = await self.pubsub_subscribe(accessToken, *topics)
+            nonce = await self.pubsub_subscribe(twitchAccessToken, *topics)
 
             # save the nonce, we'll need to use it later if the token used for this user's
             # connection has to be refreshed
@@ -550,7 +555,7 @@ class CynanBot(commands.Bot):
 
             print(f'Subscribed to events for {user.getHandle()} (userId: \"{userId}\", nonce: \"{nonce}\")')
 
-        print(f'Finished subscribing to events for {count} user(s)')
+        print(f'Finished subscribing to events for {len(subscribeUsers)} user(s)')
 
     async def __validateAndRefreshTokensAndResubscribe(self, nonce: str):
         print(f'Validating and refreshing tokens... (nonce: \"{nonce}\")')
