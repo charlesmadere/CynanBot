@@ -1,6 +1,6 @@
 import json
 import os
-from typing import List
+from typing import Dict, List
 
 import requests
 
@@ -33,64 +33,82 @@ class AuthHelper():
         self.__oauth2TokenUrl = oauth2TokenUrl
         self.__oauth2ValidateUrl = oauth2ValidateUrl
 
-        if not os.path.exists(authFile):
-            raise FileNotFoundError(f'Auth file not found: \"{authFile}\"')
+    def getIqAirApiKey(self) -> str:
+        jsonContents = self.__readJson()
+        return jsonContents.get('iqAirApiKey')
 
-        with open(authFile, 'r') as file:
+    def getMerriamWebsterApiKey(self) -> str:
+        jsonContents = self.__readJson()
+        return jsonContents.get('merriamWebsterApiKey')
+
+    def getOneWeatherApiKey(self) -> str:
+        jsonContents = self.__readJson()
+        return jsonContents.get('oneWeatherApiKey')
+
+    def __readJson(self) -> Dict:
+        if not os.path.exists(self.__authFile):
+            raise FileNotFoundError(f'Auth file not found: \"{self.__authFile}\"')
+
+        with open(self.__authFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents is None:
-            raise IOError(f'Error reading from auth file: \"{authFile}\"')
+            raise IOError(f'Error reading from auth file: \"{self.__authFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of auth file \"{authFile}\" is empty')
+            raise ValueError(f'JSON contents of auth file \"{self.__authFile}\" is empty')
 
-        clientId = jsonContents.get('clientId')
-        if not utils.isValidStr(clientId):
-            raise ValueError(f'Auth file ({authFile}) has malformed clientId: \"{clientId}\"')
-        self.__clientId = clientId
+        return jsonContents
 
-        clientSecret = jsonContents.get('clientSecret')
-        if not utils.isValidStr(clientSecret):
-            raise ValueError(f'Auth file ({authFile}) has malformed clientSecret: \"{clientSecret}\"')
-        self.__clientSecret = clientSecret
+    def requireIqAirApiKey(self) -> str:
+        iqAirApiKey = self.getIqAirApiKey()
 
-        iqAirApiKey = jsonContents.get('iqAirApiKey')
         if not utils.isValidStr(iqAirApiKey):
-            print(f'Auth file ({authFile}) has no value for iqAirApiKey: \"{iqAirApiKey}\"')
-        self.__iqAirApiKey = iqAirApiKey
+            raise ValueError(f'\"iqAirApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{iqAirApiKey}\"')
 
-        ircAuthToken = jsonContents.get('ircAuthToken')
-        if not utils.isValidStr(ircAuthToken):
-            raise ValueError(f'Auth file ({authFile}) has malformed ircAuthToken: \"{ircAuthToken}\"')
-        self.__ircAuthToken = ircAuthToken
+        return iqAirApiKey
 
-        merriamWebsterApikey = jsonContents.get('merriamWebsterApiKey')
-        if not utils.isValidStr(merriamWebsterApikey):
-            raise ValueError(f'Auth file ({authFile}) has malformed merriamWebsterApiKey: \"{merriamWebsterApikey}\"')
-        self.__merriamWebsterApiKey = merriamWebsterApikey
+    def requireMerriamWebsterApiKey(self) -> str:
+        merriamWebsterApiKey = self.getMerriamWebsterApiKey()
 
-        oneWeatherApiKey = jsonContents.get('oneWeatherApiKey')
+        if not utils.isValidStr(merriamWebsterApiKey):
+            raise ValueError(f'\"merriamWebsterApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{merriamWebsterApiKey}\"')
+
+        return merriamWebsterApiKey
+
+    def requireOneWeatherApiKey(self) -> str:
+        oneWeatherApiKey = self.getOneWeatherApiKey()
+
         if not utils.isValidStr(oneWeatherApiKey):
-            print(f'No value for oneWeatherApiKey: \"{oneWeatherApiKey}\"')
-        self.__oneWeatherApiKey = oneWeatherApiKey
+            raise ValueError(f'\"oneWeatherApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{oneWeatherApiKey}\"')
 
-    def getClientId(self) -> str:
-        return self.__clientId
+        return oneWeatherApiKey
 
-    def getClientSecret(self) -> str:
-        return self.__clientSecret
+    def requireTwitchClientId(self) -> str:
+        jsonContents = self.__readJson()
 
-    def getIqAirApiKey(self) -> str:
-        return self.__iqAirApiKey
+        twitchClientId = jsonContents.get('twitchClientId')
+        if not utils.isValidStr(twitchClientId):
+            raise ValueError(f'\"twitchClientId\" in auth file \"{self.__authFile}\" is malformed: \"{twitchClientId}\"')
 
-    def getIrcAuthToken(self) -> str:
-        return self.__ircAuthToken
+        return twitchClientId
 
-    def getMerriamWebsterApiKey(self) -> str:
-        return self.__merriamWebsterApiKey
+    def requireTwitchIrcAuthToken(self) -> str:
+        jsonContents = self.__readJson()
 
-    def getOneWeatherApiKey(self) -> str:
-        return self.__oneWeatherApiKey
+        twitchIrcAuthToken = jsonContents.get('twitchIrcAuthToken')
+        if not utils.isValidStr(twitchIrcAuthToken):
+            raise ValueError(f'\"twitchIrcAuthToken\" in auth file \"{self.__authFile}\" is malformed: \"{twitchIrcAuthToken}\"')
+
+        return twitchIrcAuthToken
+
+    def requireTwitchClientSecret(self) -> str:
+        jsonContents = self.__readJson()
+
+        twitchClientSecret = jsonContents.get('twitchClientSecret')
+        if not utils.isValidStr(twitchClientSecret):
+            raise ValueError(f'\"twitchClientSecret\" in auth file \"{self.__authFile}\" is malformed: \"{twitchClientSecret}\"')
+
+        return twitchClientSecret
 
     def __refreshAccessToken(
         self,
@@ -105,8 +123,8 @@ class AuthHelper():
         refreshToken = userTokensRepository.getRefreshToken(handle)
 
         params = {
-            'client_id': self.getClientId(),
-            'client_secret': self.getClientSecret(),
+            'client_id': self.requireTwitchClientId(),
+            'client_secret': self.requireTwitchClientSecret(),
             'grant_type': 'refresh_token',
             'refresh_token': refreshToken
         }

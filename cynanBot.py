@@ -22,6 +22,7 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -48,6 +49,7 @@ class CynanBot(commands.Bot):
         pokepediaRepository: PokepediaRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         triviaRepository: TriviaRepository,
+        twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         userTokensRepository: UserTokensRepository,
@@ -55,8 +57,8 @@ class CynanBot(commands.Bot):
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
-            irc_token = authHelper.getIrcAuthToken(),
-            client_id = authHelper.getClientId(),
+            irc_token = authHelper.requireTwitchIrcAuthToken(),
+            client_id = authHelper.requireTwitchClientId(),
             nick = 'CynanBot',
             prefix = '!',
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
@@ -86,6 +88,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
         elif triviaRepository is None:
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+        elif twitchTokensRepository is None:
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif userTokensRepository is None:
@@ -108,6 +112,7 @@ class CynanBot(commands.Bot):
         self.__pokepediaRepository = pokepediaRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaRepository = triviaRepository
+        self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__userTokensRepository = userTokensRepository
@@ -420,13 +425,13 @@ class CynanBot(commands.Bot):
         for user in self.__usersRepository.getUsers():
             accessToken = self.__userTokensRepository.getAccessToken(user.getHandle())
 
-            if accessToken is None:
+            if not utils.isValidStr(accessToken):
                 continue
 
             userId = self.__userIdsRepository.fetchUserId(
                 userName = user.getHandle(),
-                clientId = self.__authHelper.getClientId(),
-                accessToken = accessToken
+                twitchAccessToken = accessToken,
+                twitchClientId = self.__authHelper.requireTwitchClientId(),
             )
 
             if twitchUserId.lower() == userId.lower():
@@ -529,7 +534,7 @@ class CynanBot(commands.Bot):
 
             userId = self.__userIdsRepository.fetchUserId(
                 userName = user.getHandle(),
-                clientId = self.__authHelper.getClientId(),
+                clientId = self.__authHelper.requireTwitchClientId(),
                 accessToken = accessToken
             )
 

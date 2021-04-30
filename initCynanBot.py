@@ -15,6 +15,7 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -46,7 +47,7 @@ cynanBot = CynanBot(
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
     enEsDictionary = EnEsDictionary(
-        merriamWebsterApiKey = authHelper.getMerriamWebsterApiKey()
+        merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
     ),
     funtoonRepository = FuntoonRepository(),
     jishoHelper = JishoHelper(),
@@ -59,6 +60,7 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
     triviaRepository = TriviaRepository(),
+    twitchTokensRepository = TwitchTokensRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase
     ),
@@ -67,8 +69,8 @@ cynanBot = CynanBot(
     ),
     userTokensRepository = UserTokensRepository(),
     weatherRepository = WeatherRepository(
-        iqAirApiKey = authHelper.getIqAirApiKey(),
-        oneWeatherApiKey = authHelper.getOneWeatherApiKey()
+        iqAirApiKey = authHelper.requireIqAirApiKey(),
+        oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
     ),
     wordOfTheDayRepository = WordOfTheDayRepository()
 )

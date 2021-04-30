@@ -28,8 +28,8 @@ class UserIdsRepository():
     def fetchUserId(
         self,
         userName: str,
-        clientId: str = None,
-        accessToken: str = None
+        twitchAccessToken: str = None,
+        twitchClientId: str = None
     ):
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
@@ -50,22 +50,20 @@ class UserIdsRepository():
             else:
                 raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
 
-        if not utils.isValidStr(clientId):
-            print(f'Can\'t lookup user ID for \"{userName}\", as clientId is malformed: \"{clientId}\"')
-            raise ValueError(f'clientId argument is malformed: \"{clientId}\"')
-        elif not utils.isValidStr(accessToken):
-            print(f'Can\'t lookup user ID for \"{userName}\", as accessToken is malformed: \"{accessToken}\"')
-            raise ValueError(f'accessToken argument is malformed: \"{accessToken}\"')
+        if not utils.isValidStr(twitchAccessToken):
+            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken is malformed: \"{twitchAccessToken}\"'))
+        elif not utils.isValidStr(twitchClientId):
+            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchClientId is malformed: \"{twitchClientId}\"')
 
-        print(f'Performing network call to fetch user ID for \"{userName}\"...')
+        print(f'Performing network call to fetch Twitch user ID for \"{userName}\"...')
 
         rawResponse = None
         try:
             rawResponse = requests.get(
                 url = f'https://api.twitch.tv/helix/users?login={userName}',
                 headers = {
-                    'Client-Id': clientId,
-                    'Authorization': f'Bearer {accessToken}'
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId
                 },
                 timeout = utils.getDefaultTimeout()
             )
