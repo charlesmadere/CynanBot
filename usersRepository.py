@@ -45,6 +45,7 @@ class UsersRepository():
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
         isTamalesEnabled = userJson.get('tamalesEnabled', False)
         isTriviaEnabled = userJson.get('triviaEnabled', False)
+        isTriviaGameEnabled = userJson.get('triviaGameEnabled', False)
         isWeatherEnabled = userJson.get('weatherEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
         discord = userJson.get('discord')
@@ -74,6 +75,14 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
+        triviaGameRewardId = None
+        triviaGamePoints = None
+        waitForTriviaAnswerDelay = None
+        if isTriviaGameEnabled:
+            triviaGameRewardId = userJson.get('triviaGameRewardId')
+            triviaGamePoints = userJson.get('triviaGamePoints')
+            waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
+
         pkmnBattleRewardId = None
         pkmnCatchRewardId = None
         pkmnEvolveRewardId = None
@@ -100,8 +109,11 @@ class UsersRepository():
             isRatJamEnabled = isRatJamEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTriviaEnabled = isTriviaEnabled,
+            isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
+            triviaGamePoints = triviaGamePoints,
+            waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
             handle = handle,
             increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
@@ -114,6 +126,7 @@ class UsersRepository():
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             speedrunProfile = speedrunProfile,
+            triviaGameRewardId = triviaGameRewardId,
             twitter = twitter,
             timeZones = timeZones
         )

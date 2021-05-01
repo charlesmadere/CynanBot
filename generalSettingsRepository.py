@@ -20,6 +20,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'raidLinkMessagingDelay')
 
+    def getTriviaGamePoints(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'triviaGamePoints')
+
     def getWaitForTriviaAnswerDelay(self) -> int:
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')

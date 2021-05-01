@@ -21,7 +21,7 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -47,7 +47,7 @@ class CynanBot(commands.Bot):
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
         tamaleGuyRepository: TamaleGuyRepository,
-        triviaRepository: TriviaRepository,
+        triviaGameRepository: TriviaGameRepository,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -84,8 +84,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif tamaleGuyRepository is None:
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
-        elif triviaRepository is None:
-            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+        elif triviaGameRepository is None:
+            raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
@@ -107,7 +107,7 @@ class CynanBot(commands.Bot):
         self.__nonceRepository = nonceRepository
         self.__pokepediaRepository = pokepediaRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
-        self.__triviaRepository = triviaRepository
+        self.__triviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
@@ -438,7 +438,7 @@ class CynanBot(commands.Bot):
 
         # Don't forget to check this if statement if you're having trouble with redemption reward
         # monitoring for specific users!
-        if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled():
+        if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled() and not twitchUser.isTriviaGameEnabled():
             return
 
         increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
@@ -448,6 +448,7 @@ class CynanBot(commands.Bot):
         pkmnCatchRewardId = twitchUser.getPkmnCatchRewardId()
         pkmnEvolveRewardId = twitchUser.getPkmnEvolveRewardId()
         pkmnShinyRewardId = twitchUser.getPkmnShinyRewardId()
+        triviaGameRewardId = twitchUser.getTriviaGameRewardId()
 
         rewardId = redemptionJson['reward']['id']
         userIdThatRedeemed = redemptionJson['user']['id']
@@ -496,8 +497,54 @@ class CynanBot(commands.Bot):
             )
         elif twitchUser.isPkmnEnabled() and rewardId == pkmnShinyRewardId:
             await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
+        elif twitchUser.isTriviaGameEnabled() and rewardId == triviaGameRewardId:
+            await self.__handleTriviaGameRewardRedeemed(
+                userNameThatRedeemed = userNameThatRedeemed,
+                twitchUser = twitchUser,
+                twitchChannel = twitchChannel
+            )
         else:
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
+
+    async def __handleTriviaGameRewardRedeemed(
+        self,
+        userNameThatRedeemed: str,
+        twitchUser: User,
+        twitchChannel
+    ):
+        try:
+            response = self.__triviaGameRepository.fetchTrivia()
+
+            points = self.__generalSettingsRepository.getTriviaGamePoints()
+            if twitchUser.hasTriviaGamePoints():
+                points = twitchUser.getTriviaGamePoints()
+            pointsStr = locale.format_string("%d", points, grouping = True)
+
+            seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+            if twitchUser.hasWaitForTriviaAnswerDelay():
+                seconds = twitchUser.getWaitForTriviaAnswerDelay()
+            secondsStr = locale.format_string("%d", seconds, grouping = True)
+
+            await twitchChannel.send(f'🎓 {userNameThatRedeemed} has started the trivia game! The first to use the !answer command to answer this trivia question will win {pointsStr} cuteness points! You have {secondsStr} seconds! 🎓')
+            await twitchChannel.send(response.toPromptStr())
+
+            asyncio.create_task(self.__handleTriviaGameAnswer(
+                delaySeconds = seconds,
+                twitchChannel = twitchChannel
+            ))
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving trivia')
+            await twitchChannel.send('⚠ Error retrieving trivia')
+
+    async def __handleTriviaGameAnswer(self, delaySeconds: int, twitchChannel):
+        await asyncio.sleep(delaySeconds)
+
+        if self.__triviaGameRepository.isAnswered():
+            return
+
+        self.__triviaGameRepository.setAnswered()
+        response = self.__triviaGameRepository.fetchTrivia()
+        await twitchChannel.send(f'😿 Sorry, there is no winner! The answer was: {response.getCorrectAnswer()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
@@ -595,6 +642,53 @@ class CynanBot(commands.Bot):
             print(f'Error fetching Analogue stock in {user.getHandle()}')
             await ctx.send('⚠ Error fetching Analogue stock')
 
+    @commands.command(name = 'answer')
+    async def command_answer(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+        elif self.__triviaGameRepository.isAnswered():
+            return
+
+        seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        if user.hasWaitForTriviaAnswerDelay():
+            seconds = user.getWaitForTriviaAnswerDelay()
+
+        if not self.__triviaGameRepository.isWithinAnswerWindow(seconds):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            await ctx.send('⚠ You must provide the exact answer with the !answer command.')
+
+        answer = ' '.join(splits[1:])
+        answerResult = self.__triviaGameRepository.checkAnswer(answer)
+
+        if not answerResult:
+            answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
+            await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer was: {answerStr}')
+            return
+
+        cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
+        if user.hasTriviaGamePoints():
+            cutenessPoints = user.getTriviaGamePoints()
+
+        userId = str(ctx.author.id)
+
+        try:
+            cutenessResult = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = cutenessPoints,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = ctx.author.name
+            )
+
+            await ctx.send(f'🎉 Congratulations {ctx.author.name}! You are correct! 🎉 Your new cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
+        except ValueError:
+            print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
+
     @commands.command(name = 'commands')
     async def command_commands(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -638,7 +732,7 @@ class CynanBot(commands.Bot):
         if user.isTamalesEnabled():
             commands.append('!tamales')
 
-        if user.isTriviaEnabled():
+        if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
             commands.append('!trivia')
 
         if user.isWeatherEnabled():
@@ -741,7 +835,6 @@ class CynanBot(commands.Bot):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
-
         if len(splits) < 3:
             await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
@@ -973,11 +1066,13 @@ class CynanBot(commands.Bot):
 
         if not user.isTriviaEnabled():
             return
+        elif user.isTriviaGameEnabled():
+            return
         elif not ctx.author.is_mod and not self.__lastTriviaMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         try:
-            response = self.__triviaRepository.fetchTrivia()
+            response = self.__triviaGameRepository.fetchTrivia()
             await ctx.send(response.toPromptStr())
 
             asyncio.create_task(self.__sendDelayedMessage(

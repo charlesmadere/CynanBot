@@ -25,8 +25,11 @@ class User:
         isRatJamEnabled: bool,
         isTamalesEnabled: bool,
         isTriviaEnabled: bool,
+        isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        triviaGamePoints: int,
+        waitForTriviaAnswerDelay: int,
         discord: str,
         handle: str,
         increaseCutenessDoubleRewardId: str,
@@ -39,6 +42,7 @@ class User:
         pkmnEvolveRewardId: str,
         pkmnShinyRewardId: str,
         speedrunProfile: str,
+        triviaGameRewardId: str,
         twitter: str,
         timeZones: List[tzinfo]
     ):
@@ -62,8 +66,11 @@ class User:
         self.__isRatJamEnabled = isRatJamEnabled
         self.__isTamalesEnabled = isTamalesEnabled
         self.__isTriviaEnabled = isTriviaEnabled
+        self.__isTriviaGameEnabled = isTriviaGameEnabled
         self.__isWeatherEnabled = isWeatherEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
+        self.__triviaGamePoints = triviaGamePoints
+        self.__waitForTriviaAnswerDelay = waitForTriviaAnswerDelay
         self.__discord = discord
         self.__handle = handle
         self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
@@ -76,6 +83,7 @@ class User:
         self.__pkmnEvolveRewardId = pkmnEvolveRewardId
         self.__pkmnShinyRewardId = pkmnShinyRewardId
         self.__speedrunProfile = speedrunProfile
+        self.__triviaGameRewardId = triviaGameRewardId
         self.__twitter = twitter
         self.__timeZones = timeZones
 
@@ -130,11 +138,20 @@ class User:
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
+    def getTriviaGameRewardId(self) -> str:
+        return self.__triviaGameRewardId
+
+    def getTriviaGamePoints(self) -> int:
+        return self.__triviaGamePoints
+
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
 
     def getTwitterUrl(self) -> str:
         return self.__twitter
+
+    def getWaitForTriviaAnswerDelay(self) -> int:
+        return self.__waitForTriviaAnswerDelay
 
     def hasDiscord(self) -> bool:
         return utils.isValidStr(self.__discord)
@@ -148,8 +165,14 @@ class User:
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
 
+    def hasTriviaGamePoints(self) -> bool:
+        return utils.isValidNum(self.__triviaGamePoints)
+
     def hasTwitter(self) -> bool:
         return utils.isValidStr(self.__twitter)
+
+    def hasWaitForTriviaAnswerDelay(self) -> bool:
+        return utils.isValidNum(self.__waitForTriviaAnswerDelay)
 
     def isAnalogueEnabled(self) -> bool:
         return self.__isAnalogueEnabled
@@ -195,6 +218,9 @@ class User:
 
     def isTriviaEnabled(self) -> bool:
         return self.__isTriviaEnabled
+
+    def isTriviaGameEnabled(self) -> bool:
+        return self.__isTriviaGameEnabled
 
     def isWeatherEnabled(self) -> bool:
         return self.__isWeatherEnabled
