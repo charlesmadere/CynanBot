@@ -450,8 +450,8 @@ class CynanBot(commands.Bot):
         pkmnShinyRewardId = twitchUser.getPkmnShinyRewardId()
         triviaGameRewardId = twitchUser.getTriviaGameRewardId()
 
-        rewardId = redemptionJson['reward']['id']
-        userIdThatRedeemed = redemptionJson['user']['id']
+        rewardId = utils.getStrFromDict(redemptionJson['reward'], 'id')
+        userIdThatRedeemed = utils.getStrFromDict(redemptionJson['user'], 'id')
         userNameThatRedeemed = redemptionJson['user']['display_name']
         redemptionMessage = utils.cleanStr(redemptionJson.get('user_input'))
         twitchChannel = self.get_channel(twitchUser.getHandle())
@@ -499,6 +499,7 @@ class CynanBot(commands.Bot):
             await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
         elif twitchUser.isTriviaGameEnabled() and rewardId == triviaGameRewardId:
             await self.__handleTriviaGameRewardRedeemed(
+                userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
@@ -508,12 +509,14 @@ class CynanBot(commands.Bot):
 
     async def __handleTriviaGameRewardRedeemed(
         self,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
         try:
             response = self.__triviaGameRepository.fetchTrivia()
+            self.__triviaGameRepository.setUserIdThatRedeemed(userIdThatRedeemed)
 
             points = self.__generalSettingsRepository.getTriviaGamePoints()
             if twitchUser.hasTriviaGamePoints():
@@ -623,6 +626,11 @@ class CynanBot(commands.Bot):
         await self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
+    @commands.command(name = 'a')
+    async def command_a(self, ctx):
+        # this is just an alias to the !answer command
+        await self.command_answer(ctx)
+
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -663,7 +671,12 @@ class CynanBot(commands.Bot):
             await ctx.send('⚠ You must provide the exact answer with the !answer command.')
 
         answer = ' '.join(splits[1:])
-        answerResult = self.__triviaGameRepository.checkAnswer(answer)
+        userId = str(ctx.author.id)
+
+        answerResult = self.__triviaGameRepository.check(
+            answer = answer,
+            userId = userId
+        )
 
         if not answerResult:
             answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
@@ -674,8 +687,6 @@ class CynanBot(commands.Bot):
         if user.hasTriviaGamePoints():
             cutenessPoints = user.getTriviaGamePoints()
 
-        userId = str(ctx.author.id)
-
         try:
             cutenessResult = self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = cutenessPoints,
@@ -684,7 +695,7 @@ class CynanBot(commands.Bot):
                 userName = ctx.author.name
             )
 
-            await ctx.send(f'🎉 Congratulations {ctx.author.name}! You are correct! 🎉 Your new cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
+            await ctx.send(f'🎉 Congratulations {ctx.author.name}! 🎉 You are correct! 🎉 Your new cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
