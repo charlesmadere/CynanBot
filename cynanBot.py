@@ -21,7 +21,7 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.triviaGameRepository import TriviaGameCheckResult, TriviaGameRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -673,14 +673,18 @@ class CynanBot(commands.Bot):
         answer = ' '.join(splits[1:])
         userId = str(ctx.author.id)
 
-        answerResult = self.__triviaGameRepository.check(
+        checkResult = self.__triviaGameRepository.check(
             answer = answer,
             userId = userId
         )
 
-        if not answerResult:
+        if checkResult is TriviaGameCheckResult.INCORRECT:
             answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
             await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer was: {answerStr}')
+            return
+        elif checkResult is not TriviaGameCheckResult.CORRECT:
+            print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
+            await ctx.send(f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
 
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
