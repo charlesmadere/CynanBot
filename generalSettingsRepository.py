@@ -9,7 +9,7 @@ class GeneralSettingsRepository():
 
     def __init__(
         self,
-        generalSettingsFile: str = 'generalSettings.json'
+        generalSettingsFile: str = 'generalSettingsRepository.json'
     ):
         if not utils.isValidStr(generalSettingsFile):
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
