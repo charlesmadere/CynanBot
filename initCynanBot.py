@@ -24,6 +24,7 @@ from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 
+
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 nonceRepository = NonceRepository()
