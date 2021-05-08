@@ -626,11 +626,6 @@ class CynanBot(commands.Bot):
         await self.__subscribeToEvents(resubscribeUsers)
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
-    @commands.command(name = 'a')
-    async def command_a(self, ctx):
-        # this is just an alias to the !answer command
-        await self.command_answer(ctx)
-
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
