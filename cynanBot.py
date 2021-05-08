@@ -674,7 +674,9 @@ class CynanBot(commands.Bot):
             userId = userId
         )
 
-        if checkResult is TriviaGameCheckResult.INCORRECT:
+        if checkResult is TriviaGameCheckResult.INVALID_USER_ID:
+            return
+        elif checkResult is TriviaGameCheckResult.INCORRECT:
             answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
             await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer was: {answerStr}')
             return
