@@ -1063,7 +1063,9 @@ class CynanBot(commands.Bot):
 
         try:
             swQuote = self.__starWarsQuotesRepository.searchQuote(query)
-            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+
+            if utils.isValidStr(swQuote):
+                await ctx.send(f'{swQuote} {randomSpaceEmoji}')
         except ValueError:
             print(f'Error retrieving Star Wars quote from query: \"{query}\"')
             await ctx.send(f'⚠ Error retrieving Star Wars quote from query: \"{query}\"')
