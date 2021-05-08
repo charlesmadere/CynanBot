@@ -664,6 +664,7 @@ class CynanBot(commands.Bot):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             await ctx.send('⚠ You must provide the exact answer with the !answer command.')
+            return
 
         answer = ' '.join(splits[1:])
         userId = str(ctx.author.id)
