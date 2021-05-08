@@ -1066,9 +1066,11 @@ class CynanBot(commands.Bot):
 
             if utils.isValidStr(swQuote):
                 await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+            else:
+                await ctx.send(f'⚠ No Star Wars quote found for the given query: \"{query}\"')
         except ValueError:
-            print(f'Error retrieving Star Wars quote from query: \"{query}\"')
-            await ctx.send(f'⚠ Error retrieving Star Wars quote from query: \"{query}\"')
+            print(f'Error retrieving Star Wars quote with query: \"{query}\"')
+            await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
 
     @commands.command(name = 'tamales')
     async def command_tamales(self, ctx):
