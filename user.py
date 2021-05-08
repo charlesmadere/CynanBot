@@ -23,6 +23,7 @@ class User:
         isRaceEnabled: bool,
         isRaidLinkMessagingEnabled: bool,
         isRatJamEnabled: bool,
+        isStarWarsQuotesEnabled: bool,
         isTamalesEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
@@ -64,6 +65,7 @@ class User:
         self.__isRaceEnabled = isRaceEnabled
         self.__isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled
         self.__isRatJamEnabled = isRatJamEnabled
+        self.__isStarWarsQuotesEnabled = isStarWarsQuotesEnabled
         self.__isTamalesEnabled = isTamalesEnabled
         self.__isTriviaEnabled = isTriviaEnabled
         self.__isTriviaGameEnabled = isTriviaGameEnabled
@@ -212,6 +214,9 @@ class User:
 
     def isRatJamEnabled(self) -> bool:
         return self.__isRatJamEnabled
+
+    def isStarWarsQuotesEnabled(self) -> bool:
+        return self.__isStarWarsQuotesEnabled
 
     def isTamalesEnabled(self) -> bool:
         return self.__isTamalesEnabled

@@ -19,9 +19,11 @@ from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaGameRepository import TriviaGameCheckResult, TriviaGameRepository
+from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
+                                                 TriviaGameRepository)
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -46,6 +48,7 @@ class CynanBot(commands.Bot):
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
+        starWarsQuotesRepository: StarWarsQuotesRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         triviaGameRepository: TriviaGameRepository,
         twitchTokensRepository: TwitchTokensRepository,
@@ -82,6 +85,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif starWarsQuotesRepository is None:
+            raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif tamaleGuyRepository is None:
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
         elif triviaGameRepository is None:
@@ -106,6 +111,7 @@ class CynanBot(commands.Bot):
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__pokepediaRepository = pokepediaRepository
+        self.__starWarsQuotesRepository = starWarsQuotesRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository = twitchTokensRepository
@@ -128,6 +134,7 @@ class CynanBot(commands.Bot):
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
@@ -742,6 +749,9 @@ class CynanBot(commands.Bot):
             commands.append('!pkmon')
             commands.append('!pkmove')
 
+        if user.isStarWarsQuotesEnabled():
+            commands.append('!swquote')
+
         if user.isTamalesEnabled():
             commands.append('!tamales')
 
@@ -1031,6 +1041,32 @@ class CynanBot(commands.Bot):
             return
 
         await ctx.send('!race')
+
+    @commands.command(name = 'swquote')
+    async def command_swquote(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isStarWarsQuotesEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastStarWarsQuotesMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        randomSpaceEmoji = utils.getRandomSpaceEmoji()
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) < 2:
+            swQuote = self.__starWarsQuotesRepository.fetchRandomQuote()
+            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+            return
+
+        query = ' '.join(splits[1:])
+
+        try:
+            swQuote = self.__starWarsQuotesRepository.searchQuote(query)
+            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+        except ValueError:
+            print(f'Error retrieving Star Wars quote from query: \"{query}\"')
+            await ctx.send(f'⚠ Error retrieving Star Wars quote from query: \"{query}\"')
 
     @commands.command(name = 'tamales')
     async def command_tamales(self, ctx):

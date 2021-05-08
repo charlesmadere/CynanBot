@@ -12,6 +12,7 @@ from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
@@ -22,7 +23,6 @@ from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
-
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
@@ -56,6 +56,7 @@ cynanBot = CynanBot(
     ),
     nonceRepository = nonceRepository,
     pokepediaRepository = PokepediaRepository(),
+    starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
     triviaGameRepository = TriviaGameRepository(TriviaRepository()),
     twitchTokensRepository = TwitchTokensRepository(),

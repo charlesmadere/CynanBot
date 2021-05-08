@@ -43,6 +43,7 @@ class UsersRepository():
         isRaceEnabled = userJson.get('raceEnabled', False)
         isRaidLinkMessagingEnabled = userJson.get('raidLinkMessagingEnabled', False)
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
+        isStarWarsQuotesEnabled = userJson.get('starWarsQuotesEnabled', False)
         isTamalesEnabled = userJson.get('tamalesEnabled', False)
         isTriviaEnabled = userJson.get('triviaEnabled', False)
         isTriviaGameEnabled = userJson.get('triviaGameEnabled', False)
@@ -107,6 +108,7 @@ class UsersRepository():
             isRaceEnabled = isRaceEnabled,
             isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
             isRatJamEnabled = isRatJamEnabled,
+            isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
