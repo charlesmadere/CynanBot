@@ -121,9 +121,9 @@ class CynanBot(commands.Bot):
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
-        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 2, seconds = 30))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
