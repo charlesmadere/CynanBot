@@ -93,13 +93,13 @@ class User:
         if not self.__isPicOfTheDayEnabled:
             raise RuntimeError(f'POTD is disabled for {self.__handle}')
         elif not os.path.exists(self.__picOfTheDayFile):
-            raise FileNotFoundError(f'POTD file not found: \"{self.__picOfTheDayFile}\"')
+            raise FileNotFoundError(f'POTD file for {self.__handle} not found: \"{self.__picOfTheDayFile}\"')
 
         with open(self.__picOfTheDayFile, 'r') as file:
             potdText = utils.cleanStr(file.read())
 
         if not utils.isValidUrl(potdText):
-            raise ValueError(f'POTD text is malformed: \"{potdText}\"')
+            raise ValueError(f'POTD text for {self.__handle} is malformed: \"{potdText}\"')
 
         potdParsed = urllib.parse.urlparse(potdText)
         return potdParsed.geturl()
