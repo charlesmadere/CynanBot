@@ -75,15 +75,6 @@ class AuthHelper():
 
         return twitchClientId
 
-    def requireTwitchIrcAuthToken(self) -> str:
-        jsonContents = self.__readJson()
-
-        twitchIrcAuthToken = jsonContents.get('twitchIrcAuthToken')
-        if not utils.isValidStr(twitchIrcAuthToken):
-            raise ValueError(f'\"twitchIrcAuthToken\" in auth file \"{self.__authFile}\" is malformed: \"{twitchIrcAuthToken}\"')
-
-        return twitchIrcAuthToken
-
     def requireTwitchClientSecret(self) -> str:
         jsonContents = self.__readJson()
 
@@ -92,3 +83,12 @@ class AuthHelper():
             raise ValueError(f'\"twitchClientSecret\" in auth file \"{self.__authFile}\" is malformed: \"{twitchClientSecret}\"')
 
         return twitchClientSecret
+
+    def requireTwitchIrcAuthToken(self) -> str:
+        jsonContents = self.__readJson()
+
+        twitchIrcAuthToken = jsonContents.get('twitchIrcAuthToken')
+        if not utils.isValidStr(twitchIrcAuthToken):
+            raise ValueError(f'\"twitchIrcAuthToken\" in auth file \"{self.__authFile}\" is malformed: \"{twitchIrcAuthToken}\"')
+
+        return twitchIrcAuthToken
