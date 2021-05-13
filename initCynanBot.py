@@ -27,7 +27,6 @@ from usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
-nonceRepository = NonceRepository()
 authHelper = AuthHelper()
 backingDatabase = BackingDatabase()
 userIdsRepository = UserIdsRepository(
@@ -55,7 +54,7 @@ cynanBot = CynanBot(
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
-    nonceRepository = nonceRepository,
+    nonceRepository = NonceRepository(),
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
