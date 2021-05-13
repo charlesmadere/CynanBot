@@ -47,7 +47,45 @@ class User:
         twitter: str,
         timeZones: List[tzinfo]
     ):
-        if not utils.isValidStr(handle):
+        if not utils.isValidBool(isAnalogueEnabled):
+            raise ValueError(f'isAnalogueEnabled argument is malformed: \"{isAnalogueEnabled}\"')
+        elif not utils.isValidBool(isCatJamEnabled):
+            raise ValueError(f'isCatJamEnabled argument is malformed: \"{isCatJamEnabled}\"')
+        elif not utils.isValidBool(isCutenessEnabled):
+            raise ValueError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
+        elif not utils.isValidBool(isDiccionarioEnabled):
+            raise ValueError(f'isDiccionarioEnabled argument is malformed: \"{isDiccionarioEnabled}\"')
+        elif not utils.isValidBool(isGiveCutenessEnabled):
+            raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
+        elif not utils.isValidBool(isJishoEnabled):
+            raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
+        elif not utils.isValidBool(isJokesEnabled):
+            raise ValueError(f'isJokesEnabled argument is malformed: \"{isJokesEnabled}\"')
+        elif not utils.isValidBool(isPicOfTheDayEnabled):
+            raise ValueError(f'isPicOfTheDayEnabled argument is malformed: \"{isPicOfTheDayEnabled}\"')
+        elif not utils.isValidBool(isPkmnEnabled):
+            raise ValueError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
+        elif not utils.isValidBool(isPokepediaEnabled):
+            raise ValueError(f'isPokepediaEnabled argument is malformed: \"{isPokepediaEnabled}\"')
+        elif not utils.isValidBool(isRaceEnabled):
+            raise ValueError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
+        elif not utils.isValidBool(isRaidLinkMessagingEnabled):
+            raise ValueError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
+        elif not utils.isValidBool(isRatJamEnabled):
+            raise ValueError(f'isRatJamEnabled argument is malformed: \"{isRatJamEnabled}\"')
+        elif not utils.isValidBool(isStarWarsQuotesEnabled):
+            raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
+        elif not utils.isValidBool(isTamalesEnabled):
+            raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
+        elif not utils.isValidBool(isTriviaEnabled):
+            raise ValueError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
+        elif not utils.isValidBool(isTriviaGameEnabled):
+            raise ValueError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isWeatherEnabled):
+            raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
+        elif not utils.isValidBool(isWordOfTheDayEnabled):
+            raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
