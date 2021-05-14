@@ -535,7 +535,7 @@ class CynanBot(commands.Bot):
                 seconds = twitchUser.getWaitForTriviaAnswerDelay()
             secondsStr = locale.format_string("%d", seconds, grouping = True)
 
-            await twitchChannel.send(f'🎓 {userNameThatRedeemed} has started the trivia game! The first to use the !answer command to answer this trivia question will win {pointsStr} cuteness points! You have {secondsStr} seconds! 🎓')
+            await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
             await twitchChannel.send(response.toPromptStr())
 
             asyncio.create_task(self.__handleTriviaGameAnswer(
