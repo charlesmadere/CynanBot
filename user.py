@@ -85,6 +85,10 @@ class User:
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif triviaGamePoints is not None and not utils.isValidNum(triviaGamePoints):
+            raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
+        elif waitForTriviaAnswerDelay is not None and not utils.isValidNum(waitForTriviaAnswerDelay):
+            raise ValueError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
         elif not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
