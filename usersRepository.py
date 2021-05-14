@@ -156,6 +156,7 @@ class UsersRepository():
         if not utils.hasItems(users):
             raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
 
+        users.sort(key = lambda user: user.getHandle().lower())
         return users
 
     def __readJson(self) -> Dict:
