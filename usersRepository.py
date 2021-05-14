@@ -22,7 +22,7 @@ class UsersRepository():
         self.__timeZoneRepository = timeZoneRepository
         self.__usersFile = usersFile
 
-    def __createUser(self, handle: str, userJson: dict):
+    def __createUser(self, handle: str, userJson: dict) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif userJson is None:
