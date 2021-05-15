@@ -10,6 +10,7 @@ from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
+from commands import AnalogueCommand, RaceCommand
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -120,8 +121,10 @@ class CynanBot(commands.Bot):
         self.__weatherRepository = weatherRepository
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
+        self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
+        self.__raceCommand = RaceCommand(usersRepository)
+
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
-        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 2, seconds = 30))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
@@ -132,7 +135,6 @@ class CynanBot(commands.Bot):
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
-        self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
@@ -635,22 +637,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isAnalogueEnabled():
-            return
-        elif not self.__lastAnalogueStockMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        includePrices = 'includePrices' in splits
-
-        try:
-            result = self.__analogueStoreRepository.fetchStoreStock()
-            await ctx.send(result.toStr(includePrices = includePrices))
-        except (RuntimeError, ValueError):
-            print(f'Error fetching Analogue stock in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching Analogue stock')
+        await self.__analogueCommand.handleCommand(ctx)
 
     @commands.command(name = 'answer')
     async def command_answer(self, ctx):
@@ -1033,14 +1020,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'race')
     async def command_race(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isRaceEnabled() or not ctx.author.is_mod:
-            return
-        elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        await ctx.send('!race')
+        await self.__raceCommand.handleCommand(ctx)
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx):
