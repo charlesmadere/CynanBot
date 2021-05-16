@@ -10,7 +10,8 @@ from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
-from commands import AnalogueCommand, RaceCommand
+from commands import (AnalogueCommand, AnswerCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -23,8 +24,7 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
-                                                 TriviaGameRepository)
+from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -101,7 +101,6 @@ class CynanBot(commands.Bot):
         elif wordOfTheDayRepository is None:
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
-        self.__analogueStoreRepository = analogueStoreRepository
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
         self.__enEsDictionary = enEsDictionary
@@ -122,6 +121,9 @@ class CynanBot(commands.Bot):
         self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
+        self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
+        self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
+        self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
 
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
@@ -133,8 +135,6 @@ class CynanBot(commands.Bot):
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
-        self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
-        self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
@@ -641,60 +641,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'answer')
     async def command_answer(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isTriviaGameEnabled():
-            return
-        elif self.__triviaGameRepository.isAnswered():
-            return
-
-        seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
-        if user.hasWaitForTriviaAnswerDelay():
-            seconds = user.getWaitForTriviaAnswerDelay()
-
-        if not self.__triviaGameRepository.isWithinAnswerWindow(seconds):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 2:
-            await ctx.send('⚠ You must provide the exact answer with the !answer command.')
-            return
-
-        answer = ' '.join(splits[1:])
-        userId = str(ctx.author.id)
-
-        checkResult = self.__triviaGameRepository.check(
-            answer = answer,
-            userId = userId
-        )
-
-        if checkResult is TriviaGameCheckResult.INVALID_USER_ID:
-            return
-        elif checkResult is TriviaGameCheckResult.INCORRECT:
-            answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
-            await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer was: {answerStr}')
-            return
-        elif checkResult is not TriviaGameCheckResult.CORRECT:
-            print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
-            await ctx.send(f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
-            return
-
-        cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
-        if user.hasTriviaGamePoints():
-            cutenessPoints = user.getTriviaGamePoints()
-
-        try:
-            cutenessResult = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = cutenessPoints,
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = ctx.author.name
-            )
-
-            await ctx.send(f'🎉 Congratulations {ctx.author.name}! 🎉 You are correct! 🎉 Your new cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
-        except ValueError:
-            print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
+        await self.__answerCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx):
@@ -968,55 +915,11 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isPokepediaEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastPkMonMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 2:
-            await ctx.send('⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
-            return
-
-        name = splits[1]
-
-        try:
-            mon = self.__pokepediaRepository.searchPokemon(name)
-            strList = mon.toStrList()
-
-            for s in strList:
-                await ctx.send(s)
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving Pokemon \"{name}\"')
-            await ctx.send(f'⚠ Error retrieving Pokémon \"{name}\"')
+        await self.__pkMonCommand.handleCommand(ctx)
 
     @commands.command(name = 'pkmove')
     async def command_pkmove(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isPokepediaEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastPkMoveMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 2:
-            await ctx.send('⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
-            return
-
-        name = ' '.join(splits[1:])
-
-        try:
-            move = self.__pokepediaRepository.searchMoves(name)
-            strList = move.toStrList()
-
-            for s in strList:
-                await ctx.send(s)
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving Pokemon move \"{name}\"')
-            await ctx.send(f'⚠ Error retrieving Pokémon move \"{name}\"')
+        await self.__pkMoveCommand.handleCommand(ctx)
 
     @commands.command(name = 'race')
     async def command_race(self, ctx):
