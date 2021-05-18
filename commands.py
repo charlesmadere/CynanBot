@@ -1,13 +1,15 @@
-from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from abc import ABC, abstractmethod
 from datetime import timedelta
 
 import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
+from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from usersRepository import UsersRepository
 
@@ -239,3 +241,100 @@ class RaceCommand(AbsCommand):
             return
 
         await ctx.send('!race')
+
+
+class SwQuoteCommand(AbsCommand):
+
+    def __init__(
+        self,
+        starWarsQuotesRepository: StarWarsQuotesRepository,
+        usersRepository: UsersRepository
+    ):
+        if starWarsQuotesRepository is None:
+            raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__starWarsQuotesRepository = starWarsQuotesRepository
+        self.__usersRepository = usersRepository
+        self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 30))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isStarWarsQuotesEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastStarWarsQuotesMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        randomSpaceEmoji = utils.getRandomSpaceEmoji()
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) < 2:
+            swQuote = self.__starWarsQuotesRepository.fetchRandomQuote()
+            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+            return
+
+        query = ' '.join(splits[1:])
+
+        try:
+            swQuote = self.__starWarsQuotesRepository.searchQuote(query)
+
+            if utils.isValidStr(swQuote):
+                await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+            else:
+                await ctx.send(f'⚠ No Star Wars quote found for the given query: \"{query}\"')
+        except ValueError:
+            print(f'Error retrieving Star Wars quote with query: \"{query}\"')
+            await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+
+
+class WordCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository,
+        wordOfTheDayRepository: WordOfTheDayRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif wordOfTheDayRepository is None:
+            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+
+        self.__usersRepository = usersRepository
+        self.__wordOfTheDayRepository = wordOfTheDayRepository
+        self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 8))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+        
+        if not user.isWordOfTheDayEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        languageList = self.__wordOfTheDayRepository.getLanguageList()
+
+        if len(splits) < 2:
+            example = languageList.getLanguages()[0].getPrimaryCommandName()
+            languages = languageList.toCommandNamesStr()
+            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
+            return
+
+        language = splits[1]
+        languageEntry = None
+
+        try:
+            languageEntry = languageList.getLanguageForCommand(language)
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languageList.toCommandNamesStr()}')
+            return
+
+        try:
+            wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
+            await ctx.send(wotd.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getApiName()}\"')

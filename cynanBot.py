@@ -11,7 +11,7 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AnalogueCommand, AnswerCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand)
+                      PkMoveCommand, RaceCommand, SwQuoteCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -110,21 +110,20 @@ class CynanBot(commands.Bot):
         self.__generalSettingsRepository = generalSettingsRepository
         self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
-        self.__pokepediaRepository = pokepediaRepository
-        self.__starWarsQuotesRepository = starWarsQuotesRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
         self.__weatherRepository = weatherRepository
-        self.__wordOfTheDayRepository = wordOfTheDayRepository
 
         self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
         self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
         self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
         self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
+        self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+        self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
 
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
@@ -136,11 +135,9 @@ class CynanBot(commands.Bot):
         self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
-        self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 15))
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
@@ -927,33 +924,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isStarWarsQuotesEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastStarWarsQuotesMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        randomSpaceEmoji = utils.getRandomSpaceEmoji()
-        splits = utils.getCleanedSplits(ctx.message.content)
-
-        if len(splits) < 2:
-            swQuote = self.__starWarsQuotesRepository.fetchRandomQuote()
-            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
-            return
-
-        query = ' '.join(splits[1:])
-
-        try:
-            swQuote = self.__starWarsQuotesRepository.searchQuote(query)
-
-            if utils.isValidStr(swQuote):
-                await ctx.send(f'{swQuote} {randomSpaceEmoji}')
-            else:
-                await ctx.send(f'⚠ No Star Wars quote found for the given query: \"{query}\"')
-        except ValueError:
-            print(f'Error retrieving Star Wars quote with query: \"{query}\"')
-            await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+        await self.__swQuoteCommand.handleCommand(ctx)
 
     @commands.command(name = 'tamales')
     async def command_tamales(self, ctx):
@@ -1054,35 +1025,4 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'word')
     async def command_word(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isWordOfTheDayEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        languageList = self.__wordOfTheDayRepository.getLanguageList()
-
-        if len(splits) < 2:
-            example = languageList.getLanguages()[0].getPrimaryCommandName()
-            languages = languageList.toCommandNamesStr()
-            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
-            return
-
-        language = splits[1]
-        languageEntry = None
-
-        try:
-            languageEntry = languageList.getLanguageForCommand(language)
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languageList.toCommandNamesStr()}')
-            return
-
-        try:
-            wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-            await ctx.send(wotd.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getApiName()}\"')
+        await self.__wordCommand.handleCommand(ctx)
