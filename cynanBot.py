@@ -946,7 +946,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx):
-        await self.weatherCommand.handleCommand(ctx)
+        await self.__weatherCommand.handleCommand(ctx)
 
     @commands.command(name = 'word')
     async def command_word(self, ctx):
