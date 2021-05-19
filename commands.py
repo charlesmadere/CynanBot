@@ -4,11 +4,14 @@ from datetime import timedelta
 import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
+from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from usersRepository import UsersRepository
@@ -134,6 +137,101 @@ class AnswerCommand(AbsCommand):
         except ValueError:
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
+
+
+class CutenessCommand(AbsCommand):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        usersRepository: UsersRepository
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__cutenessRepository = cutenessRepository
+        self.__usersRepository = usersRepository
+        self.__lastCutenessMessageTimes = TimedDict(timedelta(seconds = 15))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCutenessEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastCutenessMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        userName = None
+        if len(splits) >= 2:
+            userName = splits[1]
+
+        if utils.isValidStr(userName):
+            userName = utils.removePreceedingAt(userName)
+
+            try:
+                result = self.__cutenessRepository.fetchCuteness(
+                    twitchChannel = user.getHandle(),
+                    userName = userName
+                )
+
+                if result.hasCuteness():
+                    await ctx.send(f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
+                else:
+                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
+            except ValueError:
+                print(f'Unable to find \"{userName}\" in the cuteness database')
+                await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
+        else:
+            result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
+
+            if result.hasEntries():
+                await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
+            else:
+                await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
+
+
+class JishoCommand(AbsCommand):
+
+    def __init__(
+        self,
+        jishoHelper: JishoHelper,
+        usersRepository: UsersRepository
+    ):
+        if jishoHelper is None:
+            raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__jishoHelper = jishoHelper
+        self.__usersRepository = usersRepository
+        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 8))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJishoEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastJishoMessageTimes.isReady(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
+            return
+
+        query = splits[1]
+        self.__lastJishoMessageTimes.update(user.getHandle())
+
+        try:
+            result = self.__jishoHelper.search(query)
+            await ctx.send(result.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
 
 class PkMonCommand(AbsCommand):
@@ -287,6 +385,48 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             print(f'Error retrieving Star Wars quote with query: \"{query}\"')
             await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+
+
+class WeatherCommand(AbsCommand):
+    
+    def __init__(
+        self,
+        locationsRepository: LocationsRepository,
+        usersRepository: UsersRepository,
+        weatherRepository: WeatherRepository
+    ):
+        if locationsRepository is None:
+            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif weatherRepository is None:
+            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+
+        self.__locationsRepository = locationsRepository
+        self.__usersRepository = usersRepository
+        self.__weatherRepository = weatherRepository
+        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 2))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isWeatherEnabled():
+            return
+        elif not self.__lastWeatherMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        if not user.hasLocationId():
+            await ctx.send(f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
+            return
+
+        location = self.__locationsRepository.getLocation(user.getLocationId())
+
+        try:
+            weatherReport = self.__weatherRepository.fetchWeather(location)
+            await ctx.send(weatherReport.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error fetching weather for \"{user.getLocationId()}\" in {user.getHandle()}')
+            await ctx.send('⚠ Error fetching weather')
 
 
 class WordCommand(AbsCommand):

@@ -10,8 +10,9 @@ from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
-from commands import (AnalogueCommand, AnswerCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand, SwQuoteCommand, WordCommand)
+from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
+                      JishoCommand, PkMonCommand, PkMoveCommand, RaceCommand,
+                      SwQuoteCommand, WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -105,39 +106,36 @@ class CynanBot(commands.Bot):
         self.__cutenessRepository = cutenessRepository
         self.__enEsDictionary = enEsDictionary
         self.__funtoonRepository = funtoonRepository
-        self.__jishoHelper = jishoHelper
         self.__jokesRepository = jokesRepository
         self.__generalSettingsRepository = generalSettingsRepository
-        self.__locationsRepository = locationsRepository
         self.__nonceRepository = nonceRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
         self.__usersRepository = usersRepository
-        self.__weatherRepository = weatherRepository
 
         self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
         self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
+        self.__cutenessCommand = CutenessCommand(cutenessRepository, usersRepository)
+        self.__jishoCommand = JishoCommand(jishoHelper, usersRepository)
         self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
         self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
         self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+        self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
         self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
 
         self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
         self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastCutenessLeaderboardMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
-        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
-        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 1))
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
@@ -702,42 +700,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isCutenessEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastCutenessLeaderboardMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-
-        userName = None
-        if len(splits) >= 2:
-            userName = splits[1]
-
-        if not utils.isValidStr(userName):
-            result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
-
-            if result.hasEntries():
-                await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
-            else:
-                await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
-        else:
-            userName = utils.removePreceedingAt(userName)
-
-            try:
-                result = self.__cutenessRepository.fetchCuteness(
-                    twitchChannel = user.getHandle(),
-                    userName = userName
-                )
-
-                if result.hasCuteness():
-                    await ctx.send(f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
-                else:
-                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
-            except ValueError:
-                print(f'Unable to find \"{userName}\" in the cuteness database')
-                await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
+        await self.__cutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
@@ -836,27 +799,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isJishoEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastJishoMessageTimes.isReady(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 2:
-            await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
-            return
-
-        query = splits[1]
-        self.__lastJishoMessageTimes.update(user.getHandle())
-
-        try:
-            result = self.__jishoHelper.search(query)
-            await ctx.send(result.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
+        await self.__jishoCommand.handleCommand(ctx)
 
     @commands.command(name = 'joke')
     async def command_joke(self, ctx):
@@ -1003,25 +946,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isWeatherEnabled():
-            return
-        elif not self.__lastWeatherMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        if not user.hasLocationId():
-            await ctx.send(f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
-            return
-
-        location = self.__locationsRepository.getLocation(user.getLocationId())
-
-        try:
-            weatherReport = self.__weatherRepository.fetchWeather(location)
-            await ctx.send(weatherReport.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching weather for \"{user.getLocationId()}\" in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching weather')
+        await self.weatherCommand.handleCommand(ctx)
 
     @commands.command(name = 'word')
     async def command_word(self, ctx):
