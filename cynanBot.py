@@ -11,8 +11,9 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
-                      JishoCommand, PkMonCommand, PkMoveCommand, RaceCommand,
-                      SwQuoteCommand, WeatherCommand, WordCommand)
+                      JishoCommand, JokeCommand, PkMonCommand, PkMoveCommand,
+                      RaceCommand, SwQuoteCommand, TwitterCommand,
+                      WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -106,7 +107,6 @@ class CynanBot(commands.Bot):
         self.__cutenessRepository = cutenessRepository
         self.__enEsDictionary = enEsDictionary
         self.__funtoonRepository = funtoonRepository
-        self.__jokesRepository = jokesRepository
         self.__generalSettingsRepository = generalSettingsRepository
         self.__nonceRepository = nonceRepository
         self.__tamaleGuyRepository = tamaleGuyRepository
@@ -119,10 +119,12 @@ class CynanBot(commands.Bot):
         self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
         self.__cutenessCommand = CutenessCommand(cutenessRepository, usersRepository)
         self.__jishoCommand = JishoCommand(jishoHelper, usersRepository)
+        self.__jokeCommand = JokeCommand(jokesRepository, usersRepository)
         self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
         self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
         self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+        self.__twitterCommand = TwitterCommand(usersRepository)
         self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
         self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
 
@@ -132,7 +134,6 @@ class CynanBot(commands.Bot):
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
-        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
         self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
@@ -803,19 +804,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'joke')
     async def command_joke(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isJokesEnabled():
-            return
-        elif not self.__lastJokeMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            result = self.__jokesRepository.fetchJoke()
-            await ctx.send(result.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching joke of the day in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching joke of the day')
+        await self.__jokeCommand.handleCommand(ctx)
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
@@ -936,13 +925,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.hasTwitter():
-            return
-
-        twitter = user.getTwitterUrl()
-        await ctx.send(f'{user.getHandle()}\'s twitter: {twitter}')
+        await self.__twitterCommand.handleCommand(ctx)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx):

@@ -5,6 +5,7 @@ import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
@@ -234,6 +235,38 @@ class JishoCommand(AbsCommand):
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
 
 
+class JokeCommand(AbsCommand):
+
+    def __init__(
+        self,
+        jokesRepository: JokesRepository,
+        usersRepository: UsersRepository
+    ):
+        if jokesRepository is None:
+            raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__jokesRepository = jokesRepository
+        self.__usersRepository = usersRepository
+        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isJokesEnabled():
+            return
+        elif not self.__lastJokeMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        try:
+            result = self.__jokesRepository.fetchJoke()
+            await ctx.send(result.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error fetching joke of the day in {user.getHandle()}')
+            await ctx.send('⚠ Error fetching joke of the day')
+
+
 class PkMonCommand(AbsCommand):
 
     def __init__(
@@ -385,6 +418,26 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             print(f'Error retrieving Star Wars quote with query: \"{query}\"')
             await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+
+
+class TwitterCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__usersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.hasTwitter():
+            return
+
+        await ctx.send(f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
 
 
 class WeatherCommand(AbsCommand):
