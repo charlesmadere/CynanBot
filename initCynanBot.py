@@ -67,7 +67,6 @@ cynanBot = CynanBot(
         timeZoneRepository = timeZoneRepository
     ),
     weatherRepository = WeatherRepository(
-        iqAirApiKey = authHelper.requireIqAirApiKey(),
         oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
     ),
     wordOfTheDayRepository = WordOfTheDayRepository()
