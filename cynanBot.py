@@ -574,7 +574,7 @@ class CynanBot(commands.Bot):
             return
 
         self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
-        response = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
+        response = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
         await twitchChannel.send(f'😿 You lose! The answer was: {response.getCorrectAnswer()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
