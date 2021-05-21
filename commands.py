@@ -116,7 +116,7 @@ class AnswerCommand(AbsCommand):
         if checkResult is TriviaGameCheckResult.INVALID_USER:
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
-            answerStr = self.__triviaGameRepository.fetchTrivia(user.getHandle()).getCorrectAnswer()
+            answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getCorrectAnswer()
             await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer is: {answerStr}')
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
