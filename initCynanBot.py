@@ -1,4 +1,5 @@
 import locale
+from datetime import timedelta
 
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
@@ -58,7 +59,11 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
-    triviaGameRepository = TriviaGameRepository(TriviaRepository()),
+    triviaGameRepository = TriviaGameRepository(
+        triviaRepository = TriviaRepository(
+            cacheTimeDelta = timedelta(seconds = 1)
+        )
+    ),
     twitchTokensRepository = TwitchTokensRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase

@@ -519,40 +519,62 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
+        response = None
+
         try:
-            response = self.__triviaGameRepository.fetchTrivia()
-            self.__triviaGameRepository.setUserIdThatRedeemed(userIdThatRedeemed)
-
-            points = self.__generalSettingsRepository.getTriviaGamePoints()
-            if twitchUser.hasTriviaGamePoints():
-                points = twitchUser.getTriviaGamePoints()
-            pointsStr = locale.format_string("%d", points, grouping = True)
-
-            seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
-            if twitchUser.hasWaitForTriviaAnswerDelay():
-                seconds = twitchUser.getWaitForTriviaAnswerDelay()
-            secondsStr = locale.format_string("%d", seconds, grouping = True)
-
-            await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-            await twitchChannel.send(response.toPromptStr())
-
-            asyncio.create_task(self.__handleTriviaGameAnswer(
-                delaySeconds = seconds,
-                twitchChannel = twitchChannel
-            ))
+            response = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
         except (RuntimeError, ValueError):
-            print(f'Error retrieving trivia')
+            print(f'Error retrieving trivia in {twitchUser.getHandle()}')
             await twitchChannel.send('⚠ Error retrieving trivia')
-
-    async def __handleTriviaGameAnswer(self, delaySeconds: int, twitchChannel):
-        await asyncio.sleep(delaySeconds)
-
-        if self.__triviaGameRepository.isAnswered():
             return
 
-        self.__triviaGameRepository.setAnswered()
-        response = self.__triviaGameRepository.fetchTrivia()
-        await twitchChannel.send(f'😿 Sorry, there is no winner! The answer was: {response.getCorrectAnswer()}')
+        self.__triviaGameRepository.setUserThatRedeemed(
+            twitchChannel = twitchUser.getHandle(),
+            userId = userIdThatRedeemed,
+            userName = userNameThatRedeemed
+        )
+
+        points = self.__generalSettingsRepository.getTriviaGamePoints()
+        if twitchUser.hasTriviaGamePoints():
+            points = twitchUser.getTriviaGamePoints()
+        pointsStr = locale.format_string("%d", points, grouping = True)
+
+        seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        if twitchUser.hasWaitForTriviaAnswerDelay():
+            seconds = twitchUser.getWaitForTriviaAnswerDelay()
+        secondsStr = locale.format_string("%d", seconds, grouping = True)
+
+        await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
+        await twitchChannel.send(response.toPromptStr())
+
+        asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
+            delaySeconds = seconds,
+            twitchChannel = twitchChannel
+        ))
+
+    async def __handleTriviaGameFailureToAnswer(
+        self,
+        delaySeconds: int,
+        twitchUser: User,
+        twitchChannel
+    ):
+        if not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        await asyncio.sleep(delaySeconds)
+
+        if self.__triviaGameRepository.isAnswered(twitchUser.getHandle()):
+            return
+
+        self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
+        response = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
+        await twitchChannel.send(f'😿 You lose! The answer was: {response.getCorrectAnswer()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
@@ -613,9 +635,29 @@ class CynanBot(commands.Bot):
         users = self.__usersRepository.getUsers()
         resubscribeUsers = list()
 
-        for user in users:
-            if not utils.isValidStr(nonce) or nonce == self.__nonceRepository.getNonce(user.getHandle()):
-                resubscribeUsers.append(user)
+        if utils.isValidStr(nonce):
+            for user in users:
+                if nonce == self.__nonceRepository.getNonce(user.getHandle()):
+                    resubscribeUsers.append(user)
+        else:
+            resubscribeUsers.extend(users)
+
+        if not utils.hasItems(resubscribeUsers):
+            print(f'Found no users to validate and refresh tokens for (nonce: \"{nonce}\")')
+            return
+
+        removeUsers = list()
+
+        for user in resubscribeUsers:
+            accessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+            refreshToken = self.__twitchTokensRepository.getRefreshToken(user.getHandle())
+
+            if not utils.isValidStr(accessToken) or not utils.isValidStr(refreshToken):
+                removeUsers.append(user)
+
+        if utils.hasItems(removeUsers):
+            for user in removeUsers:
+                resubscribeUsers.remove(user)
 
         if not utils.hasItems(resubscribeUsers):
             print(f'Found no users to validate and refresh tokens for (nonce: \"{nonce}\")')
@@ -911,7 +953,7 @@ class CynanBot(commands.Bot):
             return
 
         try:
-            response = self.__triviaGameRepository.fetchTrivia()
+            response = self.__triviaGameRepository.fetchTrivia(user.getHandle())
             await ctx.send(response.toPromptStr())
 
             asyncio.create_task(self.__sendDelayedMessage(

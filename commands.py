@@ -88,14 +88,14 @@ class AnswerCommand(AbsCommand):
 
         if not user.isTriviaGameEnabled():
             return
-        elif self.__triviaGameRepository.isAnswered():
+        elif self.__triviaGameRepository.isAnswered(user.getHandle()):
             return
 
         seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if user.hasWaitForTriviaAnswerDelay():
             seconds = user.getWaitForTriviaAnswerDelay()
 
-        if not self.__triviaGameRepository.isWithinAnswerWindow(seconds):
+        if not self.__triviaGameRepository.isWithinAnswerWindow(seconds, user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -106,18 +106,20 @@ class AnswerCommand(AbsCommand):
         answer = ' '.join(splits[1:])
         userId = str(ctx.author.id)
 
-        checkResult = self.__triviaGameRepository.check(
+        checkResult = self.__triviaGameRepository.checkAnswer(
             answer = answer,
-            userId = userId
+            twitchChannel = user.getHandle(),
+            userId = userId,
+            userName = ctx.author.name
         )
 
-        if checkResult is TriviaGameCheckResult.INVALID_USER_ID:
+        if checkResult is TriviaGameCheckResult.INVALID_USER:
             return
-        elif checkResult is TriviaGameCheckResult.INCORRECT:
-            answerStr = self.__triviaGameRepository.fetchTrivia().getCorrectAnswer()
+        elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
+            answerStr = self.__triviaGameRepository.fetchTrivia(user.getHandle()).getCorrectAnswer()
             await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer is: {answerStr}')
             return
-        elif checkResult is not TriviaGameCheckResult.CORRECT:
+        elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
             print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
             await ctx.send(f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
