@@ -549,6 +549,7 @@ class CynanBot(commands.Bot):
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
             delaySeconds = seconds,
+            twitchUser = twitchUser,
             twitchChannel = twitchChannel
         ))
 
