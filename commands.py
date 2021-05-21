@@ -87,8 +87,10 @@ class AnswerCommand(AbsCommand):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTriviaGameEnabled():
+            print('first')
             return
         elif self.__triviaGameRepository.isAnswered(user.getHandle()):
+            print('second')
             return
 
         seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
@@ -96,6 +98,7 @@ class AnswerCommand(AbsCommand):
             seconds = user.getWaitForTriviaAnswerDelay()
 
         if not self.__triviaGameRepository.isWithinAnswerWindow(seconds, user.getHandle()):
+            print('third')
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -113,6 +116,8 @@ class AnswerCommand(AbsCommand):
             userName = ctx.author.name
         )
 
+        print('fourth')
+
         if checkResult is TriviaGameCheckResult.INVALID_USER:
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
@@ -123,6 +128,8 @@ class AnswerCommand(AbsCommand):
             print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
             await ctx.send(f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
+
+        print('fifth')
 
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
