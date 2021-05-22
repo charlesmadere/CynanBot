@@ -1,15 +1,17 @@
 import asyncio
 from abc import ABC, abstractmethod
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
@@ -17,6 +19,7 @@ from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
+from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 
 
@@ -171,7 +174,7 @@ class CutenessCommand(AbsCommand):
 
         self.__cutenessRepository = cutenessRepository
         self.__usersRepository = usersRepository
-        self.__lastCutenessMessageTimes = TimedDict(timedelta(seconds = 15))
+        self.__lastCutenessMessageTimes = TimedDict(timedelta(seconds = 10))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -210,6 +213,143 @@ class CutenessCommand(AbsCommand):
                 await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
             else:
                 await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
+
+
+class DiccionarioCommand(AbsCommand):
+
+    def __init__(
+        self,
+        enEsDictionary: EnEsDictionary,
+        usersRepository: UsersRepository
+    ):
+        if enEsDictionary is None:
+            raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__enEsDictionary = enEsDictionary
+        self.__usersRepository = usersRepository
+        self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isDiccionarioEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastDiccionarioMessageTimes.isReady(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) < 2:
+            await ctx.send('⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
+            return
+
+        query = ' '.join(splits[1:])
+
+        try:
+            result = self.__enEsDictionary.search(query)
+            self.__lastDiccionarioMessageTimes.update(user.getHandle())
+            await ctx.send(result.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
+
+
+class DiscordCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__usersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.hasDiscord():
+            return
+
+        discord = user.getDiscordUrl()
+        await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+
+
+class GiveCutenessCommand(AbsCommand):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif userIdsRepository is None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__cutenessRepository = cutenessRepository
+        self.__userIdsRepository = userIdsRepository
+        self.__usersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        if not ctx.author.is_mod:
+            return
+
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 3:
+            await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        userName = splits[1]
+        if not utils.isValidStr(userName):
+            print(f'Username is malformed: \"{userName}\"')
+            await ctx.send(f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        incrementAmountStr = splits[2]
+        if not utils.isValidStr(incrementAmountStr):
+            print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
+            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        try:
+            incrementAmount = int(incrementAmountStr)
+        except (SyntaxError, ValueError):
+            print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
+            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            return
+
+        userName = utils.removePreceedingAt(userName)
+
+        try:
+            userId = self.__userIdsRepository.fetchUserId(userName = userName)
+        except ValueError:
+            print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
+            await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+            return
+
+        try:
+            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = incrementAmount,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = userName
+            )
+
+            await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
+        except ValueError:
+            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
+            await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
 
 
 class JishoCommand(AbsCommand):
@@ -282,6 +422,71 @@ class JokeCommand(AbsCommand):
         except (RuntimeError, ValueError):
             print(f'Error fetching joke of the day in {user.getHandle()}')
             await ctx.send('⚠ Error fetching joke of the day')
+
+
+class MyCutenessCommand(AbsCommand):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        usersRepository: UsersRepository
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__cutenessRepository = cutenessRepository
+        self.__usersRepository = usersRepository
+        self.__lastMyCutenessMessageTimes = TimedDict(timedelta(seconds = 10))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCutenessEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastMyCutenessMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        userId = str(ctx.author.id)
+
+        try:
+            result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = ctx.author.name
+            )
+
+            if result.hasCuteness() and result.hasLocalLeaderboard():
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
+            elif result.hasCuteness():
+                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
+            else:
+                await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')
+        except ValueError:
+            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
+
+
+class PbsCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__usersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.hasSpeedrunProfile():
+            return
+
+        speedrunProfile = user.getSpeedrunProfile()
+        await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
 
 
 class PkMonCommand(AbsCommand):
@@ -435,6 +640,74 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             print(f'Error retrieving Star Wars quote with query: \"{query}\"')
             await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+
+
+class TamalesCommand(AbsCommand):
+
+    def __init__(
+        self,
+        tamaleGuyRepository: TamaleGuyRepository,
+        usersRepository: UsersRepository
+    ):
+        if tamaleGuyRepository is None:
+            raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__tamaleGuyRepository = tamaleGuyRepository
+        self.__usersRepository = usersRepository
+        self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTamalesEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastTamalesMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        try:
+            storeStock = self.__tamaleGuyRepository.fetchStoreStock()
+            await ctx.send(storeStock.toStr())
+        except (RuntimeError, ValueError):
+            print('Error retrieving Tamale Guy store stock')
+            await ctx.send('⚠ Error retrieving Tamale Guy store stock')
+
+
+class TimeCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__usersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.hasTimeZones():
+            return
+
+        timeZones = user.getTimeZones()
+        first = True
+        text = ''
+
+        for timeZone in timeZones:
+            localTime = datetime.now(timeZone)
+
+            if first:
+                first = False
+                formattedTime = utils.formatTime(localTime)
+                text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
+            else:
+                formattedTime = utils.formatTimeShort(localTime)
+                timeZoneName = timeZone.tzname(datetime.utcnow())
+                text = f'{text} {timeZoneName} time is {formattedTime}.'
+
+        await ctx.send(text)
 
 
 class TriviaCommand(AbsCommand):

@@ -11,8 +11,10 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
-                      JishoCommand, JokeCommand, PkMonCommand, PkMoveCommand,
-                      RaceCommand, SwQuoteCommand, TriviaCommand,
+                      DiccionarioCommand, DiscordCommand, GiveCutenessCommand,
+                      JishoCommand, JokeCommand, MyCutenessCommand, PbsCommand,
+                      PkMonCommand, PkMoveCommand, RaceCommand, SwQuoteCommand,
+                      TamalesCommand, TimeCommand, TriviaCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
@@ -109,11 +111,9 @@ class CynanBot(commands.Bot):
 
         self.__authHelper = authHelper
         self.__cutenessRepository = cutenessRepository
-        self.__enEsDictionary = enEsDictionary
         self.__funtoonRepository = funtoonRepository
         self.__generalSettingsRepository = generalSettingsRepository
         self.__nonceRepository = nonceRepository
-        self.__tamaleGuyRepository = tamaleGuyRepository
         self.__triviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository = userIdsRepository
@@ -122,12 +122,19 @@ class CynanBot(commands.Bot):
         self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
         self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
         self.__cutenessCommand = CutenessCommand(cutenessRepository, usersRepository)
+        self.__diccionarioCommand = DiccionarioCommand(enEsDictionary, usersRepository)
+        self.__discordCommand = DiscordCommand(usersRepository)
         self.__jishoCommand = JishoCommand(jishoHelper, usersRepository)
         self.__jokeCommand = JokeCommand(jokesRepository, usersRepository)
+        self.__giveCutenessCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
+        self.__myCutenessCommand = MyCutenessCommand(cutenessRepository, usersRepository)
+        self.__pbsCommand = PbsCommand(usersRepository)
         self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
         self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
         self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+        self.__tamalesCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
+        self.__timeCommand = TimeCommand(usersRepository)
         self.__triviaCommand = TriviaCommand(triviaRepository, usersRepository)
         self.__twitterCommand = TwitterCommand(usersRepository)
         self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
@@ -138,9 +145,7 @@ class CynanBot(commands.Bot):
         self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
@@ -756,94 +761,15 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'diccionario')
     async def command_diccionario(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isDiccionarioEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastDiccionarioMessageTimes.isReady(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-
-        if len(splits) < 2:
-            await ctx.send('⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
-            return
-
-        query = ' '.join(splits[1:])
-
-        try:
-            result = self.__enEsDictionary.search(query)
-            self.__lastDiccionarioMessageTimes.update(user.getHandle())
-            await ctx.send(result.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
+        await self.__diccionarioCommand.handleCommand(ctx)
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.hasDiscord():
-            return
-
-        discord = user.getDiscordUrl()
-        await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+        await self.__discordCommand.handleCommand(ctx)
 
     @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx):
-        if not ctx.author.is_mod:
-            return
-
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 3:
-            await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
-            return
-
-        userName = splits[1]
-        if not utils.isValidStr(userName):
-            print(f'Username is malformed: \"{userName}\"')
-            await ctx.send(f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
-            return
-
-        incrementAmountStr = splits[2]
-        if not utils.isValidStr(incrementAmountStr):
-            print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
-            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
-            return
-
-        try:
-            incrementAmount = int(incrementAmountStr)
-        except (SyntaxError, ValueError):
-            print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
-            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
-            return
-
-        userName = utils.removePreceedingAt(userName)
-
-        try:
-            userId = self.__userIdsRepository.fetchUserId(userName = userName)
-        except ValueError:
-            print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
-            await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
-            return
-
-        try:
-            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = userName
-            )
-
-            await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
-        except ValueError:
-            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
+        await self.__giveCutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx):
@@ -855,39 +781,11 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isCutenessEnabled():
-            return
-
-        userId = str(ctx.author.id)
-
-        try:
-            result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = ctx.author.name
-            )
-
-            if result.hasCuteness() and result.hasLocalLeaderboard():
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
-            elif result.hasCuteness():
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
-            else:
-                await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')
-        except ValueError:
-            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
+        await self.__myCutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.hasSpeedrunProfile():
-            return
-
-        speedrunProfile = user.getSpeedrunProfile()
-        await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        await self.__pbsCommand.handleCommand(ctx)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx):
@@ -907,44 +805,11 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'tamales')
     async def command_tamales(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isTamalesEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastTamalesMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            storeStock = self.__tamaleGuyRepository.fetchStoreStock()
-            await ctx.send(storeStock.toStr())
-        except (RuntimeError, ValueError):
-            print('Error retrieving Tamale Guy store stock')
-            await ctx.send('⚠ Error retrieving Tamale Guy store stock')
+        await self.__tamalesCommand.handleCommand(ctx)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.hasTimeZones():
-            return
-
-        timeZones = user.getTimeZones()
-        first = True
-        text = ''
-
-        for timeZone in timeZones:
-            localTime = datetime.now(timeZone)
-
-            if first:
-                first = False
-                formattedTime = utils.formatTime(localTime)
-                text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
-            else:
-                formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(datetime.utcnow())
-                text = f'{text} {timeZoneName} time is {formattedTime}.'
-
-        await ctx.send(text)
+        await self.__timeCommand.handleCommand(ctx)
 
     @commands.command(name = 'trivia')
     async def command_trivia(self, ctx):
