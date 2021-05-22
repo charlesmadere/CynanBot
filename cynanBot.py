@@ -12,8 +12,8 @@ import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
                       JishoCommand, JokeCommand, PkMonCommand, PkMoveCommand,
-                      RaceCommand, SwQuoteCommand, TwitterCommand,
-                      WeatherCommand, WordCommand)
+                      RaceCommand, SwQuoteCommand, TriviaCommand,
+                      TwitterCommand, WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -27,6 +27,7 @@ from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -54,6 +55,7 @@ class CynanBot(commands.Bot):
         starWarsQuotesRepository: StarWarsQuotesRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         triviaGameRepository: TriviaGameRepository,
+        triviaRepository: TriviaRepository,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -94,6 +96,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
+        elif triviaRepository is None:
+            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
@@ -124,6 +128,7 @@ class CynanBot(commands.Bot):
         self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
         self.__raceCommand = RaceCommand(usersRepository)
         self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+        self.__triviaCommand = TriviaCommand(triviaRepository, usersRepository)
         self.__twitterCommand = TwitterCommand(usersRepository)
         self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
         self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
@@ -136,7 +141,6 @@ class CynanBot(commands.Bot):
         self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
         self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
         self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
-        self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
@@ -944,27 +948,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'trivia')
     async def command_trivia(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isTriviaEnabled():
-            return
-        elif user.isTriviaGameEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastTriviaMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            response = self.__triviaGameRepository.fetchTrivia(user.getHandle())
-            await ctx.send(response.toPromptStr())
-
-            asyncio.create_task(self.__sendDelayedMessage(
-                messageable = ctx,
-                delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = response.toAnswerStr()
-            ))
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving trivia')
-            await ctx.send('⚠ Error retrieving trivia')
+        await self.__triviaCommand.handleCommand(ctx)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx):

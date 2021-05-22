@@ -40,6 +40,9 @@ cutenessRepository = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
+triviaRepository = TriviaRepository(
+    cacheTimeDelta = timedelta(seconds = 1)
+)       
 
 cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
@@ -60,10 +63,9 @@ cynanBot = CynanBot(
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
     triviaGameRepository = TriviaGameRepository(
-        triviaRepository = TriviaRepository(
-            cacheTimeDelta = timedelta(seconds = 1)
-        )
+        triviaRepository = triviaRepository
     ),
+    triviaRepository = triviaRepository,
     twitchTokensRepository = TwitchTokensRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase

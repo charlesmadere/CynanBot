@@ -1,3 +1,4 @@
+import asyncio
 from abc import ABC, abstractmethod
 from datetime import timedelta
 
@@ -12,6 +13,7 @@ from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
+from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -23,6 +25,19 @@ class AbsCommand(ABC):
     @abstractmethod
     async def handleCommand(self, ctx):
         pass
+
+    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
+        if messageable is None:
+            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        await asyncio.sleep(delaySeconds)
+        await messageable.send(message)
 
 
 class AnalogueCommand(AbsCommand):
@@ -420,6 +435,50 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             print(f'Error retrieving Star Wars quote with query: \"{query}\"')
             await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+
+
+class TriviaCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        triviaRepository: TriviaRepository,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif triviaRepository is None:
+            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository = generalSettingsRepository
+        self.__triviaRepository = triviaRepository
+        self.__usersRepository = usersRepository
+        self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTriviaEnabled():
+            return
+        elif user.isTriviaGameEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastTriviaMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        try:
+            response = self.__triviaRepository.fetchTrivia()
+            await ctx.send(response.toPromptStr())
+
+            asyncio.create_task(self.__sendDelayedMessage(
+                messageable = ctx,
+                delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
+                message = response.toAnswerStr()
+            ))
+        except (RuntimeError, ValueError):
+            print(f'Error retrieving trivia')
+            await ctx.send('⚠ Error retrieving trivia')
 
 
 class TwitterCommand(AbsCommand):
