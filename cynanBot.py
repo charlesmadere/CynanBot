@@ -135,7 +135,7 @@ class CynanBot(commands.Bot):
         self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
         self.__tamalesCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
         self.__timeCommand = TimeCommand(usersRepository)
-        self.__triviaCommand = TriviaCommand(triviaRepository, usersRepository)
+        self.__triviaCommand = TriviaCommand(generalSettingsRepository, triviaRepository, usersRepository)
         self.__twitterCommand = TwitterCommand(usersRepository)
         self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
         self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
