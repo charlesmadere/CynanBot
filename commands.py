@@ -29,19 +29,6 @@ class AbsCommand(ABC):
     async def handleCommand(self, ctx):
         pass
 
-    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
-        if messageable is None:
-            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidNum(delaySeconds):
-            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1:
-            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
-        await asyncio.sleep(delaySeconds)
-        await messageable.send(message)
-
 
 class AnalogueCommand(AbsCommand):
 
@@ -752,6 +739,19 @@ class TriviaCommand(AbsCommand):
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia')
             await ctx.send('⚠ Error retrieving trivia')
+
+    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
+        if messageable is None:
+            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        await asyncio.sleep(delaySeconds)
+        await messageable.send(message)
 
 
 class TwitterCommand(AbsCommand):
