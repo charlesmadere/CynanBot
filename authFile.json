@@ -1,7 +1,7 @@
 {
-    "iqAirApiKey": "",
+    "merriamWebsterApiKey": "",
+    "oneWeatherApiKey": "",
     "twitchClientId": "",
     "twitchClientSecret": "",
-    "twitchIrcAuthToken": "",
-    "oneWeatherApiKey": ""
+    "twitchIrcAuthToken": ""
 }

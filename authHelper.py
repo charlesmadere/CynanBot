@@ -16,10 +16,6 @@ class AuthHelper():
 
         self.__authFile = authFile
 
-    def getIqAirApiKey(self) -> str:
-        jsonContents = self.__readJson()
-        return jsonContents.get('iqAirApiKey')
-
     def getMerriamWebsterApiKey(self) -> str:
         jsonContents = self.__readJson()
         return jsonContents.get('merriamWebsterApiKey')
@@ -41,14 +37,6 @@ class AuthHelper():
             raise ValueError(f'JSON contents of auth file \"{self.__authFile}\" is empty')
 
         return jsonContents
-
-    def requireIqAirApiKey(self) -> str:
-        iqAirApiKey = self.getIqAirApiKey()
-
-        if not utils.isValidStr(iqAirApiKey):
-            raise ValueError(f'\"iqAirApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{iqAirApiKey}\"')
-
-        return iqAirApiKey
 
     def requireMerriamWebsterApiKey(self) -> str:
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()
