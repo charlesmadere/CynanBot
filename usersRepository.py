@@ -51,6 +51,7 @@ class UsersRepository():
         isWeatherEnabled = userJson.get('weatherEnabled', False)
         isWordOfTheDayEnabled = userJson.get('wordOfTheDayEnabled', False)
         discord = userJson.get('discord')
+        instagram = userJson.get('instagram')
         locationId = userJson.get('locationId')
         speedrunProfile = userJson.get('speedrunProfile')
         twitter = userJson.get('twitter')
@@ -131,6 +132,7 @@ class UsersRepository():
             discord = discord,
             handle = handle,
             increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
+            instagram = instagram,
             locationId = locationId,
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,

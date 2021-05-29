@@ -35,6 +35,7 @@ class User:
         discord: str,
         handle: str,
         increaseCutenessDoubleRewardId: str,
+        instagram: str,
         locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
@@ -119,6 +120,7 @@ class User:
         self.__discord = discord
         self.__handle = handle
         self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
+        self.__instagram = instagram
         self.__locationId = locationId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
@@ -158,6 +160,9 @@ class User:
 
     def getIncreaseCutenessDoubleRewardId(self) -> str:
         return self.__increaseCutenessDoubleRewardId
+
+    def getInstagramUrl(self) -> str:
+        return self.__instagram
 
     def getLocationId(self) -> str:
         return self.__locationId
@@ -203,6 +208,9 @@ class User:
 
     def hasDiscord(self) -> bool:
         return utils.isValidUrl(self.__discord)
+
+    def hasInstagram(self) -> str:
+        return utils.isValidUrl(self.__instagram)
 
     def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
