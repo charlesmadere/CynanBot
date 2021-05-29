@@ -16,6 +16,7 @@ from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
                       PkMonCommand, PkMoveCommand, RaceCommand, SwQuoteCommand,
                       TamalesCommand, TimeCommand, TriviaCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
+from cutenessBoosterPack import CutenessBoosterPack
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -236,18 +237,36 @@ class CynanBot(commands.Bot):
 
     async def __handleIncreaseCutenessDoubleRewardRedeemed(
         self,
+        cutenessBoosterPacks: List[CutenessBoosterPack],
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
+        if not utils.hasItems(cutenessBoosterPacks):
+            raise ValueError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
         print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
 
         self.__cutenessDoubleEndTimes.update(twitchUser.getHandle())
 
+        # It's sort of not obvious what's going on here, but so what I'm trying to do is not
+        # penalize the given user for redeeming double cuteness. Double cuteness should just cost
+        # the user the same number of channel points that the baseline cuteness redemption is, and
+        # so let's go ahead and multiply that by 2.
+        incrementAmount = cutenessBoosterPacks[0].getAmount() * 2
+
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = 3,
+                incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
@@ -266,15 +285,27 @@ class CynanBot(commands.Bot):
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
+        cutenessBoosterPack: CutenessBoosterPack,
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
-        incrementAmount = 1
+        if cutenessBoosterPack is None:
+            raise ValueError(f'cutenessBoosterPack argument is malformed: \"{cutenessBoosterPack}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        incrementAmount = cutenessBoosterPack.getAmount()
 
         if not self.__cutenessDoubleEndTimes.isReady(twitchUser.getHandle()):
-            incrementAmount = 2
+            incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
@@ -456,7 +487,6 @@ class CynanBot(commands.Bot):
             return
 
         increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
-        increaseCutenessRewardId = twitchUser.getIncreaseCutenessRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
         pkmnBattleRewardId = twitchUser.getPkmnBattleRewardId()
         pkmnCatchRewardId = twitchUser.getPkmnCatchRewardId()
@@ -466,19 +496,23 @@ class CynanBot(commands.Bot):
 
         rewardId = utils.getStrFromDict(redemptionJson['reward'], 'id')
         userIdThatRedeemed = utils.getStrFromDict(redemptionJson['user'], 'id')
-        userNameThatRedeemed = redemptionJson['user']['display_name']
+        userNameThatRedeemed = utils.getStrFromDict(redemptionJson['user'], 'display_name', True)
         redemptionMessage = utils.cleanStr(redemptionJson.get('user_input'))
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
-        if twitchUser.isCutenessEnabled() and rewardId == increaseCutenessRewardId:
-            await self.__handleIncreaseCutenessRewardRedeemed(
-                userIdThatRedeemed = userIdThatRedeemed,
-                userNameThatRedeemed = userNameThatRedeemed,
-                twitchUser = twitchUser,
-                twitchChannel = twitchChannel
-            )
-        elif twitchUser.isCutenessEnabled() and rewardId == increaseCutenessDoubleRewardId:
+        if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
+            for cutenessBoosterPack in twitchUser.getCutenessBoosterPacks():
+                if rewardId == cutenessBoosterPack.getRewardId():
+                    await self.__handleIncreaseCutenessRewardRedeemed(
+                        cutenessBoosterPack = cutenessBoosterPack,
+                        userIdThatRedeemed = userIdThatRedeemed,
+                        userNameThatRedeemed = userNameThatRedeemed,
+                        twitchUser = twitchUser,
+                        twitchChannel = twitchChannel
+                    )
+        elif twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks() and rewardId == increaseCutenessDoubleRewardId:
             await self.__handleIncreaseCutenessDoubleRewardRedeemed(
+                cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks(),
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,

@@ -4,6 +4,7 @@ from datetime import tzinfo
 from typing import List
 
 import CynanBotCommon.utils as utils
+from cutenessBoosterPack import CutenessBoosterPack
 
 
 class User:
@@ -34,7 +35,6 @@ class User:
         discord: str,
         handle: str,
         increaseCutenessDoubleRewardId: str,
-        increaseCutenessRewardId: str,
         locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
@@ -45,6 +45,7 @@ class User:
         speedrunProfile: str,
         triviaGameRewardId: str,
         twitter: str,
+        cutenessBoosterPacks: List[CutenessBoosterPack],
         timeZones: List[tzinfo]
     ):
         if not utils.isValidBool(isAnalogueEnabled):
@@ -118,7 +119,6 @@ class User:
         self.__discord = discord
         self.__handle = handle
         self.__increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId
-        self.__increaseCutenessRewardId = increaseCutenessRewardId
         self.__locationId = locationId
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
@@ -129,6 +129,7 @@ class User:
         self.__speedrunProfile = speedrunProfile
         self.__triviaGameRewardId = triviaGameRewardId
         self.__twitter = twitter
+        self.__cutenessBoosterPacks = cutenessBoosterPacks
         self.__timeZones = timeZones
 
     def fetchPicOfTheDay(self) -> str:
@@ -146,6 +147,9 @@ class User:
         potdParsed = urllib.parse.urlparse(potdText)
         return potdParsed.geturl()
 
+    def getCutenessBoosterPacks(self) -> List[CutenessBoosterPack]:
+        return self.__cutenessBoosterPacks
+
     def getDiscordUrl(self) -> str:
         return self.__discord
 
@@ -154,9 +158,6 @@ class User:
 
     def getIncreaseCutenessDoubleRewardId(self) -> str:
         return self.__increaseCutenessDoubleRewardId
-
-    def getIncreaseCutenessRewardId(self) -> str:
-        return self.__increaseCutenessRewardId
 
     def getLocationId(self) -> str:
         return self.__locationId
@@ -196,6 +197,9 @@ class User:
 
     def getWaitForTriviaAnswerDelay(self) -> int:
         return self.__waitForTriviaAnswerDelay
+
+    def hasCutenessBoosterPacks(self) -> bool:
+        return utils.hasItems(self.__cutenessBoosterPacks)
 
     def hasDiscord(self) -> bool:
         return utils.isValidStr(self.__discord)

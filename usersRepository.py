@@ -3,6 +3,7 @@ import os
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
+from cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from user import User
 
@@ -62,10 +63,21 @@ class UsersRepository():
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
         increaseCutenessDoubleRewardId = None
-        increaseCutenessRewardId = None
+        cutenessBoosterPacks = None
         if isCutenessEnabled:
             increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
-            increaseCutenessRewardId = userJson.get('increaseCutenessRewardId')
+            cutenessBoosterPacksJson = userJson.get('cutenessBoosterPacks')
+
+            if utils.hasItems(cutenessBoosterPacksJson):
+                cutenessBoosterPacks = list()
+
+                for cutenessBoosterPackJson in cutenessBoosterPacksJson:
+                    cutenessBoosterPacks.append(CutenessBoosterPack(
+                        amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount'),
+                        rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
+                    ))
+
+                cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
 
         picOfTheDayFile = None
         picOfTheDayRewardId = None
@@ -119,7 +131,6 @@ class UsersRepository():
             discord = discord,
             handle = handle,
             increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
-            increaseCutenessRewardId = increaseCutenessRewardId,
             locationId = locationId,
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,
@@ -130,6 +141,7 @@ class UsersRepository():
             speedrunProfile = speedrunProfile,
             triviaGameRewardId = triviaGameRewardId,
             twitter = twitter,
+            cutenessBoosterPacks = cutenessBoosterPacks,
             timeZones = timeZones
         )
 
