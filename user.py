@@ -202,13 +202,13 @@ class User:
         return utils.hasItems(self.__cutenessBoosterPacks)
 
     def hasDiscord(self) -> bool:
-        return utils.isValidStr(self.__discord)
+        return utils.isValidUrl(self.__discord)
 
     def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
 
     def hasSpeedrunProfile(self) -> bool:
-        return utils.isValidStr(self.__speedrunProfile)
+        return utils.isValidUrl(self.__speedrunProfile)
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
@@ -217,7 +217,7 @@ class User:
         return utils.isValidNum(self.__triviaGamePoints)
 
     def hasTwitter(self) -> bool:
-        return utils.isValidStr(self.__twitter)
+        return utils.isValidUrl(self.__twitter)
 
     def hasWaitForTriviaAnswerDelay(self) -> bool:
         return utils.isValidNum(self.__waitForTriviaAnswerDelay)
