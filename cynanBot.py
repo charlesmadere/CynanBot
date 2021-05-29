@@ -486,13 +486,6 @@ class CynanBot(commands.Bot):
         if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled() and not twitchUser.isTriviaGameEnabled():
             return
 
-        potdRewardId = twitchUser.getPicOfTheDayRewardId()
-        pkmnBattleRewardId = twitchUser.getPkmnBattleRewardId()
-        pkmnCatchRewardId = twitchUser.getPkmnCatchRewardId()
-        pkmnEvolveRewardId = twitchUser.getPkmnEvolveRewardId()
-        pkmnShinyRewardId = twitchUser.getPkmnShinyRewardId()
-        triviaGameRewardId = twitchUser.getTriviaGameRewardId()
-
         rewardId = utils.getStrFromDict(redemptionJson['reward'], 'id')
         userIdThatRedeemed = utils.getStrFromDict(redemptionJson['user'], 'id')
         userNameThatRedeemed = utils.getStrFromDict(redemptionJson['user'], 'display_name', True)
@@ -510,7 +503,8 @@ class CynanBot(commands.Bot):
                         twitchChannel = twitchChannel
                     )
                     return
-        elif twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks() and rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
+
+        if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks() and rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
             await self.__handleIncreaseCutenessDoubleRewardRedeemed(
                 cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks(),
                 userIdThatRedeemed = userIdThatRedeemed,
@@ -518,42 +512,55 @@ class CynanBot(commands.Bot):
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        elif twitchUser.isPicOfTheDayEnabled() and rewardId == potdRewardId:
+            return
+
+        if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
             await self.__handlePotdRewardRedeemed(
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        elif twitchUser.isPkmnEnabled() and rewardId == pkmnBattleRewardId:
+            return
+
+        if twitchUser.isPkmnEnabled() and rewardId == twitchUser.getPkmnBattleRewardId():
             await self.__handlePkmnBattleRewardRedeemed(
                 redemptionMessage = redemptionMessage,
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        elif twitchUser.isPkmnEnabled() and rewardId == pkmnCatchRewardId:
+            return
+
+        if twitchUser.isPkmnEnabled() and rewardId == twitchUser.getPkmnCatchRewardId():
             await self.__handlePkmnCatchRewardRedeemed(
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        elif twitchUser.isPkmnEnabled() and rewardId == pkmnEvolveRewardId:
+            return
+
+        if twitchUser.isPkmnEnabled() and rewardId == twitchUser.getPkmnEvolveRewardId():
             await self.__handlePkmnEvolveRewardRedeemed(
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        elif twitchUser.isPkmnEnabled() and rewardId == pkmnShinyRewardId:
+            return
+
+        if twitchUser.isPkmnEnabled() and rewardId == twitchUser.getPkmnShinyRewardId():
             await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
-        elif twitchUser.isTriviaGameEnabled() and rewardId == triviaGameRewardId:
+            return
+
+        if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
             await self.__handleTriviaGameRewardRedeemed(
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed,
                 twitchUser = twitchUser,
                 twitchChannel = twitchChannel
             )
-        else:
-            print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
+            return
+
+        print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def __handleTriviaGameRewardRedeemed(
         self,
@@ -562,6 +569,15 @@ class CynanBot(commands.Bot):
         twitchUser: User,
         twitchChannel
     ):
+        if not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
         response = None
 
         try:
