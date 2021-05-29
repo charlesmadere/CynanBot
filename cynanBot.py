@@ -486,7 +486,6 @@ class CynanBot(commands.Bot):
         if not twitchUser.isCutenessEnabled() and not twitchUser.isPicOfTheDayEnabled() and not twitchUser.isPkmnEnabled() and not twitchUser.isTriviaGameEnabled():
             return
 
-        increaseCutenessDoubleRewardId = twitchUser.getIncreaseCutenessDoubleRewardId()
         potdRewardId = twitchUser.getPicOfTheDayRewardId()
         pkmnBattleRewardId = twitchUser.getPkmnBattleRewardId()
         pkmnCatchRewardId = twitchUser.getPkmnCatchRewardId()
@@ -510,7 +509,8 @@ class CynanBot(commands.Bot):
                         twitchUser = twitchUser,
                         twitchChannel = twitchChannel
                     )
-        elif twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks() and rewardId == increaseCutenessDoubleRewardId:
+                    return
+        elif twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks() and rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
             await self.__handleIncreaseCutenessDoubleRewardRedeemed(
                 cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks(),
                 userIdThatRedeemed = userIdThatRedeemed,
