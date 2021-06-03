@@ -729,12 +729,12 @@ class TriviaCommand(AbsCommand):
 
         try:
             response = self.__triviaRepository.fetchTrivia()
-            await ctx.send(response.toPromptStr())
+            await ctx.send(response.getPrompt())
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = response.toAnswerStr()
+                message = response.getAnswerReveal()
             ))
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia')

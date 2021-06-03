@@ -604,7 +604,7 @@ class CynanBot(commands.Bot):
         secondsStr = locale.format_string("%d", seconds, grouping = True)
 
         await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-        await twitchChannel.send(response.toPromptStr())
+        await twitchChannel.send(response.getPrompt())
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
             delaySeconds = seconds,
