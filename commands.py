@@ -122,7 +122,7 @@ class AnswerCommand(AbsCommand):
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
             answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getCorrectAnswer()
-            await ctx.send(f'😿 Sorry, that is not the right answer. The correct answer is: {answerStr}')
+            await ctx.send(f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
             print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
@@ -141,7 +141,7 @@ class AnswerCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await ctx.send(f'🎉 Congratulations {ctx.author.name}! 🎉 You are correct! 🎉 Your new cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
+            await ctx.send(f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')

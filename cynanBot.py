@@ -608,6 +608,7 @@ class CynanBot(commands.Bot):
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
             delaySeconds = seconds,
+            userNameThatRedeemed = userNameThatRedeemed,
             twitchUser = twitchUser,
             twitchChannel = twitchChannel
         ))
@@ -615,6 +616,7 @@ class CynanBot(commands.Bot):
     async def __handleTriviaGameFailureToAnswer(
         self,
         delaySeconds: int,
+        userNameThatRedeemed: str,
         twitchUser: User,
         twitchChannel
     ):
@@ -622,6 +624,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
         elif delaySeconds < 1:
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif twitchChannel is None:
@@ -633,8 +637,8 @@ class CynanBot(commands.Bot):
             return
 
         self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
-        response = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
-        await twitchChannel.send(f'😿 Sorry, you\'re out of time! The answer was: {response.getCorrectAnswer()}')
+        triviaQuestion = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
+        await twitchChannel.send(f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The correct answer is: {triviaQuestion.getCorrectAnswer()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
