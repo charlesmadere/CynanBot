@@ -42,19 +42,29 @@ cutenessRepository = CutenessRepository(
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     cacheTimeDelta = timedelta(seconds = 1)
-)       
+)
+
+enEsDictionary = None
+if authHelper.hasMerriamWebsterApiKey():
+    enEsDictionary = EnEsDictionary(
+        merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
+    )
+
+weatherRepository = None
+if authHelper.hasOneWeatherApiKey():
+    weatherRepository = WeatherRepository(
+        oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
+    )
 
 cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
-    enEsDictionary = EnEsDictionary(
-        merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
-    ),
+    enEsDictionary = enEsDictionary,
     funtoonRepository = FuntoonRepository(),
+    generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(),
     jokesRepository = JokesRepository(),
-    generalSettingsRepository = GeneralSettingsRepository(),
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
@@ -73,9 +83,7 @@ cynanBot = CynanBot(
     usersRepository = UsersRepository(
         timeZoneRepository = timeZoneRepository
     ),
-    weatherRepository = WeatherRepository(
-        oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
-    ),
+    weatherRepository = weatherRepository,
     wordOfTheDayRepository = WordOfTheDayRepository()
 )
 

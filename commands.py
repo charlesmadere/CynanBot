@@ -583,6 +583,15 @@ class RaceCommand(AbsCommand):
         await ctx.send('!race')
 
 
+class StubCommand(AbsCommand):
+
+    def __init__(self):
+        pass
+
+    async def handleCommand(self, ctx):
+        pass
+
+
 class SwQuoteCommand(AbsCommand):
 
     def __init__(

@@ -10,10 +10,11 @@ from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
-from commands import (AnalogueCommand, AnswerCommand, CutenessCommand,
-                      DiccionarioCommand, DiscordCommand, GiveCutenessCommand,
-                      JishoCommand, JokeCommand, MyCutenessCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand, SwQuoteCommand,
+from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
+                      CutenessCommand, DiccionarioCommand, DiscordCommand,
+                      GiveCutenessCommand, JishoCommand, JokeCommand,
+                      MyCutenessCommand, PbsCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
                       TamalesCommand, TimeCommand, TriviaCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
 from cutenessBoosterPack import CutenessBoosterPack
@@ -49,9 +50,9 @@ class CynanBot(commands.Bot):
         cutenessRepository: CutenessRepository,
         enEsDictionary: EnEsDictionary,
         funtoonRepository: FuntoonRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
         jokesRepository: JokesRepository,
-        generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
@@ -73,80 +74,107 @@ class CynanBot(commands.Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if analogueStoreRepository is None:
-            raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
-        elif cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif enEsDictionary is None:
-            raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
-        elif funtoonRepository is None:
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif jishoHelper is None:
-            raise ValueError(f'jishHelper argument is malformed: \"{jishoHelper}\"')
-        elif jokesRepository is None:
-            raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
+        if authHelper is None:
+            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif locationsRepository is None:
-            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
-        elif pokepediaRepository is None:
-            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif starWarsQuotesRepository is None:
-            raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
-        elif tamaleGuyRepository is None:
-            raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
-        elif triviaGameRepository is None:
-            raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
-        elif triviaRepository is None:
-            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif weatherRepository is None:
-            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif wordOfTheDayRepository is None:
-            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__authHelper = authHelper
-        self.__cutenessRepository = cutenessRepository
-        self.__funtoonRepository = funtoonRepository
-        self.__generalSettingsRepository = generalSettingsRepository
-        self.__nonceRepository = nonceRepository
-        self.__triviaGameRepository = triviaGameRepository
-        self.__twitchTokensRepository = twitchTokensRepository
-        self.__userIdsRepository = userIdsRepository
-        self.__usersRepository = usersRepository
+        self.__authHelper: AuthHelper = authHelper
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__funtoonRepository: FuntoonRepository = funtoonRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__nonceRepository: NonceRepository = nonceRepository
+        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
-        self.__analogueCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
-        self.__answerCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
-        self.__cutenessCommand = CutenessCommand(cutenessRepository, usersRepository)
-        self.__diccionarioCommand = DiccionarioCommand(enEsDictionary, usersRepository)
-        self.__discordCommand = DiscordCommand(usersRepository)
-        self.__jishoCommand = JishoCommand(jishoHelper, usersRepository)
-        self.__jokeCommand = JokeCommand(jokesRepository, usersRepository)
-        self.__giveCutenessCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
-        self.__myCutenessCommand = MyCutenessCommand(cutenessRepository, usersRepository)
-        self.__pbsCommand = PbsCommand(usersRepository)
-        self.__pkMonCommand = PkMonCommand(pokepediaRepository, usersRepository)
-        self.__pkMoveCommand = PkMoveCommand(pokepediaRepository, usersRepository)
-        self.__raceCommand = RaceCommand(usersRepository)
-        self.__swQuoteCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
-        self.__tamalesCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
-        self.__timeCommand = TimeCommand(usersRepository)
-        self.__triviaCommand = TriviaCommand(generalSettingsRepository, triviaRepository, usersRepository)
-        self.__twitterCommand = TwitterCommand(usersRepository)
-        self.__weatherCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
-        self.__wordCommand = WordCommand(usersRepository, wordOfTheDayRepository)
-
-        self.__cutenessDoubleEndTimes = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
-        self.__lastCatJamMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastCutenessRedeemedMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__cutenessDoubleEndTimes: TimedDict = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
+        self.__lastCatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
+        self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
-        self.__lastDeerForceMessageTimes = TimedDict(timedelta(minutes = 20))
-        self.__lastRatJamMessageTimes = TimedDict(timedelta(minutes = 20))
+        self.__lastDeerForceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
+        self.__lastRatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
+
+        self.__discordCommand = DiscordCommand(usersRepository)
+        self.__pbsCommand = PbsCommand(usersRepository)
+        self.__raceCommand = RaceCommand(usersRepository)
+        self.__timeCommand = TimeCommand(usersRepository)
+        self.__twitterCommand = TwitterCommand(usersRepository)
+
+        if analogueStoreRepository is None:
+            self.__analogueCommand: AbsCommand = StubCommand()
+        else:
+            self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
+
+        if cutenessRepository is None or triviaGameRepository is None:
+            self.__answerCommand: AbsCommand = StubCommand()
+        else:
+            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
+
+        if cutenessRepository is None:
+            self.__cutenessCommand: AbsCommand = StubCommand()
+            self.__giveCutenessCommand: AbsCommand = StubCommand()
+            self.__myCutenessCommand: AbsCommand = StubCommand()
+        else:
+            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, usersRepository)
+            self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
+            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, usersRepository)
+
+        if enEsDictionary is None:
+            self.__diccionarioCommand: AbsCommand = StubCommand()
+        else:
+            self.__diccionarioCommand: AbsCommand = DiccionarioCommand(enEsDictionary, usersRepository)
+
+        if jishoHelper is None:
+            self.__jishoCommand: AbsCommand = StubCommand()
+        else:
+            self.__jishoCommand: AbsCommand = JishoCommand(jishoHelper, usersRepository)
+
+        if jokesRepository is None:
+            self.__jokeCommand: AbsCommand = StubCommand()
+        else:
+            self.__jokeCommand: AbsCommand = JokeCommand(jokesRepository, usersRepository)
+
+        if pokepediaRepository is None:
+            self.__pkMonCommand: AbsCommand = StubCommand()
+            self.__pkMoveCommand: AbsCommand = StubCommand()
+        else:
+            self.__pkMonCommand: AbsCommand = PkMonCommand(pokepediaRepository, usersRepository)
+            self.__pkMoveCommand: AbsCommand = PkMoveCommand(pokepediaRepository, usersRepository)
+
+        if starWarsQuotesRepository is None:
+            self.__swQuoteCommand: AbsCommand = StubCommand()
+        else:
+            self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+
+        if tamaleGuyRepository is None:
+            self.__tamalesCommand: AbsCommand = StubCommand()
+        else:
+            self.__tamalesCommand: AbsCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
+
+        if triviaRepository is None:
+            self.__triviaCommand: AbsCommand = StubCommand()
+        else:
+            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, triviaRepository, usersRepository)
+
+        if locationsRepository is None or weatherRepository is None:
+            self.__weatherCommand: AbsCommand = StubCommand()
+        else:
+            self.__weatherCommand: AbsCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
+
+        if wordOfTheDayRepository is None:
+            self.__wordCommand: AbsCommand = StubCommand()
+        else:
+            self.__wordCommand: AbsCommand = WordCommand(usersRepository, wordOfTheDayRepository)
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
