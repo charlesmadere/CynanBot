@@ -122,7 +122,7 @@ class CynanBot(commands.Bot):
         if cutenessRepository is None or triviaGameRepository is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, generalSettingsRepository, triviaGameRepository, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, triviaGameRepository, usersRepository)
 
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
