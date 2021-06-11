@@ -21,6 +21,7 @@ from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
+from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
@@ -60,6 +61,7 @@ cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
     cutenessRepository = cutenessRepository,
+    doubleCutenessHelper = DoubleCutenessHelper(),
     enEsDictionary = enEsDictionary,
     funtoonRepository = FuntoonRepository(),
     generalSettingsRepository = GeneralSettingsRepository(),

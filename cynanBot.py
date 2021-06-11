@@ -35,6 +35,7 @@ from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
+from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from user import User
 from userIdsRepository import UserIdsRepository
@@ -48,6 +49,7 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
         cutenessRepository: CutenessRepository,
+        doubleCutenessHelper: DoubleCutenessHelper,
         enEsDictionary: EnEsDictionary,
         funtoonRepository: FuntoonRepository,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -76,6 +78,8 @@ class CynanBot(commands.Bot):
 
         if authHelper is None:
             raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        elif doubleCutenessHelper is None:
+            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif nonceRepository is None:
@@ -89,6 +93,7 @@ class CynanBot(commands.Bot):
 
         self.__authHelper: AuthHelper = authHelper
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__nonceRepository: NonceRepository = nonceRepository
@@ -97,18 +102,17 @@ class CynanBot(commands.Bot):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-        self.__cutenessDoubleEndTimes: TimedDict = TimedDict(timedelta(seconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds()))
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
         self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
 
-        self.__discordCommand = DiscordCommand(usersRepository)
-        self.__pbsCommand = PbsCommand(usersRepository)
-        self.__raceCommand = RaceCommand(usersRepository)
-        self.__timeCommand = TimeCommand(usersRepository)
-        self.__twitterCommand = TwitterCommand(usersRepository)
+        self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
+        self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
+        self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
+        self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
+        self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
 
         if analogueStoreRepository is None:
             self.__analogueCommand: AbsCommand = StubCommand()
@@ -283,8 +287,7 @@ class CynanBot(commands.Bot):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
-
-        self.__cutenessDoubleEndTimes.update(twitchUser.getHandle())
+        self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
 
         # It's sort of not obvious what's going on here, but so what I'm trying to do is not
         # penalize the given user for redeeming double cuteness. Double cuteness should just cost
@@ -332,7 +335,7 @@ class CynanBot(commands.Bot):
 
         incrementAmount = cutenessBoosterPack.getAmount()
 
-        if not self.__cutenessDoubleEndTimes.isReady(twitchUser.getHandle()):
+        if not self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
             incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:

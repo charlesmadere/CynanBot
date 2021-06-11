@@ -24,10 +24,10 @@ class CutenessLeaderboardEntry():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__cuteness = cuteness
-        self.__rank = rank
-        self.__userId = userId
-        self.__userName = userName
+        self.__cuteness: int = cuteness
+        self.__rank: int = rank
+        self.__userId: str = userId
+        self.__userName: str = userName
 
     def getCuteness(self) -> int:
         return self.__cuteness
@@ -66,9 +66,9 @@ class CutenessLocalLeaderboardEntry():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__cuteness = cuteness
-        self.__userId = userId
-        self.__userName = userName
+        self.__cuteness: int = cuteness
+        self.__userId: str = userId
+        self.__userName: str = userName
 
     def getCuteness(self) -> int:
         return self.__cuteness
@@ -100,10 +100,10 @@ class CutenessResult():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__cuteness = cuteness
-        self.__localLeaderboard = localLeaderboard
-        self.__userId = userId
-        self.__userName = userName
+        self.__cuteness: int = cuteness
+        self.__localLeaderboard: List[CutenessLocalLeaderboardEntry] = localLeaderboard
+        self.__userId: str = userId
+        self.__userName: str = userName
 
     def getCuteness(self) -> int:
         return self.__cuteness
@@ -194,11 +194,11 @@ class CutenessRepository():
         elif doubleCutenessTimeSeconds < 30 or doubleCutenessTimeSeconds > 600:
             raise ValueError(f'doubleCutenessTimeSeconds argument is out of bounds \"{doubleCutenessTimeSeconds}\"')
 
-        self.__backingDatabase = backingDatabase
-        self.__leaderboardSize = leaderboardSize
-        self.__localLeaderboardSize = localLeaderboardSize
-        self.__userIdsRepository = userIdsRepository
-        self.__doubleCutenessTimeSeconds = doubleCutenessTimeSeconds
+        self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__leaderboardSize: int = leaderboardSize
+        self.__localLeaderboardSize: int = localLeaderboardSize
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__doubleCutenessTimeSeconds: int = doubleCutenessTimeSeconds
 
         connection = backingDatabase.getConnection()
         connection.execute(

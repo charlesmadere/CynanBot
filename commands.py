@@ -1,6 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from doubleCutenessHelper import DoubleCutenessHelper
 
 import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
@@ -70,12 +71,15 @@ class AnswerCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        doubleCutenessHelper: DoubleCutenessHelper,
         generalSettingsRepository: GeneralSettingsRepository,
         triviaGameRepository: TriviaGameRepository,
         usersRepository: UsersRepository
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif doubleCutenessHelper is None:
+            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif triviaGameRepository is None:
@@ -84,6 +88,7 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository = cutenessRepository
+        self.__doubleCutenessHelper = doubleCutenessHelper
         self.__generalSettingsRepository = generalSettingsRepository
         self.__triviaGameRepository = triviaGameRepository
         self.__usersRepository = usersRepository
@@ -130,8 +135,12 @@ class AnswerCommand(AbsCommand):
             return
 
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
+
         if user.hasTriviaGamePoints():
             cutenessPoints = user.getTriviaGamePoints()
+
+        if self.__doubleCutenessHelper.isWithinDoubleCuteness(user.getHandle()):
+            cutenessPoints = 2 * cutenessPoints
 
         try:
             cutenessResult = self.__cutenessRepository.fetchCutenessIncrementedBy(
