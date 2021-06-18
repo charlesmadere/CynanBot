@@ -14,7 +14,7 @@ class GeneralSettingsRepository():
         if not utils.isValidStr(generalSettingsFile):
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
-        self.__generalSettingsFile = generalSettingsFile
+        self.__generalSettingsFile: str = generalSettingsFile
 
     def getRaidLinkMessagingDelay(self) -> int:
         jsonContents = self.__readJson()

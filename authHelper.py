@@ -14,7 +14,7 @@ class AuthHelper():
         if not utils.isValidStr(authFile):
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
-        self.__authFile = authFile
+        self.__authFile: str = authFile
 
     def getMerriamWebsterApiKey(self) -> str:
         jsonContents = self.__readJson()

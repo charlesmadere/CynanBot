@@ -20,8 +20,8 @@ class UsersRepository():
         elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
-        self.__timeZoneRepository = timeZoneRepository
-        self.__usersFile = usersFile
+        self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
+        self.__usersFile: str = usersFile
 
     def __createUser(self, handle: str, userJson: dict) -> User:
         if not utils.isValidStr(handle):

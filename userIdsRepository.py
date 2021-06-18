@@ -12,7 +12,7 @@ class UserIdsRepository():
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
 
-        self.__backingDatabase = backingDatabase
+        self.__backingDatabase: BackingDatabase = backingDatabase
 
         connection = backingDatabase.getConnection()
         connection.execute(

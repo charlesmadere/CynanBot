@@ -143,8 +143,11 @@ class CutenessResult():
 
 class CutenessLeaderboardResult():
 
-    def __init__(self, entries: List[CutenessLeaderboardEntry]):
-        self.__entries = entries
+    def __init__(
+        self,
+        entries: List[CutenessLeaderboardEntry]
+    ):
+        self.__entries: List[CutenessLeaderboardEntry] = entries
 
     def getEntries(self) -> List[CutenessLeaderboardEntry]:
         return self.__entries
