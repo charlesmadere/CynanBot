@@ -119,8 +119,7 @@ class AnswerCommand(AbsCommand):
         checkResult = self.__triviaGameRepository.checkAnswer(
             answer = answer,
             twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = ctx.author.name
+            userId = userId
         )
 
         if checkResult is TriviaGameCheckResult.INVALID_USER:
@@ -155,6 +154,78 @@ class AnswerCommand(AbsCommand):
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
 
+
+class CommandsCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        commands = list()
+        commands.append('!cynansource')
+
+        if user.hasDiscord():
+            commands.append('!discord')
+
+        if user.hasSpeedrunProfile():
+            commands.append('!pbs')
+
+        if user.hasTimeZones():
+            commands.append('!time')
+
+        if user.hasTwitter():
+            commands.append('!twitter')
+
+        if user.isAnalogueEnabled():
+            commands.append('!analogue')
+
+        if user.isCutenessEnabled():
+            commands.append('!cuteness')
+            commands.append('!mycuteness')
+
+            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
+                commands.append('!givecuteness')
+
+        if user.isDiccionarioEnabled():
+            commands.append('!diccionario')
+
+        if user.isJishoEnabled():
+            commands.append('!jisho')
+
+        if user.isJokesEnabled():
+            commands.append('!joke')
+
+        if user.isPokepediaEnabled():
+            commands.append('!pkmon')
+            commands.append('!pkmove')
+
+        if user.isStarWarsQuotesEnabled():
+            commands.append('!swquote')
+
+        if user.isTamalesEnabled():
+            commands.append('!tamales')
+
+        if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
+            commands.append('!trivia')
+
+        if user.isWeatherEnabled():
+            commands.append('!weather')
+
+        if user.isWordOfTheDayEnabled():
+            commands.append('!word')
+
+        commands.sort()
+        commandsString = ', '.join(commands)
+
+        await ctx.send(f'My commands: {commandsString}')
 
 class CutenessCommand(AbsCommand):
 

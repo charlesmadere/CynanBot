@@ -11,9 +11,9 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      CutenessCommand, DiccionarioCommand, DiscordCommand,
-                      GiveCutenessCommand, JishoCommand, JokeCommand,
-                      MyCutenessCommand, PbsCommand, PkMonCommand,
+                      CommandsCommand, CutenessCommand, DiccionarioCommand,
+                      DiscordCommand, GiveCutenessCommand, JishoCommand,
+                      JokeCommand, MyCutenessCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
                       TamalesCommand, TimeCommand, TriviaCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
@@ -108,6 +108,7 @@ class CynanBot(commands.Bot):
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
 
+        self.__commandsCommand: AbsCommand = CommandsCommand(usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
@@ -778,63 +779,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-        commands = [ '!cynansource' ]
-
-        if user.hasDiscord():
-            commands.append('!discord')
-
-        if user.hasSpeedrunProfile():
-            commands.append('!pbs')
-
-        if user.hasTimeZones():
-            commands.append('!time')
-
-        if user.hasTwitter():
-            commands.append('!twitter')
-
-        if user.isAnalogueEnabled():
-            commands.append('!analogue')
-
-        if user.isCutenessEnabled():
-            commands.append('!cuteness')
-            commands.append('!mycuteness')
-
-            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
-                commands.append('!givecuteness')
-
-        if user.isDiccionarioEnabled():
-            commands.append('!diccionario')
-
-        if user.isJishoEnabled():
-            commands.append('!jisho')
-
-        if user.isJokesEnabled():
-            commands.append('!joke')
-
-        if user.isPokepediaEnabled():
-            commands.append('!pkmon')
-            commands.append('!pkmove')
-
-        if user.isStarWarsQuotesEnabled():
-            commands.append('!swquote')
-
-        if user.isTamalesEnabled():
-            commands.append('!tamales')
-
-        if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
-            commands.append('!trivia')
-
-        if user.isWeatherEnabled():
-            commands.append('!weather')
-
-        if user.isWordOfTheDayEnabled():
-            commands.append('!word')
-
-        commands.sort()
-        commandsString = ', '.join(commands)
-
-        await ctx.send(f'My commands: {commandsString}')
+        await self.__commandsCommand.handleCommand(ctx)
 
     @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx):
