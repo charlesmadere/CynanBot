@@ -336,7 +336,7 @@ class CynanBot(commands.Bot):
 
         incrementAmount = cutenessBoosterPack.getAmount()
 
-        if not self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
+        if self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
             incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:
