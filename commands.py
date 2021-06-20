@@ -43,9 +43,9 @@ class AnalogueCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__analogueStoreRepository = analogueStoreRepository
-        self.__usersRepository = usersRepository
-        self.__lastAnalogueStockMessageTimes = TimedDict(timedelta(minutes = 2, seconds = 30))
+        self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastAnalogueStockMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2, seconds = 30))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -87,11 +87,11 @@ class AnswerCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository = cutenessRepository
-        self.__doubleCutenessHelper = doubleCutenessHelper
-        self.__generalSettingsRepository = generalSettingsRepository
-        self.__triviaGameRepository = triviaGameRepository
-        self.__usersRepository = usersRepository
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -239,9 +239,9 @@ class CutenessCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository = cutenessRepository
-        self.__usersRepository = usersRepository
-        self.__lastCutenessMessageTimes = TimedDict(timedelta(seconds = 10))
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -294,9 +294,9 @@ class DiccionarioCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__enEsDictionary = enEsDictionary
-        self.__usersRepository = usersRepository
-        self.__lastDiccionarioMessageTimes = TimedDict(timedelta(seconds = 15))
+        self.__enEsDictionary: EnEsDictionary = enEsDictionary
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastDiccionarioMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -332,7 +332,7 @@ class DiscordCommand(AbsCommand):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__usersRepository = usersRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -359,9 +359,9 @@ class GiveCutenessCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository = cutenessRepository
-        self.__userIdsRepository = userIdsRepository
-        self.__usersRepository = usersRepository
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         if not ctx.author.is_mod:
@@ -431,9 +431,9 @@ class JishoCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__jishoHelper = jishoHelper
-        self.__usersRepository = usersRepository
-        self.__lastJishoMessageTimes = TimedDict(timedelta(seconds = 8))
+        self.__jishoHelper: JishoHelper = jishoHelper
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastJishoMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -471,9 +471,9 @@ class JokeCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__jokesRepository = jokesRepository
-        self.__usersRepository = usersRepository
-        self.__lastJokeMessageTimes = TimedDict(timedelta(minutes = 1))
+        self.__jokesRepository: JokesRepository = jokesRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastJokeMessageTimes: TimedDict = TimedDict(timedelta(minutes = 1))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -503,9 +503,9 @@ class MyCutenessCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository = cutenessRepository
-        self.__usersRepository = usersRepository
-        self.__lastMyCutenessMessageTimes = TimedDict(timedelta(seconds = 10))
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMyCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -544,7 +544,7 @@ class PbsCommand(AbsCommand):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__usersRepository = usersRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -568,9 +568,9 @@ class PkMonCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__pokepediaRepository = pokepediaRepository
-        self.__usersRepository = usersRepository
-        self.__lastPkMonMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastPkMonMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -610,9 +610,9 @@ class PkMoveCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__pokepediaRepository = pokepediaRepository
-        self.__usersRepository = usersRepository
-        self.__lastPkMoveMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastPkMoveMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -649,8 +649,8 @@ class RaceCommand(AbsCommand):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__usersRepository = usersRepository
-        self.__lastRaceMessageTimes = TimedDict(timedelta(minutes = 2))
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastRaceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -684,9 +684,9 @@ class SwQuoteCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__starWarsQuotesRepository = starWarsQuotesRepository
-        self.__usersRepository = usersRepository
-        self.__lastStarWarsQuotesMessageTimes = TimedDict(timedelta(seconds = 30))
+        self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastStarWarsQuotesMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -730,9 +730,9 @@ class TamalesCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__tamaleGuyRepository = tamaleGuyRepository
-        self.__usersRepository = usersRepository
-        self.__lastTamalesMessageTimes = TimedDict(timedelta(minutes = 5))
+        self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastTamalesMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -759,7 +759,7 @@ class TimeCommand(AbsCommand):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__usersRepository = usersRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -801,10 +801,10 @@ class TriviaCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository = generalSettingsRepository
-        self.__triviaRepository = triviaRepository
-        self.__usersRepository = usersRepository
-        self.__lastTriviaMessageTimes = TimedDict(timedelta(minutes = 5))
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__triviaRepository: TriviaRepository = triviaRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastTriviaMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -852,7 +852,7 @@ class TwitterCommand(AbsCommand):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__usersRepository = usersRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -878,10 +878,10 @@ class WeatherCommand(AbsCommand):
         elif weatherRepository is None:
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
 
-        self.__locationsRepository = locationsRepository
-        self.__usersRepository = usersRepository
-        self.__weatherRepository = weatherRepository
-        self.__lastWeatherMessageTimes = TimedDict(timedelta(minutes = 2))
+        self.__locationsRepository: LocationsRepository = locationsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__weatherRepository: WeatherRepository = weatherRepository
+        self.__lastWeatherMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -917,8 +917,8 @@ class WordCommand(AbsCommand):
         elif wordOfTheDayRepository is None:
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
-        self.__usersRepository = usersRepository
-        self.__wordOfTheDayRepository = wordOfTheDayRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 8))
 
     async def handleCommand(self, ctx):
