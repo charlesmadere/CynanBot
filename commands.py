@@ -1,7 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from doubleCutenessHelper import DoubleCutenessHelper
 
 import CynanBotCommon.utils as utils
 from cutenessRepository import CutenessRepository
@@ -9,6 +8,7 @@ from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
+from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
@@ -19,6 +19,7 @@ from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
+from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
@@ -909,43 +910,47 @@ class WordCommand(AbsCommand):
 
     def __init__(
         self,
+        languagesRepository: LanguagesRepository,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
-        if usersRepository is None:
+        if languagesRepository is None:
+            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif wordOfTheDayRepository is None:
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
+        self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 8))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
-        
+
         if not user.isWordOfTheDayEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
-        languageList = self.__wordOfTheDayRepository.getLanguageList()
 
         if len(splits) < 2:
-            example = languageList.getLanguages()[0].getPrimaryCommandName()
-            languages = languageList.toCommandNamesStr()
-            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {example}. Available languages: {languages}')
+            exampleEntry = self.__languagesRepository.getExampleLanguageEntry()
+            allCommandNames = self.__languagesRepository.getAllCommandNames()
+            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getApiName()}. Available languages: {allCommandNames}')
             return
 
         language = splits[1]
         languageEntry = None
 
         try:
-            languageEntry = languageList.getLanguageForCommand(language)
+            languageEntry = self.__languagesRepository.getLanguageForCommand(language)
         except (RuntimeError, ValueError):
             print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {languageList.toCommandNamesStr()}')
+            allCommandNames = self.__languagesRepository.getAllCommandNames()
+            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {allCommandNames}')
             return
 
         try:

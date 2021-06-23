@@ -24,6 +24,7 @@ from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
+from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
@@ -55,6 +56,7 @@ class CynanBot(commands.Bot):
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
         jokesRepository: JokesRepository,
+        languagesRepository: LanguagesRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
@@ -82,6 +84,8 @@ class CynanBot(commands.Bot):
             raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif languagesRepository is None:
+            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif twitchTokensRepository is None:
@@ -179,7 +183,7 @@ class CynanBot(commands.Bot):
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsCommand = StubCommand()
         else:
-            self.__wordCommand: AbsCommand = WordCommand(usersRepository, wordOfTheDayRepository)
+            self.__wordCommand: AbsCommand = WordCommand(languagesRepository, usersRepository, wordOfTheDayRepository)
 
     async def event_command_error(self, ctx, error):
         if isinstance(error, CommandNotFound):
