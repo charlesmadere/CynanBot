@@ -17,6 +17,7 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
@@ -41,6 +42,7 @@ cutenessRepository = CutenessRepository(
     localLeaderboardSize = 5,
     userIdsRepository = userIdsRepository
 )
+languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     cacheTimeDelta = timedelta(seconds = 1)
@@ -68,7 +70,7 @@ cynanBot = CynanBot(
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(),
     jokesRepository = JokesRepository(),
-    languagesRepository = LanguagesRepository(),
+    languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
@@ -76,6 +78,7 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
+    translationHelper = TranslationHelper(languagesRepository),
     triviaGameRepository = TriviaGameRepository(
         triviaRepository = triviaRepository
     ),

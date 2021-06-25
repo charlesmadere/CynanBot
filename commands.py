@@ -14,6 +14,7 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
 from CynanBotCommon.triviaRepository import TriviaRepository
@@ -787,6 +788,49 @@ class TimeCommand(AbsCommand):
         await ctx.send(text)
 
 
+class TranslateCommand(AbsCommand):
+
+    def __init__(
+        self,
+        languagesRepository: LanguagesRepository,
+        translationHelper: TranslationHelper,
+        usersRepository: UsersRepository
+    ):
+        if languagesRepository is None:
+            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif translationHelper is None:
+            raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__translationHelper: TranslationHelper = translationHelper
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastTranslateMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
+
+    async def handleCommand(self, ctx):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTranslateEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastTranslateMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            await ctx.send(f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
+            return
+
+        text = ' '.join(splits[1:])
+
+        try:
+            response = self.__translationHelper.translate(text)
+            await ctx.send(response.toStr())
+        except (RuntimeError, ValueError):
+            print(f'Error translating text: \"{text}\"')
+            await ctx.send('⚠ Error translating')
+
+
 class TriviaCommand(AbsCommand):
 
     def __init__(
@@ -924,7 +968,7 @@ class WordCommand(AbsCommand):
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
-        self.__lastWotdMessageTimes = TimedDict(timedelta(seconds = 8))
+        self.__lastWotdMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
 
     async def handleCommand(self, ctx):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -938,24 +982,24 @@ class WordCommand(AbsCommand):
 
         if len(splits) < 2:
             exampleEntry = self.__languagesRepository.getExampleLanguageEntry()
-            allCommandNames = self.__languagesRepository.getAllCommandNames()
-            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getApiName()}. Available languages: {allCommandNames}')
+            allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
+            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getApiName()}. Available languages: {allWotdApiCodes}')
             return
 
         language = splits[1]
         languageEntry = None
 
         try:
-            languageEntry = self.__languagesRepository.getLanguageForCommand(language)
+            languageEntry = self.__languagesRepository.requireLanguageForCommand(language, hasWotdApiCode = True)
         except (RuntimeError, ValueError):
             print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
-            allCommandNames = self.__languagesRepository.getAllCommandNames()
-            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {allCommandNames}')
+            allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
+            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
             return
 
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
             await ctx.send(wotd.toStr())
         except (RuntimeError, ValueError):
-            print(f'Error fetching word of the day for \"{languageEntry.getApiName()}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getApiName()}\"')
+            print(f'Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\" in {user.getHandle()}')
+            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\"')

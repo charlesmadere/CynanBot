@@ -46,6 +46,7 @@ class UsersRepository():
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
         isStarWarsQuotesEnabled = userJson.get('starWarsQuotesEnabled', False)
         isTamalesEnabled = userJson.get('tamalesEnabled', False)
+        isTranslateEnabled = userJson.get('translateEnabled', False)
         isTriviaEnabled = userJson.get('triviaEnabled', False)
         isTriviaGameEnabled = userJson.get('triviaGameEnabled', False)
         isWeatherEnabled = userJson.get('weatherEnabled', False)
@@ -123,6 +124,7 @@ class UsersRepository():
             isRatJamEnabled = isRatJamEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isTamalesEnabled = isTamalesEnabled,
+            isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,

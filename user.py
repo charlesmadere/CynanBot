@@ -26,6 +26,7 @@ class User:
         isRatJamEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isTamalesEnabled: bool,
+        isTranslateEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
@@ -79,6 +80,8 @@ class User:
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isTamalesEnabled):
             raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
+        elif not utils.isValidBool(isTranslateEnabled):
+            raise ValueError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
         elif not utils.isValidBool(isTriviaEnabled):
             raise ValueError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
         elif not utils.isValidBool(isTriviaGameEnabled):
@@ -111,6 +114,7 @@ class User:
         self.__isRatJamEnabled = isRatJamEnabled
         self.__isStarWarsQuotesEnabled = isStarWarsQuotesEnabled
         self.__isTamalesEnabled = isTamalesEnabled
+        self.__isTranslateEnabled = isTranslateEnabled
         self.__isTriviaEnabled = isTriviaEnabled
         self.__isTriviaGameEnabled = isTriviaGameEnabled
         self.__isWeatherEnabled = isWeatherEnabled
@@ -274,6 +278,9 @@ class User:
 
     def isTamalesEnabled(self) -> bool:
         return self.__isTamalesEnabled
+
+    def isTranslateEnabled(self) -> bool:
+        return self.__isTranslateEnabled
 
     def isTriviaEnabled(self) -> bool:
         return self.__isTriviaEnabled
