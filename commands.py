@@ -216,6 +216,9 @@ class CommandsCommand(AbsCommand):
         if user.isTamalesEnabled():
             commands.append('!tamales')
 
+        if user.isTranslateEnabled():
+            commands.append('!translate')
+
         if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
             commands.append('!trivia')
 
