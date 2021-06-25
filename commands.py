@@ -8,7 +8,8 @@ from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
-from CynanBotCommon.languagesRepository import LanguagesRepository
+from CynanBotCommon.languagesRepository import (LanguageEntry,
+                                                LanguagesRepository)
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
@@ -821,10 +822,21 @@ class TranslateCommand(AbsCommand):
             await ctx.send(f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
-        text = ' '.join(splits[1:])
+        startSplitIndex = 1
+        targetLanguageEntry: LanguageEntry = None
+        if len(splits[1]) >= 3 and splits[1][0:2] == '--':
+            targetLanguageEntry = self.__languagesRepository.getLanguageForCommand(
+                command = splits[1][2:],
+                hasIso6391Code = True
+            )
+
+            if targetLanguageEntry is not None:
+                startSplitIndex = 2
+
+        text = ' '.join(splits[startSplitIndex:])
 
         try:
-            response = self.__translationHelper.translate(text)
+            response = self.__translationHelper.translate(text, targetLanguageEntry)
             await ctx.send(response.toStr())
         except (RuntimeError, ValueError):
             print(f'Error translating text: \"{text}\"')
@@ -990,7 +1002,10 @@ class WordCommand(AbsCommand):
         languageEntry = None
 
         try:
-            languageEntry = self.__languagesRepository.requireLanguageForCommand(language, hasWotdApiCode = True)
+            languageEntry = self.__languagesRepository.requireLanguageForCommand(
+                command = language,
+                hasWotdApiCode = True
+            )
         except (RuntimeError, ValueError):
             print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()

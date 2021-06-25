@@ -78,7 +78,9 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
-    translationHelper = TranslationHelper(languagesRepository),
+    translationHelper = TranslationHelper(
+        languagesRepository = languagesRepository
+    ),
     triviaGameRepository = TriviaGameRepository(
         triviaRepository = triviaRepository
     ),
