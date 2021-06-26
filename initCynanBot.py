@@ -54,6 +54,13 @@ if authHelper.hasMerriamWebsterApiKey():
         merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
     )
 
+translationHelper = None
+if authHelper.hasDeepLAuthKey():
+    translationHelper = TranslationHelper(
+        languagesRepository = languagesRepository,
+        deepLAuthKey = authHelper.requireDeepLAuthKey()
+    )
+
 weatherRepository = None
 if authHelper.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
@@ -78,9 +85,7 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
-    translationHelper = TranslationHelper(
-        languagesRepository = languagesRepository
-    ),
+    translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
         triviaRepository = triviaRepository
     ),

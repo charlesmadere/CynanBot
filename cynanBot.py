@@ -91,8 +91,6 @@ class CynanBot(commands.Bot):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
-        elif translationHelper is None:
-            raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
@@ -122,7 +120,6 @@ class CynanBot(commands.Bot):
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
-        self.__translateCommand: AbsCommand = TranslateCommand(languagesRepository, translationHelper, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
 
         if analogueStoreRepository is None:
@@ -175,6 +172,11 @@ class CynanBot(commands.Bot):
             self.__tamalesCommand: AbsCommand = StubCommand()
         else:
             self.__tamalesCommand: AbsCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
+
+        if translationHelper is None:
+            self.__translateCommand: AbsCommand = StubCommand()
+        else:
+            self.__translateCommand: AbsCommand = TranslateCommand(languagesRepository, translationHelper, usersRepository)
 
         if triviaRepository is None:
             self.__triviaCommand: AbsCommand = StubCommand()

@@ -16,6 +16,10 @@ class AuthHelper():
 
         self.__authFile: str = authFile
 
+    def getDeepLAuthKey(self) -> str:
+        jsonContents = self.__readJson()
+        return jsonContents.get('deepLAuthKey')
+
     def getMerriamWebsterApiKey(self) -> str:
         jsonContents = self.__readJson()
         return jsonContents.get('merriamWebsterApiKey')
@@ -23,6 +27,9 @@ class AuthHelper():
     def getOneWeatherApiKey(self) -> str:
         jsonContents = self.__readJson()
         return jsonContents.get('oneWeatherApiKey')
+
+    def hasDeepLAuthKey(self) -> bool:
+        return utils.isValidStr(self.getDeepLAuthKey())
 
     def hasMerriamWebsterApiKey(self) -> bool:
         return utils.isValidStr(self.getMerriamWebsterApiKey())
@@ -43,6 +50,14 @@ class AuthHelper():
             raise ValueError(f'JSON contents of auth file \"{self.__authFile}\" is empty')
 
         return jsonContents
+
+    def requireDeepLAuthKey(self) -> str:
+        deepLAuthKey = self.getDeepLAuthKey()
+
+        if not utils.isValidStr(deepLAuthKey):
+            raise ValueError(f'\"deepLAuthKey\" in auth file \"{self.__authFile}\" is malformed: \"{deepLAuthKey}\"')
+
+        return deepLAuthKey
 
     def requireMerriamWebsterApiKey(self) -> str:
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()
