@@ -48,20 +48,20 @@ triviaRepository = TriviaRepository(
     cacheTimeDelta = timedelta(seconds = 1)
 )
 
-enEsDictionary = None
+enEsDictionary: EnEsDictionary = None
 if authHelper.hasMerriamWebsterApiKey():
     enEsDictionary = EnEsDictionary(
         merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
     )
 
-translationHelper = None
+translationHelper: TranslationHelper = None
 if authHelper.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
         languagesRepository = languagesRepository,
         deepLAuthKey = authHelper.requireDeepLAuthKey()
     )
 
-weatherRepository = None
+weatherRepository: WeatherRepository = None
 if authHelper.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
         oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
