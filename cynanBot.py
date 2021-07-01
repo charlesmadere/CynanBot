@@ -622,16 +622,15 @@ class CynanBot(commands.Bot):
         elif twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        response = None
-
+        triviaQuestion = None
         try:
-            response = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
+            triviaQuestion = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia in {twitchUser.getHandle()}')
             await twitchChannel.send('⚠ Error retrieving trivia')
             return
 
-        self.__triviaGameRepository.setUserThatRedeemed(
+        self.__triviaGameRepository.startNewTriviaGame(
             twitchChannel = twitchUser.getHandle(),
             userId = userIdThatRedeemed,
             userName = userNameThatRedeemed
@@ -648,7 +647,7 @@ class CynanBot(commands.Bot):
         secondsStr = locale.format_string("%d", seconds, grouping = True)
 
         await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-        await twitchChannel.send(response.getPrompt())
+        await twitchChannel.send(triviaQuestion.getPrompt())
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
             delaySeconds = seconds,
