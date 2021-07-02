@@ -996,9 +996,9 @@ class WordCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) < 2:
-            exampleEntry = self.__languagesRepository.getExampleLanguageEntry()
+            exampleEntry = self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
-            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getApiName()}. Available languages: {allWotdApiCodes}')
+            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
         language = splits[1]
