@@ -681,7 +681,7 @@ class CynanBot(commands.Bot):
 
         self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
         triviaQuestion = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
-        await twitchChannel.send(f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The correct answer is: {triviaQuestion.getCorrectAnswer()}')
+        await twitchChannel.send(f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:

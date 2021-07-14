@@ -128,7 +128,7 @@ class AnswerCommand(AbsCommand):
         if checkResult is TriviaGameCheckResult.INVALID_USER:
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
-            answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getCorrectAnswer()
+            answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getAnswerReveal()
             await ctx.send(f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
@@ -883,7 +883,7 @@ class TriviaCommand(AbsCommand):
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = response.getAnswerReveal()
+                message = f'🥁 And the answer is: {response.getAnswerReveal()}'
             ))
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia')

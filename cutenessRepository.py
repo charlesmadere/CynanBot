@@ -121,7 +121,7 @@ class CutenessResult():
         if not self.hasLocalLeaderboard():
             return ''
 
-        strings = list()
+        strings: List[str] = list()
 
         for entry in self.__localLeaderboard:
             strings.append(entry.toStr())
@@ -162,7 +162,7 @@ class CutenessLeaderboardResult():
         if not self.hasEntries():
             return ''
 
-        strings = list()
+        strings: List[str] = list()
 
         for entry in self.__entries:
             strings.append(entry.toStr())
@@ -310,7 +310,7 @@ class CutenessRepository():
         # sorts cuteness into highest to lowest order
         rows.sort(key = lambda x: x[0], reverse = True)
 
-        localLeaderboard = list()
+        localLeaderboard: List[CutenessLocalLeaderboardEntry] = list()
 
         for row in rows:
             # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
@@ -416,13 +416,11 @@ class CutenessRepository():
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
-        entries = list()
+        entries: List[CutenessLeaderboardEntry] = list()
 
         if len(rows) == 0:
             cursor.close()
-            return CutenessLeaderboardResult(
-                entries = entries
-            )
+            return CutenessLeaderboardResult(entries = entries)
 
         rank = 1
 
@@ -437,10 +435,7 @@ class CutenessRepository():
             rank = rank + 1
 
         cursor.close()
-
-        return CutenessLeaderboardResult(
-            entries = entries
-        )
+        return CutenessLeaderboardResult(entries = entries)
 
     def getDoubleCutenessTimeSeconds(self) -> int:
         return self.__doubleCutenessTimeSeconds
