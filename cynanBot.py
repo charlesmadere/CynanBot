@@ -503,7 +503,7 @@ class CynanBot(commands.Bot):
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
 
         redemptionJson = jsonResponse['data']['redemption']
-        twitchUserId = redemptionJson['channel_id']
+        twitchUserId = utils.getStrFromDict(redemptionJson, 'channel_id')
         twitchUser = None
 
         for user in self.__usersRepository.getUsers():
@@ -701,7 +701,7 @@ class CynanBot(commands.Bot):
             print(f'Given an empty list of users to subscribe to events for, will not subscribe to any events')
             return
 
-        subscribeUsers = dict()
+        subscribeUsers: Dict[User, str] = dict()
 
         for user in users:
             twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
