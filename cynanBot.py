@@ -641,16 +641,16 @@ class CynanBot(commands.Bot):
             points = twitchUser.getTriviaGamePoints()
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
-            seconds = twitchUser.getWaitForTriviaAnswerDelay()
-        secondsStr = locale.format_string("%d", seconds, grouping = True)
+            delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
+        delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
-        await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {secondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
+        await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
         await twitchChannel.send(triviaQuestion.getPrompt())
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
-            delaySeconds = seconds,
+            delaySeconds = delaySeconds,
             userNameThatRedeemed = userNameThatRedeemed,
             twitchUser = twitchUser,
             twitchChannel = twitchChannel
