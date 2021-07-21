@@ -30,7 +30,7 @@ class UserIdsRepository():
         userName: str,
         twitchAccessToken: str = None,
         twitchClientId: str = None
-    ):
+    ) -> str:
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
@@ -85,7 +85,7 @@ class UserIdsRepository():
 
         return userId
 
-    def fetchUserName(self, userId: str):
+    def fetchUserName(self, userId: str) -> str:
         if not utils.isValidStr(userId) or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
