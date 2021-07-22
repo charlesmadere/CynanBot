@@ -459,7 +459,9 @@ class JishoCommand(AbsCommand):
 
         try:
             result = self.__jishoHelper.search(query)
-            await ctx.send(result.toStr())
+
+            for string in result.toStrs():
+                await ctx.send(string)
         except (RuntimeError, ValueError):
             print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
             await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
