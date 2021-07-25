@@ -9,6 +9,10 @@ async def safeSend(messageable, message: str):
     elif not utils.isValidStr(message):
         return
 
+    if len(message) < 500:
+        await messageable.send(message)
+        return
+
     messages: List[str] = list()
     messages.append(message)
 
