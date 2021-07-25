@@ -9,6 +9,7 @@ from twitchio.ext import commands
 from twitchio.ext.commands.errors import CommandNotFound
 
 import CynanBotCommon.utils as utils
+import twitchUtils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       CommandsCommand, CutenessCommand, DiccionarioCommand,
@@ -265,7 +266,7 @@ class CynanBot(commands.Bot):
         splits = utils.getCleanedSplits(message.content)
 
         if 'catJAM' in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await message.channel.send('catJAM')
+            await twitchUtils.safeSend(message.channel, 'catJAM')
             return True
         else:
             return False
@@ -275,7 +276,7 @@ class CynanBot(commands.Bot):
         text = utils.cleanStr(message.content)
 
         if text.lower() == 'd e e r f o r c e' and self.__lastDeerForceMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await message.channel.send('D e e R F o r C e')
+            await twitchUtils.safeSend(message.channel, 'D e e R F o r C e')
             return True
         else:
             return False
@@ -316,7 +317,7 @@ class CynanBot(commands.Bot):
                 userName = userNameThatRedeemed
             )
 
-            await twitchChannel.send(f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
+            await twitchUtils.safeSend(twitchChannel, f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = twitchChannel,
@@ -325,7 +326,7 @@ class CynanBot(commands.Bot):
             ))
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
@@ -360,10 +361,10 @@ class CynanBot(commands.Bot):
             )
 
             if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-                await twitchChannel.send(f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {result.getCutenessStr()} ✨')
+                await twitchUtils.safeSend(twitchChannel, f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchChannel.send(f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleMessageFromCynan(self, message) -> bool:
         if message.author.name.lower() != 'cynanmachae'.lower():
@@ -387,7 +388,7 @@ class CynanBot(commands.Bot):
     ):
         splits = utils.getCleanedSplits(redemptionMessage)
         if not utils.hasItems(splits):
-            await twitchChannel.send(f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
             return
 
         opponentUserName = utils.removePreceedingAt(splits[0])
@@ -411,7 +412,7 @@ class CynanBot(commands.Bot):
             ):
                 return
 
-        await twitchChannel.send(f'!catch {userNameThatRedeemed}')
+        await twitchUtils.safeSend(twitchChannel, f'!catch {userNameThatRedeemed}')
 
     async def __handlePkmnEvolveRewardRedeemed(
         self,
@@ -426,7 +427,7 @@ class CynanBot(commands.Bot):
             ):
                 return
 
-        await twitchChannel.send(f'!freeevolve {userNameThatRedeemed}')
+        await twitchUtils.safeSend(twitchChannel, f'!freeevolve {userNameThatRedeemed}')
 
     async def __handlePotdRewardRedeemed(
         self,
@@ -438,11 +439,11 @@ class CynanBot(commands.Bot):
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
-            await twitchChannel.send(f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
+            await twitchUtils.safeSend(twitchChannel, f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
         except FileNotFoundError:
-            await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
         except ValueError:
-            await twitchChannel.send(f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
 
     async def __handleRaidLinkMessaging(
         self,
@@ -493,7 +494,7 @@ class CynanBot(commands.Bot):
         splits = utils.getCleanedSplits(message.content)
 
         if 'ratJAM' in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await message.channel.send('ratJAM')
+            await twitchUtils.safeSend(message.channel, 'ratJAM')
             return True
         else:
             return False
@@ -592,7 +593,7 @@ class CynanBot(commands.Bot):
             return
 
         if twitchUser.isPkmnEnabled() and rewardId == twitchUser.getPkmnShinyRewardId():
-            await twitchChannel.send(f'!freeshiny {userNameThatRedeemed}')
+            await twitchUtils.safeSend(twitchChannel, f'!freeshiny {userNameThatRedeemed}')
             return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
@@ -627,7 +628,7 @@ class CynanBot(commands.Bot):
             triviaQuestion = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia in {twitchUser.getHandle()}')
-            await twitchChannel.send('⚠ Error retrieving trivia')
+            await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
             return
 
         self.__triviaGameRepository.startNewTriviaGame(
@@ -646,8 +647,8 @@ class CynanBot(commands.Bot):
             delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
-        await twitchChannel.send(f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-        await twitchChannel.send(triviaQuestion.getPrompt())
+        await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
+        await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
 
         asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
             delaySeconds = delaySeconds,
@@ -681,7 +682,7 @@ class CynanBot(commands.Bot):
 
         self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
         triviaQuestion = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
-        await twitchChannel.send(f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}')
+        await twitchUtils.safeSend(twitchChannel, f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
@@ -694,7 +695,7 @@ class CynanBot(commands.Bot):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         await asyncio.sleep(delaySeconds)
-        await messageable.send(message)
+        await twitchUtils.safeSend(messageable, message)
 
     async def __subscribeToEvents(self, users: List[User]):
         if not utils.hasItems(users):
@@ -798,7 +799,7 @@ class CynanBot(commands.Bot):
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx):
-        await ctx.send('My source code is available here: https://github.com/charlesmadere/cynanbot')
+        await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
 
     @commands.command(name = 'diccionario')
     async def command_diccionario(self, ctx):

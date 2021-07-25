@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
 import CynanBotCommon.utils as utils
+import twitchUtils
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -63,10 +64,10 @@ class AnalogueCommand(AbsCommand):
 
         try:
             result = self.__analogueStoreRepository.fetchStoreStock()
-            await ctx.send(result.toStr(includePrices = includePrices))
+            await twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
         except (RuntimeError, ValueError):
             print(f'Error fetching Analogue stock in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching Analogue stock')
+            await twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue stock')
 
 
 class AnswerCommand(AbsCommand):
@@ -113,7 +114,7 @@ class AnswerCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await ctx.send('⚠ You must provide the exact answer with the !answer command.')
+            await twitchUtils.safeSend(ctx, '⚠ You must provide the exact answer with the !answer command.')
             return
 
         answer = ' '.join(splits[1:])
@@ -129,11 +130,11 @@ class AnswerCommand(AbsCommand):
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
             answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getAnswerReveal()
-            await ctx.send(f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
+            await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
             print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
-            await ctx.send(f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
+            await twitchUtils.safeSend(ctx, f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
 
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
@@ -152,10 +153,10 @@ class AnswerCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await ctx.send(f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
+            await twitchUtils.safeSend(ctx, f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error increasing cuteness for {ctx.author.name}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
 
 
 class CommandsCommand(AbsCommand):
@@ -231,7 +232,7 @@ class CommandsCommand(AbsCommand):
         commands.sort()
         commandsString = ', '.join(commands)
 
-        await ctx.send(f'My commands: {commandsString}')
+        await twitchUtils.safeSend(ctx, f'My commands: {commandsString}')
 
 class CutenessCommand(AbsCommand):
 
@@ -273,19 +274,19 @@ class CutenessCommand(AbsCommand):
                 )
 
                 if result.hasCuteness():
-                    await ctx.send(f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
+                    await twitchUtils.safeSend(ctx, f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
                 else:
-                    await ctx.send(f'😿 Unfortunately {userName} has no cuteness 😿')
+                    await twitchUtils.safeSend(ctx, f'😿 Unfortunately {userName} has no cuteness 😿')
             except ValueError:
                 print(f'Unable to find \"{userName}\" in the cuteness database')
-                await ctx.send(f'⚠ Unable to find \"{userName}\" in the cuteness database')
+                await twitchUtils.safeSend(ctx, f'⚠ Unable to find \"{userName}\" in the cuteness database')
         else:
             result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
 
             if result.hasEntries():
-                await ctx.send(f'✨ Cuteness leaderboard — {result.toStr()} ✨')
+                await twitchUtils.safeSend(ctx, f'✨ Cuteness leaderboard — {result.toStr()} ✨')
             else:
-                await ctx.send('😿 Unfortunately the cuteness leaderboard is empty 😿')
+                await twitchUtils.safeSend(ctx, '😿 Unfortunately the cuteness leaderboard is empty 😿')
 
 
 class DiccionarioCommand(AbsCommand):
@@ -315,7 +316,7 @@ class DiccionarioCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) < 2:
-            await ctx.send('⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
+            await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
             return
 
         query = ' '.join(splits[1:])
@@ -323,10 +324,10 @@ class DiccionarioCommand(AbsCommand):
         try:
             result = self.__enEsDictionary.search(query)
             self.__lastDiccionarioMessageTimes.update(user.getHandle())
-            await ctx.send(result.toStr())
+            await twitchUtils.safeSend(ctx, result.toStr())
         except (RuntimeError, ValueError):
             print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
 
 
 class DiscordCommand(AbsCommand):
@@ -347,7 +348,7 @@ class DiscordCommand(AbsCommand):
             return
 
         discord = user.getDiscordUrl()
-        await ctx.send(f'{user.getHandle()}\'s discord: {discord}')
+        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
 
 
 class GiveCutenessCommand(AbsCommand):
@@ -380,26 +381,26 @@ class GiveCutenessCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 3:
-            await ctx.send(f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            await twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName = splits[1]
         if not utils.isValidStr(userName):
             print(f'Username is malformed: \"{userName}\"')
-            await ctx.send(f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr = splits[2]
         if not utils.isValidStr(incrementAmountStr):
             print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
-            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, ValueError):
             print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
-            await ctx.send(f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName = utils.removePreceedingAt(userName)
@@ -408,7 +409,7 @@ class GiveCutenessCommand(AbsCommand):
             userId = self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
             print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
-            await ctx.send(f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
         try:
@@ -419,10 +420,10 @@ class GiveCutenessCommand(AbsCommand):
                 userName = userName
             )
 
-            await ctx.send(f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
+            await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error incrementing cuteness for {userName}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error incrementing cuteness for {userName}')
 
 
 class JishoCommand(AbsCommand):
@@ -451,7 +452,7 @@ class JishoCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await ctx.send('⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
+            await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
         query = splits[1]
@@ -460,11 +461,11 @@ class JishoCommand(AbsCommand):
         try:
             result = self.__jishoHelper.search(query)
 
-            for string in result.toStrs():
-                await ctx.send(string)
+            for string in result.toStrList():
+                await twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError):
             print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error searching Jisho for \"{query}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
 
 class JokeCommand(AbsCommand):
@@ -493,10 +494,10 @@ class JokeCommand(AbsCommand):
 
         try:
             result = self.__jokesRepository.fetchJoke()
-            await ctx.send(result.toStr())
+            await twitchUtils.safeSend(ctx, result.toStr())
         except (RuntimeError, ValueError):
             print(f'Error fetching joke of the day in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching joke of the day')
+            await twitchUtils.safeSend(ctx, '⚠ Error fetching joke of the day')
 
 
 class MyCutenessCommand(AbsCommand):
@@ -533,14 +534,14 @@ class MyCutenessCommand(AbsCommand):
             )
 
             if result.hasCuteness() and result.hasLocalLeaderboard():
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
+                await twitchUtils.safeSend(ctx, f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
             elif result.hasCuteness():
-                await ctx.send(f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
+                await twitchUtils.safeSend(ctx, f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
             else:
-                await ctx.send(f'😿 {ctx.author.name} has no cuteness 😿')
+                await twitchUtils.safeSend(ctx, f'😿 {ctx.author.name} has no cuteness 😿')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
-            await ctx.send(f'⚠ Error retrieving cuteness for {ctx.author.name}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
 
 class PbsCommand(AbsCommand):
@@ -561,7 +562,7 @@ class PbsCommand(AbsCommand):
             return
 
         speedrunProfile = user.getSpeedrunProfile()
-        await ctx.send(f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
 
 
 class PkMonCommand(AbsCommand):
@@ -590,20 +591,19 @@ class PkMonCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await ctx.send('⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
+            await twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
             return
 
         name = splits[1]
 
         try:
             mon = self.__pokepediaRepository.searchPokemon(name)
-            strList = mon.toStrList()
 
-            for s in strList:
-                await ctx.send(s)
+            for string in mon.toStrList():
+                await twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon: \"{name}\"')
-            await ctx.send(f'⚠ Error retrieving Pokémon: \"{name}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon: \"{name}\"')
 
 
 class PkMoveCommand(AbsCommand):
@@ -632,20 +632,19 @@ class PkMoveCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await ctx.send('⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
+            await twitchUtils.safeSend(ctx, '⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
             return
 
         name = ' '.join(splits[1:])
 
         try:
             move = self.__pokepediaRepository.searchMoves(name)
-            strList = move.toStrList()
 
-            for s in strList:
-                await ctx.send(s)
+            for string in move.toStrList():
+                await twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError):
             print(f'Error retrieving Pokemon move: \"{name}\"')
-            await ctx.send(f'⚠ Error retrieving Pokémon move: \"{name}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
 
 class RaceCommand(AbsCommand):
@@ -668,7 +667,7 @@ class RaceCommand(AbsCommand):
         elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        await ctx.send('!race')
+        await twitchUtils.safeSend(ctx, '!race')
 
 
 class StubCommand(AbsCommand):
@@ -709,7 +708,7 @@ class SwQuoteCommand(AbsCommand):
 
         if len(splits) < 2:
             swQuote = self.__starWarsQuotesRepository.fetchRandomQuote()
-            await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+            await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
             return
 
         query = ' '.join(splits[1:])
@@ -718,12 +717,12 @@ class SwQuoteCommand(AbsCommand):
             swQuote = self.__starWarsQuotesRepository.searchQuote(query)
 
             if utils.isValidStr(swQuote):
-                await ctx.send(f'{swQuote} {randomSpaceEmoji}')
+                await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
             else:
-                await ctx.send(f'⚠ No Star Wars quote found for the given query: \"{query}\"')
+                await twitchUtils.safeSend(ctx, f'⚠ No Star Wars quote found for the given query: \"{query}\"')
         except ValueError:
             print(f'Error retrieving Star Wars quote with query: \"{query}\"')
-            await ctx.send(f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
 
 
 class TamalesCommand(AbsCommand):
@@ -752,10 +751,10 @@ class TamalesCommand(AbsCommand):
 
         try:
             storeStock = self.__tamaleGuyRepository.fetchStoreStock()
-            await ctx.send(storeStock.toStr())
+            await twitchUtils.safeSend(ctx, storeStock.toStr())
         except (RuntimeError, ValueError):
             print('Error retrieving Tamale Guy store stock')
-            await ctx.send('⚠ Error retrieving Tamale Guy store stock')
+            await twitchUtils.safeSend(ctx, '⚠ Error retrieving Tamale Guy store stock')
 
 
 class TimeCommand(AbsCommand):
@@ -791,7 +790,7 @@ class TimeCommand(AbsCommand):
                 timeZoneName = timeZone.tzname(datetime.utcnow())
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
-        await ctx.send(text)
+        await twitchUtils.safeSend(ctx, text)
 
 
 class TranslateCommand(AbsCommand):
@@ -824,7 +823,7 @@ class TranslateCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await ctx.send(f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
+            await twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
         startSplitIndex = 1
@@ -842,10 +841,10 @@ class TranslateCommand(AbsCommand):
 
         try:
             response = self.__translationHelper.translate(text, targetLanguageEntry)
-            await ctx.send(response.toStr())
+            await twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError):
             print(f'Error translating text: \"{text}\"')
-            await ctx.send('⚠ Error translating')
+            await twitchUtils.safeSend(ctx, '⚠ Error translating')
 
 
 class TriviaCommand(AbsCommand):
@@ -880,7 +879,7 @@ class TriviaCommand(AbsCommand):
 
         try:
             response = self.__triviaRepository.fetchTrivia()
-            await ctx.send(response.getPrompt())
+            await twitchUtils.safeSend(ctx, response.getPrompt())
 
             asyncio.create_task(self.__sendDelayedMessage(
                 messageable = ctx,
@@ -889,7 +888,7 @@ class TriviaCommand(AbsCommand):
             ))
         except (RuntimeError, ValueError):
             print(f'Error retrieving trivia')
-            await ctx.send('⚠ Error retrieving trivia')
+            await twitchUtils.safeSend(ctx, '⚠ Error retrieving trivia')
 
     async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
         if messageable is None:
@@ -902,7 +901,7 @@ class TriviaCommand(AbsCommand):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         await asyncio.sleep(delaySeconds)
-        await messageable.send(message)
+        await twitchUtils.safeSend(messageable, message)
 
 
 class TwitterCommand(AbsCommand):
@@ -922,7 +921,7 @@ class TwitterCommand(AbsCommand):
         if not user.hasTwitter():
             return
 
-        await ctx.send(f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
+        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
 
 
 class WeatherCommand(AbsCommand):
@@ -954,17 +953,17 @@ class WeatherCommand(AbsCommand):
             return
 
         if not user.hasLocationId():
-            await ctx.send(f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
+            await twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
         location = self.__locationsRepository.getLocation(user.getLocationId())
 
         try:
             weatherReport = self.__weatherRepository.fetchWeather(location)
-            await ctx.send(weatherReport.toStr())
+            await twitchUtils.safeSend(ctx, weatherReport.toStr())
         except (RuntimeError, ValueError):
             print(f'Error fetching weather for \"{user.getLocationId()}\" in {user.getHandle()}')
-            await ctx.send('⚠ Error fetching weather')
+            await twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
 
 class WordCommand(AbsCommand):
@@ -1000,7 +999,7 @@ class WordCommand(AbsCommand):
         if len(splits) < 2:
             exampleEntry = self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
-            await ctx.send(f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
+            await twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
         language = splits[1]
@@ -1014,12 +1013,12 @@ class WordCommand(AbsCommand):
         except (RuntimeError, ValueError):
             print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
-            await ctx.send(f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
+            await twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
             return
 
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-            await ctx.send(wotd.toStr())
+            await twitchUtils.safeSend(ctx, wotd.toStr())
         except (RuntimeError, ValueError):
             print(f'Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\" in {user.getHandle()}')
-            await ctx.send(f'⚠ Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\"')
