@@ -5,8 +5,10 @@ from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
 from typing import Dict, List
 
+from twitchio import client
 from twitchio.ext import commands
 from twitchio.ext.commands.errors import CommandNotFound
+from twitchio.ext.pubsub.pool import PubSubPool
 
 import CynanBotCommon.utils as utils
 import twitchUtils
@@ -75,12 +77,14 @@ class CynanBot(commands.Bot):
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
-            irc_token = authHelper.requireTwitchIrcAuthToken(),
-            client_id = authHelper.requireTwitchClientId(),
+            token = authHelper.requireTwitchIrcAuthToken(),
+            client_secret = authHelper.requireTwitchClientSecret(),
             nick = 'CynanBot',
             prefix = '!',
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
+
+        self.__pubSubPool = PubSubPool(self)
 
         if authHelper is None:
             raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
@@ -214,6 +218,11 @@ class CynanBot(commands.Bot):
             return
 
         await self.handle_commands(message)
+
+    @client.event
+    async def event_pubsub_message(msg):
+        print(f'event_pubsub_message(): {msg}')
+        pass
 
     async def event_raw_pubsub(self, data):
         if 'error' in data and len(data['error']) >= 1:
@@ -724,10 +733,10 @@ class CynanBot(commands.Bot):
             )
 
             # we could subscribe to multiple topics, but for now, just channel points
-            topics = [ f'channel-points-channel-v1.{userId}' ]
+            topics = [ pubsub.channel_points[userId] ]
 
             # subscribe to pubhub channel points events
-            nonce = await self.pubsub_subscribe(twitchAccessToken, *topics)
+            nonce = await self.__pubSubPool.subscribe_topics(topics)
 
             # save the nonce, we'll need to use it later if the token used for this user's
             # connection has to be refreshed
@@ -782,93 +791,93 @@ class CynanBot(commands.Bot):
         print(f'Finished validating and refreshing {len(resubscribeUsers)} token(s) (nonce: \"{nonce}\")')
 
     @commands.command(name = 'analogue')
-    async def command_analogue(self, ctx):
+    async def command_analogue(self, ctx: commands.Context):
         await self.__analogueCommand.handleCommand(ctx)
 
     @commands.command(name = 'answer')
-    async def command_answer(self, ctx):
+    async def command_answer(self, ctx: commands.Context):
         await self.__answerCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
-    async def command_commands(self, ctx):
+    async def command_commands(self, ctx: commands.Context):
         await self.__commandsCommand.handleCommand(ctx)
 
     @commands.command(name = 'cuteness')
-    async def command_cuteness(self, ctx):
+    async def command_cuteness(self, ctx: commands.Context):
         await self.__cutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'cynansource')
-    async def command_cynansource(self, ctx):
+    async def command_cynansource(self, ctx: commands.Context):
         await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
 
     @commands.command(name = 'diccionario')
-    async def command_diccionario(self, ctx):
+    async def command_diccionario(self, ctx: commands.Context):
         await self.__diccionarioCommand.handleCommand(ctx)
 
     @commands.command(name = 'discord')
-    async def command_discord(self, ctx):
+    async def command_discord(self, ctx: commands.Context):
         await self.__discordCommand.handleCommand(ctx)
 
     @commands.command(name = 'givecuteness')
-    async def command_givecuteness(self, ctx):
+    async def command_givecuteness(self, ctx: commands.Context):
         await self.__giveCutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'jisho')
-    async def command_jisho(self, ctx):
+    async def command_jisho(self, ctx: commands.Context):
         await self.__jishoCommand.handleCommand(ctx)
 
     @commands.command(name = 'joke')
-    async def command_joke(self, ctx):
+    async def command_joke(self, ctx: commands.Context):
         await self.__jokeCommand.handleCommand(ctx)
 
     @commands.command(name = 'mycuteness')
-    async def command_mycuteness(self, ctx):
+    async def command_mycuteness(self, ctx: commands.Context):
         await self.__myCutenessCommand.handleCommand(ctx)
 
     @commands.command(name = 'pbs')
-    async def command_pbs(self, ctx):
+    async def command_pbs(self, ctx: commands.Context):
         await self.__pbsCommand.handleCommand(ctx)
 
     @commands.command(name = 'pkmon')
-    async def command_pkmon(self, ctx):
+    async def command_pkmon(self, ctx: commands.Context):
         await self.__pkMonCommand.handleCommand(ctx)
 
     @commands.command(name = 'pkmove')
-    async def command_pkmove(self, ctx):
+    async def command_pkmove(self, ctx: commands.Context):
         await self.__pkMoveCommand.handleCommand(ctx)
 
     @commands.command(name = 'race')
-    async def command_race(self, ctx):
+    async def command_race(self, ctx: commands.Context):
         await self.__raceCommand.handleCommand(ctx)
 
     @commands.command(name = 'swquote')
-    async def command_swquote(self, ctx):
+    async def command_swquote(self, ctx: commands.Context):
         await self.__swQuoteCommand.handleCommand(ctx)
 
     @commands.command(name = 'tamales')
-    async def command_tamales(self, ctx):
+    async def command_tamales(self, ctx: commands.Context):
         await self.__tamalesCommand.handleCommand(ctx)
 
     @commands.command(name = 'time')
-    async def command_time(self, ctx):
+    async def command_time(self, ctx: commands.Context):
         await self.__timeCommand.handleCommand(ctx)
 
     @commands.command(name = 'translate')
-    async def command_translate(self, ctx):
+    async def command_translate(self, ctx: commands.Context):
         await self.__translateCommand.handleCommand(ctx)
 
     @commands.command(name = 'trivia')
-    async def command_trivia(self, ctx):
+    async def command_trivia(self, ctx: commands.Context):
         await self.__triviaCommand.handleCommand(ctx)
 
     @commands.command(name = 'twitter')
-    async def command_twitter(self, ctx):
+    async def command_twitter(self, ctx: commands.Context):
         await self.__twitterCommand.handleCommand(ctx)
 
     @commands.command(name = 'weather')
-    async def command_weather(self, ctx):
+    async def command_weather(self, ctx: commands.Context):
         await self.__weatherCommand.handleCommand(ctx)
 
     @commands.command(name = 'word')
-    async def command_word(self, ctx):
+    async def command_word(self, ctx: commands.Context):
         await self.__wordCommand.handleCommand(ctx)
