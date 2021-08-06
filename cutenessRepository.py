@@ -441,10 +441,10 @@ class CutenessRepository():
         specificLookupAlreadyInResults = False
         if utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
             for entry in entries:
-                if entry.getUserId().lower() == specificLookupUserId.lower():
+                if utils.isValidStr(specificLookupUserId) and entry.getUserId().lower() == specificLookupUserId.lower():
                     specificLookupAlreadyInResults = True
                     break
-                elif entry.getUserName().lower() == specificLookupUserName.lower():
+                elif utils.isValidStr(specificLookupUserName) and entry.getUserName().lower() == specificLookupUserName.lower():
                     specificLookupAlreadyInResults = True
                     break
 
