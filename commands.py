@@ -260,33 +260,23 @@ class CutenessCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
 
-        userName = None
+        userName: str = None
         if len(splits) >= 2:
-            userName = splits[1]
-
-        if utils.isValidStr(userName):
-            userName = utils.removePreceedingAt(userName)
-
-            try:
-                result = self.__cutenessRepository.fetchCuteness(
-                    twitchChannel = user.getHandle(),
-                    userName = userName
-                )
-
-                if result.hasCuteness():
-                    await twitchUtils.safeSend(ctx, f'✨ {userName}\'s cuteness: {result.getCutenessStr()} ✨')
-                else:
-                    await twitchUtils.safeSend(ctx, f'😿 Unfortunately {userName} has no cuteness 😿')
-            except ValueError:
-                print(f'Unable to find \"{userName}\" in the cuteness database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find \"{userName}\" in the cuteness database')
+            userName = utils.removePreceedingAt(splits[1])
         else:
-            result = self.__cutenessRepository.fetchLeaderboard(user.getHandle())
+            userName = ctx.author.name
 
-            if result.hasEntries():
-                await twitchUtils.safeSend(ctx, f'✨ Cuteness leaderboard — {result.toStr()} ✨')
-            else:
-                await twitchUtils.safeSend(ctx, '😿 Unfortunately the cuteness leaderboard is empty 😿')
+        userId: str = None
+        if not utils.isValidStr(userName):
+            userId = str(ctx.author.id)
+
+        result = self.__cutenessRepository.fetchLeaderboard(
+            twitchChannel = user.getHandle(),
+            specificLookupUserId = userId,
+            specificLookupUserName = userName
+        )
+
+        await twitchUtils.safeSend(ctx, result.toStr())
 
 
 class DiccionarioCommand(AbsCommand):
@@ -528,17 +518,18 @@ class MyCutenessCommand(AbsCommand):
 
         try:
             result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
+                fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = ctx.author.name
             )
 
             if result.hasCuteness() and result.hasLocalLeaderboard():
-                await twitchUtils.safeSend(ctx, f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
+                await twitchUtils.safeSend(ctx, f'✨ {result.getUserName()}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
             elif result.hasCuteness():
-                await twitchUtils.safeSend(ctx, f'✨ {ctx.author.name}\'s cuteness is {result.getCutenessStr()} ✨')
+                await twitchUtils.safeSend(ctx, f'✨ {result.getUserName()}\'s cuteness is {result.getCutenessStr()} ✨')
             else:
-                await twitchUtils.safeSend(ctx, f'😿 {ctx.author.name} has no cuteness 😿')
+                await twitchUtils.safeSend(ctx, f'{result.getUserName()} has no cuteness 😿')
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')

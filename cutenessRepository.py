@@ -145,9 +145,11 @@ class CutenessLeaderboardResult():
 
     def __init__(
         self,
-        entries: List[CutenessLeaderboardEntry]
+        entries: List[CutenessLeaderboardEntry],
+        specificLookupCutenessResult: CutenessResult = None
     ):
         self.__entries: List[CutenessLeaderboardEntry] = entries
+        self.__specificLookupCutenessResult: CutenessResult = specificLookupCutenessResult
 
     def getEntries(self) -> List[CutenessLeaderboardEntry]:
         return self.__entries
@@ -155,19 +157,31 @@ class CutenessLeaderboardResult():
     def hasEntries(self) -> bool:
         return utils.hasItems(self.__entries)
 
+    def hasSpecificLookupCutenessResult(self) -> bool:
+        return self.__specificLookupCutenessResult is not None
+
     def toStr(self, delimiter: str = ', ') -> str:
         if delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not self.hasEntries():
-            return ''
+            return 'Unfortunately the cuteness leaderboard is empty 😿'
 
-        strings: List[str] = list()
+        leaderboardText = ''
+        if self.hasEntries():
+            strings: List[str] = list()
+            for entry in self.__entries:
+                strings.append(entry.toStr())
 
-        for entry in self.__entries:
-            strings.append(entry.toStr())
+            leaderboardText = f'✨ {delimiter.join(strings)}'
 
-        return delimiter.join(strings)
+        specificLookupText = ''
+        if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
+            userName = self.__specificLookupCutenessResult.getUserName()
+            cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
+            specificLookupText = f'. And {userName}\'s cuteness is {cutenessStr}.'
+
+        return f'{leaderboardText} {specificLookupText}'.strip()
 
 
 class CutenessRepository():
@@ -217,45 +231,16 @@ class CutenessRepository():
 
         connection.commit()
 
-    def fetchCuteness(self, twitchChannel: str, userName: str) -> CutenessResult:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        userId = self.__userIdsRepository.fetchUserId(userName = userName)
-
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute(
-            '''
-                SELECT cuteness FROM cuteness
-                WHERE twitchChannel = ? AND userId = ?
-            ''',
-            ( twitchChannel, userId )
-        )
-
-        row = cursor.fetchone()
-
-        cuteness = None
-        if row is not None:
-            cuteness = row[0]
-
-        cursor.close()
-
-        return CutenessResult(
-            cuteness = cuteness,
-            localLeaderboard = None,
-            userId = userId,
-            userName = userName
-        )
-
     def fetchCutenessAndLocalLeaderboard(
         self,
+        fetchLocalLeaderboard: bool,
         twitchChannel: str,
         userId: str,
-        userName: str
+        userName: str,
     ) -> CutenessResult:
-        if not utils.isValidStr(twitchChannel):
+        if not utils.isValidBool(fetchLocalLeaderboard):
+            raise ValueError(f'fetchLocalLeaderboard argument is malformed: \"{fetchLocalLeaderboard}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId) or userId == '0':
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
@@ -286,6 +271,15 @@ class CutenessRepository():
 
         cuteness = row[0]
 
+        if not fetchLocalLeaderboard:
+            cursor.close()
+            return CutenessResult(
+                cuteness = cuteness,
+                localLeaderboard = None,
+                userId = userId,
+                userName = userName
+            )
+
         cursor.execute(
             '''
                 SELECT cuteness, userId FROM cuteness
@@ -306,9 +300,6 @@ class CutenessRepository():
                 userId = userId,
                 userName = userName
             )
-
-        # sorts cuteness into highest to lowest order
-        rows.sort(key = lambda x: x[0], reverse = True)
 
         localLeaderboard: List[CutenessLocalLeaderboardEntry] = list()
 
@@ -332,6 +323,9 @@ class CutenessRepository():
                 print(f'Encountered a user ID that has no username: \"{row[1]}\"')
 
         cursor.close()
+
+        # sorts cuteness into highest to lowest order
+        localLeaderboard.sort(key = lambda entry: entry.getCuteness(), reverse = True)
 
         return CutenessResult(
             cuteness = cuteness,
@@ -398,7 +392,12 @@ class CutenessRepository():
             userName = userName
         )
 
-    def fetchLeaderboard(self, twitchChannel: str) -> CutenessLeaderboardResult:
+    def fetchLeaderboard(
+        self,
+        twitchChannel: str,
+        specificLookupUserId: str = None,
+        specificLookupUserName: str = None
+    ) -> CutenessLeaderboardResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -435,7 +434,47 @@ class CutenessRepository():
             rank = rank + 1
 
         cursor.close()
-        return CutenessLeaderboardResult(entries = entries)
+
+        # sort cuteness into highest to lowest order
+        entries.sort(key = lambda entry: entry.getCuteness(), reverse = True)
+
+        specificLookupAlreadyInResults = False
+        if utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
+            for entry in entries:
+                if entry.getUserId().lower() == specificLookupUserId.lower():
+                    specificLookupAlreadyInResults = True
+                    break
+                elif entry.getUserName().lower() == specificLookupUserName.lower():
+                    specificLookupAlreadyInResults = True
+                    break
+
+        specificLookupCutenessResult: CutenessResult = None
+        if not specificLookupAlreadyInResults and utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
+            if not utils.isValidStr(specificLookupUserId):
+                try:
+                    specificLookupUserId = self.__userIdsRepository.fetchUserId(specificLookupUserName)
+                except ValueError:
+                    # this exception can be safely ignored
+                    pass
+            elif not utils.isValidStr(specificLookupUserName):
+                try:
+                    specificLookupUserName = self.__userIdsRepository.fetchUserName(specificLookupUserId)
+                except (RuntimeError, ValueError):
+                    # this exception can be safely ignored
+                    pass
+
+            if utils.isValidStr(specificLookupUserId) and utils.isValidStr(specificLookupUserName):
+                specificLookupCutenessResult = self.fetchCutenessAndLocalLeaderboard(
+                    fetchLocalLeaderboard = False,
+                    twitchChannel = twitchChannel,
+                    userId = specificLookupUserId,
+                    userName = specificLookupUserName
+                )
+
+        return CutenessLeaderboardResult(
+            entries = entries,
+            specificLookupCutenessResult = specificLookupCutenessResult
+        )
 
     def getDoubleCutenessTimeSeconds(self) -> int:
         return self.__doubleCutenessTimeSeconds
