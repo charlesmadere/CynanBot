@@ -312,11 +312,11 @@ class CutenessRepository():
             # If we were to ever start from scratch with a brand new database, this try-except
             # would be completely extranneous, and could be removed.
             try:
-                userName = self.__userIdsRepository.fetchUserName(row[1])
+                entryUserName = self.__userIdsRepository.fetchUserName(row[1])
                 localLeaderboard.append(CutenessLocalLeaderboardEntry(
                     cuteness = row[0],
                     userId = row[1],
-                    userName = userName
+                    userName = entryUserName
                 ))
             except RuntimeError:
                 # Just log the error and continue, there's nothing more we can do to recover.
