@@ -179,7 +179,7 @@ class CutenessLeaderboardResult():
         if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
             userName = self.__specificLookupCutenessResult.getUserName()
             cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'And {userName}\'s cuteness is {cutenessStr}.'
+            specificLookupText = f'Also, {userName}\'s cuteness is {cutenessStr}'
 
         return f'{leaderboardText} {specificLookupText}'.strip()
 
