@@ -71,7 +71,7 @@ class UsersRepository():
             cutenessBoosterPacksJson = userJson.get('cutenessBoosterPacks')
 
             if utils.hasItems(cutenessBoosterPacksJson):
-                cutenessBoosterPacks = list()
+                cutenessBoosterPacks: List[CutenessBoosterPack] = list()
 
                 for cutenessBoosterPackJson in cutenessBoosterPacksJson:
                     cutenessBoosterPacks.append(CutenessBoosterPack(
@@ -164,7 +164,7 @@ class UsersRepository():
     def getUsers(self) -> List[User]:
         jsonContents = self.__readJson()
 
-        users = list()
+        users: List[User] = list()
         for key in jsonContents:
             user = self.__createUser(key, jsonContents[key])
             users.append(user)
