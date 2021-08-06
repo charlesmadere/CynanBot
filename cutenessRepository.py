@@ -173,13 +173,13 @@ class CutenessLeaderboardResult():
             for entry in self.__entries:
                 strings.append(entry.toStr())
 
-            leaderboardText = f'✨ {delimiter.join(strings)}'
+            leaderboardText = f'✨ {delimiter.join(strings)} ✨'
 
         specificLookupText = ''
         if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
             userName = self.__specificLookupCutenessResult.getUserName()
             cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'. And {userName}\'s cuteness is {cutenessStr}.'
+            specificLookupText = f'And {userName}\'s cuteness is {cutenessStr}.'
 
         return f'{leaderboardText} {specificLookupText}'.strip()
 
