@@ -239,14 +239,18 @@ class CutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif userIdsRepository is None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
 
@@ -267,16 +271,38 @@ class CutenessCommand(AbsCommand):
             userName = ctx.author.name
 
         userId: str = None
-        if not utils.isValidStr(userName):
+
+        # this means that a user is querying for another user's cuteness
+        if userName.lower() != ctx.author.name.lower():
+            try:
+                userId = self.__userIdsRepository.fetchUserId(userName = userName)
+            except (RuntimeError, ValueError):
+                # this exception can be safely ignored
+                pass
+
+            if not utils.isValidStr(userId):
+                print(f'Unable to find user ID for \"{userName}\" in the database (Twitch channel is \"{user.getHandle()}\")')
+                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                return
+
+            result = self.__cutenessRepository.fetchCuteness(
+                fetchLocalLeaderboard = True,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = userName
+            )
+
+            await twitchUtils.safeSend(ctx, result.toStr())
+        else:
             userId = str(ctx.author.id)
 
-        result = self.__cutenessRepository.fetchLeaderboard(
-            twitchChannel = user.getHandle(),
-            specificLookupUserId = userId,
-            specificLookupUserName = userName
-        )
+            result = self.__cutenessRepository.fetchCutenessLeaderboard(
+                twitchChannel = user.getHandle(),
+                specificLookupUserId = userId,
+                specificLookupUserName = userName
+            )
 
-        await twitchUtils.safeSend(ctx, result.toStr())
+            await twitchUtils.safeSend(ctx, result.toStr())
 
 
 class DiccionarioCommand(AbsCommand):
@@ -517,19 +543,14 @@ class MyCutenessCommand(AbsCommand):
         userId = str(ctx.author.id)
 
         try:
-            result = self.__cutenessRepository.fetchCutenessAndLocalLeaderboard(
+            result = self.__cutenessRepository.fetchCuteness(
                 fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = ctx.author.name
             )
 
-            if result.hasCuteness() and result.hasLocalLeaderboard():
-                await twitchUtils.safeSend(ctx, f'✨ {result.getUserName()}\'s cuteness is {result.getCutenessStr()}, and their local leaderboard is: {result.getLocalLeaderboardStr()} ✨')
-            elif result.hasCuteness():
-                await twitchUtils.safeSend(ctx, f'✨ {result.getUserName()}\'s cuteness is {result.getCutenessStr()} ✨')
-            else:
-                await twitchUtils.safeSend(ctx, f'{result.getUserName()} has no cuteness 😿')
+            await twitchUtils.safeSend(ctx, result.toStr())
         except ValueError:
             print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')

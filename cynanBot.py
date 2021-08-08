@@ -138,7 +138,7 @@ class CynanBot(commands.Bot):
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
         else:
-            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, usersRepository)
+            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, usersRepository)
 

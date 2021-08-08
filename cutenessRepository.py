@@ -140,6 +140,18 @@ class CutenessResult():
     def hasLocalLeaderboard(self) -> bool:
         return utils.hasItems(self.__localLeaderboard)
 
+    def toStr(self, delimiter: str = ', ') -> str:
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if self.hasCuteness():
+            if self.hasLocalLeaderboard():
+                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
+            else:
+                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()} ✨'
+        else:
+            return f'{self.getUserName()} has no cuteness 😿'
+
 
 class CutenessLeaderboardResult():
 
@@ -231,7 +243,7 @@ class CutenessRepository():
 
         connection.commit()
 
-    def fetchCutenessAndLocalLeaderboard(
+    def fetchCuteness(
         self,
         fetchLocalLeaderboard: bool,
         twitchChannel: str,
@@ -341,7 +353,7 @@ class CutenessRepository():
         userId: str,
         userName: str
     ) -> CutenessResult:
-        if incrementAmount is None:
+        if not utils.isValidNum(incrementAmount):
             raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
         elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -392,7 +404,7 @@ class CutenessRepository():
             userName = userName
         )
 
-    def fetchLeaderboard(
+    def fetchCutenessLeaderboard(
         self,
         twitchChannel: str,
         specificLookupUserId: str = None,
@@ -464,7 +476,7 @@ class CutenessRepository():
                     pass
 
             if utils.isValidStr(specificLookupUserId) and utils.isValidStr(specificLookupUserName):
-                specificLookupCutenessResult = self.fetchCutenessAndLocalLeaderboard(
+                specificLookupCutenessResult = self.fetchCuteness(
                     fetchLocalLeaderboard = False,
                     twitchChannel = twitchChannel,
                     userId = specificLookupUserId,
