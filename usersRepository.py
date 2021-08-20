@@ -26,10 +26,8 @@ class UsersRepository():
     def __createUser(self, handle: str, userJson: dict) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif userJson is None:
-            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
-        elif len(userJson) == 0:
-            raise ValueError(f'userJson argument is empty: \"{userJson}\"')
+        elif not utils.hasItems(userJson):
+            raise ValueError(f'userJson argument is empty or malformed: \"{userJson}\"')
 
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
         isCatJamEnabled = userJson.get('catJamEnabled', False)
