@@ -893,27 +893,14 @@ class TriviaCommand(AbsCommand):
             response = self.__triviaRepository.fetchTrivia()
             await twitchUtils.safeSend(ctx, response.getPrompt())
 
-            asyncio.create_task(self.__sendDelayedMessage(
+            asyncio.create_task(twitchUtils.waitThenSend(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
                 message = f'🥁 And the answer is: {response.getAnswerReveal()}'
             ))
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving trivia')
+        except (RuntimeError, ValueError) as e:
+            print(f'Error retrieving trivia: {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error retrieving trivia')
-
-    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
-        if messageable is None:
-            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidNum(delaySeconds):
-            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1:
-            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
-        await asyncio.sleep(delaySeconds)
-        await twitchUtils.safeSend(messageable, message)
 
 
 class TwitterCommand(AbsCommand):

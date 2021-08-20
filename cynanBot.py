@@ -319,7 +319,7 @@ class CynanBot(commands.Bot):
 
             await twitchUtils.safeSend(twitchChannel, f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
 
-            asyncio.create_task(self.__sendDelayedMessage(
+            asyncio.create_task(twitchUtils.waitThenSend(
                 messageable = twitchChannel,
                 delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
                 message = 'Double cuteness has ended! 😿'
@@ -479,7 +479,7 @@ class CynanBot(commands.Bot):
 
         print(f'{user.getHandle()} was raided by {raidedByName} ({utils.getNowTimeText()})')
 
-        asyncio.create_task(self.__sendDelayedMessage(
+        asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
@@ -626,8 +626,8 @@ class CynanBot(commands.Bot):
         triviaQuestion = None
         try:
             triviaQuestion = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving trivia in {twitchUser.getHandle()}')
+        except (RuntimeError, ValueError) as e:
+            print(f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
             return
 
@@ -650,52 +650,12 @@ class CynanBot(commands.Bot):
         await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
         await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
 
-        asyncio.create_task(self.__handleTriviaGameFailureToAnswer(
+        asyncio.create_task(twitchUtils.waitThenSend(
+            messageable = twitchChannel,
             delaySeconds = delaySeconds,
-            userNameThatRedeemed = userNameThatRedeemed,
-            twitchUser = twitchUser,
-            twitchChannel = twitchChannel
+            message = f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
+            heartbeat = lambda: self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
         ))
-
-    async def __handleTriviaGameFailureToAnswer(
-        self,
-        delaySeconds: int,
-        userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
-    ):
-        if not utils.isValidNum(delaySeconds):
-            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1:
-            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        await asyncio.sleep(delaySeconds)
-
-        if self.__triviaGameRepository.isAnswered(twitchUser.getHandle()):
-            return
-
-        self.__triviaGameRepository.setAnswered(twitchUser.getHandle())
-        triviaQuestion = self.__triviaGameRepository.getTrivia(twitchUser.getHandle())
-        await twitchUtils.safeSend(twitchChannel, f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}')
-
-    async def __sendDelayedMessage(self, messageable, delaySeconds: int, message: str):
-        if messageable is None:
-            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidNum(delaySeconds):
-            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1:
-            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
-        await asyncio.sleep(delaySeconds)
-        await twitchUtils.safeSend(messageable, message)
 
     async def __subscribeToEvents(self, users: List[User]):
         if not utils.hasItems(users):

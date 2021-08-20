@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 import CynanBotCommon.utils as utils
@@ -40,3 +41,25 @@ async def safeSend(messageable, message: str):
 
     for m in messages:
         await messageable.send(m)
+
+async def waitThenSend(
+    messageable,
+    delaySeconds: int,
+    message: str,
+    heartbeat = lambda: True
+):
+    if messageable is None:
+        raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+    elif not utils.isValidNum(delaySeconds):
+        raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+    elif delaySeconds < 1:
+        raise ValueError(f'delaySeconds argument is out of bounds: \"{delaySeconds}\"')
+    elif not utils.isValidStr(message):
+        return
+    elif heartbeat is None:
+        raise ValueError(f'heartbeat argument is malformed: \"{heartbeat}\"')
+
+    await asyncio.sleep(delaySeconds)
+
+    if heartbeat():
+        await safeSend(messageable, message)
