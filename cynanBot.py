@@ -654,7 +654,7 @@ class CynanBot(commands.Bot):
             messageable = twitchChannel,
             delaySeconds = delaySeconds,
             message = f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
-            heartbeat = lambda: self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
+            heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
         ))
 
     async def __subscribeToEvents(self, users: List[User]):
