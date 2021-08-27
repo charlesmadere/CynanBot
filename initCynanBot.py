@@ -11,6 +11,7 @@ from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.languagesRepository import LanguagesRepository
+from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
@@ -45,7 +46,8 @@ cutenessRepository = CutenessRepository(
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
-    cacheTimeDelta = timedelta(seconds = 1)
+    cacheTimeDelta = timedelta(seconds = 1),
+    localTriviaRepository = LocalTriviaRepository()
 )
 
 enEsDictionary: EnEsDictionary = None
