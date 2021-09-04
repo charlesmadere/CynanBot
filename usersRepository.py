@@ -36,6 +36,7 @@ class UsersRepository():
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
         isJokesEnabled = userJson.get('jokesEnabled', False)
+        isLocalTriviaRepositoryEnabled = userJson.get('localTriviaRepositoryEnabled', False)
         isPicOfTheDayEnabled = userJson.get('picOfTheDayEnabled', False)
         isPkmnEnabled = userJson.get('pkmnEnabled', False)
         isPokepediaEnabled = userJson.get('pokepediaEnabled', False)
@@ -114,6 +115,7 @@ class UsersRepository():
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,
+            isLocalTriviaRepositoryEnabled = isLocalTriviaRepositoryEnabled,
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,

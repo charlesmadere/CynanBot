@@ -625,7 +625,10 @@ class CynanBot(commands.Bot):
 
         triviaQuestion = None
         try:
-            triviaQuestion = self.__triviaGameRepository.fetchTrivia(twitchUser.getHandle())
+            triviaQuestion = self.__triviaGameRepository.fetchTrivia(
+                twitchChannel = twitchUser.getHandle(),
+                isLocalTriviaRepositoryEnabled = twitchUser.isLocalTriviaRepositoryEnabled()
+            )
         except (RuntimeError, ValueError) as e:
             print(f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
