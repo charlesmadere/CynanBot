@@ -46,8 +46,8 @@ cutenessRepository = CutenessRepository(
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
-    cacheTimeDelta = timedelta(seconds = 1),
-    localTriviaRepository = LocalTriviaRepository()
+    localTriviaRepository = LocalTriviaRepository(),
+    cacheTimeDelta = timedelta(seconds = 1)
 )
 
 enEsDictionary: EnEsDictionary = None
