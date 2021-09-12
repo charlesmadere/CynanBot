@@ -307,6 +307,10 @@ class CynanBot(Bot):
         if twitchUser.isRewardIdPrintingEnabled():
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
+    async def event_token_expired(self):
+        print('token expired event')
+        return self.__auth.refresh_access_token()
+
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         msgId = tags.get('msg-id')
 
