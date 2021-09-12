@@ -333,11 +333,6 @@ class CynanBot(Bot):
         await self.__initializeSoundEventsHelper()
         await self.__subscribeToPubSubTopics()
 
-    async def event_token_expired(self):
-        print('token expired event')
-        # TODO
-        return None
-
     async def __handleCatJamMessage(self, message: Message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
 
@@ -669,8 +664,6 @@ class CynanBot(Bot):
                 twitchHandle = user.getHandle()
             )
 
-        print(f'Subscribing to PubSub topics for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
-
         topics: List[Topic] = list()
 
         for user in subscribeUsers:
@@ -707,8 +700,6 @@ class CynanBot(Bot):
         if not utils.hasItems(unsubscribeUsers):
             print(f'From a list of {len(users)}, there are no users to unsubscribe from PubSub topics for: \"{unsubscribeUsers}\"')
             return
-
-        print(f'Unsubscribing from PubSub topics for {len(unsubscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
 
         topics: List[Topic] = list()
 
