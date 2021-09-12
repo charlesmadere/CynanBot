@@ -236,6 +236,9 @@ class CynanBot(Bot):
         userNameThatRedeemed = event.user.name
         redemptionMessage = event.input
 
+        if twitchUser.isRewardIdPrintingEnabled():
+            print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
+
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             for cutenessBoosterPack in twitchUser.getCutenessBoosterPacks():
                 if rewardId == cutenessBoosterPack.getRewardId():
@@ -304,9 +307,6 @@ class CynanBot(Bot):
                 twitchChannel = twitchChannel
             )
             return
-
-        if twitchUser.isRewardIdPrintingEnabled():
-            print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
     async def event_pubsub_error(self, tags: Dict):
         print(f'Received a PubSub error ({utils.getNowTimeText(includeSeconds = True)}):\n{tags}')
