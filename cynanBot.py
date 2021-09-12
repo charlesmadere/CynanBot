@@ -308,6 +308,11 @@ class CynanBot(Bot):
         if twitchUser.isRewardIdPrintingEnabled():
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
+    async def event_pubsub_error(self, tags: Dict):
+        print(f'Received a PubSub error ({utils.getNowTimeText(includeSeconds = True)}):\n{tags}')
+        self.__unsubscribeFromPubSubTopics()
+        self.__subscribeToPubSubTopics()
+
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         msgId = tags.get('msg-id')
 
@@ -636,7 +641,7 @@ class CynanBot(Bot):
             self.__soundEventsHelper.startWebsocketServer(self.loop)
 
     async def __subscribeToPubSubTopics(self):
-        print('Subscribing to PubSub topics...')
+        print(f'Subscribing to PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')
 
         users = self.__usersRepository.getUsers()
         if not utils.hasItems(users):
@@ -655,7 +660,18 @@ class CynanBot(Bot):
             print(f'From a list of {len(users)}, there are no users to subscribe to PubSub topics for: \"{subscribeUsers}\"')
             return
 
-        print(f'Subscribing to PubSub topics for {len(subscribeUsers)} user(s)...')
+        print(f'Refreshing PubSub tokens for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+
+        for user in subscribeUsers:
+            self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                twitchClientId = self.__authHelper.requireTwitchClientId(),
+                twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
+                twitchHandle = user.getHandle()
+            )
+
+        print(f'Subscribing to PubSub topics for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+
+        topics: List[Topic] = list()
 
         for user in subscribeUsers:
             twitchAccessToken = subscribeUsers[user]
@@ -666,13 +682,50 @@ class CynanBot(Bot):
                 twitchClientId = self.__authHelper.requireTwitchClientId()
             )
 
-            topics: List[Topic] = list()
             topics.append(pubsub.channel_points(twitchAccessToken)[userId])
 
-            print(f'Subscribing to {len(topics)} PubSub topic(s) for {user.getHandle()} (userId: \"{userId}\")...')
-            await self.__pubSub.subscribe_topics(topics)
+        print(f'Subscribing to {len(topics)} PubSub topic(s) for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        await self.__pubSub.subscribe_topics(topics)
+        print(f'Finished subscribing to {len(topics)} PubSub topic(s) for {len(subscribeUsers)} user(s) ({utils.getNowTimeText(includeSeconds = True)})')
 
-        print(f'Finished subscribing to PubSub topics for {len(subscribeUsers)} user(s)')
+    async def __unsubscribeFromPubSubTopics(self):
+        print(f'Unsubscribing from PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')
+
+        users = self.__usersRepository.getUsers()
+        if not utils.hasItems(users):
+            print(f'There are no users to unsubscribe from PubSub topics for: \"{users}\"')
+            return
+
+        unsubscribeUsers: Dict[User, str] = dict()
+
+        for user in users:
+            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+
+            if utils.isValidStr(twitchAccessToken):
+                unsubscribeUsers[user] = twitchAccessToken
+
+        if not utils.hasItems(unsubscribeUsers):
+            print(f'From a list of {len(users)}, there are no users to unsubscribe from PubSub topics for: \"{unsubscribeUsers}\"')
+            return
+
+        print(f'Unsubscribing from PubSub topics for {len(unsubscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+
+        topics: List[Topic] = list()
+
+        for user in unsubscribeUsers:
+            twitchAccessToken = unsubscribeUsers[user]
+
+            userId = self.__userIdsRepository.fetchUserIdAsInt(
+                userName = user.getHandle(),
+                twitchAccessToken = twitchAccessToken,
+                twitchClientId = self.__authHelper.requireTwitchClientId()
+            )
+
+            topics.append(pubsub.channel_points(twitchAccessToken)[userId])
+
+        print(f'Unsubscribing from {len(topics)} PubSub topic(s) for {len(unsubscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        await self.__pubSub.unsubscribe_topics(topics)
+        print(f'Finished unsubscribing from PubSub topic(s) for {len(unsubscribeUsers)} user(s) ({utils.getNowTimeText(includeSeconds = True)})')
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
