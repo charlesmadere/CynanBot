@@ -225,7 +225,6 @@ class CynanBot(Bot):
 
         await self.handle_commands(message)
 
-    @bot.event()
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
         twitchUserStr = self.__userIdsRepository.fetchUserName(event.channel_id)
         twitchUser = self.__usersRepository.getUser(twitchUserStr)
