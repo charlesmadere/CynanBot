@@ -8,6 +8,7 @@ from twitchio.ext import commands, pubsub
 from twitchio.ext.commands import Bot, Context
 from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
+from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
 import twitchUtils
@@ -665,9 +666,8 @@ class CynanBot(Bot):
                 twitchClientId = self.__authHelper.requireTwitchClientId()
             )
 
-            topics = [
-                pubsub.channel_points(twitchAccessToken)[userId]
-            ]
+            topics: List[Topic] = list()
+            topics.append(pubsub.channel_points(twitchAccessToken)[userId])
 
             print(f'Subscribing to {len(topics)} PubSub topic(s) for {user.getHandle()} (userId: \"{userId}\")...')
             await self.__pubSub.subscribe_topics(topics)
