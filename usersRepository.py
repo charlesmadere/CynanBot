@@ -31,6 +31,7 @@ class UsersRepository():
 
         isAnalogueEnabled = userJson.get('analogueEnabled', False)
         isCatJamEnabled = userJson.get('catJamEnabled', False)
+        isChatBandEnabled = userJson.get('chatBandEnabled', False)
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
         isDiccionarioEnabled = userJson.get('diccionarioEnabled', False)
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
@@ -111,6 +112,7 @@ class UsersRepository():
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
             isCatJamEnabled = isCatJamEnabled,
+            isChatBandEnabled = isChatBandEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isDiccionarioEnabled = isDiccionarioEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
