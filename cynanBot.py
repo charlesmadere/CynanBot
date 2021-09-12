@@ -307,10 +307,6 @@ class CynanBot(Bot):
         if twitchUser.isRewardIdPrintingEnabled():
             print(f'The Reward ID for {twitchUser.getHandle()} is \"{rewardId}\"')
 
-    async def event_token_expired(self):
-        print('token expired event')
-        return self.__auth.refresh_access_token()
-
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         msgId = tags.get('msg-id')
 
@@ -330,6 +326,11 @@ class CynanBot(Bot):
         print(f'{self.nick} is ready!')
         await self.__initializeSoundEventsHelper()
         await self.__subscribeToPubSubTopics()
+
+    async def event_token_expired(self):
+        print('token expired event')
+        # TODO
+        return None
 
     async def __handleCatJamMessage(self, message: Message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
