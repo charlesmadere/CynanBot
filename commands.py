@@ -2,8 +2,6 @@ import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-from TwitchIO.twitchio.ext.commands import Context
-
 import CynanBotCommon.utils as utils
 import twitchUtils
 from cutenessRepository import CutenessRepository
@@ -26,6 +24,7 @@ from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
+from TwitchIO.twitchio.ext.commands import Context
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
 

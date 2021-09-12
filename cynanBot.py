@@ -3,13 +3,6 @@ import locale
 from datetime import datetime, timedelta
 from typing import Dict, List
 
-from TwitchIO.twitchio import Channel, Message
-from TwitchIO.twitchio.ext import commands, pubsub
-from TwitchIO.twitchio.ext.commands import Bot, Context
-from TwitchIO.twitchio.ext.commands.errors import CommandNotFound
-from TwitchIO.twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
-from TwitchIO.twitchio.ext.pubsub.topics import Topic
-
 import CynanBotCommon.utils as utils
 import twitchUtils
 from authHelper import AuthHelper
@@ -44,6 +37,12 @@ from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
+from TwitchIO.twitchio import Channel, Message
+from TwitchIO.twitchio.ext import commands, pubsub
+from TwitchIO.twitchio.ext.commands import Bot, Context
+from TwitchIO.twitchio.ext.commands.errors import CommandNotFound
+from TwitchIO.twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
+from TwitchIO.twitchio.ext.pubsub.topics import Topic
 from user import User
 from userIdsRepository import UserIdsRepository
 from usersRepository import UsersRepository
