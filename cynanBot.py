@@ -628,7 +628,7 @@ class CynanBot(Bot):
             print(f'Skipping initialization of soundEventsHelper, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
         else:
             print(f'Initializing soundEventsHelper\'s websocket server... ({utils.getNowTimeText(includeSeconds = True)})')
-            self.__soundEventsHelper.startWebsocketServer(self.get_loop)
+            self.__soundEventsHelper.startWebsocketServer(self.loop)
 
     async def __subscribeToPubSubTopics(self):
         print('Subscribing to PubSub topics...')
