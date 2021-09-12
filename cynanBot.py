@@ -17,6 +17,7 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
 from cutenessBoosterPack import CutenessBoosterPack
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
@@ -25,7 +26,6 @@ from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.soundEventsHelper import SoundEventsHelper
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
@@ -54,6 +54,7 @@ class CynanBot(Bot):
         self,
         analogueStoreRepository: AnalogueStoreRepository,
         authHelper: AuthHelper,
+        chatBandManager: ChatBandManager,
         cutenessRepository: CutenessRepository,
         doubleCutenessHelper: DoubleCutenessHelper,
         enEsDictionary: EnEsDictionary,
@@ -65,7 +66,6 @@ class CynanBot(Bot):
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
-        soundEventsHelper: SoundEventsHelper,
         starWarsQuotesRepository: StarWarsQuotesRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         translationHelper: TranslationHelper,
@@ -103,12 +103,12 @@ class CynanBot(Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authHelper: AuthHelper = authHelper
+        self.__chatBandManager: ChatBandManager = chatBandManager
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__nonceRepository: NonceRepository = nonceRepository
-        self.__soundEventsHelper: SoundEventsHelper = soundEventsHelper
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
@@ -211,6 +211,8 @@ class CynanBot(Bot):
             return
 
         if utils.isValidStr(message.content):
+            await self.__handleChatBandMessage(message)
+
             if await self.__handleMessageFromCynan(message):
                 return
 
@@ -352,6 +354,18 @@ class CynanBot(Bot):
             return True
         else:
             return False
+
+    async def __handleChatBandMessage(self, message: Message) -> bool:
+        user = self.__usersRepository.getUser(message.channel.name)
+
+        if not user.isChatBandEnabled():
+            return False
+
+        return await self.__chatBandManager.playInstrumentForMessage(
+            twitchChannel = user.getHandle(),
+            author = message.author.name,
+            message = utils.cleanStr(message.content)
+        )
 
     async def __handleDeerForceMessage(self, message: Message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)

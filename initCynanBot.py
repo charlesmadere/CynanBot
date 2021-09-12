@@ -6,6 +6,7 @@ from cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
+from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
@@ -15,7 +16,6 @@ from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.soundEventsHelper import SoundEventsHelper
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -24,6 +24,7 @@ from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
+from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
@@ -73,6 +74,9 @@ if authHelper.hasOneWeatherApiKey():
 cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
+    chatBandManager = ChatBandManager(
+        websocketConnectionServer = WebsocketConnectionServer()
+    ),
     cutenessRepository = cutenessRepository,
     doubleCutenessHelper = DoubleCutenessHelper(),
     enEsDictionary = enEsDictionary,
@@ -86,7 +90,6 @@ cynanBot = CynanBot(
     ),
     nonceRepository = NonceRepository(),
     pokepediaRepository = PokepediaRepository(),
-    soundEventsHelper = SoundEventsHelper(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
     translationHelper = translationHelper,
