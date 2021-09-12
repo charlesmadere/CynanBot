@@ -666,7 +666,7 @@ class CynanBot(Bot):
             ]
 
             print(f'Subscribing to {len(topics)} PubSub topic(s) for {user.getHandle()} (userId: \"{userId}\")...')
-            self.__pubSub.subscribe_topics(topics)
+            await self.__pubSub.subscribe_topics(topics)
 
         print(f'Finished subscribing to PubSub topics for {len(subscribeUsers)} user(s)')
 
