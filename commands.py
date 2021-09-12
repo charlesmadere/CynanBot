@@ -2,7 +2,7 @@ import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-from twitchio.ext.commands import Context
+from TwitchIO.twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitchUtils

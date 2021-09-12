@@ -3,12 +3,12 @@ import locale
 from datetime import datetime, timedelta
 from typing import Dict, List
 
-from twitchio import Channel, Message
-from twitchio.ext import commands, pubsub
-from twitchio.ext.commands import Bot, Context
-from twitchio.ext.commands.errors import CommandNotFound
-from twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
-from twitchio.ext.pubsub.topics import Topic
+from TwitchIO.twitchio import Channel, Message
+from TwitchIO.twitchio.ext import commands, pubsub
+from TwitchIO.twitchio.ext.commands import Bot, Context
+from TwitchIO.twitchio.ext.commands.errors import CommandNotFound
+from TwitchIO.twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
+from TwitchIO.twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
 import twitchUtils
