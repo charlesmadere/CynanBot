@@ -363,6 +363,8 @@ class CynanBot(Bot):
 
         if not user.isChatBandEnabled():
             return False
+        elif self.__chatBandManager is None:
+            raise RuntimeError(f'ChatBandManager is enabled but is currently None')
 
         return await self.__chatBandManager.playInstrumentForMessage(
             twitchChannel = user.getHandle(),
@@ -653,10 +655,10 @@ class CynanBot(Bot):
 
     async def __initializeWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
-            print(f'Skipping initialization of websocketConnectionServer, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Will not start websocketConnectionServer, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
         else:
-            print(f'Initializing websocketConnectionserver\'s websocket server... ({utils.getNowTimeText(includeSeconds = True)})')
-            self.__websocketConnectionServer.startWebsocketServer(self.loop)
+            print(f'Starting websocketConnectionServer... ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
         print(f'Subscribing to PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')
