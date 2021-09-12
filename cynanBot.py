@@ -231,7 +231,7 @@ class CynanBot(Bot):
         twitchUser = self.__usersRepository.getUser(twitchUserStr)
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
-        rewardId = event.id
+        rewardId = event.reward.id
         userIdThatRedeemed = str(event.user.id)
         userNameThatRedeemed = event.user.name
         redemptionMessage = event.input
