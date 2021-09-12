@@ -32,6 +32,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'funtoonApiEnabled', False)
 
+    def isRewardIdPrintingEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'rewardIdPrintingEnabled', False)
+
     def __readJson(self) -> Dict:
         if not os.path.exists(self.__generalSettingsFile):
             raise FileNotFoundError(f'General settings file not found: \"{self.__generalSettingsFile}\"')
