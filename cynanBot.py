@@ -309,9 +309,15 @@ class CynanBot(Bot):
             return
 
     async def event_pubsub_error(self, tags: Dict):
-        print(f'Received a PubSub error ({utils.getNowTimeText(includeSeconds = True)}):\n{tags}')
+        print(f'Received PubSub error ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
         self.__unsubscribeFromPubSubTopics()
         self.__subscribeToPubSubTopics()
+
+    async def event_pubsub_nonce(self, tags: Dict):
+        print(f'Received PubSub nonce ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
+
+    async def event_pubsub_pong(self):
+        print(f'Received PubSub pong ({utils.getNowTimeText(includeSeconds = True)})')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         msgId = tags.get('msg-id')
