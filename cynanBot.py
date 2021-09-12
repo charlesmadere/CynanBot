@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 
 from twitchio import Channel, Message
-from twitchio.ext import commands
+from twitchio.ext import commands, pubsub
 from twitchio.ext.commands import Bot, Context
 from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
@@ -662,7 +662,7 @@ class CynanBot(Bot):
             )
 
             topics = [
-                self.__pubSub.channel_points(twitchAccessToken)[userId]
+                pubsub.channel_points(twitchAccessToken)[userId]
             ]
 
             print(f'Subscribing to {len(topics)} PubSub topic(s) for {user.getHandle()} (userId: \"{userId}\")...')
