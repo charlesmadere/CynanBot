@@ -25,6 +25,7 @@ class User:
         isRaceEnabled: bool,
         isRaidLinkMessagingEnabled: bool,
         isRatJamEnabled: bool,
+        isRewardIdPrintingEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isTamalesEnabled: bool,
         isTranslateEnabled: bool,
@@ -79,6 +80,8 @@ class User:
             raise ValueError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
         elif not utils.isValidBool(isRatJamEnabled):
             raise ValueError(f'isRatJamEnabled argument is malformed: \"{isRatJamEnabled}\"')
+        elif not utils.isValidBool(isRewardIdPrintingEnabled):
+            raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isTamalesEnabled):
@@ -116,6 +119,7 @@ class User:
         self.__isRaceEnabled = isRaceEnabled
         self.__isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled
         self.__isRatJamEnabled = isRatJamEnabled
+        self.__isRewardIdPrintingEnabled = isRewardIdPrintingEnabled
         self.__isStarWarsQuotesEnabled = isStarWarsQuotesEnabled
         self.__isTamalesEnabled = isTamalesEnabled
         self.__isTranslateEnabled = isTranslateEnabled
@@ -279,6 +283,9 @@ class User:
 
     def isRatJamEnabled(self) -> bool:
         return self.__isRatJamEnabled
+
+    def isRewardIdPrintingEnabled(self) -> bool:
+        return self.__isRewardIdPrintingEnabled
 
     def isStarWarsQuotesEnabled(self) -> bool:
         return self.__isStarWarsQuotesEnabled

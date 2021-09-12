@@ -43,6 +43,7 @@ class UsersRepository():
         isRaceEnabled = userJson.get('raceEnabled', False)
         isRaidLinkMessagingEnabled = userJson.get('raidLinkMessagingEnabled', False)
         isRatJamEnabled = userJson.get('ratJamEnabled', False)
+        isRewardIdPrintingEnabled = userJson.get('rewardIdPrintingEnabled', False)
         isStarWarsQuotesEnabled = userJson.get('starWarsQuotesEnabled', False)
         isTamalesEnabled = userJson.get('tamalesEnabled', False)
         isTranslateEnabled = userJson.get('translateEnabled', False)
@@ -122,6 +123,7 @@ class UsersRepository():
             isRaceEnabled = isRaceEnabled,
             isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
             isRatJamEnabled = isRatJamEnabled,
+            isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTranslateEnabled = isTranslateEnabled,
