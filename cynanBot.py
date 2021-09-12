@@ -34,6 +34,7 @@ from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
+from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
@@ -75,6 +76,7 @@ class CynanBot(Bot):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
+        websocketConnectionServer: WebsocketConnectionServer,
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
@@ -113,6 +115,7 @@ class CynanBot(Bot):
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
+        self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
@@ -338,7 +341,7 @@ class CynanBot(Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
-        await self.__initializeSoundEventsHelper()
+        await self.__initializeWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
     async def __handleCatJamMessage(self, message: Message) -> bool:
@@ -648,12 +651,12 @@ class CynanBot(Bot):
             heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
         ))
 
-    async def __initializeSoundEventsHelper(self):
-        if self.__soundEventsHelper is None:
-            print(f'Skipping initialization of soundEventsHelper, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
+    async def __initializeWebsocketConnectionServer(self):
+        if self.__websocketConnectionServer is None:
+            print(f'Skipping initialization of websocketConnectionServer, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
         else:
-            print(f'Initializing soundEventsHelper\'s websocket server... ({utils.getNowTimeText(includeSeconds = True)})')
-            self.__soundEventsHelper.startWebsocketServer(self.loop)
+            print(f'Initializing websocketConnectionserver\'s websocket server... ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__websocketConnectionServer.startWebsocketServer(self.loop)
 
     async def __subscribeToPubSubTopics(self):
         print(f'Subscribing to PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')

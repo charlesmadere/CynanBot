@@ -51,6 +51,7 @@ triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     cacheTimeDelta = timedelta(seconds = 1)
 )
+websocketConnectionServer = WebsocketConnectionServer()
 
 enEsDictionary: EnEsDictionary = None
 if authHelper.hasMerriamWebsterApiKey():
@@ -75,7 +76,7 @@ cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
     chatBandManager = ChatBandManager(
-        websocketConnectionServer = WebsocketConnectionServer()
+        websocketConnectionServer = websocketConnectionServer
     ),
     cutenessRepository = cutenessRepository,
     doubleCutenessHelper = DoubleCutenessHelper(),
