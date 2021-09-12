@@ -227,8 +227,9 @@ class CynanBot(Bot):
         await self.handle_commands(message)
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
-        twitchUserStr = self.__userIdsRepository.fetchUserName(str(event.channel_id))
-        twitchUser = self.__usersRepository.getUser(twitchUserStr)
+        twitchUserIdStr = str(event.channel_id)
+        twitchUserNameStr = self.__userIdsRepository.fetchUserName(twitchUserIdStr)
+        twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         rewardId = event.reward.id
