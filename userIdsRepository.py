@@ -82,8 +82,21 @@ class UserIdsRepository():
             raise ValueError(f'Unable to fetch user ID for {userName}: {jsonResponse}')
 
         self.setUser(userId = userId, userName = userName)
-
         return userId
+
+    def fetchUserIdAsInt(
+        self,
+        userName: str,
+        twitchAccessToken: str = None,
+        twitchClientId: str = None
+    ) -> int:
+        userId = self.fetchUserId(
+            userName = userName,
+            twitchAccessToken = twitchAccessToken,
+            twitchClientId = twitchClientId
+        )
+
+        return int(userId)
 
     def fetchUserName(self, userId: str) -> str:
         if not utils.isValidStr(userId) or userId == '0':

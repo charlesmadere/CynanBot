@@ -655,7 +655,7 @@ class CynanBot(Bot):
         for user in subscribeUsers:
             twitchAccessToken = subscribeUsers[user]
 
-            userId = self.__userIdsRepository.fetchUserId(
+            userId = self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken,
                 twitchClientId = self.__authHelper.requireTwitchClientId()
