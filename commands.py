@@ -2,6 +2,8 @@ import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
+from twitchio.ext.commands import Context
+
 import CynanBotCommon.utils as utils
 import twitchUtils
 from cutenessRepository import CutenessRepository
@@ -31,7 +33,7 @@ from usersRepository import UsersRepository
 class AbsCommand(ABC):
 
     @abstractmethod
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         pass
 
 
@@ -51,7 +53,7 @@ class AnalogueCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastAnalogueStockMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2, seconds = 30))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isAnalogueEnabled():
@@ -97,7 +99,7 @@ class AnswerCommand(AbsCommand):
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTriviaGameEnabled():
@@ -254,7 +256,7 @@ class CutenessCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isCutenessEnabled():
@@ -321,7 +323,7 @@ class DiccionarioCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastDiccionarioMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isDiccionarioEnabled():
@@ -357,7 +359,7 @@ class DiscordCommand(AbsCommand):
 
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasDiscord():
@@ -386,7 +388,7 @@ class GiveCutenessCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         if not ctx.author.is_mod:
             return
 
@@ -458,7 +460,7 @@ class JishoCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastJishoMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isJishoEnabled():
@@ -500,7 +502,7 @@ class JokeCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastJokeMessageTimes: TimedDict = TimedDict(timedelta(minutes = 1))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isJokesEnabled():
@@ -532,7 +534,7 @@ class MyCutenessCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMyCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isCutenessEnabled():
@@ -567,7 +569,7 @@ class PbsCommand(AbsCommand):
 
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasSpeedrunProfile():
@@ -593,7 +595,7 @@ class PkMonCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastPkMonMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isPokepediaEnabled():
@@ -634,7 +636,7 @@ class PkMoveCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastPkMoveMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isPokepediaEnabled():
@@ -671,7 +673,7 @@ class RaceCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastRaceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isRaceEnabled() or not ctx.author.is_mod:
@@ -687,7 +689,7 @@ class StubCommand(AbsCommand):
     def __init__(self):
         pass
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         pass
 
 
@@ -707,7 +709,7 @@ class SwQuoteCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastStarWarsQuotesMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isStarWarsQuotesEnabled():
@@ -753,7 +755,7 @@ class TamalesCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastTamalesMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTamalesEnabled():
@@ -780,7 +782,7 @@ class TimeCommand(AbsCommand):
 
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasTimeZones():
@@ -825,7 +827,7 @@ class TranslateCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastTranslateMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTranslateEnabled():
@@ -879,7 +881,7 @@ class TriviaCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastTriviaMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTriviaEnabled():
@@ -914,7 +916,7 @@ class TwitterCommand(AbsCommand):
 
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasTwitter():
@@ -943,7 +945,7 @@ class WeatherCommand(AbsCommand):
         self.__weatherRepository: WeatherRepository = weatherRepository
         self.__lastWeatherMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isWeatherEnabled():
@@ -985,7 +987,7 @@ class WordCommand(AbsCommand):
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastWotdMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isWordOfTheDayEnabled():
