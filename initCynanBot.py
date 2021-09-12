@@ -15,6 +15,7 @@ from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.soundEventsHelper import SoundEventsHelper
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -85,6 +86,7 @@ cynanBot = CynanBot(
     ),
     nonceRepository = NonceRepository(),
     pokepediaRepository = PokepediaRepository(),
+    soundEventsHelper = SoundEventsHelper(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
     translationHelper = translationHelper,

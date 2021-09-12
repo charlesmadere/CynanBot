@@ -30,6 +30,7 @@ from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.soundEventsHelper import SoundEventsHelper
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
@@ -63,6 +64,7 @@ class CynanBot(commands.Bot):
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
         pokepediaRepository: PokepediaRepository,
+        soundEventsHelper: SoundEventsHelper,
         starWarsQuotesRepository: StarWarsQuotesRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         translationHelper: TranslationHelper,
@@ -105,6 +107,7 @@ class CynanBot(commands.Bot):
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__nonceRepository: NonceRepository = nonceRepository
+        self.__soundEventsHelper: SoundEventsHelper = soundEventsHelper
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
