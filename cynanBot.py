@@ -341,8 +341,35 @@ class CynanBot(Bot):
 
     async def event_ready(self):
         print(f'{self.nick} is ready!')
-        await self.__initializeWebsocketConnectionServer()
+        await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
+
+    def __getAllPubSubTopics(self) -> List[Topic]:
+        users = self.__usersRepository.getUsers()
+        usersAndTwitchTokens: Dict[User, str] = dict()
+        pubSubTopics: List[Topic] = list()
+
+        for user in users:
+            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+
+            if utils.isValidStr(twitchAccessToken):
+                usersAndTwitchTokens[user] = twitchAccessToken
+
+        if not utils.hasItems(usersAndTwitchTokens):
+            return pubSubTopics
+
+        for user in usersAndTwitchTokens:
+            twitchAccessToken = usersAndTwitchTokens[user]
+
+            userId = self.__userIdsRepository.fetchUserIdAsInt(
+                userName = user.getHandle(),
+                twitchAccessToken = twitchAccessToken,
+                twitchClientId = self.__authHelper.requireTwitchClientId()
+            )
+
+            pubSubTopics.append(pubsub.channel_points(twitchAccessToken)[userId])
+
+        return pubSubTopics
 
     async def __handleCatJamMessage(self, message: Message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
@@ -650,95 +677,23 @@ class CynanBot(Bot):
             heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
         ))
 
-    async def __initializeWebsocketConnectionServer(self):
+    async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
             print(f'Will not start websocketConnectionServer, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
         else:
-            print(f'Starting websocketConnectionServer... ({utils.getNowTimeText(includeSeconds = True)})')
             self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
-        print(f'Subscribing to PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')
-
-        users = self.__usersRepository.getUsers()
-        if not utils.hasItems(users):
-            print(f'There are no users to subscribe to PubSub topics for: \"{users}\"')
-            return
-
-        subscribeUsers: Dict[User, str] = dict()
-
-        for user in users:
-            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-
-            if utils.isValidStr(twitchAccessToken):
-                subscribeUsers[user] = twitchAccessToken
-
-        if not utils.hasItems(subscribeUsers):
-            print(f'From a list of {len(users)}, there are no users to subscribe to PubSub topics for: \"{subscribeUsers}\"')
-            return
-
-        print(f'Refreshing PubSub tokens for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
-
-        for user in subscribeUsers:
-            self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                twitchClientId = self.__authHelper.requireTwitchClientId(),
-                twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
-                twitchHandle = user.getHandle()
-            )
-
-        topics: List[Topic] = list()
-
-        for user in subscribeUsers:
-            twitchAccessToken = subscribeUsers[user]
-
-            userId = self.__userIdsRepository.fetchUserIdAsInt(
-                userName = user.getHandle(),
-                twitchAccessToken = twitchAccessToken,
-                twitchClientId = self.__authHelper.requireTwitchClientId()
-            )
-
-            topics.append(pubsub.channel_points(twitchAccessToken)[userId])
-
-        print(f'Subscribing to {len(topics)} PubSub topic(s) for {len(subscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
-        await self.__pubSub.subscribe_topics(topics)
-        print(f'Finished subscribing to {len(topics)} PubSub topic(s) for {len(subscribeUsers)} user(s) ({utils.getNowTimeText(includeSeconds = True)})')
+        pubSubTopics = self.__getAllPubSubTopics()
+        print(f'Subscribing to {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        await self.__pubSub.subscribe_topics(pubSubTopics)
+        print(f'Finished subscribing to PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
 
     async def __unsubscribeFromPubSubTopics(self):
-        print(f'Unsubscribing from PubSub topics... ({utils.getNowTimeText(includeSeconds = True)})')
-
-        users = self.__usersRepository.getUsers()
-        if not utils.hasItems(users):
-            print(f'There are no users to unsubscribe from PubSub topics for: \"{users}\"')
-            return
-
-        unsubscribeUsers: Dict[User, str] = dict()
-
-        for user in users:
-            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-
-            if utils.isValidStr(twitchAccessToken):
-                unsubscribeUsers[user] = twitchAccessToken
-
-        if not utils.hasItems(unsubscribeUsers):
-            print(f'From a list of {len(users)}, there are no users to unsubscribe from PubSub topics for: \"{unsubscribeUsers}\"')
-            return
-
-        topics: List[Topic] = list()
-
-        for user in unsubscribeUsers:
-            twitchAccessToken = unsubscribeUsers[user]
-
-            userId = self.__userIdsRepository.fetchUserIdAsInt(
-                userName = user.getHandle(),
-                twitchAccessToken = twitchAccessToken,
-                twitchClientId = self.__authHelper.requireTwitchClientId()
-            )
-
-            topics.append(pubsub.channel_points(twitchAccessToken)[userId])
-
-        print(f'Unsubscribing from {len(topics)} PubSub topic(s) for {len(unsubscribeUsers)} user(s)... ({utils.getNowTimeText(includeSeconds = True)})')
-        await self.__pubSub.unsubscribe_topics(topics)
-        print(f'Finished unsubscribing from PubSub topic(s) for {len(unsubscribeUsers)} user(s) ({utils.getNowTimeText(includeSeconds = True)})')
+        pubSubTopics = self.__getAllPubSubTopics()
+        print(f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        await self.__pubSub.unsubscribe_topics(pubSubTopics)
+        print(f'Finished unsubscribing from PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
