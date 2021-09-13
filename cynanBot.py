@@ -332,7 +332,7 @@ class CynanBot(Bot):
 
         user = self.__usersRepository.getUser(channel.name)
 
-        if msgId == 'raid':
+        if user.isRaidLinkMessagingEnabled() and msgId == 'raid':
             await self.__handleRaidLinkMessaging(
                 tags = tags,
                 user = user,
@@ -558,9 +558,6 @@ class CynanBot(Bot):
             raise ValueError(f'user argument is malformed: \"{user}\"')
         elif twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        if not user.isRaidLinkMessagingEnabled():
-            return
 
         raidedByName = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
