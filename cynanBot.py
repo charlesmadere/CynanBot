@@ -344,7 +344,10 @@ class CynanBot(Bot):
         await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
-    def __getAllPubSubTopics(self) -> List[Topic]:
+    async def __getAllPubSubTopics(self, validateAndRefresh: bool) -> List[Topic]:
+        if not utils.isValidBool(validateAndRefresh):
+            raise ValueError(f'validateAndRefresh argument is malformed: \"{validateAndRefresh}\"')
+
         users = self.__usersRepository.getUsers()
         usersAndTwitchTokens: Dict[User, str] = dict()
         pubSubTopics: List[Topic] = list()
@@ -357,6 +360,16 @@ class CynanBot(Bot):
 
         if not utils.hasItems(usersAndTwitchTokens):
             return pubSubTopics
+
+        if validateAndRefresh:
+            for user in usersAndTwitchTokens:
+                self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                    twitchClientId = self.__authHelper.requireTwitchClientId(),
+                    twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
+                    twitchHandle = user.getHandle()
+                )
+
+                usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
 
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
@@ -684,13 +697,21 @@ class CynanBot(Bot):
             self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
-        pubSubTopics = self.__getAllPubSubTopics()
+        pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = True)
+        if not utils.hasItems(pubSubTopics):
+            print(f'There aren\'t any PubSub topics to subscribe to ({utils.getNowTimeText(includeSeconds = True)})')
+            return
+
         print(f'Subscribing to {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
         await self.__pubSub.subscribe_topics(pubSubTopics)
         print(f'Finished subscribing to PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
 
     async def __unsubscribeFromPubSubTopics(self):
-        pubSubTopics = self.__getAllPubSubTopics()
+        pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = False)
+        if not utils.hasItems(pubSubTopics):
+            print(f'There aren\'t any PubSub topics to unsubscribe from ({utils.getNowTimeText(includeSeconds = True)})')
+            return
+
         print(f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
         await self.__pubSub.unsubscribe_topics(pubSubTopics)
         print(f'Finished unsubscribing from PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
