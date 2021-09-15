@@ -2,9 +2,10 @@ import asyncio
 from typing import List
 
 import CynanBotCommon.utils as utils
+from TwitchIO.twitchio.abcs import Messageable
 
 
-async def safeSend(messageable, message: str):
+async def safeSend(messageable: Messageable, message: str):
     if messageable is None:
         raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
     elif not utils.isValidStr(message):
@@ -43,7 +44,7 @@ async def safeSend(messageable, message: str):
         await messageable.send(m)
 
 async def waitThenSend(
-    messageable,
+    messageable: Messageable,
     delaySeconds: int,
     message: str,
     heartbeat = lambda: True
