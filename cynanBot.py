@@ -38,6 +38,7 @@ from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
+from messages import AbsMessage, CatJamMessage, ChatBandMessage, StubMessage
 from TwitchIO.twitchio import Channel, Message
 from TwitchIO.twitchio.ext import commands, pubsub
 from TwitchIO.twitchio.ext.commands import Bot, Context
@@ -119,7 +120,6 @@ class CynanBot(Bot):
 
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
-        self.__lastCynanMessageTime = datetime.utcnow() - timedelta(days = 1)
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
 
@@ -129,6 +129,13 @@ class CynanBot(Bot):
         self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
+
+        self.__catJamMessage: AbsMessage = CatJamMessage(usersRepository)
+
+        if chatBandManager is None:
+            self.__chatBandMessage: AbsMessage = StubMessage()
+        else:
+            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, usersRepository)
 
         if analogueStoreRepository is None:
             self.__analogueCommand: AbsCommand = StubCommand()
@@ -214,7 +221,7 @@ class CynanBot(Bot):
             return
 
         if utils.isValidStr(message.content):
-            await self.__handleChatBandMessage(message)
+            await self.__chatBandMessage.handleMessage(message)
 
             if await self.__handleMessageFromCynan(message):
                 return
@@ -222,7 +229,7 @@ class CynanBot(Bot):
             if await self.__handleDeerForceMessage(message):
                 return
 
-            if await self.__handleCatJamMessage(message):
+            if await self.__catJamMessage.handleMessage(message):
                 return
 
             if await self.__handleRatJamMessage(message):
@@ -248,55 +255,55 @@ class CynanBot(Bot):
             for cutenessBoosterPack in twitchUser.getCutenessBoosterPacks():
                 if rewardId == cutenessBoosterPack.getRewardId():
                     await self.__handleIncreaseCutenessRewardRedeemed(
+                        twitchChannel = twitchChannel,
                         cutenessBoosterPack = cutenessBoosterPack,
                         userIdThatRedeemed = userIdThatRedeemed,
                         userNameThatRedeemed = userNameThatRedeemed,
-                        twitchUser = twitchUser,
-                        twitchChannel = twitchChannel
+                        twitchUser = twitchUser
                     )
                     return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
                 await self.__handleIncreaseCutenessDoubleRewardRedeemed(
+                    twitchChannel = twitchChannel,
                     cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks(),
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser,
-                    twitchChannel = twitchChannel
+                    twitchUser = twitchUser
                 )
                 return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
             await self.__handlePotdRewardRedeemed(
+                twitchChannel = twitchChannel,
                 userNameThatRedeemed = userNameThatRedeemed,
-                twitchUser = twitchUser,
-                twitchChannel = twitchChannel
+                twitchUser = twitchUser
             )
             return
 
         if twitchUser.isPkmnEnabled():
             if rewardId == twitchUser.getPkmnBattleRewardId():
                 await self.__handlePkmnBattleRewardRedeemed(
+                    twitchChannel = twitchChannel,
                     redemptionMessage = redemptionMessage,
                     userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser,
-                    twitchChannel = twitchChannel
+                    twitchUser = twitchUser
                 )
                 return
 
             if rewardId == twitchUser.getPkmnCatchRewardId():
                 await self.__handlePkmnCatchRewardRedeemed(
+                    twitchChannel = twitchChannel,
                     userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser,
-                    twitchChannel = twitchChannel
+                    twitchUser = twitchUser
                 )
                 return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
                 await self.__handlePkmnEvolveRewardRedeemed(
+                    twitchChannel = twitchChannel,
                     userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser,
-                    twitchChannel = twitchChannel
+                    twitchUser = twitchUser
                 )
                 return
 
@@ -306,10 +313,10 @@ class CynanBot(Bot):
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
             await self.__handleTriviaGameRewardRedeemed(
+                twitchChannel = twitchChannel,
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed,
-                twitchUser = twitchUser,
-                twitchChannel = twitchChannel
+                twitchUser = twitchUser
             )
             return
 
@@ -334,9 +341,9 @@ class CynanBot(Bot):
 
         if user.isRaidLinkMessagingEnabled() and msgId == 'raid':
             await self.__handleRaidLinkMessaging(
+                twitchChannel = channel,
                 tags = tags,
-                user = user,
-                twitchChannel = channel
+                user = user
             )
 
     async def event_ready(self):
@@ -384,34 +391,6 @@ class CynanBot(Bot):
 
         return pubSubTopics
 
-    async def __handleCatJamMessage(self, message: Message) -> bool:
-        user = self.__usersRepository.getUser(message.channel.name)
-
-        if not user.isCatJamEnabled():
-            return False
-
-        splits = utils.getCleanedSplits(message.content)
-
-        if 'catJAM' in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await twitchUtils.safeSend(message.channel, 'catJAM')
-            return True
-        else:
-            return False
-
-    async def __handleChatBandMessage(self, message: Message) -> bool:
-        user = self.__usersRepository.getUser(message.channel.name)
-
-        if not user.isChatBandEnabled():
-            return False
-        elif self.__chatBandManager is None:
-            raise RuntimeError(f'ChatBandManager is enabled but is currently None')
-
-        return await self.__chatBandManager.playInstrumentForMessage(
-            twitchChannel = user.getHandle(),
-            author = message.author.name,
-            message = utils.cleanStr(message.content)
-        )
-
     async def __handleDeerForceMessage(self, message: Message) -> bool:
         user = self.__usersRepository.getUser(message.channel.name)
         text = utils.cleanStr(message.content)
@@ -424,13 +403,15 @@ class CynanBot(Bot):
 
     async def __handleIncreaseCutenessDoubleRewardRedeemed(
         self,
+        twitchChannel: Channel,
         cutenessBoosterPacks: List[CutenessBoosterPack],
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
-        if not utils.hasItems(cutenessBoosterPacks):
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.hasItems(cutenessBoosterPacks):
             raise ValueError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
         elif not utils.isValidStr(userIdThatRedeemed):
             raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
@@ -438,8 +419,6 @@ class CynanBot(Bot):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
         self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
@@ -471,13 +450,15 @@ class CynanBot(Bot):
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
+        twitchChannel: Channel,
         cutenessBoosterPack: CutenessBoosterPack,
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
-        if cutenessBoosterPack is None:
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif cutenessBoosterPack is None:
             raise ValueError(f'cutenessBoosterPack argument is malformed: \"{cutenessBoosterPack}\"')
         elif not utils.isValidStr(userIdThatRedeemed):
             raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
@@ -485,8 +466,6 @@ class CynanBot(Bot):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         incrementAmount = cutenessBoosterPack.getAmount()
 
@@ -515,17 +494,17 @@ class CynanBot(Bot):
 
         if now > self.__lastCynanMessageTime + timedelta(hours = 4):
             self.__lastCynanMessageTime = now
-            await message.channel.send_me('waves to @CynanMachae 👋')
+            await message.channel.send('/me waves to @CynanMachae 👋')
             return True
         else:
             return False
 
     async def __handlePkmnBattleRewardRedeemed(
         self,
+        twitchChannel: Channel,
         redemptionMessage: str,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
         splits = utils.getCleanedSplits(redemptionMessage)
         if not utils.hasItems(splits):
@@ -542,9 +521,9 @@ class CynanBot(Bot):
 
     async def __handlePkmnCatchRewardRedeemed(
         self,
+        twitchChannel: Channel,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnCatch(
@@ -557,9 +536,9 @@ class CynanBot(Bot):
 
     async def __handlePkmnEvolveRewardRedeemed(
         self,
+        twitchChannel: Channel,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnGiveEvolve(
@@ -572,9 +551,9 @@ class CynanBot(Bot):
 
     async def __handlePotdRewardRedeemed(
         self,
+        twitchChannel: Channel,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
         print(f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
 
@@ -588,16 +567,16 @@ class CynanBot(Bot):
 
     async def __handleRaidLinkMessaging(
         self,
+        twitchChannel: Channel,
         tags: Dict,
-        user: User,
-        twitchChannel
+        user: User
     ):
-        if tags is None:
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif tags is None:
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
         elif user is None:
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         raidedByName = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
@@ -639,19 +618,19 @@ class CynanBot(Bot):
 
     async def __handleTriviaGameRewardRedeemed(
         self,
+        twitchChannel: Channel,
         userIdThatRedeemed: str,
         userNameThatRedeemed: str,
-        twitchUser: User,
-        twitchChannel
+        twitchUser: User
     ):
-        if not utils.isValidStr(userIdThatRedeemed):
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
             raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         triviaQuestion = None
         try:
