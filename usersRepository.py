@@ -33,6 +33,7 @@ class UsersRepository():
         isCatJamEnabled = userJson.get('catJamEnabled', False)
         isChatBandEnabled = userJson.get('chatBandEnabled', False)
         isCutenessEnabled = userJson.get('cutenessEnabled', False)
+        isCynanMessageEnabled = userJson.get('cynanMessageEnabled', True)
         isDiccionarioEnabled = userJson.get('diccionarioEnabled', False)
         isGiveCutenessEnabled = userJson.get('giveCutenessEnabled', False)
         isJishoEnabled = userJson.get('jishoEnabled', False)
@@ -114,6 +115,7 @@ class UsersRepository():
             isCatJamEnabled = isCatJamEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isCutenessEnabled = isCutenessEnabled,
+            isCynanMessageEnabled = isCynanMessageEnabled,
             isDiccionarioEnabled = isDiccionarioEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,

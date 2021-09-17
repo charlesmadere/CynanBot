@@ -38,7 +38,8 @@ from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
-from messages import AbsMessage, CatJamMessage, ChatBandMessage, StubMessage
+from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
+                      DeerForceMessage, RatJamMessage, StubMessage)
 from TwitchIO.twitchio import Channel, Message
 from TwitchIO.twitchio.ext import commands, pubsub
 from TwitchIO.twitchio.ext.commands import Bot, Context
@@ -106,22 +107,21 @@ class CynanBot(Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authHelper: AuthHelper = authHelper
-        self.__chatBandManager: ChatBandManager = chatBandManager
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__nonceRepository: NonceRepository = nonceRepository
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
-        self.__lastCatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
         self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
-        self.__lastDeerForceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
-        self.__lastRatJamMessageTimes: TimedDict = TimedDict(timedelta(minutes = 20))
+
+        #######################################
+        ## Initialization of command objects ##
+        #######################################
 
         self.__commandsCommand: AbsCommand = CommandsCommand(usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
@@ -129,13 +129,6 @@ class CynanBot(Bot):
         self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
-
-        self.__catJamMessage: AbsMessage = CatJamMessage(usersRepository)
-
-        if chatBandManager is None:
-            self.__chatBandMessage: AbsMessage = StubMessage()
-        else:
-            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, usersRepository)
 
         if analogueStoreRepository is None:
             self.__analogueCommand: AbsCommand = StubCommand()
@@ -208,6 +201,25 @@ class CynanBot(Bot):
         else:
             self.__wordCommand: AbsCommand = WordCommand(languagesRepository, usersRepository, wordOfTheDayRepository)
 
+        ###############################################
+        ## Initialization of message handler objects ##
+        ###############################################
+
+        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository, usersRepository)
+
+        if chatBandManager is None:
+            self.__chatBandMessage: AbsMessage = StubMessage()
+        else:
+            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, usersRepository)
+
+        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository, usersRepository)
+        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, usersRepository)
+        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, usersRepository)
+
+        ######################################
+        ## Initialization of PubSub objects ##
+        ######################################
+
         self.__pubSub = PubSubPool(self)
 
     async def event_command_error(self, context: Context, error: Exception):
@@ -223,16 +235,16 @@ class CynanBot(Bot):
         if utils.isValidStr(message.content):
             await self.__chatBandMessage.handleMessage(message)
 
-            if await self.__handleMessageFromCynan(message):
+            if await self.__cynanMessage.handleMessage(message):
                 return
 
-            if await self.__handleDeerForceMessage(message):
+            if await self.__deerForceMessage.handleMessage(message):
                 return
 
             if await self.__catJamMessage.handleMessage(message):
                 return
 
-            if await self.__handleRatJamMessage(message):
+            if await self.__ratJamMessage.handleMessage(message):
                 return
 
         await self.handle_commands(message)
@@ -391,16 +403,6 @@ class CynanBot(Bot):
 
         return pubSubTopics
 
-    async def __handleDeerForceMessage(self, message: Message) -> bool:
-        user = self.__usersRepository.getUser(message.channel.name)
-        text = utils.cleanStr(message.content)
-
-        if text.lower() == 'd e e r f o r c e' and self.__lastDeerForceMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await twitchUtils.safeSend(message.channel, 'D e e R F o r C e')
-            return True
-        else:
-            return False
-
     async def __handleIncreaseCutenessDoubleRewardRedeemed(
         self,
         twitchChannel: Channel,
@@ -485,19 +487,6 @@ class CynanBot(Bot):
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
-
-    async def __handleMessageFromCynan(self, message: Message) -> bool:
-        if message.author.name.lower() != 'cynanmachae'.lower():
-            return False
-
-        now = datetime.utcnow()
-
-        if now > self.__lastCynanMessageTime + timedelta(hours = 4):
-            self.__lastCynanMessageTime = now
-            await message.channel.send('/me waves to @CynanMachae 👋')
-            return True
-        else:
-            return False
 
     async def __handlePkmnBattleRewardRedeemed(
         self,
@@ -601,20 +590,6 @@ class CynanBot(Bot):
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
         ))
-
-    async def __handleRatJamMessage(self, message: Message) -> bool:
-        user = self.__usersRepository.getUser(message.channel.name)
-
-        if not user.isRatJamEnabled():
-            return False
-
-        splits = utils.getCleanedSplits(message.content)
-
-        if 'ratJAM' in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
-            await twitchUtils.safeSend(message.channel, 'ratJAM')
-            return True
-        else:
-            return False
 
     async def __handleTriviaGameRewardRedeemed(
         self,

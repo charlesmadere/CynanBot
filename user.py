@@ -15,6 +15,7 @@ class User:
         isCatJamEnabled: bool,
         isChatBandEnabled: bool,
         isCutenessEnabled: bool,
+        isCynanMessageEnabled: bool,
         isDiccionarioEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJishoEnabled: bool,
@@ -61,6 +62,8 @@ class User:
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise ValueError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
+        elif not utils.isValidBool(isCynanMessageEnabled):
+            raise ValueError(f'isCynanMessageEnabled argument is malformed: \"{isCynanMessageEnabled}\"')
         elif not utils.isValidBool(isDiccionarioEnabled):
             raise ValueError(f'isDiccionarioEnabled argument is malformed: \"{isDiccionarioEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
@@ -112,6 +115,7 @@ class User:
         self.__isCatJamEnabled = isCatJamEnabled
         self.__isChatBandEnabled = isChatBandEnabled
         self.__isCutenessEnabled = isCutenessEnabled
+        self.__isCynanMessageEnabled = isCynanMessageEnabled
         self.__isDiccionarioEnabled = isDiccionarioEnabled
         self.__isGiveCutenessEnabled = isGiveCutenessEnabled
         self.__isJishoEnabled = isJishoEnabled
@@ -257,6 +261,9 @@ class User:
 
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
+
+    def isCynanMessageEnabled(self) -> bool:
+        return self.__isCynanMessageEnabled
 
     def isDiccionarioEnabled(self) -> bool:
         return self.__isDiccionarioEnabled

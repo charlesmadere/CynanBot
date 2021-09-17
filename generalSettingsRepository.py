@@ -28,9 +28,25 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')
 
+    def isCatJamMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', True)
+
+    def isCynanMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'cynanMessageEnabled', True)
+
+    def isDeerForceMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', False)
+
     def isFuntoonApiEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'funtoonApiEnabled', False)
+
+    def isRatJamMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', True)
 
     def isRewardIdPrintingEnabled(self) -> bool:
         jsonContents = self.__readJson()
