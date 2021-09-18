@@ -21,7 +21,7 @@ class AbsPointRedemption(ABC):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         pass
@@ -47,15 +47,15 @@ class DoubleCutenessRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -77,7 +77,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
-                userId = userIdThatRedemeed,
+                userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
             )
 
@@ -89,7 +89,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
                 message = 'Double cuteness has ended! 😿'
             ))
         except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedemeed}) in {twitchUser.getHandle()}')
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
 
@@ -113,15 +113,15 @@ class PkmnBattleRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -167,15 +167,15 @@ class PkmnCatchRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -213,15 +213,15 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -259,15 +259,15 @@ class PkmnShinyRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -295,15 +295,15 @@ class PotdPointRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -331,7 +331,7 @@ class StubPointRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         return False
@@ -357,15 +357,15 @@ class TriviaGameRedemption(AbsPointRedemption):
         twitchChannel: Channel,
         twitchUser: User,
         redemptionMessage: str,
-        userIdThatRedemeed: str,
+        userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(userIdThatRedemeed):
-            raise ValueError(f'userIdThatRedemeed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userIdThatRedeemed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
@@ -382,7 +382,7 @@ class TriviaGameRedemption(AbsPointRedemption):
 
         self.__triviaGameRepository.startNewTriviaGame(
             twitchChannel = twitchUser.getHandle(),
-            userId = userIdThatRedemeed,
+            userId = userIdThatRedeemed,
             userName = userNameThatRedeemed
         )
 

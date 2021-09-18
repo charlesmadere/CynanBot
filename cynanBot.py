@@ -320,7 +320,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
-                    userIdThatRedemeed = userIdThatRedeemed,
+                    userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
@@ -361,7 +361,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
-                    userIdThatRedemeed = userIdThatRedeemed,
+                    userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
@@ -371,7 +371,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
-                    userIdThatRedemeed = userIdThatRedeemed,
+                    userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
@@ -381,7 +381,7 @@ class CynanBot(Bot):
                 twitchChannel = twitchChannel,
                 twitchUser = twitchUser,
                 redemptionMessage = redemptionMessage,
-                userIdThatRedemeed = userIdThatRedeemed,
+                userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             )
             return
