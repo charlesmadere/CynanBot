@@ -1,6 +1,5 @@
 import asyncio
 import locale
-from datetime import timedelta
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
@@ -28,7 +27,6 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
-from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
