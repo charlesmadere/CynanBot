@@ -4,8 +4,10 @@ from abc import ABC, abstractmethod
 
 import CynanBotCommon.utils as utils
 import twitchUtils
+from cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
+from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from TwitchIO.twitchio.channel import Channel
 from user import User
@@ -23,6 +25,72 @@ class AbsPointRedemption(ABC):
         userNameThatRedeemed: str
     ) -> bool:
         pass
+
+
+class DoubleCutenessRedemption(AbsPointRedemption):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        doubleCutenessHelper: DoubleCutenessHelper
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif doubleCutenessHelper is None:
+            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
+
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
+
+    async def handlePointRedemption(
+        self,
+        twitchChannel: Channel,
+        twitchUser: User,
+        redemptionMessage: str,
+        userIdThatRedemeed: str,
+        userNameThatRedeemed: str
+    ) -> bool:
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif not utils.isValidStr(userIdThatRedemeed):
+            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedemeed}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+
+        if not twitchUser.hasCutenessBoosterPacks():
+            print(f'Attempted to activate double cuteness for {twitchUser.getHandle()}, but there are no cuteness booster packs! ({utils.getNowTimeText(includeSeconds = True)})')
+            return False
+
+        print(f'Enabling double cuteness points in {twitchUser.getHandle()} ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
+        cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks()
+
+        # It's sort of not obvious what's going on here, but so what I'm trying to do is not
+        # penalize the given user for redeeming double cuteness. Double cuteness should just cost
+        # the user the same number of channel points that the baseline cuteness redemption is, and
+        # so let's go ahead and multiply that by 2.
+        incrementAmount = cutenessBoosterPacks[0].getAmount() * 2
+
+        try:
+            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
+                incrementAmount = incrementAmount,
+                twitchChannel = twitchUser.getHandle(),
+                userId = userIdThatRedemeed,
+                userName = userNameThatRedeemed
+            )
+
+            await twitchUtils.safeSend(twitchChannel, f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
+
+            asyncio.create_task(twitchUtils.waitThenSend(
+                messageable = twitchChannel,
+                delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
+                message = 'Double cuteness has ended! 😿'
+            ))
+        except ValueError:
+            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedemeed}) in {twitchUser.getHandle()}')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
 
 class PkmnBattleRedemption(AbsPointRedemption):

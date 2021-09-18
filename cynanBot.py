@@ -1,4 +1,3 @@
-import asyncio
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
@@ -38,10 +37,11 @@ from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, RatJamMessage, StubMessage)
-from pointRedemptions import (AbsPointRedemption, PkmnBattleRedemption,
-                              PkmnCatchRedemption, PkmnEvolveRedemption,
-                              PkmnShinyRedemption, PotdPointRedemption,
-                              StubPointRedemption, TriviaGameRedemption)
+from pointRedemptions import (AbsPointRedemption, DoubleCutenessRedemption,
+                              PkmnBattleRedemption, PkmnCatchRedemption,
+                              PkmnEvolveRedemption, PkmnShinyRedemption,
+                              PotdPointRedemption, StubPointRedemption,
+                              TriviaGameRedemption)
 from TwitchIO.twitchio import Channel, Message
 from TwitchIO.twitchio.ext import commands, pubsub
 from TwitchIO.twitchio.ext.commands import Bot, Context
@@ -224,6 +224,11 @@ class CynanBot(Bot):
         ## Initialization of point redemption handler objects ##
         ########################################################
 
+        if cutenessRepository is None or doubleCutenessHelper is None:
+            self.__doubleCutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__doubleCutenessPointRedemption: AbsPointRedemption = DoubleCutenessRedemption(cutenessRepository, doubleCutenessHelper)
+
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
@@ -311,12 +316,12 @@ class CynanBot(Bot):
                     return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
-                await self.__handleIncreaseCutenessDoubleRewardRedeemed(
+                await self.__doubleCutenessPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks(),
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser
+                    twitchUser = twitchUser,
+                    redemptionMessage = redemptionMessage,
+                    userIdThatRedemeed = userIdThatRedeemed,
+                    userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
 
@@ -454,53 +459,6 @@ class CynanBot(Bot):
             pubSubTopics.append(pubsub.channel_points(twitchAccessToken)[userId])
 
         return pubSubTopics
-
-    async def __handleIncreaseCutenessDoubleRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        cutenessBoosterPacks: List[CutenessBoosterPack],
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.hasItems(cutenessBoosterPacks):
-            raise ValueError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-
-        print(f'Enabling double cuteness points in {twitchUser.getHandle()}...')
-        self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
-
-        # It's sort of not obvious what's going on here, but so what I'm trying to do is not
-        # penalize the given user for redeeming double cuteness. Double cuteness should just cost
-        # the user the same number of channel points that the baseline cuteness redemption is, and
-        # so let's go ahead and multiply that by 2.
-        incrementAmount = cutenessBoosterPacks[0].getAmount() * 2
-
-        try:
-            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
-                twitchChannel = twitchUser.getHandle(),
-                userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed
-            )
-
-            await twitchUtils.safeSend(twitchChannel, f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
-
-            asyncio.create_task(twitchUtils.waitThenSend(
-                messageable = twitchChannel,
-                delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
-                message = 'Double cuteness has ended! 😿'
-            ))
-        except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __handleIncreaseCutenessRewardRedeemed(
         self,
