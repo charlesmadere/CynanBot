@@ -1,6 +1,6 @@
 import asyncio
 import locale
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
