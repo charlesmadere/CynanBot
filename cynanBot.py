@@ -111,9 +111,7 @@ class CynanBot(Bot):
         self.__authHelper: AuthHelper = authHelper
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
-        self.__funtoonRepository: FuntoonRepository = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
