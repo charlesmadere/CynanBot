@@ -357,7 +357,7 @@ class CynanBot(Bot):
             )
 
     async def event_ready(self):
-        print(f'{self.nick} is ready!')
+        print(f'{self.nick} is ready! ({utils.getNowTimeText(includeSeconds = True)})')
         await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
@@ -641,7 +641,7 @@ class CynanBot(Bot):
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
-            print(f'Will not start websocketConnectionServer, as it is None ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Will not start websocketConnectionServer, as the instance is None ({utils.getNowTimeText(includeSeconds = True)})')
         else:
             self.__websocketConnectionServer.start(self.loop)
 
