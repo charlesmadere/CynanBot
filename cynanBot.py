@@ -38,6 +38,10 @@ from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, RatJamMessage, StubMessage)
+from pointRedemptions import (AbsPointRedemption, PkmnBattleRedemption,
+                              PkmnCatchRedemption, PkmnEvolveRedemption,
+                              PkmnShinyRedemption, PotdPointRedemption,
+                              StubPointRedemption, TriviaGameRedemption)
 from TwitchIO.twitchio import Channel, Message
 from TwitchIO.twitchio.ext import commands, pubsub
 from TwitchIO.twitchio.ext.commands import Bot, Context
@@ -212,6 +216,37 @@ class CynanBot(Bot):
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, usersRepository)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, usersRepository)
 
+        ########################################################
+        ## Initialization of point redemption handler objects ##
+        ########################################################
+
+        if funtoonRepository is None:
+            self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__pkmnBattlePointRedemption: AbsPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository)
+
+        if funtoonRepository is None:
+            self.__pkmnCatchPointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__pkmnCatchPointRedemption: AbsPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository)
+
+        if funtoonRepository is None:
+            self.__pkmnEvolvePointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository)
+
+        if funtoonRepository is None:
+            self.__pkmnShinyPointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository)
+
+        self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption()
+
+        if triviaGameRepository is None:
+            self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
+        else:
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, triviaGameRepository)
+
         ######################################
         ## Initialization of PubSub objects ##
         ######################################
@@ -282,53 +317,63 @@ class CynanBot(Bot):
                 return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
-            await self.__handlePotdRewardRedeemed(
+            await self.__potdPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                userNameThatRedeemed = userNameThatRedeemed,
-                twitchUser = twitchUser
+                twitchUser = twitchUser,
+                redemptionMessage = redemptionMessage,
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed
             )
             return
 
         if twitchUser.isPkmnEnabled():
             if rewardId == twitchUser.getPkmnBattleRewardId():
-                await self.__handlePkmnBattleRewardRedeemed(
+                await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
+                    twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
-                    userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser
+                    userIdThatRedeemed = userIdThatRedeemed,
+                    userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
 
             if rewardId == twitchUser.getPkmnCatchRewardId():
-                await self.__handlePkmnCatchRewardRedeemed(
+                await self.__pkmnCatchPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser
+                    twitchUser = twitchUser,
+                    redemptionMessage = redemptionMessage,
+                    userIdThatRedeemed = userIdThatRedeemed,
+                    userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
-                await self.__handlePkmnEvolveRewardRedeemed(
+                await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser
+                    twitchUser = twitchUser,
+                    redemptionMessage = redemptionMessage,
+                    userIdThatRedemeed = userIdThatRedeemed,
+                    userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
 
             if rewardId == twitchUser.getPkmnShinyRewardId():
-                await self.__handlePkmnShinyRewardRedeemed(
+                await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    userNameThatRedeemed = userNameThatRedeemed,
-                    twitchUser = twitchUser
+                    twitchUser = twitchUser,
+                    redemptionMessage = redemptionMessage,
+                    userIdThatRedemeed = userIdThatRedeemed,
+                    userNameThatRedeemed = userNameThatRedeemed
                 )
                 return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
-            await self.__handleTriviaGameRewardRedeemed(
+            await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                userIdThatRedeemed = userIdThatRedeemed,
-                userNameThatRedeemed = userNameThatRedeemed,
-                twitchUser = twitchUser
+                twitchUser = twitchUser,
+                redemptionMessage = redemptionMessage,
+                userIdThatRedemeed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed
             )
             return
 
@@ -485,87 +530,6 @@ class CynanBot(Bot):
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
-    async def __handlePkmnBattleRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        redemptionMessage: str,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        splits = utils.getCleanedSplits(redemptionMessage)
-        if not utils.hasItems(splits):
-            await twitchUtils.safeSend(twitchChannel, f'⚠ @{userNameThatRedeemed} you must specify the exact user name of the person you want to fight')
-            return
-
-        opponentUserName = utils.removePreceedingAt(splits[0])
-
-        self.__funtoonRepository.pkmnBattle(
-            userThatRedeemed = userNameThatRedeemed,
-            userToBattle = opponentUserName,
-            twitchChannel = twitchUser.getHandle()
-        )
-
-    async def __handlePkmnCatchRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnCatch(
-                userThatRedeemed = userNameThatRedeemed,
-                twitchChannel = twitchUser.getHandle()
-            ):
-                return
-
-        await twitchUtils.safeSend(twitchChannel, f'!catch {userNameThatRedeemed}')
-
-    async def __handlePkmnEvolveRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnGiveEvolve(
-                userThatRedeemed = userNameThatRedeemed,
-                twitchChannel = twitchUser.getHandle()
-            ):
-                return
-
-        await twitchUtils.safeSend(twitchChannel, f'!freeevolve {userNameThatRedeemed}')
-
-    async def __handlePkmnShinyRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnGiveShiny(
-                userThatRedeemed = userNameThatRedeemed,
-                twitchChannel = twitchUser.getHandle()
-            ):
-                return
-
-        await twitchUtils.safeSend(twitchChannel, f'!freeshiny {userNameThatRedeemed}')
-
-    async def __handlePotdRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        print(f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
-
-        try:
-            picOfTheDay = twitchUser.fetchPicOfTheDay()
-            await twitchUtils.safeSend(twitchChannel, f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
-        except FileNotFoundError:
-            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
-        except ValueError:
-            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
-
     async def __handleRaidLinkMessaging(
         self,
         twitchChannel: Channel,
@@ -601,59 +565,6 @@ class CynanBot(Bot):
             messageable = twitchChannel,
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
-        ))
-
-    async def __handleTriviaGameRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-
-        triviaQuestion = None
-        try:
-            triviaQuestion = self.__triviaGameRepository.fetchTrivia(
-                twitchChannel = twitchUser.getHandle(),
-                isLocalTriviaRepositoryEnabled = twitchUser.isLocalTriviaRepositoryEnabled()
-            )
-        except (RuntimeError, ValueError) as e:
-            print(f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
-            await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
-            return
-
-        self.__triviaGameRepository.startNewTriviaGame(
-            twitchChannel = twitchUser.getHandle(),
-            userId = userIdThatRedeemed,
-            userName = userNameThatRedeemed
-        )
-
-        points = self.__generalSettingsRepository.getTriviaGamePoints()
-        if twitchUser.hasTriviaGamePoints():
-            points = twitchUser.getTriviaGamePoints()
-        pointsStr = locale.format_string("%d", points, grouping = True)
-
-        delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
-        if twitchUser.hasWaitForTriviaAnswerDelay():
-            delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
-        delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
-
-        await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-        await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
-
-        asyncio.create_task(twitchUtils.waitThenSend(
-            messageable = twitchChannel,
-            delaySeconds = delaySeconds,
-            message = f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
-            heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
         ))
 
     async def __startWebsocketConnectionServer(self):
