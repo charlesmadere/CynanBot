@@ -35,6 +35,7 @@ from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
+from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, RatJamMessage, StubMessage)
@@ -198,6 +199,12 @@ class CynanBot(Bot):
             self.__wordCommand: AbsCommand = StubCommand()
         else:
             self.__wordCommand: AbsCommand = WordCommand(languagesRepository, usersRepository, wordOfTheDayRepository)
+
+        #############################################
+        ## Initialization of event handler objects ##
+        #############################################
+
+        self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository)
 
         ###############################################
         ## Initialization of message handler objects ##
@@ -387,18 +394,21 @@ class CynanBot(Bot):
         print(f'Received PubSub pong ({utils.getNowTimeText(includeSeconds = True)})')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
+        if not utils.hasItems(tags):
+            return
+
         msgId = tags.get('msg-id')
 
         if not utils.isValidStr(msgId):
             return
 
-        user = self.__usersRepository.getUser(channel.name)
+        twitchUser = self.__usersRepository.getUser(channel.name)
 
-        if user.isRaidLinkMessagingEnabled() and msgId == 'raid':
-            await self.__handleRaidLinkMessaging(
+        if twitchUser.isRaidLinkMessagingEnabled() and msgId == 'raid':
+            await self.__raidEvent.handleEvent(
                 twitchChannel = channel,
-                tags = tags,
-                user = user
+                twitchUser = twitchUser,
+                tags = tags
             )
 
     async def event_ready(self):
@@ -527,43 +537,6 @@ class CynanBot(Bot):
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
-
-    async def __handleRaidLinkMessaging(
-        self,
-        twitchChannel: Channel,
-        tags: Dict,
-        user: User
-    ):
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif tags is None:
-            raise ValueError(f'tags argument is malformed: \"{tags}\"')
-        elif user is None:
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        raidedByName = tags.get('msg-param-displayName')
-        if not utils.isValidStr(raidedByName):
-            raidedByName = tags.get('display-name')
-        if not utils.isValidStr(raidedByName):
-            raidedByName = tags['login']
-
-        raidSize = tags.get('msg-param-viewerCount')
-        messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {user.getTwitchUrl()} Thank you! ✨'
-
-        message = None
-        if utils.isValidNum(raidSize) and raidSize >= 5:
-            raidSizeStr = locale.format_string("%d", raidSize, grouping = True)
-            message = f'Thank you for the raid of {raidSizeStr} {raidedByName}! {messageSuffix}'
-        else:
-            message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
-
-        print(f'{user.getHandle()} was raided by {raidedByName} ({utils.getNowTimeText()})')
-
-        asyncio.create_task(twitchUtils.waitThenSend(
-            messageable = twitchChannel,
-            delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
-            message = message
-        ))
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
