@@ -1,5 +1,4 @@
 import asyncio
-import locale
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
