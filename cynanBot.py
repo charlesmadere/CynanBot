@@ -117,8 +117,6 @@ class CynanBot(Bot):
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
-        self.__lastCutenessRedeemedMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
-
         #######################################
         ## Initialization of command objects ##
         #######################################
@@ -475,15 +473,12 @@ class CynanBot(Bot):
             incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:
-            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
             )
-
-            if self.__lastCutenessRedeemedMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-                await twitchUtils.safeSend(twitchChannel, f'✨ @{userNameThatRedeemed} has increased cuteness~ ✨ Their cuteness has increased to {result.getCutenessStr()} ✨')
         except ValueError:
             print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
