@@ -165,7 +165,7 @@ class UsersRepository():
             if handle.lower() == key.lower():
                 return self.__createUser(handle, jsonContents[key])
 
-        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users file: \"{self.__usersFile}\"')
+        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
 
     def getUsers(self) -> List[User]:
         jsonContents = self.__readJson()
@@ -176,21 +176,21 @@ class UsersRepository():
             users.append(user)
 
         if not utils.hasItems(users):
-            raise RuntimeError(f'Unable to read in any users from users file: \"{self.__usersFile}\"')
+            raise RuntimeError(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
         users.sort(key = lambda user: user.getHandle().lower())
         return users
 
     def __readJson(self) -> Dict:
         if not os.path.exists(self.__usersFile):
-            raise FileNotFoundError(f'Users file not found: \"{self.__usersFile}\"')
+            raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
         with open(self.__usersFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents is None:
-            raise IOError(f'Error reading from users file: \"{self.__usersFile}\"')
+            raise IOError(f'Error reading from users repository file: \"{self.__usersFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of users file \"{self.__usersFile}\" is empty')
+            raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
         return jsonContents
