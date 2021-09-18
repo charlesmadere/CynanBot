@@ -179,6 +179,12 @@ class CutenessLeaderboardResult():
         if not self.hasEntries():
             return 'Unfortunately the cuteness leaderboard is empty 😿'
 
+        specificLookupText = ''
+        if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
+            userName = self.__specificLookupCutenessResult.getUserName()
+            cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
+            specificLookupText = f'{userName} your cuteness is {cutenessStr}.'
+
         leaderboardText = ''
         if self.hasEntries():
             strings: List[str] = list()
@@ -187,13 +193,7 @@ class CutenessLeaderboardResult():
 
             leaderboardText = f'✨ {delimiter.join(strings)} ✨'
 
-        specificLookupText = ''
-        if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
-            userName = self.__specificLookupCutenessResult.getUserName()
-            cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'Also, {userName}\'s cuteness is {cutenessStr}'
-
-        return f'{leaderboardText} {specificLookupText}'.strip()
+        return f'{specificLookupText} {leaderboardText}'.strip()
 
 
 class CutenessRepository():
@@ -461,7 +461,7 @@ class CutenessRepository():
                     break
 
         specificLookupCutenessResult: CutenessResult = None
-        if not specificLookupAlreadyInResults and utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
+        if not specificLookupAlreadyInResults and (utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName)):
             if not utils.isValidStr(specificLookupUserId):
                 try:
                     specificLookupUserId = self.__userIdsRepository.fetchUserId(specificLookupUserName)
