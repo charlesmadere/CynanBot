@@ -34,6 +34,7 @@ class UsersRepository():
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isCynanMessageEnabled = utils.getBoolFromDict(userJson, 'cynanMessageEnabled', True)
+        isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDiccionarioEnabled = utils.getBoolFromDict(userJson, 'diccionarioEnabled', False)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
@@ -116,6 +117,7 @@ class UsersRepository():
             isChatBandEnabled = isChatBandEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isCynanMessageEnabled = isCynanMessageEnabled,
+            isCynanSourceEnabled = isCynanSourceEnabled,
             isDiccionarioEnabled = isDiccionarioEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isJishoEnabled = isJishoEnabled,

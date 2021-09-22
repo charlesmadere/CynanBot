@@ -1,6 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from typing import List
 
 import CynanBotCommon.utils as utils
 import twitchUtils
@@ -41,23 +42,26 @@ class AnalogueCommand(AbsCommand):
     def __init__(
         self,
         analogueStoreRepository: AnalogueStoreRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if analogueStoreRepository is None:
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastAnalogueStockMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2, seconds = 30))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isAnalogueEnabled():
             return
-        elif not self.__lastAnalogueStockMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -164,18 +168,24 @@ class CommandsCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        commands = list()
-        commands.append('!cynansource')
+        if not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        commands: List[str] = list()
 
         if user.hasDiscord():
             commands.append('!discord')
@@ -198,6 +208,9 @@ class CommandsCommand(AbsCommand):
 
             if user.isGiveCutenessEnabled() and ctx.author.is_mod:
                 commands.append('!givecuteness')
+
+        if user.isCynanSourceEnabled():
+            commands.append('!cynansource')
 
         if user.isDiccionarioEnabled():
             commands.append('!diccionario')
@@ -230,10 +243,14 @@ class CommandsCommand(AbsCommand):
         if user.isWordOfTheDayEnabled():
             commands.append('!word')
 
+        if not utils.hasItems(commands):
+            return
+
         commands.sort()
         commandsString = ', '.join(commands)
 
         await twitchUtils.safeSend(ctx, f'My commands: {commandsString}')
+
 
 class CutenessCommand(AbsCommand):
 
@@ -241,7 +258,8 @@ class CutenessCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         userIdsRepository: UserIdsRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -249,18 +267,20 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastCutenessMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -306,21 +326,50 @@ class CutenessCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, result.toStr())
 
 
+class CynanSourceCommand(AbsCommand):
+
+    def __init__(
+        self,
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+    ):
+        if usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCynanSourceEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(ctx.channel.name):
+            return
+
+        await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
+
+
 class DiccionarioCommand(AbsCommand):
 
     def __init__(
         self,
         enEsDictionary: EnEsDictionary,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if enEsDictionary is None:
             raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__enEsDictionary: EnEsDictionary = enEsDictionary
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastDiccionarioMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
+        self.__lastDiccionarioMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -351,17 +400,23 @@ class DiscordCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasDiscord():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         discord = user.getDiscordUrl()
@@ -448,23 +503,26 @@ class JishoCommand(AbsCommand):
     def __init__(
         self,
         jishoHelper: JishoHelper,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 8)
     ):
         if jishoHelper is None:
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__jishoHelper: JishoHelper = jishoHelper
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastJishoMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isJishoEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastJishoMessageTimes.isReady(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReady(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -473,7 +531,7 @@ class JishoCommand(AbsCommand):
             return
 
         query = splits[1]
-        self.__lastJishoMessageTimes.update(user.getHandle())
+        self.__lastMessageTimes.update(user.getHandle())
 
         try:
             result = self.__jishoHelper.search(query)
@@ -490,23 +548,26 @@ class JokeCommand(AbsCommand):
     def __init__(
         self,
         jokesRepository: JokesRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta
     ):
         if jokesRepository is None:
             raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__jokesRepository: JokesRepository = jokesRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastJokeMessageTimes: TimedDict = TimedDict(timedelta(minutes = 1))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isJokesEnabled():
             return
-        elif not self.__lastJokeMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         try:
@@ -522,23 +583,26 @@ class MyCutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMyCutenessMessageTimes: TimedDict = TimedDict(timedelta(seconds = 10))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMyCutenessMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         userId = str(ctx.author.id)
@@ -583,23 +647,26 @@ class PkMonCommand(AbsCommand):
     def __init__(
         self,
         pokepediaRepository: PokepediaRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastPkMonMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isPokepediaEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastPkMonMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -624,23 +691,26 @@ class PkMoveCommand(AbsCommand):
     def __init__(
         self,
         pokepediaRepository: PokepediaRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastPkMoveMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isPokepediaEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastPkMoveMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -664,18 +734,23 @@ class RaceCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastRaceMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
+        self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isRaceEnabled() or not ctx.author.is_mod:
+        if not user.isRaceEnabled():
+            return
+        elif not ctx.author.is_mod:
             return
         elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -697,23 +772,26 @@ class SwQuoteCommand(AbsCommand):
     def __init__(
         self,
         starWarsQuotesRepository: StarWarsQuotesRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if starWarsQuotesRepository is None:
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastStarWarsQuotesMessageTimes: TimedDict = TimedDict(timedelta(seconds = 30))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isStarWarsQuotesEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastStarWarsQuotesMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         randomSpaceEmoji = utils.getRandomSpaceEmoji()
@@ -743,7 +821,8 @@ class TamalesCommand(AbsCommand):
     def __init__(
         self,
         tamaleGuyRepository: TamaleGuyRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if tamaleGuyRepository is None:
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
@@ -752,14 +831,14 @@ class TamalesCommand(AbsCommand):
 
         self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastTamalesMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTamalesEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastTamalesMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         try:
@@ -774,17 +853,23 @@ class TimeCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasTimeZones():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         timeZones = user.getTimeZones()
@@ -812,7 +897,8 @@ class TranslateCommand(AbsCommand):
         self,
         languagesRepository: LanguagesRepository,
         translationHelper: TranslationHelper,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
@@ -820,18 +906,20 @@ class TranslateCommand(AbsCommand):
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__translationHelper: TranslationHelper = translationHelper
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastTranslateMessageTimes: TimedDict = TimedDict(timedelta(seconds = 15))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isTranslateEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastTranslateMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -866,7 +954,8 @@ class TriviaCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         triviaRepository: TriviaRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -874,20 +963,22 @@ class TriviaCommand(AbsCommand):
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaRepository: TriviaRepository = triviaRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastTriviaMessageTimes: TimedDict = TimedDict(timedelta(minutes = 5))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
+        if user.isTriviaGameEnabled():
+            return
         if not user.isTriviaEnabled():
             return
-        elif user.isTriviaGameEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastTriviaMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         try:
@@ -908,17 +999,23 @@ class TwitterCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasTwitter():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
@@ -930,7 +1027,8 @@ class WeatherCommand(AbsCommand):
         self,
         locationsRepository: LocationsRepository,
         usersRepository: UsersRepository,
-        weatherRepository: WeatherRepository
+        weatherRepository: WeatherRepository,
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if locationsRepository is None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
@@ -938,18 +1036,20 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is None:
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__locationsRepository: LocationsRepository = locationsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: WeatherRepository = weatherRepository
-        self.__lastWeatherMessageTimes: TimedDict = TimedDict(timedelta(minutes = 2))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isWeatherEnabled():
             return
-        elif not self.__lastWeatherMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         if not user.hasLocationId():
@@ -972,7 +1072,8 @@ class WordCommand(AbsCommand):
         self,
         languagesRepository: LanguagesRepository,
         usersRepository: UsersRepository,
-        wordOfTheDayRepository: WordOfTheDayRepository
+        wordOfTheDayRepository: WordOfTheDayRepository,
+        cooldown: timedelta = timedelta(seconds = 10)
     ):
         if languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
@@ -980,18 +1081,20 @@ class WordCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif wordOfTheDayRepository is None:
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
-        self.__lastWotdMessageTimes: TimedDict = TimedDict(timedelta(seconds = 8))
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isWordOfTheDayEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastWotdMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -1003,7 +1106,7 @@ class WordCommand(AbsCommand):
             return
 
         language = splits[1]
-        languageEntry = None
+        languageEntry: LanguageEntry = None
 
         try:
             languageEntry = self.__languagesRepository.requireLanguageForCommand(
