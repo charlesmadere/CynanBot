@@ -11,7 +11,6 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       TamalesCommand, TimeCommand, TranslateCommand,
                       TriviaCommand, TwitterCommand, WeatherCommand,
                       WordCommand)
-from cutenessBoosterPack import CutenessBoosterPack
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.chatBandManager import ChatBandManager
@@ -37,11 +36,11 @@ from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, RatJamMessage, StubMessage)
-from pointRedemptions import (AbsPointRedemption, DoubleCutenessRedemption,
-                              PkmnBattleRedemption, PkmnCatchRedemption,
-                              PkmnEvolveRedemption, PkmnShinyRedemption,
-                              PotdPointRedemption, StubPointRedemption,
-                              TriviaGameRedemption)
+from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
+                              DoubleCutenessRedemption, PkmnBattleRedemption,
+                              PkmnCatchRedemption, PkmnEvolveRedemption,
+                              PkmnShinyRedemption, PotdPointRedemption,
+                              StubPointRedemption, TriviaGameRedemption)
 from TwitchIO.twitchio import Channel, Message
 from TwitchIO.twitchio.ext import commands, pubsub
 from TwitchIO.twitchio.ext.commands import Bot, Context
@@ -225,8 +224,10 @@ class CynanBot(Bot):
         ########################################################
 
         if cutenessRepository is None or doubleCutenessHelper is None:
+            self.__cutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
             self.__doubleCutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
+            self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, doubleCutenessHelper)
             self.__doubleCutenessPointRedemption: AbsPointRedemption = DoubleCutenessRedemption(cutenessRepository, doubleCutenessHelper)
 
         if funtoonRepository is None:
@@ -304,22 +305,22 @@ class CynanBot(Bot):
             print(f'The Reward ID for {twitchUser.getHandle()} (userId \"{twitchUserIdStr}\") is \"{rewardId}\"')
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
-            for cutenessBoosterPack in twitchUser.getCutenessBoosterPacks():
-                if rewardId == cutenessBoosterPack.getRewardId():
-                    await self.__handleIncreaseCutenessRewardRedeemed(
-                        twitchChannel = twitchChannel,
-                        cutenessBoosterPack = cutenessBoosterPack,
-                        userIdThatRedeemed = userIdThatRedeemed,
-                        userNameThatRedeemed = userNameThatRedeemed,
-                        twitchUser = twitchUser
-                    )
-                    return
+            if await self.__cutenessPointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchUser = twitchUser,
+                redemptionMessage = redemptionMessage,
+                rewardId = rewardId,
+                userIdThatRedeemed = userIdThatRedeemed,
+                userNameThatRedeemed = userNameThatRedeemed
+            ):
+                return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
                 await self.__doubleCutenessPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
+                    rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
@@ -330,6 +331,7 @@ class CynanBot(Bot):
                 twitchChannel = twitchChannel,
                 twitchUser = twitchUser,
                 redemptionMessage = redemptionMessage,
+                rewardId = rewardId,
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             )
@@ -341,6 +343,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
+                    rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
@@ -351,6 +354,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
+                    rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
@@ -361,6 +365,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
+                    rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
@@ -371,6 +376,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
+                    rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 )
@@ -381,6 +387,7 @@ class CynanBot(Bot):
                 twitchChannel = twitchChannel,
                 twitchUser = twitchUser,
                 redemptionMessage = redemptionMessage,
+                rewardId = rewardId,
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             )
@@ -459,41 +466,6 @@ class CynanBot(Bot):
             pubSubTopics.append(pubsub.channel_points(twitchAccessToken)[userId])
 
         return pubSubTopics
-
-    async def __handleIncreaseCutenessRewardRedeemed(
-        self,
-        twitchChannel: Channel,
-        cutenessBoosterPack: CutenessBoosterPack,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str,
-        twitchUser: User
-    ):
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif cutenessBoosterPack is None:
-            raise ValueError(f'cutenessBoosterPack argument is malformed: \"{cutenessBoosterPack}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-
-        incrementAmount = cutenessBoosterPack.getAmount()
-
-        if self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
-            incrementAmount = cutenessBoosterPack.getAmount() * 2
-
-        try:
-            self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
-                twitchChannel = twitchUser.getHandle(),
-                userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed
-            )
-        except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
-            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
