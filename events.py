@@ -46,6 +46,9 @@ class RaidEvent(AbsEvent):
         elif tags is None:
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
 
+        if not twitchUser.isRaidLinkMessagingEnabled():
+            return False
+
         raidedByName = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
             raidedByName = tags.get('display-name')
