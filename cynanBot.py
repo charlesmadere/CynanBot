@@ -108,8 +108,6 @@ class CynanBot(Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authHelper: AuthHelper = authHelper
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
