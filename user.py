@@ -7,7 +7,7 @@ import CynanBotCommon.utils as utils
 from cutenessBoosterPack import CutenessBoosterPack
 
 
-class User:
+class User():
 
     def __init__(
         self,
