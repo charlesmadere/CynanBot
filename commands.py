@@ -549,7 +549,7 @@ class JokeCommand(AbsCommand):
         self,
         jokesRepository: JokesRepository,
         usersRepository: UsersRepository,
-        cooldown: timedelta
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if jokesRepository is None:
             raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
