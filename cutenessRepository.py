@@ -170,7 +170,7 @@ class CutenessLeaderboardResult():
         return utils.hasItems(self.__entries)
 
     def hasSpecificLookupCutenessResult(self) -> bool:
-        return self.__specificLookupCutenessResult is not None
+        return self.__specificLookupCutenessResult is not None and self.__specificLookupCutenessResult.hasCuteness()
 
     def toStr(self, delimiter: str = ', ') -> str:
         if delimiter is None:
@@ -180,20 +180,19 @@ class CutenessLeaderboardResult():
             return 'Unfortunately the cuteness leaderboard is empty 😿'
 
         specificLookupText = ''
-        if self.hasSpecificLookupCutenessResult() and self.__specificLookupCutenessResult.hasCuteness():
+        if self.hasSpecificLookupCutenessResult():
             userName = self.__specificLookupCutenessResult.getUserName()
             cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'{userName} your cuteness is {cutenessStr}.'
+            specificLookupText = f'{userName} your cuteness is {cutenessStr}'
 
-        leaderboardText = ''
-        if self.hasEntries():
-            strings: List[str] = list()
-            for entry in self.__entries:
-                strings.append(entry.toStr())
+        entryStrings: List[str] = list()
+        for entry in self.__entries:
+            entryStrings.append(entry.toStr())
 
-            leaderboardText = f'✨ {delimiter.join(strings)} ✨'
-
-        return f'{specificLookupText} {leaderboardText}'.strip()
+        if utils.isValidStr(specificLookupText):
+            return f'{specificLookupText}, and the leaderboard is: {delimiter.join(entryStrings)} ✨'
+        else:
+            return f'✨ {delimiter.join(entryStrings)} ✨'
 
 
 class CutenessRepository():
