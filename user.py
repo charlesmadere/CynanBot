@@ -37,6 +37,7 @@ class User():
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         triviaGamePoints: int,
+        triviaGameTutorialCutenessThreshold: int,
         waitForTriviaAnswerDelay: int,
         discord: str,
         handle: str,
@@ -140,6 +141,7 @@ class User():
         self.__isWeatherEnabled = isWeatherEnabled
         self.__isWordOfTheDayEnabled = isWordOfTheDayEnabled
         self.__triviaGamePoints = triviaGamePoints
+        self.__triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold
         self.__waitForTriviaAnswerDelay = waitForTriviaAnswerDelay
         self.__discord = discord
         self.__handle = handle
@@ -218,6 +220,9 @@ class User():
     def getTriviaGamePoints(self) -> int:
         return self.__triviaGamePoints
 
+    def getTriviaGameTutorialCutenessThreshold(self) -> int:
+        return self.__triviaGameTutorialCutenessThreshold
+
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
 
@@ -247,6 +252,9 @@ class User():
 
     def hasTriviaGamePoints(self) -> bool:
         return utils.isValidNum(self.__triviaGamePoints)
+
+    def hasTriviaGameTutorialCutenessThreshold(self) -> bool:
+        return utils.isValidNum(self.__triviaGameTutorialCutenessThreshold)
 
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitter)

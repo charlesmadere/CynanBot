@@ -135,7 +135,7 @@ class CutenessResult():
         return self.__userName
 
     def hasCuteness(self) -> bool:
-        return utils.isValidNum(self.__cuteness) and self.__cuteness >= 1
+        return utils.isValidNum(self.__cuteness)
 
     def hasLocalLeaderboard(self) -> bool:
         return utils.hasItems(self.__localLeaderboard)
@@ -144,7 +144,7 @@ class CutenessResult():
         if delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if self.hasCuteness():
+        if self.hasCuteness() and self.__cuteness >= 1:
             if self.hasLocalLeaderboard():
                 return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
             else:

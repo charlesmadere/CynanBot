@@ -8,6 +8,7 @@ from cutenessBoosterPack import CutenessBoosterPack
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.triviaModels import AbsTriviaQuestion
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from TwitchIO.twitchio.channel import Channel
@@ -429,14 +430,18 @@ class TriviaGameRedemption(AbsPointRedemption):
 
     def __init__(
         self,
+        cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         triviaGameRepository: TriviaGameRepository
     ):
-        if generalSettingsRepository is None:
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
 
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
 
@@ -460,7 +465,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        triviaQuestion = None
+        triviaQuestion: AbsTriviaQuestion = None
         try:
             triviaQuestion = self.__triviaGameRepository.fetchTrivia(
                 twitchChannel = twitchUser.getHandle(),
@@ -477,18 +482,32 @@ class TriviaGameRedemption(AbsPointRedemption):
             userName = userNameThatRedeemed
         )
 
-        points = self.__generalSettingsRepository.getTriviaGamePoints()
-        if twitchUser.hasTriviaGamePoints():
-            points = twitchUser.getTriviaGamePoints()
-        pointsStr = locale.format_string("%d", points, grouping = True)
+        cutenessResult = self.__cutenessRepository.fetchCuteness(
+            fetchLocalLeaderboard = False,
+            twitchChannel = twitchUser.getHandle(),
+            userId = userIdThatRedeemed,
+            userName = userNameThatRedeemed
+        )
+
+        triviaGameTutorialCutenessThreshold = self.__generalSettingsRepository.getTriviaGameTutorialCutenessThreshold()
+        if twitchUser.hasTriviaGameTutorialCutenessThreshold():
+            triviaGameTutorialCutenessThreshold = twitchUser.getTriviaGameTutorialCutenessThreshold()
 
         delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
             delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
-        await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-        await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
+        points = self.__generalSettingsRepository.getTriviaGamePoints()
+        if twitchUser.hasTriviaGamePoints():
+            points = twitchUser.getTriviaGamePoints()
+        pointsStr = locale.format_string("%d", points, grouping = True)
+
+        if cutenessResult.hasCuteness() and cutenessResult.getCuteness() >= triviaGameTutorialCutenessThreshold:
+            await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
+        else:
+            await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
+            await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
 
         asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,

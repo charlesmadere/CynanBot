@@ -54,11 +54,11 @@ class UsersRepository():
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
-        discord = userJson.get('discord')
-        instagram = userJson.get('instagram')
-        locationId = userJson.get('locationId')
-        speedrunProfile = userJson.get('speedrunProfile')
-        twitter = userJson.get('twitter')
+        discord: str = userJson.get('discord')
+        instagram: str = userJson.get('instagram')
+        locationId: str = userJson.get('locationId')
+        speedrunProfile: str = userJson.get('speedrunProfile')
+        twitter: str = userJson.get('twitter')
 
         timeZones = None
         if 'timeZones' in userJson:
@@ -67,8 +67,8 @@ class UsersRepository():
             timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
-        increaseCutenessDoubleRewardId = None
-        cutenessBoosterPacks = None
+        increaseCutenessDoubleRewardId: str = None
+        cutenessBoosterPacks: List[CutenessBoosterPack] = None
         if isCutenessEnabled:
             increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             cutenessBoosterPacksJson = userJson.get('cutenessBoosterPacks')
@@ -84,8 +84,8 @@ class UsersRepository():
 
                 cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
 
-        picOfTheDayFile = None
-        picOfTheDayRewardId = None
+        picOfTheDayFile: str = None
+        picOfTheDayRewardId: str = None
         if isPicOfTheDayEnabled:
             picOfTheDayFile = userJson.get('picOfTheDayFile')
             picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
@@ -93,18 +93,20 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
-        triviaGameRewardId = None
-        triviaGamePoints = None
-        waitForTriviaAnswerDelay = None
+        triviaGameRewardId: str = None
+        triviaGamePoints: int = None
+        triviaGameTutorialCutenessThreshold: int = None
+        waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
+            triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
-        pkmnBattleRewardId = None
-        pkmnCatchRewardId = None
-        pkmnEvolveRewardId = None
-        pkmnShinyRewardId = None
+        pkmnBattleRewardId: str = None
+        pkmnCatchRewardId: str = None
+        pkmnEvolveRewardId: str = None
+        pkmnShinyRewardId: str = None
         if isPkmnEnabled:
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
             pkmnCatchRewardId = userJson.get('pkmnCatchRewardId')
@@ -138,6 +140,7 @@ class UsersRepository():
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             triviaGamePoints = triviaGamePoints,
+            triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
             handle = handle,

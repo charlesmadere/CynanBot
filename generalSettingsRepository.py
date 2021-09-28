@@ -24,6 +24,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'triviaGamePoints')
 
+    def getTriviaGameTutorialCutenessThreshold(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'triviaGameTutorialCutenessThreshold', 25)
+
     def getWaitForTriviaAnswerDelay(self) -> int:
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')
