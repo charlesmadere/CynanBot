@@ -250,10 +250,10 @@ class CynanBot(Bot):
 
         self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption()
 
-        if triviaGameRepository is None:
+        if cutenessRepository is None or triviaGameRepository is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, triviaGameRepository)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(cutenessRepository, generalSettingsRepository, triviaGameRepository)
 
         ######################################
         ## Initialization of PubSub objects ##
