@@ -403,6 +403,9 @@ class CynanBot(Bot):
         print(f'Received PubSub pong ({utils.getNowTimeText(includeSeconds = True)})')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
+        if self.__generalSettingsRepository.isDebugLoggingEnabled():
+            print(f'event_raw_usernotice() ({utils.getNowTimeText()}): {tags}')
+
         if not utils.hasItems(tags):
             return
 

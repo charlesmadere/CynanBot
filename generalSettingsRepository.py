@@ -40,6 +40,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'cynanMessageEnabled', True)
 
+    def isDebugLoggingEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', False)
+
     def isDeerForceMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', False)
