@@ -413,7 +413,7 @@ class CynanBot(Bot):
 
         twitchUser = self.__usersRepository.getUser(channel.name)
 
-        if twitchUser.isRaidLinkMessagingEnabled() and msgId == 'raid':
+        if msgId == 'raid':
             await self.__raidEvent.handleEvent(
                 twitchChannel = channel,
                 twitchUser = twitchUser,
