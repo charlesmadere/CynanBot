@@ -461,10 +461,13 @@ class CynanBot(Bot):
                     # We should be fine just ignoring these, as this probably means that a user
                     # failed to have their Twitch tokens refreshed, possibly caused by a password
                     # change.
-                    print(f'Failed to validate and refresh Twitch tokens for {user.getHandle()}: {e}')
+                    print(f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
 
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
+
+            if not utils.isValidStr(twitchAccessToken):
+                continue
 
             userId = self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
