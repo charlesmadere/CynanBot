@@ -27,7 +27,9 @@ from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
-from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitchTokensRepository import (
+    TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
+    TwitchTokensRepository)
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
@@ -447,13 +449,19 @@ class CynanBot(Bot):
 
         if validateAndRefresh:
             for user in usersAndTwitchTokens:
-                self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchClientId = self.__authHelper.requireTwitchClientId(),
-                    twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
-                    twitchHandle = user.getHandle()
-                )
+                try:
+                    self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                        twitchClientId = self.__authHelper.requireTwitchClientId(),
+                        twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
+                        twitchHandle = user.getHandle()
+                    )
 
-                usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+                    usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+                except (TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException):
+                    # We should be fine just ignoring these, as this probably means that a user
+                    # failed to have their Twitch tokens refreshed, possibly caused by a password
+                    # change.
+                    pass
 
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
