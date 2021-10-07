@@ -457,11 +457,11 @@ class CynanBot(Bot):
                     )
 
                     usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-                except (TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException):
+                except (TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException) as e:
                     # We should be fine just ignoring these, as this probably means that a user
                     # failed to have their Twitch tokens refreshed, possibly caused by a password
                     # change.
-                    pass
+                    print(f'Failed to validate and refresh Twitch tokens for {user.getHandle()}: {e}')
 
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
