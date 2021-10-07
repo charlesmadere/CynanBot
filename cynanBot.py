@@ -447,6 +447,8 @@ class CynanBot(Bot):
         if not utils.hasItems(usersAndTwitchTokens):
             return pubSubTopics
 
+        usersToRemove: List[User] = list()
+
         if validateAndRefresh:
             for user in usersAndTwitchTokens:
                 try:
@@ -458,16 +460,17 @@ class CynanBot(Bot):
 
                     usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
                 except (TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException) as e:
-                    # We should be fine just ignoring these, as this probably means that a user
-                    # failed to have their Twitch tokens refreshed, possibly caused by a password
-                    # change.
+                    # if we run into this error, that most likely means that this user changed
+                    # their password
+                    usersToRemove.append(user)
                     print(f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
+
+        if utils.hasItems(usersToRemove):
+            for user in usersToRemove:
+                del usersAndTwitchTokens[user]
 
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
-
-            if not utils.isValidStr(twitchAccessToken):
-                continue
 
             userId = self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
