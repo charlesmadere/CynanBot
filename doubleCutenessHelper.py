@@ -1,7 +1,7 @@
-from CynanBotCommon.timedDict import TimedDict
 from datetime import timedelta
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.timedDict import TimedDict
 
 
 class DoubleCutenessHelper():
