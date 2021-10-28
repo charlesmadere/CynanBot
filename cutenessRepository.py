@@ -200,10 +200,10 @@ class CutenessRepository():
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        leaderboardSize: int,
-        localLeaderboardSize: int,
         userIdsRepository: UserIdsRepository,
-        doubleCutenessTimeSeconds: int = 300
+        doubleCutenessTimeSeconds: int = 300,
+        leaderboardSize: int = 10,
+        localLeaderboardSize: int = 5
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -213,7 +213,7 @@ class CutenessRepository():
             raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
         elif not utils.isValidNum(localLeaderboardSize):
             raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
-        elif localLeaderboardSize < 3 or localLeaderboardSize > 6:
+        elif localLeaderboardSize < 1 or localLeaderboardSize > 5:
             raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')

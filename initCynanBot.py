@@ -1,5 +1,4 @@
 import locale
-from datetime import timedelta
 
 from authHelper import AuthHelper
 from cutenessRepository import CutenessRepository
@@ -41,15 +40,13 @@ userIdsRepository = UserIdsRepository(
 )
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
-    leaderboardSize = 10,
-    localLeaderboardSize = 5,
     userIdsRepository = userIdsRepository
 )
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
-    cacheTimeDelta = timedelta(seconds = 1)
+    cacheTimeDelta = None
 )
 websocketConnectionServer = WebsocketConnectionServer()
 
