@@ -39,7 +39,7 @@ class UserIdsRepository():
         cursor.execute('SELECT userId FROM userIds WHERE userName = ?', ( userName, ))
         row = cursor.fetchone()
 
-        userId = None
+        userId: str = None
         if row is not None:
             userId = row[0]
 
@@ -108,7 +108,7 @@ class UserIdsRepository():
         if row is None:
             raise RuntimeError(f'No userName for userId \"{userId}\" found')
 
-        userName = row[0]
+        userName: str = row[0]
         if not utils.isValidStr(userName):
             raise RuntimeError(f'userName for userId \"{userId}\" is malformed: \"{userName}\"')
 
