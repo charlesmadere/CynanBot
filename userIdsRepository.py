@@ -1,5 +1,6 @@
 import requests
 from requests import ConnectionError, HTTPError, Timeout
+from requests.exceptions import ReadTimeout, TooManyRedirects
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 import CynanBotCommon.utils as utils
@@ -50,12 +51,10 @@ class UserIdsRepository():
             else:
                 raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
 
-        if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(twitchClientId):
-            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchClientId is malformed: \"{twitchClientId}\"')
+        if not utils.isValidStr(twitchAccessToken) or not utils.isValidStr(twitchClientId):
+            raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken (\"{twitchAccessToken}\") and/or twitchClientId (\"{twitchClientId}\") is malformed')
 
-        print(f'Performing network call to fetch Twitch user ID for \"{userName}\"...')
+        print(f'Performing network call to fetch Twitch user ID for \"{userName}\"... ({utils.getNowTimeText(includeSeconds = True)})')
 
         rawResponse = None
         try:
@@ -67,9 +66,9 @@ class UserIdsRepository():
                 },
                 timeout = utils.getDefaultTimeout()
             )
-        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, Timeout) as e:
-            print(f'Exception occurred when attempting to fetch user ID for {userName}: {e}')
-            raise RuntimeError(f'Exception occurred when attempting to fetch user ID for {userName}: {e}')
+        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, ReadTimeout, Timeout, TooManyRedirects) as e:
+            print(f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
+            raise RuntimeError(f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
 
         jsonResponse = rawResponse.json()
 
@@ -79,7 +78,7 @@ class UserIdsRepository():
         userId = jsonResponse['data'][0]['id']
 
         if not utils.isValidStr(userId):
-            raise ValueError(f'Unable to fetch user ID for {userName}: {jsonResponse}')
+            raise ValueError(f'Unable to fetch user ID for \"{userName}\": {jsonResponse}')
 
         self.setUser(userId = userId, userName = userName)
         return userId
