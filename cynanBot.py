@@ -4,13 +4,13 @@ import CynanBotCommon.utils as utils
 import twitchUtils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      CommandsCommand, CutenessCommand, DiccionarioCommand,
-                      DiscordCommand, GiveCutenessCommand, JishoCommand,
-                      JokeCommand, MyCutenessCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
-                      TamalesCommand, TimeCommand, TranslateCommand,
-                      TriviaCommand, TwitterCommand, WeatherCommand,
-                      WordCommand)
+                      CommandsCommand, CutenessCommand, CynanSourceCommand,
+                      DiccionarioCommand, DiscordCommand, GiveCutenessCommand,
+                      JishoCommand, JokeCommand, MyCutenessCommand, PbsCommand,
+                      PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
+                      SwQuoteCommand, TamalesCommand, TimeCommand,
+                      TranslateCommand, TriviaCommand, TwitterCommand,
+                      WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.chatBandManager import ChatBandManager
@@ -121,6 +121,7 @@ class CynanBot(Bot):
         #######################################
 
         self.__commandsCommand: AbsCommand = CommandsCommand(usersRepository)
+        self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(usersRepository)
@@ -526,7 +527,7 @@ class CynanBot(Bot):
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
-        await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
+        await self.__cynanSourceCommand.handleCommand(ctx)
 
     @commands.command(name = 'diccionario')
     async def command_diccionario(self, ctx: Context):
