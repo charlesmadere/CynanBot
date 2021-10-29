@@ -1,7 +1,6 @@
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
-import twitchUtils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       CommandsCommand, CutenessCommand, CynanSourceCommand,
