@@ -180,6 +180,50 @@ class DeerForceMessage(AbsMessage):
             return False
 
 
+class JamCatMessage(AbsMessage):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        usersRepository: UsersRepository,
+        jamCatMessage: str = 'jamCAT',
+        cooldown: timedelta = timedelta(minutes = 20)
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not utils.isValidStr(jamCatMessage):
+            raise ValueError(f'jamCatMessage argument is malformed: \"{jamCatMessage}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__jamCatMessage: str = jamCatMessage
+        self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleMessage(self, message: Message) -> bool:
+        if message is None:
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        if not self.__generalSettingsRepository.isJamCatMessageEnabled():
+            return False
+
+        user = self.__usersRepository.getUser(message.channel.name)
+
+        if not user.isJamCatEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if self.__jamCatMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(user.getHandle()):
+            await twitchUtils.safeSend(message.channel, self.__jamCatMessage)
+            return True
+        else:
+            return False
+
+
 class RatJamMessage(AbsMessage):
 
     def __init__(

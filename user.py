@@ -19,6 +19,7 @@ class User():
         isCynanSourceEnabled: bool,
         isDiccionarioEnabled: bool,
         isGiveCutenessEnabled: bool,
+        isJamCatEnabled: bool,
         isJishoEnabled: bool,
         isJokesEnabled: bool,
         isLocalTriviaRepositoryEnabled: bool,
@@ -72,6 +73,8 @@ class User():
             raise ValueError(f'isDiccionarioEnabled argument is malformed: \"{isDiccionarioEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
+        elif not utils.isValidBool(isJamCatEnabled):
+            raise ValueError(f'isJamCatEnabled argument is malformed: \"{isJamCatEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
             raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isJokesEnabled):
@@ -123,6 +126,7 @@ class User():
         self.__isCynanSourceEnabled = isCynanSourceEnabled
         self.__isDiccionarioEnabled = isDiccionarioEnabled
         self.__isGiveCutenessEnabled = isGiveCutenessEnabled
+        self.__isJamCatEnabled = isJamCatEnabled
         self.__isJishoEnabled = isJishoEnabled
         self.__isJokesEnabled = isJokesEnabled
         self.__isLocalTriviaRepositoryEnabled = isLocalTriviaRepositoryEnabled
@@ -285,6 +289,9 @@ class User():
 
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
+
+    def isJamCatEnabled(self) -> bool:
+        return self.__isJamCatEnabled
 
     def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled

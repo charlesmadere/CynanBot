@@ -37,6 +37,7 @@ class UsersRepository():
         isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDiccionarioEnabled = utils.getBoolFromDict(userJson, 'diccionarioEnabled', False)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
+        isJamCatEnabled = utils.getBoolFromDict(userJson, 'jamCatEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokesEnabled = utils.getBoolFromDict(userJson, 'jokesEnabled', False)
         isLocalTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'localTriviaRepositoryEnabled', False)
@@ -122,6 +123,7 @@ class UsersRepository():
             isCynanSourceEnabled = isCynanSourceEnabled,
             isDiccionarioEnabled = isDiccionarioEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
+            isJamCatEnabled = isJamCatEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,
             isLocalTriviaRepositoryEnabled = isLocalTriviaRepositoryEnabled,

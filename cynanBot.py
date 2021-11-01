@@ -36,7 +36,8 @@ from doubleCutenessHelper import DoubleCutenessHelper
 from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
-                      DeerForceMessage, RatJamMessage, StubMessage)
+                      DeerForceMessage, JamCatMessage, RatJamMessage,
+                      StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               DoubleCutenessRedemption, PkmnBattleRedemption,
                               PkmnCatchRedemption, PkmnEvolveRedemption,
@@ -217,6 +218,7 @@ class CynanBot(Bot):
 
         self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository, usersRepository)
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, usersRepository)
+        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, usersRepository)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, usersRepository)
 
         ########################################################
@@ -283,6 +285,9 @@ class CynanBot(Bot):
                 return
 
             if await self.__catJamMessage.handleMessage(message):
+                return
+
+            if await self.__jamCatMessage.handleMessage(message):
                 return
 
             if await self.__ratJamMessage.handleMessage(message):

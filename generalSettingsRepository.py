@@ -34,7 +34,7 @@ class GeneralSettingsRepository():
 
     def isCatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', False)
 
     def isCynanMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -56,9 +56,13 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'funtoonTwitchChatFallbackEnabled', True)
 
+    def isJamCatMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', False)
+
     def isRatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', False)
 
     def isRewardIdPrintingEnabled(self) -> bool:
         jsonContents = self.__readJson()
