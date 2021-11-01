@@ -354,16 +354,16 @@ class CynanBot(Bot):
                 )
                 return
 
-            if rewardId == twitchUser.getPkmnCatchRewardId():
-                await self.__pkmnCatchPointRedemption.handlePointRedemption(
+            if twitchUser.hasPkmnCatchBoosterPacks():
+                if await self.__pkmnCatchPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
                     rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
-                )
-                return
+                ):
+                    return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
                 await self.__pkmnEvolvePointRedemption.handlePointRedemption(

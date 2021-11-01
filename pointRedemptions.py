@@ -6,11 +6,13 @@ import CynanBotCommon.utils as utils
 import twitchUtils
 from cutenessBoosterPack import CutenessBoosterPack
 from cutenessRepository import CutenessRepository
-from CynanBotCommon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoonRepository import (FuntoonPkmnCatchType,
+                                              FuntoonRepository)
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaModels import AbsTriviaQuestion
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
+from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
 from TwitchIO.twitchio.channel import Channel
 from user import User
 
@@ -65,7 +67,7 @@ class CutenessRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        if not twitchUser.hasCutenessBoosterPacks():
+        if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
             return False
 
         cutenessBoosterPack: CutenessBoosterPack = None
@@ -132,7 +134,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        if not twitchUser.hasCutenessBoosterPacks():
+        if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
             return False
 
         print(f'Enabling double cuteness points in {twitchUser.getHandle()} ({utils.getNowTimeText(includeSeconds = True)})')
@@ -200,6 +202,9 @@ class PkmnBattleRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
+        if not twitchUser.isPkmnEnabled():
+            return False
+
         splits = utils.getCleanedSplits(redemptionMessage)
 
         if not utils.hasItems(splits):
@@ -258,10 +263,26 @@ class PkmnCatchRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
+        if not twitchUser.isPkmnEnabled() or not twitchUser.hasPkmnCatchBoosterPacks():
+            return False
+
+        pkmnCatchBoosterPack: PkmnCatchBoosterPack = None
+
+        for pkbp in twitchUser.getPkmnCatchBoosterPacks():
+            if rewardId == pkbp.getRewardId():
+                pkmnCatchBoosterPack = pkbp
+                break
+
+        if pkmnCatchBoosterPack is None:
+            return False
+
+        funtoonPkmnCatchType = self.__toFuntoonPkmnCatchType(pkmnCatchBoosterPack)
+
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnCatch(
                 userThatRedeemed = userNameThatRedeemed,
-                twitchChannel = twitchUser.getHandle()
+                twitchChannel = twitchUser.getHandle(),
+                funtoonPkmnCatchType = funtoonPkmnCatchType
             ):
                 return True
 
@@ -270,6 +291,24 @@ class PkmnCatchRedemption(AbsPointRedemption):
             return True
         else:
             return False
+
+    def __toFuntoonPkmnCatchType(
+        self,
+        pkmnCatchBoosterPack: PkmnCatchBoosterPack
+    ) -> FuntoonPkmnCatchType:
+        if pkmnCatchBoosterPack is None:
+            raise ValueError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')
+
+        if pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.NORMAL:
+            return FuntoonPkmnCatchType.NORMAL
+        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.GREAT:
+            return FuntoonPkmnCatchType.GREAT
+        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.ULTRA:
+            return FuntoonPkmnCatchType.ULTRA
+        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.SHINY_ONLY:
+            return FuntoonPkmnCatchType.SHINY_ONLY
+        else:
+            raise ValueError(f'unknown PkmnCatchType: \"{pkmnCatchBoosterPack.getCatchType()}\"')
 
 
 class PkmnEvolveRedemption(AbsPointRedemption):
@@ -306,6 +345,9 @@ class PkmnEvolveRedemption(AbsPointRedemption):
             raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+
+        if not twitchUser.isPkmnEnabled():
+            return False
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnGiveEvolve(

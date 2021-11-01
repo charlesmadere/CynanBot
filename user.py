@@ -5,6 +5,7 @@ from typing import List
 
 import CynanBotCommon.utils as utils
 from cutenessBoosterPack import CutenessBoosterPack
+from pkmnBoosterPacks import PkmnCatchBoosterPack
 
 
 class User():
@@ -48,13 +49,13 @@ class User():
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
         pkmnBattleRewardId: str,
-        pkmnCatchRewardId: str,
         pkmnEvolveRewardId: str,
         pkmnShinyRewardId: str,
         speedrunProfile: str,
         triviaGameRewardId: str,
         twitter: str,
         cutenessBoosterPacks: List[CutenessBoosterPack],
+        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack],
         timeZones: List[tzinfo]
     ):
         if not utils.isValidBool(isAnalogueEnabled):
@@ -155,13 +156,13 @@ class User():
         self.__picOfTheDayFile = picOfTheDayFile
         self.__picOfTheDayRewardId = picOfTheDayRewardId
         self.__pkmnBattleRewardId = pkmnBattleRewardId
-        self.__pkmnCatchRewardId = pkmnCatchRewardId
         self.__pkmnEvolveRewardId = pkmnEvolveRewardId
         self.__pkmnShinyRewardId = pkmnShinyRewardId
         self.__speedrunProfile = speedrunProfile
         self.__triviaGameRewardId = triviaGameRewardId
         self.__twitter = twitter
         self.__cutenessBoosterPacks = cutenessBoosterPacks
+        self.__pkmnCatchBoosterPacks = pkmnCatchBoosterPacks
         self.__timeZones = timeZones
 
     def fetchPicOfTheDay(self) -> str:
@@ -203,8 +204,8 @@ class User():
     def getPkmnBattleRewardId(self) -> str:
         return self.__pkmnBattleRewardId
 
-    def getPkmnCatchRewardId(self) -> str:
-        return self.__pkmnCatchRewardId
+    def getPkmnCatchBoosterPacks(self) -> List[PkmnCatchBoosterPack]:
+        return self.__pkmnCatchBoosterPacks
 
     def getPkmnEvolveRewardId(self) -> str:
         return self.__pkmnEvolveRewardId
@@ -247,6 +248,9 @@ class User():
 
     def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
+
+    def hasPkmnCatchBoosterPacks(self) -> bool:
+        return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)

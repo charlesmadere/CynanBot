@@ -5,6 +5,7 @@ from typing import Dict, List
 import CynanBotCommon.utils as utils
 from cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
 from user import User
 
 
@@ -73,17 +74,7 @@ class UsersRepository():
         if isCutenessEnabled:
             increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             cutenessBoosterPacksJson = userJson.get('cutenessBoosterPacks')
-
-            if utils.hasItems(cutenessBoosterPacksJson):
-                cutenessBoosterPacks: List[CutenessBoosterPack] = list()
-
-                for cutenessBoosterPackJson in cutenessBoosterPacksJson:
-                    cutenessBoosterPacks.append(CutenessBoosterPack(
-                        amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount'),
-                        rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
-                    ))
-
-                cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
+            cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
         picOfTheDayFile: str = None
         picOfTheDayRewardId: str = None
@@ -105,14 +96,15 @@ class UsersRepository():
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
         pkmnBattleRewardId: str = None
-        pkmnCatchRewardId: str = None
         pkmnEvolveRewardId: str = None
         pkmnShinyRewardId: str = None
+        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = None
         if isPkmnEnabled:
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
-            pkmnCatchRewardId = userJson.get('pkmnCatchRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
             pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
+            pkmnCatchBoosterPacksJson = userJson.get('pkmnCatchBoosterPacks')
+            pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
@@ -152,13 +144,13 @@ class UsersRepository():
             picOfTheDayFile = picOfTheDayFile,
             picOfTheDayRewardId = picOfTheDayRewardId,
             pkmnBattleRewardId = pkmnBattleRewardId,
-            pkmnCatchRewardId = pkmnCatchRewardId,
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             speedrunProfile = speedrunProfile,
             triviaGameRewardId = triviaGameRewardId,
             twitter = twitter,
             cutenessBoosterPacks = cutenessBoosterPacks,
+            pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             timeZones = timeZones
         )
 
@@ -187,6 +179,37 @@ class UsersRepository():
 
         users.sort(key = lambda user: user.getHandle().lower())
         return users
+
+    def __parseCutenessBoosterPacksFromJson(self, json: Dict) -> List[CutenessBoosterPack]:
+        if not utils.hasItems(json):
+            return None
+
+        cutenessBoosterPacks: List[CutenessBoosterPack] = list()
+
+        for cutenessBoosterPackJson in json:
+            cutenessBoosterPacks.append(CutenessBoosterPack(
+                amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount'),
+                rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
+            ))
+
+        cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
+        return cutenessBoosterPacks
+
+    def __parsePkmnCatchBoosterPacksFromJson(self, json: Dict) -> List[PkmnCatchBoosterPack]:
+        if not utils.hasItems(json):
+            return None
+
+        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = list()
+
+        for pkmnCatchBoosterPackJson in json:
+            pkmnCatchType = PkmnCatchType.fromStr(utils.getStrFromDict(pkmnCatchBoosterPackJson, 'catchType'))
+            pkmnCatchBoosterPacks.append(PkmnCatchBoosterPack(
+                pkmnCatchType = pkmnCatchType,
+                rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
+            ))
+
+        pkmnCatchBoosterPacks.sort(key = lambda pack: pack.getCatchType().getSortOrder())
+        return pkmnCatchBoosterPacks
 
     def __readJson(self) -> Dict:
         if not os.path.exists(self.__usersFile):
