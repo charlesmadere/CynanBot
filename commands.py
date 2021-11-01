@@ -21,6 +21,8 @@ from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
                                                  TriviaGameRepository)
 from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.triviaScoreRepository import (TriviaScoreRepository,
+                                                  TriviaScoreResult)
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from doubleCutenessHelper import DoubleCutenessHelper
@@ -236,6 +238,8 @@ class CommandsCommand(AbsCommand):
 
         if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
             commands.append('!trivia')
+        elif not user.isTriviaEnabled() and user.isTriviaGameEnabled():
+            commands.append('!triviascore')
 
         if user.isWeatherEnabled():
             commands.append('!weather')
@@ -994,6 +998,113 @@ class TriviaCommand(AbsCommand):
             print(f'Error retrieving trivia: {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error retrieving trivia')
 
+
+class TriviaScoreCommand(AbsCommand):
+
+    def __init__(
+        self,
+        triviaScoreRepository: TriviaScoreRepository,
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(seconds = 30)
+    ):
+        if triviaScoreRepository is None:
+            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif userIdsRepository is None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def __getResultStr(
+        self,
+        userName: str,
+        result: TriviaScoreResult
+    ) -> str:
+        if not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+
+        if result.getTotal() <= 0:
+            return f'{userName} has not played any trivia games 😿'
+
+        gamesStr: str = 'games'
+        if result.getTotal() == 1:
+            gamesStr = 'game'
+
+        lossesStr: str = 'losses'
+        if result.getTotalLosses() == 1:
+            lossesStr = 'loss'
+
+        winsStr: str = 'wins'
+        if result.getTotalWins() == 1:
+            winsStr = 'win'
+
+        streakStr: str = None
+        if result.getStreak() >= 3:
+            streakStr = f', and is on a {result.getStreakStr()} game winning streak 😸'
+        elif result.getStreak() <= -3:
+            streakStr = f', and is on a {result.getStreakStr()} game losing streak 🙀'
+        else:
+            streakStr = '.'
+
+        return f'{userName} has played {result.getTotal()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{streakStr}'
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        userName: str = None
+        if len(splits) >= 2:
+            userName = utils.removePreceedingAt(splits[1])
+        else:
+            userName = ctx.author.name
+
+        userId: str = None
+        result: TriviaScoreResult = None
+
+        # this means that a user is querying for another user's trivia score
+        if userName.lower() != ctx.author.name.lower():
+            try:
+                userId = self.__userIdsRepository.fetchUserId(userName = userName)
+            except (RuntimeError, ValueError):
+                # this exception can be safely ignored
+                pass
+
+            if not utils.isValidStr(userId):
+                print(f'Unable to find user ID for \"{userName}\" in the database (Twitch channel is \"{user.getHandle()}\")')
+                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                return
+
+            result = self.__triviaScoreRepository.fetchScore(
+                twitchChannel = user.getHandle(),
+                userId = userId
+            )
+        else:
+            userId = str(ctx.author.id)
+
+            result = self.__triviaScoreRepository.fetchScore(
+                twitchChannel = user.getHandle(),
+                userId = userId
+            )
+
+        await twitchUtils.safeSend(ctx, self.__getResultStr(
+            userName = userName,
+            result = result
+        ))
 
 class TwitterCommand(AbsCommand):
 

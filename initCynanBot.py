@@ -21,6 +21,7 @@ from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
@@ -47,6 +48,9 @@ timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     cacheTimeDelta = None
+)
+triviaScoreRepository = TriviaScoreRepository(
+    backingDatabase = backingDatabase
 )
 websocketConnectionServer = WebsocketConnectionServer()
 
@@ -92,9 +96,11 @@ cynanBot = CynanBot(
     tamaleGuyRepository = TamaleGuyRepository(),
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
-        triviaRepository = triviaRepository
+        triviaRepository = triviaRepository,
+        triviaScoreRepository = triviaScoreRepository
     ),
     triviaRepository = triviaRepository,
+    triviaScoreRepository = triviaScoreRepository,
     twitchTokensRepository = TwitchTokensRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase

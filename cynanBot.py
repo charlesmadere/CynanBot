@@ -8,8 +8,8 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       JishoCommand, JokeCommand, MyCutenessCommand, PbsCommand,
                       PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
                       SwQuoteCommand, TamalesCommand, TimeCommand,
-                      TranslateCommand, TriviaCommand, TwitterCommand,
-                      WeatherCommand, WordCommand)
+                      TranslateCommand, TriviaCommand, TriviaScoreCommand,
+                      TwitterCommand, WeatherCommand, WordCommand)
 from cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.chatBandManager import ChatBandManager
@@ -26,6 +26,7 @@ from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
+from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
     TwitchTokensRepository)
@@ -77,6 +78,7 @@ class CynanBot(Bot):
         translationHelper: TranslationHelper,
         triviaGameRepository: TriviaGameRepository,
         triviaRepository: TriviaRepository,
+        triviaScoreRepository: TriviaScoreRepository,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -188,6 +190,11 @@ class CynanBot(Bot):
             self.__triviaCommand: AbsCommand = StubCommand()
         else:
             self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, triviaRepository, usersRepository)
+
+        if triviaScoreRepository is None:
+            self.__triviaScoreCommand: AbsCommand = StubCommand()
+        else:
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(triviaScoreRepository, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
@@ -592,6 +599,10 @@ class CynanBot(Bot):
     @commands.command(name = 'trivia')
     async def command_trivia(self, ctx: Context):
         await self.__triviaCommand.handleCommand(ctx)
+
+    @commands.command(name = 'triviascore')
+    async def command_triviascore(self, ctx: Context):
+        await self.__triviaScoreCommand.handleCommand(ctx)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx: Context):
