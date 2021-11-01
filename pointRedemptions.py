@@ -398,6 +398,9 @@ class PkmnShinyRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
+        if not twitchUser.isPkmnEnabled():
+            return False
+
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnGiveShiny(
                 userThatRedeemed = userNameThatRedeemed,
@@ -506,6 +509,9 @@ class TriviaGameRedemption(AbsPointRedemption):
             raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+
+        if not twitchUser.isTriviaGameEnabled():
+            return False
 
         triviaQuestion: AbsTriviaQuestion = None
         try:
