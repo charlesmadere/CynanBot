@@ -13,7 +13,7 @@ class DoubleCutenessHelper():
         if doubleCutenessDuration is None:
             raise ValueError(f'doubleCutenessDuration argument is malformed: \"{doubleCutenessDuration}\"')
 
-        self.__times = TimedDict(doubleCutenessDuration)
+        self.__times: TimedDict = TimedDict(doubleCutenessDuration)
 
     def beginDoubleCuteness(self, twitchHandle: str):
         if not utils.isValidStr(twitchHandle):
