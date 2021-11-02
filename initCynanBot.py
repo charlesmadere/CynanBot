@@ -49,9 +49,6 @@ triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     cacheTimeDelta = None
 )
-triviaScoreRepository = TriviaScoreRepository(
-    backingDatabase = backingDatabase
-)
 websocketConnectionServer = WebsocketConnectionServer()
 
 enEsDictionary: EnEsDictionary = None
@@ -96,11 +93,12 @@ cynanBot = CynanBot(
     tamaleGuyRepository = TamaleGuyRepository(),
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
-        triviaRepository = triviaRepository,
-        triviaScoreRepository = triviaScoreRepository
+        triviaRepository = triviaRepository
     ),
     triviaRepository = triviaRepository,
-    triviaScoreRepository = triviaScoreRepository,
+    triviaScoreRepository = TriviaScoreRepository(
+        backingDatabase = backingDatabase
+    ),
     twitchTokensRepository = TwitchTokensRepository(),
     userIdsRepository = UserIdsRepository(
         backingDatabase = backingDatabase
