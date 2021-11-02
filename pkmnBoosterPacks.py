@@ -33,7 +33,17 @@ class PkmnCatchType(Enum):
         elif self is PkmnCatchType.ULTRA:
             return 2
         else:
-            raise ValueError(f'unknown PkmnCatchType: \"{self}\"')
+            raise RuntimeError(f'unknown PkmnCatchType: \"{self}\"')
+
+    def toStr(self) -> str:
+        if self is PkmnCatchType.GREAT:
+            return 'great'
+        elif self is PkmnCatchType.NORMAL:
+            return 'normal'
+        elif self is PkmnCatchType.ULTRA:
+            return 'ultra'
+        else:
+            raise RuntimeError(f'unknown PkmnCatchType: \"{self}\"')
 
 
 class PkmnCatchBoosterPack():

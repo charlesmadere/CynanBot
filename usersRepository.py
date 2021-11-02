@@ -202,9 +202,14 @@ class UsersRepository():
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = list()
 
         for pkmnCatchBoosterPackJson in json:
-            pkmnCatchType = PkmnCatchType.fromStr(utils.getStrFromDict(pkmnCatchBoosterPackJson, 'catchType'))
+            pkmnCatchTypeStr = utils.getStrFromDict(
+                d = pkmnCatchBoosterPackJson,
+                key = 'catchType',
+                fallback = PkmnCatchType.NORMAL.toStr()
+            )
+
             pkmnCatchBoosterPacks.append(PkmnCatchBoosterPack(
-                pkmnCatchType = pkmnCatchType,
+                pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr),
                 rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
             ))
 
