@@ -7,7 +7,6 @@ class PkmnCatchType(Enum):
 
     GREAT = auto()
     NORMAL = auto()
-    SHINY_ONLY = auto()
     ULTRA = auto()
 
     @classmethod
@@ -21,8 +20,6 @@ class PkmnCatchType(Enum):
             return PkmnCatchType.GREAT
         elif text == 'normal':
             return PkmnCatchType.NORMAL
-        elif text == 'shinyOnly':
-            return PkmnCatchType.SHINY_ONLY
         elif text == 'ultra':
             return PkmnCatchType.ULTRA
         else:
@@ -33,8 +30,6 @@ class PkmnCatchType(Enum):
             return 1
         elif self is PkmnCatchType.NORMAL:
             return 0
-        elif self is PkmnCatchType.SHINY_ONLY:
-            return 3
         elif self is PkmnCatchType.ULTRA:
             return 2
         else:

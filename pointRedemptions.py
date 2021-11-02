@@ -305,8 +305,6 @@ class PkmnCatchRedemption(AbsPointRedemption):
             return FuntoonPkmnCatchType.GREAT
         elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.ULTRA:
             return FuntoonPkmnCatchType.ULTRA
-        elif pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.SHINY_ONLY:
-            return FuntoonPkmnCatchType.SHINY_ONLY
         else:
             raise ValueError(f'unknown PkmnCatchType: \"{pkmnCatchBoosterPack.getCatchType()}\"')
 
