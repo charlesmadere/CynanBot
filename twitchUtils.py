@@ -1,8 +1,9 @@
 import asyncio
 from typing import List
 
+from twitchio.abcs import Messageable
+
 import CynanBotCommon.utils as utils
-from TwitchIO.twitchio.abcs import Messageable
 
 
 async def safeSend(messageable: Messageable, message: str):

@@ -1,6 +1,3 @@
 [submodule "CynanBotCommon"]
 	path = CynanBotCommon
 	url = https://github.com/charlesmadere/CynanBotCommon.git
-[submodule "TwitchIO"]
-	path = TwitchIO
-	url = https://github.com/charlesmadere/TwitchIO.git

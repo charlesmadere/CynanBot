@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
+from twitchio import Message
+
 import CynanBotCommon.utils as utils
 import twitchUtils
 from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
-from TwitchIO.twitchio import Message
 from usersRepository import UsersRepository
 
 

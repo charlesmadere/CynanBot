@@ -3,10 +3,11 @@ import locale
 from abc import ABC, abstractmethod
 from typing import Dict
 
+from twitchio.channel import Channel
+
 import CynanBotCommon.utils as utils
 import twitchUtils
 from generalSettingsRepository import GeneralSettingsRepository
-from TwitchIO.twitchio.channel import Channel
 from user import User
 
 

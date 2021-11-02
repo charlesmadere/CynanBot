@@ -2,6 +2,8 @@ import asyncio
 import locale
 from abc import ABC, abstractmethod
 
+from twitchio.channel import Channel
+
 import CynanBotCommon.utils as utils
 import twitchUtils
 from cutenessBoosterPack import CutenessBoosterPack
@@ -14,7 +16,6 @@ from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
-from TwitchIO.twitchio.channel import Channel
 from user import User
 
 
