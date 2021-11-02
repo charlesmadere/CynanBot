@@ -47,7 +47,9 @@ async def waitThenSend(
     messageable: Messageable,
     delaySeconds: int,
     message: str,
-    heartbeat = lambda: True
+    heartbeat = lambda: True,
+    beforeSend = lambda: None,
+    afterSend = lambda: None
 ):
     if messageable is None:
         raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
@@ -63,4 +65,6 @@ async def waitThenSend(
     await asyncio.sleep(delaySeconds)
 
     if heartbeat():
+        beforeSend()
         await safeSend(messageable, message)
+        afterSend()

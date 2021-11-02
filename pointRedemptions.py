@@ -564,7 +564,8 @@ class TriviaGameRedemption(AbsPointRedemption):
             messageable = twitchChannel,
             delaySeconds = delaySeconds,
             message = f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
-            heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle())
+            heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle()),
+            beforeSend = lambda: self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed)
         ))
 
         return True

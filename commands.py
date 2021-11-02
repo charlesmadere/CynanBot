@@ -142,12 +142,14 @@ class AnswerCommand(AbsCommand):
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
             answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getAnswerReveal()
             await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
+            self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
             print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
 
+        self.__triviaScoreRepository.incrementTotalWins(user.getHandle(), userId)
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
 
         if user.hasTriviaGamePoints():
