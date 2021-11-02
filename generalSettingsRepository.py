@@ -34,11 +34,11 @@ class GeneralSettingsRepository():
 
     def isCatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', True)
 
     def isChatBandEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'chatBandEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'chatBandEnabled', True)
 
     def isCynanMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -50,11 +50,11 @@ class GeneralSettingsRepository():
 
     def isDeerForceMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', True)
 
     def isFuntoonApiEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'funtoonApiEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'funtoonApiEnabled', True)
 
     def isFuntoonTwitchChatFallbackEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -62,23 +62,23 @@ class GeneralSettingsRepository():
 
     def isJamCatMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', True)
 
     def isJishoEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'jishoEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'jishoEnabled', True)
 
     def isPokepediaEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', True)
 
     def isRaidLinkMessagingEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'raidLinkMessagingEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'raidLinkMessagingEnabled', True)
 
     def isRatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', True)
 
     def isRewardIdPrintingEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -86,19 +86,19 @@ class GeneralSettingsRepository():
 
     def isTranslateEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'translateEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'translateEnabled', True)
 
     def isTriviaEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'triviaEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'triviaEnabled', True)
 
     def isTriviaGameEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'triviaGameEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'triviaGameEnabled', True)
 
     def isWeatherEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'weatherEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'weatherEnabled', True)
 
     def __readJson(self) -> Dict:
         if not os.path.exists(self.__generalSettingsFile):
