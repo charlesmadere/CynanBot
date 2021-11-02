@@ -135,10 +135,10 @@ class CynanBot(Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, usersRepository)
 
-        if cutenessRepository is None or triviaGameRepository is None:
+        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, triviaGameRepository, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, triviaGameRepository, triviaScoreRepository, usersRepository)
 
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -261,10 +261,10 @@ class CynanBot(Bot):
 
         self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption()
 
-        if cutenessRepository is None or triviaGameRepository is None:
+        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(cutenessRepository, generalSettingsRepository, triviaGameRepository)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(cutenessRepository, generalSettingsRepository, triviaGameRepository, triviaScoreRepository)
 
         ######################################
         ## Initialization of PubSub objects ##

@@ -10,6 +10,7 @@ from CynanBotCommon.funtoonRepository import (FuntoonPkmnCatchType,
                                               FuntoonRepository)
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaModels import AbsTriviaQuestion
+from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
@@ -475,7 +476,8 @@ class TriviaGameRedemption(AbsPointRedemption):
         self,
         cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        triviaGameRepository: TriviaGameRepository
+        triviaGameRepository: TriviaGameRepository,
+        triviaScoreRepository: TriviaScoreRepository
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -483,10 +485,13 @@ class TriviaGameRedemption(AbsPointRedemption):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
+        elif triviaScoreRepository is None:
+            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
 
     async def handlePointRedemption(
         self,

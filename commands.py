@@ -85,6 +85,7 @@ class AnswerCommand(AbsCommand):
         doubleCutenessHelper: DoubleCutenessHelper,
         generalSettingsRepository: GeneralSettingsRepository,
         triviaGameRepository: TriviaGameRepository,
+        triviaScoreRepository: TriviaScoreRepository,
         usersRepository: UsersRepository
     ):
         if cutenessRepository is None:
@@ -95,6 +96,8 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
+        elif triviaScoreRepository is None:
+            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -102,6 +105,7 @@ class AnswerCommand(AbsCommand):
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
