@@ -60,6 +60,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', False)
 
+    def isRaidLinkMessagingEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'raidLinkMessagingEnabled', False)
+
     def isRatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', False)
