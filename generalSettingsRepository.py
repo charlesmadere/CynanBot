@@ -36,6 +36,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', False)
 
+    def isChatBandEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'chatBandEnabled', False)
+
     def isCynanMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'cynanMessageEnabled', True)
