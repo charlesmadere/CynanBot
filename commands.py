@@ -112,7 +112,7 @@ class AnswerCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
             return
         elif self.__triviaGameRepository.isAnswered(user.getHandle()):
             return
@@ -243,10 +243,11 @@ class CommandsCommand(AbsCommand):
         if user.isTranslateEnabled():
             commands.append('!translate')
 
-        if user.isTriviaEnabled() and not user.isTriviaGameEnabled():
-            commands.append('!trivia')
-        elif not user.isTriviaEnabled() and user.isTriviaGameEnabled():
-            commands.append('!triviascore')
+        if user.isTriviaEnabled():
+            if user.isTriviaGameEnabled():
+                commands.append('!triviascore')
+            else:
+                commands.append('!trivia')
 
         if user.isWeatherEnabled():
             commands.append('!weather')
@@ -985,9 +986,9 @@ class TriviaCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if user.isTriviaGameEnabled():
+        if not self.__generalSettingsRepository.isTriviaEnabled():
             return
-        if not user.isTriviaEnabled():
+        elif not user.isTriviaEnabled() or user.isTriviaGameEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
