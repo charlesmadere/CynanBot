@@ -64,6 +64,14 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', False)
 
+    def isJishoEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'jishoEnabled', False)
+
+    def isPokepediaEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', False)
+
     def isRaidLinkMessagingEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'raidLinkMessagingEnabled', False)
@@ -76,14 +84,15 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'rewardIdPrintingEnabled', False)
 
+    def isTranslateEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'translateEnabled', False)
+
     def isTriviaEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'triviaEnabled', False)
 
     def isTriviaGameEnabled(self) -> bool:
-        if not self.isTriviaEnabled():
-            return False
-
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'triviaGameEnabled', False)
 

@@ -158,7 +158,7 @@ class CynanBot(Bot):
         if jishoHelper is None:
             self.__jishoCommand: AbsCommand = StubCommand()
         else:
-            self.__jishoCommand: AbsCommand = JishoCommand(jishoHelper, usersRepository)
+            self.__jishoCommand: AbsCommand = JishoCommand(generalSettingsRepository, jishoHelper, usersRepository)
 
         if jokesRepository is None:
             self.__jokeCommand: AbsCommand = StubCommand()
@@ -169,8 +169,8 @@ class CynanBot(Bot):
             self.__pkMonCommand: AbsCommand = StubCommand()
             self.__pkMoveCommand: AbsCommand = StubCommand()
         else:
-            self.__pkMonCommand: AbsCommand = PkMonCommand(pokepediaRepository, usersRepository)
-            self.__pkMoveCommand: AbsCommand = PkMoveCommand(pokepediaRepository, usersRepository)
+            self.__pkMonCommand: AbsCommand = PkMonCommand(generalSettingsRepository, pokepediaRepository, usersRepository)
+            self.__pkMoveCommand: AbsCommand = PkMoveCommand(generalSettingsRepository, pokepediaRepository, usersRepository)
 
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsCommand = StubCommand()
@@ -185,7 +185,7 @@ class CynanBot(Bot):
         if translationHelper is None:
             self.__translateCommand: AbsCommand = StubCommand()
         else:
-            self.__translateCommand: AbsCommand = TranslateCommand(languagesRepository, translationHelper, usersRepository)
+            self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, translationHelper, usersRepository)
 
         if triviaRepository is None:
             self.__triviaCommand: AbsCommand = StubCommand()
@@ -195,12 +195,12 @@ class CynanBot(Bot):
         if triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(triviaScoreRepository, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, triviaScoreRepository, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
         else:
-            self.__weatherCommand: AbsCommand = WeatherCommand(locationsRepository, usersRepository, weatherRepository)
+            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, usersRepository, weatherRepository)
 
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsCommand = StubCommand()

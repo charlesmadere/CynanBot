@@ -112,7 +112,9 @@ class AnswerCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
+        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled():
             return
         elif self.__triviaGameRepository.isAnswered(user.getHandle()):
             return
@@ -244,10 +246,10 @@ class CommandsCommand(AbsCommand):
             commands.append('!translate')
 
         if user.isTriviaEnabled():
-            if user.isTriviaGameEnabled():
-                commands.append('!triviascore')
-            else:
-                commands.append('!trivia')
+            commands.append('!trivia')
+
+        if user.isTriviaGameEnabled():
+            commands.append('!triviascore')
 
         if user.isWeatherEnabled():
             commands.append('!weather')
@@ -514,17 +516,21 @@ class JishoCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 8)
     ):
-        if jishoHelper is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif jishoHelper is None:
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__jishoHelper: JishoHelper = jishoHelper
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -532,7 +538,9 @@ class JishoCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isJishoEnabled():
+        if not self.__generalSettingsRepository.isJishoEnabled():
+            return
+        elif not user.isJishoEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReady(user.getHandle()):
             return
@@ -658,17 +666,21 @@ class PkMonCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if pokepediaRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -676,7 +688,9 @@ class PkMonCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isPokepediaEnabled():
+        if not self.__generalSettingsRepository.isPokepediaEnabled():
+            return
+        elif not user.isPokepediaEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -702,17 +716,21 @@ class PkMoveCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if pokepediaRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -720,7 +738,9 @@ class PkMoveCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isPokepediaEnabled():
+        if not self.__generalSettingsRepository.isPokepediaEnabled():
+            return
+        elif not user.isPokepediaEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -758,11 +778,12 @@ class RaceCommand(AbsCommand):
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
+        if not ctx.author.is_mod:
+            return
+
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.isRaceEnabled():
-            return
-        elif not ctx.author.is_mod:
             return
         elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -907,12 +928,15 @@ class TranslateCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
         translationHelper: TranslationHelper,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if languagesRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif translationHelper is None:
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
@@ -921,6 +945,7 @@ class TranslateCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__translationHelper: TranslationHelper = translationHelper
         self.__usersRepository: UsersRepository = usersRepository
@@ -929,7 +954,9 @@ class TranslateCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTranslateEnabled():
+        if not self.__generalSettingsRepository.isTranslateEnabled():
+            return
+        elif not user.isTranslateEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -988,7 +1015,7 @@ class TriviaCommand(AbsCommand):
 
         if not self.__generalSettingsRepository.isTriviaEnabled():
             return
-        elif not user.isTriviaEnabled() or user.isTriviaGameEnabled():
+        elif not user.isTriviaEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -1011,12 +1038,15 @@ class TriviaScoreCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         triviaScoreRepository: TriviaScoreRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if triviaScoreRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -1025,6 +1055,7 @@ class TriviaScoreCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1068,7 +1099,9 @@ class TriviaScoreCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -1144,12 +1177,15 @@ class WeatherCommand(AbsCommand):
     
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if locationsRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif locationsRepository is None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1158,6 +1194,7 @@ class WeatherCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: LocationsRepository = locationsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: WeatherRepository = weatherRepository
@@ -1166,7 +1203,9 @@ class WeatherCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isWeatherEnabled():
+        if not self.__generalSettingsRepository.isWeatherEnabled():
+            return
+        elif not user.isWeatherEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return

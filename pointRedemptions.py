@@ -514,7 +514,9 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        if not twitchUser.isTriviaGameEnabled():
+        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+            return False
+        elif not twitchUser.isTriviaGameEnabled():
             return False
 
         triviaQuestion: AbsTriviaQuestion = None
