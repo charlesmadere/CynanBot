@@ -217,17 +217,17 @@ class CynanBot(Bot):
         ## Initialization of message handler objects ##
         ###############################################
 
-        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository, usersRepository)
+        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository)
 
         if chatBandManager is None:
             self.__chatBandMessage: AbsMessage = StubMessage()
         else:
-            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, usersRepository)
+            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository)
 
-        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository, usersRepository)
-        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, usersRepository)
-        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, usersRepository)
-        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, usersRepository)
+        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository)
+        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository)
+        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository)
+        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository)
 
         ########################################################
         ## Initialization of point redemption handler objects ##
@@ -284,21 +284,41 @@ class CynanBot(Bot):
             return
 
         if utils.isValidStr(message.content):
-            await self.__chatBandMessage.handleMessage(message)
+            twitchUser = self.__usersRepository.getUser(message.channel.name)
 
-            if await self.__cynanMessage.handleMessage(message):
+            await self.__chatBandMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            )
+
+            if await self.__cynanMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
                 return
 
-            if await self.__deerForceMessage.handleMessage(message):
+            if await self.__deerForceMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
                 return
 
-            if await self.__catJamMessage.handleMessage(message):
+            if await self.__catJamMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
                 return
 
-            if await self.__jamCatMessage.handleMessage(message):
+            if await self.__jamCatMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
                 return
 
-            if await self.__ratJamMessage.handleMessage(message):
+            if await self.__ratJamMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
                 return
 
         await self.handle_commands(message)
