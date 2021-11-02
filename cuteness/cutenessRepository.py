@@ -5,194 +5,10 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.backingDatabase import BackingDatabase
 from userIdsRepository import UserIdsRepository
 
-
-class CutenessLeaderboardEntry():
-
-    def __init__(
-        self,
-        cuteness: int,
-        rank: int,
-        userId: str,
-        userName: str
-    ):
-        if not utils.isValidNum(cuteness):
-            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        elif not utils.isValidNum(rank):
-            raise ValueError(f'rank argument is malformed: \"{rank}\"')
-        elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness: int = cuteness
-        self.__rank: int = rank
-        self.__userId: str = userId
-        self.__userName: str = userName
-
-    def getCuteness(self) -> int:
-        return self.__cuteness
-
-    def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping = True)
-
-    def getRank(self) -> int:
-        return self.__rank
-
-    def getRankStr(self) -> str:
-        return locale.format_string("%d", self.__rank, grouping = True)
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
-    def toStr(self) -> str:
-        return f'#{self.getRankStr()} {self.__userName} ({self.getCutenessStr()})'
-
-
-class CutenessLocalLeaderboardEntry():
-
-    def __init__(
-        self,
-        cuteness: int,
-        userId: str,
-        userName: str
-    ):
-        if not utils.isValidNum(cuteness):
-            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness: int = cuteness
-        self.__userId: str = userId
-        self.__userName: str = userName
-
-    def getCuteness(self) -> int:
-        return self.__cuteness
-
-    def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping = True)
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
-    def toStr(self) -> str:
-        return f'{self.__userName} ({self.getCutenessStr()})'
-
-
-class CutenessResult():
-
-    def __init__(
-        self,
-        cuteness: int,
-        localLeaderboard: List[CutenessLocalLeaderboardEntry],
-        userId: str,
-        userName: str
-    ):
-        if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        self.__cuteness: int = cuteness
-        self.__localLeaderboard: List[CutenessLocalLeaderboardEntry] = localLeaderboard
-        self.__userId: str = userId
-        self.__userName: str = userName
-
-    def getCuteness(self) -> int:
-        return self.__cuteness
-
-    def getCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__cuteness, grouping = True)
-
-    def getLocalLeaderboard(self) -> List[CutenessLocalLeaderboardEntry]:
-        return self.__localLeaderboard
-
-    def getLocalLeaderboardStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasLocalLeaderboard():
-            return ''
-
-        strings: List[str] = list()
-
-        for entry in self.__localLeaderboard:
-            strings.append(entry.toStr())
-
-        return delimiter.join(strings)
-
-    def getUserId(self) -> str:
-        return self.__userId
-
-    def getUserName(self) -> str:
-        return self.__userName
-
-    def hasCuteness(self) -> bool:
-        return utils.isValidNum(self.__cuteness)
-
-    def hasLocalLeaderboard(self) -> bool:
-        return utils.hasItems(self.__localLeaderboard)
-
-    def toStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if self.hasCuteness() and self.__cuteness >= 1:
-            if self.hasLocalLeaderboard():
-                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
-            else:
-                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()} ✨'
-        else:
-            return f'{self.getUserName()} has no cuteness 😿'
-
-
-class CutenessLeaderboardResult():
-
-    def __init__(
-        self,
-        entries: List[CutenessLeaderboardEntry],
-        specificLookupCutenessResult: CutenessResult = None
-    ):
-        self.__entries: List[CutenessLeaderboardEntry] = entries
-        self.__specificLookupCutenessResult: CutenessResult = specificLookupCutenessResult
-
-    def getEntries(self) -> List[CutenessLeaderboardEntry]:
-        return self.__entries
-
-    def hasEntries(self) -> bool:
-        return utils.hasItems(self.__entries)
-
-    def hasSpecificLookupCutenessResult(self) -> bool:
-        return self.__specificLookupCutenessResult is not None and self.__specificLookupCutenessResult.hasCuteness()
-
-    def toStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasEntries():
-            return 'Unfortunately the cuteness leaderboard is empty 😿'
-
-        specificLookupText = ''
-        if self.hasSpecificLookupCutenessResult():
-            userName = self.__specificLookupCutenessResult.getUserName()
-            cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'{userName} your cuteness is {cutenessStr}'
-
-        entryStrings: List[str] = list()
-        for entry in self.__entries:
-            entryStrings.append(entry.toStr())
-
-        if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the leaderboard is: {delimiter.join(entryStrings)} ✨'
-        else:
-            return f'✨ {delimiter.join(entryStrings)} ✨'
+from cuteness.cutenessEntry import CutenessEntry
+from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
+from cuteness.cutenessResult import CutenessResult
 
 
 class CutenessRepository():
@@ -312,7 +128,7 @@ class CutenessRepository():
                 userName = userName
             )
 
-        localLeaderboard: List[CutenessLocalLeaderboardEntry] = list()
+        localLeaderboard: List[CutenessEntry] = list()
 
         for row in rows:
             # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
@@ -324,7 +140,7 @@ class CutenessRepository():
             # would be completely extranneous, and could be removed.
             try:
                 entryUserName = self.__userIdsRepository.fetchUserName(row[1])
-                localLeaderboard.append(CutenessLocalLeaderboardEntry(
+                localLeaderboard.append(CutenessEntry(
                     cuteness = row[0],
                     userId = row[1],
                     userName = entryUserName

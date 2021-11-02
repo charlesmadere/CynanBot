@@ -1,7 +1,7 @@
 import locale
 
 from authHelper import AuthHelper
-from cutenessRepository import CutenessRepository
+from cuteness.cutenessRepository import CutenessRepository
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase

@@ -6,8 +6,8 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitchUtils
+from cuteness.cutenessRepository import CutenessRepository
 from cutenessBoosterPack import CutenessBoosterPack
-from cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoonRepository import (FuntoonPkmnCatchType,
                                               FuntoonRepository)
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository

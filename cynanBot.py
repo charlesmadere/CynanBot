@@ -17,7 +17,7 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       SwQuoteCommand, TamalesCommand, TimeCommand,
                       TranslateCommand, TriviaCommand, TriviaScoreCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
-from cutenessRepository import CutenessRepository
+from cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary

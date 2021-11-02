@@ -7,7 +7,7 @@ from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitchUtils
-from cutenessRepository import CutenessRepository
+from cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
