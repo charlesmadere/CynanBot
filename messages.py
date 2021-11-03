@@ -8,7 +8,7 @@ import twitchUtils
 from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
-from user import User
+from user.user import User
 
 
 class AbsMessage(ABC):

@@ -8,6 +8,7 @@ from twitchio.ext.commands import Context
 import CynanBotCommon.utils as utils
 import twitchUtils
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
@@ -27,10 +28,9 @@ from CynanBotCommon.triviaScoreRepository import (TriviaScoreRepository,
                                                   TriviaScoreResult)
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
-from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
-from userIdsRepository import UserIdsRepository
-from usersRepository import UsersRepository
+from user.userIdsRepository import UserIdsRepository
+from user.usersRepository import UsersRepository
 
 
 class AbsCommand(ABC):

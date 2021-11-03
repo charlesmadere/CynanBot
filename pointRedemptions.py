@@ -6,17 +6,18 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitchUtils
+from cuteness.cutenessBoosterPack import CutenessBoosterPack
 from cuteness.cutenessRepository import CutenessRepository
-from cutenessBoosterPack import CutenessBoosterPack
+from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoonRepository import (FuntoonPkmnCatchType,
                                               FuntoonRepository)
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaModels import AbsTriviaQuestion
 from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
-from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
-from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
-from user import User
+from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from pkmn.pkmnCatchType import PkmnCatchType
+from user.user import User
 
 
 class AbsPointRedemption(ABC):

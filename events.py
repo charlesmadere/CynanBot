@@ -8,7 +8,7 @@ from twitchio.channel import Channel
 import CynanBotCommon.utils as utils
 import twitchUtils
 from generalSettingsRepository import GeneralSettingsRepository
-from user import User
+from user.user import User
 
 
 class AbsEvent(ABC):

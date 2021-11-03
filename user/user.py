@@ -4,8 +4,8 @@ from datetime import tzinfo
 from typing import List
 
 import CynanBotCommon.utils as utils
-from cutenessBoosterPack import CutenessBoosterPack
-from pkmnBoosterPacks import PkmnCatchBoosterPack
+from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 
 
 class User():

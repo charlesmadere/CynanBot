@@ -18,6 +18,7 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       TranslateCommand, TriviaCommand, TriviaScoreCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -40,7 +41,6 @@ from CynanBotCommon.twitchTokensRepository import (
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
-from doubleCutenessHelper import DoubleCutenessHelper
 from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
@@ -51,9 +51,9 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnCatchRedemption, PkmnEvolveRedemption,
                               PkmnShinyRedemption, PotdPointRedemption,
                               StubPointRedemption, TriviaGameRedemption)
-from user import User
-from userIdsRepository import UserIdsRepository
-from usersRepository import UsersRepository
+from user.user import User
+from user.userIdsRepository import UserIdsRepository
+from user.usersRepository import UsersRepository
 
 
 class CynanBot(Bot):

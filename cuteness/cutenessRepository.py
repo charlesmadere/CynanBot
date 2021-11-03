@@ -3,7 +3,7 @@ from typing import List
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backingDatabase import BackingDatabase
-from userIdsRepository import UserIdsRepository
+from user.userIdsRepository import UserIdsRepository
 
 from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry

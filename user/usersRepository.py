@@ -3,10 +3,12 @@ import os
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
-from cutenessBoosterPack import CutenessBoosterPack
+from cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from pkmnBoosterPacks import PkmnCatchBoosterPack, PkmnCatchType
-from user import User
+from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from pkmn.pkmnCatchType import PkmnCatchType
+
+from user.user import User
 
 
 class UsersRepository():

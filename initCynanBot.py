@@ -2,6 +2,7 @@ import locale
 
 from authHelper import AuthHelper
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
@@ -26,10 +27,9 @@ from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
-from doubleCutenessHelper import DoubleCutenessHelper
 from generalSettingsRepository import GeneralSettingsRepository
-from userIdsRepository import UserIdsRepository
-from usersRepository import UsersRepository
+from user.userIdsRepository import UserIdsRepository
+from user.usersRepository import UsersRepository
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
