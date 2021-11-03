@@ -1,7 +1,7 @@
 import os
-import urllib
 from datetime import tzinfo
 from typing import List
+from urllib.parse import urlparse
 
 import CynanBotCommon.utils as utils
 from cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -181,7 +181,7 @@ class User():
         if not utils.isValidUrl(potdText):
             raise ValueError(f'POTD text for {self.__handle} is malformed: \"{potdText}\"')
 
-        potdParsed = urllib.parse.urlparse(potdText)
+        potdParsed = urlparse(potdText)
         return potdParsed.geturl()
 
     def getCutenessBoosterPacks(self) -> List[CutenessBoosterPack]:
