@@ -3,7 +3,9 @@ from datetime import tzinfo
 from typing import List
 
 from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from pkmn.pkmnCatchType import PkmnCatchType
 
 from user.user import User
 
@@ -108,6 +110,25 @@ class TestUser(unittest.TestCase):
             timeZones = timeZones
         )
 
+    def test_hasCutenessBoosterPacks(self):
+        user = self.createUser(cutenessBoosterPacks = [
+            CutenessBoosterPack(amount = 1, rewardId = "a")
+        ])
+        self.assertEqual(True, user.hasCutenessBoosterPacks())
+
+        user = self.createUser(cutenessBoosterPacks = [
+            CutenessBoosterPack(amount = 1, rewardId = "a"),
+            CutenessBoosterPack(amount = 2, rewardId = "b"),
+            CutenessBoosterPack(amount = 3, rewardId = "c")
+        ])
+        self.assertEqual(True, user.hasCutenessBoosterPacks())
+
+        user = self.createUser(cutenessBoosterPacks = list())
+        self.assertEqual(False, user.hasCutenessBoosterPacks())
+
+        user = self.createUser(cutenessBoosterPacks = None)
+        self.assertEqual(False, user.hasCutenessBoosterPacks())
+
     def test_hasDiscord(self):
         user = self.createUser(discord = "https://example.com/")
         self.assertEqual(True, user.hasDiscord())
@@ -141,6 +162,25 @@ class TestUser(unittest.TestCase):
         user = self.createUser(locationId = None)
         self.assertEqual(False, user.hasLocationId())
 
+    def test_hasPkmnCatchBoosterPacks(self):
+        user = self.createUser(pkmnCatchBoosterPacks = [
+            PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.NORMAL, rewardId = "a")
+        ])
+        self.assertEqual(True, user.hasPkmnCatchBoosterPacks())
+
+        user = self.createUser(pkmnCatchBoosterPacks = [
+            PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.NORMAL, rewardId = "a"),
+            PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.GREAT, rewardId = "b"),
+            PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.ULTRA, rewardId = "c")
+        ])
+        self.assertEqual(True, user.hasPkmnCatchBoosterPacks())
+
+        user = self.createUser(pkmnCatchBoosterPacks = list())
+        self.assertEqual(False, user.hasPkmnCatchBoosterPacks())
+
+        user = self.createUser(pkmnCatchBoosterPacks = None)
+        self.assertEqual(False, user.hasPkmnCatchBoosterPacks())
+
     def test_hasSpeedrunProfile(self):
         user = self.createUser(speedrunProfile = "https://example.com/")
         self.assertEqual(True, user.hasSpeedrunProfile())
@@ -154,6 +194,52 @@ class TestUser(unittest.TestCase):
         user = self.createUser(speedrunProfile = None)
         self.assertEqual(False, user.hasSpeedrunProfile())
 
+    def hasTimeZones(self):
+        timeZoneRepository = TimeZoneRepository()
+
+        user = self.createUser(timeZones = [
+            timeZoneRepository.getTimeZone("Asia/Tokyo"),
+            timeZoneRepository.getTimeZone("US/Pacific")
+        ])
+        self.assertEquals(True, user.hasTimeZones())
+
+        user = self.createUser(timeZones = [
+            timeZoneRepository.getTimeZone("America/New_York")
+        ])
+        self.assertEquals(True, user.hasTimeZones())
+
+        user = self.createUser(timeZones = list())
+        self.assertEqual(False, user.hasTimeZones())
+
+        user = self.createUser(timeZones = None)
+        self.assertEqual(False, user.hasTimeZones())
+
+    def test_hasTriviaGamePoints(self):
+        user = self.createUser(triviaGamePoints = 0)
+        self.assertEqual(True, user.hasTriviaGamePoints())
+
+        user = self.createUser(triviaGamePoints = 1)
+        self.assertEqual(True, user.hasTriviaGamePoints())
+
+        user = self.createUser(triviaGamePoints = -1)
+        self.assertEqual(True, user.hasTriviaGamePoints())
+
+        user = self.createUser(triviaGamePoints = None)
+        self.assertEqual(False, user.hasTriviaGamePoints())
+
+    def test_hasTriviaGameTutorialCutenessThreshold(self):
+        user = self.createUser(triviaGameTutorialCutenessThreshold = 0)
+        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+
+        user = self.createUser(triviaGameTutorialCutenessThreshold = 1)
+        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+
+        user = self.createUser(triviaGameTutorialCutenessThreshold = -1)
+        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+
+        user = self.createUser(triviaGameTutorialCutenessThreshold = None)
+        self.assertEqual(False, user.hasTriviaGameTutorialCutenessThreshold())
+
     def test_hasTwitter(self):
         user = self.createUser(twitter = "https://example.com/")
         self.assertEqual(True, user.hasTwitter())
@@ -166,3 +252,16 @@ class TestUser(unittest.TestCase):
 
         user = self.createUser(twitter = None)
         self.assertEqual(False, user.hasTwitter())
+
+    def test_hasWaitForTriviaAnswerDelay(self):
+        user = self.createUser(waitForTriviaAnswerDelay = 0)
+        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+
+        user = self.createUser(waitForTriviaAnswerDelay = 1)
+        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+
+        user = self.createUser(waitForTriviaAnswerDelay = -1)
+        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+
+        user = self.createUser(waitForTriviaAnswerDelay = None)
+        self.assertEqual(False, user.hasWaitForTriviaAnswerDelay())
