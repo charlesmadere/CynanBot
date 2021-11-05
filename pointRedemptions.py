@@ -9,8 +9,8 @@ import twitchUtils
 from cuteness.cutenessBoosterPack import CutenessBoosterPack
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
-from CynanBotCommon.funtoonRepository import (FuntoonPkmnCatchType,
-                                              FuntoonRepository)
+from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
+from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaModels import AbsTriviaQuestion
 from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
