@@ -11,6 +11,9 @@ from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
+from CynanBotCommon.language.translationHelper import TranslationHelper
+from CynanBotCommon.language.wordOfTheDayRepository import \
+    WordOfTheDayRepository
 from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
@@ -18,14 +21,12 @@ from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.translationHelper import TranslationHelper
 from CynanBotCommon.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
-from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from user.userIdsRepository import UserIdsRepository
 from user.usersRepository import UsersRepository
