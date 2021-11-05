@@ -24,7 +24,7 @@ from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
-from CynanBotCommon.languagesRepository import LanguagesRepository
+from CynanBotCommon.languages.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
