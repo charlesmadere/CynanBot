@@ -19,7 +19,8 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBotCommon.starWars.starWarsQuotesRepository import \
+    StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
