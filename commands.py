@@ -12,7 +12,7 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
-from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper

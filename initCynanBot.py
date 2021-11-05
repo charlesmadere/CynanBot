@@ -10,7 +10,7 @@ from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.jishoHelper import JishoHelper
+from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
