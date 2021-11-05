@@ -12,8 +12,8 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
-from CynanBotCommon.languages.languageEntry import LanguageEntry
-from CynanBotCommon.languages.languagesRepository import LanguagesRepository
+from CynanBotCommon.language.languageEntry import LanguageEntry
+from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
