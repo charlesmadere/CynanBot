@@ -29,7 +29,7 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
-from CynanBotCommon.lruCache import LRUCache
+from CynanBotCommon.lruCache import LruCache
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
@@ -119,7 +119,7 @@ class CynanBot(Bot):
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
-        self.__channelPointsLruCache: LRUCache = LRUCache(100)
+        self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################
         ## Initialization of command objects ##
