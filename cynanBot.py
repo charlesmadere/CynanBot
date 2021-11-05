@@ -11,18 +11,17 @@ import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       CommandsCommand, CutenessCommand, CynanSourceCommand,
-                      DiccionarioCommand, DiscordCommand, GiveCutenessCommand,
-                      JishoCommand, MyCutenessCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
-                      SwQuoteCommand, TamalesCommand, TimeCommand,
-                      TranslateCommand, TriviaCommand, TriviaScoreCommand,
-                      TwitterCommand, WeatherCommand, WordCommand)
+                      DiscordCommand, GiveCutenessCommand, JishoCommand,
+                      MyCutenessCommand, PbsCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
+                      TamalesCommand, TimeCommand, TranslateCommand,
+                      TriviaCommand, TriviaScoreCommand, TwitterCommand,
+                      WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
-from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -67,7 +66,6 @@ class CynanBot(Bot):
         chatBandManager: ChatBandManager,
         cutenessRepository: CutenessRepository,
         doubleCutenessHelper: DoubleCutenessHelper,
-        enEsDictionary: EnEsDictionary,
         funtoonRepository: FuntoonRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
@@ -150,11 +148,6 @@ class CynanBot(Bot):
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, usersRepository)
-
-        if enEsDictionary is None:
-            self.__diccionarioCommand: AbsCommand = StubCommand()
-        else:
-            self.__diccionarioCommand: AbsCommand = DiccionarioCommand(enEsDictionary, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsCommand = StubCommand()
@@ -556,10 +549,6 @@ class CynanBot(Bot):
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
         await self.__cynanSourceCommand.handleCommand(ctx)
-
-    @commands.command(name = 'diccionario')
-    async def command_diccionario(self, ctx: Context):
-        await self.__diccionarioCommand.handleCommand(ctx)
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx: Context):

@@ -11,7 +11,6 @@ from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
-from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -225,9 +224,6 @@ class CommandsCommand(AbsCommand):
         if user.isCynanSourceEnabled():
             commands.append('!cynansource')
 
-        if user.isDiccionarioEnabled():
-            commands.append('!diccionario')
-
         if user.isJishoEnabled():
             commands.append('!jisho')
 
@@ -366,50 +362,6 @@ class CynanSourceCommand(AbsCommand):
             return
 
         await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
-
-
-class DiccionarioCommand(AbsCommand):
-
-    def __init__(
-        self,
-        enEsDictionary: EnEsDictionary,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 15)
-    ):
-        if enEsDictionary is None:
-            raise ValueError(f'enEsDictionary argument is malformed: \"{enEsDictionary}\"')
-        elif usersRepository is None:
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__enEsDictionary: EnEsDictionary = enEsDictionary
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__lastDiccionarioMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isDiccionarioEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastDiccionarioMessageTimes.isReady(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-
-        if len(splits) < 2:
-            await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !diccionario command. Example: !diccionario beer')
-            return
-
-        query = ' '.join(splits[1:])
-
-        try:
-            result = self.__enEsDictionary.search(query)
-            self.__lastDiccionarioMessageTimes.update(user.getHandle())
-            await twitchUtils.safeSend(ctx, result.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error searching Spanish-English Dictionary for \"{query}\" in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error searching Spanish-English Dictionary for \"{query}\"')
 
 
 class DiscordCommand(AbsCommand):

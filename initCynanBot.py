@@ -8,7 +8,6 @@ from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
-from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -53,12 +52,6 @@ triviaRepository = TriviaRepository(
 )
 websocketConnectionServer = WebsocketConnectionServer()
 
-enEsDictionary: EnEsDictionary = None
-if authHelper.hasMerriamWebsterApiKey():
-    enEsDictionary = EnEsDictionary(
-        merriamWebsterApiKey = authHelper.requireMerriamWebsterApiKey()
-    )
-
 translationHelper: TranslationHelper = None
 if authHelper.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
@@ -80,7 +73,6 @@ cynanBot = CynanBot(
     ),
     cutenessRepository = cutenessRepository,
     doubleCutenessHelper = DoubleCutenessHelper(),
-    enEsDictionary = enEsDictionary,
     funtoonRepository = FuntoonRepository(),
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(),

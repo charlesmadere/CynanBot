@@ -19,7 +19,6 @@ class User():
         isCynanMessageEnabled: bool,
         isCynanSourceEnabled: bool,
         isDeerForceMessageEnabled: bool,
-        isDiccionarioEnabled: bool,
         isGiveCutenessEnabled: bool,
         isJamCatEnabled: bool,
         isJishoEnabled: bool,
@@ -73,8 +72,6 @@ class User():
             raise ValueError(f'isCynanSourceEnabled argument is malformed: \"{isCynanSourceEnabled}\"')
         elif not utils.isValidBool(isDeerForceMessageEnabled):
             raise ValueError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
-        elif not utils.isValidBool(isDiccionarioEnabled):
-            raise ValueError(f'isDiccionarioEnabled argument is malformed: \"{isDiccionarioEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
         elif not utils.isValidBool(isJamCatEnabled):
@@ -129,7 +126,6 @@ class User():
         self.__isCynanMessageEnabled: bool = isCynanMessageEnabled
         self.__isCynanSourceEnabled: bool = isCynanSourceEnabled
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
-        self.__isDiccionarioEnabled: bool = isDiccionarioEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
         self.__isJamCatEnabled: bool = isJamCatEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
@@ -294,9 +290,6 @@ class User():
 
     def isDeerForceMessageEnabled(self) -> bool:
         return self.__isDeerForceMessageEnabled
-
-    def isDiccionarioEnabled(self) -> bool:
-        return self.__isDiccionarioEnabled
 
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
