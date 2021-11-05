@@ -9,7 +9,8 @@ import CynanBotCommon.utils as utils
 import twitchUtils
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
-from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.analogue.analogueStoreRepository import \
+    AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry

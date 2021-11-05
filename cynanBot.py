@@ -19,7 +19,8 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
-from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.analogue.analogueStoreRepository import \
+    AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository

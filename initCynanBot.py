@@ -4,7 +4,8 @@ from authHelper import AuthHelper
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cynanBot import CynanBot
-from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
+from CynanBotCommon.analogue.analogueStoreRepository import \
+    AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
@@ -31,7 +32,6 @@ from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from user.userIdsRepository import UserIdsRepository
 from user.usersRepository import UsersRepository
-
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
