@@ -5,7 +5,7 @@ from twitchio import Message
 
 import CynanBotCommon.utils as utils
 import twitchUtils
-from CynanBotCommon.chatBandManager import ChatBandManager
+from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
 from user.user import User

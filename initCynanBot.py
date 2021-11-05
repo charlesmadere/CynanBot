@@ -6,7 +6,7 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cynanBot import CynanBot
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
-from CynanBotCommon.chatBandManager import ChatBandManager
+from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
