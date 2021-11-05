@@ -10,7 +10,6 @@ from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
-from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -82,7 +81,6 @@ cynanBot = CynanBot(
     funtoonRepository = FuntoonRepository(),
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(),
-    jokesRepository = JokesRepository(),
     languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository

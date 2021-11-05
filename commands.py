@@ -12,7 +12,6 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogueStoreRepository import AnalogueStoreRepository
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
-from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.languagesRepository import (LanguageEntry,
                                                 LanguagesRepository)
 from CynanBotCommon.locationsRepository import LocationsRepository
@@ -561,41 +560,6 @@ class JishoCommand(AbsCommand):
         except (RuntimeError, ValueError):
             print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
-
-
-class JokeCommand(AbsCommand):
-
-    def __init__(
-        self,
-        jokesRepository: JokesRepository,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
-    ):
-        if jokesRepository is None:
-            raise ValueError(f'jokesRepository argument is malformed: \"{jokesRepository}\"')
-        elif usersRepository is None:
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__jokesRepository: JokesRepository = jokesRepository
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isJokesEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            result = self.__jokesRepository.fetchJoke()
-            await twitchUtils.safeSend(ctx, result.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching joke of the day in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, '⚠ Error fetching joke of the day')
 
 
 class MyCutenessCommand(AbsCommand):

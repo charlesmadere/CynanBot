@@ -12,7 +12,7 @@ from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       CommandsCommand, CutenessCommand, CynanSourceCommand,
                       DiccionarioCommand, DiscordCommand, GiveCutenessCommand,
-                      JishoCommand, JokeCommand, MyCutenessCommand, PbsCommand,
+                      JishoCommand, MyCutenessCommand, PbsCommand,
                       PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
                       SwQuoteCommand, TamalesCommand, TimeCommand,
                       TranslateCommand, TriviaCommand, TriviaScoreCommand,
@@ -24,7 +24,6 @@ from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.jishoHelper import JishoHelper
-from CynanBotCommon.jokesRepository import JokesRepository
 from CynanBotCommon.languagesRepository import LanguagesRepository
 from CynanBotCommon.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
@@ -69,7 +68,6 @@ class CynanBot(Bot):
         funtoonRepository: FuntoonRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
-        jokesRepository: JokesRepository,
         languagesRepository: LanguagesRepository,
         locationsRepository: LocationsRepository,
         nonceRepository: NonceRepository,
@@ -159,11 +157,6 @@ class CynanBot(Bot):
             self.__jishoCommand: AbsCommand = StubCommand()
         else:
             self.__jishoCommand: AbsCommand = JishoCommand(generalSettingsRepository, jishoHelper, usersRepository)
-
-        if jokesRepository is None:
-            self.__jokeCommand: AbsCommand = StubCommand()
-        else:
-            self.__jokeCommand: AbsCommand = JokeCommand(jokesRepository, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()
@@ -576,10 +569,6 @@ class CynanBot(Bot):
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
         await self.__jishoCommand.handleCommand(ctx)
-
-    @commands.command(name = 'joke')
-    async def command_joke(self, ctx: Context):
-        await self.__jokeCommand.handleCommand(ctx)
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx: Context):
