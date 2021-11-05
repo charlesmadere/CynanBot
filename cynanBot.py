@@ -29,6 +29,7 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.lruCache import LRUCache
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
@@ -117,6 +118,8 @@ class CynanBot(Bot):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
+
+        self.__channelPointsLruCache: LRUCache = LRUCache(100)
 
         #######################################
         ## Initialization of command objects ##
@@ -313,6 +316,10 @@ class CynanBot(Bot):
         await self.handle_commands(message)
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
+        if self.__channelPointsLruCache.contains(event.id):
+            return
+
+        self.__channelPointsLruCache.put(event.id)
         twitchUserIdStr = str(event.channel_id)
         twitchUserNameStr = self.__userIdsRepository.fetchUserName(twitchUserIdStr)
         twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
