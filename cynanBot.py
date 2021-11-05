@@ -37,7 +37,7 @@ from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
     TwitchTokensRepository)
-from CynanBotCommon.weatherRepository import WeatherRepository
+from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from events import AbsEvent, RaidEvent

@@ -25,7 +25,7 @@ from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
 from CynanBotCommon.triviaRepository import TriviaRepository
 from CynanBotCommon.triviaScoreRepository import (TriviaScoreRepository,
                                                   TriviaScoreResult)
-from CynanBotCommon.weatherRepository import WeatherRepository
+from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.wordOfTheDayRepository import WordOfTheDayRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from user.userIdsRepository import UserIdsRepository
