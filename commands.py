@@ -14,7 +14,7 @@ from CynanBotCommon.enEsDictionary import EnEsDictionary
 from CynanBotCommon.jishoHelper import JishoHelper
 from CynanBotCommon.languages.languageEntry import LanguageEntry
 from CynanBotCommon.languages.languagesRepository import LanguagesRepository
-from CynanBotCommon.locationsRepository import LocationsRepository
+from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
