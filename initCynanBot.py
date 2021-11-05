@@ -18,7 +18,7 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.nonceRepository import NonceRepository
-from CynanBotCommon.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
@@ -32,6 +32,7 @@ from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from user.userIdsRepository import UserIdsRepository
 from user.usersRepository import UsersRepository
+
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
