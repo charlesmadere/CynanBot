@@ -32,4 +32,4 @@ class CutenessLeaderboardEntry(CutenessEntry):
         return locale.format_string("%d", self.__rank, grouping = True)
 
     def toStr(self) -> str:
-        return f'#{self.getRankStr()} {self.__userName} ({self.getCutenessStr()})'
+        return f'#{self.getRankStr()} {self.getUserName()} ({self.getCutenessStr()})'
