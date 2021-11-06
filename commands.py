@@ -980,7 +980,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def __getResultStr(
+    def __getResultStr(
         self,
         userName: str,
         result: TriviaScoreResult
