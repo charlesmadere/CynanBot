@@ -53,9 +53,9 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnCatchRedemption, PkmnEvolveRedemption,
                               PkmnShinyRedemption, PotdPointRedemption,
                               StubPointRedemption, TriviaGameRedemption)
-from user.user import User
-from user.userIdsRepository import UserIdsRepository
-from user.usersRepository import UsersRepository
+from users.user import User
+from users.userIdsRepository import UserIdsRepository
+from users.usersRepository import UsersRepository
 
 
 class CynanBot(Bot):

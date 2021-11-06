@@ -29,8 +29,8 @@ from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
-from user.userIdsRepository import UserIdsRepository
-from user.usersRepository import UsersRepository
+from users.userIdsRepository import UserIdsRepository
+from users.usersRepository import UsersRepository
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')

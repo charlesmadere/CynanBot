@@ -17,7 +17,7 @@ from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
-from user.user import User
+from users.user import User
 
 
 class AbsPointRedemption(ABC):

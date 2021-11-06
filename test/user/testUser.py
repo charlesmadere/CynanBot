@@ -7,7 +7,7 @@ from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 
-from user.user import User
+from users.user import User
 
 
 class TestUser(unittest.TestCase):
