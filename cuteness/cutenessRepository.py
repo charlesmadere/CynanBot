@@ -35,7 +35,7 @@ class CutenessRepository():
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(doubleCutenessTimeSeconds):
             raise ValueError(f'doubleCutenessTimeSeconds argument is malformed: \"{doubleCutenessTimeSeconds}\"')
-        elif doubleCutenessTimeSeconds < 30 or doubleCutenessTimeSeconds > 600:
+        elif doubleCutenessTimeSeconds < 15 or doubleCutenessTimeSeconds > 300:
             raise ValueError(f'doubleCutenessTimeSeconds argument is out of bounds \"{doubleCutenessTimeSeconds}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase

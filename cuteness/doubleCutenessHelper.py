@@ -8,7 +8,7 @@ class DoubleCutenessHelper():
 
     def __init__(
         self,
-        doubleCutenessDuration: timedelta = timedelta(minutes = 5)
+        doubleCutenessDuration: timedelta = timedelta(minutes = 1)
     ):
         if doubleCutenessDuration is None:
             raise ValueError(f'doubleCutenessDuration argument is malformed: \"{doubleCutenessDuration}\"')

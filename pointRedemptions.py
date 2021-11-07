@@ -148,7 +148,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
         # penalize the given user for redeeming double cuteness. Double cuteness should just cost
         # the user the same number of channel points that the baseline cuteness redemption is, and
         # so let's go ahead and multiply that by 2.
-        incrementAmount = cutenessBoosterPacks[0].getAmount() * 2
+        incrementAmount: int = cutenessBoosterPacks[0].getAmount() * 2
 
         try:
             result = self.__cutenessRepository.fetchCutenessIncrementedBy(
