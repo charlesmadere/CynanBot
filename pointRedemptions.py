@@ -11,9 +11,9 @@ from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.triviaGameRepository import TriviaGameRepository
-from CynanBotCommon.triviaModels import AbsTriviaQuestion
-from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType

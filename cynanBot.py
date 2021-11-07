@@ -35,9 +35,9 @@ from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
-from CynanBotCommon.triviaGameRepository import TriviaGameRepository
-from CynanBotCommon.triviaRepository import TriviaRepository
-from CynanBotCommon.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
     TwitchTokensRepository)

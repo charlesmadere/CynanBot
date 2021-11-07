@@ -23,11 +23,11 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.triviaGameRepository import (TriviaGameCheckResult,
-                                                 TriviaGameRepository)
-from CynanBotCommon.triviaRepository import TriviaRepository
-from CynanBotCommon.triviaScoreRepository import (TriviaScoreRepository,
-                                                  TriviaScoreResult)
+from CynanBotCommon.trivia.triviaGameRepository import (TriviaGameCheckResult,
+                                                        TriviaGameRepository)
+from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaScoreRepository import (TriviaScoreRepository,
+                                                         TriviaScoreResult)
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from users.userIdsRepository import UserIdsRepository
@@ -154,8 +154,8 @@ class AnswerCommand(AbsCommand):
             return
 
         self.__triviaScoreRepository.incrementTotalWins(user.getHandle(), userId)
-        cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
 
+        cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
             cutenessPoints = user.getTriviaGamePoints()
 
@@ -1005,13 +1005,11 @@ class TriviaScoreCommand(AbsCommand):
         if result.getTotalWins() == 1:
             winsStr = 'win'
 
-        streakStr: str = None
+        streakStr: str = '.'
         if result.getStreak() >= 3:
             streakStr = f', and is on a {result.getStreakStr()} game winning streak 😸'
         elif result.getStreak() <= -3:
             streakStr = f', and is on a {result.getStreakStr()} game losing streak 🙀'
-        else:
-            streakStr = '.'
 
         return f'{userName} has played {result.getTotalStr()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{streakStr}'
 
