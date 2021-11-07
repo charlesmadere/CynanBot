@@ -1047,14 +1047,14 @@ class TriviaScoreCommand(AbsCommand):
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
-            result = self.__triviaScoreRepository.fetchScore(
+            result = self.__triviaScoreRepository.fetchTriviaScore(
                 twitchChannel = user.getHandle(),
                 userId = userId
             )
         else:
             userId = str(ctx.author.id)
 
-            result = self.__triviaScoreRepository.fetchScore(
+            result = self.__triviaScoreRepository.fetchTriviaScore(
                 twitchChannel = user.getHandle(),
                 userId = userId
             )
