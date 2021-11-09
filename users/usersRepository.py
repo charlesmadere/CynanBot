@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import tzinfo
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
@@ -58,31 +59,31 @@ class UsersRepository():
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
-        discord: str = userJson.get('discord')
-        instagram: str = userJson.get('instagram')
-        locationId: str = userJson.get('locationId')
-        speedrunProfile: str = userJson.get('speedrunProfile')
-        twitter: str = userJson.get('twitter')
+        discord = utils.getStrFromDict(userJson, 'discord', '')
+        instagram = utils.getStrFromDict(userJson, 'instagram', '')
+        locationId = utils.getStrFromDict(userJson, 'locationId', '')
+        speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
+        twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
         timeZones = None
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
-            timeZones = list()
+            timeZones: List[tzinfo] = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
         increaseCutenessDoubleRewardId: str = None
         cutenessBoosterPacks: List[CutenessBoosterPack] = None
         if isCutenessEnabled:
-            increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
-            cutenessBoosterPacksJson = userJson.get('cutenessBoosterPacks')
+            increaseCutenessDoubleRewardId: str = userJson.get('increaseCutenessDoubleRewardId')
+            cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
         picOfTheDayFile: str = None
         picOfTheDayRewardId: str = None
         if isPicOfTheDayEnabled:
-            picOfTheDayFile = userJson.get('picOfTheDayFile')
-            picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
+            picOfTheDayFile: str = userJson.get('picOfTheDayFile')
+            picOfTheDayRewardId: str = userJson.get('picOfTheDayRewardId')
 
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
@@ -92,20 +93,20 @@ class UsersRepository():
         triviaGameTutorialCutenessThreshold: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
-            triviaGameRewardId = userJson.get('triviaGameRewardId')
-            triviaGamePoints = userJson.get('triviaGamePoints')
-            triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
-            waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
+            triviaGameRewardId: str = userJson.get('triviaGameRewardId')
+            triviaGamePoints: str = userJson.get('triviaGamePoints')
+            triviaGameTutorialCutenessThreshold: int = userJson.get('triviaGameTutorialCutenessThreshold')
+            waitForTriviaAnswerDelay: int = userJson.get('waitForTriviaAnswerDelay')
 
         pkmnBattleRewardId: str = None
         pkmnEvolveRewardId: str = None
         pkmnShinyRewardId: str = None
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = None
         if isPkmnEnabled:
-            pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
-            pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
-            pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
-            pkmnCatchBoosterPacksJson = userJson.get('pkmnCatchBoosterPacks')
+            pkmnBattleRewardId: str = userJson.get('pkmnBattleRewardId')
+            pkmnEvolveRewardId: str = userJson.get('pkmnEvolveRewardId')
+            pkmnShinyRewardId: str = userJson.get('pkmnShinyRewardId')
+            pkmnCatchBoosterPacksJson: List[Dict] = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
         return User(
@@ -182,13 +183,13 @@ class UsersRepository():
         users.sort(key = lambda user: user.getHandle().lower())
         return users
 
-    def __parseCutenessBoosterPacksFromJson(self, json: Dict) -> List[CutenessBoosterPack]:
-        if not utils.hasItems(json):
+    def __parseCutenessBoosterPacksFromJson(self, jsonList: List[Dict]) -> List[CutenessBoosterPack]:
+        if not utils.hasItems(jsonList):
             return None
 
         cutenessBoosterPacks: List[CutenessBoosterPack] = list()
 
-        for cutenessBoosterPackJson in json:
+        for cutenessBoosterPackJson in jsonList:
             cutenessBoosterPacks.append(CutenessBoosterPack(
                 amount = utils.getIntFromDict(cutenessBoosterPackJson, 'amount'),
                 rewardId = utils.getStrFromDict(cutenessBoosterPackJson, 'rewardId')
@@ -197,13 +198,13 @@ class UsersRepository():
         cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
         return cutenessBoosterPacks
 
-    def __parsePkmnCatchBoosterPacksFromJson(self, json: Dict) -> List[PkmnCatchBoosterPack]:
-        if not utils.hasItems(json):
+    def __parsePkmnCatchBoosterPacksFromJson(self, jsonList: List[Dict]) -> List[PkmnCatchBoosterPack]:
+        if not utils.hasItems(jsonList):
             return None
 
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = list()
 
-        for pkmnCatchBoosterPackJson in json:
+        for pkmnCatchBoosterPackJson in jsonList:
             pkmnCatchTypeStr = utils.getStrFromDict(
                 d = pkmnCatchBoosterPackJson,
                 key = 'catchType',
@@ -221,7 +222,7 @@ class UsersRepository():
 
         return pkmnCatchBoosterPacks
 
-    def __readJson(self) -> Dict:
+    def __readJson(self) -> Dict[str, object]:
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
