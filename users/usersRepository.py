@@ -207,15 +207,18 @@ class UsersRepository():
             pkmnCatchTypeStr = utils.getStrFromDict(
                 d = pkmnCatchBoosterPackJson,
                 key = 'catchType',
-                fallback = PkmnCatchType.NORMAL.toStr()
+                fallback = ''
             )
 
+            pkmnCatchType: PkmnCatchType = None
+            if utils.isValidStr(pkmnCatchTypeStr):
+                pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
+
             pkmnCatchBoosterPacks.append(PkmnCatchBoosterPack(
-                pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr),
+                pkmnCatchType = pkmnCatchType,
                 rewardId = utils.getStrFromDict(pkmnCatchBoosterPackJson, 'rewardId')
             ))
 
-        pkmnCatchBoosterPacks.sort(key = lambda pack: pack.getCatchType().getSortOrder())
         return pkmnCatchBoosterPacks
 
     def __readJson(self) -> Dict:

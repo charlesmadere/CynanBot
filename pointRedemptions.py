@@ -279,7 +279,9 @@ class PkmnCatchRedemption(AbsPointRedemption):
         if pkmnCatchBoosterPack is None:
             return False
 
-        funtoonPkmnCatchType = self.__toFuntoonPkmnCatchType(pkmnCatchBoosterPack)
+        funtoonPkmnCatchType: FuntoonPkmnCatchType = None
+        if pkmnCatchBoosterPack.hasCatchType():
+            funtoonPkmnCatchType = self.__toFuntoonPkmnCatchType(pkmnCatchBoosterPack)
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnCatch(
