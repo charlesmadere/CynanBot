@@ -1007,9 +1007,9 @@ class TriviaScoreCommand(AbsCommand):
 
         streakStr: str = '.'
         if result.getStreak() >= 3:
-            streakStr = f', and is on a {result.getStreakStr()} game winning streak 😸'
+            streakStr = f', and is on a {result.getAbsStreakStr()} game winning streak 😸'
         elif result.getStreak() <= -3:
-            streakStr = f', and is on a {result.getStreakStr()} game losing streak 🙀'
+            streakStr = f', and is on a {result.getAbsStreakStr()} game losing streak 🙀'
 
         return f'{userName} has played {result.getTotalStr()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{streakStr}'
 
