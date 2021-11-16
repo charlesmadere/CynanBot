@@ -46,8 +46,8 @@ from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
 from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
-                      DeerForceMessage, JamCatMessage, RatJamMessage,
-                      StubMessage)
+                      DeerForceMessage, EyesMessage, JamCatMessage,
+                      RatJamMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               DoubleCutenessRedemption, PkmnBattleRedemption,
                               PkmnCatchRedemption, PkmnEvolveRedemption,
@@ -218,6 +218,7 @@ class CynanBot(Bot):
 
         self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository)
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository)
+        self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository)
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository)
 
@@ -308,6 +309,12 @@ class CynanBot(Bot):
                 return
 
             if await self.__ratJamMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
+                return
+
+            if await self.__eyesMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = message
             ):

@@ -52,6 +52,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', True)
 
+    def isEyesMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'eyesMessageEnabled', True)
+
     def isFuntoonApiEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'funtoonApiEnabled', True)

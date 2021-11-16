@@ -192,6 +192,49 @@ class DeerForceMessage(AbsMessage):
             return False
 
 
+class EyesMessage(AbsMessage):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        eyesMessage: str = '👀',
+        cooldown: timedelta = timedelta(minutes = 20)
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not utils.isValidStr(eyesMessage):
+            raise ValueError(f'eyesMessage argument is malformed: \"{eyesMessage}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__eyesMessage: str = eyesMessage
+        self.__lastEyesMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleMessage(
+        self,
+        twitchUser: User,
+        message: Message
+    ) -> bool:
+        if twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif message is None:
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        if not self.__generalSettingsRepository.isEyesMessageEnabled():
+            return False
+        elif not twitchUser.isEyesMessageEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if self.__eyesMessage in splits and self.__lastEyesMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
+            await twitchUtils.safeSend(message.channel, self.__eyesMessage)
+            return True
+        else:
+            return False
+
+
 class JamCatMessage(AbsMessage):
 
     def __init__(
