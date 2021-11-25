@@ -352,40 +352,52 @@ class CynanBot(Bot):
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             ):
+                if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                    print(f'Redeemed cuteness point in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                 return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
-                await self.__doubleCutenessPointRedemption.handlePointRedemption(
+                if await self.__doubleCutenessPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
                     rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
-                )
+                ):
+                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                        print(f'Redeemed double cuteness points in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                 return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
-            await self.__potdPointRedemption.handlePointRedemption(
+            if await self.__potdPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchUser = twitchUser,
                 redemptionMessage = redemptionMessage,
                 rewardId = rewardId,
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
-            )
+            ):
+                if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                    print(f'Redeemed Pic Of The Day in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
             return
 
         if twitchUser.isPkmnEnabled():
             if rewardId == twitchUser.getPkmnBattleRewardId():
-                await self.__pkmnBattlePointRedemption.handlePointRedemption(
+                if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
                     rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
-                )
+                ):
+                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                        print(f'Redeemed Pkmn Battle in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                 return
 
             if twitchUser.hasPkmnCatchBoosterPacks():
@@ -397,39 +409,51 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
+                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                        print(f'Redeemed Pkmn Catch in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                     return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
-                await self.__pkmnEvolvePointRedemption.handlePointRedemption(
+                if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
                     rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
-                )
+                ):
+                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                        print(f'Redeemed Pkmn Evolve in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                 return
 
             if rewardId == twitchUser.getPkmnShinyRewardId():
-                await self.__pkmnShinyPointRedemption.handlePointRedemption(
+                if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchUser = twitchUser,
                     redemptionMessage = redemptionMessage,
                     rewardId = rewardId,
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
-                )
+                ):
+                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                        print(f'Redeemed Pkmn Shiny in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
                 return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
-            await self.__triviaGamePointRedemption.handlePointRedemption(
+            if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchUser = twitchUser,
                 redemptionMessage = redemptionMessage,
                 rewardId = rewardId,
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
-            )
+            ):
+                if self.__generalSettingsRepository.isDebugLoggingEnabled():
+                    print(f'Redeemed trivia game in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+
             return
 
     async def event_pubsub_error(self, tags: Dict):
