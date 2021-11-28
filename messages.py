@@ -235,6 +235,49 @@ class EyesMessage(AbsMessage):
             return False
 
 
+class ImytSlurpMessage(AbsMessage):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        imytSlurpMessage: str = 'imytSlurp',
+        cooldown: timedelta = timedelta(minutes = 20)
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not utils.isValidStr(imytSlurpMessage):
+            raise ValueError(f'imytSlurpMessage argument is malformed: \"{imytSlurpMessage}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__imytSlurpMessage: str = imytSlurpMessage
+        self.__lastImytSlurpMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleMessage(
+        self,
+        twitchUser: User,
+        message: Message
+    ) -> bool:
+        if twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif message is None:
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        if not self.__generalSettingsRepository.isImytSlurpMessageEnabled():
+            return False
+        elif not twitchUser.isImytSlurpEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if self.__imytSlurpMessage in splits and self.__lastImytSlurpMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
+            await twitchUtils.safeSend(message.channel, self.__imytSlurpMessage)
+            return True
+        else:
+            return False
+
+
 class JamCatMessage(AbsMessage):
 
     def __init__(

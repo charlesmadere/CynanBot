@@ -21,6 +21,7 @@ class User():
         isDeerForceMessageEnabled: bool,
         isEyesMessageEnabled: bool,
         isGiveCutenessEnabled: bool,
+        isImytSlurpEnabled: bool,
         isJamCatEnabled: bool,
         isJishoEnabled: bool,
         isJokesEnabled: bool,
@@ -77,6 +78,8 @@ class User():
             raise ValueError(f'isEyesMessageEnabled argument is malformed: \"{isEyesMessageEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
+        elif not utils.isValidBool(isImytSlurpEnabled):
+            raise ValueError(f'isImytSlurpEnabled argument is malformed: \"{isImytSlurpEnabled}\"')
         elif not utils.isValidBool(isJamCatEnabled):
             raise ValueError(f'isJamCatEnabled argument is malformed: \"{isJamCatEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
@@ -131,6 +134,7 @@ class User():
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEyesMessageEnabled: bool = isEyesMessageEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
+        self.__isImytSlurpEnabled: bool = isImytSlurpEnabled
         self.__isJamCatEnabled: bool = isJamCatEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isJokesEnabled: bool = isJokesEnabled
@@ -300,6 +304,9 @@ class User():
 
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
+
+    def isImytSlurpEnabled(self) -> bool:
+        return self.__isImytSlurpEnabled
 
     def isJamCatEnabled(self) -> bool:
         return self.__isJamCatEnabled
