@@ -10,13 +10,13 @@ from twitchio.ext.pubsub.topics import Topic
 import CynanBotCommon.utils as utils
 from authHelper import AuthHelper
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      CommandsCommand, CutenessCommand, CynanSourceCommand,
-                      DiscordCommand, GiveCutenessCommand, JishoCommand,
-                      MyCutenessCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
-                      TamalesCommand, TimeCommand, TranslateCommand,
-                      TriviaCommand, TriviaScoreCommand, TwitterCommand,
-                      WeatherCommand, WordCommand)
+                      ChatBandClearCommand, CommandsCommand, CutenessCommand,
+                      CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
+                      JishoCommand, MyCutenessCommand, PbsCommand,
+                      PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
+                      SwQuoteCommand, TamalesCommand, TimeCommand,
+                      TranslateCommand, TriviaCommand, TriviaScoreCommand,
+                      TwitterCommand, WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
@@ -142,6 +142,11 @@ class CynanBot(Bot):
             self.__answerCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, triviaGameRepository, triviaScoreRepository, usersRepository)
+
+        if chatBandManager is None:
+            self.__chatBandClearCommand: AbsCommand = StubCommand()
+        else:
+            self.__chatBandClearCommand: AbsCommand = ChatBandClearCommand(chatBandManager, generalSettingsRepository, usersRepository)
 
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -585,6 +590,10 @@ class CynanBot(Bot):
     @commands.command(name = 'answer')
     async def command_answer(self, ctx: Context):
         await self.__answerCommand.handleCommand(ctx)
+
+    @commands.command(name = 'clearchatband')
+    async def command_clearchatband(self, ctx: Context):
+        await self.__chatBandClearCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):

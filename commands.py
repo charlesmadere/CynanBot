@@ -11,6 +11,7 @@ from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
+from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -174,6 +175,38 @@ class AnswerCommand(AbsCommand):
         except ValueError:
             print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
+
+
+class ChatBandClearCommand(AbsCommand):
+
+    def __init__(
+        self,
+        chatBandManager: ChatBandManager,
+        generalSettingsRepository: GeneralSettingsRepository,
+        usersRepository: UsersRepository
+    ):
+        if chatBandManager is None:
+            raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
+        elif generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__chatBandManager: ChatBandManager = chatBandManager
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not self.__generalSettingsRepository.isChatBandEnabled():
+            return
+        elif not user.isChatBandEnabled():
+            return
+        elif not ctx.author.is_mod:
+            return
+
+        self.__chatBandManager.clearCaches()
 
 
 class CommandsCommand(AbsCommand):
