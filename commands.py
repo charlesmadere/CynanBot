@@ -196,7 +196,7 @@ class ChatBandClearCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isChatBandEnabled():
