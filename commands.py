@@ -207,7 +207,7 @@ class ChatBandClearCommand(AbsCommand):
             return
 
         self.__chatBandManager.clearCaches()
-        print(f'Chat band caches cleared ({utils.getNowTimeText(includeSeconds = True)})')
+        print(f'Chat Band caches cleared ({utils.getNowTimeText(includeSeconds = True)})')
         await twitchUtils.safeSend(ctx, 'ⓘ Chat Band caches cleared')
 
 
