@@ -249,6 +249,9 @@ class CommandsCommand(AbsCommand):
         if user.isAnalogueEnabled():
             commands.append('!analogue')
 
+        if user.isChatBandEnabled() and ctx.author.is_mod:
+            commands.append('!clearchatband')
+
         if user.isCutenessEnabled():
             commands.append('!cuteness')
             commands.append('!mycuteness')
