@@ -299,7 +299,7 @@ class CommandsCommand(AbsCommand):
         commands.sort()
         commandsString = ', '.join(commands)
 
-        await twitchUtils.safeSend(ctx, f'My commands: {commandsString}')
+        await twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
 
 
 class CutenessCommand(AbsCommand):
