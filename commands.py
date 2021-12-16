@@ -1035,13 +1035,15 @@ class TriviaScoreCommand(AbsCommand):
         if result.getTotal() == 1:
             gamesStr = 'game'
 
+        winsStr: str = 'wins'
+        if result.getTotalWins() == 1:
+            winsStr = 'win'
+
         lossesStr: str = 'losses'
         if result.getTotalLosses() == 1:
             lossesStr = 'loss'
 
-        winsStr: str = 'wins'
-        if result.getTotalWins() == 1:
-            winsStr = 'win'
+        ratioStr: str = f' ({result.getWinPercentStr()} wins)'
 
         streakStr: str = '.'
         if result.getStreak() >= 3:
@@ -1049,7 +1051,7 @@ class TriviaScoreCommand(AbsCommand):
         elif result.getStreak() <= -3:
             streakStr = f', and is on a {result.getAbsStreakStr()} game losing streak 🙀'
 
-        return f'{userName} has played {result.getTotalStr()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{streakStr}'
+        return f'{userName} has played {result.getTotalStr()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
