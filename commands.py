@@ -1045,7 +1045,7 @@ class TriviaScoreCommand(AbsCommand):
 
         ratioStr: str = f' ({result.getWinPercentStr()} wins)'
 
-        streakStr: str = '.'
+        streakStr: str = ''
         if result.getStreak() >= 3:
             streakStr = f', and is on a {result.getAbsStreakStr()} game winning streak 😸'
         elif result.getStreak() <= -3:
