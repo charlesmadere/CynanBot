@@ -602,17 +602,23 @@ class PbsCommand(AbsCommand):
 
     def __init__(
         self,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
         if not user.hasSpeedrunProfile():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         speedrunProfile = user.getSpeedrunProfile()
