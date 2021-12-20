@@ -27,7 +27,8 @@ from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
+from CynanBotCommon.websocketConnection.websocketConnectionServer import \
+    WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository

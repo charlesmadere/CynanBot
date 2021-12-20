@@ -42,7 +42,8 @@ from CynanBotCommon.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
     TwitchTokensRepository)
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnectionServer import WebsocketConnectionServer
+from CynanBotCommon.websocketConnection.websocketConnectionServer import \
+    WebsocketConnectionServer
 from events import AbsEvent, RaidEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
