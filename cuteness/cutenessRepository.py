@@ -96,7 +96,7 @@ class CutenessRepository():
                 userName = userName
             )
 
-        cuteness = row[0]
+        cuteness: int = row[0]
 
         if not fetchLocalLeaderboard:
             cursor.close()
