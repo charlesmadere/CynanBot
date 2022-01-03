@@ -107,14 +107,16 @@ class CutenessRepository():
                 userName = userName
             )
 
+        twitchChannelUserId = self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+
         cursor.execute(
             '''
                 SELECT cuteness, userId FROM cuteness
-                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1 AND userId != ?
+                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1 AND userId != ? AND userId != ?
                 ORDER BY ABS(? - ABS(cuteness)) ASC
                 LIMIT ?
             ''',
-            ( twitchChannel, userId, cuteness, self.__localLeaderboardSize )
+            ( twitchChannel, userId, twitchChannelUserId, cuteness, self.__localLeaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__localLeaderboardSize)
