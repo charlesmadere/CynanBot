@@ -248,7 +248,7 @@ class CutenessRepository():
             cursor.close()
             return CutenessLeaderboardResult(entries = entries)
 
-        rank = 1
+        rank: int = 1
 
         for row in rows:
             userName = self.__userIdsRepository.fetchUserName(row[1])
@@ -265,7 +265,7 @@ class CutenessRepository():
         # sort cuteness into highest to lowest order
         entries.sort(key = lambda entry: entry.getCuteness(), reverse = True)
 
-        specificLookupAlreadyInResults = False
+        specificLookupAlreadyInResults: bool = False
         if utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName):
             for entry in entries:
                 if utils.isValidStr(specificLookupUserId) and entry.getUserId().lower() == specificLookupUserId.lower():
@@ -279,7 +279,7 @@ class CutenessRepository():
         if not specificLookupAlreadyInResults and (utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName)):
             if not utils.isValidStr(specificLookupUserId):
                 try:
-                    specificLookupUserId = self.__userIdsRepository.fetchUserId(specificLookupUserName)
+                    specificLookupUserId = self.__userIdsRepository.fetchUserId(userName = specificLookupUserName)
                 except ValueError:
                     # this exception can be safely ignored
                     pass
