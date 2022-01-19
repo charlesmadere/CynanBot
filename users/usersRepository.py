@@ -67,7 +67,7 @@ class UsersRepository():
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
-        timeZones = None
+        timeZones: List[tzinfo] = None
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
