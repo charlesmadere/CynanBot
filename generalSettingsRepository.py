@@ -18,11 +18,11 @@ class GeneralSettingsRepository():
 
     def getRaidLinkMessagingDelay(self) -> int:
         jsonContents = self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'raidLinkMessagingDelay')
+        return utils.getIntFromDict(jsonContents, 'raidLinkMessagingDelay', 60)
 
     def getTriviaGamePoints(self) -> int:
         jsonContents = self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'triviaGamePoints')
+        return utils.getIntFromDict(jsonContents, 'triviaGamePoints', 5)
 
     def getTriviaGameTutorialCutenessThreshold(self) -> int:
         jsonContents = self.__readJson()
@@ -30,7 +30,7 @@ class GeneralSettingsRepository():
 
     def getWaitForTriviaAnswerDelay(self) -> int:
         jsonContents = self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')
+        return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay', 45)
 
     def isAnalogueEnabled(self) -> bool:
         jsonContents = self.__readJson()
