@@ -84,6 +84,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'jishoEnabled', True)
 
+    def isPersistAllUsersEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'persistAllUsersEnabled', False)
+
     def isPokepediaEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', True)

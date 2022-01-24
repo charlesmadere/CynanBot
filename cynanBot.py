@@ -284,6 +284,12 @@ class CynanBot(Bot):
             return
 
         if utils.isValidStr(message.content):
+            if self.__generalSettingsRepository.isPersistAllUsersEnabled():
+                self.__userIdsRepository.setUser(
+                    userId = str(message.author.id),
+                    userName = message.author.name
+                )
+
             twitchUser = self.__usersRepository.getUser(message.channel.name)
 
             await self.__chatBandMessage.handleMessage(
