@@ -54,7 +54,7 @@ class GeneralSettingsRepository():
 
     def isDeerForceMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', False)
 
     def isEyesMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -78,7 +78,7 @@ class GeneralSettingsRepository():
 
     def isJamCatMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'jamCatMessageEnabled', False)
 
     def isJishoEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -98,7 +98,7 @@ class GeneralSettingsRepository():
 
     def isRatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'ratJamMessageEnabled', False)
 
     def isRewardIdPrintingEnabled(self) -> bool:
         jsonContents = self.__readJson()
