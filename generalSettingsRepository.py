@@ -46,11 +46,11 @@ class GeneralSettingsRepository():
 
     def isCynanMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'cynanMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'cynanMessageEnabled', False)
 
     def isDebugLoggingEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', True)
 
     def isDeerForceMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -58,7 +58,7 @@ class GeneralSettingsRepository():
 
     def isEyesMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'eyesMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'eyesMessageEnabled', False)
 
     def isFuntoonApiEnabled(self) -> bool:
         jsonContents = self.__readJson()
