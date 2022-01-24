@@ -72,21 +72,21 @@ class UsersRepository():
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
-            timeZones: List[tzinfo] = list()
+            timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
         increaseCutenessDoubleRewardId: str = None
         cutenessBoosterPacks: List[CutenessBoosterPack] = None
         if isCutenessEnabled:
-            increaseCutenessDoubleRewardId: str = userJson.get('increaseCutenessDoubleRewardId')
+            increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
         picOfTheDayFile: str = None
         picOfTheDayRewardId: str = None
         if isPicOfTheDayEnabled:
-            picOfTheDayFile: str = userJson.get('picOfTheDayFile')
-            picOfTheDayRewardId: str = userJson.get('picOfTheDayRewardId')
+            picOfTheDayFile = userJson.get('picOfTheDayFile')
+            picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
 
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
@@ -96,19 +96,19 @@ class UsersRepository():
         triviaGameTutorialCutenessThreshold: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
-            triviaGameRewardId: str = userJson.get('triviaGameRewardId')
-            triviaGamePoints: str = userJson.get('triviaGamePoints')
-            triviaGameTutorialCutenessThreshold: int = userJson.get('triviaGameTutorialCutenessThreshold')
-            waitForTriviaAnswerDelay: int = userJson.get('waitForTriviaAnswerDelay')
+            triviaGameRewardId = userJson.get('triviaGameRewardId')
+            triviaGamePoints = userJson.get('triviaGamePoints')
+            triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
+            waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
         pkmnBattleRewardId: str = None
         pkmnEvolveRewardId: str = None
         pkmnShinyRewardId: str = None
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = None
         if isPkmnEnabled:
-            pkmnBattleRewardId: str = userJson.get('pkmnBattleRewardId')
-            pkmnEvolveRewardId: str = userJson.get('pkmnEvolveRewardId')
-            pkmnShinyRewardId: str = userJson.get('pkmnShinyRewardId')
+            pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
+            pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
+            pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
             pkmnCatchBoosterPacksJson: List[Dict] = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
