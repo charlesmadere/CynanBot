@@ -178,7 +178,7 @@ class CynanBot(Bot):
         if tamaleGuyRepository is None:
             self.__tamalesCommand: AbsCommand = StubCommand()
         else:
-            self.__tamalesCommand: AbsCommand = TamalesCommand(tamaleGuyRepository, usersRepository)
+            self.__tamalesCommand: AbsCommand = TamalesCommand(generalSettingsRepository, tamaleGuyRepository, usersRepository)
 
         if translationHelper is None:
             self.__translateCommand: AbsCommand = StubCommand()

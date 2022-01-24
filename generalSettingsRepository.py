@@ -104,6 +104,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'rewardIdPrintingEnabled', False)
 
+    def isTamalesEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'tamalesEnabled', True)
+
     def isTranslateEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'translateEnabled', True)

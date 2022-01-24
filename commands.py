@@ -825,15 +825,19 @@ class TamalesCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         tamaleGuyRepository: TamaleGuyRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if tamaleGuyRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif tamaleGuyRepository is None:
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -841,7 +845,9 @@ class TamalesCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTamalesEnabled():
+        if not self.__generalSettingsRepository.isTamalesEnabled():
+            return
+        elif not user.isTamalesEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
