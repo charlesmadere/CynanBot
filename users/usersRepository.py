@@ -30,7 +30,7 @@ class UsersRepository():
     def __createUser(self, handle: str, userJson: dict) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif not utils.hasItems(userJson):
+        elif userJson is None:
             raise ValueError(f'userJson argument is empty or malformed: \"{userJson}\"')
 
         isAnalogueEnabled = utils.getBoolFromDict(userJson, 'analogueEnabled', False)
