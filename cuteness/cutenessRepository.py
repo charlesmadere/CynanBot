@@ -192,8 +192,8 @@ class CutenessRepository():
         )
 
         row = cursor.fetchone()
-
         cuteness: int = 0
+
         if row is not None:
             cuteness = row[0]
 

@@ -40,7 +40,7 @@ async def safeSend(
     messages: List[str] = list()
     messages.append(message)
 
-    index = 0
+    index: int = 0
 
     while index < len(messages):
         m = messages[index]
