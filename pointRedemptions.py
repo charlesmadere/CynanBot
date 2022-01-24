@@ -569,7 +569,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = delaySeconds,
-            message = f'😿 Sorry {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
+            message = f'😿 {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
             heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle()),
             beforeSend = lambda: self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed)
         ))
