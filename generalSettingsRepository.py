@@ -64,6 +64,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'funtoonTwitchChatFallbackEnabled', True)
 
+    def isGiftSubscriptionThanksMessageEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'giftSubscriptionThanksMessageEnabled', True)
+
     def isImytSlurpMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'imytSlurpMessageEnabled', True)
