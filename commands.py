@@ -222,14 +222,18 @@ class CommandsCommand(AbsCommand):
     def __init__(
         self,
         usersRepository: UsersRepository,
+        delimiter: str = ', ',
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__usersRepository: UsersRepository = usersRepository
+        self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -303,8 +307,7 @@ class CommandsCommand(AbsCommand):
             return
 
         commands.sort()
-        commandsString = ', '.join(commands)
-
+        commandsString = self.__delimiter.join(commands)
         await twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
 
 
