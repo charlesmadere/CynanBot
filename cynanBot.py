@@ -203,7 +203,7 @@ class CynanBot(Bot):
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsCommand = StubCommand()
         else:
-            self.__wordCommand: AbsCommand = WordCommand(languagesRepository, usersRepository, wordOfTheDayRepository)
+            self.__wordCommand: AbsCommand = WordCommand(generalSettingsRepository, languagesRepository, usersRepository, wordOfTheDayRepository)
 
         #############################################
         ## Initialization of event handler objects ##

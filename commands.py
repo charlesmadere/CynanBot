@@ -1201,12 +1201,15 @@ class WordCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository,
         cooldown: timedelta = timedelta(seconds = 10)
     ):
-        if languagesRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1215,6 +1218,7 @@ class WordCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
@@ -1223,7 +1227,9 @@ class WordCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isWordOfTheDayEnabled():
+        if not self.__generalSettingsRepository.isWordOfTheDayEnabled():
+            return
+        elif not user.isWordOfTheDayEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
