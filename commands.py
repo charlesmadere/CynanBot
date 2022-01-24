@@ -47,24 +47,30 @@ class AnalogueCommand(AbsCommand):
     def __init__(
         self,
         analogueStoreRepository: AnalogueStoreRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
         if analogueStoreRepository is None:
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
+        elif generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isAnalogueEnabled():
+        if not self.__generalSettingsRepository.isAnalogueEnabled():
+            return
+        elif not user.isAnalogueEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return

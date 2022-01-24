@@ -32,6 +32,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'waitForTriviaAnswerDelay')
 
+    def isAnalogueEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'analogueEnabled', True)
+
     def isCatJamMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'catJamMessageEnabled', True)
