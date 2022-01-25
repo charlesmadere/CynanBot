@@ -56,7 +56,7 @@ class RaidEvent(AbsEvent):
         if not utils.isValidStr(raidedByName):
             raidedByName = tags.get('display-name')
         if not utils.isValidStr(raidedByName):
-            raidedByName = tags('login')
+            raidedByName = tags.get('login')
 
         if not utils.isValidStr(raidedByName):
             print(f'{twitchUser.getHandle()} was raided, but the tags dictionary has strange values: {tags}')
