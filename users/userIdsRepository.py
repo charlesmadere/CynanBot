@@ -98,8 +98,10 @@ class UserIdsRepository():
         return int(userId)
 
     def fetchUserName(self, userId: str) -> str:
-        if not utils.isValidStr(userId) or userId == '0':
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif userId == '0':
+            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute('SELECT userName FROM userIds WHERE userId = ?', ( userId, ))
@@ -116,8 +118,10 @@ class UserIdsRepository():
         return userName
 
     def setUser(self, userId: str, userName: str):
-        if not utils.isValidStr(userId) or userId == '0':
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif userId == '0':
+            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
