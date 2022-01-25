@@ -353,7 +353,7 @@ class CynanBot(Bot):
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if self.__channelPointsLruCache.contains(event.id):
-            print(f'Duplicate reward ID in {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Duplicate reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
             return
         else:
             self.__channelPointsLruCache.put(event.id)
