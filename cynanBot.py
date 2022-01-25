@@ -345,22 +345,20 @@ class CynanBot(Bot):
         twitchUserIdStr = str(event.channel_id)
         twitchUserNameStr = self.__userIdsRepository.fetchUserName(twitchUserIdStr)
         twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
+        rewardId = str(event.reward.id)
+        userIdThatRedeemed = str(event.user.id)
+        userNameThatRedeemed = event.user.name
+        redemptionMessage = event.input
+        twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if self.__channelPointsLruCache.contains(event.id):
-            print(f'Encountered duplicate channel points redemption ID in {twitchUser.getHandle()}: \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Duplicate reward ID in {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
             return
         else:
             self.__channelPointsLruCache.put(event.id)
 
-        twitchChannel = self.get_channel(twitchUser.getHandle())
-
-        rewardId = event.reward.id
-        userIdThatRedeemed = str(event.user.id)
-        userNameThatRedeemed = event.user.name
-        redemptionMessage = event.input
-
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            print(f'The Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}) is \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
@@ -373,7 +371,6 @@ class CynanBot(Bot):
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
                     print(f'Redeemed cuteness point in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                 return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
@@ -387,7 +384,6 @@ class CynanBot(Bot):
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
                         print(f'Redeemed double cuteness points in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                 return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
@@ -401,7 +397,6 @@ class CynanBot(Bot):
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
                     print(f'Redeemed Pic Of The Day in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
             return
 
         if twitchUser.isPkmnEnabled():
@@ -416,7 +411,6 @@ class CynanBot(Bot):
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
                         print(f'Redeemed Pkmn Battle in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                 return
 
             if twitchUser.hasPkmnCatchBoosterPacks():
@@ -430,7 +424,6 @@ class CynanBot(Bot):
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
                         print(f'Redeemed Pkmn Catch in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                     return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
@@ -444,7 +437,6 @@ class CynanBot(Bot):
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
                         print(f'Redeemed Pkmn Evolve in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                 return
 
             if rewardId == twitchUser.getPkmnShinyRewardId():
@@ -458,7 +450,6 @@ class CynanBot(Bot):
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
                         print(f'Redeemed Pkmn Shiny in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
                 return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
@@ -472,7 +463,6 @@ class CynanBot(Bot):
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
                     print(f'Redeemed trivia game in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-
             return
 
     async def event_pubsub_error(self, tags: Dict):
