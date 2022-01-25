@@ -25,7 +25,7 @@ class CutenessRepository():
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not utils.isValidNum(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
-        elif leaderboardSize < 1 or leaderboardSize > 10:
+        elif leaderboardSize < 3 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
         elif not utils.isValidNum(localLeaderboardSize):
             raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
