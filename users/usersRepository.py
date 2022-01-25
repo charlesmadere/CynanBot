@@ -31,7 +31,7 @@ class UsersRepository():
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif userJson is None:
-            raise ValueError(f'userJson argument is empty or malformed: \"{userJson}\"')
+            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
 
         isAnalogueEnabled = utils.getBoolFromDict(userJson, 'analogueEnabled', False)
         isCatJamEnabled = utils.getBoolFromDict(userJson, 'catJamEnabled', False)

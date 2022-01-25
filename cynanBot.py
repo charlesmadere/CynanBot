@@ -347,7 +347,7 @@ class CynanBot(Bot):
         twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
 
         if self.__channelPointsLruCache.contains(event.id):
-            print(f'Encountered duplicate channel points redemption ID in {twitchUser.getHandle()}: \"{event.id}\": ({utils.getNowTimeText(includeSeconds = True)})')
+            print(f'Encountered duplicate channel points redemption ID in {twitchUser.getHandle()}: \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
             return
         else:
             self.__channelPointsLruCache.put(event.id)
@@ -360,7 +360,7 @@ class CynanBot(Bot):
         redemptionMessage = event.input
 
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            print(f'The Reward ID for {twitchUser.getHandle()} (userId \"{twitchUserIdStr}\") is \"{rewardId}\"')
+            print(f'The Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}) is \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
