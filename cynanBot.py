@@ -486,7 +486,7 @@ class CynanBot(Bot):
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            print(f'event_raw_usernotice() ({utils.getNowTimeText()}): {tags}')
+            print(f'event_raw_usernotice() ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
 
         if not utils.hasItems(tags):
             return
