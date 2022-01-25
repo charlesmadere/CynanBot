@@ -59,10 +59,11 @@ class RaidEvent(AbsEvent):
             raidedByName = tags.get('login')
 
         if not utils.isValidStr(raidedByName):
-            print(f'{twitchUser.getHandle()} was raided, but the tags dictionary has strange values: {tags}')
+            print(f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
             return False
 
-        print(f'{twitchUser.getHandle()} was raided by {raidedByName} ({utils.getNowTimeText()})')
+        if self.__generalSettingsRepository.isDebugLoggingEnabled():
+            print(f'Raid for {twitchUser.getHandle()} () from {raidedByName} ({utils.getNowTimeText()})')
 
         messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {twitchUser.getTwitchUrl()} Thank you! ✨'
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', -1)
