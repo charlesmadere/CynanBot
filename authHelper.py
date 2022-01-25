@@ -67,6 +67,15 @@ class AuthHelper():
 
         return merriamWebsterApiKey
 
+    def requireNick(self) -> str:
+        jsonContents = self.__readJson()
+
+        nick = jsonContents.get('nick')
+        if not utils.isValidStr(nick):
+            raise ValueError(f'\"nick\" in auth file \"{self.__authFile}\" is malformed: \"{nick}\"')
+
+        return nick
+
     def requireOneWeatherApiKey(self) -> str:
         oneWeatherApiKey = self.getOneWeatherApiKey()
 

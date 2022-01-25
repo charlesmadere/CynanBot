@@ -7,6 +7,7 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitchUtils
+from authHelper import AuthHelper
 from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
@@ -88,16 +89,16 @@ class SubGiftEvent(AbsEvent):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        nick: str
+        authHelper: AuthHelper,
+        generalSettingsRepository: GeneralSettingsRepository
     ):
-        if generalSettingsRepository is None:
+        if authHelper is None:
+            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not utils.isValidStr(nick):
-            raise ValueError(f'nick argument is malformed: \"{nick}\"')
 
+        self.__authHelper: AuthHelper = authHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__nick: str = nick
 
     async def handleEvent(
         self,

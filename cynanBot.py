@@ -91,7 +91,7 @@ class CynanBot(Bot):
         super().__init__(
             token = authHelper.requireTwitchIrcAuthToken(),
             client_secret = authHelper.requireTwitchClientSecret(),
-            nick = 'CynanBot',
+            nick = authHelper.requireNick(),
             prefix = '!',
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
@@ -210,7 +210,7 @@ class CynanBot(Bot):
         #############################################
 
         self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository)
-        self.__subGiftEvent: AbsEvent = SubGiftEvent(generalSettingsRepository, 'CynanBot')
+        self.__subGiftEvent: AbsEvent = SubGiftEvent(authHelper, generalSettingsRepository)
 
         ###############################################
         ## Initialization of message handler objects ##
@@ -512,7 +512,7 @@ class CynanBot(Bot):
             )
 
     async def event_ready(self):
-        print(f'{self.nick} is ready! ({utils.getNowTimeText(includeSeconds = True)})')
+        print(f'{self.__authHelper.requireNick()} is ready! ({utils.getNowTimeText(includeSeconds = True)})')
         await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
