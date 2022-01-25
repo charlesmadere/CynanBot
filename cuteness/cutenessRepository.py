@@ -81,8 +81,9 @@ class CutenessRepository():
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
-                SELECT cuteness FROM cuteness
-                WHERE twitchChannel = ? AND userId = ?
+                SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
+                INNER JOIN userIds ON cuteness.userId = userIds.userId
+                WHERE cuteness.twitchChannel = ? AND cuteness.userId = ?
             ''',
             ( twitchChannel, userId )
         )
@@ -113,9 +114,10 @@ class CutenessRepository():
 
         cursor.execute(
             '''
-                SELECT cuteness, userId FROM cuteness
-                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1 AND userId != ? AND userId != ?
-                ORDER BY ABS(? - ABS(cuteness)) ASC
+                SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
+                INNER JOIN userIds ON cuteness.userId = userIds.userId
+                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ? AND cuteness.userId != ?
+                ORDER BY ABS(? - ABS(cuteness.cuteness)) ASC
                 LIMIT ?
             ''',
             ( twitchChannel, userId, twitchChannelUserId, cuteness, self.__localLeaderboardSize )
@@ -135,23 +137,11 @@ class CutenessRepository():
         localLeaderboard: List[CutenessEntry] = list()
 
         for row in rows:
-            # The try-except here is an unfortunate band-aid around an old, since been fixed, bug
-            # that would cause us to not always have a person's username persisted in the database
-            # alongside their user ID. So for any users that cause this exception to be raised,
-            # we'll just ignore them and continue, as there's nothing more we can do to recover.
-            #
-            # If we were to ever start from scratch with a brand new database, this try-except
-            # would be completely extranneous, and could be removed.
-            try:
-                entryUserName = self.__userIdsRepository.fetchUserName(row[1])
-                localLeaderboard.append(CutenessEntry(
-                    cuteness = row[0],
-                    userId = row[1],
-                    userName = entryUserName
-                ))
-            except RuntimeError:
-                # Just log the error and continue, there's nothing more we can do to recover.
-                print(f'Encountered a user ID that has no username: \"{row[1]}\"')
+            localLeaderboard.append(CutenessEntry(
+                cuteness = row[0],
+                userId = row[1],
+                userName = row[2]
+            ))
 
         cursor.close()
 
@@ -239,9 +229,10 @@ class CutenessRepository():
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
-                SELECT cuteness, userId FROM cuteness
-                WHERE twitchChannel = ? AND cuteness IS NOT NULL AND cuteness >= 1 AND userId != ?
-                ORDER BY cuteness DESC
+                SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
+                INNER JOIN userIds ON cuteness.userId = userIds.userId
+                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ?
+                ORDER BY cuteness.cuteness DESC
                 LIMIT ?
             ''',
             ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
@@ -257,12 +248,11 @@ class CutenessRepository():
         rank: int = 1
 
         for row in rows:
-            userName = self.__userIdsRepository.fetchUserName(row[1])
             entries.append(CutenessLeaderboardEntry(
                 cuteness = row[0],
                 rank = rank,
                 userId = row[1],
-                userName = userName
+                userName = row[2]
             ))
             rank = rank + 1
 
@@ -289,7 +279,7 @@ class CutenessRepository():
                 except ValueError:
                     # this exception can be safely ignored
                     pass
-            elif not utils.isValidStr(specificLookupUserName):
+            else:
                 try:
                     specificLookupUserName = self.__userIdsRepository.fetchUserName(specificLookupUserId)
                 except (RuntimeError, ValueError):
