@@ -248,12 +248,12 @@ class CutenessRepository():
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
-        entries: List[CutenessLeaderboardEntry] = list()
 
         if len(rows) == 0:
             cursor.close()
-            return CutenessLeaderboardResult(entries = entries)
+            return CutenessLeaderboardResult()
 
+        entries: List[CutenessLeaderboardEntry] = list()
         rank: int = 1
 
         for row in rows:

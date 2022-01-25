@@ -10,7 +10,7 @@ class CutenessLeaderboardResult():
 
     def __init__(
         self,
-        entries: List[CutenessLeaderboardEntry],
+        entries: List[CutenessLeaderboardEntry] = None,
         specificLookupCutenessResult: CutenessResult = None
     ):
         self.__entries: List[CutenessLeaderboardEntry] = entries
