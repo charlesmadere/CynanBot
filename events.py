@@ -82,3 +82,55 @@ class RaidEvent(AbsEvent):
         ))
 
         return True
+
+
+class SubGiftEvent(AbsEvent):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        nick: str
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not utils.isValidStr(nick):
+            raise ValueError(f'nick argument is malformed: \"{nick}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__nick: str = nick
+
+    async def handleEvent(
+        self,
+        twitchChannel: Channel,
+        twitchUser: User,
+        tags: Dict
+    ) -> bool:
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif tags is None:
+            raise ValueError(f'tags argument is malformed: \"{tags}\"')
+
+        # TODO DELETE
+        print(f'Sub gift tags ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
+
+        if not self.__generalSettingsRepository.isSubGiftThankingEnabled():
+            return False
+        elif not twitchUser.isSubGiftThankingEnabled():
+            return False
+
+        # TODO check to ensure that self.__nick is receiving the sub gift
+
+        if not utils.getBoolFromDict(tags, 'msg-param-was-gifted', False):
+            return False
+
+        giftedByName = tags.get('msg-param-was-gifted')
+        if not utils.isValidStr(giftedByName):
+            giftedByName = tags.get('display-name')
+        if not utils.isValidStr(giftedByName):
+            giftedByName = tags.get('login')
+
+        # TODO add thank you message
+
+        return True

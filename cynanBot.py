@@ -44,7 +44,7 @@ from CynanBotCommon.twitchTokensRepository import (
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
-from events import AbsEvent, RaidEvent
+from events import AbsEvent, RaidEvent, SubGiftEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, EyesMessage, ImytSlurpMessage,
@@ -210,6 +210,7 @@ class CynanBot(Bot):
         #############################################
 
         self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository)
+        self.__subGiftEvent: AbsEvent = SubGiftEvent(generalSettingsRepository, self.nick)
 
         ###############################################
         ## Initialization of message handler objects ##
@@ -499,6 +500,12 @@ class CynanBot(Bot):
 
         if msgId == 'raid':
             await self.__raidEvent.handleEvent(
+                twitchChannel = channel,
+                twitchUser = twitchUser,
+                tags = tags
+            )
+        elif msgId == 'subgift' or msgId == 'anonsubgift':
+            await self.__subGiftEvent.handleEvent(
                 twitchChannel = channel,
                 twitchUser = twitchUser,
                 tags = tags
