@@ -210,7 +210,7 @@ class CynanBot(Bot):
         #############################################
 
         self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository)
-        self.__subGiftEvent: AbsEvent = SubGiftEvent(generalSettingsRepository, self.nick)
+        self.__subGiftEvent: AbsEvent = SubGiftEvent(generalSettingsRepository, 'CynanBot')
 
         ###############################################
         ## Initialization of message handler objects ##
