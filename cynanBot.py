@@ -292,10 +292,11 @@ class CynanBot(Bot):
 
             twitchUser = self.__usersRepository.getUser(message.channel.name)
 
-            await self.__chatBandMessage.handleMessage(
+            if await self.__chatBandMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = message
-            )
+            ):
+                return
 
             if await self.__cynanMessage.handleMessage(
                 twitchUser = twitchUser,
