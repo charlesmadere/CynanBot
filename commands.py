@@ -1115,10 +1115,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__getResultStr(
-            userName = userName,
-            result = result
-        ))
+        await twitchUtils.safeSend(ctx, self.__getResultStr(userName, result))
 
 class TwitterCommand(AbsCommand):
 
