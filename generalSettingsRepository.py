@@ -104,6 +104,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'rewardIdPrintingEnabled', False)
 
+    def isSubGiftThankingEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'subGiftThankingEnabled', False)
+
     def isTamalesEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'tamalesEnabled', True)

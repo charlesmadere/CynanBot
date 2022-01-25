@@ -35,6 +35,7 @@ class User():
         isRatJamEnabled: bool,
         isRewardIdPrintingEnabled: bool,
         isStarWarsQuotesEnabled: bool,
+        isSubGiftThankingEnabled: bool,
         isTamalesEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
@@ -107,6 +108,8 @@ class User():
             raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
+        elif not utils.isValidBool(isSubGiftThankingEnabled):
+            raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isTamalesEnabled):
             raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -151,6 +154,7 @@ class User():
         self.__isRatJamEnabled: bool = isRatJamEnabled
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
+        self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isTamalesEnabled: bool = isTamalesEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
@@ -350,6 +354,9 @@ class User():
 
     def isStarWarsQuotesEnabled(self) -> bool:
         return self.__isStarWarsQuotesEnabled
+
+    def isSubGiftThankingEnabled(self) -> bool:
+        return self.__isSubGiftThankingEnabled
 
     def isTamalesEnabled(self) -> bool:
         return self.__isTamalesEnabled
