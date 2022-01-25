@@ -361,6 +361,12 @@ class CynanBot(Bot):
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
             print(f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
 
+        if self.__generalSettingsRepository.isPersistAllUsersEnabled():
+            self.__userIdsRepository.setUser(
+                userId = userIdThatRedeemed,
+                userName = userNameThatRedeemed
+            )
+
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
