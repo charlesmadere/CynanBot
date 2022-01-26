@@ -113,25 +113,29 @@ class SubGiftEvent(AbsEvent):
         elif tags is None:
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
 
-        # TODO DELETE
-        print(f'Sub gift tags ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
-
         if not self.__generalSettingsRepository.isSubGiftThankingEnabled():
             return False
         elif not twitchUser.isSubGiftThankingEnabled():
             return False
 
-        # TODO check to ensure that self.__nick is receiving the sub gift
-
-        if not utils.getBoolFromDict(tags, 'msg-param-was-gifted', False):
-            return False
-
-        giftedByName = tags.get('msg-param-was-gifted')
-        if not utils.isValidStr(giftedByName):
-            giftedByName = tags.get('display-name')
+        giftedByName: str = tags.get('display-name')
         if not utils.isValidStr(giftedByName):
             giftedByName = tags.get('login')
 
-        # TODO add thank you message
+        giftedToName: str = tags.get('msg-param-recipient-display-name')
+        if not utils.isValidStr(giftedToName):
+            giftedToName = tags.get('msg-param-recipient-user-name')
+
+        if giftedToName.lower() != self.__authHelper.requireNick().lower():
+            return False
+        elif not utils.isValidStr(giftedByName):
+            return False
+        elif giftedToName.lower() == giftedByName.lower():
+            return False
+
+        await twitchUtils.safeSend(
+            messageable = twitchChannel,
+            message = f'😻 thank you for the gifted sub @{giftedByName}!'
+        )
 
         return True
