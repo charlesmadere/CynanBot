@@ -135,7 +135,7 @@ class SubGiftEvent(AbsEvent):
 
         await twitchUtils.safeSend(
             messageable = twitchChannel,
-            message = f'😻 thank you for the gifted sub @{giftedByName}!'
+            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
         )
 
         return True
