@@ -42,7 +42,7 @@ class GeneralSettingsRepository():
 
     def isChatBandEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'chatBandEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'chatBandEnabled', False)
 
     def isCynanMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -74,7 +74,7 @@ class GeneralSettingsRepository():
 
     def isImytSlurpMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'imytSlurpMessageEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'imytSlurpMessageEnabled', False)
 
     def isJamCatMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
@@ -106,7 +106,7 @@ class GeneralSettingsRepository():
 
     def isSubGiftThankingEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'subGiftThankingEnabled', False)
+        return utils.getBoolFromDict(jsonContents, 'subGiftThankingEnabled', True)
 
     def isTamalesEnabled(self) -> bool:
         jsonContents = self.__readJson()
