@@ -132,7 +132,7 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'wordOfTheDayEnabled', True)
 
-    def __readJson(self) -> Dict:
+    def __readJson(self) -> Dict[str, object]:
         if not os.path.exists(self.__generalSettingsFile):
             raise FileNotFoundError(f'General settings file not found: \"{self.__generalSettingsFile}\"')
 
