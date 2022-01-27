@@ -349,15 +349,16 @@ class CynanBot(Bot):
         twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
         rewardId = str(event.reward.id)
         userIdThatRedeemed = str(event.user.id)
-        userNameThatRedeemed = event.user.name
-        redemptionMessage = event.input
-        twitchChannel = self.get_channel(twitchUser.getHandle())
+        userNameThatRedeemed: str = event.user.name
+        redemptionMessage: str = event.input
+        lruCacheId: str = f'{twitchUserNameStr}:{event.id}'.lower()
 
-        if self.__channelPointsLruCache.contains(event.id):
+        if self.__channelPointsLruCache.contains(lruCacheId):
             print(f'Duplicate reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
             return
-        else:
-            self.__channelPointsLruCache.put(event.id)
+
+        self.__channelPointsLruCache.put(lruCacheId)
+        twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
             print(f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
