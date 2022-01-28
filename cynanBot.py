@@ -126,7 +126,7 @@ class CynanBot(Bot):
         ## Initialization of command objects ##
         #######################################
 
-        self.__commandsCommand: AbsCommand = CommandsCommand(usersRepository)
+        self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)

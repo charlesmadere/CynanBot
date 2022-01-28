@@ -221,17 +221,21 @@ class CommandsCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if usersRepository is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -256,10 +260,10 @@ class CommandsCommand(AbsCommand):
         if user.hasTwitter():
             commands.append('!twitter')
 
-        if user.isAnalogueEnabled():
+        if self.__generalSettingsRepository.isAnalogueEnabled() and user.isAnalogueEnabled():
             commands.append('!analogue')
 
-        if user.isChatBandEnabled() and ctx.author.is_mod:
+        if self.__generalSettingsRepository.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
             commands.append('!clearchatband')
 
         if user.isCutenessEnabled():
@@ -272,35 +276,35 @@ class CommandsCommand(AbsCommand):
         if user.isCynanSourceEnabled():
             commands.append('!cynansource')
 
-        if user.isJishoEnabled():
+        if self.__generalSettingsRepository.isJishoEnabled() and user.isJishoEnabled():
             commands.append('!jisho')
 
         if user.isJokesEnabled():
             commands.append('!joke')
 
-        if user.isPokepediaEnabled():
+        if self.__generalSettingsRepository.isPokepediaEnabled() and user.isPokepediaEnabled():
             commands.append('!pkmon')
             commands.append('!pkmove')
 
         if user.isStarWarsQuotesEnabled():
             commands.append('!swquote')
 
-        if user.isTamalesEnabled():
+        if self.__generalSettingsRepository.isTamalesEnabled() and user.isTamalesEnabled():
             commands.append('!tamales')
 
-        if user.isTranslateEnabled():
+        if self.__generalSettingsRepository.isTranslateEnabled() and user.isTranslateEnabled():
             commands.append('!translate')
 
-        if user.isTriviaEnabled():
+        if self.__generalSettingsRepository.isTriviaEnabled() and user.isTriviaEnabled():
             commands.append('!trivia')
 
-        if user.isTriviaGameEnabled():
+        if self.__generalSettingsRepository.isTriviaGameEnabled() and user.isTriviaGameEnabled():
             commands.append('!triviascore')
 
-        if user.isWeatherEnabled():
+        if self.__generalSettingsRepository.isWeatherEnabled() and user.isWeatherEnabled():
             commands.append('!weather')
 
-        if user.isWordOfTheDayEnabled():
+        if self.__generalSettingsRepository.isWordOfTheDayEnabled() and user.isWordOfTheDayEnabled():
             commands.append('!word')
 
         if not utils.hasItems(commands):
