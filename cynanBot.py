@@ -550,7 +550,7 @@ class CynanBot(Bot):
                     # if we run into this error, that most likely means that this user changed
                     # their password
                     usersToRemove.append(user)
-                    print(f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
+                    print(f'Failed to validate and refresh access Twitch token for {user.getHandle()} ({utils.getNowTimeText(includeSeconds = True)}): {e}')
 
         if utils.hasItems(usersToRemove):
             for user in usersToRemove:
