@@ -85,7 +85,7 @@ class RaidEvent(AbsEvent):
         return True
 
 
-class SubGiftEvent(AbsEvent):
+class SubGiftThankingEvent(AbsEvent):
 
     def __init__(
         self,
