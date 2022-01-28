@@ -37,7 +37,7 @@ class AuthHelper():
     def hasOneWeatherApiKey(self) -> bool:
         return utils.isValidStr(self.getOneWeatherApiKey())
 
-    def __readJson(self) -> Dict:
+    def __readJson(self) -> Dict[str, object]:
         if not os.path.exists(self.__authFile):
             raise FileNotFoundError(f'Auth file not found: \"{self.__authFile}\"')
 
