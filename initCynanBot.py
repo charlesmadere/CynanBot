@@ -20,6 +20,7 @@ from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.localTriviaRepository import LocalTriviaRepository
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
@@ -46,6 +47,7 @@ cutenessRepository = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 languagesRepository = LanguagesRepository()
+timber = Timber()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
@@ -85,6 +87,7 @@ cynanBot = CynanBot(
     pokepediaRepository = PokepediaRepository(),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(),
+    timber = timber,
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
         triviaRepository = triviaRepository
@@ -105,5 +108,5 @@ cynanBot = CynanBot(
     wordOfTheDayRepository = WordOfTheDayRepository()
 )
 
-print('Starting CynanBot...')
+timber.log('initCynanBot', 'Starting CynanBot...')
 cynanBot.run()

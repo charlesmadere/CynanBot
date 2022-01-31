@@ -35,6 +35,7 @@ from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -77,6 +78,7 @@ class CynanBot(Bot):
         pokepediaRepository: PokepediaRepository,
         starWarsQuotesRepository: StarWarsQuotesRepository,
         tamaleGuyRepository: TamaleGuyRepository,
+        timber: Timber,
         translationHelper: TranslationHelper,
         triviaGameRepository: TriviaGameRepository,
         triviaRepository: TriviaRepository,
@@ -106,6 +108,8 @@ class CynanBot(Bot):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif nonceRepository is None:
             raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
@@ -115,6 +119,7 @@ class CynanBot(Bot):
 
         self.__authHelper: AuthHelper = authHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -354,14 +359,14 @@ class CynanBot(Bot):
         lruCacheId: str = f'{twitchUserNameStr}:{event.id}'.lower()
 
         if self.__channelPointsLruCache.contains(lruCacheId):
-            print(f'Duplicate reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\" ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__timber.log('CynanBot', f'Duplicate reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\"')
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            print(f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\" ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__generalSettingsRepository.isPersistAllUsersEnabled():
             self.__userIdsRepository.setUser(
@@ -379,7 +384,7 @@ class CynanBot(Bot):
                 userNameThatRedeemed = userNameThatRedeemed
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    print(f'Redeemed cuteness point in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                    self.__timber.log('CynanBot', f'Redeemed cuteness point in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
@@ -392,7 +397,7 @@ class CynanBot(Bot):
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        print(f'Redeemed double cuteness points in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                        self.__timber.log('CynanBot', f'Redeemed double cuteness points in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
@@ -405,7 +410,7 @@ class CynanBot(Bot):
                 userNameThatRedeemed = userNameThatRedeemed
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    print(f'Redeemed Pic Of The Day in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                    self.__timber.log('CynanBot', f'Redeemed Pic Of The Day in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
             return
 
         if twitchUser.isPkmnEnabled():
@@ -419,7 +424,7 @@ class CynanBot(Bot):
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        print(f'Redeemed Pkmn Battle in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                        self.__timber.log('CynanBot', f'Redeemed Pkmn Battle in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
             if twitchUser.hasPkmnCatchBoosterPacks():
@@ -432,7 +437,7 @@ class CynanBot(Bot):
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        print(f'Redeemed Pkmn Catch in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                        self.__timber.log('CynanBot', f'Redeemed Pkmn Catch in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                     return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
@@ -445,7 +450,7 @@ class CynanBot(Bot):
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        print(f'Redeemed Pkmn Evolve in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                        self.__timber.log('CynanBot', f'Redeemed Pkmn Evolve in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
             if rewardId == twitchUser.getPkmnShinyRewardId():
@@ -458,7 +463,7 @@ class CynanBot(Bot):
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
                     if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        print(f'Redeemed Pkmn Shiny in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                        self.__timber.log('CynanBot', f'Redeemed Pkmn Shiny in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
@@ -471,23 +476,23 @@ class CynanBot(Bot):
                 userNameThatRedeemed = userNameThatRedeemed
             ):
                 if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    print(f'Redeemed trivia game in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
+                    self.__timber.log('CynanBot', f'Redeemed trivia game in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
             return
 
     async def event_pubsub_error(self, tags: Dict):
-        print(f'Received PubSub error ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
+        self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
         await self.__unsubscribeFromPubSubTopics()
         await self.__subscribeToPubSubTopics()
 
     async def event_pubsub_nonce(self, tags: Dict):
-        print(f'Received PubSub nonce ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
+        self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
 
     async def event_pubsub_pong(self):
-        print(f'Received PubSub pong ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'Received PubSub pong')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            print(f'event_raw_usernotice() ({utils.getNowTimeText(includeSeconds = True)}): {tags}')
+            self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
 
         if not utils.hasItems(tags):
             return
@@ -513,7 +518,7 @@ class CynanBot(Bot):
             )
 
     async def event_ready(self):
-        print(f'{self.__authHelper.requireNick()} is ready! ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'{self.__authHelper.requireNick()} is ready!')
         await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
@@ -550,7 +555,7 @@ class CynanBot(Bot):
                     # if we run into this error, that most likely means that this user changed
                     # their password
                     usersToRemove.append(user)
-                    print(f'Failed to validate and refresh access Twitch token for {user.getHandle()} ({utils.getNowTimeText(includeSeconds = True)}): {e}')
+                    self.__timber.log('CynanBot', f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
 
         if utils.hasItems(usersToRemove):
             for user in usersToRemove:
@@ -571,29 +576,29 @@ class CynanBot(Bot):
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
-            print(f'Will not start websocketConnectionServer, as the instance is None ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__timber.log('CynanBot', f'Will not start websocketConnectionServer, as the instance is `None`')
         else:
             self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
         pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = True)
         if not utils.hasItems(pubSubTopics):
-            print(f'There aren\'t any PubSub topics to subscribe to ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to subscribe to')
             return
 
-        print(f'Subscribing to {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'Subscribing to {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.subscribe_topics(pubSubTopics)
-        print(f'Finished subscribing to PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s)')
 
     async def __unsubscribeFromPubSubTopics(self):
         pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = False)
         if not utils.hasItems(pubSubTopics):
-            print(f'There aren\'t any PubSub topics to unsubscribe from ({utils.getNowTimeText(includeSeconds = True)})')
+            self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to unsubscribe from')
             return
 
-        print(f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)... ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.unsubscribe_topics(pubSubTopics)
-        print(f'Finished unsubscribing from PubSub topic(s) ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('CynanBot', f'Finished unsubscribing from PubSub topic(s)')
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
