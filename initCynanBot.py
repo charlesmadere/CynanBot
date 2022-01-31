@@ -103,9 +103,7 @@ cynanBot = CynanBot(
         backingDatabase = backingDatabase
     ),
     twitchTokensRepository = TwitchTokensRepository(),
-    userIdsRepository = UserIdsRepository(
-        backingDatabase = backingDatabase
-    ),
+    userIdsRepository = userIdsRepository,
     usersRepository = UsersRepository(
         timeZoneRepository = timeZoneRepository
     ),
