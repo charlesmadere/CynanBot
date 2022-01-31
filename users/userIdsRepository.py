@@ -1,19 +1,28 @@
+from typing import Dict
+
+import CynanBotCommon.utils as utils
 import requests
+from CynanBotCommon.backingDatabase import BackingDatabase
+from CynanBotCommon.timber.timber import Timber
 from requests import ConnectionError, HTTPError, Timeout
 from requests.exceptions import ReadTimeout, TooManyRedirects
 from urllib3.exceptions import MaxRetryError, NewConnectionError
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.backingDatabase import BackingDatabase
-
 
 class UserIdsRepository():
 
-    def __init__(self, backingDatabase: BackingDatabase):
+    def __init__(
+        self,
+        backingDatabase: BackingDatabase,
+        timber: Timber
+    ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__timber: Timber = timber
 
         connection = backingDatabase.getConnection()
         connection.execute(
@@ -54,7 +63,7 @@ class UserIdsRepository():
         if not utils.isValidStr(twitchAccessToken) or not utils.isValidStr(twitchClientId):
             raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken (\"{twitchAccessToken}\") and/or twitchClientId (\"{twitchClientId}\") is malformed')
 
-        print(f'Performing network call to fetch Twitch user ID for \"{userName}\"... ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('UserIdsRepository', f'Performing network call to fetch Twitch user ID for \"{userName}\"...')
 
         rawResponse = None
         try:
@@ -67,15 +76,15 @@ class UserIdsRepository():
                 timeout = utils.getDefaultTimeout()
             )
         except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, ReadTimeout, Timeout, TooManyRedirects) as e:
-            print(f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
+            self.__timber.log('UserIdsRepository', f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
             raise RuntimeError(f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
 
-        jsonResponse = rawResponse.json()
+        jsonResponse: Dict[str, object] = rawResponse.json()
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             raise RuntimeError(f'Received an error when fetching user ID for {userName}: {jsonResponse}')
 
-        userId = jsonResponse['data'][0]['id']
+        userId: str = jsonResponse['data'][0]['id']
 
         if not utils.isValidStr(userId):
             raise ValueError(f'Unable to fetch user ID for \"{userName}\": {jsonResponse}')

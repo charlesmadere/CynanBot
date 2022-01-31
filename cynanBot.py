@@ -142,12 +142,12 @@ class CynanBot(Bot):
         if analogueStoreRepository is None:
             self.__analogueCommand: AbsCommand = StubCommand()
         else:
-            self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, usersRepository)
+            self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
         if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, triviaGameRepository, triviaScoreRepository, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
@@ -159,62 +159,62 @@ class CynanBot(Bot):
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
         else:
-            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
-            self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, userIdsRepository, usersRepository)
-            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, usersRepository)
+            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, timber, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsCommand = StubCommand()
         else:
-            self.__jishoCommand: AbsCommand = JishoCommand(generalSettingsRepository, jishoHelper, usersRepository)
+            self.__jishoCommand: AbsCommand = JishoCommand(generalSettingsRepository, jishoHelper, timber, usersRepository)
 
         if pokepediaRepository is None:
             self.__pkMonCommand: AbsCommand = StubCommand()
             self.__pkMoveCommand: AbsCommand = StubCommand()
         else:
-            self.__pkMonCommand: AbsCommand = PkMonCommand(generalSettingsRepository, pokepediaRepository, usersRepository)
-            self.__pkMoveCommand: AbsCommand = PkMoveCommand(generalSettingsRepository, pokepediaRepository, usersRepository)
+            self.__pkMonCommand: AbsCommand = PkMonCommand(generalSettingsRepository, pokepediaRepository, timber, usersRepository)
+            self.__pkMoveCommand: AbsCommand = PkMoveCommand(generalSettingsRepository, pokepediaRepository, timber, usersRepository)
 
         if starWarsQuotesRepository is None:
             self.__swQuoteCommand: AbsCommand = StubCommand()
         else:
-            self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, usersRepository)
+            self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, timber, usersRepository)
 
         if tamaleGuyRepository is None:
             self.__tamalesCommand: AbsCommand = StubCommand()
         else:
-            self.__tamalesCommand: AbsCommand = TamalesCommand(generalSettingsRepository, tamaleGuyRepository, usersRepository)
+            self.__tamalesCommand: AbsCommand = TamalesCommand(generalSettingsRepository, tamaleGuyRepository, timber, usersRepository)
 
         if translationHelper is None:
             self.__translateCommand: AbsCommand = StubCommand()
         else:
-            self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, translationHelper, usersRepository)
+            self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, usersRepository)
 
         if triviaRepository is None:
             self.__triviaCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, triviaRepository, usersRepository)
+            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, timber, triviaRepository, usersRepository)
 
         if triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, triviaScoreRepository, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
         else:
-            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, usersRepository, weatherRepository)
+            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, timber, usersRepository, weatherRepository)
 
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsCommand = StubCommand()
         else:
-            self.__wordCommand: AbsCommand = WordCommand(generalSettingsRepository, languagesRepository, usersRepository, wordOfTheDayRepository)
+            self.__wordCommand: AbsCommand = WordCommand(generalSettingsRepository, languagesRepository, timber, usersRepository, wordOfTheDayRepository)
 
         #############################################
         ## Initialization of event handler objects ##
         #############################################
 
-        self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository)
+        self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository, timber)
         self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authHelper, generalSettingsRepository)
 
         ###############################################

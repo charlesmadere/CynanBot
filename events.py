@@ -8,6 +8,7 @@ from twitchio.channel import Channel
 import CynanBotCommon.utils as utils
 import twitchUtils
 from authHelper import AuthHelper
+from CynanBotCommon.timber.timber import Timber
 from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
@@ -28,12 +29,16 @@ class RaidEvent(AbsEvent):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
 
     async def handleEvent(
         self,
@@ -60,11 +65,11 @@ class RaidEvent(AbsEvent):
             raidedByName = tags.get('login')
 
         if not utils.isValidStr(raidedByName):
-            print(f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
+            self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
             return False
 
         if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            print(f'Raid for {twitchUser.getHandle()} () from {raidedByName} ({utils.getNowTimeText()})')
+            self.__timber.log('RaidEvent', f'Raid for {twitchUser.getHandle()} () from {raidedByName}')
 
         messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {twitchUser.getTwitchUrl()} Thank you! ✨'
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', -1)

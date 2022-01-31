@@ -34,26 +34,31 @@ from generalSettingsRepository import GeneralSettingsRepository
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
-
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
+
+timber = Timber()
 authHelper = AuthHelper()
 backingDatabase = BackingDatabase()
 userIdsRepository = UserIdsRepository(
-    backingDatabase = backingDatabase
+    backingDatabase = backingDatabase,
+    timber = timber
 )
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
 languagesRepository = LanguagesRepository()
-timber = Timber()
 timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
+    timber = timber,
     cacheTimeDelta = None
 )
-websocketConnectionServer = WebsocketConnectionServer()
+websocketConnectionServer = WebsocketConnectionServer(
+    timber = timber,
+    isDebugLoggingEnabled = True
+)
 
 translationHelper: TranslationHelper = None
 if authHelper.hasDeepLAuthKey():
@@ -72,6 +77,7 @@ cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(),
     authHelper = authHelper,
     chatBandManager = ChatBandManager(
+        timber = timber,
         websocketConnectionServer = websocketConnectionServer
     ),
     cutenessRepository = cutenessRepository,

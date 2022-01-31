@@ -23,6 +23,7 @@ from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.triviaGameRepository import (TriviaGameCheckResult,
                                                         TriviaGameRepository)
@@ -48,6 +49,7 @@ class AnalogueCommand(AbsCommand):
         self,
         analogueStoreRepository: AnalogueStoreRepository,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
@@ -62,6 +64,7 @@ class AnalogueCommand(AbsCommand):
 
         self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -81,9 +84,9 @@ class AnalogueCommand(AbsCommand):
         try:
             result = self.__analogueStoreRepository.fetchStoreStock()
             await twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
-        except (RuntimeError, ValueError):
-            print(f'Error fetching Analogue stock in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue stock')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}')
+            await twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue store stock')
 
 
 class AnswerCommand(AbsCommand):
@@ -93,6 +96,7 @@ class AnswerCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         doubleCutenessHelper: DoubleCutenessHelper,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         triviaGameRepository: TriviaGameRepository,
         triviaScoreRepository: TriviaScoreRepository,
         usersRepository: UsersRepository
@@ -103,6 +107,8 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
         elif triviaScoreRepository is None:
@@ -113,6 +119,7 @@ class AnswerCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -156,7 +163,7 @@ class AnswerCommand(AbsCommand):
             self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
-            print(f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
+            self.__timber.log('AnswerCommand', f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
 
@@ -179,7 +186,7 @@ class AnswerCommand(AbsCommand):
 
             await twitchUtils.safeSend(ctx, f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
-            print(f'Error increasing cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
 
 
@@ -213,7 +220,6 @@ class ChatBandClearCommand(AbsCommand):
             return
 
         self.__chatBandManager.clearCaches()
-        print(f'Chat Band caches cleared ({utils.getNowTimeText(includeSeconds = True)})')
         await twitchUtils.safeSend(ctx, 'ⓘ Chat Band caches cleared')
 
 
@@ -320,12 +326,15 @@ class CutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -334,6 +343,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -365,7 +375,7 @@ class CutenessCommand(AbsCommand):
                 pass
 
             if not utils.isValidStr(userId):
-                print(f'Unable to find user ID for \"{userName}\" in the database (Twitch channel is \"{user.getHandle()}\")')
+                self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
@@ -447,17 +457,21 @@ class GiveCutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -477,20 +491,20 @@ class GiveCutenessCommand(AbsCommand):
 
         userName = splits[1]
         if not utils.isValidStr(userName):
-            print(f'Username is malformed: \"{userName}\"')
+            self.__timber.log('GiveCutenessCommand', f'Username is malformed: \"{userName}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr = splits[2]
         if not utils.isValidStr(incrementAmountStr):
-            print(f'Increment amount is malformed: \"{incrementAmountStr}\"')
+            self.__timber.log('GiveCutenessCommand', f'Increment amount is malformed: \"{incrementAmountStr}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, ValueError):
-            print(f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
+            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -499,7 +513,7 @@ class GiveCutenessCommand(AbsCommand):
         try:
             userId = self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
-            print(f'Attempted to give cuteness to \"{userName}\", but their user ID does not exist in the database')
+            self.__timber.log('GiveCutenessCommand', f'Unable to give cuteness to \"{userName}\", they don\'t current exist in the database')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
@@ -513,8 +527,8 @@ class GiveCutenessCommand(AbsCommand):
 
             await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except ValueError:
-            print(f'Error incrementing cuteness by {incrementAmount} for {userName} ({userId}) in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error incrementing cuteness for {userName}')
+            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness to {userName}:{userId}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
 
 class JishoCommand(AbsCommand):
@@ -523,6 +537,7 @@ class JishoCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 8)
     ):
@@ -530,6 +545,8 @@ class JishoCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif jishoHelper is None:
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -537,6 +554,7 @@ class JishoCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__jishoHelper: JishoHelper = jishoHelper
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -564,7 +582,7 @@ class JishoCommand(AbsCommand):
             for string in result.toStrList():
                 await twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError):
-            print(f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
+            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
 
@@ -573,17 +591,21 @@ class MyCutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -607,7 +629,7 @@ class MyCutenessCommand(AbsCommand):
 
             await twitchUtils.safeSend(ctx, result.toStr())
         except ValueError:
-            print(f'Error retrieving cuteness for {ctx.author.name} ({userId}) in {user.getHandle()}')
+            self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
 
@@ -644,6 +666,7 @@ class PkMonCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
@@ -651,6 +674,8 @@ class PkMonCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -658,6 +683,7 @@ class PkMonCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -683,9 +709,9 @@ class PkMonCommand(AbsCommand):
 
             for string in mon.toStrList():
                 await twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError):
-            print(f'Error retrieving Pokemon: \"{name}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon: \"{name}\"')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
 
 class PkMoveCommand(AbsCommand):
@@ -694,6 +720,7 @@ class PkMoveCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
@@ -701,6 +728,8 @@ class PkMoveCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif pokepediaRepository is None:
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -708,6 +737,7 @@ class PkMoveCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -734,7 +764,7 @@ class PkMoveCommand(AbsCommand):
             for string in move.toStrList():
                 await twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError):
-            print(f'Error retrieving Pokemon move: \"{name}\"')
+            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
 
@@ -781,17 +811,21 @@ class SwQuoteCommand(AbsCommand):
     def __init__(
         self,
         starWarsQuotesRepository: StarWarsQuotesRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if starWarsQuotesRepository is None:
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -821,7 +855,7 @@ class SwQuoteCommand(AbsCommand):
             else:
                 await twitchUtils.safeSend(ctx, f'⚠ No Star Wars quote found for the given query: \"{query}\"')
         except ValueError:
-            print(f'Error retrieving Star Wars quote with query: \"{query}\"')
+            self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
 
 
@@ -831,6 +865,7 @@ class TamalesCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         tamaleGuyRepository: TamaleGuyRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
@@ -838,11 +873,14 @@ class TamalesCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif tamaleGuyRepository is None:
             raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -859,8 +897,8 @@ class TamalesCommand(AbsCommand):
         try:
             storeStock = self.__tamaleGuyRepository.fetchStoreStock()
             await twitchUtils.safeSend(ctx, storeStock.toStr())
-        except (RuntimeError, ValueError):
-            print('Error retrieving Tamale Guy store stock')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('TamalesCommand', f'Error retrieving Tamale Guy store stock: {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error retrieving Tamale Guy store stock')
 
 
@@ -912,6 +950,7 @@ class TranslateCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
+        timber: Timber,
         translationHelper: TranslationHelper,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 15)
@@ -920,6 +959,8 @@ class TranslateCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif translationHelper is None:
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
         elif usersRepository is None:
@@ -929,6 +970,7 @@ class TranslateCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__timber: Timber = timber
         self.__translationHelper: TranslationHelper = translationHelper
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -965,7 +1007,7 @@ class TranslateCommand(AbsCommand):
             response = self.__translationHelper.translate(text, targetLanguageEntry)
             await twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError):
-            print(f'Error translating text: \"{text}\"')
+            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\"')
             await twitchUtils.safeSend(ctx, '⚠ Error translating')
 
 
@@ -974,12 +1016,15 @@ class TriviaCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         triviaRepository: TriviaRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaRepository is None:
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif usersRepository is None:
@@ -988,6 +1033,7 @@ class TriviaCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__triviaRepository: TriviaRepository = triviaRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1012,8 +1058,8 @@ class TriviaCommand(AbsCommand):
                 message = f'🥁 And the answer is: {response.getAnswerReveal()}'
             ))
         except (RuntimeError, ValueError) as e:
-            print(f'Error retrieving trivia: {e}')
-            await twitchUtils.safeSend(ctx, '⚠ Error retrieving trivia')
+            self.__timber.log('TriviaCommand', f'Error fetching trivia: {e}')
+            await twitchUtils.safeSend(ctx, '⚠ Error fetching trivia')
 
 
 class TriviaScoreCommand(AbsCommand):
@@ -1021,6 +1067,7 @@ class TriviaScoreCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -1028,6 +1075,8 @@ class TriviaScoreCommand(AbsCommand):
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif userIdsRepository is None:
@@ -1038,6 +1087,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1108,8 +1158,8 @@ class TriviaScoreCommand(AbsCommand):
                 pass
 
             if not utils.isValidStr(userId):
-                print(f'Unable to find user ID for \"{userName}\" in the database (Twitch channel is \"{user.getHandle()}\")')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database')
+                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user ID for \"{userName}\" in the database')
                 return
         else:
             userId = str(ctx.author.id)
@@ -1154,6 +1204,7 @@ class WeatherCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
         cooldown: timedelta = timedelta(minutes = 5)
@@ -1162,6 +1213,8 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif locationsRepository is None:
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is None:
@@ -1171,6 +1224,7 @@ class WeatherCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: LocationsRepository = locationsRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: WeatherRepository = weatherRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1194,8 +1248,8 @@ class WeatherCommand(AbsCommand):
         try:
             weatherReport = self.__weatherRepository.fetchWeather(location)
             await twitchUtils.safeSend(ctx, weatherReport.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching weather for \"{user.getLocationId()}\" in {user.getHandle()}')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
 
@@ -1205,6 +1259,7 @@ class WordCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository,
         cooldown: timedelta = timedelta(seconds = 10)
@@ -1213,6 +1268,8 @@ class WordCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif wordOfTheDayRepository is None:
@@ -1222,6 +1279,7 @@ class WordCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1253,14 +1311,13 @@ class WordCommand(AbsCommand):
                 hasWotdApiCode = True
             )
         except (RuntimeError, ValueError):
-            print(f'Error retrieving language entry for \"{language}\" in {user.getHandle()}')
-            allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
-            await twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
+            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
             return
 
         try:
             wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
             await twitchUtils.safeSend(ctx, wotd.toStr())
-        except (RuntimeError, ValueError):
-            print(f'Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\" in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error fetching word of the day for \"{languageEntry.getWotdApiCode()}\"')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
+            await twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
