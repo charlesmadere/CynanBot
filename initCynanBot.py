@@ -102,7 +102,9 @@ cynanBot = CynanBot(
     triviaScoreRepository = TriviaScoreRepository(
         backingDatabase = backingDatabase
     ),
-    twitchTokensRepository = TwitchTokensRepository(),
+    twitchTokensRepository = TwitchTokensRepository(
+        timber = timber
+    ),
     userIdsRepository = userIdsRepository,
     usersRepository = UsersRepository(
         timeZoneRepository = timeZoneRepository
