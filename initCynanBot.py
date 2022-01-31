@@ -64,17 +64,21 @@ translationHelper: TranslationHelper = None
 if authHelper.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
         languagesRepository = languagesRepository,
-        deepLAuthKey = authHelper.requireDeepLAuthKey()
+        deepLAuthKey = authHelper.requireDeepLAuthKey(),
+        timber = timber
     )
 
 weatherRepository: WeatherRepository = None
 if authHelper.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
-        oneWeatherApiKey = authHelper.requireOneWeatherApiKey()
+        oneWeatherApiKey = authHelper.requireOneWeatherApiKey(),
+        timber = timber
     )
 
 cynanBot = CynanBot(
-    analogueStoreRepository = AnalogueStoreRepository(),
+    analogueStoreRepository = AnalogueStoreRepository(
+        timber = timber
+    ),
     authHelper = authHelper,
     chatBandManager = ChatBandManager(
         timber = timber,
@@ -82,17 +86,27 @@ cynanBot = CynanBot(
     ),
     cutenessRepository = cutenessRepository,
     doubleCutenessHelper = DoubleCutenessHelper(),
-    funtoonRepository = FuntoonRepository(),
+    funtoonRepository = FuntoonRepository(
+        timber = timber
+    ),
     generalSettingsRepository = GeneralSettingsRepository(),
-    jishoHelper = JishoHelper(),
+    jishoHelper = JishoHelper(
+        timber = timber
+    ),
     languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
-    nonceRepository = NonceRepository(),
-    pokepediaRepository = PokepediaRepository(),
+    nonceRepository = NonceRepository(
+        timber = timber
+    ),
+    pokepediaRepository = PokepediaRepository(
+        timber = timber
+    ),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
-    tamaleGuyRepository = TamaleGuyRepository(),
+    tamaleGuyRepository = TamaleGuyRepository(
+        timber = timber
+    ),
     timber = timber,
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
@@ -111,7 +125,9 @@ cynanBot = CynanBot(
     ),
     weatherRepository = weatherRepository,
     websocketConnectionServer = websocketConnectionServer,
-    wordOfTheDayRepository = WordOfTheDayRepository()
+    wordOfTheDayRepository = WordOfTheDayRepository(
+        timber = timber
+    )
 )
 
 timber.log('initCynanBot', 'Starting CynanBot...')

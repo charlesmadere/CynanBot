@@ -11,6 +11,7 @@ from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -40,15 +41,19 @@ class CutenessRedemption(AbsPointRedemption):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper
+        doubleCutenessHelper: DoubleCutenessHelper,
+        timber: Timber
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif doubleCutenessHelper is None:
             raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
+        self.__timber: Timber = timber
 
     async def handlePointRedemption(
         self,
@@ -96,7 +101,7 @@ class CutenessRedemption(AbsPointRedemption):
                 userName = userNameThatRedeemed
             )
         except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+            self.__timber.log('CutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
         return True
@@ -107,15 +112,19 @@ class DoubleCutenessRedemption(AbsPointRedemption):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper
+        doubleCutenessHelper: DoubleCutenessHelper,
+        timber: Timber
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif doubleCutenessHelper is None:
             raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
+        self.__timber: Timber = timber
 
     async def handlePointRedemption(
         self,
@@ -140,7 +149,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
         if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
             return False
 
-        print(f'Enabling double cuteness points in {twitchUser.getHandle()} ({utils.getNowTimeText(includeSeconds = True)})')
+        self.__timber.log('DoubleCutenessRedemption', f'Enabling double cuteness in {twitchUser.getHandle()}...')
         self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
         cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks()
 
@@ -158,15 +167,15 @@ class DoubleCutenessRedemption(AbsPointRedemption):
                 userName = userNameThatRedeemed
             )
 
-            await twitchUtils.safeSend(twitchChannel, f'✨ Double cuteness points enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, cuteness for {userNameThatRedeemed} has increased to {result.getCutenessStr()} ✨')
+            await twitchUtils.safeSend(twitchChannel, f'Double cuteness enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, {userNameThatRedeemed} has increased cuteness to {result.getCutenessStr()} ✨')
 
             asyncio.create_task(twitchUtils.waitThenSend(
                 messageable = twitchChannel,
                 delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
                 message = 'Double cuteness has ended! 😿'
             ))
-        except ValueError:
-            print(f'Error increasing cuteness for {userNameThatRedeemed} ({userIdThatRedeemed}) in {twitchUser.getHandle()}')
+        except ValueError as e:
+            self.__timber.log('DoubleCutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed}: {e}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
 
@@ -420,8 +429,14 @@ class PkmnShinyRedemption(AbsPointRedemption):
 
 class PotdPointRedemption(AbsPointRedemption):
 
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        timber: Timber
+    ):
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__timber: Timber = timber
 
     async def handlePointRedemption(
         self,
@@ -443,16 +458,18 @@ class PotdPointRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        print(f'Sending POTD to {userNameThatRedeemed} in {twitchUser.getHandle()}...')
+        self.__timber.log('PotdPointRedemption', f'Fetching Pic Of The Day for {twitchUser.getHandle()}...')
 
         try:
             picOfTheDay = twitchUser.fetchPicOfTheDay()
             await twitchUtils.safeSend(twitchChannel, f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
             return True
-        except FileNotFoundError:
-            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD file is missing!')
-        except ValueError:
-            await twitchUtils.safeSend(twitchChannel, f'⚠ {twitchUser.getHandle()}\'s POTD content is malformed!')
+        except FileNotFoundError as e:
+            self.__timber.log('PotdPointRedemption', f'Pic Of The Day file for {twitchUser.getHandle()} is missing: {e}')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day file for {twitchUser.getHandle()} is missing')
+        except ValueError as e:
+            self.__timber.log('PotdPointRedemption', f'Pic Of The Day content for {twitchUser.getHandle()} is malformed: {e}')
+            await twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day content for {twitchUser.getHandle()} is malformed')
 
         return False
 
@@ -480,6 +497,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         self,
         cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         triviaGameRepository: TriviaGameRepository,
         triviaScoreRepository: TriviaScoreRepository
     ):
@@ -487,6 +505,8 @@ class TriviaGameRedemption(AbsPointRedemption):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
         elif triviaScoreRepository is None:
@@ -494,6 +514,7 @@ class TriviaGameRedemption(AbsPointRedemption):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
 
@@ -529,7 +550,7 @@ class TriviaGameRedemption(AbsPointRedemption):
                 isLocalTriviaRepositoryEnabled = twitchUser.isLocalTriviaRepositoryEnabled()
             )
         except (RuntimeError, ValueError) as e:
-            print(f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
+            self.__timber.log('TriviaGameRedemption', f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
             return False
 

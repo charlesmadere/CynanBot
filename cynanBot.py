@@ -222,12 +222,6 @@ class CynanBot(Bot):
         ###############################################
 
         self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository)
-
-        if chatBandManager is None:
-            self.__chatBandMessage: AbsMessage = StubMessage()
-        else:
-            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository)
-
         self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository)
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository)
         self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository)
@@ -235,16 +229,23 @@ class CynanBot(Bot):
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository)
 
+        if chatBandManager is None:
+            self.__chatBandMessage: AbsMessage = StubMessage()
+        else:
+            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository)
+
         ########################################################
         ## Initialization of point redemption handler objects ##
         ########################################################
+
+        self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption(timber)
 
         if cutenessRepository is None or doubleCutenessHelper is None:
             self.__cutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
             self.__doubleCutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, doubleCutenessHelper)
-            self.__doubleCutenessPointRedemption: AbsPointRedemption = DoubleCutenessRedemption(cutenessRepository, doubleCutenessHelper)
+            self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, doubleCutenessHelper, timber)
+            self.__doubleCutenessPointRedemption: AbsPointRedemption = DoubleCutenessRedemption(cutenessRepository, doubleCutenessHelper, timber)
 
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
@@ -266,12 +267,10 @@ class CynanBot(Bot):
         else:
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository)
 
-        self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption()
-
         if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(cutenessRepository, generalSettingsRepository, triviaGameRepository, triviaScoreRepository)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(cutenessRepository, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository)
 
         ######################################
         ## Initialization of PubSub objects ##
