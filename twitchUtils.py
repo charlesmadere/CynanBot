@@ -6,25 +6,23 @@ from twitchio.abcs import Messageable
 import CynanBotCommon.utils as utils
 
 
+def getMaxMessageSize() -> int:
+    return 500
+
 async def safeSend(
     messageable: Messageable,
     message: str,
-    twitchMaxSize: int = 500,
     perMessageMaxSize: int = 450,
     maxMessages: int = 3
 ):
     if messageable is None:
         raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-    elif not utils.isValidNum(twitchMaxSize):
-        raise ValueError(f'twitchMaxSize argument is malformed: \"{twitchMaxSize}\"')
-    elif twitchMaxSize < 400 or twitchMaxSize > 500:
-        raise ValueError(f'twitchMaxSize argument is out of bounds: {twitchMaxSize}')
     elif not utils.isValidNum(perMessageMaxSize):
         raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
-    elif perMessageMaxSize >= twitchMaxSize:
-        raise ValueError(f'perMessageMaxSize ({perMessageMaxSize}) is >= twitchMaxSize ({twitchMaxSize})')
     elif perMessageMaxSize < 300:
-        raise ValueError(f'perMessageMaxSize is out of bounds: {perMessageMaxSize}')
+        raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
+    elif perMessageMaxSize >= getMaxMessageSize():
+        raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {getMaxMessageSize()})')
     elif not utils.isValidNum(maxMessages):
         raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
     elif maxMessages < 3 or maxMessages > 5:
@@ -33,7 +31,7 @@ async def safeSend(
     if not utils.isValidStr(message):
         return
 
-    if len(message) < twitchMaxSize:
+    if len(message) < getMaxMessageSize():
         await messageable.send(message)
         return
 
@@ -43,9 +41,9 @@ async def safeSend(
     index: int = 0
 
     while index < len(messages):
-        m = messages[index]
+        m: str = messages[index]
 
-        if len(m) >= twitchMaxSize:
+        if len(m) >= getMaxMessageSize():
             spaceIndex = m.rfind(' ')
 
             while spaceIndex >= perMessageMaxSize:
@@ -60,7 +58,7 @@ async def safeSend(
         index = index + 1
 
     if len(messages) > maxMessages:
-        raise RuntimeError(f'This message is just too long and won\'t be sent (len is {len(message)}):\n{message}')
+        raise RuntimeError(f'This message is too long and won\'t be sent (len is {len(message)}):\n{message}')
 
     for m in messages:
         await messageable.send(m)
