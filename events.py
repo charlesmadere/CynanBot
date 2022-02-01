@@ -86,6 +86,7 @@ class RaidEvent(AbsEvent):
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
         ))
+        self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
 
         return True
 
