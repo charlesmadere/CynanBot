@@ -232,7 +232,7 @@ class CynanBot(Bot):
         if chatBandManager is None:
             self.__chatBandMessage: AbsMessage = StubMessage()
         else:
-            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository)
+            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository, timber)
 
         ########################################################
         ## Initialization of point redemption handler objects ##
@@ -250,22 +250,22 @@ class CynanBot(Bot):
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnBattlePointRedemption: AbsPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository)
+            self.__pkmnBattlePointRedemption: AbsPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository, timber)
 
         if funtoonRepository is None:
             self.__pkmnCatchPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnCatchPointRedemption: AbsPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository)
+            self.__pkmnCatchPointRedemption: AbsPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository, timber)
 
         if funtoonRepository is None:
             self.__pkmnEvolvePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository)
+            self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository, timber)
 
         if funtoonRepository is None:
             self.__pkmnShinyPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository)
+            self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber)
 
         if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
@@ -358,14 +358,14 @@ class CynanBot(Bot):
         lruCacheId: str = f'{twitchUserNameStr}:{event.id}'.lower()
 
         if self.__channelPointsLruCache.contains(lruCacheId):
-            self.__timber.log('CynanBot', f'Duplicate reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{event.id}\"')
+            self.__timber.log('CynanBot', f'Encountered duplicate reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{event.id}\"')
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
         twitchChannel = self.get_channel(twitchUser.getHandle())
 
         if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()} ({twitchUserIdStr}) redeemed by \"{userNameThatRedeemed}\" ({userIdThatRedeemed}): \"{rewardId}\"')
+            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__generalSettingsRepository.isPersistAllUsersEnabled():
             self.__userIdsRepository.setUser(
@@ -382,8 +382,6 @@ class CynanBot(Bot):
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             ):
-                if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    self.__timber.log('CynanBot', f'Redeemed cuteness point in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                 return
 
             if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
@@ -395,9 +393,7 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
-                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        self.__timber.log('CynanBot', f'Redeemed double cuteness points in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-                return
+                    return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
             if await self.__potdPointRedemption.handlePointRedemption(
@@ -408,9 +404,7 @@ class CynanBot(Bot):
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             ):
-                if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    self.__timber.log('CynanBot', f'Redeemed Pic Of The Day in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-            return
+                return
 
         if twitchUser.isPkmnEnabled():
             if rewardId == twitchUser.getPkmnBattleRewardId():
@@ -422,9 +416,7 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
-                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        self.__timber.log('CynanBot', f'Redeemed Pkmn Battle in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-                return
+                    return
 
             if twitchUser.hasPkmnCatchBoosterPacks():
                 if await self.__pkmnCatchPointRedemption.handlePointRedemption(
@@ -435,8 +427,6 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
-                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        self.__timber.log('CynanBot', f'Redeemed Pkmn Catch in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
                     return
 
             if rewardId == twitchUser.getPkmnEvolveRewardId():
@@ -448,9 +438,7 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
-                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        self.__timber.log('CynanBot', f'Redeemed Pkmn Evolve in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-                return
+                    return
 
             if rewardId == twitchUser.getPkmnShinyRewardId():
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
@@ -461,9 +449,7 @@ class CynanBot(Bot):
                     userIdThatRedeemed = userIdThatRedeemed,
                     userNameThatRedeemed = userNameThatRedeemed
                 ):
-                    if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                        self.__timber.log('CynanBot', f'Redeemed Pkmn Shiny in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-                return
+                    return
 
         if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(
@@ -474,9 +460,7 @@ class CynanBot(Bot):
                 userIdThatRedeemed = userIdThatRedeemed,
                 userNameThatRedeemed = userNameThatRedeemed
             ):
-                if self.__generalSettingsRepository.isDebugLoggingEnabled():
-                    self.__timber.log('CynanBot', f'Redeemed trivia game in {twitchUser.getHandle()} for {userNameThatRedeemed}:{userIdThatRedeemed}')
-            return
+                return
 
     async def event_pubsub_error(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub error: {tags}')

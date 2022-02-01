@@ -6,6 +6,7 @@ from twitchio import Message
 import CynanBotCommon.utils as utils
 import twitchUtils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
@@ -70,15 +71,19 @@ class ChatBandMessage(AbsMessage):
     def __init__(
         self,
         chatBandManager: ChatBandManager,
-        generalSettingsRepository: GeneralSettingsRepository
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber
     ):
         if chatBandManager is None:
             raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatBandManager: ChatBandManager = chatBandManager
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
 
     async def handleMessage(
         self,
@@ -95,11 +100,15 @@ class ChatBandMessage(AbsMessage):
         elif not twitchUser.isChatBandEnabled():
             return False
 
-        return await self.__chatBandManager.playInstrumentForMessage(
+        if await self.__chatBandManager.playInstrumentForMessage(
             twitchChannel = twitchUser.getHandle(),
             author = message.author.name,
             message = utils.cleanStr(message.content)
-        )
+        ):
+            self.__timber.log('ChatBandMessage', f'Handled chat band message for {message.author.name} in {twitchUser.getHandle()}')
+            return True
+
+        return False
 
 
 class CynanMessage(AbsMessage):
