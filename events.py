@@ -95,15 +95,19 @@ class SubGiftThankingEvent(AbsEvent):
     def __init__(
         self,
         authHelper: AuthHelper,
-        generalSettingsRepository: GeneralSettingsRepository
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber
     ):
         if authHelper is None:
             raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__authHelper: AuthHelper = authHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
 
     async def handleEvent(
         self,
@@ -142,5 +146,6 @@ class SubGiftThankingEvent(AbsEvent):
             messageable = twitchChannel,
             message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
         )
+        self.__timber.log('SubGiftThankingEvent', f'{self.__authHelper.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
 
         return True

@@ -215,7 +215,7 @@ class CynanBot(Bot):
         #############################################
 
         self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository, timber)
-        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authHelper, generalSettingsRepository)
+        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authHelper, generalSettingsRepository, timber)
 
         ###############################################
         ## Initialization of message handler objects ##
