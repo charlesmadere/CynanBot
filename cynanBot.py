@@ -221,13 +221,13 @@ class CynanBot(Bot):
         ## Initialization of message handler objects ##
         ###############################################
 
-        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository)
-        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository)
-        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository)
-        self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository)
-        self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository)
-        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository)
-        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository)
+        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository, timber)
+        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository, timber)
+        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, timber)
+        self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository, timber)
+        self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber)
+        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber)
+        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber)
 
         if chatBandManager is None:
             self.__chatBandMessage: AbsMessage = StubMessage()
