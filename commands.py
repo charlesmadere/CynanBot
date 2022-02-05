@@ -8,6 +8,7 @@ from twitchio.ext.commands import Context
 import CynanBotCommon.utils as utils
 import twitchUtils
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.cutenessResult import CutenessResult
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -1066,6 +1067,7 @@ class TriviaScoreCommand(AbsCommand):
 
     def __init__(
         self,
+        cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
@@ -1073,7 +1075,9 @@ class TriviaScoreCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if generalSettingsRepository is None:
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1086,6 +1090,7 @@ class TriviaScoreCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
@@ -1096,37 +1101,46 @@ class TriviaScoreCommand(AbsCommand):
     def __getResultStr(
         self,
         userName: str,
-        result: TriviaScoreResult
+        cutenessResult: CutenessResult,
+        triviaResult: TriviaScoreResult
     ) -> str:
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif result is None:
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif cutenessResult is None:
+            raise ValueError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
+        elif triviaResult is None:
+            raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
-        if result.getTotal() <= 0:
-            return f'{userName} has not played any trivia games 😿'
+        if triviaResult.getTotal() <= 0:
+            if cutenessResult.hasCuteness():
+                return f'{userName} has {cutenessResult.getCutenessStr()} cuteness and has not played any trivia games 😿'
+            else:
+                return f'{userName} has no cuteness and has not played any trivia games 😿'
 
         gamesStr: str = 'games'
-        if result.getTotal() == 1:
+        if triviaResult.getTotal() == 1:
             gamesStr = 'game'
 
         winsStr: str = 'wins'
-        if result.getTotalWins() == 1:
+        if triviaResult.getTotalWins() == 1:
             winsStr = 'win'
 
         lossesStr: str = 'losses'
-        if result.getTotalLosses() == 1:
+        if triviaResult.getTotalLosses() == 1:
             lossesStr = 'loss'
 
-        ratioStr: str = f' ({result.getWinPercentStr()} wins)'
+        ratioStr: str = f' ({triviaResult.getWinPercentStr()} wins)'
 
         streakStr: str = ''
-        if result.getStreak() >= 3:
-            streakStr = f', and is on a {result.getAbsStreakStr()} game winning streak 😸'
-        elif result.getStreak() <= -3:
-            streakStr = f', and is on a {result.getAbsStreakStr()} game losing streak 🙀'
+        if triviaResult.getStreak() >= 3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+        elif triviaResult.getStreak() <= -3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
-        return f'{userName} has played {result.getTotalStr()} trivia {gamesStr}, with {result.getTotalWinsStr()} {winsStr} and {result.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+        if cutenessResult.hasCuteness():
+            return f'{userName} has {cutenessResult.getCutenessStr()} cuteness, has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+        else:
+            return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -1147,7 +1161,6 @@ class TriviaScoreCommand(AbsCommand):
             userName = ctx.author.name
 
         userId: str = None
-        result: TriviaScoreResult = None
 
         # this means that a user is querying for another user's trivia score
         if userName.lower() != ctx.author.name.lower():
@@ -1164,12 +1177,22 @@ class TriviaScoreCommand(AbsCommand):
         else:
             userId = str(ctx.author.id)
 
-        result = self.__triviaScoreRepository.fetchTriviaScore(
+        cutenessResult = self.__cutenessRepository.fetchCuteness(
+            twitchChannel = user.getHandle(),
+            userId = userId,
+            userName = userName
+        )
+
+        triviaResult = self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.getHandle(),
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__getResultStr(userName, result))
+        await twitchUtils.safeSend(ctx, self.__getResultStr(
+            userName = userName,
+            cutenessResult = cutenessResult,
+            triviaResult = triviaResult
+        ))
 
 
 class TwitterCommand(AbsCommand):

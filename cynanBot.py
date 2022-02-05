@@ -100,8 +100,6 @@ class CynanBot(Bot):
 
         if authHelper is None:
             raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
-        elif doubleCutenessHelper is None:
-            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
@@ -144,7 +142,7 @@ class CynanBot(Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
+        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameRepository is None or triviaScoreRepository is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, usersRepository)
@@ -195,10 +193,10 @@ class CynanBot(Bot):
         else:
             self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, timber, triviaRepository, usersRepository)
 
-        if triviaScoreRepository is None:
+        if cutenessRepository is None or triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(cutenessRepository, generalSettingsRepository, timber, triviaScoreRepository, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
