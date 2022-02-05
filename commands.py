@@ -1178,6 +1178,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = str(ctx.author.id)
 
         cutenessResult = self.__cutenessRepository.fetchCuteness(
+            fetchLocalLeaderboard = False,
             twitchChannel = user.getHandle(),
             userId = userId,
             userName = userName
