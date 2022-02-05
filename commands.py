@@ -1138,7 +1138,7 @@ class TriviaScoreCommand(AbsCommand):
             streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
         if cutenessResult.hasCuteness():
-            return f'{userName} has {cutenessResult.getCutenessStr()} cuteness, has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+            return f'{userName} has {cutenessResult.getCutenessStr()} cuteness, has played {triviaResult.getTotalStr()} trivia {gamesStr}, and {triviaResult.getTotalWinsStr()} {winsStr} with {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
         else:
             return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
