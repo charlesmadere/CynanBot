@@ -1067,7 +1067,6 @@ class TriviaScoreCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
@@ -1075,9 +1074,7 @@ class TriviaScoreCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif generalSettingsRepository is None:
+        if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1090,7 +1087,6 @@ class TriviaScoreCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
@@ -1101,21 +1097,15 @@ class TriviaScoreCommand(AbsCommand):
     def __getResultStr(
         self,
         userName: str,
-        cutenessResult: CutenessResult,
         triviaResult: TriviaScoreResult
     ) -> str:
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif cutenessResult is None:
-            raise ValueError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
         elif triviaResult is None:
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
         if triviaResult.getTotal() <= 0:
-            if cutenessResult.hasCuteness():
-                return f'{userName} has {cutenessResult.getCutenessStr()} cuteness and has not played any trivia games 😿'
-            else:
-                return f'{userName} has no cuteness and has not played any trivia games 😿'
+            return f'{userName} has not played any trivia games 😿'
 
         gamesStr: str = 'games'
         if triviaResult.getTotal() == 1:
@@ -1133,14 +1123,11 @@ class TriviaScoreCommand(AbsCommand):
 
         streakStr: str = ''
         if triviaResult.getStreak() >= 3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
         elif triviaResult.getStreak() <= -3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
-        if cutenessResult.hasCuteness():
-            return f'{userName} has {cutenessResult.getCutenessStr()} cuteness, has played {triviaResult.getTotalStr()} trivia {gamesStr}, and {triviaResult.getTotalWinsStr()} {winsStr} with {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
-        else:
-            return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+        return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -1177,13 +1164,6 @@ class TriviaScoreCommand(AbsCommand):
         else:
             userId = str(ctx.author.id)
 
-        cutenessResult = self.__cutenessRepository.fetchCuteness(
-            fetchLocalLeaderboard = False,
-            twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = userName
-        )
-
         triviaResult = self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.getHandle(),
             userId = userId
@@ -1191,7 +1171,6 @@ class TriviaScoreCommand(AbsCommand):
 
         await twitchUtils.safeSend(ctx, self.__getResultStr(
             userName = userName,
-            cutenessResult = cutenessResult,
             triviaResult = triviaResult
         ))
 

@@ -196,7 +196,7 @@ class CynanBot(Bot):
         if cutenessRepository is None or triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(cutenessRepository, generalSettingsRepository, timber, triviaScoreRepository, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
