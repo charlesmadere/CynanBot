@@ -503,8 +503,8 @@ class GiveCutenessCommand(AbsCommand):
 
         try:
             incrementAmount = int(incrementAmountStr)
-        except (SyntaxError, ValueError):
-            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount into an int: \"{incrementAmountStr}\"')
+        except (SyntaxError, ValueError) as e:
+            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount into an int: \"{incrementAmountStr}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -526,8 +526,8 @@ class GiveCutenessCommand(AbsCommand):
             )
 
             await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
-        except ValueError:
-            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness to {userName}:{userId}')
+        except ValueError as e:
+            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness to {userName}:{userId} in {user.getHandle()}: {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
 
@@ -581,8 +581,8 @@ class JishoCommand(AbsCommand):
 
             for string in result.toStrList():
                 await twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError):
-            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\" in {user.getHandle()}')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
 
@@ -763,8 +763,8 @@ class PkMoveCommand(AbsCommand):
 
             for string in move.toStrList():
                 await twitchUtils.safeSend(ctx, string)
-        except (RuntimeError, ValueError):
-            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\"')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
 
@@ -1013,8 +1013,8 @@ class TranslateCommand(AbsCommand):
         try:
             response = self.__translationHelper.translate(text, targetLanguageEntry)
             await twitchUtils.safeSend(ctx, response.toStr())
-        except (RuntimeError, ValueError):
-            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\"')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error translating')
 
 
@@ -1319,8 +1319,8 @@ class WordCommand(AbsCommand):
                 command = language,
                 hasWotdApiCode = True
             )
-        except (RuntimeError, ValueError):
-            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\"')
+        except (RuntimeError, ValueError) as e:
+            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
             return
 
