@@ -975,6 +975,18 @@ class TranslateCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
+    def __determineOptionalLanguageEntry(self, splits: List[str]) -> LanguageEntry:
+        if not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+
+        if len(splits[1]) >= 3 and splits[1][0:2] == '--':
+            return self.__languagesRepository.getLanguageForCommand(
+                command = splits[1][2:],
+                hasIso6391Code = True
+            )
+
+        return None
+
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
@@ -990,16 +1002,11 @@ class TranslateCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
-        startSplitIndex = 1
-        targetLanguageEntry: LanguageEntry = None
-        if len(splits[1]) >= 3 and splits[1][0:2] == '--':
-            targetLanguageEntry = self.__languagesRepository.getLanguageForCommand(
-                command = splits[1][2:],
-                hasIso6391Code = True
-            )
+        targetLanguageEntry: LanguageEntry = self.__determineOptionalLanguageEntry(splits)
 
-            if targetLanguageEntry is not None:
-                startSplitIndex = 2
+        startSplitIndex: int = 1
+        if targetLanguageEntry is not None:
+            startSplitIndex = 2
 
         text = ' '.join(splits[startSplitIndex:])
 
