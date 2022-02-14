@@ -66,8 +66,8 @@ class CutenessResult():
 
         if self.hasCuteness() and self.__cuteness >= 1:
             if self.hasLocalLeaderboard():
-                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
+                return f'{self.getUserName()}\'s cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
             else:
-                return f'✨ {self.getUserName()}\'s cuteness is {self.getCutenessStr()} ✨'
+                return f'{self.getUserName()}\'s cuteness is {self.getCutenessStr()} ✨'
         else:
             return f'{self.getUserName()} has no cuteness 😿'
