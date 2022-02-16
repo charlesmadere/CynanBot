@@ -472,9 +472,6 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'Received PubSub pong')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
-        if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
-
         if not utils.hasItems(tags):
             return
 
@@ -497,6 +494,8 @@ class CynanBot(Bot):
                 twitchUser = twitchUser,
                 tags = tags
             )
+        elif self.__generalSettingsRepository.isDebugLoggingEnabled():
+            self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
 
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
