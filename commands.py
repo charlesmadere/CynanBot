@@ -25,11 +25,11 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.trivia.triviaGameRepository import (TriviaGameCheckResult,
-                                                        TriviaGameRepository)
+from CynanBotCommon.trivia.triviaGameCheckResult import TriviaGameCheckResult
+from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
-from CynanBotCommon.trivia.triviaScoreRepository import (TriviaScoreRepository,
-                                                         TriviaScoreResult)
+from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from users.userIdsRepository import UserIdsRepository
