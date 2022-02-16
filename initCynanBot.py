@@ -1,6 +1,6 @@
 import locale
 
-from authHelper import AuthHelper
+from authRepository import AuthRepository
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cynanBot import CynanBot
@@ -38,7 +38,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
 timber = Timber()
-authHelper = AuthHelper()
+authRepository = AuthRepository()
 backingDatabase = BackingDatabase()
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
@@ -61,17 +61,17 @@ websocketConnectionServer = WebsocketConnectionServer(
 )
 
 translationHelper: TranslationHelper = None
-if authHelper.hasDeepLAuthKey():
+if authRepository.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
         languagesRepository = languagesRepository,
-        deepLAuthKey = authHelper.requireDeepLAuthKey(),
+        deepLAuthKey = authRepository.requireDeepLAuthKey(),
         timber = timber
     )
 
 weatherRepository: WeatherRepository = None
-if authHelper.hasOneWeatherApiKey():
+if authRepository.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
-        oneWeatherApiKey = authHelper.requireOneWeatherApiKey(),
+        oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
         timber = timber
     )
 
@@ -79,7 +79,7 @@ cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(
         timber = timber
     ),
-    authHelper = authHelper,
+    authRepository = authRepository,
     chatBandManager = ChatBandManager(
         timber = timber,
         websocketConnectionServer = websocketConnectionServer

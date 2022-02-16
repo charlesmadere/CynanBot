@@ -7,7 +7,7 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitchUtils
-from authHelper import AuthHelper
+from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
@@ -95,18 +95,18 @@ class SubGiftThankingEvent(AbsEvent):
 
     def __init__(
         self,
-        authHelper: AuthHelper,
+        authRepository: AuthRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber
     ):
-        if authHelper is None:
-            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        if authRepository is None:
+            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__authHelper: AuthHelper = authHelper
+        self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
 
@@ -114,7 +114,7 @@ class SubGiftThankingEvent(AbsEvent):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict
+        tags: Dict[str, object]
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -136,7 +136,7 @@ class SubGiftThankingEvent(AbsEvent):
         if not utils.isValidStr(giftedToName):
             giftedToName = tags.get('msg-param-recipient-user-name')
 
-        if giftedToName.lower() != self.__authHelper.requireNick().lower():
+        if giftedToName.lower() != self.__authRepository.requireNick().lower():
             return False
         elif not utils.isValidStr(giftedByName):
             return False
@@ -147,6 +147,6 @@ class SubGiftThankingEvent(AbsEvent):
             messageable = twitchChannel,
             message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
         )
-        self.__timber.log('SubGiftThankingEvent', f'{self.__authHelper.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
+        self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
 
         return True

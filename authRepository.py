@@ -5,14 +5,14 @@ from typing import Dict
 import CynanBotCommon.utils as utils
 
 
-class AuthHelper():
+class AuthRepository():
 
     def __init__(
         self,
-        authFile: str = 'authFile.json'
+        authFile: str = 'authRepository.json'
     ):
         if not utils.isValidStr(authFile):
-            raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
+            raise ValueError(f'authRepository argument is malformed: \"{authFile}\"')
 
         self.__authFile: str = authFile
 

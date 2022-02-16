@@ -8,7 +8,7 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
 from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
-from authHelper import AuthHelper
+from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand, CutenessCommand,
                       CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
@@ -65,7 +65,7 @@ class CynanBot(Bot):
     def __init__(
         self,
         analogueStoreRepository: AnalogueStoreRepository,
-        authHelper: AuthHelper,
+        authRepository: AuthRepository,
         chatBandManager: ChatBandManager,
         cutenessRepository: CutenessRepository,
         doubleCutenessHelper: DoubleCutenessHelper,
@@ -91,15 +91,15 @@ class CynanBot(Bot):
         wordOfTheDayRepository: WordOfTheDayRepository
     ):
         super().__init__(
-            token = authHelper.requireTwitchIrcAuthToken(),
-            client_secret = authHelper.requireTwitchClientSecret(),
-            nick = authHelper.requireNick(),
+            token = authRepository.requireTwitchIrcAuthToken(),
+            client_secret = authRepository.requireTwitchClientSecret(),
+            nick = authRepository.requireNick(),
             prefix = '!',
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if authHelper is None:
-            raise ValueError(f'authHelper argument is malformed: \"{authHelper}\"')
+        if authRepository is None:
+            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
@@ -115,7 +115,7 @@ class CynanBot(Bot):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__authHelper: AuthHelper = authHelper
+        self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
@@ -213,7 +213,7 @@ class CynanBot(Bot):
         #############################################
 
         self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository, timber)
-        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authHelper, generalSettingsRepository, timber)
+        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authRepository, generalSettingsRepository, timber)
 
         ###############################################
         ## Initialization of message handler objects ##
@@ -499,7 +499,7 @@ class CynanBot(Bot):
             )
 
     async def event_ready(self):
-        self.__timber.log('CynanBot', f'{self.__authHelper.requireNick()} is ready!')
+        self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__startWebsocketConnectionServer()
         await self.__subscribeToPubSubTopics()
 
@@ -526,8 +526,8 @@ class CynanBot(Bot):
             for user in usersAndTwitchTokens:
                 try:
                     self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                        twitchClientId = self.__authHelper.requireTwitchClientId(),
-                        twitchClientSecret = self.__authHelper.requireTwitchClientSecret(),
+                        twitchClientId = self.__authRepository.requireTwitchClientId(),
+                        twitchClientSecret = self.__authRepository.requireTwitchClientSecret(),
                         twitchHandle = user.getHandle()
                     )
 
@@ -548,7 +548,7 @@ class CynanBot(Bot):
             userId = self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken,
-                twitchClientId = self.__authHelper.requireTwitchClientId()
+                twitchClientId = self.__authRepository.requireTwitchClientId()
             )
 
             pubSubTopics.append(pubsub.channel_points(twitchAccessToken)[userId])
