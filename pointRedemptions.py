@@ -522,15 +522,12 @@ class TriviaGameRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameRepository: TriviaGameRepository,
         triviaScoreRepository: TriviaScoreRepository
     ):
-        if cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif generalSettingsRepository is None:
+        if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -539,7 +536,6 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
@@ -587,17 +583,6 @@ class TriviaGameRedemption(AbsPointRedemption):
             userName = userNameThatRedeemed
         )
 
-        cutenessResult = self.__cutenessRepository.fetchCuteness(
-            fetchLocalLeaderboard = False,
-            twitchChannel = twitchUser.getHandle(),
-            userId = userIdThatRedeemed,
-            userName = userNameThatRedeemed
-        )
-
-        triviaGameTutorialCutenessThreshold = self.__generalSettingsRepository.getTriviaGameTutorialCutenessThreshold()
-        if twitchUser.hasTriviaGameTutorialCutenessThreshold():
-            triviaGameTutorialCutenessThreshold = twitchUser.getTriviaGameTutorialCutenessThreshold()
-
         delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
             delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
@@ -608,12 +593,7 @@ class TriviaGameRedemption(AbsPointRedemption):
             points = twitchUser.getTriviaGamePoints()
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        if cutenessResult.hasCuteness() and cutenessResult.getCuteness() >= triviaGameTutorialCutenessThreshold:
-            await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
-        else:
-            await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} you have {delaySecondsStr} seconds to answer the trivia game! Please answer using the !answer command. Get it right and you\'ll win {pointsStr} cuteness points! ✨')
-            await twitchUtils.safeSend(twitchChannel, triviaQuestion.getPrompt())
-
+        await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
         self.__timber.log('TriviaGameRedemption', f'Redeemed Trivia Game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
 
         asyncio.create_task(twitchUtils.waitThenSend(
