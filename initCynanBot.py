@@ -23,9 +23,13 @@ from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.localTriviaRepository import LocalTriviaRepository
+from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.trivia.triviaHistoryRepository import \
+    TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
@@ -53,6 +57,12 @@ timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     timber = timber,
+    triviaVerifier = TriviaVerifier(
+        triviaContentScanner = TriviaContentScanner(),
+        triviaHistoryRepository = TriviaHistoryRepository(
+            backingDatabase = backingDatabase
+        )
+    ),
     cacheTimeDelta = None
 )
 websocketConnectionServer = WebsocketConnectionServer(
