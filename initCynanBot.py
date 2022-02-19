@@ -27,6 +27,7 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
+from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
@@ -57,6 +58,7 @@ timeZoneRepository = TimeZoneRepository()
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     timber = timber,
+    triviaIdGenerator = TriviaIdGenerator(),
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
         triviaHistoryRepository = TriviaHistoryRepository(
