@@ -24,16 +24,7 @@ class UserIdsRepository():
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: Timber = timber
 
-        connection = backingDatabase.getConnection()
-        connection.execute(
-            '''
-                CREATE TABLE IF NOT EXISTS userIds (
-                    userId TEXT NOT NULL PRIMARY KEY COLLATE NOCASE,
-                    userName TEXT NOT NULL COLLATE NOCASE
-                )
-            '''
-        )
-        connection.commit()
+        self.__initDatabaseTable()
 
     def fetchUserId(
         self,
@@ -125,6 +116,19 @@ class UserIdsRepository():
 
         cursor.close()
         return userName
+
+    def __initDatabaseTable(self):
+        connection = self.__backingDatabase.getConnection()
+        connection.execute(
+            '''
+                CREATE TABLE IF NOT EXISTS userIds (
+                    userId TEXT NOT NULL PRIMARY KEY COLLATE NOCASE,
+                    userName TEXT NOT NULL COLLATE NOCASE
+                )
+            '''
+        )
+
+        connection.commit()
 
     def setUser(self, userId: str, userName: str):
         if not utils.isValidStr(userId):

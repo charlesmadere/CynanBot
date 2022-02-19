@@ -44,19 +44,7 @@ class CutenessRepository():
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__doubleCutenessTimeSeconds: int = doubleCutenessTimeSeconds
 
-        connection = backingDatabase.getConnection()
-        connection.execute(
-            '''
-                CREATE TABLE IF NOT EXISTS cuteness (
-                    cuteness INTEGER NOT NULL DEFAULT 0,
-                    twitchChannel TEXT NOT NULL COLLATE NOCASE,
-                    userId TEXT NOT NULL COLLATE NOCASE,
-                    PRIMARY KEY (twitchChannel, userId)
-                )
-            '''
-        )
-
-        connection.commit()
+        self.__initDatabaseTable()
 
     def fetchCuteness(
         self,
@@ -304,3 +292,18 @@ class CutenessRepository():
 
     def getDoubleCutenessTimeSecondsStr(self) -> str:
         return locale.format_string("%d", self.__doubleCutenessTimeSeconds, grouping = True)
+
+    def __initDatabaseTable(self):
+        connection = self.__backingDatabase.getConnection()
+        connection.execute(
+            '''
+                CREATE TABLE IF NOT EXISTS cuteness (
+                    cuteness INTEGER NOT NULL DEFAULT 0,
+                    twitchChannel TEXT NOT NULL COLLATE NOCASE,
+                    userId TEXT NOT NULL COLLATE NOCASE,
+                    PRIMARY KEY (twitchChannel, userId)
+                )
+            '''
+        )
+
+        connection.commit()
