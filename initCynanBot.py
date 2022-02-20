@@ -55,6 +55,7 @@ cutenessRepository = CutenessRepository(
 )
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
+
 triviaRepository = TriviaRepository(
     localTriviaRepository = LocalTriviaRepository(),
     timber = timber,
@@ -62,11 +63,13 @@ triviaRepository = TriviaRepository(
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
         triviaHistoryRepository = TriviaHistoryRepository(
-            backingDatabase = backingDatabase
+            backingDatabase = backingDatabase,
+            timber = timber
         )
     ),
     cacheTimeDelta = None
 )
+
 websocketConnectionServer = WebsocketConnectionServer(
     timber = timber,
     isDebugLoggingEnabled = True
