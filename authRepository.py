@@ -28,6 +28,10 @@ class AuthRepository():
         jsonContents = self.__readJson()
         return jsonContents.get('oneWeatherApiKey')
 
+    def getQuizApiKey(self) -> str:
+        jsonContents = self.__readJson()
+        return jsonContents.get('quizApiKey')
+
     def hasDeepLAuthKey(self) -> bool:
         return utils.isValidStr(self.getDeepLAuthKey())
 
@@ -36,6 +40,9 @@ class AuthRepository():
 
     def hasOneWeatherApiKey(self) -> bool:
         return utils.isValidStr(self.getOneWeatherApiKey())
+
+    def hasQuizApiKey(self) -> bool:
+        return utils.isValidStr(self.getQuizApiKey())
 
     def __readJson(self) -> Dict[str, object]:
         if not os.path.exists(self.__authFile):
@@ -83,6 +90,14 @@ class AuthRepository():
             raise ValueError(f'\"oneWeatherApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{oneWeatherApiKey}\"')
 
         return oneWeatherApiKey
+
+    def requireQuizApiKey(self) -> str:
+        quizApiKey = self.getQuizApiKey()
+
+        if not utils.isValidStr(quizApiKey):
+            raise ValueError(f'\"quizApiKey\" in auth file \"{self.__authFile}\" is malformed: \"{quizApiKey}\"')
+
+        return quizApiKey
 
     def requireTwitchClientId(self) -> str:
         jsonContents = self.__readJson()
