@@ -25,6 +25,7 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaGameCheckResult import TriviaGameCheckResult
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
@@ -1056,13 +1057,13 @@ class TriviaCommand(AbsCommand):
             return
 
         try:
-            response = self.__triviaRepository.fetchTrivia()
-            await twitchUtils.safeSend(ctx, response.getPrompt())
+            triviaQuestion: AbsTriviaQuestion = self.__triviaRepository.fetchTrivia()
+            await twitchUtils.safeSend(ctx, triviaQuestion.getPrompt())
 
             asyncio.create_task(twitchUtils.waitThenSend(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = f'🥁 And the answer is: {response.getAnswerReveal()}'
+                message = f'🥁 And the answer is: {triviaQuestion.getAnswerReveal()}'
             ))
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TriviaCommand', f'Error fetching trivia: {e}')
