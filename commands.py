@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List
 
 from twitchio.ext.commands import Context
@@ -939,7 +939,7 @@ class TimeCommand(AbsCommand):
                 text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(datetime.utcnow())
+                timeZoneName = timeZone.tzname(datetime.now(timezone.utc))
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await twitchUtils.safeSend(ctx, text)
