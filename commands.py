@@ -1057,7 +1057,7 @@ class TriviaCommand(AbsCommand):
             return
 
         try:
-            triviaQuestion: AbsTriviaQuestion = self.__triviaRepository.fetchTrivia()
+            triviaQuestion: AbsTriviaQuestion = self.__triviaRepository.fetchTrivia(user.getHandle())
             await twitchUtils.safeSend(ctx, triviaQuestion.getPrompt())
 
             asyncio.create_task(twitchUtils.waitThenSend(
