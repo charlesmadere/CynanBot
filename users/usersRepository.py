@@ -48,6 +48,7 @@ class UsersRepository():
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokesEnabled = utils.getBoolFromDict(userJson, 'jokesEnabled', False)
         isLocalTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'localTriviaRepositoryEnabled', False)
+        isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
         isPicOfTheDayEnabled = utils.getBoolFromDict(userJson, 'picOfTheDayEnabled', False)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
@@ -129,6 +130,7 @@ class UsersRepository():
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,
             isLocalTriviaRepositoryEnabled = isLocalTriviaRepositoryEnabled,
+            isLoremIpsumEnabled = isLoremIpsumEnabled,
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,

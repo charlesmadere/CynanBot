@@ -12,9 +12,9 @@ from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand, CutenessCommand,
                       CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
-                      JishoCommand, MyCutenessCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
-                      SwQuoteCommand, TamalesCommand, TimeCommand,
+                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
+                      PbsCommand, PkMonCommand, PkMoveCommand, RaceCommand,
+                      StubCommand, SwQuoteCommand, TamalesCommand, TimeCommand,
                       TranslateCommand, TriviaCommand, TriviaScoreCommand,
                       TwitterCommand, WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
@@ -133,6 +133,7 @@ class CynanBot(Bot):
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
+        self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
@@ -630,6 +631,10 @@ class CynanBot(Bot):
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
         await self.__jishoCommand.handleCommand(ctx)
+
+    @commands.command(name = 'lorem')
+    async def command_lorem(self, ctx: Context):
+        await self.__loremIpsumCommand.handleCommand(ctx)
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx: Context):
