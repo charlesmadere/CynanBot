@@ -159,6 +159,7 @@ class AnswerCommand(AbsCommand):
         if checkResult is TriviaGameCheckResult.INVALID_USER:
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
+            self.__timber.log('AnswerCommand', f'{ctx.author.name}:{userId} in {user.getHandle()} answered incorrectly')
             answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getAnswerReveal()
             await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
             self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
@@ -185,9 +186,10 @@ class AnswerCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
+            self.__timber.log('AnswerCommand', f'Increased cuteness for {ctx.author.name}:{userId} by {cutenessPoints} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
-            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId}')
+            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
 
 
