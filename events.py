@@ -143,10 +143,7 @@ class SubGiftThankingEvent(AbsEvent):
         elif giftedToName.lower() == giftedByName.lower():
             return False
 
-        await twitchUtils.safeSend(
-            messageable = twitchChannel,
-            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
-        )
+        await twitchUtils.safeSend(twitchChannel, f'😻 Thank you for the gifted sub @{giftedByName}! ✨')
         self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
 
         return True
