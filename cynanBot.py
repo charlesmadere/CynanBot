@@ -123,6 +123,7 @@ class CynanBot(Bot):
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
+        self.__managingPubSubConnections: bool = False
         self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################
@@ -462,8 +463,15 @@ class CynanBot(Bot):
 
     async def event_pubsub_error(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
+
+        if self.__managingPubSubConnections:
+            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
+            return
+
+        self.__managingPubSubConnections = True
         await self.__unsubscribeFromPubSubTopics()
         await self.__subscribeToPubSubTopics()
+        self.__managingPubSubConnections = False
 
     async def event_pubsub_nonce(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
@@ -500,7 +508,14 @@ class CynanBot(Bot):
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__startWebsocketConnectionServer()
+
+        if self.__managingPubSubConnections:
+            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
+            return
+
+        self.__managingPubSubConnections = True
         await self.__subscribeToPubSubTopics()
+        self.__managingPubSubConnections = False
 
     async def __getAllPubSubTopics(self, validateAndRefresh: bool) -> List[Topic]:
         if not utils.isValidBool(validateAndRefresh):
