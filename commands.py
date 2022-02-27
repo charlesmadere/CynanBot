@@ -231,12 +231,15 @@ class CommandsCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif delimiter is None:
@@ -245,6 +248,7 @@ class CommandsCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -322,6 +326,7 @@ class CommandsCommand(AbsCommand):
         commands.sort()
         commandsString = self.__delimiter.join(commands)
         await twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
+        self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.author.name} in {user.getHandle()}')
 
 
 class CutenessCommand(AbsCommand):
@@ -406,14 +411,18 @@ class CynanSourceCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -426,6 +435,7 @@ class CynanSourceCommand(AbsCommand):
             return
 
         await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
+        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.author.name} in {user.getHandle()}')
 
 
 class DiscordCommand(AbsCommand):
@@ -775,14 +785,18 @@ class RaceCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -797,6 +811,7 @@ class RaceCommand(AbsCommand):
         elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
+        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.author.name} in {user.getHandle()}')
         await twitchUtils.safeSend(ctx, '!race')
 
 
