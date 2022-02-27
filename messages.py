@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from twitchio import Message
 
@@ -138,7 +138,7 @@ class CynanMessage(AbsMessage):
         self.__timber: Timber = timber
         self.__cynanUserName: str = cynanUserName
         self.__cooldown: timedelta = cooldown
-        self.__lastCynanMessageTime = datetime.utcnow() - cooldown
+        self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
 
     async def handleMessage(
         self,
@@ -157,7 +157,7 @@ class CynanMessage(AbsMessage):
         elif message.author.name.lower() != self.__cynanUserName.lower():
             return False
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         if now > self.__lastCynanMessageTime + self.__cooldown:
             self.__lastCynanMessageTime = now
