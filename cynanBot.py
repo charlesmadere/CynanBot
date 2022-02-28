@@ -136,7 +136,7 @@ class CynanBot(Bot):
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, usersRepository)
-        self.__timeCommand: AbsCommand = TimeCommand(usersRepository)
+        self.__timeCommand: AbsCommand = TimeCommand(timber, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
 
         if analogueStoreRepository is None:

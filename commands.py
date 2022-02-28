@@ -957,14 +957,18 @@ class TimeCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -989,10 +993,11 @@ class TimeCommand(AbsCommand):
                 text = f'🕰️ The local time for {user.getHandle()} is {formattedTime}.'
             else:
                 formattedTime = utils.formatTimeShort(localTime)
-                timeZoneName = timeZone.tzname(datetime.now(timezone.utc))
+                timeZoneName = timeZone.tzname(datetime.utcnow())
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await twitchUtils.safeSend(ctx, text)
+        self.__timber.log('TimeCommand', f'Handled !time command for {ctx.author.name} in {user.getHandle()}')
 
 
 class TranslateCommand(AbsCommand):
