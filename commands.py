@@ -1053,7 +1053,7 @@ class TranslateCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
-        targetLanguageEntry: LanguageEntry = self.__determineOptionalLanguageEntry(splits)
+        targetLanguageEntry = self.__determineOptionalLanguageEntry(splits)
 
         startSplitIndex: int = 1
         if targetLanguageEntry is not None:
