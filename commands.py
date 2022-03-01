@@ -192,6 +192,8 @@ class AnswerCommand(AbsCommand):
             self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
 
+        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name} in {user.getHandle()}')
+
 
 class ChatBandClearCommand(AbsCommand):
 
@@ -1073,6 +1075,8 @@ class TranslateCommand(AbsCommand):
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error translating')
 
+        self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.author.name} in {user.getHandle()}')
+
 
 class TriviaCommand(AbsCommand):
 
@@ -1236,6 +1240,8 @@ class TriviaScoreCommand(AbsCommand):
             triviaResult = triviaResult
         ))
 
+        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name} in {user.getHandle()}')
+
 
 class TwitterCommand(AbsCommand):
 
@@ -1317,6 +1323,8 @@ class WeatherCommand(AbsCommand):
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
+        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.author.name} in {user.getHandle()}')
+
 
 class WordCommand(AbsCommand):
 
@@ -1386,3 +1394,5 @@ class WordCommand(AbsCommand):
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
+
+        self.__timber.log('WordCommand', f'Handled !word command for {ctx.author.name} in {user.getHandle()}')

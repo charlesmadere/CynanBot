@@ -68,9 +68,6 @@ class RaidEvent(AbsEvent):
             self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
             return False
 
-        if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('RaidEvent', f'Raid for {twitchUser.getHandle()} () from {raidedByName}')
-
         messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {twitchUser.getTwitchUrl()} Thank you! ✨'
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', -1)
 
@@ -86,8 +83,8 @@ class RaidEvent(AbsEvent):
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
         ))
-        self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
 
+        self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
         return True
 
 
