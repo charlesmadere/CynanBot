@@ -19,9 +19,7 @@ class CutenessRepository():
         userIdsRepository: UserIdsRepository,
         doubleCutenessTimeSeconds: int = 300,
         leaderboardSize: int = 10,
-        localLeaderboardSize: int = 5,
-        maxValue: int = utils.getIntMaxSafeSize(),
-        minValue: int = utils.getIntMinSafeSize()
+        localLeaderboardSize: int = 5
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -39,22 +37,12 @@ class CutenessRepository():
             raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
         elif localLeaderboardSize < 1 or localLeaderboardSize > 5:
             raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
-        elif not utils.isValidNum(maxValue):
-            raise ValueError(f'maxValue argument is malformed: \"{maxValue}\"')
-        elif maxValue <= 0:
-            raise ValueError(f'maxValue argument is out of bounds: \"{maxValue}\"')
-        elif not utils.isValidNum(minValue):
-            raise ValueError(f'minValue argument is malformed: \"{minValue}\"')
-        elif minValue >= 0:
-            raise ValueError(f'minValue argument is out of bounds: \"{minValue}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__doubleCutenessTimeSeconds: int = doubleCutenessTimeSeconds
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
-        self.__maxValue: int = maxValue
-        self.__minValue: int = minValue
 
         self.__initDatabaseTable()
 
@@ -164,10 +152,10 @@ class CutenessRepository():
     ) -> CutenessResult:
         if not utils.isValidNum(incrementAmount):
             raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
-        elif incrementAmount >= self.__maxValue:
-            raise ValueError(f'incrementAmount ({incrementAmount}) is >= maxValue ({self.__maxValue})')
-        elif incrementAmount <= self.__minValue:
-            raise ValueError(f'incrementAmount ({incrementAmount}) is <= minValue ({self.__minValue})')
+        elif incrementAmount >= utils.getIntMaxSafeSize():
+            raise ValueError(f'incrementAmount ({incrementAmount}) is >= maximum value ({utils.getIntMaxSafeSize()})')
+        elif incrementAmount <= utils.getIntMinSafeSize():
+            raise ValueError(f'incrementAmount ({incrementAmount}) is <= minimum value ({utils.getIntMinSafeSize()})')
         elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
