@@ -201,17 +201,21 @@ class ChatBandClearCommand(AbsCommand):
         self,
         chatBandManager: ChatBandManager,
         generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
         usersRepository: UsersRepository
     ):
         if chatBandManager is None:
             raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__chatBandManager: ChatBandManager = chatBandManager
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -226,6 +230,7 @@ class ChatBandClearCommand(AbsCommand):
 
         self.__chatBandManager.clearCaches()
         await twitchUtils.safeSend(ctx, 'ⓘ Chat Band caches cleared')
+        self.__timber.log('ChatBandClearCommand', f'Handled !clearchatband command for {ctx.author.name} in {user.getHandle()}')
 
 
 class CommandsCommand(AbsCommand):
@@ -407,6 +412,8 @@ class CutenessCommand(AbsCommand):
             )
 
             await twitchUtils.safeSend(ctx, result.toStr())
+
+        self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name} in {user.getHandle()}')
 
 
 class CynanSourceCommand(AbsCommand):

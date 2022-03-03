@@ -152,7 +152,7 @@ class CynanBot(Bot):
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
         else:
-            self.__chatBandClearCommand: AbsCommand = ChatBandClearCommand(chatBandManager, generalSettingsRepository, usersRepository)
+            self.__chatBandClearCommand: AbsCommand = ChatBandClearCommand(chatBandManager, generalSettingsRepository, timber, usersRepository)
 
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
