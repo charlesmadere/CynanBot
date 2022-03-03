@@ -20,8 +20,8 @@ class CutenessRepository():
         doubleCutenessTimeSeconds: int = 300,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5,
-        maxValue: int = 2147483647,
-        minValue: int = -2147483648
+        maxValue: int = utils.getIntMaxSafeSize(),
+        minValue: int = utils.getIntMinSafeSize()
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
