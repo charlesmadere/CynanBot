@@ -1148,6 +1148,7 @@ class TriviaScoreCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
+        triviaUtils: TriviaUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
@@ -1158,6 +1159,8 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -1168,44 +1171,10 @@ class TriviaScoreCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    def __getResultStr(
-        self,
-        userName: str,
-        triviaResult: TriviaScoreResult
-    ) -> str:
-        if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif triviaResult is None:
-            raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
-
-        if triviaResult.getTotal() <= 0:
-            return f'{userName} has not played any trivia games 😿'
-
-        gamesStr: str = 'games'
-        if triviaResult.getTotal() == 1:
-            gamesStr = 'game'
-
-        winsStr: str = 'wins'
-        if triviaResult.getTotalWins() == 1:
-            winsStr = 'win'
-
-        lossesStr: str = 'losses'
-        if triviaResult.getTotalLosses() == 1:
-            lossesStr = 'loss'
-
-        ratioStr: str = f' ({triviaResult.getWinPercentStr()} wins)'
-
-        streakStr: str = ''
-        if triviaResult.getStreak() >= 3:
-            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
-        elif triviaResult.getStreak() <= -3:
-            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
-
-        return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -1247,11 +1216,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__getResultStr(
-            userName = userName,
-            triviaResult = triviaResult
-        ))
-
+        await twitchUtils.safeSend(ctx, self.__triviaUtils.getResults(userName, triviaResult))
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name} in {user.getHandle()}')
 
 
