@@ -18,6 +18,7 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
+from triviaUtils import TriviaUtils
 from users.user import User
 
 
@@ -525,7 +526,8 @@ class TriviaGameRedemption(AbsPointRedemption):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameRepository: TriviaGameRepository,
-        triviaScoreRepository: TriviaScoreRepository
+        triviaScoreRepository: TriviaScoreRepository,
+        triviaUtils: TriviaUtils
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -535,11 +537,14 @@ class TriviaGameRedemption(AbsPointRedemption):
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
         elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
 
     async def handlePointRedemption(
         self,
@@ -599,7 +604,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = delaySeconds,
-            message = f'😿 {userNameThatRedeemed}, you\'re out of time! The answer is: {triviaQuestion.getAnswerReveal()}',
+            message = f'😿 {userNameThatRedeemed}, you\'re out of time! {self.__triviaUtils.getAnswerReveal(triviaQuestion)}',
             heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle()),
             beforeSend = lambda: self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed)
         ))

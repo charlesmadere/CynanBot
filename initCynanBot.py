@@ -36,6 +36,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
+from triviaUtils import TriviaUtils
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
@@ -132,6 +133,7 @@ cynanBot = CynanBot(
     triviaScoreRepository = TriviaScoreRepository(
         backingDatabase = backingDatabase
     ),
+    triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
         timber = timber
     ),

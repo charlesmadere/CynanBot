@@ -55,6 +55,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnCatchRedemption, PkmnEvolveRedemption,
                               PkmnShinyRedemption, PotdPointRedemption,
                               StubPointRedemption, TriviaGameRedemption)
+from triviaUtils import TriviaUtils
 from users.user import User
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
@@ -83,6 +84,7 @@ class CynanBot(Bot):
         triviaGameRepository: TriviaGameRepository,
         triviaRepository: TriviaRepository,
         triviaScoreRepository: TriviaScoreRepository,
+        triviaUtils: TriviaUtils,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -190,10 +192,10 @@ class CynanBot(Bot):
         else:
             self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, usersRepository)
 
-        if triviaRepository is None:
+        if triviaRepository is None or triviaUtils is None:
             self.__triviaCommand: AbsCommand = StubCommand()
         else:
-            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, timber, triviaRepository, usersRepository)
+            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, timber, triviaRepository, triviaUtils, usersRepository)
 
         if cutenessRepository is None or triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
@@ -267,10 +269,10 @@ class CynanBot(Bot):
         else:
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber)
 
-        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None:
+        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, triviaUtils)
 
         ######################################
         ## Initialization of PubSub objects ##

@@ -33,6 +33,7 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
+from triviaUtils import TriviaUtils
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
@@ -160,8 +161,8 @@ class AnswerCommand(AbsCommand):
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
             self.__timber.log('AnswerCommand', f'{ctx.author.name}:{userId} in {user.getHandle()} answered incorrectly')
-            answerStr = self.__triviaGameRepository.getTrivia(user.getHandle()).getAnswerReveal()
-            await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. The correct answer is: {answerStr}')
+            answerStr = self.__getAnswerStr(self.__triviaGameRepository.getTrivia(user.getHandle()))
+            await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. {answerStr}')
             self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
@@ -1092,6 +1093,7 @@ class TriviaCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaRepository: TriviaRepository,
+        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
@@ -1101,6 +1103,8 @@ class TriviaCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaRepository is None:
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1109,6 +1113,7 @@ class TriviaCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaRepository: TriviaRepository = triviaRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1129,7 +1134,7 @@ class TriviaCommand(AbsCommand):
             asyncio.create_task(twitchUtils.waitThenSend(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = f'🥁 And the answer is: {triviaQuestion.getAnswerReveal()}'
+                message = f'🥁 {self.__triviaUtils.getAnswerReveal(triviaQuestion)}'
             ))
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TriviaCommand', f'Error fetching trivia: {e}')
