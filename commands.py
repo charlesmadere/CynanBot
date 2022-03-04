@@ -970,6 +970,8 @@ class TamalesCommand(AbsCommand):
             self.__timber.log('TamalesCommand', f'Error retrieving Tamale Guy store stock: {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error retrieving Tamale Guy store stock')
 
+        self.__timber.log('TamalesCommand', f'Handled !tamales command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
 
 class TimeCommand(AbsCommand):
 
