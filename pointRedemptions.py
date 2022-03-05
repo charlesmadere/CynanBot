@@ -103,7 +103,7 @@ class CutenessRedemption(AbsPointRedemption):
             )
 
             self.__timber.log('CutenessRedemption', f'Increased cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}')
-        except ValueError as e:
+        except (OverflowError, ValueError) as e:
             self.__timber.log('CutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
@@ -178,7 +178,7 @@ class DoubleCutenessRedemption(AbsPointRedemption):
                 delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
                 message = 'Double cuteness has ended! 😿'
             ))
-        except ValueError as e:
+        except (OverflowError, ValueError) as e:
             self.__timber.log('DoubleCutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 

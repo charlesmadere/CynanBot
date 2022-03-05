@@ -195,8 +195,8 @@ class AnswerCommand(AbsCommand):
 
             self.__timber.log('AnswerCommand', f'Increased cuteness for {ctx.author.name}:{userId} by {cutenessPoints} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
-        except ValueError:
-            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}')
+        except (OverflowError, ValueError) as e:
+            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}: {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
 
         self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
@@ -555,7 +555,7 @@ class GiveCutenessCommand(AbsCommand):
             )
 
             await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
-        except ValueError as e:
+        except (OverflowError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness to {userName}:{userId} in {user.getHandle()}: {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
