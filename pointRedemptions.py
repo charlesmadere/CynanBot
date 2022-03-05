@@ -182,6 +182,8 @@ class DoubleCutenessRedemption(AbsPointRedemption):
             self.__timber.log('DoubleCutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
+        self.__timber.log('DoubleCutenessRedemption', f'Redeemed double cuteness redemption for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+
 
 class PkmnBattleRedemption(AbsPointRedemption):
 
@@ -226,13 +228,12 @@ class PkmnBattleRedemption(AbsPointRedemption):
             return False
 
         splits = utils.getCleanedSplits(redemptionMessage)
-
         if not utils.hasItems(splits):
             await twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{userNameThatRedeemed}, you must specify the exact user name of the person you want to fight')
             return False
 
         opponentUserName = utils.removePreceedingAt(splits[0])
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed Pokemon battle for {userNameThatRedeemed}:{userIdThatRedeemed} vs {opponentUserName} in {twitchUser.getHandle()}')
+        actionCompleted = False
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
             if self.__funtoonRepository.pkmnBattle(
@@ -240,13 +241,14 @@ class PkmnBattleRedemption(AbsPointRedemption):
                 userToBattle = opponentUserName,
                 twitchChannel = twitchUser.getHandle()
             ):
-                return True
+                actionCompleted = True
 
-        if self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
+        if not actionCompleted and self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
             await twitchUtils.safeSend(twitchChannel, f'!battle {userNameThatRedeemed} {opponentUserName}')
-            return True
-        else:
-            return False
+            actionCompleted = True
+
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle redemption for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        return actionCompleted
 
 
 class PkmnCatchRedemption(AbsPointRedemption):
