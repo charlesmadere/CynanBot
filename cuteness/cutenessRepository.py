@@ -152,10 +152,10 @@ class CutenessRepository():
     ) -> CutenessResult:
         if not utils.isValidNum(incrementAmount):
             raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
-        elif incrementAmount >= utils.getIntMaxSafeSize():
-            raise ValueError(f'incrementAmount ({incrementAmount}) is >= maximum value ({utils.getIntMaxSafeSize()})')
-        elif incrementAmount <= utils.getIntMinSafeSize():
-            raise ValueError(f'incrementAmount ({incrementAmount}) is <= minimum value ({utils.getIntMinSafeSize()})')
+        elif incrementAmount >= utils.getLongMaxSafeSize():
+            raise ValueError(f'incrementAmount ({incrementAmount}) is >= maximum value ({utils.getLongMaxSafeSize()})')
+        elif incrementAmount <= utils.getLongMinSafeSize():
+            raise ValueError(f'incrementAmount ({incrementAmount}) is <= minimum value ({utils.getLongMinSafeSize()})')
         elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
@@ -178,15 +178,17 @@ class CutenessRepository():
         )
 
         row = cursor.fetchone()
-        cuteness: int = 0
+        oldCuteness: int = 0
 
         if row is not None:
-            cuteness = row[0]
+            oldCuteness = row[0]
 
-        cuteness = cuteness + incrementAmount
+        newCuteness: int = oldCuteness + incrementAmount
 
-        if cuteness < 0:
-            cuteness = 0
+        if newCuteness < 0:
+            newCuteness = 0
+        elif newCuteness > utils.getLongMaxSafeSize():
+            raise OverflowError(f'New cuteness ({newCuteness}) would be too large (old cuteness = {oldCuteness}) (increment amount = {incrementAmount})')
 
         cursor.execute(
             '''
@@ -194,14 +196,14 @@ class CutenessRepository():
                 VALUES (?, ?, ?)
                 ON CONFLICT (twitchChannel, userId) DO UPDATE SET cuteness = excluded.cuteness
             ''',
-            ( cuteness, twitchChannel, userId )
+            ( newCuteness, twitchChannel, userId )
         )
 
         connection.commit()
         cursor.close()
 
         return CutenessResult(
-            cuteness = cuteness,
+            cuteness = newCuteness,
             localLeaderboard = None,
             userId = userId,
             userName = userName
