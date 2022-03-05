@@ -600,7 +600,7 @@ class TriviaGameRedemption(AbsPointRedemption):
             points = twitchUser.getTriviaGamePoints()
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        await twitchUtils.safeSend(twitchChannel, f'🏫 {userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
+        await twitchUtils.safeSend(twitchChannel, f'🏫 @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
         self.__timber.log('TriviaGameRedemption', f'Redeemed Trivia Game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
 
         asyncio.create_task(twitchUtils.waitThenSend(
