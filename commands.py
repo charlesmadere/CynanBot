@@ -103,6 +103,7 @@ class AnswerCommand(AbsCommand):
         timber: Timber,
         triviaGameRepository: TriviaGameRepository,
         triviaScoreRepository: TriviaScoreRepository,
+        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
         if cutenessRepository is None:
@@ -117,6 +118,8 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
         elif triviaScoreRepository is None:
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -126,6 +129,7 @@ class AnswerCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -163,7 +167,7 @@ class AnswerCommand(AbsCommand):
             return
         elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
             self.__timber.log('AnswerCommand', f'{ctx.author.name}:{userId} in {user.getHandle()} answered incorrectly')
-            answerStr = self.__getAnswerStr(self.__triviaGameRepository.getTrivia(user.getHandle()))
+            answerStr = self.__triviaUtils.getAnswerReveal(self.__triviaGameRepository.getTrivia(user.getHandle()))
             await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. {answerStr}')
             self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
             return
@@ -190,7 +194,7 @@ class AnswerCommand(AbsCommand):
             )
 
             self.__timber.log('AnswerCommand', f'Increased cuteness for {ctx.author.name}:{userId} by {cutenessPoints} in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'🎉 Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
+            await twitchUtils.safeSend(ctx, f'Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
         except ValueError:
             self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')

@@ -146,10 +146,10 @@ class CynanBot(Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameRepository is None or triviaScoreRepository is None:
+        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, triviaUtils, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
