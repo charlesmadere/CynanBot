@@ -530,7 +530,7 @@ class GiveCutenessCommand(AbsCommand):
 
         try:
             incrementAmount = int(incrementAmountStr)
-        except (SyntaxError, ValueError) as e:
+        except (SyntaxError, TypeError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount into an int: \"{incrementAmountStr}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
