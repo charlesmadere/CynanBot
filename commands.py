@@ -779,6 +779,8 @@ class PkMonCommand(AbsCommand):
             self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
+        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
 
 class PkMoveCommand(AbsCommand):
 
@@ -832,6 +834,8 @@ class PkMoveCommand(AbsCommand):
         except (RuntimeError, ValueError) as e:
             self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
+
+        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class RaceCommand(AbsCommand):
