@@ -73,7 +73,6 @@ triviaRepository = TriviaRepository(
             timber = timber
         )
     ),
-    quizApiKey = authRepository.getQuizApiKey(),
     cacheTimeDelta = None
 )
 
