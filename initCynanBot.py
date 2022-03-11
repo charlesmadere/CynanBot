@@ -22,7 +22,9 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.trivia.localTriviaRepository import LocalTriviaRepository
+from CynanBotCommon.trivia.generalTriviaSettingsRepository import \
+    GeneralTriviaSettingsRepository
+from CynanBotCommon.trivia.jokeTriviaRepository import JokeTriviaRepository
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -58,7 +60,10 @@ languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 
 triviaRepository = TriviaRepository(
-    localTriviaRepository = LocalTriviaRepository(),
+    generalTriviaSettingsRepository = GeneralTriviaSettingsRepository(),
+    jokeTriviaRepository = JokeTriviaRepository(
+        timber = timber
+    ),
     timber = timber,
     triviaIdGenerator = TriviaIdGenerator(),
     triviaVerifier = TriviaVerifier(

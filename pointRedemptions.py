@@ -577,7 +577,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         try:
             triviaQuestion = self.__triviaGameRepository.fetchTrivia(
                 twitchChannel = twitchUser.getHandle(),
-                isLocalTriviaRepositoryEnabled = twitchUser.isLocalTriviaRepositoryEnabled()
+                isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled()
             )
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TriviaGameRedemption', f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')

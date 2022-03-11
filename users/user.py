@@ -26,7 +26,7 @@ class User():
         isJamCatEnabled: bool,
         isJishoEnabled: bool,
         isJokesEnabled: bool,
-        isLocalTriviaRepositoryEnabled: bool,
+        isJokeTriviaRepositoryEnabled: bool,
         isLoremIpsumEnabled: bool,
         isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
@@ -91,8 +91,8 @@ class User():
             raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isJokesEnabled):
             raise ValueError(f'isJokesEnabled argument is malformed: \"{isJokesEnabled}\"')
-        elif not utils.isValidBool(isLocalTriviaRepositoryEnabled):
-            raise ValueError(f'isLocalTriviaRepositoryEnabled argument is malformed: \"{isLocalTriviaRepositoryEnabled}\"')
+        elif not utils.isValidBool(isJokeTriviaRepositoryEnabled):
+            raise ValueError(f'isJokeTriviaRepositoryEnabled argument is malformed: \"{isJokeTriviaRepositoryEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise ValueError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
         elif not utils.isValidBool(isPicOfTheDayEnabled):
@@ -148,7 +148,7 @@ class User():
         self.__isJamCatEnabled: bool = isJamCatEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isJokesEnabled: bool = isJokesEnabled
-        self.__isLocalTriviaRepositoryEnabled: bool = isLocalTriviaRepositoryEnabled
+        self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
         self.__isPicOfTheDayEnabled: bool = isPicOfTheDayEnabled
         self.__isPkmnEnabled: bool = isPkmnEnabled
@@ -332,8 +332,8 @@ class User():
     def isJokesEnabled(self) -> bool:
         return self.__isJokesEnabled
 
-    def isLocalTriviaRepositoryEnabled(self) -> bool:
-        return self.__isLocalTriviaRepositoryEnabled
+    def isJokeTriviaRepositoryEnabled(self) -> bool:
+        return self.__isJokeTriviaRepositoryEnabled
 
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled

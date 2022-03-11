@@ -47,7 +47,7 @@ class UsersRepository():
         isJamCatEnabled = utils.getBoolFromDict(userJson, 'jamCatEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokesEnabled = utils.getBoolFromDict(userJson, 'jokesEnabled', False)
-        isLocalTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'localTriviaRepositoryEnabled', False)
+        isJokeTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'jokeTriviaRepositoryEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
         isPicOfTheDayEnabled = utils.getBoolFromDict(userJson, 'picOfTheDayEnabled', False)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
@@ -129,7 +129,7 @@ class UsersRepository():
             isJamCatEnabled = isJamCatEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,
-            isLocalTriviaRepositoryEnabled = isLocalTriviaRepositoryEnabled,
+            isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
             isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isPkmnEnabled = isPkmnEnabled,
