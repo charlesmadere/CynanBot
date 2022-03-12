@@ -22,8 +22,6 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.trivia.generalTriviaSettingsRepository import \
-    GeneralTriviaSettingsRepository
 from CynanBotCommon.trivia.jokeTriviaRepository import JokeTriviaRepository
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
@@ -32,6 +30,8 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaSettingsRepository import \
+    TriviaSettingsRepository
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -60,12 +60,12 @@ languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 
 triviaRepository = TriviaRepository(
-    generalTriviaSettingsRepository = GeneralTriviaSettingsRepository(),
     jokeTriviaRepository = JokeTriviaRepository(
         timber = timber
     ),
     timber = timber,
     triviaIdGenerator = TriviaIdGenerator(),
+    triviaSettingsRepository = TriviaSettingsRepository(),
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
         triviaHistoryRepository = TriviaHistoryRepository(
@@ -73,6 +73,7 @@ triviaRepository = TriviaRepository(
             timber = timber
         )
     ),
+    quizApiKey = authRepository.getQuizApiKey(),
     cacheTimeDelta = None
 )
 
