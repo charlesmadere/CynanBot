@@ -600,7 +600,11 @@ class TriviaGameRedemption(AbsPointRedemption):
             points = twitchUser.getTriviaGamePoints()
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        await twitchUtils.safeSend(twitchChannel, f'🏫 @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} points: {triviaQuestion.getPrompt()}')
+        pointsPlurality = 'points'
+        if points == 1:
+            pointsPlurality = 'point'
+
+        await twitchUtils.safeSend(twitchChannel, f'🏫 @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality}: {triviaQuestion.getPrompt()}')
 
         asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
