@@ -513,25 +513,26 @@ class GiveCutenessCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 3:
+            self.__timber.log('GiveCutenessCommand', f'Less than 3 arguments given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             await twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName = splits[1]
         if not utils.isValidStr(userName):
-            self.__timber.log('GiveCutenessCommand', f'Username is malformed: \"{userName}\"')
+            self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{userName}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr = splits[2]
         if not utils.isValidStr(incrementAmountStr):
-            self.__timber.log('GiveCutenessCommand', f'Increment amount is malformed: \"{incrementAmountStr}\"')
+            self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, TypeError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount into an int: \"{incrementAmountStr}\": {e}')
+            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -540,7 +541,7 @@ class GiveCutenessCommand(AbsCommand):
         try:
             userId = self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
-            self.__timber.log('GiveCutenessCommand', f'Unable to give cuteness to \"{userName}\", they don\'t current exist in the database')
+            self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
@@ -554,10 +555,10 @@ class GiveCutenessCommand(AbsCommand):
 
             await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness to {userName}:{userId} in {user.getHandle()}: {e}')
+            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}')
             await twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
-        self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class JishoCommand(AbsCommand):
