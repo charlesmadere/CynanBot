@@ -1,3 +1,4 @@
+import asyncio
 from typing import Dict, List
 
 from twitchio import Channel, Message
@@ -466,15 +467,7 @@ class CynanBot(Bot):
 
     async def event_pubsub_error(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
-
-        if self.__isManagingPubSubConnections:
-            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
-            return
-
-        self.__isManagingPubSubConnections = True
-        await self.__unsubscribeFromPubSubTopics()
-        await self.__subscribeToPubSubTopics()
-        self.__isManagingPubSubConnections = False
+        await self.__refreshPubSubTokens()
 
     async def event_pubsub_nonce(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
@@ -572,6 +565,18 @@ class CynanBot(Bot):
 
         return pubSubTopics
 
+    async def __refreshPubSubTokens(self):
+        self.__timber.log('CynanBot', 'Refreshing PubSub tokens...')
+
+        if self.__isManagingPubSubConnections:
+            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
+            return
+
+        self.__isManagingPubSubConnections = True
+        await self.__unsubscribeFromPubSubTopics()
+        await self.__subscribeToPubSubTopics()
+        self.__isManagingPubSubConnections = False
+
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
             self.__timber.log('CynanBot', f'Will not start websocketConnectionServer, as the instance is `None`')
@@ -579,6 +584,8 @@ class CynanBot(Bot):
             self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
+        self.__twitchTokensRepository.consumeTokensExpireInSeconds()
+
         pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = True)
         if not utils.hasItems(pubSubTopics):
             self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to subscribe to')
@@ -586,7 +593,11 @@ class CynanBot(Bot):
 
         self.__timber.log('CynanBot', f'Subscribing to {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.subscribe_topics(pubSubTopics)
-        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s)')
+
+        tokensExpireInSeconds = self.__twitchTokensRepository.getTokensExpireInSeconds()
+        asyncio.create_task(self.__waitThenRefreshPubSubTokens(tokensExpireInSeconds))
+
+        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {tokensExpireInSeconds} seconds')
 
     async def __unsubscribeFromPubSubTopics(self):
         pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = False)
@@ -597,6 +608,13 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.unsubscribe_topics(pubSubTopics)
         self.__timber.log('CynanBot', f'Finished unsubscribing from PubSub topic(s)')
+
+    async def __waitThenRefreshPubSubTokens(self, tokensExpireInSeconds: int):
+        if not utils.isValidNum(tokensExpireInSeconds):
+            raise ValueError(f'tokensExpireInSeconds argument is malformed: \"{tokensExpireInSeconds}\"')
+
+        await asyncio.sleep(tokensExpireInSeconds)
+        await self.__refreshPubSubTokens()
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
