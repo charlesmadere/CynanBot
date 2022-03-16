@@ -40,8 +40,8 @@ from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import (
-    TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException,
-    TwitchTokensRepository)
+    TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
+    TwitchRefreshTokenMissingException, TwitchTokensRepository)
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
@@ -549,7 +549,7 @@ class CynanBot(Bot):
                     )
 
                     usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-                except (TwitchAccessTokenMissingException, TwitchRefreshTokenMissingException) as e:
+                except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchRefreshTokenMissingException) as e:
                     # if we run into this error, that most likely means that this user changed
                     # their password
                     usersToRemove.append(user)
