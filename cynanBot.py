@@ -467,7 +467,9 @@ class CynanBot(Bot):
 
     async def event_pubsub_error(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
-        await self.__refreshPubSubTokens()
+
+        # TODO verify that this should remain commented out
+        # await self.__refreshPubSubTokens()
 
     async def event_pubsub_nonce(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
