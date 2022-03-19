@@ -140,8 +140,7 @@ cynanBot = CynanBot(
     ),
     triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
-        timber = timber,
-        isDebugLoggingEnabled = True
+        timber = timber
     ),
     userIdsRepository = userIdsRepository,
     usersRepository = UsersRepository(
