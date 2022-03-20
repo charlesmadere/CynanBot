@@ -132,6 +132,7 @@ cynanBot = CynanBot(
     timber = timber,
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
+        timber = timber,
         triviaRepository = triviaRepository
     ),
     triviaRepository = triviaRepository,
