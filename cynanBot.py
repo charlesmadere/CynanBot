@@ -515,11 +515,22 @@ class CynanBot(Bot):
         await self.__subscribeToPubSubTopics()
         self.__isManagingPubSubConnections = False
 
-    async def __getAllPubSubTopics(self, validateAndRefresh: bool) -> List[Topic]:
+    async def __getPubSubTopics(
+        self,
+        validateAndRefresh: bool,
+        twitchHandles: List[str] = None
+    ) -> List[Topic]:
         if not utils.isValidBool(validateAndRefresh):
             raise ValueError(f'validateAndRefresh argument is malformed: \"{validateAndRefresh}\"')
 
-        users = self.__usersRepository.getUsers()
+        users: List[User] = list()
+
+        if utils.hasItems(twitchHandles):
+            for twitchHandle in twitchHandles:
+                users.append(self.__usersRepository.getUser(twitchHandle))
+        else:
+            users = self.__usersRepository.getUsers()
+
         usersAndTwitchTokens: Dict[User, str] = dict()
         pubSubTopics: List[Topic] = list()
 
@@ -588,7 +599,7 @@ class CynanBot(Bot):
     async def __subscribeToPubSubTopics(self):
         self.__twitchTokensRepository.consumeTokensExpireInSeconds()
 
-        pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = True)
+        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = True)
         if not utils.hasItems(pubSubTopics):
             self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to subscribe to')
             return
@@ -602,7 +613,7 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {tokensExpireInSeconds} seconds')
 
     async def __unsubscribeFromPubSubTopics(self):
-        pubSubTopics = await self.__getAllPubSubTopics(validateAndRefresh = False)
+        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = False)
         if not utils.hasItems(pubSubTopics):
             self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to unsubscribe from')
             return
