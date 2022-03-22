@@ -523,9 +523,9 @@ class CynanBot(Bot):
         if not utils.isValidBool(validateAndRefresh):
             raise ValueError(f'validateAndRefresh argument is malformed: \"{validateAndRefresh}\"')
 
-        users: List[User] = list()
-
+        users: List[User] = None
         if utils.hasItems(twitchHandles):
+            users = list()
             for twitchHandle in twitchHandles:
                 users.append(self.__usersRepository.getUser(twitchHandle))
         else:
