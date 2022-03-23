@@ -597,9 +597,9 @@ class CynanBot(Bot):
             self.__websocketConnectionServer.start(self.loop)
 
     async def __subscribeToPubSubTopics(self):
-        self.__twitchTokensRepository.consumeTokensExpireInSeconds()
+        twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
 
-        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = True)
+        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = True, twitchHandles = twitchHandles)
         if not utils.hasItems(pubSubTopics):
             self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to subscribe to')
             return
@@ -613,7 +613,9 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {tokensExpireInSeconds} seconds')
 
     async def __unsubscribeFromPubSubTopics(self):
-        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = False)
+        twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
+
+        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = False, twitchHandles = twitchHandles)
         if not utils.hasItems(pubSubTopics):
             self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to unsubscribe from')
             return
