@@ -526,12 +526,17 @@ class CynanBot(Bot):
             raise ValueError(f'validateAndRefresh argument is malformed: \"{validateAndRefresh}\"')
 
         users: List[User] = None
-        if utils.hasItems(twitchHandles):
+        if twitchHandles is None:
+            # if twitchHandles is None, then we must do a full validate and refresh of every user
+            users = self.__usersRepository.getUsers()
+        elif len(twitchHandles) == 0:
+            # if twitchHandles is empty, then there is no need to do a validate or fresh of anyone
+            return
+        else:
+            # if twitchHandles has entries, then we will be validating and refreshing those users
             users = list()
             for twitchHandle in twitchHandles:
                 users.append(self.__usersRepository.getUser(twitchHandle))
-        else:
-            users = self.__usersRepository.getUsers()
 
         usersAndTwitchTokens: Dict[User, str] = dict()
         pubSubTopics: List[Topic] = list()
@@ -609,10 +614,10 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'Subscribing to {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.subscribe_topics(pubSubTopics)
 
-        tokensExpireInSeconds = self.__twitchTokensRepository.getTokensExpireInSeconds()
-        asyncio.create_task(self.__waitThenRefreshPubSubTokens(tokensExpireInSeconds))
+        refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
+        asyncio.create_task(self.__waitThenRefreshPubSubTokens(refreshPubSubTokensSeconds))
 
-        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {tokensExpireInSeconds} seconds')
+        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {refreshPubSubTokensSeconds} seconds')
 
     async def __unsubscribeFromPubSubTopics(self):
         twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
@@ -626,11 +631,13 @@ class CynanBot(Bot):
         await self.__pubSub.unsubscribe_topics(pubSubTopics)
         self.__timber.log('CynanBot', f'Finished unsubscribing from PubSub topic(s)')
 
-    async def __waitThenRefreshPubSubTokens(self, tokensExpireInSeconds: int):
-        if not utils.isValidNum(tokensExpireInSeconds):
-            raise ValueError(f'tokensExpireInSeconds argument is malformed: \"{tokensExpireInSeconds}\"')
+    async def __waitThenRefreshPubSubTokens(self, refreshPubSubTokensSeconds: int):
+        if not utils.isValidNum(refreshPubSubTokensSeconds):
+            raise ValueError(f'refreshPubSubTokensSeconds argument is malformed: \"{refreshPubSubTokensSeconds}\"')
+        elif refreshPubSubTokensSeconds < 30:
+            raise ValueError(f'refreshPubSubTokensSeconds argument is too aggressive: {refreshPubSubTokensSeconds}')
 
-        await asyncio.sleep(tokensExpireInSeconds)
+        await asyncio.sleep(refreshPubSubTokensSeconds)
         await self.__refreshPubSubTokens()
 
     @commands.command(name = 'analogue')
