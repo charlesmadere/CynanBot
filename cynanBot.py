@@ -135,12 +135,12 @@ class CynanBot(Bot):
 
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, usersRepository)
-        self.__discordCommand: AbsCommand = DiscordCommand(usersRepository)
+        self.__discordCommand: AbsCommand = DiscordCommand(timber, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, usersRepository)
-        self.__pbsCommand: AbsCommand = PbsCommand(usersRepository)
+        self.__pbsCommand: AbsCommand = PbsCommand(timber, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, usersRepository)
-        self.__twitterCommand: AbsCommand = TwitterCommand(usersRepository)
+        self.__twitterCommand: AbsCommand = TwitterCommand(timber, usersRepository)
 
         if analogueStoreRepository is None:
             self.__analogueCommand: AbsCommand = StubCommand()

@@ -456,14 +456,18 @@ class DiscordCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -477,6 +481,7 @@ class DiscordCommand(AbsCommand):
 
         discord = user.getDiscordUrl()
         await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
+        self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class GiveCutenessCommand(AbsCommand):
@@ -704,14 +709,18 @@ class PbsCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -725,6 +734,7 @@ class PbsCommand(AbsCommand):
 
         speedrunProfile = user.getSpeedrunProfile()
         await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class PkMonCommand(AbsCommand):
@@ -1243,14 +1253,18 @@ class TwitterCommand(AbsCommand):
 
     def __init__(
         self,
+        timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if usersRepository is None:
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1263,6 +1277,7 @@ class TwitterCommand(AbsCommand):
             return
 
         await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
+        self.__timber.log('TwitterCommand', f'Handled !twitter command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class WeatherCommand(AbsCommand):
