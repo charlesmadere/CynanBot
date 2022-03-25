@@ -515,8 +515,9 @@ class CynanBot(Bot):
 
         self.__isManagingPubSubConnections = True
         await self.__subscribeToPubSubTopics()
-        await self.__waitThenRefreshPubSubTokens()
         self.__isManagingPubSubConnections = False
+
+        await self.__waitThenRefreshPubSubTokens()
 
     async def __getPubSubTopics(
         self,
