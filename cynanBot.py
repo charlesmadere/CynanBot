@@ -515,6 +515,7 @@ class CynanBot(Bot):
 
         self.__isManagingPubSubConnections = True
         await self.__subscribeToPubSubTopics()
+        await self.__waitThenRefreshPubSubTokens()
         self.__isManagingPubSubConnections = False
 
     async def __getPubSubTopics(
@@ -595,6 +596,7 @@ class CynanBot(Bot):
         self.__isManagingPubSubConnections = True
         await self.__unsubscribeFromPubSubTopics()
         await self.__subscribeToPubSubTopics()
+        await self.__waitThenRefreshPubSubTokens()
         self.__isManagingPubSubConnections = False
 
     async def __startWebsocketConnectionServer(self):
@@ -613,11 +615,7 @@ class CynanBot(Bot):
 
         self.__timber.log('CynanBot', f'Subscribing to {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.subscribe_topics(pubSubTopics)
-
-        refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
-        asyncio.create_task(self.__waitThenRefreshPubSubTokens(refreshPubSubTokensSeconds))
-
-        self.__timber.log('CynanBot', f'Finished subscribing to PubSub topic(s), will be refreshing in {refreshPubSubTokensSeconds} seconds')
+        self.__timber.log('CynanBot', f'Finished subscribing to {len(pubSubTopics)} PubSub topic(s)')
 
     async def __unsubscribeFromPubSubTopics(self):
         twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
@@ -629,12 +627,12 @@ class CynanBot(Bot):
 
         self.__timber.log('CynanBot', f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)...')
         await self.__pubSub.unsubscribe_topics(pubSubTopics)
-        self.__timber.log('CynanBot', f'Finished unsubscribing from PubSub topic(s)')
+        self.__timber.log('CynanBot', f'Finished unsubscribing from {len(pubSubTopics)} PubSub topic(s)')
 
-    async def __waitThenRefreshPubSubTokens(self, refreshPubSubTokensSeconds: int):
-        if not utils.isValidNum(refreshPubSubTokensSeconds):
-            raise ValueError(f'refreshPubSubTokensSeconds argument is malformed: \"{refreshPubSubTokensSeconds}\"')
-        elif refreshPubSubTokensSeconds < 30:
+    async def __waitThenRefreshPubSubTokens(self):
+        refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
+
+        if refreshPubSubTokensSeconds < 30:
             raise ValueError(f'refreshPubSubTokensSeconds argument is too aggressive: {refreshPubSubTokensSeconds}')
 
         await asyncio.sleep(refreshPubSubTokensSeconds)
