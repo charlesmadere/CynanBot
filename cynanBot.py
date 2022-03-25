@@ -596,8 +596,9 @@ class CynanBot(Bot):
         self.__isManagingPubSubConnections = True
         await self.__unsubscribeFromPubSubTopics()
         await self.__subscribeToPubSubTopics()
-        await self.__waitThenRefreshPubSubTokens()
         self.__isManagingPubSubConnections = False
+
+        await self.__waitThenRefreshPubSubTokens()
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
