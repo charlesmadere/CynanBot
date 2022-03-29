@@ -22,7 +22,16 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.trivia.jokeTriviaRepository import JokeTriviaRepository
+from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
+    BongoTriviaQuestionRepository
+from CynanBotCommon.trivia.jokeTriviaQuestionRepository import \
+    JokeTriviaQuestionRepository
+from CynanBotCommon.trivia.jServiceTriviaQuestionRepository import \
+    JServiceTriviaQuestionRepository
+from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
+    QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -33,6 +42,8 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
+from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
+    WillFryTriviaQuestionRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
@@ -44,6 +55,10 @@ from users.usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
+
+#################################
+## Misc initialization section ##
+#################################
 
 timber = Timber()
 authRepository = AuthRepository()
@@ -58,24 +73,6 @@ cutenessRepository = CutenessRepository(
 )
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
-
-triviaRepository = TriviaRepository(
-    jokeTriviaRepository = JokeTriviaRepository(
-        timber = timber
-    ),
-    timber = timber,
-    triviaIdGenerator = TriviaIdGenerator(),
-    triviaSettingsRepository = TriviaSettingsRepository(),
-    triviaVerifier = TriviaVerifier(
-        triviaContentScanner = TriviaContentScanner(),
-        triviaHistoryRepository = TriviaHistoryRepository(
-            backingDatabase = backingDatabase,
-            timber = timber
-        )
-    ),
-    quizApiKey = authRepository.getQuizApiKey(),
-    cacheTimeDelta = None
-)
 
 websocketConnectionServer = WebsocketConnectionServer(
     timber = timber,
@@ -96,6 +93,67 @@ if authRepository.hasOneWeatherApiKey():
         oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
         timber = timber
     )
+
+
+###################################
+## Trivia initialization section ##
+###################################
+
+triviaIdGenerator = TriviaIdGenerator()
+triviaSettingsRepository = TriviaSettingsRepository()
+
+quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
+if authRepository.hasQuizApiKey():
+    quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
+        quizApiKey = authRepository.requireQuizApiKey(),
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    )
+
+triviaRepository = TriviaRepository(
+    bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    timber = timber,
+    triviaIdGenerator = triviaIdGenerator,
+    triviaSettingsRepository = triviaSettingsRepository,
+    triviaVerifier = TriviaVerifier(
+        triviaContentScanner = TriviaContentScanner(),
+        triviaHistoryRepository = TriviaHistoryRepository(
+            backingDatabase = backingDatabase,
+            timber = timber
+        )
+    ),
+    willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
+        timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    cacheTimeDelta = None
+)
+
+
+#####################################
+## CynanBot initialization section ##
+#####################################
 
 cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(
