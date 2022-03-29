@@ -133,7 +133,6 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     timber = timber,
-    triviaIdGenerator = triviaIdGenerator,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
