@@ -132,6 +132,7 @@ triviaRepository = TriviaRepository(
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
