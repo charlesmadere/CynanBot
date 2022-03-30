@@ -157,16 +157,9 @@ class PubSubUtils():
         return pubSubEntries
 
     async def __refreshPubSub(self):
-        if self.__isManagingPubSub:
-            self.__timber.log('PubSubUtils', f'Unable to refresh because PubSubUtils is current working')
-            return
-
         self.__timber.log('PubSubUtils', 'Refreshing...')
-
-        self.__isManagingPubSub = True
         await self.__updatePubSubSubscriptions()
         await self.__sleepThenRefreshPubSub()
-        self.__isManagingPubSub = False
 
     async def __sleepThenRefreshPubSub(self):
         refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
@@ -178,15 +171,18 @@ class PubSubUtils():
             self.__timber.log('PubSubUtils', 'Not starting PubSub as it has already been started')
             return
 
-        self.__timber.log('PubSubUtils', 'Starting PubSub...')
         self.__isStarted = True
-
-        self.__isManagingPubSub = True
+        self.__timber.log('PubSubUtils', 'Starting PubSub...')
         await self.__updatePubSubSubscriptions()
         await self.__sleepThenRefreshPubSub()
-        self.__isManagingPubSub = False
 
     async def __updatePubSubSubscriptions(self):
+        if self.__isManagingPubSub:
+            self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently working!')
+            return
+
+        self.__isManagingPubSub = True
+
         pubSubTopicsToAdd: List[Topic] = list()
         pubSubTopicsToRemove: List[Topic] = list()
         newPubSubEntries = await self.__getSubscribeReadyPubSubEntries()
@@ -210,3 +206,5 @@ class PubSubUtils():
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
             await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
             self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub user(s)')
+
+        self.__isManagingPubSub = False
