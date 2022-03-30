@@ -197,14 +197,14 @@ class PubSubUtils():
                 if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
                     pubSubTopicsToRemove.append(topicQueue.get())
 
-        if utils.hasItems(pubSubTopicsToRemove):
-            self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)...')
-            await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
-            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
-
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
             await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
             self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub user(s)')
+
+        if utils.hasItems(pubSubTopicsToRemove):
+            self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)...')
+            await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
+            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
 
         self.__isManagingPubSub = False
