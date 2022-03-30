@@ -194,7 +194,7 @@ class PubSubUtils():
 
         if utils.hasItems(self.__pubSubEntries):
             for topicQueue in self.__pubSubEntries.values():
-                if topicQueue.qsize() >= self.__maxConnectionsPerTwitchChannel:
+                if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
                     pubSubTopicsToRemove.append(topicQueue.get())
 
         if utils.hasItems(pubSubTopicsToRemove):
