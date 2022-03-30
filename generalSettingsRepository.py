@@ -22,7 +22,12 @@ class GeneralSettingsRepository():
 
     def getRefreshPubSubTokensSeconds(self) -> int:
         jsonContents = self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'refreshPubSubTokensSeconds', 120)
+
+        refreshPubSubTokensSeconds = utils.getIntFromDict(jsonContents, 'refreshPubSubTokensSeconds', 120)
+        if refreshPubSubTokensSeconds < 30:
+            raise ValueError(f'\"refreshPubSubTokensSeconds\" value is too aggressive: {refreshPubSubTokensSeconds}')
+
+        return refreshPubSubTokensSeconds
 
     def getTriviaGamePoints(self) -> int:
         jsonContents = self.__readJson()
