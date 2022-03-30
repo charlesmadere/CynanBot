@@ -162,11 +162,7 @@ class PubSubUtils():
             return
 
         self.__isManagingPubSub = True
-
-        pubSubUsersWithTopics = await self.__getSubscribeReadyPubSubEntries()
-        if utils.hasItems(pubSubUsersWithTopics):
-            self.__timber.log('PubSubUtils', f'Refreshing PubSub tokens for {len(pubSubUsersWithTopics)} user(s)...')
-
+        await self.__updatePubSubSubscriptions()
         await self.__sleepThenRefreshPubSub()
         self.__isManagingPubSub = False
 
@@ -185,6 +181,7 @@ class PubSubUtils():
 
         self.__isManagingPubSub = True
         await self.__updatePubSubSubscriptions()
+        await self.__sleepThenRefreshPubSub()
         self.__isManagingPubSub = False
 
     async def __updatePubSubSubscriptions(self):
