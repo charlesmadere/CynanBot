@@ -161,6 +161,8 @@ class PubSubUtils():
             self.__timber.log('PubSubUtils', f'Unable to refresh because PubSubUtils is current working')
             return
 
+        self.__timber.log('PubSubUtils', 'Refreshing...')
+
         self.__isManagingPubSub = True
         await self.__updatePubSubSubscriptions()
         await self.__sleepThenRefreshPubSub()
