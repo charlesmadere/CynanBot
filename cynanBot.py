@@ -1,11 +1,11 @@
 import asyncio
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from twitchio import Channel, Message
 from twitchio.ext import commands, pubsub
 from twitchio.ext.commands import Bot, Context
 from twitchio.ext.commands.errors import CommandNotFound
-from twitchio.ext.pubsub import PubSubChannelPointsMessage, PubSubPool
+from twitchio.ext.pubsub import PubSubChannelPointsMessage
 from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
@@ -57,6 +57,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnShinyRedemption, PotdPointRedemption,
                               StubPointRedemption, TriviaGameRedemption)
 from triviaUtils import TriviaUtils
+from twitch.pubSubUtils import PubSubUtils
 from users.user import User
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
@@ -66,32 +67,32 @@ class CynanBot(Bot):
 
     def __init__(
         self,
-        analogueStoreRepository: AnalogueStoreRepository,
+        analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
-        chatBandManager: ChatBandManager,
-        cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper,
-        funtoonRepository: FuntoonRepository,
+        chatBandManager: Optional[ChatBandManager],
+        cutenessRepository: Optional[CutenessRepository],
+        doubleCutenessHelper: Optional[DoubleCutenessHelper],
+        funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
-        jishoHelper: JishoHelper,
+        jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
-        locationsRepository: LocationsRepository,
+        locationsRepository: Optional[LocationsRepository],
         nonceRepository: NonceRepository,
-        pokepediaRepository: PokepediaRepository,
-        starWarsQuotesRepository: StarWarsQuotesRepository,
-        tamaleGuyRepository: TamaleGuyRepository,
+        pokepediaRepository: Optional[PokepediaRepository],
+        starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
+        tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
-        translationHelper: TranslationHelper,
-        triviaGameRepository: TriviaGameRepository,
-        triviaRepository: TriviaRepository,
-        triviaScoreRepository: TriviaScoreRepository,
-        triviaUtils: TriviaUtils,
+        translationHelper: Optional[TranslationHelper],
+        triviaGameRepository: Optional[TriviaGameRepository],
+        triviaRepository: Optional[TriviaRepository],
+        triviaScoreRepository: Optional[TriviaScoreRepository],
+        triviaUtils: Optional[TriviaUtils],
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        weatherRepository: WeatherRepository,
-        websocketConnectionServer: WebsocketConnectionServer,
-        wordOfTheDayRepository: WordOfTheDayRepository
+        weatherRepository: Optional[WeatherRepository],
+        websocketConnectionServer: Optional[WebsocketConnectionServer],
+        wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
             token = authRepository.requireTwitchIrcAuthToken(),
@@ -279,7 +280,15 @@ class CynanBot(Bot):
         ## Initialization of PubSub objects ##
         ######################################
 
-        self.__pubSub = PubSubPool(self)
+        self.__pubSubUtils: PubSubUtils = PubSubUtils(
+            authRepository = authRepository,
+            client = self,
+            generalSettingsRepository = generalSettingsRepository,
+            timber = timber,
+            twitchTokensRepository = twitchTokensRepository,
+            userIdsRepository = userIdsRepository,
+            usersRepository = usersRepository
+        )
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
@@ -508,137 +517,13 @@ class CynanBot(Bot):
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__startWebsocketConnectionServer()
-
-        if self.__isManagingPubSubConnections:
-            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
-            return
-
-        self.__isManagingPubSubConnections = True
-        await self.__subscribeToPubSubTopics()
-        self.__isManagingPubSubConnections = False
-
-        await self.__waitThenRefreshPubSubTokens()
-
-    async def __getPubSubTopics(
-        self,
-        validateAndRefresh: bool,
-        twitchHandles: List[str] = None
-    ) -> List[Topic]:
-        if not utils.isValidBool(validateAndRefresh):
-            raise ValueError(f'validateAndRefresh argument is malformed: \"{validateAndRefresh}\"')
-
-        users: List[User] = None
-        if twitchHandles is None:
-            # if twitchHandles is None, then we must do a full validate and refresh of every user
-            users = self.__usersRepository.getUsers()
-        elif len(twitchHandles) == 0:
-            # if twitchHandles is empty, then there is no need to do a validate or fresh of anyone
-            return
-        else:
-            # if twitchHandles has entries, then we will be validating and refreshing those users
-            users = list()
-            for twitchHandle in twitchHandles:
-                users.append(self.__usersRepository.getUser(twitchHandle))
-
-        usersAndTwitchTokens: Dict[User, str] = dict()
-        pubSubTopics: List[Topic] = list()
-
-        for user in users:
-            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-
-            if utils.isValidStr(twitchAccessToken):
-                usersAndTwitchTokens[user] = twitchAccessToken
-
-        if not utils.hasItems(usersAndTwitchTokens):
-            return pubSubTopics
-
-        usersToRemove: List[User] = list()
-
-        if validateAndRefresh:
-            for user in usersAndTwitchTokens:
-                try:
-                    self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                        twitchClientId = self.__authRepository.requireTwitchClientId(),
-                        twitchClientSecret = self.__authRepository.requireTwitchClientSecret(),
-                        twitchHandle = user.getHandle()
-                    )
-
-                    usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
-                except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchRefreshTokenMissingException) as e:
-                    # if we run into this error, that most likely means that this user changed
-                    # their password
-                    usersToRemove.append(user)
-                    self.__timber.log('CynanBot', f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
-
-        if utils.hasItems(usersToRemove):
-            for user in usersToRemove:
-                del usersAndTwitchTokens[user]
-
-        for user in usersAndTwitchTokens:
-            twitchAccessToken = usersAndTwitchTokens[user]
-
-            userId = self.__userIdsRepository.fetchUserIdAsInt(
-                userName = user.getHandle(),
-                twitchAccessToken = twitchAccessToken,
-                twitchClientId = self.__authRepository.requireTwitchClientId()
-            )
-
-            pubSubTopics.append(pubsub.channel_points(twitchAccessToken)[userId])
-
-        return pubSubTopics
-
-    async def __refreshPubSubTokens(self):
-        self.__timber.log('CynanBot', 'Refreshing PubSub tokens...')
-
-        if self.__isManagingPubSubConnections:
-            self.__timber.log('CynanBot', 'Already managing PubSub connections, won\'t continue...')
-            return
-
-        self.__isManagingPubSubConnections = True
-        await self.__unsubscribeFromPubSubTopics()
-        await self.__subscribeToPubSubTopics()
-        self.__isManagingPubSubConnections = False
-
-        await self.__waitThenRefreshPubSubTokens()
+        await self.__pubSubUtils.startPubSub()
 
     async def __startWebsocketConnectionServer(self):
         if self.__websocketConnectionServer is None:
             self.__timber.log('CynanBot', f'Will not start websocketConnectionServer, as the instance is `None`')
         else:
             self.__websocketConnectionServer.start(self.loop)
-
-    async def __subscribeToPubSubTopics(self):
-        twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
-
-        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = True, twitchHandles = twitchHandles)
-        if not utils.hasItems(pubSubTopics):
-            self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to subscribe to')
-            return
-
-        self.__timber.log('CynanBot', f'Subscribing to {len(pubSubTopics)} PubSub topic(s)...')
-        await self.__pubSub.subscribe_topics(pubSubTopics)
-        self.__timber.log('CynanBot', f'Finished subscribing to {len(pubSubTopics)} PubSub topic(s)')
-
-    async def __unsubscribeFromPubSubTopics(self):
-        twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
-
-        pubSubTopics = await self.__getPubSubTopics(validateAndRefresh = False, twitchHandles = twitchHandles)
-        if not utils.hasItems(pubSubTopics):
-            self.__timber.log('CynanBot', f'There aren\'t any PubSub topics to unsubscribe from')
-            return
-
-        self.__timber.log('CynanBot', f'Unsubscribing from {len(pubSubTopics)} PubSub topic(s)...')
-        await self.__pubSub.unsubscribe_topics(pubSubTopics)
-        self.__timber.log('CynanBot', f'Finished unsubscribing from {len(pubSubTopics)} PubSub topic(s)')
-
-    async def __waitThenRefreshPubSubTokens(self):
-        refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
-
-        if refreshPubSubTokensSeconds < 30:
-            raise ValueError(f'refreshPubSubTokensSeconds argument is too aggressive: {refreshPubSubTokensSeconds}')
-
-        await asyncio.sleep(refreshPubSubTokensSeconds)
-        await self.__refreshPubSubTokens()
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
