@@ -156,16 +156,6 @@ class PubSubUtils():
 
         return pubSubEntries
 
-    async def __refreshPubSub(self):
-        self.__timber.log('PubSubUtils', 'Refreshing...')
-        await self.__updatePubSubSubscriptions()
-        await self.__sleepThenRefreshPubSub()
-
-    async def __sleepThenRefreshPubSub(self):
-        refreshPubSubTokensSeconds = self.__generalSettingsRepository.getRefreshPubSubTokensSeconds()
-        await asyncio.sleep(refreshPubSubTokensSeconds)
-        await self.__refreshPubSub()
-
     async def startPubSub(self):
         if self.__isStarted:
             self.__timber.log('PubSubUtils', 'Not starting PubSub as it has already been started')
@@ -173,8 +163,11 @@ class PubSubUtils():
 
         self.__isStarted = True
         self.__timber.log('PubSubUtils', 'Starting PubSub...')
-        await self.__updatePubSubSubscriptions()
-        await self.__sleepThenRefreshPubSub()
+
+        while True:
+            await self.__updatePubSubSubscriptions()
+            asyncio.sleep(self.__generalSettingsRepository.getRefreshPubSubTokensSeconds())
+            self.__timber.log('PubSubUtils', 'Refreshing...')
 
     async def __updatePubSubSubscriptions(self):
         if self.__isManagingPubSub:
