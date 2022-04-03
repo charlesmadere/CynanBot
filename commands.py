@@ -1325,10 +1325,10 @@ class WeatherCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
-        location = self.__locationsRepository.getLocation(user.getLocationId())
+        location = await self.__locationsRepository.getLocation(user.getLocationId())
 
         try:
-            weatherReport = self.__weatherRepository.fetchWeather(location)
+            weatherReport = await self.__weatherRepository.fetchWeather(location)
             await twitchUtils.safeSend(ctx, weatherReport.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
