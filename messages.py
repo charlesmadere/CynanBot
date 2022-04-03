@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from twitchio import Message
 
 import CynanBotCommon.utils as utils
-import twitchUtils
+import twitch.twitchUtils as twitchUtils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict

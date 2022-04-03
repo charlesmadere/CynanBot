@@ -1,12 +1,10 @@
-import asyncio
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from twitchio import Channel, Message
-from twitchio.ext import commands, pubsub
+from twitchio.ext import commands
 from twitchio.ext.commands import Bot, Context
 from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
-from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
@@ -40,9 +38,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBotCommon.twitchTokensRepository import (
-    TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
-    TwitchRefreshTokenMissingException, TwitchTokensRepository)
+from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
@@ -122,12 +118,10 @@ class CynanBot(Bot):
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
-        self.__isManagingPubSubConnections: bool = False
         self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################

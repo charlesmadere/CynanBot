@@ -1,9 +1,8 @@
 import asyncio
 from typing import List
 
-from twitchio.abcs import Messageable
-
 import CynanBotCommon.utils as utils
+from twitchio.abcs import Messageable
 
 
 def getMaxMessageSize() -> int:

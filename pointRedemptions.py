@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
-import twitchUtils
+import twitch.twitchUtils as twitchUtils
 from cuteness.cutenessBoosterPack import CutenessBoosterPack
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
@@ -89,8 +89,7 @@ class CutenessRedemption(AbsPointRedemption):
         if cutenessBoosterPack is None:
             return False
 
-        incrementAmount: int = cutenessBoosterPack.getAmount()
-
+        incrementAmount = cutenessBoosterPack.getAmount()
         if self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
             incrementAmount = cutenessBoosterPack.getAmount() * 2
 

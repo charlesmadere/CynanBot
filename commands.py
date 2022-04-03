@@ -6,7 +6,7 @@ from typing import List
 from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
-import twitchUtils
+import twitch.twitchUtils as twitchUtils
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \

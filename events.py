@@ -6,7 +6,7 @@ from typing import Dict
 from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
-import twitchUtils
+import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from generalSettingsRepository import GeneralSettingsRepository
