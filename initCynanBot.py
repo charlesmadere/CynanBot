@@ -113,6 +113,7 @@ triviaSettingsRepository = TriviaSettingsRepository()
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
 if authRepository.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
+        clientSession = clientSession,
         quizApiKey = authRepository.requireQuizApiKey(),
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
