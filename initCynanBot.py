@@ -97,6 +97,7 @@ if authRepository.hasDeepLAuthKey():
 weatherRepository: WeatherRepository = None
 if authRepository.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
+        clientSession = clientSession,
         oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
         timber = timber
     )
