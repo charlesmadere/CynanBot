@@ -89,7 +89,7 @@ class PubSubUtils():
         self.__pubSubPool: PubSubPool = PubSubPool(client)
 
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
-        twitchHandles = self.__twitchTokensRepository.getExpiringTwitchHandles()
+        twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
         users: List[User] = None
 
         if twitchHandles is None:
@@ -108,7 +108,7 @@ class PubSubUtils():
         usersAndTwitchTokens: Dict[User, str] = dict()
 
         for user in users:
-            twitchAccessToken = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
 
             if utils.isValidStr(twitchAccessToken):
                 usersAndTwitchTokens[user] = twitchAccessToken
@@ -126,7 +126,7 @@ class PubSubUtils():
                     twitchHandle = user.getHandle()
                 )
 
-                usersAndTwitchTokens[user] = self.__twitchTokensRepository.getAccessToken(user.getHandle())
+                usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
             except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchRefreshTokenMissingException) as e:
                 # if we run into this error, that most likely means that this user changed
                 # their password

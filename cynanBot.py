@@ -274,7 +274,7 @@ class CynanBot(Bot):
         ## Initialization of PubSub objects ##
         ######################################
 
-        self.__pubSubUtils: PubSubUtils = PubSubUtils(
+        self.__pubSubUtils = PubSubUtils(
             authRepository = authRepository,
             client = self,
             generalSettingsRepository = generalSettingsRepository,
