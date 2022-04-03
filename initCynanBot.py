@@ -212,6 +212,7 @@ cynanBot = CynanBot(
     ),
     triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
+        clientSession = clientSession,
         timber = timber
     ),
     userIdsRepository = userIdsRepository,
