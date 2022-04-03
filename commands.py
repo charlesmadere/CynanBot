@@ -1400,7 +1400,7 @@ class WordCommand(AbsCommand):
             return
 
         try:
-            wotd = self.__wordOfTheDayRepository.fetchWotd(languageEntry)
+            wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
             await twitchUtils.safeSend(ctx, wotd.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
