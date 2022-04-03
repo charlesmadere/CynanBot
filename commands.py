@@ -82,7 +82,7 @@ class AnalogueCommand(AbsCommand):
         includePrices = 'includePrices' in splits
 
         try:
-            result = self.__analogueStoreRepository.fetchStoreStock()
+            result = await self.__analogueStoreRepository.fetchStoreStock()
             await twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
         except (RuntimeError, ValueError) as e:
             self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}')
@@ -155,7 +155,7 @@ class AnswerCommand(AbsCommand):
         answer = ' '.join(splits[1:])
         userId = str(ctx.author.id)
 
-        checkResult = self.__triviaGameRepository.checkAnswer(
+        checkResult = await self.__triviaGameRepository.checkAnswer(
             answer = answer,
             twitchChannel = user.getHandle(),
             userId = userId
@@ -1155,7 +1155,7 @@ class TriviaCommand(AbsCommand):
             return
 
         try:
-            triviaQuestion = self.__triviaRepository.fetchTrivia(user.getHandle())
+            triviaQuestion = await self.__triviaRepository.fetchTrivia(user.getHandle())
             await twitchUtils.safeSend(ctx, triviaQuestion.getPrompt())
 
             asyncio.create_task(twitchUtils.waitThenSend(
