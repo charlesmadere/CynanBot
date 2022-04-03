@@ -235,7 +235,7 @@ class PkmnBattleRedemption(AbsPointRedemption):
         actionCompleted = False
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnBattle(
+            if await self.__funtoonRepository.pkmnBattle(
                 userThatRedeemed = userNameThatRedeemed,
                 userToBattle = opponentUserName,
                 twitchChannel = twitchUser.getHandle()
@@ -309,7 +309,7 @@ class PkmnCatchRedemption(AbsPointRedemption):
         self.__timber.log('PkmnCatchRedemption', f'Redeemed Pokemon Catch for {userNameThatRedeemed}:{userIdThatRedeemed} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnCatch(
+            if await self.__funtoonRepository.pkmnCatch(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle(),
                 funtoonPkmnCatchType = funtoonPkmnCatchType
@@ -384,7 +384,7 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         self.__timber.log('PkmnEvolveRedemption', f'Redeemed Pokemon Evolve for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnGiveEvolve(
+            if await self.__funtoonRepository.pkmnGiveEvolve(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle()
             ):
@@ -442,7 +442,7 @@ class PkmnShinyRedemption(AbsPointRedemption):
         self.__timber.log('PkmnShinyRedemption', f'Redeemed Pokemon Shiny for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
 
         if self.__generalSettingsRepository.isFuntoonApiEnabled():
-            if self.__funtoonRepository.pkmnGiveShiny(
+            if await self.__funtoonRepository.pkmnGiveShiny(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle()
             ):

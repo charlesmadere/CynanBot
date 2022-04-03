@@ -180,6 +180,7 @@ cynanBot = CynanBot(
     cutenessRepository = cutenessRepository,
     doubleCutenessHelper = DoubleCutenessHelper(),
     funtoonRepository = FuntoonRepository(
+        clientSession = clientSession,
         timber = timber
     ),
     generalSettingsRepository = GeneralSettingsRepository(),
