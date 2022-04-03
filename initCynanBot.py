@@ -1,5 +1,7 @@
 import locale
 
+import aiohttp
+
 from authRepository import AuthRepository
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
@@ -60,9 +62,14 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Misc initialization section ##
 #################################
 
-timber = Timber()
 authRepository = AuthRepository()
 backingDatabase = BackingDatabase()
+clientSession = aiohttp.ClientSession(
+    cookie_jar = aiohttp.DummyCookieJar(),
+    timeout = aiohttp.ClientTimeout(8)
+)
+timber = Timber()
+
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber
@@ -113,6 +120,7 @@ if authRepository.hasQuizApiKey():
 
 triviaRepository = TriviaRepository(
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
+        clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
@@ -123,11 +131,13 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
+        clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
+        clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
@@ -143,11 +153,11 @@ triviaRepository = TriviaRepository(
         )
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
+        clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
-    ),
-    cacheTimeDelta = None
+    )
 )
 
 
@@ -157,6 +167,7 @@ triviaRepository = TriviaRepository(
 
 cynanBot = CynanBot(
     analogueStoreRepository = AnalogueStoreRepository(
+        clientSession = clientSession,
         timber = timber
     ),
     authRepository = authRepository,

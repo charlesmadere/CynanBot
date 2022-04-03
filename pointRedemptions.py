@@ -574,7 +574,7 @@ class TriviaGameRedemption(AbsPointRedemption):
 
         triviaQuestion: AbsTriviaQuestion = None
         try:
-            triviaQuestion = self.__triviaGameRepository.fetchTrivia(
+            triviaQuestion = await self.__triviaGameRepository.fetchTrivia(
                 twitchChannel = twitchUser.getHandle(),
                 isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled()
             )

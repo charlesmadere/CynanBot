@@ -120,7 +120,7 @@ class PubSubUtils():
 
         for user in usersAndTwitchTokens:
             try:
-                self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                await self.__twitchTokensRepository.validateAndRefreshAccessToken(
                     twitchClientId = self.__authRepository.requireTwitchClientId(),
                     twitchClientSecret = self.__authRepository.requireTwitchClientSecret(),
                     twitchHandle = user.getHandle()
