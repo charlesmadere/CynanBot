@@ -71,6 +71,7 @@ clientSession = aiohttp.ClientSession(
 timber = Timber()
 
 userIdsRepository = UserIdsRepository(
+    clientSession = clientSession,
     backingDatabase = backingDatabase,
     timber = timber
 )

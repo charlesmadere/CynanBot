@@ -142,7 +142,7 @@ class PubSubUtils():
         for user in usersAndTwitchTokens:
             twitchAccessToken = usersAndTwitchTokens[user]
 
-            userId = self.__userIdsRepository.fetchUserIdAsInt(
+            userId = await self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken,
                 twitchClientId = self.__authRepository.requireTwitchClientId()

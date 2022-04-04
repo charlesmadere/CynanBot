@@ -57,7 +57,7 @@ class CutenessRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__userIdsRepository.setUser(userId = userId, userName = userName)
+        await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
@@ -91,7 +91,7 @@ class CutenessRepository():
                 userName = userName
             )
 
-        twitchChannelUserId = self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+        twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
         cursor.execute(
             '''
@@ -158,7 +158,7 @@ class CutenessRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__userIdsRepository.setUser(userId = userId, userName = userName)
+        await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
@@ -211,7 +211,7 @@ class CutenessRepository():
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        twitchChannelUserId = self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+        twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
@@ -262,13 +262,13 @@ class CutenessRepository():
         if not specificLookupAlreadyInResults and (utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName)):
             if not utils.isValidStr(specificLookupUserId):
                 try:
-                    specificLookupUserId = self.__userIdsRepository.fetchUserId(userName = specificLookupUserName)
+                    specificLookupUserId = await self.__userIdsRepository.fetchUserId(userName = specificLookupUserName)
                 except ValueError:
                     # this exception can be safely ignored
                     pass
             else:
                 try:
-                    specificLookupUserName = self.__userIdsRepository.fetchUserName(specificLookupUserId)
+                    specificLookupUserName = await self.__userIdsRepository.fetchUserName(specificLookupUserId)
                 except (RuntimeError, ValueError):
                     # this exception can be safely ignored
                     pass

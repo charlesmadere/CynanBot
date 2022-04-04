@@ -293,7 +293,7 @@ class CynanBot(Bot):
 
         if utils.isValidStr(message.content):
             if self.__generalSettingsRepository.isPersistAllUsersEnabled():
-                self.__userIdsRepository.setUser(
+                await self.__userIdsRepository.setUser(
                     userId = str(message.author.id),
                     userName = message.author.name
                 )
@@ -352,7 +352,7 @@ class CynanBot(Bot):
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
         twitchUserIdStr = str(event.channel_id)
-        twitchUserNameStr = self.__userIdsRepository.fetchUserName(twitchUserIdStr)
+        twitchUserNameStr = await self.__userIdsRepository.fetchUserName(twitchUserIdStr)
         twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
         rewardId = str(event.reward.id)
         userIdThatRedeemed = str(event.user.id)
@@ -371,7 +371,7 @@ class CynanBot(Bot):
             self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__generalSettingsRepository.isPersistAllUsersEnabled():
-            self.__userIdsRepository.setUser(
+            await self.__userIdsRepository.setUser(
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
             )

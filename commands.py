@@ -389,7 +389,7 @@ class CutenessCommand(AbsCommand):
         # this means that a user is querying for another user's cuteness
         if userName.lower() != ctx.author.name.lower():
             try:
-                userId = self.__userIdsRepository.fetchUserId(userName = userName)
+                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError):
                 # this exception can be safely ignored
                 pass
@@ -544,7 +544,7 @@ class GiveCutenessCommand(AbsCommand):
         userName = utils.removePreceedingAt(userName)
 
         try:
-            userId = self.__userIdsRepository.fetchUserId(userName = userName)
+            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
             self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
@@ -1228,7 +1228,7 @@ class TriviaScoreCommand(AbsCommand):
         # this means that a user is querying for another user's trivia score
         if userName.lower() != ctx.author.name.lower():
             try:
-                userId = self.__userIdsRepository.fetchUserId(userName = userName)
+                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError):
                 # this exception can be safely ignored
                 pass

@@ -1,32 +1,31 @@
-from typing import Dict
-
+import aiohttp
 import CynanBotCommon.utils as utils
-import requests
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.timber.timber import Timber
-from requests import ConnectionError, HTTPError, Timeout
-from requests.exceptions import ReadTimeout, TooManyRedirects
-from urllib3.exceptions import MaxRetryError, NewConnectionError
 
 
 class UserIdsRepository():
 
     def __init__(
         self,
+        clientSession: aiohttp.ClientSession,
         backingDatabase: BackingDatabase,
         timber: Timber
     ):
-        if backingDatabase is None:
+        if clientSession is None:
+            raise ValueError(f'clientSession argument is malformed: \"{clientSession}\"')
+        elif backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__clientSession: aiohttp.ClientSession = clientSession
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: Timber = timber
 
         self.__initDatabaseTable()
 
-    def fetchUserId(
+    async def fetchUserId(
         self,
         userName: str,
         twitchAccessToken: str = None,
@@ -56,21 +55,16 @@ class UserIdsRepository():
 
         self.__timber.log('UserIdsRepository', f'Performing network call to fetch Twitch user ID for \"{userName}\"...')
 
-        rawResponse = None
-        try:
-            rawResponse = requests.get(
-                url = f'https://api.twitch.tv/helix/users?login={userName}',
-                headers = {
-                    'Authorization': f'Bearer {twitchAccessToken}',
-                    'Client-Id': twitchClientId
-                },
-                timeout = utils.getDefaultTimeout()
-            )
-        except (ConnectionError, HTTPError, MaxRetryError, NewConnectionError, ReadTimeout, Timeout, TooManyRedirects) as e:
-            self.__timber.log('UserIdsRepository', f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
-            raise RuntimeError(f'Exception occurred when attempting to fetch user ID for \"{userName}\": {e}')
+        response = await self.__clientSession.get(
+            url = f'https://api.twitch.tv/helix/users?login={userName}',
+            headers = {
+                'Authorization': f'Bearer {twitchAccessToken}',
+                'Client-Id': twitchClientId
+            }
+        )
 
-        jsonResponse: Dict[str, object] = rawResponse.json()
+        jsonResponse = await response.json()
+        response.close()
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             raise RuntimeError(f'Received an error when fetching user ID for {userName}: {jsonResponse}')
@@ -80,16 +74,16 @@ class UserIdsRepository():
         if not utils.isValidStr(userId):
             raise ValueError(f'Unable to fetch user ID for \"{userName}\": {jsonResponse}')
 
-        self.setUser(userId = userId, userName = userName)
+        await self.setUser(userId = userId, userName = userName)
         return userId
 
-    def fetchUserIdAsInt(
+    async def fetchUserIdAsInt(
         self,
         userName: str,
         twitchAccessToken: str = None,
         twitchClientId: str = None
     ) -> int:
-        userId = self.fetchUserId(
+        userId = await self.fetchUserId(
             userName = userName,
             twitchAccessToken = twitchAccessToken,
             twitchClientId = twitchClientId
@@ -97,7 +91,7 @@ class UserIdsRepository():
 
         return int(userId)
 
-    def fetchUserName(self, userId: str) -> str:
+    async def fetchUserName(self, userId: str) -> str:
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userId == '0':
@@ -130,7 +124,7 @@ class UserIdsRepository():
 
         connection.commit()
 
-    def setUser(self, userId: str, userName: str):
+    async def setUser(self, userId: str, userName: str):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userId == '0':
