@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backingDatabase import BackingDatabase
@@ -205,8 +205,8 @@ class CutenessRepository():
     async def fetchCutenessLeaderboard(
         self,
         twitchChannel: str,
-        specificLookupUserId: str = None,
-        specificLookupUserName: str = None
+        specificLookupUserId: Optional[str] = None,
+        specificLookupUserName: Optional[str] = None
     ) -> CutenessLeaderboardResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
