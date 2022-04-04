@@ -1158,11 +1158,11 @@ class TriviaCommand(AbsCommand):
             triviaQuestion = await self.__triviaRepository.fetchTrivia(user.getHandle())
             await twitchUtils.safeSend(ctx, triviaQuestion.getPrompt())
 
-            asyncio.create_task(twitchUtils.waitThenSend(
+            await twitchUtils.waitThenSend(
                 messageable = ctx,
                 delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
                 message = f'🥁 {self.__triviaUtils.getAnswerReveal(triviaQuestion)}'
-            ))
+            )
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TriviaCommand', f'Error fetching trivia: {e}')
             await twitchUtils.safeSend(ctx, '⚠ Error fetching trivia')
