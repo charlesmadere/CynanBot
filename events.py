@@ -78,11 +78,11 @@ class RaidEvent(AbsEvent):
         else:
             message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
-        await twitchUtils.waitThenSend(
+        asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
-        )
+        ))
 
         self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
         return True
