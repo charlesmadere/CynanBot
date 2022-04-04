@@ -167,14 +167,14 @@ class AnswerCommand(AbsCommand):
             self.__timber.log('AnswerCommand', f'{ctx.author.name}:{userId} in {user.getHandle()} answered incorrectly')
             answerStr = self.__triviaUtils.getAnswerReveal(self.__triviaGameRepository.getTrivia(user.getHandle()))
             await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. {answerStr}')
-            self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
+            await self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
             return
         elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
             self.__timber.log('AnswerCommand', f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
             return
 
-        self.__triviaScoreRepository.incrementTotalWins(user.getHandle(), userId)
+        await self.__triviaScoreRepository.incrementTotalWins(user.getHandle(), userId)
 
         cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
@@ -1240,7 +1240,7 @@ class TriviaScoreCommand(AbsCommand):
         else:
             userId = str(ctx.author.id)
 
-        triviaResult = self.__triviaScoreRepository.fetchTriviaScore(
+        triviaResult = await self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.getHandle(),
             userId = userId
         )
