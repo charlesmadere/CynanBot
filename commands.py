@@ -184,7 +184,7 @@ class AnswerCommand(AbsCommand):
             cutenessPoints = 2 * cutenessPoints
 
         try:
-            cutenessResult = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = cutenessPoints,
                 twitchChannel = user.getHandle(),
                 userId = userId,
@@ -399,7 +399,7 @@ class CutenessCommand(AbsCommand):
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
-            result = self.__cutenessRepository.fetchCuteness(
+            result = await self.__cutenessRepository.fetchCuteness(
                 fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
@@ -410,7 +410,7 @@ class CutenessCommand(AbsCommand):
         else:
             userId = str(ctx.author.id)
 
-            result = self.__cutenessRepository.fetchCutenessLeaderboard(
+            result = await self.__cutenessRepository.fetchCutenessLeaderboard(
                 twitchChannel = user.getHandle(),
                 specificLookupUserId = userId,
                 specificLookupUserName = userName
@@ -551,7 +551,7 @@ class GiveCutenessCommand(AbsCommand):
             return
 
         try:
-            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
+            result = await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = user.getHandle(),
                 userId = userId,
@@ -690,7 +690,7 @@ class MyCutenessCommand(AbsCommand):
         userId = str(ctx.author.id)
 
         try:
-            result = self.__cutenessRepository.fetchCuteness(
+            result = await self.__cutenessRepository.fetchCuteness(
                 fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,

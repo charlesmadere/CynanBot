@@ -48,13 +48,12 @@ from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
                       DeerForceMessage, EyesMessage, ImytSlurpMessage,
                       JamCatMessage, RatJamMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
-                              DoubleCutenessRedemption, PkmnBattleRedemption,
-                              PkmnCatchRedemption, PkmnEvolveRedemption,
-                              PkmnShinyRedemption, PotdPointRedemption,
-                              StubPointRedemption, TriviaGameRedemption)
+                              PkmnBattleRedemption, PkmnCatchRedemption,
+                              PkmnEvolveRedemption, PkmnShinyRedemption,
+                              PotdPointRedemption, StubPointRedemption,
+                              TriviaGameRedemption)
 from triviaUtils import TriviaUtils
 from twitch.pubSubUtils import PubSubUtils
-from users.user import User
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
@@ -240,10 +239,8 @@ class CynanBot(Bot):
 
         if cutenessRepository is None or doubleCutenessHelper is None:
             self.__cutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
-            self.__doubleCutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
             self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, doubleCutenessHelper, timber)
-            self.__doubleCutenessPointRedemption: AbsPointRedemption = DoubleCutenessRedemption(cutenessRepository, doubleCutenessHelper, timber)
 
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
@@ -389,17 +386,6 @@ class CynanBot(Bot):
                 userNameThatRedeemed = userNameThatRedeemed
             ):
                 return
-
-            if rewardId == twitchUser.getIncreaseCutenessDoubleRewardId():
-                if await self.__doubleCutenessPointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchUser = twitchUser,
-                    redemptionMessage = redemptionMessage,
-                    rewardId = rewardId,
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed
-                ):
-                    return
 
         if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
             if await self.__potdPointRedemption.handlePointRedemption(

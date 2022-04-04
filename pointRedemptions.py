@@ -94,7 +94,7 @@ class CutenessRedemption(AbsPointRedemption):
             incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:
-            self.__cutenessRepository.fetchCutenessIncrementedBy(
+            await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
                 userId = userIdThatRedeemed,
@@ -107,81 +107,6 @@ class CutenessRedemption(AbsPointRedemption):
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
         return True
-
-
-class DoubleCutenessRedemption(AbsPointRedemption):
-
-    def __init__(
-        self,
-        cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper,
-        timber: Timber
-    ):
-        if cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif doubleCutenessHelper is None:
-            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
-        elif timber is None:
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
-        self.__timber: Timber = timber
-
-    async def handlePointRedemption(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
-    ) -> bool:
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-
-        if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
-            return False
-
-        self.__doubleCutenessHelper.beginDoubleCuteness(twitchUser.getHandle())
-        self.__timber.log('DoubleCutenessRedemption', f'Double cuteness in {twitchUser.getHandle()} has been enabled by {userNameThatRedeemed}:{userIdThatRedeemed}')
-        cutenessBoosterPacks = twitchUser.getCutenessBoosterPacks()
-
-        # It's sort of not obvious what's going on here, but so what I'm trying to do is not
-        # penalize the given user for redeeming double cuteness. Double cuteness should just cost
-        # the user the same number of channel points that the baseline cuteness redemption is, and
-        # so let's go ahead and multiply that by 2.
-        incrementAmount: int = cutenessBoosterPacks[0].getAmount() * 2
-
-        try:
-            result = self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = incrementAmount,
-                twitchChannel = twitchUser.getHandle(),
-                userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed
-            )
-
-            self.__timber.log('DoubleCutenessRedemption', f'Increased cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}')
-            await twitchUtils.safeSend(twitchChannel, f'Double cuteness enabled for the next {self.__cutenessRepository.getDoubleCutenessTimeSecondsStr()} seconds! Increase your cuteness now~ ✨ Also, {userNameThatRedeemed} has increased cuteness to {result.getCutenessStr()} ✨')
-
-            asyncio.create_task(twitchUtils.waitThenSend(
-                messageable = twitchChannel,
-                delaySeconds = self.__cutenessRepository.getDoubleCutenessTimeSeconds(),
-                message = 'Double cuteness has ended! 😿'
-            ))
-        except (OverflowError, ValueError) as e:
-            self.__timber.log('DoubleCutenessRedemption', f'Error increasing cuteness for {userNameThatRedeemed}:{userIdThatRedeemed} by {incrementAmount} in {twitchUser.getHandle()}: {e}')
-            await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
-
-        self.__timber.log('DoubleCutenessRedemption', f'Redeemed double cuteness redemption for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
 
 
 class PkmnBattleRedemption(AbsPointRedemption):

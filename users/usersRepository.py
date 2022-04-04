@@ -77,10 +77,8 @@ class UsersRepository():
             timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
-        increaseCutenessDoubleRewardId: str = None
         cutenessBoosterPacks: List[CutenessBoosterPack] = None
         if isCutenessEnabled:
-            increaseCutenessDoubleRewardId = userJson.get('increaseCutenessDoubleRewardId')
             cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
@@ -151,7 +149,6 @@ class UsersRepository():
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
             handle = handle,
-            increaseCutenessDoubleRewardId = increaseCutenessDoubleRewardId,
             instagram = instagram,
             locationId = locationId,
             picOfTheDayFile = picOfTheDayFile,

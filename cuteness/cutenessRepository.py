@@ -17,7 +17,6 @@ class CutenessRepository():
         self,
         backingDatabase: BackingDatabase,
         userIdsRepository: UserIdsRepository,
-        doubleCutenessTimeSeconds: int = 300,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5
     ):
@@ -25,10 +24,6 @@ class CutenessRepository():
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not utils.isValidNum(doubleCutenessTimeSeconds):
-            raise ValueError(f'doubleCutenessTimeSeconds argument is malformed: \"{doubleCutenessTimeSeconds}\"')
-        elif doubleCutenessTimeSeconds < 15 or doubleCutenessTimeSeconds > 300:
-            raise ValueError(f'doubleCutenessTimeSeconds argument is out of bounds \"{doubleCutenessTimeSeconds}\"')
         elif not utils.isValidNum(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 3 or leaderboardSize > 10:
@@ -40,13 +35,12 @@ class CutenessRepository():
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__doubleCutenessTimeSeconds: int = doubleCutenessTimeSeconds
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
 
         self.__initDatabaseTable()
 
-    def fetchCuteness(
+    async def fetchCuteness(
         self,
         fetchLocalLeaderboard: bool,
         twitchChannel: str,
@@ -143,7 +137,7 @@ class CutenessRepository():
             userName = userName
         )
 
-    def fetchCutenessIncrementedBy(
+    async def fetchCutenessIncrementedBy(
         self,
         incrementAmount: int,
         twitchChannel: str,
@@ -209,7 +203,7 @@ class CutenessRepository():
             userName = userName
         )
 
-    def fetchCutenessLeaderboard(
+    async def fetchCutenessLeaderboard(
         self,
         twitchChannel: str,
         specificLookupUserId: str = None,
@@ -281,7 +275,7 @@ class CutenessRepository():
                     pass
 
             if utils.isValidStr(specificLookupUserId) and utils.isValidStr(specificLookupUserName):
-                specificLookupCutenessResult = self.fetchCuteness(
+                specificLookupCutenessResult = await self.fetchCuteness(
                     fetchLocalLeaderboard = False,
                     twitchChannel = twitchChannel,
                     userId = specificLookupUserId,
@@ -292,12 +286,6 @@ class CutenessRepository():
             entries = entries,
             specificLookupCutenessResult = specificLookupCutenessResult
         )
-
-    def getDoubleCutenessTimeSeconds(self) -> int:
-        return self.__doubleCutenessTimeSeconds
-
-    def getDoubleCutenessTimeSecondsStr(self) -> str:
-        return locale.format_string("%d", self.__doubleCutenessTimeSeconds, grouping = True)
 
     def __initDatabaseTable(self):
         connection = self.__backingDatabase.getConnection()

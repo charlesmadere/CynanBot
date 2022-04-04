@@ -48,7 +48,6 @@ class User():
         waitForTriviaAnswerDelay: int,
         discord: str,
         handle: str,
-        increaseCutenessDoubleRewardId: str,
         instagram: str,
         locationId: str,
         picOfTheDayFile: str,
@@ -170,7 +169,6 @@ class User():
         self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
         self.__discord: str = discord
         self.__handle: str = handle
-        self.__increaseCutenessDoubleRewardId: str = increaseCutenessDoubleRewardId
         self.__instagram: str = instagram
         self.__locationId: str = locationId
         self.__picOfTheDayFile: str = picOfTheDayFile
@@ -208,9 +206,6 @@ class User():
 
     def getHandle(self) -> str:
         return self.__handle
-
-    def getIncreaseCutenessDoubleRewardId(self) -> str:
-        return self.__increaseCutenessDoubleRewardId
 
     def getInstagramUrl(self) -> str:
         return self.__instagram
