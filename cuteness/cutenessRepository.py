@@ -4,6 +4,7 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.backingDatabase import BackingDatabase
 from users.userIdsRepository import UserIdsRepository
 
+from cuteness.cutenessDate import CutenessDate
 from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
@@ -59,14 +60,15 @@ class CutenessRepository():
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
+        cutenessDate = CutenessDate()
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
-                WHERE cuteness.twitchChannel = ? AND cuteness.userId = ?
+                WHERE cuteness.twitchChannel = ? AND cuteness.userId = ? AND cuteness.utcYearAndMonth = ?
             ''',
-            ( twitchChannel, userId )
+            ( twitchChannel, userId, cutenessDate.getStr() )
         )
 
         row = cursor.fetchone()
@@ -74,6 +76,7 @@ class CutenessRepository():
         if row is None:
             cursor.close()
             return CutenessResult(
+                cutenessDate = cutenessDate,
                 cuteness = 0,
                 localLeaderboard = None,
                 userId = userId,
@@ -85,6 +88,7 @@ class CutenessRepository():
         if not fetchLocalLeaderboard:
             cursor.close()
             return CutenessResult(
+                cutenessDate = cutenessDate,
                 cuteness = cuteness,
                 localLeaderboard = None,
                 userId = userId,
@@ -97,11 +101,11 @@ class CutenessRepository():
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
-                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ? AND cuteness.userId != ?
+                WHERE cuteness.twitchChannel = ? AND cuteness.utcYearAndMonth = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ? AND cuteness.userId != ?
                 ORDER BY ABS(? - ABS(cuteness.cuteness)) ASC
                 LIMIT ?
             ''',
-            ( twitchChannel, userId, twitchChannelUserId, cuteness, self.__localLeaderboardSize )
+            ( twitchChannel, cutenessDate.getStr(), userId, twitchChannelUserId, cuteness, self.__localLeaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__localLeaderboardSize)
@@ -109,6 +113,7 @@ class CutenessRepository():
         if len(rows) == 0:
             cursor.close()
             return CutenessResult(
+                cutenessDate = cutenessDate,
                 cuteness = cuteness,
                 localLeaderboard = None,
                 userId = userId,
@@ -130,6 +135,7 @@ class CutenessRepository():
         localLeaderboard.sort(key = lambda entry: entry.getCuteness(), reverse = True)
 
         return CutenessResult(
+            cutenessDate = cutenessDate,
             cuteness = cuteness,
             localLeaderboard = localLeaderboard,
             userId = userId,
@@ -160,14 +166,15 @@ class CutenessRepository():
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
+        cutenessDate = CutenessDate()
         connection = self.__backingDatabase.getConnection()
         cursor = connection.cursor()
         cursor.execute(
             '''
                 SELECT cuteness FROM cuteness
-                WHERE twitchChannel = ? AND userId = ?
+                WHERE twitchChannel = ? AND userId = ? AND utcYearAndMonth = ?
             ''',
-            ( twitchChannel, userId )
+            ( twitchChannel, userId, cutenessDate.getStr() )
         )
 
         row = cursor.fetchone()
@@ -185,17 +192,18 @@ class CutenessRepository():
 
         cursor.execute(
             '''
-                INSERT INTO cuteness (cuteness, twitchChannel, userId)
-                VALUES (?, ?, ?)
-                ON CONFLICT (twitchChannel, userId) DO UPDATE SET cuteness = excluded.cuteness
+                INSERT INTO cuteness (cuteness, twitchChannel, userId, utcYearAndMonth)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT (twitchChannel, userId, utcYearAndMonth) DO UPDATE SET cuteness = excluded.cuteness
             ''',
-            ( newCuteness, twitchChannel, userId )
+            ( newCuteness, twitchChannel, userId, cutenessDate.getStr() )
         )
 
         connection.commit()
         cursor.close()
 
         return CutenessResult(
+            cutenessDate = cutenessDate,
             cuteness = newCuteness,
             localLeaderboard = None,
             userId = userId,
@@ -213,23 +221,24 @@ class CutenessRepository():
 
         twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
+        cutenessDate = CutenessDate()
         cursor = self.__backingDatabase.getConnection().cursor()
         cursor.execute(
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
-                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ?
+                WHERE cuteness.twitchChannel = ? AND cuteness.utcYearAndMonth = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ?
                 ORDER BY cuteness.cuteness DESC
                 LIMIT ?
             ''',
-            ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
+            ( twitchChannel, cutenessDate.getStr(), twitchChannelUserId, self.__leaderboardSize )
         )
 
         rows = cursor.fetchmany(size = self.__leaderboardSize)
 
         if len(rows) == 0:
             cursor.close()
-            return CutenessLeaderboardResult()
+            return CutenessLeaderboardResult(cutenessDate = cutenessDate)
 
         entries: List[CutenessLeaderboardEntry] = list()
         rank: int = 1
@@ -282,6 +291,7 @@ class CutenessRepository():
                 )
 
         return CutenessLeaderboardResult(
+            cutenessDate = cutenessDate,
             entries = entries,
             specificLookupCutenessResult = specificLookupCutenessResult
         )
@@ -294,7 +304,8 @@ class CutenessRepository():
                     cuteness INTEGER NOT NULL DEFAULT 0,
                     twitchChannel TEXT NOT NULL COLLATE NOCASE,
                     userId TEXT NOT NULL COLLATE NOCASE,
-                    PRIMARY KEY (twitchChannel, userId)
+                    utcYearAndMonth TEXT NOT NULL COLLATE NOCASE,
+                    PRIMARY KEY (twitchChannel, userId, utcYearAndMonth)
                 )
             '''
         )

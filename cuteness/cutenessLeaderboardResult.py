@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Optional
 
 import CynanBotCommon.utils as utils
 
+from cuteness.cutenessDate import CutenessDate
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from cuteness.cutenessResult import CutenessResult
 
@@ -10,11 +11,19 @@ class CutenessLeaderboardResult():
 
     def __init__(
         self,
-        entries: List[CutenessLeaderboardEntry] = None,
-        specificLookupCutenessResult: CutenessResult = None
+        cutenessDate: CutenessDate,
+        specificLookupCutenessResult: Optional[CutenessResult] = None,
+        entries: Optional[List[CutenessLeaderboardEntry]] = None
     ):
-        self.__entries: List[CutenessLeaderboardEntry] = entries
+        if cutenessDate is None:
+            raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
+
+        self.__cutenessDate: CutenessDate = cutenessDate
         self.__specificLookupCutenessResult: CutenessResult = specificLookupCutenessResult
+        self.__entries: List[CutenessLeaderboardEntry] = entries
+
+    def getCutenessDate(self) -> CutenessDate:
+        return self.__cutenessDate
 
     def getEntries(self) -> List[CutenessLeaderboardEntry]:
         return self.__entries
@@ -30,7 +39,7 @@ class CutenessLeaderboardResult():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not self.hasEntries():
-            return 'Unfortunately the cuteness leaderboard is empty 😿'
+            return f'Unfortunately the {self.__cutenessDate.toStr()} cuteness leaderboard is empty 😿'
 
         specificLookupText = ''
         if self.hasSpecificLookupCutenessResult():
@@ -43,6 +52,6 @@ class CutenessLeaderboardResult():
             entryStrings.append(entry.toStr())
 
         if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the leaderboard is: {delimiter.join(entryStrings)} ✨'
+            return f'{specificLookupText}, and the {self.__cutenessDate.toStr()} leaderboard is: {delimiter.join(entryStrings)} ✨'
         else:
-            return f'✨ {delimiter.join(entryStrings)} ✨'
+            return f'The {self.__cutenessDate.toStr()} leaderboard is {delimiter.join(entryStrings)} ✨'
