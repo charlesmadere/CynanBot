@@ -1,4 +1,3 @@
-import locale
 from typing import List
 
 import CynanBotCommon.utils as utils
