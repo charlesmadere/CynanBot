@@ -535,7 +535,7 @@ class TriviaGameRedemption(AbsPointRedemption):
             delaySeconds = delaySeconds,
             message = f'😿 {userNameThatRedeemed}, you\'re out of time! {self.__triviaUtils.getAnswerReveal(triviaQuestion)}',
             heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle()),
-            beforeSend = lambda: await self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed)
+            beforeSend = lambda: (await self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed) for _ in '_').__anext__()
         ))
 
         self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
