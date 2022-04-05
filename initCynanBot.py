@@ -133,7 +133,6 @@ triviaRepository = TriviaRepository(
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
         timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
