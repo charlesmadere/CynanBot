@@ -86,7 +86,12 @@ class PubSubUtils():
         self.__isStarted: bool = False
         self.__pubSubEntries: defaultdict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
-        self.__pubSubPool: PubSubPool = PubSubPool(client)
+
+        self.__pubSubPool: PubSubPool = PubSubPool(
+            client = client,
+            max_pool_size = 32,
+            max_connection_topics = 128
+        )
 
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
         twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
