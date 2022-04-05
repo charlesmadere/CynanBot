@@ -203,10 +203,12 @@ cynanBot = CynanBot(
         timber = timber
     ),
     pokepediaRepository = PokepediaRepository(
+        clientSession = clientSession,
         timber = timber
     ),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(
+        clientSession = clientSession,
         timber = timber
     ),
     timber = timber,

@@ -677,6 +677,7 @@ class MyCutenessCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -722,6 +723,7 @@ class PbsCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -762,6 +764,7 @@ class PkMonCommand(AbsCommand):
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -782,7 +785,7 @@ class PkMonCommand(AbsCommand):
         name = splits[1]
 
         try:
-            mon = self.__pokepediaRepository.searchPokemon(name)
+            mon = await self.__pokepediaRepository.searchPokemon(name)
 
             for string in mon.toStrList():
                 await twitchUtils.safeSend(ctx, string)
@@ -818,6 +821,7 @@ class PkMoveCommand(AbsCommand):
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -838,7 +842,7 @@ class PkMoveCommand(AbsCommand):
         name = ' '.join(splits[1:])
 
         try:
-            move = self.__pokepediaRepository.searchMoves(name)
+            move = await self.__pokepediaRepository.searchMoves(name)
 
             for string in move.toStrList():
                 await twitchUtils.safeSend(ctx, string)
@@ -866,6 +870,7 @@ class RaceCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -963,11 +968,14 @@ class TamalesCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -981,7 +989,7 @@ class TamalesCommand(AbsCommand):
             return
 
         try:
-            storeStock = self.__tamaleGuyRepository.fetchStoreStock()
+            storeStock = await self.__tamaleGuyRepository.fetchStoreStock()
             await twitchUtils.safeSend(ctx, storeStock.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TamalesCommand', f'Error retrieving Tamale Guy store stock: {e}')
@@ -1007,6 +1015,7 @@ class TimeCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
