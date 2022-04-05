@@ -612,7 +612,7 @@ class JishoCommand(AbsCommand):
         self.__lastMessageTimes.update(user.getHandle())
 
         try:
-            result = self.__jishoHelper.search(query)
+            result = await self.__jishoHelper.search(query)
 
             for string in result.toStrList():
                 await twitchUtils.safeSend(ctx, string)
@@ -1104,7 +1104,7 @@ class TranslateCommand(AbsCommand):
         text = ' '.join(splits[startSplitIndex:])
 
         try:
-            response = self.__translationHelper.translate(text, targetLanguageEntry)
+            response = await self.__translationHelper.translate(text, targetLanguageEntry)
             await twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')

@@ -46,6 +46,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
+from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
+    WwtbamTriviaQuestionRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
@@ -90,6 +92,7 @@ websocketConnectionServer = WebsocketConnectionServer(
 translationHelper: TranslationHelper = None
 if authRepository.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
+        clientSession = clientSession,
         languagesRepository = languagesRepository,
         deepLAuthKey = authRepository.requireDeepLAuthKey(),
         timber = timber
@@ -160,6 +163,10 @@ triviaRepository = TriviaRepository(
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
+    ),
+    wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
+        timber = timber,
+        triviaSettingsRepository = triviaSettingsRepository
     )
 )
 
@@ -186,6 +193,7 @@ cynanBot = CynanBot(
     ),
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(
+        clientSession = clientSession,
         timber = timber
     ),
     languagesRepository = languagesRepository,
