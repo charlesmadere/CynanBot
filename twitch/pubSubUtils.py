@@ -54,7 +54,7 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        maxConnectionsPerTwitchChannel: int = 2
+        maxConnectionsPerTwitchChannel: int = 3
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
