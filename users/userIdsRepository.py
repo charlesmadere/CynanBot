@@ -1,5 +1,6 @@
 import aiohttp
 import CynanBotCommon.utils as utils
+from aiosqlite import Connection
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.timber.timber import Timber
 
@@ -23,7 +24,7 @@ class UserIdsRepository():
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: Timber = timber
 
-        self.__initDatabaseTable()
+        self.__isDatabaseReady: bool = False
 
     async def fetchUserId(
         self,
@@ -34,15 +35,23 @@ class UserIdsRepository():
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute('SELECT userId FROM userIds WHERE userName = ?', ( userName, ))
-        row = cursor.fetchone()
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
+            '''
+                SELECT userId FROM userIds
+                WHERE userName = ?
+            ''',
+            ( userName, )
+        )
+
+        row = await cursor.fetchone()
 
         userId: str = None
         if row is not None:
             userId = row[0]
 
-        cursor.close()
+        await cursor.close()
+        await connection.close()
 
         if userId is not None:
             if utils.isValidStr(userId):
@@ -97,9 +106,16 @@ class UserIdsRepository():
         elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute('SELECT userName FROM userIds WHERE userId = ?', ( userId, ))
-        row = cursor.fetchone()
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
+            '''
+                SELECT userName FROM userIds
+                WHERE userId = ?
+            ''',
+            ( userId, )
+        )
+
+        row = await cursor.fetchone()
 
         if row is None:
             raise RuntimeError(f'No userName for userId \"{userId}\" found')
@@ -108,12 +124,22 @@ class UserIdsRepository():
         if not utils.isValidStr(userName):
             raise RuntimeError(f'userName for userId \"{userId}\" is malformed: \"{userName}\"')
 
-        cursor.close()
+        await cursor.close()
+        await connection.close()
         return userName
 
-    def __initDatabaseTable(self):
-        connection = self.__backingDatabase.getConnection()
-        connection.execute(
+    async def __getDatabaseConnection(self) -> Connection:
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
+    async def __initDatabaseTable(self):
+        if self.__isDatabaseReady:
+            return
+
+        self.__isDatabaseReady = True
+
+        connection = await self.__backingDatabase.getConnection()
+        cursor = await connection.execute(
             '''
                 CREATE TABLE IF NOT EXISTS userIds (
                     userId TEXT NOT NULL PRIMARY KEY COLLATE NOCASE,
@@ -122,7 +148,9 @@ class UserIdsRepository():
             '''
         )
 
-        connection.commit()
+        await connection.commit()
+        await cursor.close()
+        await connection.close()
 
     async def setUser(self, userId: str, userName: str):
         if not utils.isValidStr(userId):
@@ -132,9 +160,8 @@ class UserIdsRepository():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        connection = self.__backingDatabase.getConnection()
-        cursor = connection.cursor()
-        cursor.execute(
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
             '''
                 INSERT INTO userIds (userId, userName)
                 VALUES (?, ?)
@@ -142,5 +169,7 @@ class UserIdsRepository():
             ''',
             ( userId, userName )
         )
-        connection.commit()
-        cursor.close()
+
+        await connection.commit()
+        await cursor.close()
+        await connection.close()
