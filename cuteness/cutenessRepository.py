@@ -76,6 +76,7 @@ class CutenessRepository():
 
         if row is None:
             await cursor.close()
+            await connection.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = 0,
@@ -88,6 +89,7 @@ class CutenessRepository():
 
         if not fetchLocalLeaderboard:
             await cursor.close()
+            await connection.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = cuteness,
@@ -113,6 +115,7 @@ class CutenessRepository():
 
         if len(rows) == 0:
             await cursor.close()
+            await connection.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = cuteness,
