@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import CynanBotCommon.utils as utils
+from aiosqlite import Connection
 from CynanBotCommon.backingDatabase import BackingDatabase
 from users.userIdsRepository import UserIdsRepository
 
@@ -38,7 +39,7 @@ class CutenessRepository():
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
 
-        self.__initDatabaseTable()
+        self.__isDatabaseReady: bool = False
 
     async def fetchCuteness(
         self,
@@ -61,8 +62,8 @@ class CutenessRepository():
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute(
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
@@ -71,10 +72,10 @@ class CutenessRepository():
             ( twitchChannel, userId, cutenessDate.getStr() )
         )
 
-        row = cursor.fetchone()
+        row = await cursor.fetchone()
 
         if row is None:
-            cursor.close()
+            await cursor.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = 0,
@@ -86,7 +87,7 @@ class CutenessRepository():
         cuteness: int = row[0]
 
         if not fetchLocalLeaderboard:
-            cursor.close()
+            await cursor.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = cuteness,
@@ -97,7 +98,7 @@ class CutenessRepository():
 
         twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
-        cursor.execute(
+        await cursor.execute(
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
@@ -108,10 +109,10 @@ class CutenessRepository():
             ( twitchChannel, cutenessDate.getStr(), userId, twitchChannelUserId, cuteness, self.__localLeaderboardSize )
         )
 
-        rows = cursor.fetchmany(size = self.__localLeaderboardSize)
+        rows = await cursor.fetchmany(size = self.__localLeaderboardSize)
 
         if len(rows) == 0:
-            cursor.close()
+            await cursor.close()
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = cuteness,
@@ -129,7 +130,8 @@ class CutenessRepository():
                 userName = row[2]
             ))
 
-        cursor.close()
+        await cursor.close()
+        await connection.close()
 
         # sorts cuteness into highest to lowest order
         localLeaderboard.sort(key = lambda entry: entry.getCuteness(), reverse = True)
@@ -167,9 +169,8 @@ class CutenessRepository():
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
-        connection = self.__backingDatabase.getConnection()
-        cursor = connection.cursor()
-        cursor.execute(
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
             '''
                 SELECT cuteness FROM cuteness
                 WHERE twitchChannel = ? AND userId = ? AND utcYearAndMonth = ?
@@ -177,7 +178,7 @@ class CutenessRepository():
             ( twitchChannel, userId, cutenessDate.getStr() )
         )
 
-        row = cursor.fetchone()
+        row = await cursor.fetchone()
         oldCuteness: int = 0
 
         if row is not None:
@@ -190,7 +191,7 @@ class CutenessRepository():
         elif newCuteness > utils.getLongMaxSafeSize():
             raise OverflowError(f'New cuteness ({newCuteness}) would be too large (old cuteness = {oldCuteness}) (increment amount = {incrementAmount})')
 
-        cursor.execute(
+        await cursor.execute(
             '''
                 INSERT INTO cuteness (cuteness, twitchChannel, userId, utcYearAndMonth)
                 VALUES (?, ?, ?, ?)
@@ -199,8 +200,9 @@ class CutenessRepository():
             ( newCuteness, twitchChannel, userId, cutenessDate.getStr() )
         )
 
-        connection.commit()
-        cursor.close()
+        await connection.commit()
+        await cursor.close()
+        await connection.close()
 
         return CutenessResult(
             cutenessDate = cutenessDate,
@@ -222,8 +224,8 @@ class CutenessRepository():
         twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
 
         cutenessDate = CutenessDate()
-        cursor = self.__backingDatabase.getConnection().cursor()
-        cursor.execute(
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
             '''
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
@@ -234,7 +236,7 @@ class CutenessRepository():
             ( twitchChannel, cutenessDate.getStr(), twitchChannelUserId, self.__leaderboardSize )
         )
 
-        rows = cursor.fetchmany(size = self.__leaderboardSize)
+        rows = await cursor.fetchmany(size = self.__leaderboardSize)
 
         if len(rows) == 0:
             cursor.close()
@@ -252,7 +254,8 @@ class CutenessRepository():
             ))
             rank = rank + 1
 
-        cursor.close()
+        await cursor.close()
+        await connection.close()
 
         # sort cuteness into highest to lowest order
         entries.sort(key = lambda entry: entry.getCuteness(), reverse = True)
@@ -296,9 +299,18 @@ class CutenessRepository():
             specificLookupCutenessResult = specificLookupCutenessResult
         )
 
-    def __initDatabaseTable(self):
-        connection = self.__backingDatabase.getConnection()
-        connection.execute(
+    async def __getDatabaseConnection(self) -> Connection:
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
+    async def __initDatabaseTable(self):
+        if self.__isDatabaseReady:
+            return
+
+        self.__isDatabaseReady = True
+
+        connection = await self.__backingDatabase.getConnection()
+        cursor = await connection.execute(
             '''
                 CREATE TABLE IF NOT EXISTS cuteness (
                     cuteness INTEGER NOT NULL DEFAULT 0,
@@ -310,4 +322,6 @@ class CutenessRepository():
             '''
         )
 
-        connection.commit()
+        await connection.commit()
+        await cursor.close()
+        await connection.close()
