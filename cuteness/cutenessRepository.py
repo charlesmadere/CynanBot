@@ -243,6 +243,7 @@ class CutenessRepository():
 
         if len(rows) == 0:
             await cursor.close()
+            await connection.close()
             return CutenessLeaderboardResult(cutenessDate = cutenessDate)
 
         entries: List[CutenessLeaderboardEntry] = list()
