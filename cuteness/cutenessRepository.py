@@ -239,7 +239,7 @@ class CutenessRepository():
         rows = await cursor.fetchmany(size = self.__leaderboardSize)
 
         if len(rows) == 0:
-            cursor.close()
+            await cursor.close()
             return CutenessLeaderboardResult(cutenessDate = cutenessDate)
 
         entries: List[CutenessLeaderboardEntry] = list()
