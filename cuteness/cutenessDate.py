@@ -1,5 +1,7 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
+
+from CynanBotCommon.simpleDateTime import SimpleDateTime
 
 
 class CutenessDate():
@@ -9,18 +11,22 @@ class CutenessDate():
         utcYearAndMonthStr: Optional[str] = None
     ):
         if utcYearAndMonthStr is None:
-            now = datetime.now(timezone.utc)
-            self.__str: str = now.strftime('%Y-%m')
-            self.__datetime: datetime = now
+            self.__simpleDateTime: SimpleDateTime = SimpleDateTime()
         else:
-            self.__str: str = utcYearAndMonthStr
-            self.__datetime: datetime = datetime.strptime(utcYearAndMonthStr, '%Y-%m')
+            self.__simpleDateTime: SimpleDateTime = SimpleDateTime(
+                now = datetime.strptime(utcYearAndMonthStr, '%Y-%m')
+            )
+
+        self.__str: str = self.getDateTime().strftime('%Y-%m')
 
     def getDateTime(self) -> datetime:
-        return self.__datetime
+        return self.__simpleDateTime.getDateTime()
+
+    def getSimpleDateTime(self) -> SimpleDateTime:
+        return self.__simpleDateTime
 
     def getStr(self) -> str:
         return self.__str
 
     def toStr(self) -> str:
-        return self.__datetime.strftime('%b %Y')
+        return self.getDateTime().strftime('%b %Y')
