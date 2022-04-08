@@ -17,10 +17,7 @@ class CutenessDate():
                 now = datetime.strptime(utcYearAndMonthStr, '%Y-%m')
             )
 
-        self.__str: str = self.getDateTime().strftime('%Y-%m')
-
-    def getDateTime(self) -> datetime:
-        return self.__simpleDateTime.getDateTime()
+        self.__str: str = self.__simpleDateTime.getDateTime().strftime('%Y-%m')
 
     def getSimpleDateTime(self) -> SimpleDateTime:
         return self.__simpleDateTime
@@ -29,4 +26,4 @@ class CutenessDate():
         return self.__str
 
     def toStr(self) -> str:
-        return self.getDateTime().strftime('%b %Y')
+        return self.__simpleDateTime.getDateTime().strftime('%b %Y')

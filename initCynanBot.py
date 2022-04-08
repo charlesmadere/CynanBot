@@ -3,6 +3,8 @@ import locale
 import aiohttp
 
 from authRepository import AuthRepository
+from cuteness.cutenessParticipationRepository import \
+    CutenessParticipationRepository
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cynanBot import CynanBot
@@ -79,6 +81,9 @@ userIdsRepository = UserIdsRepository(
 )
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
+    cutenessParticipationRepository = CutenessParticipationRepository(
+        backingDatabase = backingDatabase
+    ),
     userIdsRepository = userIdsRepository
 )
 languagesRepository = LanguagesRepository()
