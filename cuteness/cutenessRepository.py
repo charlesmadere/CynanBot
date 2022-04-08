@@ -11,8 +11,6 @@ from cuteness.cutenessHistoryEntry import CutenessHistoryEntry
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
-from cuteness.cutenessParticipationRepository import \
-    CutenessParticipationRepository
 from cuteness.cutenessResult import CutenessResult
 
 
@@ -21,15 +19,12 @@ class CutenessRepository():
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        cutenessParticipationRepository: CutenessParticipationRepository,
         userIdsRepository: UserIdsRepository,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5
     ):
         if backingDatabase is None:
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif cutenessParticipationRepository is None:
-            raise ValueError(f'cutenessParticipationRepository argument is malformed: \"{cutenessParticipationRepository}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(leaderboardSize):
@@ -42,7 +37,6 @@ class CutenessRepository():
             raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__cutenessParticipationRepository: CutenessParticipationRepository = cutenessParticipationRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
@@ -172,7 +166,7 @@ class CutenessRepository():
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
-        cutenessDates = await self.__cutenessParticipationRepository.getCutenessParticipation(
+        cutenessDates = await self.__fetchCutenessParticipation(
             twitchChannel = twitchChannel,
             userId = userId
         )
@@ -235,12 +229,6 @@ class CutenessRepository():
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
-
-        await self.__cutenessParticipationRepository.saveParticipator(
-            cutenessDate = cutenessDate,
-            twitchChannel = twitchChannel,
-            userId = userId
-        )
 
         connection = await self.__getDatabaseConnection()
         cursor = await connection.execute(
