@@ -839,7 +839,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         await twitchUtils.safeSend(ctx, self.__resultToStr(result))
         self.__timber.log('CutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
-    async def __resultToStr(self, result: CutenessHistoryResult) -> str:
+    def __resultToStr(self, result: CutenessHistoryResult) -> str:
         if result is None:
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
