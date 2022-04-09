@@ -9,6 +9,7 @@ import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.cutenessResult import CutenessResult
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -399,26 +400,16 @@ class CutenessCommand(AbsCommand):
                 self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
-
-            result = await self.__cutenessRepository.fetchCuteness(
-                fetchLocalLeaderboard = True,
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = userName
-            )
-
-            await twitchUtils.safeSend(ctx, result.toStr())
         else:
             userId = str(ctx.author.id)
 
-            result = await self.__cutenessRepository.fetchCutenessLeaderboard(
-                twitchChannel = user.getHandle(),
-                specificLookupUserId = userId,
-                specificLookupUserName = userName
-            )
+        result = await self.__cutenessRepository.fetchCutenessLeaderboard(
+            twitchChannel = user.getHandle(),
+            specificLookupUserId = userId,
+            specificLookupUserName = userName
+        )
 
-            await twitchUtils.safeSend(ctx, result.toStr())
-
+        await twitchUtils.safeSend(ctx, result.toStr())
         self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -502,7 +493,7 @@ class CutenessHistoryCommand(AbsCommand):
 
         historyStrs: List[str] = list()
         for entry in result.getEntries():
-            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessEntry().getCutenessStr()})')
+            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
 
         historyStr = delimiter.join(historyStrs)
         return f'Cuteness history for {result.getUserName()} — {historyStr} ✨'

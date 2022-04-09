@@ -64,6 +64,7 @@ class CutenessRepository():
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
         cutenessDate = CutenessDate()
+
         connection = await self.__getDatabaseConnection()
         cursor = await connection.execute(
             '''
@@ -187,15 +188,11 @@ class CutenessRepository():
                 userName = userName
             )
 
-            cutenessEntry = CutenessEntry(
+            entries.append(CutenessHistoryEntry(
+                cutenessDate = cutenessDate,
                 cuteness = cutenessResult.getCuteness(),
                 userId = userId,
                 userName = userName
-            )
-
-            entries.append(CutenessHistoryEntry(
-                cutenessDate = cutenessDate,
-                cutenessEntry = cutenessEntry
             ))
 
         return CutenessHistoryResult(

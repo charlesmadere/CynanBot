@@ -2,19 +2,21 @@ from cuteness.cutenessDate import CutenessDate
 from cuteness.cutenessEntry import CutenessEntry
 
 
-class CutenessHistoryEntry():
+class CutenessHistoryEntry(CutenessEntry):
 
-    def __init__(self, cutenessDate: CutenessDate, cutenessEntry: CutenessEntry):
+    def __init__(
+        self,
+        cutenessDate: CutenessDate,
+        cuteness: int,
+        userId: str,
+        userName: str
+    ):
+        super().__init__(cuteness, userId, userName)
+
         if cutenessDate is None:
             raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
-        elif cutenessEntry is None:
-            raise ValueError(f'cutenessResult argument is malformed: \"{cutenessEntry}\"')
 
         self.__cutenessDate: CutenessDate = cutenessDate
-        self.__cutenessEntry: CutenessEntry = cutenessEntry
 
     def getCutenessDate(self) -> CutenessDate:
         return self.__cutenessDate
-
-    def getCutenessEntry(self) -> CutenessEntry:
-        return self.__cutenessEntry
