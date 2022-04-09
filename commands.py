@@ -459,7 +459,7 @@ class CutenessChampionsCommand(AbsCommand):
             twitchChannel = user.getHandle()
         )
 
-        await twitchUtils.safeSend(ctx, self.__resultToStr(result), user)
+        await twitchUtils.safeSend(ctx, self.__resultToStr(result, user))
         self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
     def __resultToStr(self, result: CutenessChampionsResult, user: User) -> str:
