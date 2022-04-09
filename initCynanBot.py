@@ -1,3 +1,4 @@
+import asyncio
 import locale
 
 import aiohttp
@@ -60,183 +61,187 @@ from users.usersRepository import UsersRepository
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
-#################################
-## Misc initialization section ##
-#################################
+async def main():
 
-authRepository = AuthRepository()
-backingDatabase = BackingDatabase()
-clientSession = aiohttp.ClientSession(
-    cookie_jar = aiohttp.DummyCookieJar(),
-    timeout = aiohttp.ClientTimeout(8)
-)
-timber = Timber()
+    #################################
+    ## Misc initialization section ##
+    #################################
 
-userIdsRepository = UserIdsRepository(
-    clientSession = clientSession,
-    backingDatabase = backingDatabase,
-    timber = timber
-)
-cutenessRepository = CutenessRepository(
-    backingDatabase = backingDatabase,
-    userIdsRepository = userIdsRepository
-)
-languagesRepository = LanguagesRepository()
-timeZoneRepository = TimeZoneRepository()
+    authRepository = AuthRepository()
+    backingDatabase = BackingDatabase()
+    clientSession = aiohttp.ClientSession(
+        cookie_jar = aiohttp.DummyCookieJar(),
+        timeout = aiohttp.ClientTimeout(8)
+    )
+    timber = Timber()
 
-websocketConnectionServer = WebsocketConnectionServer(
-    timber = timber,
-    isDebugLoggingEnabled = True
-)
-
-translationHelper: TranslationHelper = None
-if authRepository.hasDeepLAuthKey():
-    translationHelper = TranslationHelper(
+    userIdsRepository = UserIdsRepository(
         clientSession = clientSession,
-        languagesRepository = languagesRepository,
-        deepLAuthKey = authRepository.requireDeepLAuthKey(),
+        backingDatabase = backingDatabase,
         timber = timber
     )
+    cutenessRepository = CutenessRepository(
+        backingDatabase = backingDatabase,
+        userIdsRepository = userIdsRepository
+    )
+    languagesRepository = LanguagesRepository()
+    timeZoneRepository = TimeZoneRepository()
 
-weatherRepository: WeatherRepository = None
-if authRepository.hasOneWeatherApiKey():
-    weatherRepository = WeatherRepository(
-        clientSession = clientSession,
-        oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
-        timber = timber
+    websocketConnectionServer = WebsocketConnectionServer(
+        timber = timber,
+        isDebugLoggingEnabled = True
     )
 
-
-###################################
-## Trivia initialization section ##
-###################################
-
-triviaIdGenerator = TriviaIdGenerator()
-triviaSettingsRepository = TriviaSettingsRepository()
-
-quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
-if authRepository.hasQuizApiKey():
-    quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
-        clientSession = clientSession,
-        quizApiKey = authRepository.requireQuizApiKey(),
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
-    )
-
-triviaRepository = TriviaRepository(
-    bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
-        clientSession = clientSession,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
-        timber = timber,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
-        clientSession = clientSession,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
-        clientSession = clientSession,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
-    timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository,
-    triviaVerifier = TriviaVerifier(
-        triviaContentScanner = TriviaContentScanner(),
-        triviaHistoryRepository = TriviaHistoryRepository(
-            backingDatabase = backingDatabase,
+    translationHelper: TranslationHelper = None
+    if authRepository.hasDeepLAuthKey():
+        translationHelper = TranslationHelper(
+            clientSession = clientSession,
+            languagesRepository = languagesRepository,
+            deepLAuthKey = authRepository.requireDeepLAuthKey(),
             timber = timber
         )
-    ),
-    willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
-        clientSession = clientSession,
+
+    weatherRepository: WeatherRepository = None
+    if authRepository.hasOneWeatherApiKey():
+        weatherRepository = WeatherRepository(
+            clientSession = clientSession,
+            oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
+            timber = timber
+        )
+
+
+    ###################################
+    ## Trivia initialization section ##
+    ###################################
+
+    triviaIdGenerator = TriviaIdGenerator()
+    triviaSettingsRepository = TriviaSettingsRepository()
+
+    quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
+    if authRepository.hasQuizApiKey():
+        quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
+            clientSession = clientSession,
+            quizApiKey = authRepository.requireQuizApiKey(),
+            timber = timber,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        )
+
+    triviaRepository = TriviaRepository(
+        bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
+            clientSession = clientSession,
+            timber = timber,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
+            timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
+            clientSession = clientSession,
+            timber = timber,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
+            clientSession = clientSession,
+            timber = timber,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
         timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
-        timber = timber,
-        triviaSettingsRepository = triviaSettingsRepository
+        triviaSettingsRepository = triviaSettingsRepository,
+        triviaVerifier = TriviaVerifier(
+            triviaContentScanner = TriviaContentScanner(),
+            triviaHistoryRepository = TriviaHistoryRepository(
+                backingDatabase = backingDatabase,
+                timber = timber
+            )
+        ),
+        willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
+            clientSession = clientSession,
+            timber = timber,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
+            timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
+        )
     )
-)
 
 
-#####################################
-## CynanBot initialization section ##
-#####################################
+    #####################################
+    ## CynanBot initialization section ##
+    #####################################
 
-cynanBot = CynanBot(
-    analogueStoreRepository = AnalogueStoreRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    authRepository = authRepository,
-    chatBandManager = ChatBandManager(
+    cynanBot = CynanBot(
+        analogueStoreRepository = AnalogueStoreRepository(
+            clientSession = clientSession,
+            timber = timber
+        ),
+        authRepository = authRepository,
+        chatBandManager = ChatBandManager(
+            timber = timber,
+            websocketConnectionServer = websocketConnectionServer
+        ),
+        cutenessRepository = cutenessRepository,
+        doubleCutenessHelper = DoubleCutenessHelper(),
+        funtoonRepository = FuntoonRepository(
+            clientSession = clientSession,
+            timber = timber
+        ),
+        generalSettingsRepository = GeneralSettingsRepository(),
+        jishoHelper = JishoHelper(
+            clientSession = clientSession,
+            timber = timber
+        ),
+        languagesRepository = languagesRepository,
+        locationsRepository = LocationsRepository(
+            timeZoneRepository = timeZoneRepository
+        ),
+        nonceRepository = NonceRepository(
+            timber = timber
+        ),
+        pokepediaRepository = PokepediaRepository(
+            clientSession = clientSession,
+            timber = timber
+        ),
+        starWarsQuotesRepository = StarWarsQuotesRepository(),
+        tamaleGuyRepository = TamaleGuyRepository(
+            clientSession = clientSession,
+            timber = timber
+        ),
         timber = timber,
-        websocketConnectionServer = websocketConnectionServer
-    ),
-    cutenessRepository = cutenessRepository,
-    doubleCutenessHelper = DoubleCutenessHelper(),
-    funtoonRepository = FuntoonRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    generalSettingsRepository = GeneralSettingsRepository(),
-    jishoHelper = JishoHelper(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    languagesRepository = languagesRepository,
-    locationsRepository = LocationsRepository(
-        timeZoneRepository = timeZoneRepository
-    ),
-    nonceRepository = NonceRepository(
-        timber = timber
-    ),
-    pokepediaRepository = PokepediaRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    starWarsQuotesRepository = StarWarsQuotesRepository(),
-    tamaleGuyRepository = TamaleGuyRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    timber = timber,
-    translationHelper = translationHelper,
-    triviaGameRepository = TriviaGameRepository(
-        timber = timber,
-        triviaRepository = triviaRepository
-    ),
-    triviaRepository = triviaRepository,
-    triviaScoreRepository = TriviaScoreRepository(
-        backingDatabase = backingDatabase
-    ),
-    triviaUtils = TriviaUtils(),
-    twitchTokensRepository = TwitchTokensRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
-    userIdsRepository = userIdsRepository,
-    usersRepository = UsersRepository(
-        timeZoneRepository = timeZoneRepository
-    ),
-    weatherRepository = weatherRepository,
-    websocketConnectionServer = websocketConnectionServer,
-    wordOfTheDayRepository = WordOfTheDayRepository(
-        clientSession = clientSession,
-        timber = timber
+        translationHelper = translationHelper,
+        triviaGameRepository = TriviaGameRepository(
+            timber = timber,
+            triviaRepository = triviaRepository
+        ),
+        triviaRepository = triviaRepository,
+        triviaScoreRepository = TriviaScoreRepository(
+            backingDatabase = backingDatabase
+        ),
+        triviaUtils = TriviaUtils(),
+        twitchTokensRepository = TwitchTokensRepository(
+            clientSession = clientSession,
+            timber = timber
+        ),
+        userIdsRepository = userIdsRepository,
+        usersRepository = UsersRepository(
+            timeZoneRepository = timeZoneRepository
+        ),
+        weatherRepository = weatherRepository,
+        websocketConnectionServer = websocketConnectionServer,
+        wordOfTheDayRepository = WordOfTheDayRepository(
+            clientSession = clientSession,
+            timber = timber
+        )
     )
-)
 
-timber.log('initCynanBot', 'Starting CynanBot...')
-cynanBot.run()
+    timber.log('initCynanBot', 'Starting CynanBot...')
+    await cynanBot.start()
+
+asyncio.run(main())
