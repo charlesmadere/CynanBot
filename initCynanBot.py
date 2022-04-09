@@ -244,4 +244,4 @@ async def main():
     timber.log('initCynanBot', 'Starting CynanBot...')
     await cynanBot.start()
 
-asyncio.get_event_loop().run_forever(main())
+asyncio.get_event_loop().run_until_complete(main())
