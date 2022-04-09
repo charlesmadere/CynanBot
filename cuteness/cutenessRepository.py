@@ -20,6 +20,7 @@ class CutenessRepository():
         self,
         backingDatabase: BackingDatabase,
         userIdsRepository: UserIdsRepository,
+        historySize: int = 3,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5
     ):
@@ -27,6 +28,10 @@ class CutenessRepository():
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidNum(historySize):
+            raise ValueError(f'historySize argument is malformed: \"{historySize}\"')
+        elif historySize < 2 or historySize > 12:
+            raise ValueError(f'historySize argument is out of bounds: \"{historySize}\"')
         elif not utils.isValidNum(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 3 or leaderboardSize > 10:
@@ -38,6 +43,7 @@ class CutenessRepository():
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__historySize: int = historySize
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
 
@@ -71,6 +77,7 @@ class CutenessRepository():
                 SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
                 INNER JOIN userIds ON cuteness.userId = userIds.userId
                 WHERE cuteness.twitchChannel = ? AND cuteness.userId = ? AND cuteness.utcYearAndMonth = ?
+                LIMIT 1
             ''',
             ( twitchChannel, userId, cutenessDate.getStr() )
         )
@@ -167,12 +174,22 @@ class CutenessRepository():
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
 
-        cutenessDates = await self.__fetchCutenessParticipation(
-            twitchChannel = twitchChannel,
-            userId = userId
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
+            '''
+                SELECT cuteness, utcYearAndMonth FROM cuteness
+                WHERE twitchChannel = ? AND userId = ? AND cuteness IS NOT NULL AND cuteness >= 1
+                ORDER BY utcYearAndMonth DESC
+                LIMIT ?
+            ''',
+            ( twitchChannel, userId, self.__historySize )
         )
 
-        if not utils.hasItems(cutenessDates):
+        rows = await cursor.fetchmany(self.__historySize)
+
+        if len(rows) == 0:
+            await cursor.close()
+            await connection.close()
             return CutenessHistoryResult(
                 userId = userId,
                 userName = userName
@@ -180,20 +197,16 @@ class CutenessRepository():
 
         entries: List[CutenessHistoryEntry] = list()
 
-        for cutenessDate in cutenessDates:
-            cutenessResult = await self.fetchCuteness(
-                fetchLocalLeaderboard = False,
-                twitchChannel = twitchChannel,
-                userId = userId,
-                userName = userName
-            )
-
+        for row in rows:
             entries.append(CutenessHistoryEntry(
-                cutenessDate = cutenessDate,
-                cuteness = cutenessResult.getCuteness(),
+                cutenessDate = CutenessDate(row[1]),
+                cuteness = row[0],
                 userId = userId,
                 userName = userName
             ))
+
+        # sort entries into newest to oldest order
+        entries.sort(key = lambda entry: entry.getCutenessDate(), reverse = True)
 
         return CutenessHistoryResult(
             userId = userId,
@@ -232,6 +245,7 @@ class CutenessRepository():
             '''
                 SELECT cuteness FROM cuteness
                 WHERE twitchChannel = ? AND userId = ? AND utcYearAndMonth = ?
+                LIMIT 1
             ''',
             ( twitchChannel, userId, cutenessDate.getStr() )
         )

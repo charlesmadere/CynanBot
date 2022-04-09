@@ -421,6 +421,7 @@ class CutenessHistoryCommand(AbsCommand):
         timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
+        delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
@@ -431,6 +432,8 @@ class CutenessHistoryCommand(AbsCommand):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
@@ -438,6 +441,8 @@ class CutenessHistoryCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
+        self.__delimiter: str = delimiter
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -482,11 +487,9 @@ class CutenessHistoryCommand(AbsCommand):
         await twitchUtils.safeSend(ctx, self.__resultToStr(result))
         self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
-    async def __resultToStr(self, result: CutenessHistoryResult, delimiter: str = ', ') -> str:
+    async def __resultToStr(self, result: CutenessHistoryResult) -> str:
         if result is None:
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not result.hasEntries():
             return f'{result.getUserName()} has no cuteness history 😿'
@@ -495,8 +498,9 @@ class CutenessHistoryCommand(AbsCommand):
         for entry in result.getEntries():
             historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
 
-        historyStr = delimiter.join(historyStrs)
-        return f'Cuteness history for {result.getUserName()} — {historyStr} ✨'
+        historyStr = self.__delimiter.join(historyStrs)
+        return f'{result.getUserName()}\'s cuteness history — {historyStr} ✨'
+
 
 class CynanSourceCommand(AbsCommand):
 
