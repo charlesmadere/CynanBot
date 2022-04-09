@@ -459,17 +459,15 @@ class CutenessChampionsCommand(AbsCommand):
             twitchChannel = user.getHandle()
         )
 
-        await twitchUtils.safeSend(ctx, self.__resultToStr(result, user))
+        await twitchUtils.safeSend(ctx, self.__resultToStr(result))
         self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
-    def __resultToStr(self, result: CutenessChampionsResult, user: User) -> str:
+    def __resultToStr(self, result: CutenessChampionsResult) -> str:
         if result is None:
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif user is None:
-            raise ValueError(f'user argument is malformed: \"{user}\"')
 
         if not result.hasChampions():
-            return f'{user.getHandle()} has no cuteness champions 😿'
+            return f'There are no cuteness champions 😿'
 
         championsStrs: List[str] = list()
 
@@ -477,7 +475,7 @@ class CutenessChampionsCommand(AbsCommand):
             championsStrs.append(f'#{entry.getRankStr()} {entry.getUserName()} ({entry.getCutenessStr()})')
 
         championsStr = self.__delimiter.join(championsStrs)
-        return f'{user.getHandle()}\'s cuteness champions: {championsStr} ✨'
+        return f'Cuteness champions: {championsStr} ✨'
 
 
 class CynanSourceCommand(AbsCommand):
