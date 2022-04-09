@@ -123,7 +123,7 @@ class CynanBot(Bot):
         self.__usersRepository: UsersRepository = usersRepository
         self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
-        self.__channelPointsLruCache: LruCache = LruCache(64)
+        self.__channelPointsLruCache: LruCache = LruCache(128)
 
         #######################################
         ## Initialization of command objects ##
