@@ -7,9 +7,9 @@ from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
+from cuteness.cutenessChampionsResult import CutenessChampionsResult
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessRepository import CutenessRepository
-from cuteness.cutenessResult import CutenessResult
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -34,6 +34,7 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
+from users.user import User
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
@@ -411,6 +412,70 @@ class CutenessCommand(AbsCommand):
 
         await twitchUtils.safeSend(ctx, result.toStr())
         self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
+class CutenessChampionsCommand(AbsCommand):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        timber: Timber,
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository,
+        delimiter: str = ', ',
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif userIdsRepository is None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__timber: Timber = timber
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__delimiter: str = delimiter
+
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCutenessEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        result = await self.__cutenessRepository.fetchCutenessChampions(
+            twitchChannel = user.getHandle()
+        )
+
+        await twitchUtils.safeSend(ctx, self.__resultToStr(result), user)
+        self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+    def __resultToStr(self, result: CutenessChampionsResult, user: User) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if not result.hasChampions():
+            return f'{user.getHandle()} has no cuteness champions 😿'
+
+        championsStrs: List[str] = list()
+
+        for entry in result.getChampions():
+            championsStrs.append(f'#{entry.getRankStr()} {entry.getUserName()} ({entry.getCutenessStr()})')
+
+        championsStr = self.__delimiter.join(championsStrs)
+        return f'{user.getHandle()}\'s cuteness champions — {championsStr} ✨'
 
 
 class CutenessHistoryCommand(AbsCommand):

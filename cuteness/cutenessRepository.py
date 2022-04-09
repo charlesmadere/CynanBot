@@ -5,6 +5,7 @@ from aiosqlite import Connection
 from CynanBotCommon.backingDatabase import BackingDatabase
 from users.userIdsRepository import UserIdsRepository
 
+from cuteness.cutenessChampionsResult import CutenessChampionsResult
 from cuteness.cutenessDate import CutenessDate
 from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessHistoryEntry import CutenessHistoryEntry
@@ -155,6 +156,55 @@ class CutenessRepository():
             localLeaderboard = localLeaderboard,
             userId = userId,
             userName = userName
+        )
+
+    async def fetchCutenessChampions(self, twitchChannel: str) -> CutenessChampionsResult:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
+            '''
+                SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
+                INNER JOIN userIds ON cuteness.userId = userIds.userId
+                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ?
+                SUM(cuteness.cuteness) totalCuteness
+                ORDER BY SUM(totalCuteness) DESC
+                LIMIT ?
+            ''',
+            ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
+        )
+
+        rows = await cursor.fetchmany(size = self.__leaderboardSize)
+
+        if len(rows) == 0:
+            await cursor.close()
+            await connection.close()
+            return CutenessChampionsResult(twitchChannel = twitchChannel)
+
+        champions: List[CutenessLeaderboardEntry] = list()
+        rank: int = 1
+
+        for row in rows:
+            champions.append(CutenessLeaderboardEntry(
+                cuteness = row[0],
+                rank = rank,
+                userId = row[1],
+                userName = row[2]
+            ))
+            rank = rank + 1
+
+        await cursor.close()
+        await connection.close()
+
+        # sort cuteness into highest to lowest order
+        champions.sort(key = lambda champion: champion.getCuteness(), reverse = True)
+
+        return CutenessChampionsResult(
+            twitchChannel = twitchChannel,
+            champions = champions
         )
 
     async def fetchCutenessHistory(

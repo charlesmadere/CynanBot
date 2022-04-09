@@ -9,7 +9,8 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      ChatBandClearCommand, CommandsCommand, CutenessCommand,
+                      ChatBandClearCommand, CommandsCommand,
+                      CutenessChampionsCommand, CutenessCommand,
                       CutenessHistoryCommand, CynanSourceCommand,
                       DiscordCommand, GiveCutenessCommand, JishoCommand,
                       LoremIpsumCommand, MyCutenessCommand, PbsCommand,
@@ -154,11 +155,13 @@ class CynanBot(Bot):
 
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
+            self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__cutenessHistoryCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, timber, usersRepository)
