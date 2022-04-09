@@ -477,7 +477,7 @@ class CutenessChampionsCommand(AbsCommand):
             championsStrs.append(f'#{entry.getRankStr()} {entry.getUserName()} ({entry.getCutenessStr()})')
 
         championsStr = self.__delimiter.join(championsStrs)
-        return f'{user.getHandle()}\'s cuteness champions — {championsStr} ✨'
+        return f'{user.getHandle()}\'s cuteness champions: {championsStr} ✨'
 
 
 class CynanSourceCommand(AbsCommand):
@@ -851,7 +851,7 @@ class MyCutenessHistoryCommand(AbsCommand):
             historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
 
         historyStr = self.__delimiter.join(historyStrs)
-        return f'{result.getUserName()}\'s cuteness history — {historyStr} ✨'
+        return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
 
 
 class PbsCommand(AbsCommand):
