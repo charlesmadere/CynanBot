@@ -11,13 +11,13 @@ from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand,
                       CutenessChampionsCommand, CutenessCommand,
-                      CutenessHistoryCommand, CynanSourceCommand,
-                      DiscordCommand, GiveCutenessCommand, JishoCommand,
-                      LoremIpsumCommand, MyCutenessCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand, StubCommand,
-                      SwQuoteCommand, TamalesCommand, TimeCommand,
-                      TranslateCommand, TriviaCommand, TriviaScoreCommand,
-                      TwitterCommand, WeatherCommand, WordCommand)
+                      CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
+                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
+                      MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
+                      TamalesCommand, TimeCommand, TranslateCommand,
+                      TriviaCommand, TriviaScoreCommand, TwitterCommand,
+                      WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.analogue.analogueStoreRepository import \
@@ -156,15 +156,15 @@ class CynanBot(Bot):
         if cutenessRepository is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
-            self.__cutenessHistoryCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
+            self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
-            self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, timber, usersRepository)
+            self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsCommand = StubCommand()
@@ -531,6 +531,10 @@ class CynanBot(Bot):
     async def command_cuteness(self, ctx: Context):
         await self.__cutenessCommand.handleCommand(ctx)
 
+    @commands.command(name = 'cutenesschampions')
+    async def command_cutenesschampions(self, ctx: Context):
+        await self.__cutenessChampionsCommand.handleCommand(ctx)
+
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
         await self.__cynanSourceCommand.handleCommand(ctx)
@@ -554,6 +558,10 @@ class CynanBot(Bot):
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx: Context):
         await self.__myCutenessCommand.handleCommand(ctx)
+
+    @commands.command(name = 'mycutenesshistory')
+    async def command_mycutenesshistory(self, ctx: Context):
+        await self.__myCutenessHistoryCommand.handleCommand(ctx)
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx: Context):

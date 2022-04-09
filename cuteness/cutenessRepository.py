@@ -167,11 +167,10 @@ class CutenessRepository():
         connection = await self.__getDatabaseConnection()
         cursor = await connection.execute(
             '''
-                SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
-                INNER JOIN userIds ON cuteness.userId = userIds.userId
-                WHERE cuteness.twitchChannel = ? AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userId != ?
-                SUM(cuteness.cuteness) totalCuteness
-                ORDER BY SUM(totalCuteness) DESC
+                SELECT cuteness.userId, userIds.userName, SUM(cuteness.cuteness) as totalCuteness
+                FROM cuteness INNER JOIN userIds on cuteness.userId = userIds.userId where cuteness.twitchChannel = ? AND cuteness.userId != ?
+                GROUP BY cuteness.userId
+                ORDER BY SUM(cuteness.cuteness) DESC
                 LIMIT ?
             ''',
             ( twitchChannel, twitchChannelUserId, self.__leaderboardSize )
@@ -189,10 +188,10 @@ class CutenessRepository():
 
         for row in rows:
             champions.append(CutenessLeaderboardEntry(
-                cuteness = row[0],
+                cuteness = row[2],
                 rank = rank,
-                userId = row[1],
-                userName = row[2]
+                userId = row[0],
+                userName = row[1]
             ))
             rank = rank + 1
 

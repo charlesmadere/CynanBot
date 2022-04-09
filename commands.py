@@ -296,7 +296,9 @@ class CommandsCommand(AbsCommand):
 
         if user.isCutenessEnabled():
             commands.append('!cuteness')
+            commands.append('!cutenesschampions')
             commands.append('!mycuteness')
+            commands.append('!mycutenesshistory')
 
             if user.isGiveCutenessEnabled() and ctx.author.is_mod:
                 commands.append('!givecuteness')
@@ -476,95 +478,6 @@ class CutenessChampionsCommand(AbsCommand):
 
         championsStr = self.__delimiter.join(championsStrs)
         return f'{user.getHandle()}\'s cuteness champions — {championsStr} ✨'
-
-
-class CutenessHistoryCommand(AbsCommand):
-
-    def __init__(
-        self,
-        cutenessRepository: CutenessRepository,
-        timber: Timber,
-        userIdsRepository: UserIdsRepository,
-        usersRepository: UsersRepository,
-        delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 30)
-    ):
-        if cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif timber is None:
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif userIdsRepository is None:
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__timber: Timber = timber
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__delimiter: str = delimiter
-
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not user.isCutenessEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-
-        userName: str = None
-        if len(splits) >= 2:
-            userName = utils.removePreceedingAt(splits[1])
-        else:
-            userName = ctx.author.name
-
-        userId: str = None
-
-        # this means that a user is querying for another user's cuteness history
-        if userName.lower() != ctx.author.name.lower():
-            try:
-                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-            except (RuntimeError, ValueError):
-                # this exception can be safely ignored
-                pass
-
-            if not utils.isValidStr(userId):
-                self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
-                return
-        else:
-            userId = str(ctx.author.id)
-
-        result = await self.__cutenessRepository.fetchCutenessHistory(
-            twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = userName
-        )
-
-        await twitchUtils.safeSend(ctx, self.__resultToStr(result))
-        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-    async def __resultToStr(self, result: CutenessHistoryResult) -> str:
-        if result is None:
-            raise ValueError(f'result argument is malformed: \"{result}\"')
-
-        if not result.hasEntries():
-            return f'{result.getUserName()} has no cuteness history 😿'
-
-        historyStrs: List[str] = list()
-        for entry in result.getEntries():
-            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
-
-        historyStr = self.__delimiter.join(historyStrs)
-        return f'{result.getUserName()}\'s cuteness history — {historyStr} ✨'
 
 
 class CynanSourceCommand(AbsCommand):
@@ -850,6 +763,95 @@ class MyCutenessCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
         self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {ctx.author.name}:{userId} in {user.getHandle()}')
+
+
+class MyCutenessHistoryCommand(AbsCommand):
+
+    def __init__(
+        self,
+        cutenessRepository: CutenessRepository,
+        timber: Timber,
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository,
+        delimiter: str = ', ',
+        cooldown: timedelta = timedelta(seconds = 30)
+    ):
+        if cutenessRepository is None:
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif userIdsRepository is None:
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__timber: Timber = timber
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__delimiter: str = delimiter
+
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isCutenessEnabled():
+            return
+        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        userName: str = None
+        if len(splits) >= 2:
+            userName = utils.removePreceedingAt(splits[1])
+        else:
+            userName = ctx.author.name
+
+        userId: str = None
+
+        # this means that a user is querying for another user's cuteness history
+        if userName.lower() != ctx.author.name.lower():
+            try:
+                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+            except (RuntimeError, ValueError):
+                # this exception can be safely ignored
+                pass
+
+            if not utils.isValidStr(userId):
+                self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
+                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                return
+        else:
+            userId = str(ctx.author.id)
+
+        result = await self.__cutenessRepository.fetchCutenessHistory(
+            twitchChannel = user.getHandle(),
+            userId = userId,
+            userName = userName
+        )
+
+        await twitchUtils.safeSend(ctx, self.__resultToStr(result))
+        self.__timber.log('CutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+    async def __resultToStr(self, result: CutenessHistoryResult) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+
+        if not result.hasEntries():
+            return f'{result.getUserName()} has no cuteness history 😿'
+
+        historyStrs: List[str] = list()
+        for entry in result.getEntries():
+            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
+
+        historyStr = self.__delimiter.join(historyStrs)
+        return f'{result.getUserName()}\'s cuteness history — {historyStr} ✨'
 
 
 class PbsCommand(AbsCommand):
