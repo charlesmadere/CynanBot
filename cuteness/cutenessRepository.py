@@ -21,7 +21,7 @@ class CutenessRepository():
         self,
         backingDatabase: BackingDatabase,
         userIdsRepository: UserIdsRepository,
-        historySize: int = 3,
+        historySize: int = 5,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5
     ):
@@ -231,23 +231,18 @@ class CutenessRepository():
                 ORDER BY utcYearAndMonth DESC
                 LIMIT ?
             ''',
-            ( twitchChannel, userId, self.__historySize + 1 )
+            ( twitchChannel, userId, self.__historySize )
         )
 
         rows = await cursor.fetchmany(self.__historySize)
 
-        # check for <= 1 because 1 entry within rows is guaranteed to be the current month, but we
-        # only want previous months
-        if len(rows) <= 1:
+        if len(rows) == 0:
             await cursor.close()
             await connection.close()
             return CutenessHistoryResult(
                 userId = userId,
                 userName = userName
             )
-
-        # remove the first entry, because that is the one that refers to the current month
-        rows = rows[1:]
 
         entries: List[CutenessHistoryEntry] = list()
 
