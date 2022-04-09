@@ -178,6 +178,7 @@ async def main():
     #####################################
 
     cynanBot = CynanBot(
+        eventLoop = asyncio.get_event_loop(),
         analogueStoreRepository = AnalogueStoreRepository(
             clientSession = clientSession,
             timber = timber

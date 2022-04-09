@@ -1,3 +1,4 @@
+from asyncio import AbstractEventLoop
 from typing import Dict, Optional
 
 from twitchio import Channel, Message
@@ -64,6 +65,7 @@ class CynanBot(Bot):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
@@ -99,7 +101,9 @@ class CynanBot(Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if authRepository is None:
+        if eventLoop is None:
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -116,6 +120,7 @@ class CynanBot(Bot):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -509,7 +514,7 @@ class CynanBot(Bot):
         if self.__websocketConnectionServer is None:
             self.__timber.log('CynanBot', f'Will not start websocketConnectionServer, as the instance is `None`')
         else:
-            self.__websocketConnectionServer.start(self.loop)
+            self.__websocketConnectionServer.start(self.__eventLoop)
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
