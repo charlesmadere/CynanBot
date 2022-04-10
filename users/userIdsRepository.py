@@ -1,3 +1,5 @@
+from asyncio import TimeoutError
+
 import aiohttp
 import CynanBotCommon.utils as utils
 from aiosqlite import Connection
@@ -57,31 +59,43 @@ class UserIdsRepository():
             if utils.isValidStr(userId):
                 return userId
             else:
+                self.__timber.log('UserIdsRepository', f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
                 raise RuntimeError(f'Persisted userId for userName \"{userName}\" is malformed: \"{userId}\"')
 
         if not utils.isValidStr(twitchAccessToken) or not utils.isValidStr(twitchClientId):
             raise ValueError(f'Can\'t lookup Twitch user ID for \"{userName}\", as twitchAccessToken (\"{twitchAccessToken}\") and/or twitchClientId (\"{twitchClientId}\") is malformed')
 
-        self.__timber.log('UserIdsRepository', f'Performing network call to fetch Twitch user ID for \"{userName}\"...')
+        self.__timber.log('UserIdsRepository', f'Performing network call to fetch Twitch userId for userName \"{userName}\"...')
 
-        response = await self.__clientSession.get(
-            url = f'https://api.twitch.tv/helix/users?login={userName}',
-            headers = {
-                'Authorization': f'Bearer {twitchAccessToken}',
-                'Client-Id': twitchClientId
-            }
-        )
+        response = None
+        try:
+            response = await self.__clientSession.get(
+                url = f'https://api.twitch.tv/helix/users?login={userName}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId
+                }
+            )
+        except (aiohttp.ClientError, TimeoutError) as e:
+            self.__timber.log('UserIdsRepository', f'Encountered network error when fetching userId for userName \"{userName}\": {e}')
+            raise RuntimeError(f'UserIdsRepository encountered network error when fetching userId for userName \"{userName}\": {e}')
+
+        if response.status != 200:
+            self.__timber.log('UserIdsRepository', f'Encountered non-200 HTTP status code when fetching userId for userName \"{userName}\": \"{response.status}\"')
+            raise RuntimeError(f'UserIdsRepository encountered non-200 HTTP status code when fetching userId for userName \"{userName}\": \"{response.status}\"')
 
         jsonResponse = await response.json()
         response.close()
 
         if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            raise RuntimeError(f'Received an error when fetching user ID for {userName}: {jsonResponse}')
+            self.__timber.log('UserIdsRepository', f'Received an error of some kind when fetching userId for userName \"{userName}\": {jsonResponse}')
+            raise RuntimeError(f'UserIdsRepository received an error of some kind when fetching userId for userName \"{userName}\": {jsonResponse}')
 
         userId: str = jsonResponse['data'][0]['id']
 
         if not utils.isValidStr(userId):
-            raise ValueError(f'Unable to fetch user ID for \"{userName}\": {jsonResponse}')
+            self.__timber.log('UserIdsRepository', f'Unable to fetch userId for \"{userName}\": {jsonResponse}')
+            raise ValueError(f'UserIdsRepository was unable to fetch userId for \"{userName}\": {jsonResponse}')
 
         await self.setUser(userId = userId, userName = userName)
         return userId
