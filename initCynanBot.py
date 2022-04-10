@@ -69,7 +69,7 @@ authRepository = AuthRepository()
 backingDatabase = BackingDatabase()
 clientSession = aiohttp.ClientSession(
     cookie_jar = aiohttp.DummyCookieJar(),
-    timeout = aiohttp.ClientTimeout(8)
+    timeout = aiohttp.ClientTimeout(total = 8)
 )
 timber = Timber()
 
