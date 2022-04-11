@@ -31,6 +31,8 @@ from CynanBotCommon.trivia.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
 from CynanBotCommon.trivia.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
+from CynanBotCommon.trivia.lotrTriviaQuestionsRepository import \
+    LotrTriviaQuestionRepository
 from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
@@ -140,6 +142,10 @@ triviaRepository = TriviaRepository(
         clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
+        timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
