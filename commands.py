@@ -9,8 +9,11 @@ import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from cuteness.cutenessChampionsResult import CutenessChampionsResult
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
+from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
 from cuteness.cutenessRepository import CutenessRepository
+from cuteness.cutenessResult import CutenessResult
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
+from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
@@ -34,7 +37,6 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
-from users.user import User
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
@@ -351,27 +353,69 @@ class CutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        cutenessUtils: CutenessUtils,
         timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
+        delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif cutenessUtils is None:
+            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
+        self.__delimiter: str = delimiter
+
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    def __cutenessLeaderboardResultToStr(self, result: CutenessLeaderboardResult) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+
+        if not result.hasEntries():
+            return f'Unfortunately the {result.getCutenessDate().toStr()} cuteness leaderboard is empty 😿'
+
+        specificLookupText: str = None
+        if result.hasSpecificLookupCutenessResult():
+            userName = result.getSpecificLookupCutenessResult().getUserName()
+            cutenessStr = result.getSpecificLookupCutenessResult().getCutenessStr()
+            specificLookupText = f'{userName} your cuteness is {cutenessStr}'
+
+        leaderboard = self.__cutenessUtils.getLeaderboard(result.getEntries(), self.__delimiter)
+
+        if utils.isValidStr(specificLookupText):
+            return f'{specificLookupText}, and the {result.getCutenessDate().toStr()} leaderboard is: {leaderboard} ✨'
+        else:
+            return f'The {result.getCutenessDate().toStr()} leaderboard is {leaderboard} ✨'
+
+    def __cutenessResultToStr(self, result: CutenessResult) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+
+        if result.hasCuteness() and result.getCuteness() >= 1:
+            if result.hasLocalLeaderboard():
+                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard())
+                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
+            else:
+                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+        else:
+            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
@@ -403,16 +447,26 @@ class CutenessCommand(AbsCommand):
                 self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
+
+            result = self.__cutenessRepository.fetchCuteness(
+                fetchLocalLeaderboard = True,
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = userName
+            )
+
+            await twitchUtils.safeSend(ctx, self.__cutenessResultToStr(result))
         else:
             userId = str(ctx.author.id)
 
-        result = await self.__cutenessRepository.fetchCutenessLeaderboard(
-            twitchChannel = user.getHandle(),
-            specificLookupUserId = userId,
-            specificLookupUserName = userName
-        )
+            result = await self.__cutenessRepository.fetchCutenessLeaderboard(
+                twitchChannel = user.getHandle(),
+                specificLookupUserId = userId,
+                specificLookupUserName = userName
+            )
 
-        await twitchUtils.safeSend(ctx, result.toStr())
+            await twitchUtils.safeSend(ctx, self.__cutenessLeaderboardResultToStr(result))
+
         self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -718,11 +772,14 @@ class MyCutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        cutenessUtils: CutenessUtils,
         timber: Timber,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if cutenessRepository is None:
+        if cutenessUtils is None:
+            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+        elif cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -732,6 +789,7 @@ class MyCutenessCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -755,12 +813,25 @@ class MyCutenessCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await twitchUtils.safeSend(ctx, result.toStr())
+            await twitchUtils.safeSend(ctx, self.__resultToStr(result))
         except ValueError:
             self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
         self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {ctx.author.name}:{userId} in {user.getHandle()}')
+
+    def __resultToStr(self, result: CutenessResult) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+
+        if result.hasCuteness() and result.getCuteness() >= 1:
+            if result.hasLocalLeaderboard():
+                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard())
+                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
+            else:
+                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+        else:
+            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()} 😿'
 
 
 class MyCutenessHistoryCommand(AbsCommand):

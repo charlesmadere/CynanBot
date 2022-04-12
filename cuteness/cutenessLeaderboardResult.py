@@ -28,30 +28,11 @@ class CutenessLeaderboardResult():
     def getEntries(self) -> List[CutenessLeaderboardEntry]:
         return self.__entries
 
+    def getSpecificLookupCutenessResult(self) -> CutenessResult:
+        return self.__specificLookupCutenessResult
+
     def hasEntries(self) -> bool:
         return utils.hasItems(self.__entries)
 
     def hasSpecificLookupCutenessResult(self) -> bool:
         return self.__specificLookupCutenessResult is not None and self.__specificLookupCutenessResult.hasCuteness()
-
-    def toStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasEntries():
-            return f'Unfortunately the {self.__cutenessDate.toStr()} cuteness leaderboard is empty 😿'
-
-        specificLookupText = ''
-        if self.hasSpecificLookupCutenessResult():
-            userName = self.__specificLookupCutenessResult.getUserName()
-            cutenessStr = self.__specificLookupCutenessResult.getCutenessStr()
-            specificLookupText = f'{userName} your cuteness is {cutenessStr}'
-
-        entryStrings: List[str] = list()
-        for entry in self.__entries:
-            entryStrings.append(entry.toStr())
-
-        if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {self.__cutenessDate.toStr()} leaderboard is: {delimiter.join(entryStrings)} ✨'
-        else:
-            return f'The {self.__cutenessDate.toStr()} leaderboard is {delimiter.join(entryStrings)} ✨'

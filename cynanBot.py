@@ -21,6 +21,7 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
+from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
@@ -70,6 +71,7 @@ class CynanBot(Bot):
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
         cutenessRepository: Optional[CutenessRepository],
+        cutenessUtils: Optional[CutenessUtils],
         doubleCutenessHelper: Optional[DoubleCutenessHelper],
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
@@ -158,17 +160,17 @@ class CynanBot(Bot):
         else:
             self.__chatBandClearCommand: AbsCommand = ChatBandClearCommand(chatBandManager, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None:
+        if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
-            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
-            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, timber, usersRepository)
+            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, cutenessUtils, timber, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
 
         if jishoHelper is None:

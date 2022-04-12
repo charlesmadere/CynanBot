@@ -42,20 +42,6 @@ class CutenessResult():
     def getLocalLeaderboard(self) -> List[CutenessEntry]:
         return self.__localLeaderboard
 
-    def getLocalLeaderboardStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if not self.hasLocalLeaderboard():
-            return ''
-
-        strings: List[str] = list()
-
-        for entry in self.__localLeaderboard:
-            strings.append(entry.toStr())
-
-        return delimiter.join(strings)
-
     def getUserId(self) -> str:
         return self.__userId
 
@@ -67,15 +53,3 @@ class CutenessResult():
 
     def hasLocalLeaderboard(self) -> bool:
         return utils.hasItems(self.__localLeaderboard)
-
-    def toStr(self, delimiter: str = ', ') -> str:
-        if delimiter is None:
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        if self.hasCuteness() and self.__cuteness >= 1:
-            if self.hasLocalLeaderboard():
-                return f'{self.getUserName()}\'s {self.__cutenessDate.toStr()} cuteness is {self.getCutenessStr()}, and their local leaderboard is: {self.getLocalLeaderboardStr(delimiter)} ✨'
-            else:
-                return f'{self.getUserName()}\'s {self.__cutenessDate.toStr()} cuteness is {self.getCutenessStr()} ✨'
-        else:
-            return f'{self.getUserName()} has no cuteness in {self.__cutenessDate.toStr()} 😿'

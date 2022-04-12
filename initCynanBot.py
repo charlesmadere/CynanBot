@@ -6,6 +6,7 @@ import aiohttp
 from authRepository import AuthRepository
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
+from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -193,6 +194,7 @@ cynanBot = CynanBot(
         websocketConnectionServer = websocketConnectionServer
     ),
     cutenessRepository = cutenessRepository,
+    cutenessUtils = CutenessUtils(),
     doubleCutenessHelper = DoubleCutenessHelper(),
     funtoonRepository = FuntoonRepository(
         clientSession = clientSession,

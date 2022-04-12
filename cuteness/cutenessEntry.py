@@ -33,6 +33,3 @@ class CutenessEntry():
 
     def getUserName(self) -> str:
         return self.__userName
-
-    def toStr(self) -> str:
-        return f'{self.__userName} ({self.getCutenessStr()})'
