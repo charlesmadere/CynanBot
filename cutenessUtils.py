@@ -2,6 +2,7 @@ from typing import List
 
 import CynanBotCommon.utils as utils
 from cuteness.cutenessEntry import CutenessEntry
+from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from cuteness.cutenessResult import CutenessResult
 
@@ -23,6 +24,22 @@ class CutenessUtils():
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
+
+    def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not result.hasEntries():
+            return f'{result.getUserName()} has no cuteness history 😿'
+
+        historyStrs: List[str] = list()
+        for entry in result.getEntries():
+            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
+
+        historyStr = delimiter.join(historyStrs)
+        return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):

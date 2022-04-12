@@ -826,6 +826,7 @@ class MyCutenessHistoryCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        cutenessUtils: CutenessUtils,
         timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -834,6 +835,8 @@ class MyCutenessHistoryCommand(AbsCommand):
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif cutenessUtils is None:
+            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif userIdsRepository is None:
@@ -846,6 +849,7 @@ class MyCutenessHistoryCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -892,22 +896,8 @@ class MyCutenessHistoryCommand(AbsCommand):
             userName = userName
         )
 
-        await twitchUtils.safeSend(ctx, self.__resultToStr(result))
+        await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__delimiter))
         self.__timber.log('CutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-    def __resultToStr(self, result: CutenessHistoryResult) -> str:
-        if result is None:
-            raise ValueError(f'result argument is malformed: \"{result}\"')
-
-        if not result.hasEntries():
-            return f'{result.getUserName()} has no cuteness history 😿'
-
-        historyStrs: List[str] = list()
-        for entry in result.getEntries():
-            historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
-
-        historyStr = self.__delimiter.join(historyStrs)
-        return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
 
 
 class PbsCommand(AbsCommand):
