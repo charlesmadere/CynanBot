@@ -813,25 +813,12 @@ class MyCutenessCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await twitchUtils.safeSend(ctx, self.__resultToStr(result))
+            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result))
         except ValueError:
             self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
         self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {ctx.author.name}:{userId} in {user.getHandle()}')
-
-    def __resultToStr(self, result: CutenessResult) -> str:
-        if result is None:
-            raise ValueError(f'result argument is malformed: \"{result}\"')
-
-        if result.hasCuteness() and result.getCuteness() >= 1:
-            if result.hasLocalLeaderboard():
-                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard())
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
-            else:
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
-        else:
-            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()} 😿'
 
 
 class MyCutenessHistoryCommand(AbsCommand):
