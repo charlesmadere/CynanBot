@@ -34,12 +34,21 @@ class CutenessUtils():
         if not result.hasEntries():
             return f'{result.getUserName()} has no cuteness history 😿'
 
+        bestCuteness = result.getBestCuteness()
+
         historyStrs: List[str] = list()
         for entry in result.getEntries():
             historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
-
         historyStr = delimiter.join(historyStrs)
-        return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
+
+        if bestCuteness is not None and result.hasTotalCuteness():
+            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate()}. And here is their cuteness history: {historyStr} ✨'
+        elif bestCuteness is not None and not result.hasTotalCuteness():
+            return f'{result.getUserName()}\'s best ever cuteness was {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate()}, with a cuteness history of {historyStr} ✨'
+        elif bestCuteness is None and result.hasTotalCuteness():
+            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a cuteness history of {historyStr} ✨'
+        else:
+            return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):

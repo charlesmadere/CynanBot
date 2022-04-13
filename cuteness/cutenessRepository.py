@@ -257,6 +257,55 @@ class CutenessRepository():
         # sort entries into newest to oldest order
         entries.sort(key = lambda entry: entry.getCutenessDate(), reverse = True)
 
+        await cursor.close()
+
+        cursor = await connection.execute(
+            '''
+                SELECT SUM(cuteness) FROM cuteness
+                WHERE twitchChannel = ? AND userId = ?
+                LIMIT 1
+            ''',
+            ( twitchChannel, userId )
+        )
+
+        row = await cursor.fetchone()
+        totalCuteness: int = 0
+
+        if row is not None:
+            # this should be impossible at this point, but let's just be safe
+            totalCuteness = row[0]
+
+        await cursor.close()
+
+        cursor = await connection.execute(
+            '''
+                SELECT a.cuteness, a.utcYearAndMonth FROM cuteness
+                WHERE a.twitchChannel = ? AND a.userId = ?
+                INNER JOIN (
+                    SELECT MAX(cuteness) cuteness, utcYearAndMonth
+                    FROM cuteness
+                    GROUP BY userId
+                )
+                LIMIT 1
+            ''',
+            ( twitchChannel, userId )
+        )
+
+        row = await cursor.fetchone()
+        bestCuteness: CutenessHistoryEntry = None
+
+        if row is not None:
+            # again, this should be impossible here, but let's just be safe
+            bestCuteness = CutenessHistoryEntry(
+                cutenessDate = row[0],
+                cuteness = row[1],
+                userId = userId,
+                userName = userName
+            )
+
+        await cursor.close()
+        await connection.close()
+
         return CutenessHistoryResult(
             userId = userId,
             userName = userName,
