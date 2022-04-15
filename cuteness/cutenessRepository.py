@@ -11,6 +11,8 @@ from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessHistoryEntry import CutenessHistoryEntry
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from cuteness.cutenessLeaderboardHistoryResult import \
+    CutenessLeaderboardHistoryResult
 from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
 from cuteness.cutenessResult import CutenessResult
 
@@ -21,6 +23,7 @@ class CutenessRepository():
         self,
         backingDatabase: BackingDatabase,
         userIdsRepository: UserIdsRepository,
+        historyLeaderboardSize: int = 3,
         historySize: int = 5,
         leaderboardSize: int = 10,
         localLeaderboardSize: int = 5
@@ -29,21 +32,26 @@ class CutenessRepository():
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidNum(historyLeaderboardSize):
+            raise ValueError(f'historyLeaderboardSize argument is malformed: \"{historyLeaderboardSize}\"')
+        elif historyLeaderboardSize < 2 or historyLeaderboardSize > 6:
+            raise ValueError(f'historyLeaderboardSize argument is out of bounds: {historyLeaderboardSize}')
         elif not utils.isValidNum(historySize):
             raise ValueError(f'historySize argument is malformed: \"{historySize}\"')
         elif historySize < 2 or historySize > 12:
-            raise ValueError(f'historySize argument is out of bounds: \"{historySize}\"')
+            raise ValueError(f'historySize argument is out of bounds: {historySize}')
         elif not utils.isValidNum(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
         elif leaderboardSize < 3 or leaderboardSize > 10:
-            raise ValueError(f'leaderboardSize argument is out of bounds: \"{leaderboardSize}\"')
+            raise ValueError(f'leaderboardSize argument is out of bounds: {leaderboardSize}')
         elif not utils.isValidNum(localLeaderboardSize):
             raise ValueError(f'localLeaderboardSize argument is malformed: \"{localLeaderboardSize}\"')
         elif localLeaderboardSize < 1 or localLeaderboardSize > 5:
-            raise ValueError(f'localLeaderboardSize argument is out of bounds: \"{localLeaderboardSize}\"')
+            raise ValueError(f'localLeaderboardSize argument is out of bounds: {localLeaderboardSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__historyLeaderboardSize: int = historyLeaderboardSize
         self.__historySize: int = historySize
         self.__leaderboardSize: int = leaderboardSize
         self.__localLeaderboardSize: int = localLeaderboardSize
@@ -279,13 +287,12 @@ class CutenessRepository():
 
         cursor = await connection.execute(
             '''
-                SELECT a.cuteness, a.utcYearAndMonth FROM cuteness
-                WHERE a.twitchChannel = ? AND a.userId = ?
+                SELECT a.cuteness, a.utcYearAndMonth FROM cuteness a
                 INNER JOIN (
-                    SELECT MAX(cuteness) cuteness, utcYearAndMonth
-                    FROM cuteness
+                    SELECT MAX(cuteness) cuteness, utcYearAndMonth FROM cuteness
                     GROUP BY userId
                 )
+                WHERE twitchChannel = ? AND userId = ?
                 LIMIT 1
             ''',
             ( twitchChannel, userId )
@@ -297,8 +304,8 @@ class CutenessRepository():
         if row is not None:
             # again, this should be impossible here, but let's just be safe
             bestCuteness = CutenessHistoryEntry(
-                cutenessDate = row[0],
-                cuteness = row[1],
+                cutenessDate = CutenessDate(row[1]),
+                cuteness = row[0],
                 userId = userId,
                 userName = userName
             )
@@ -309,6 +316,8 @@ class CutenessRepository():
         return CutenessHistoryResult(
             userId = userId,
             userName = userName,
+            bestCuteness = bestCuteness,
+            totalCuteness = totalCuteness,
             entries = entries
         )
 
@@ -469,6 +478,34 @@ class CutenessRepository():
             entries = entries,
             specificLookupCutenessResult = specificLookupCutenessResult
         )
+
+    async def fetchCutenessLeaderboardHistory(self, twitchChannel: str) -> CutenessLeaderboardHistoryResult:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        twitchChannelUserId = await self.__userIdsRepository.fetchUserId(userName = twitchChannel)
+
+        connection = await self.__getDatabaseConnection()
+        cursor = await connection.execute(
+            '''
+                SELECT cuteness.cuteness, cuteness.userId, cuteness.utcYearAndMonth, userIds.userName FROM cuteness
+                INNER JOIN userIds ON cuteness.userId = userIds.userId
+                WHERE cuteness.twitchChannel = ? AND cuteness.userId != ?
+                ORDER BY cuteness.utcYearAndMonth DESC, cuteness.cuteness DESC
+                LIMIT ?
+            ''',
+            ( twitchChannel, twitchChannelUserId, self.__historyLeaderboardSize )
+        )
+
+        # TODO the above SQL query needs some work, it currently just returns the top X in the
+        # current cuteness leaderboard month
+
+        rows = await cursor.fetchmany(self.__historyLeaderboardSize)
+
+        await cursor.close()
+        await connection.close()
+
+        # TODO
 
     async def __getDatabaseConnection(self) -> Connection:
         await self.__initDatabaseTable()

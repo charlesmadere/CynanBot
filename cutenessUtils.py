@@ -4,6 +4,8 @@ import CynanBotCommon.utils as utils
 from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from cuteness.cutenessLeaderboardHistoryResult import \
+    CutenessLeaderboardHistoryResult
 from cuteness.cutenessResult import CutenessResult
 
 
@@ -34,21 +36,21 @@ class CutenessUtils():
         if not result.hasEntries():
             return f'{result.getUserName()} has no cuteness history 😿'
 
-        bestCuteness = result.getBestCuteness()
-
         historyStrs: List[str] = list()
+
         for entry in result.getEntries():
             historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
+
         historyStr = delimiter.join(historyStrs)
 
-        if bestCuteness is not None and result.hasTotalCuteness():
-            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate()}. And here is their cuteness history: {historyStr} ✨'
-        elif bestCuteness is not None and not result.hasTotalCuteness():
-            return f'{result.getUserName()}\'s best ever cuteness was {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate()}, with a cuteness history of {historyStr} ✨'
-        elif bestCuteness is None and result.hasTotalCuteness():
-            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a cuteness history of {historyStr} ✨'
+        if result.hasBestCuteness() and result.hasTotalCuteness():
+            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}. And here is their recent cuteness history: {historyStr} ✨'
+        elif result.hasBestCuteness() and not result.hasTotalCuteness():
+            return f'{result.getUserName()}\'s best ever cuteness was {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}, with a recent cuteness history of {historyStr} ✨'
+        elif not result.hasBestCuteness() and result.hasTotalCuteness():
+            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a recent cuteness history of {historyStr} ✨'
         else:
-            return f'{result.getUserName()}\'s cuteness history: {historyStr} ✨'
+            return f'{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):
@@ -62,6 +64,36 @@ class CutenessUtils():
             entryStrings.append(self.getLeaderboardPlacement(entry))
 
         return delimiter.join(entryStrings)
+
+    def getCutenessLeaderboardHistory(
+        self,
+        result: CutenessLeaderboardHistoryResult,
+        entryDelimiter: str,
+        leaderboardDelimiter: str
+    ) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif entryDelimiter is None:
+            raise ValueError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
+        elif leaderboardDelimiter is None:
+            raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
+
+        if not result.hasLeaderboards():
+            return f'{result.getTwitchChannel()} has no cuteness leaderboard history 😿'
+
+        leaderboardStrings: List[str] = list()
+
+        for leaderboard in result.getLeaderboards():
+            if not leaderboard.hasEntries():
+                continue
+
+            entryStrings: List[str] = list()
+            for entry in leaderboard.getEntries():
+                entryStrings.append(self.getCuteness(entry))
+
+            leaderboardStrings.append(f'{leaderboard.getCutenessDate().toStr()}: {entryDelimiter.join(entryStrings)}')
+
+        return f'Cuteness leaderboard history: {leaderboardDelimiter.join(leaderboardStrings)}'
 
     def getLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
         if entry is None:

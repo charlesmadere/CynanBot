@@ -12,8 +12,9 @@ from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand,
                       CutenessChampionsCommand, CutenessCommand,
-                      CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
-                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
+                      CutenessHistoryCommand, CynanSourceCommand,
+                      DiscordCommand, GiveCutenessCommand, JishoCommand,
+                      LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
                       TamalesCommand, TimeCommand, TranslateCommand,
@@ -163,12 +164,14 @@ class CynanBot(Bot):
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
+            self.__cutenessHistoryCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, cutenessUtils, timber, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
