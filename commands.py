@@ -447,7 +447,7 @@ class CutenessCommand(AbsCommand):
                 await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
-            result = self.__cutenessRepository.fetchCuteness(
+            result = await self.__cutenessRepository.fetchCuteness(
                 fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
