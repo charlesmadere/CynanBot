@@ -545,6 +545,10 @@ class CynanBot(Bot):
     async def command_cutenesschampions(self, ctx: Context):
         await self.__cutenessChampionsCommand.handleCommand(ctx)
 
+    @commands.command(name = 'cutenesshistory')
+    async def command_cutenesshistory(self, ctx: Context):
+        await self.__cutenessHistoryCommand.handleCommand(ctx)
+
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
         await self.__cynanSourceCommand.handleCommand(ctx)

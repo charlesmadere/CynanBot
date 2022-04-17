@@ -89,11 +89,11 @@ class CutenessUtils():
 
             entryStrings: List[str] = list()
             for entry in leaderboard.getEntries():
-                entryStrings.append(self.getCuteness(entry))
+                entryStrings.append(self.getLeaderboardPlacement(entry))
 
             leaderboardStrings.append(f'{leaderboard.getCutenessDate().toStr()}: {entryDelimiter.join(entryStrings)}')
 
-        return f'Cuteness leaderboard history: {leaderboardDelimiter.join(leaderboardStrings)}'
+        return f'Cuteness leaderboard history ✨ {leaderboardDelimiter.join(leaderboardStrings)}'
 
     def getLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
         if entry is None:

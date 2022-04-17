@@ -488,24 +488,64 @@ class CutenessRepository():
         connection = await self.__getDatabaseConnection()
         cursor = await connection.execute(
             '''
-                SELECT cuteness.cuteness, cuteness.userId, cuteness.utcYearAndMonth, userIds.userName FROM cuteness
-                INNER JOIN userIds ON cuteness.userId = userIds.userId
-                WHERE cuteness.twitchChannel = ? AND cuteness.userId != ?
-                ORDER BY cuteness.utcYearAndMonth DESC, cuteness.cuteness DESC
+                SELECT DISTINCT utcYearAndMonth FROM cuteness
+                WHERE twitchChannel = ?
+                ORDER BY utcYearAndMonth DESC
                 LIMIT ?
             ''',
-            ( twitchChannel, twitchChannelUserId, self.__historyLeaderboardSize )
+            ( twitchChannel, self.__historyLeaderboardSize )
         )
-
-        # TODO the above SQL query needs some work, it currently just returns the top X in the
-        # current cuteness leaderboard month
 
         rows = await cursor.fetchmany(self.__historyLeaderboardSize)
 
-        await cursor.close()
+        if len(rows) == 0:
+            await cursor.close()
+            await connection.close()
+            return CutenessLeaderboardHistoryResult(twitchChannel = twitchChannel)
+
+        leaderboards: List[CutenessLeaderboardResult] = list()
+
+        for row in rows:
+            cutenessDate = CutenessDate(row[0])
+            cursor = await connection.execute(
+                '''
+                    SELECT cuteness.cuteness, cuteness.userId, userIds.userName FROM cuteness
+                    INNER JOIN userIds ON cuteness.userId = userIds.userId
+                    WHERE cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.twitchChannel = ? AND cuteness.userId != ? AND cuteness.utcYearAndMonth = ?
+                    ORDER BY cuteness.cuteness DESC
+                    LIMIT ?
+                ''',
+                ( twitchChannel, twitchChannelUserId, cutenessDate.getStr(), self.__historyLeaderboardSize )
+            )
+
+            rows = await cursor.fetchmany(self.__historyLeaderboardSize)
+
+            if len(rows) >= 1:
+                entries: List[CutenessLeaderboardEntry] = list()
+                rank: int = 1
+
+                for row in rows:
+                    entries.append(CutenessLeaderboardEntry(
+                        cuteness = row[0],
+                        rank = rank,
+                        userId = row[1],
+                        userName = row[2]
+                    ))
+                    rank = rank + 1
+
+                leaderboards.append(CutenessLeaderboardResult(
+                    cutenessDate = cutenessDate,
+                    entries = entries
+                ))
+
+            await cursor.close()
+
         await connection.close()
 
-        # TODO
+        return CutenessLeaderboardHistoryResult(
+            twitchChannel = twitchChannel,
+            leaderboards = leaderboards
+        )
 
     async def __getDatabaseConnection(self) -> Connection:
         await self.__initDatabaseTable()
