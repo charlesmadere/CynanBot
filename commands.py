@@ -409,7 +409,7 @@ class CutenessCommand(AbsCommand):
 
         if result.hasCuteness() and result.getCuteness() >= 1:
             if result.hasLocalLeaderboard():
-                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard())
+                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard(), self.__delimiter)
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
             else:
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
