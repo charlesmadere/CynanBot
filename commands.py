@@ -298,6 +298,7 @@ class CommandsCommand(AbsCommand):
         if user.isCutenessEnabled():
             commands.append('!cuteness')
             commands.append('!cutenesschampions')
+            commands.append('!cutenesshistory')
             commands.append('!mycuteness')
             commands.append('!mycutenesshistory')
 
