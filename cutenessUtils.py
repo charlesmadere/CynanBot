@@ -116,7 +116,17 @@ class CutenessUtils():
         if entry is None:
             raise ValueError(f'result argument is malformed: \"{entry}\"')
 
-        return f'#{entry.getRankStr()} {entry.getUserName()} ({entry.getCutenessStr()})'
+        rankStr: str = None
+        if entry.getRank() == 1:
+            rankStr = '🥇'
+        elif entry.getRank() == 2:
+            rankStr = '🥈'
+        elif entry.getRank() == 3:
+            rankStr = '🥉'
+        else:
+            rankStr = f'#{entry.getRankStr()}'
+
+        return f'{rankStr} {entry.getUserName()} ({entry.getCutenessStr()})'
 
     def getLocalLeaderboard(self, entries: List[CutenessEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):
