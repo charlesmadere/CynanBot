@@ -67,7 +67,7 @@ class TriviaUtils():
         triviaQuestion: AbsTriviaQuestion,
         delaySeconds: int,
         points: int,
-        delimiter: str = ', '
+        delimiter: str = ''
     ) -> str:
         if triviaQuestion is None:
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
