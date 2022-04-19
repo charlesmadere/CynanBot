@@ -1,5 +1,4 @@
 import asyncio
-import locale
 from abc import ABC, abstractmethod
 
 from twitchio.channel import Channel
@@ -517,18 +516,16 @@ class TriviaGameRedemption(AbsPointRedemption):
         delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
             delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
-        delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
 
         points = self.__generalSettingsRepository.getTriviaGamePoints()
         if twitchUser.hasTriviaGamePoints():
             points = twitchUser.getTriviaGamePoints()
-        pointsStr = locale.format_string("%d", points, grouping = True)
 
-        pointsPlurality = 'points'
-        if points == 1:
-            pointsPlurality = 'point'
-
-        await twitchUtils.safeSend(twitchChannel, f'🏫 @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality}: {triviaQuestion.getPrompt()}')
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
+            triviaQuestion = triviaQuestion,
+            delaySeconds = delaySeconds,
+            points = points
+        ))
 
         asyncio.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,

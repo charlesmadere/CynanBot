@@ -1,6 +1,11 @@
+import locale
+import random
+from typing import List
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBotCommon.trivia.triviaType import TriviaType
 
 
 class TriviaUtils():
@@ -21,6 +26,10 @@ class TriviaUtils():
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'The correct answers are: {correctAnswersStr}'
+
+    def getRandomTriviaEmote(self) -> str:
+        triviaEmotes: List[str] = [ '🏫', '🖍️', '✏️', '🧑‍🎓', '👨‍🎓', '👩‍🎓', '🧑‍🏫', '👨‍🏫', '👩‍🏫' ]
+        return random.choice(triviaEmotes)
 
     def getResults(self, userName: str, triviaResult: TriviaScoreResult) -> str:
         if not utils.isValidStr(userName):
@@ -52,3 +61,41 @@ class TriviaUtils():
             streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
         return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+
+    def getTriviaGameQuestionPrompt(
+        self,
+        triviaQuestion: AbsTriviaQuestion,
+        delaySeconds: int,
+        points: int,
+        delimiter: str = ', '
+    ) -> str:
+        if triviaQuestion is None:
+            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        elif not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif not utils.isValidNum(points):
+            raise ValueError(f'points argument is malformed: \"{points}\"')
+        elif points < 1:
+            raise ValueError(f'points argument is out of bounds: {points}')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        triviaEmote = self.getRandomTriviaEmote()
+        delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
+        pointsStr = locale.format_string("%d", points, grouping = True)
+
+        pointsPlurality: str = None
+        if points == 1:
+            pointsPlurality = 'point'
+        else:
+            pointsPlurality = 'points'
+
+        questionPrompt: str = None
+        if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
+            questionPrompt = f'(category is \"{triviaQuestion.getCategory()}\") — {triviaQuestion.getQuestion()}'
+        else:
+            questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
+
+        return f'{triviaEmote} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'
