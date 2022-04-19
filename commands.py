@@ -475,6 +475,7 @@ class CutenessChampionsCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
+        cutenessUtils: CutenessUtils,
         timber: Timber,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -483,6 +484,8 @@ class CutenessChampionsCommand(AbsCommand):
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif cutenessUtils is None:
+            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif userIdsRepository is None:
@@ -495,6 +498,7 @@ class CutenessChampionsCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
@@ -513,24 +517,8 @@ class CutenessChampionsCommand(AbsCommand):
             twitchChannel = user.getHandle()
         )
 
-        await twitchUtils.safeSend(ctx, self.__resultToStr(result))
+        await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
         self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-    def __resultToStr(self, result: CutenessChampionsResult) -> str:
-        if result is None:
-            raise ValueError(f'result argument is malformed: \"{result}\"')
-
-        if not result.hasChampions():
-            return f'There are no cuteness champions 😿'
-
-        championsStrs: List[str] = list()
-
-        for entry in result.getChampions():
-            championsStrs.append(f'#{entry.getRankStr()} {entry.getUserName()} ({entry.getCutenessStr()})')
-
-        championsStr = self.__delimiter.join(championsStrs)
-        return f'Cuteness champions: {championsStr} ✨'
-
 
 class CutenessHistoryCommand(AbsCommand):
 

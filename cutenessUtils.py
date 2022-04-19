@@ -1,6 +1,7 @@
 from typing import List
 
 import CynanBotCommon.utils as utils
+from cuteness.cutenessChampionsResult import CutenessChampionsResult
 from cuteness.cutenessEntry import CutenessEntry
 from cuteness.cutenessHistoryResult import CutenessHistoryResult
 from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
@@ -26,6 +27,22 @@ class CutenessUtils():
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
+
+    def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
+        if result is None:
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not result.hasChampions():
+            return f'There are no cuteness champions 😿'
+
+        championsStrs: List[str] = list()
+        for entry in result.getChampions():
+            championsStrs.append(self.getLeaderboardPlacement(entry))
+
+        championsStr = delimiter.join(championsStrs)
+        return f'Cuteness champions — {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if result is None:
@@ -91,7 +108,7 @@ class CutenessUtils():
             for entry in leaderboard.getEntries():
                 entryStrings.append(self.getLeaderboardPlacement(entry))
 
-            leaderboardStrings.append(f'{leaderboard.getCutenessDate().toStr()}: {entryDelimiter.join(entryStrings)}')
+            leaderboardStrings.append(f'{leaderboard.getCutenessDate().toStr()} {entryDelimiter.join(entryStrings)}')
 
         return f'Cuteness leaderboard history — {leaderboardDelimiter.join(leaderboardStrings)}'
 
@@ -108,7 +125,6 @@ class CutenessUtils():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entryStrings: List[str] = list()
-
         for entry in entries:
             entryStrings.append(self.getLocalLeaderboardPlacement(entry))
 

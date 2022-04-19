@@ -170,7 +170,7 @@ class CynanBot(Bot):
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
-            self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
+            self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
             self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, userIdsRepository, usersRepository)
             self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, cutenessUtils, timber, usersRepository)
