@@ -1,4 +1,3 @@
-from asyncio import AbstractEventLoop
 from typing import Dict, Optional
 
 from twitchio import Channel, Message
@@ -45,8 +44,6 @@ from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnection.websocketConnectionServer import \
-    WebsocketConnectionServer
 from events import AbsEvent, RaidEvent, SubGiftThankingEvent
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
@@ -67,7 +64,6 @@ class CynanBot(Bot):
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
@@ -93,7 +89,6 @@ class CynanBot(Bot):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
-        websocketConnectionServer: Optional[WebsocketConnectionServer],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
@@ -104,9 +99,7 @@ class CynanBot(Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if eventLoop is None:
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif authRepository is None:
+        if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -123,13 +116,11 @@ class CynanBot(Bot):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__websocketConnectionServer: WebsocketConnectionServer = websocketConnectionServer
 
         self.__channelPointsLruCache: LruCache = LruCache(128)
 
@@ -512,14 +503,7 @@ class CynanBot(Bot):
 
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
-        await self.__startWebsocketConnectionServer()
         await self.__pubSubUtils.startPubSub()
-
-    async def __startWebsocketConnectionServer(self):
-        if self.__websocketConnectionServer is None:
-            self.__timber.log('CynanBot', f'Will not start websocketConnectionServer, as the instance is `None`')
-        else:
-            self.__websocketConnectionServer.start(self.__eventLoop)
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):

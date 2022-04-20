@@ -76,7 +76,10 @@ clientSession = aiohttp.ClientSession(
     cookie_jar = aiohttp.DummyCookieJar(),
     timeout = aiohttp.ClientTimeout(total = 8)
 )
-timber = Timber()
+eventLoop = asyncio.get_event_loop()
+timber = Timber(
+    eventLoop = eventLoop
+)
 
 userIdsRepository = UserIdsRepository(
     clientSession = clientSession,
@@ -91,6 +94,7 @@ languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
 
 websocketConnectionServer = WebsocketConnectionServer(
+    eventLoop = eventLoop,
     timber = timber,
     isDebugLoggingEnabled = True
 )
@@ -119,6 +123,9 @@ if authRepository.hasOneWeatherApiKey():
 
 triviaIdGenerator = TriviaIdGenerator()
 triviaSettingsRepository = TriviaSettingsRepository()
+triviaScoreRepository = TriviaScoreRepository(
+    backingDatabase = backingDatabase
+)
 
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
 if authRepository.hasQuizApiKey():
@@ -189,7 +196,6 @@ triviaRepository = TriviaRepository(
 #####################################
 
 cynanBot = CynanBot(
-    eventLoop = asyncio.get_event_loop(),
     analogueStoreRepository = AnalogueStoreRepository(
         clientSession = clientSession,
         timber = timber
@@ -230,13 +236,13 @@ cynanBot = CynanBot(
     timber = timber,
     translationHelper = translationHelper,
     triviaGameRepository = TriviaGameRepository(
+        eventLoop = eventLoop,
         timber = timber,
-        triviaRepository = triviaRepository
+        triviaRepository = triviaRepository,
+        triviaScoreRepository = triviaScoreRepository
     ),
     triviaRepository = triviaRepository,
-    triviaScoreRepository = TriviaScoreRepository(
-        backingDatabase = backingDatabase
-    ),
+    triviaScoreRepository = triviaScoreRepository,
     triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
         clientSession = clientSession,
