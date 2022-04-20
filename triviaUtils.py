@@ -67,6 +67,7 @@ class TriviaUtils():
         triviaQuestion: AbsTriviaQuestion,
         delaySeconds: int,
         points: int,
+        userNameThatRedeemed: str,
         delimiter: str = ' '
     ) -> str:
         if triviaQuestion is None:
@@ -98,4 +99,4 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{triviaEmote} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'
+        return f'{triviaEmote} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'

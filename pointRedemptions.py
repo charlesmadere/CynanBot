@@ -524,7 +524,8 @@ class TriviaGameRedemption(AbsPointRedemption):
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = triviaQuestion,
             delaySeconds = delaySeconds,
-            points = points
+            points = points,
+            userNameThatRedeemed = userNameThatRedeemed
         ))
 
         asyncio.create_task(twitchUtils.waitThenSend(
