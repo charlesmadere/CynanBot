@@ -62,7 +62,7 @@ class PubSubUtils():
 
         self.__isManagingPubSub: bool = False
         self.__isStarted: bool = False
-        self.__pubSubEntries: defaultdict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
+        self.__pubSubEntries: Dict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
 
         self.__pubSubPool: PubSubPool = PubSubPool(
