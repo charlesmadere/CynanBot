@@ -253,7 +253,6 @@ cynanBot = CynanBot(
         timeZoneRepository = timeZoneRepository
     ),
     weatherRepository = weatherRepository,
-    websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayRepository = WordOfTheDayRepository(
         clientSession = clientSession,
         timber = timber
