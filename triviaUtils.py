@@ -31,15 +31,15 @@ class TriviaUtils():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         prefix = f'{self.getRandomTriviaEmote()} Congratulations @{userNameThatRedeemed}, that\'s correct!'
-        infix = f'You\'re new cuteness is {newCuteness.getCutenessStr()}.'
+        infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
-            return f'{prefix} 🎉 {infix} The correct answer was: {correctAnswers[0]}'
+            return f'{prefix} 🎉 {infix} ✨ The correct answer was: {correctAnswers[0]}'
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} 🎉 {infix} The correct answers were: {correctAnswersStr}'
+            return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
 
     def getIncorrectAnswerReveal(
         self,
