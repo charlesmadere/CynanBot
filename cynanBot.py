@@ -49,6 +49,7 @@ from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
+from CynanBotCommon.trivia.newGameTriviaEvent import NewGameTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
@@ -531,6 +532,8 @@ class CynanBot(Bot):
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.NEW_GAME:
+            await self.__handleNewGameTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
             await self.__handleOutOfTimeTriviaEvent(event)
 
@@ -561,6 +564,16 @@ class CynanBot(Bot):
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.getTriviaQuestion(),
+            userNameThatRedeemed = event.getUserName()
+        ))
+
+    async def __handleNewGameTriviaEvent(self, event: NewGameTriviaEvent):
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
+            triviaQuestion = event.getTriviaQuestion(),
+            delaySeconds = event.getSecondsToLive(),
+            points = event.getPointsForWinning(),
             userNameThatRedeemed = event.getUserName()
         ))
 
