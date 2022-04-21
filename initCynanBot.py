@@ -41,7 +41,7 @@ from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
-from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
@@ -235,7 +235,7 @@ cynanBot = CynanBot(
     ),
     timber = timber,
     translationHelper = translationHelper,
-    triviaGameRepository = TriviaGameRepository(
+    triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         timber = timber,
         triviaRepository = triviaRepository,

@@ -49,7 +49,7 @@ from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
-from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
+from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
@@ -91,7 +91,7 @@ class CynanBot(Bot):
         tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
-        triviaGameRepository: Optional[TriviaGameRepository],
+        triviaGameMachine: Optional[TriviaGameMachine],
         triviaRepository: Optional[TriviaRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaUtils: Optional[TriviaUtils],
@@ -130,7 +130,7 @@ class CynanBot(Bot):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -155,10 +155,10 @@ class CynanBot(Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameRepository, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
@@ -282,10 +282,10 @@ class CynanBot(Bot):
         else:
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber)
 
-        if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameRepository)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameMachine)
 
         ######################################
         ## Initialization of PubSub objects ##
@@ -518,8 +518,8 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__pubSubUtils.startPubSub()
 
-        if self.__triviaGameRepository is not None:
-            self.__triviaGameRepository.setEventListener(self)
+        if self.__triviaGameMachine is not None:
+            self.__triviaGameMachine.setEventListener(self)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')

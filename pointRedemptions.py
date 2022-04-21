@@ -1,4 +1,3 @@
-import asyncio
 from abc import ABC, abstractmethod
 
 from twitchio.channel import Channel
@@ -11,15 +10,12 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.startNewGameTriviaAction import \
     StartNewGameTriviaAction
-from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
-from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
-from triviaUtils import TriviaUtils
 from users.user import User
 
 
@@ -452,18 +448,18 @@ class TriviaGameRedemption(AbsPointRedemption):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
-        triviaGameRepository: TriviaGameRepository,
+        triviaGameMachine: TriviaGameMachine,
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameRepository is None:
-            raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
+        elif triviaGameMachine is None:
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
 
     async def handlePointRedemption(
         self,
@@ -498,7 +494,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         if twitchUser.hasTriviaGamePoints():
             points = twitchUser.getTriviaGamePoints()
 
-        self.__triviaGameRepository.submitAction(StartNewGameTriviaAction(
+        self.__triviaGameMachine.submitAction(StartNewGameTriviaAction(
             isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled(),
             pointsForWinning = points,
             secondsToLive = secondsToLive,

@@ -1,4 +1,3 @@
-import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List
@@ -10,7 +9,6 @@ import twitch.twitchUtils as twitchUtils
 from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.cutenessResult import CutenessResult
-from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -30,8 +28,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
-from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
-from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -101,21 +98,21 @@ class AnswerCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
-        triviaGameRepository: TriviaGameRepository,
+        triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameRepository is None:
-            raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
+        elif triviaGameMachine is None:
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -133,7 +130,7 @@ class AnswerCommand(AbsCommand):
 
         answer = ' '.join(splits[1:])
 
-        self.__triviaGameRepository.submitAction(CheckAnswerTriviaAction(
+        self.__triviaGameMachine.submitAction(CheckAnswerTriviaAction(
             answer = answer,
             twitchChannel = user.getHandle(),
             userId = str(ctx.author.id),
