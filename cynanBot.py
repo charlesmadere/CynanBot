@@ -1,3 +1,4 @@
+from asyncio import AbstractEventLoop
 from typing import Dict, Optional
 
 from twitchio import Channel, Message
@@ -74,6 +75,7 @@ class CynanBot(Bot):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
@@ -92,7 +94,6 @@ class CynanBot(Bot):
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
         triviaGameMachine: Optional[TriviaGameMachine],
-        triviaRepository: Optional[TriviaRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaUtils: Optional[TriviaUtils],
         twitchTokensRepository: TwitchTokensRepository,
@@ -109,7 +110,9 @@ class CynanBot(Bot):
             initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
         )
 
-        if authRepository is None:
+        if eventLoop is None:
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -128,6 +131,7 @@ class CynanBot(Bot):
 
         self.__authRepository: AuthRepository = authRepository
         self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
@@ -512,21 +516,22 @@ class CynanBot(Bot):
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__pubSubUtils.startPubSub()
+        self.__eventLoop.create_task(self.__startTriviaEventLoop())
 
-        if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
+    async def __startTriviaEventLoop(self):
+        while True:
+            while not self.__triviaGameMachine.getEventQueue().empty():
+                event = self.__triviaGameMachine.getEventQueue().get()
+                self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
 
-    async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
-
-        if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
-            await self.__handleCorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
-            await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
-            await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
-            await self.__handleOutOfTimeTriviaEvent(event)
+                if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
+                    await self.__handleCorrectAnswerTriviaEvent(event)
+                elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
+                    await self.__handleFailedToFetchQuestionTriviaEvent(event)
+                elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
+                    await self.__handleIncorrectAnswerTriviaEvent(event)
+                elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
+                    await self.__handleOutOfTimeTriviaEvent(event)
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(

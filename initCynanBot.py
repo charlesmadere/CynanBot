@@ -196,6 +196,7 @@ triviaRepository = TriviaRepository(
 #####################################
 
 cynanBot = CynanBot(
+    eventLoop = eventLoop,
     analogueStoreRepository = AnalogueStoreRepository(
         clientSession = clientSession,
         timber = timber
