@@ -1,4 +1,5 @@
 import asyncio
+from asyncio import AbstractEventLoop
 from collections import defaultdict
 from queue import SimpleQueue
 from typing import Dict, List
@@ -25,6 +26,7 @@ class PubSubUtils():
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         authRepository: AuthRepository,
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -34,7 +36,9 @@ class PubSubUtils():
         usersRepository: UsersRepository,
         maxConnectionsPerTwitchChannel: int = 3
     ):
-        if authRepository is None:
+        if eventLoop is None:
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif client is None:
             raise ValueError(f'client argument is malformed: \"{client}\"')
@@ -53,6 +57,7 @@ class PubSubUtils():
         elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 5:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -139,14 +144,16 @@ class PubSubUtils():
 
         return pubSubEntries
 
-    async def startPubSub(self):
+    def startPubSub(self):
         if self.__isStarted:
             self.__timber.log('PubSubUtils', 'Not starting PubSub as it has already been started')
             return
 
         self.__isStarted = True
         self.__timber.log('PubSubUtils', 'Starting PubSub...')
+        self.__eventLoop.create_task(self.__startPubSubUpdateLoop())
 
+    async def __startPubSubUpdateLoop(self):
         while True:
             await self.__updatePubSubSubscriptions()
             await asyncio.sleep(self.__generalSettingsRepository.getRefreshPubSubTokensSeconds())

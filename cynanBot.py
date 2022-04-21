@@ -52,7 +52,6 @@ from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
-from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -516,25 +515,25 @@ class CynanBot(Bot):
 
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
-        await self.__pubSubUtils.startPubSub()
-        self.__eventLoop.create_task(self.__startTriviaEventLoop())
 
-    async def __startTriviaEventLoop(self):
-        while True:
-            while not self.__triviaGameMachine.getEventQueue().empty():
-                event: AbsTriviaEvent = self.__triviaGameMachine.getEventQueue().get()
-                self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
+        if self.__triviaGameMachine is not None:
+            self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
 
-                if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
-                    await self.__handleCorrectAnswerTriviaEvent(event)
-                elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
-                    await self.__handleFailedToFetchQuestionTriviaEvent(event)
-                elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
-                    await self.__handleIncorrectAnswerTriviaEvent(event)
-                elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
-                    await self.__handleOutOfTimeTriviaEvent(event)
+        self.__pubSubUtils.startPubSub()
 
-            await asyncio.sleep(0.5)
+    async def onNewTriviaEvent(self, event: AbsTriviaEvent):
+        self.__timber.log('CynanBot', f'Received new trivia event: {event.getTriviaEventType()}')
+
+        if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
+            await self.__handleCorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
+            await self.__handleFailedToFetchQuestionTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
+            await self.__handleIncorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
+            await self.__handleOutOfTimeTriviaEvent(event)
+
+        await asyncio.sleep(0.5)
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
