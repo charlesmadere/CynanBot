@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import AbstractEventLoop
 from typing import Dict, Optional
 
@@ -521,7 +522,7 @@ class CynanBot(Bot):
     async def __startTriviaEventLoop(self):
         while True:
             while not self.__triviaGameMachine.getEventQueue().empty():
-                event = self.__triviaGameMachine.getEventQueue().get()
+                event: AbsTriviaEvent = self.__triviaGameMachine.getEventQueue().get()
                 self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
 
                 if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
@@ -532,6 +533,8 @@ class CynanBot(Bot):
                     await self.__handleIncorrectAnswerTriviaEvent(event)
                 elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
                     await self.__handleOutOfTimeTriviaEvent(event)
+
+            await asyncio.sleep(0.5)
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
