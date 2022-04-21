@@ -18,8 +18,8 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
                       TamalesCommand, TimeCommand, TranslateCommand,
-                      TriviaCommand, TriviaScoreCommand, TwitterCommand,
-                      WeatherCommand, WordCommand)
+                      TriviaScoreCommand, TwitterCommand, WeatherCommand,
+                      WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
@@ -206,11 +206,6 @@ class CynanBot(Bot):
             self.__translateCommand: AbsCommand = StubCommand()
         else:
             self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, usersRepository)
-
-        if triviaRepository is None or triviaUtils is None:
-            self.__triviaCommand: AbsCommand = StubCommand()
-        else:
-            self.__triviaCommand: AbsCommand = TriviaCommand(generalSettingsRepository, timber, triviaRepository, triviaUtils, usersRepository)
 
         if cutenessRepository is None or triviaScoreRepository is None:
             self.__triviaScoreCommand: AbsCommand = StubCommand()
@@ -656,10 +651,6 @@ class CynanBot(Bot):
     @commands.command(name = 'translate')
     async def command_translate(self, ctx: Context):
         await self.__translateCommand.handleCommand(ctx)
-
-    @commands.command(name = 'trivia')
-    async def command_trivia(self, ctx: Context):
-        await self.__triviaCommand.handleCommand(ctx)
 
     @commands.command(name = 'triviascore')
     async def command_triviascore(self, ctx: Context):
