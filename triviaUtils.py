@@ -3,6 +3,7 @@ import random
 from typing import List
 
 import CynanBotCommon.utils as utils
+from cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
@@ -13,19 +14,76 @@ class TriviaUtils():
     def __init__(self):
         pass
 
-    def getAnswerReveal(self, question: AbsTriviaQuestion, delimiter: str = '; ') -> str:
+    def getCorrectAnswerReveal(
+        self,
+        question: AbsTriviaQuestion,
+        newCuteness: CutenessResult,
+        userNameThatRedeemed: str,
+        delimiter: str = '; '
+    ) -> str:
         if question is None:
             raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif newCuteness is None:
+            raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        prefix = f'{self.getRandomTriviaEmote()} Congratulations @{userNameThatRedeemed}, that\'s correct!'
+        infix = f'You\'re new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
-            return f'The correct answer is: {correctAnswers[0]}'
+            return f'{prefix} 🎉 {infix} The correct answer was: {correctAnswers[0]}'
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
-            return f'The correct answers are: {correctAnswersStr}'
+            return f'{prefix} 🎉 {infix} The correct answers were: {correctAnswersStr}'
+
+    def getIncorrectAnswerReveal(
+        self,
+        question: AbsTriviaQuestion,
+        userNameThatRedeemed: str,
+        delimiter: str = '; '
+    ) -> str:
+        if question is None:
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        prefix = f'{self.getRandomTriviaEmote()} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
+        correctAnswers = question.getCorrectAnswers()
+
+        if len(correctAnswers) == 1:
+            return f'{prefix} The correct answer is: {correctAnswers[0]}'
+        else:
+            correctAnswersStr = delimiter.join(correctAnswers)
+            return f'{prefix} The correct answers are: {correctAnswersStr}'
+
+    def getOutOfTimeAnswerReveal(
+        self,
+        question: AbsTriviaQuestion,
+        userNameThatRedeemed: str,
+        delimiter: str = '; '
+    ) -> str:
+        if question is None:
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        prefix = f'{self.getRandomTriviaEmote()} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
+        correctAnswers = question.getCorrectAnswers()
+
+        if len(correctAnswers) == 1:
+            return f'{prefix} The correct answer is: {correctAnswers[0]}'
+        else:
+            correctAnswersStr = delimiter.join(correctAnswers)
+            return f'{prefix} The correct answers are: {correctAnswersStr}'
 
     def getRandomTriviaEmote(self) -> str:
         triviaEmotes: List[str] = [ '🏫', '🖍️', '✏️', '🧑‍🎓', '👨‍🎓', '👩‍🎓', '🧑‍🏫', '👨‍🏫', '👩‍🏫' ]

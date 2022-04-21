@@ -7,7 +7,6 @@ from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
-from cuteness.cutenessChampionsResult import CutenessChampionsResult
 from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.cutenessResult import CutenessResult
@@ -29,7 +28,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.trivia.triviaGameCheckResult import TriviaGameCheckResult
+from CynanBotCommon.trivia.checkAnswerTriviaAction import \
+    CheckAnswerTriviaAction
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -99,39 +99,23 @@ class AnswerCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameRepository: TriviaGameRepository,
-        triviaScoreRepository: TriviaScoreRepository,
-        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
-        if cutenessRepository is None:
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif doubleCutenessHelper is None:
-            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
-        elif generalSettingsRepository is None:
+        if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
-        elif triviaScoreRepository is None:
-            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif triviaUtils is None:
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
-        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -141,15 +125,6 @@ class AnswerCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled():
             return
-        elif self.__triviaGameRepository.isAnswered(user.getHandle()):
-            return
-
-        seconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
-        if user.hasWaitForTriviaAnswerDelay():
-            seconds = user.getWaitForTriviaAnswerDelay()
-
-        if not self.__triviaGameRepository.isWithinAnswerWindow(seconds, user.getHandle()):
-            return
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
@@ -157,49 +132,13 @@ class AnswerCommand(AbsCommand):
             return
 
         answer = ' '.join(splits[1:])
-        userId = str(ctx.author.id)
 
-        checkResult = await self.__triviaGameRepository.checkAnswer(
+        self.__triviaGameRepository.submitAction(CheckAnswerTriviaAction(
             answer = answer,
             twitchChannel = user.getHandle(),
-            userId = userId
-        )
-
-        if checkResult is TriviaGameCheckResult.INVALID_USER:
-            return
-        elif checkResult is TriviaGameCheckResult.INCORRECT_ANSWER:
-            self.__timber.log('AnswerCommand', f'{ctx.author.name}:{userId} in {user.getHandle()} answered incorrectly')
-            answerStr = self.__triviaUtils.getAnswerReveal(self.__triviaGameRepository.getTrivia(user.getHandle()))
-            await twitchUtils.safeSend(ctx, f'😿 Sorry {ctx.author.name}, that is not the right answer. {answerStr}')
-            await self.__triviaScoreRepository.incrementTotalLosses(user.getHandle(), userId)
-            return
-        elif checkResult is not TriviaGameCheckResult.CORRECT_ANSWER:
-            self.__timber.log('AnswerCommand', f'Encounted a strange TriviaGameCheckResult when checking the answer to a trivia question: \"{checkResult}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Sorry, a \"{checkResult}\" error occurred when checking your answer to the trivia question.')
-            return
-
-        await self.__triviaScoreRepository.incrementTotalWins(user.getHandle(), userId)
-
-        cutenessPoints = self.__generalSettingsRepository.getTriviaGamePoints()
-        if user.hasTriviaGamePoints():
-            cutenessPoints = user.getTriviaGamePoints()
-
-        if self.__doubleCutenessHelper.isWithinDoubleCuteness(user.getHandle()):
-            cutenessPoints = 2 * cutenessPoints
-
-        try:
-            cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-                incrementAmount = cutenessPoints,
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = ctx.author.name
-            )
-
-            self.__timber.log('AnswerCommand', f'Increased cuteness for {ctx.author.name}:{userId} by {cutenessPoints} in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'Congratulations {ctx.author.name}, you are correct! 🎉 Your cuteness is now {cutenessResult.getCutenessStr()}~ ✨')
-        except (OverflowError, ValueError) as e:
-            self.__timber.log('AnswerCommand', f'Error increasing cuteness for {ctx.author.name}:{userId} in {user.getHandle()}: {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error increasing cuteness for {ctx.author.name}')
+            userId = str(ctx.author.id),
+            userName = ctx.author.name
+        ))
 
         self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -326,9 +265,6 @@ class CommandsCommand(AbsCommand):
 
         if self.__generalSettingsRepository.isTranslateEnabled() and user.isTranslateEnabled():
             commands.append('!translate')
-
-        if self.__generalSettingsRepository.isTriviaEnabled() and user.isTriviaEnabled():
-            commands.append('!trivia')
 
         if self.__generalSettingsRepository.isTriviaGameEnabled() and user.isTriviaGameEnabled():
             commands.append('!triviascore')
@@ -1394,63 +1330,6 @@ class TranslateCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, '⚠ Error translating')
 
         self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-
-class TriviaCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
-        triviaRepository: TriviaRepository,
-        triviaUtils: TriviaUtils,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 5)
-    ):
-        if generalSettingsRepository is None:
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaRepository is None:
-            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
-        elif triviaUtils is None:
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif usersRepository is None:
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
-        self.__triviaRepository: TriviaRepository = triviaRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
-
-        if not self.__generalSettingsRepository.isTriviaEnabled():
-            return
-        elif not user.isTriviaEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            triviaQuestion = await self.__triviaRepository.fetchTrivia(user.getHandle())
-            await twitchUtils.safeSend(ctx, triviaQuestion.getPrompt())
-
-            asyncio.create_task(twitchUtils.waitThenSend(
-                messageable = ctx,
-                delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay(),
-                message = f'🥁 {self.__triviaUtils.getAnswerReveal(triviaQuestion)}'
-            ))
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('TriviaCommand', f'Error fetching trivia: {e}')
-            await twitchUtils.safeSend(ctx, '⚠ Error fetching trivia')
-
-        self.__timber.log('TriviaCommand', f'Handled !trivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class TriviaScoreCommand(AbsCommand):

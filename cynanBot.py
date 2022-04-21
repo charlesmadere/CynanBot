@@ -7,6 +7,7 @@ from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 import CynanBotCommon.utils as utils
+import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand,
@@ -40,6 +41,13 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
+    CorrectAnswerTriviaEvent
+from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
+    FailedToFetchQuestionTriviaEvent
+from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
+    IncorrectAnswerTriviaEvent
+from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
@@ -119,9 +127,11 @@ class CynanBot(Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
+        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -148,7 +158,7 @@ class CynanBot(Bot):
         if cutenessRepository is None or doubleCutenessHelper is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
         else:
-            self.__answerCommand: AbsCommand = AnswerCommand(cutenessRepository, doubleCutenessHelper, generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, triviaUtils, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameRepository, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
@@ -275,7 +285,7 @@ class CynanBot(Bot):
         if cutenessRepository is None or triviaGameRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameRepository, triviaScoreRepository, triviaUtils)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameRepository)
 
         ######################################
         ## Initialization of PubSub objects ##
@@ -515,15 +525,49 @@ class CynanBot(Bot):
         self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
 
         if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
-            pass
+            await self.__handleCorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
-            pass
+            await self.__handleFailedToFetchQuestionTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
-            pass
+            await self.__handleIncorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
-            pass
+            await self.__handleOutOfTimeTriviaEvent(event)
 
-        pass
+    async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
+        cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
+            incrementAmount = event.getPointsForWinning(),
+            twitchChannel = event.getTwitchChannel(),
+            userId = event.getUserId(),
+            userName = event.getUserName()
+        )
+
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getCorrectAnswerReveal(
+            question = event.getTriviaQuestion(),
+            newCuteness = cutenessResult,
+            userNameThatRedeemed = event.getUserName()
+        ))
+
+    async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+        await twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
+
+    async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
+            question = event.getTriviaQuestion(),
+            userNameThatRedeemed = event.getUserName()
+        ))
+
+    async def __handleOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
+            question = event.getTriviaQuestion(),
+            userNameThatRedeemed = event.getUserName()
+        ))
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
