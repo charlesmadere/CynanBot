@@ -39,6 +39,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -119,6 +121,7 @@ class CynanBot(Bot):
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -504,6 +507,23 @@ class CynanBot(Bot):
     async def event_ready(self):
         self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
         await self.__pubSubUtils.startPubSub()
+
+        if self.__triviaGameRepository is not None:
+            self.__triviaGameRepository.setEventListener(self)
+
+    async def onNewTriviaEvent(self, event: AbsTriviaEvent):
+        self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
+
+        if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
+            pass
+        elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
+            pass
+        elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
+            pass
+        elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
+            pass
+
+        pass
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):

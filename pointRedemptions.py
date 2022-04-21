@@ -12,6 +12,8 @@ from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.startNewGameTriviaAction import \
+    StartNewGameTriviaAction
 from CynanBotCommon.trivia.triviaGameRepository import TriviaGameRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -451,8 +453,6 @@ class TriviaGameRedemption(AbsPointRedemption):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameRepository: TriviaGameRepository,
-        triviaScoreRepository: TriviaScoreRepository,
-        triviaUtils: TriviaUtils
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -460,16 +460,10 @@ class TriviaGameRedemption(AbsPointRedemption):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameRepository is None:
             raise ValueError(f'triviaGameRepository argument is malformed: \"{triviaGameRepository}\"')
-        elif triviaScoreRepository is None:
-            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif triviaUtils is None:
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameRepository: TriviaGameRepository = triviaGameRepository
-        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
 
     async def handlePointRedemption(
         self,
@@ -496,44 +490,21 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif not twitchUser.isTriviaGameEnabled():
             return False
 
-        triviaQuestion: AbsTriviaQuestion = None
-        try:
-            triviaQuestion = await self.__triviaGameRepository.fetchTrivia(
-                twitchChannel = twitchUser.getHandle(),
-                isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled()
-            )
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('TriviaGameRedemption', f'Error retrieving trivia in {twitchUser.getHandle()}: {e}')
-            await twitchUtils.safeSend(twitchChannel, '⚠ Error retrieving trivia')
-            return False
-
-        self.__triviaGameRepository.startNewTriviaGame(
-            twitchChannel = twitchUser.getHandle(),
-            userId = userIdThatRedeemed,
-            userName = userNameThatRedeemed
-        )
-
-        delaySeconds = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        secondsToLive = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
-            delaySeconds = twitchUser.getWaitForTriviaAnswerDelay()
+            secondsToLive = twitchUser.getWaitForTriviaAnswerDelay()
 
         points = self.__generalSettingsRepository.getTriviaGamePoints()
         if twitchUser.hasTriviaGamePoints():
             points = twitchUser.getTriviaGamePoints()
 
-        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
-            triviaQuestion = triviaQuestion,
-            delaySeconds = delaySeconds,
-            points = points,
-            userNameThatRedeemed = userNameThatRedeemed
-        ))
-
-        asyncio.create_task(twitchUtils.waitThenSend(
-            messageable = twitchChannel,
-            delaySeconds = delaySeconds,
-            message = f'😿 {userNameThatRedeemed}, you\'re out of time! {self.__triviaUtils.getAnswerReveal(triviaQuestion)}',
-            heartbeat = lambda: not self.__triviaGameRepository.isAnswered(twitchUser.getHandle()),
-            beforeSend = lambda: (await self.__triviaScoreRepository.incrementTotalLosses(twitchUser.getHandle(), userIdThatRedeemed) for _ in '_').__anext__()
+        self.__triviaGameRepository.submitAction(StartNewGameTriviaAction(
+            isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled(),
+            pointsForWinning = points,
+            secondsToLive = secondsToLive,
+            twitchChannel = twitchUser.getHandle(),
+            userId = userIdThatRedeemed,
+            userName = userNameThatRedeemed
         ))
 
         self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
