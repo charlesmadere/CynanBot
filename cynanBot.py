@@ -514,7 +514,7 @@ class CynanBot(Bot):
         await self.__pubSubUtils.startPubSub()
 
         if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self)
+            self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'onNewTriviaEvent(): {event.getTriviaEventType()} ({event.getEventId()})')
