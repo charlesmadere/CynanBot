@@ -291,6 +291,7 @@ class CynanBot(Bot):
         ######################################
 
         self.__pubSubUtils: PubSubUtils = PubSubUtils(
+            eventLoop = eventLoop,
             authRepository = authRepository,
             client = self,
             generalSettingsRepository = generalSettingsRepository,
