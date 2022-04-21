@@ -242,7 +242,6 @@ cynanBot = CynanBot(
         triviaRepository = triviaRepository,
         triviaScoreRepository = triviaScoreRepository
     ),
-    triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
