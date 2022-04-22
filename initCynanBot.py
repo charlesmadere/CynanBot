@@ -176,7 +176,8 @@ triviaRepository = TriviaRepository(
         triviaHistoryRepository = TriviaHistoryRepository(
             backingDatabase = backingDatabase,
             timber = timber
-        )
+        ),
+        triviaSettingsRepository = triviaSettingsRepository
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         clientSession = clientSession,

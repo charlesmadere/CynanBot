@@ -1104,6 +1104,42 @@ class StubCommand(AbsCommand):
         pass
 
 
+class SuperTriviaCommand(AbsCommand):
+
+    def __init__(
+        self,
+        timber: Timber,
+        triviaGameMachine: TriviaGameMachine,
+        usersRepository: UsersRepository,
+        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+    ):
+        if timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameMachine is None:
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif cooldown is None:
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__timber: Timber = timber
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__usersRepository: UsersRepository = usersRepository
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not user.isLoremIpsumEnabled():
+            return
+        elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
+            return
+
+        # TODO
+
+        self.__timber.log('SuperTriviaCommand', f'Handled !supertriviacommand for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class SwQuoteCommand(AbsCommand):
 
     def __init__(
