@@ -537,8 +537,6 @@ class CynanBot(Bot):
         elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
             await self.__handleOutOfTimeTriviaEvent(event)
 
-        await asyncio.sleep(0.5)
-
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
             incrementAmount = event.getPointsForWinning(),
