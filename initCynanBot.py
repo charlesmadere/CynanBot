@@ -174,7 +174,6 @@ triviaRepository = TriviaRepository(
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
-    triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
@@ -245,6 +244,7 @@ cynanBot = CynanBot(
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         timber = timber,
+        triviaAnswerCompiler = triviaAnswerCompiler,
         triviaRepository = triviaRepository,
         triviaScoreRepository = triviaScoreRepository
     ),
