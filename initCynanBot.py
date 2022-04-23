@@ -40,6 +40,7 @@ from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -121,6 +122,7 @@ if authRepository.hasOneWeatherApiKey():
 ## Trivia initialization section ##
 ###################################
 
+triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaSettingsRepository = TriviaSettingsRepository()
 triviaScoreRepository = TriviaScoreRepository(
@@ -151,11 +153,13 @@ triviaRepository = TriviaRepository(
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
         clientSession = clientSession,
         timber = timber,
+        triviaAnswerCompiler = triviaAnswerCompiler,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
         timber = timber,
+        triviaAnswerCompiler = triviaAnswerCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
@@ -170,6 +174,7 @@ triviaRepository = TriviaRepository(
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
+    triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         triviaContentScanner = TriviaContentScanner(),
