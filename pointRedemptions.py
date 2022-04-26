@@ -12,6 +12,7 @@ from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.startNewGameTriviaAction import \
     StartNewGameTriviaAction
+from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -494,13 +495,20 @@ class TriviaGameRedemption(AbsPointRedemption):
         if twitchUser.hasTriviaGamePoints():
             points = twitchUser.getTriviaGamePoints()
 
-        self.__triviaGameMachine.submitAction(StartNewGameTriviaAction(
+        triviaFetchOptions = TriviaFetchOptions(
+            twitchChannel = twitchChannel,
+            areQuestionAnswerTriviaQuestionsEnabled = False,
             isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled(),
+            requireQuestionAnswerTriviaQuestion = False
+        )
+
+        self.__triviaGameMachine.submitAction(StartNewGameTriviaAction(
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             twitchChannel = twitchUser.getHandle(),
             userId = userIdThatRedeemed,
-            userName = userNameThatRedeemed
+            userName = userNameThatRedeemed,
+            triviaFetchOptions = triviaFetchOptions
         ))
 
         self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
