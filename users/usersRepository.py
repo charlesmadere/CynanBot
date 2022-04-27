@@ -99,7 +99,7 @@ class UsersRepository():
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
             isSuperTriviaEnabled = utils.getBoolFromDict(userJson, 'superTriviaEnabled', isSuperTriviaEnabled)
-            superTriviaGameMultipler = userJson.get('superTriviaGameMultiplier')
+            superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
@@ -149,7 +149,7 @@ class UsersRepository():
             isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
-            superTriviaGameMultiplier = superTriviaGameMultipler,
+            superTriviaGameMultiplier = superTriviaGameMultiplier,
             triviaGamePoints = triviaGamePoints,
             triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
