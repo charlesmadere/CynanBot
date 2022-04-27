@@ -496,7 +496,7 @@ class TriviaGameRedemption(AbsPointRedemption):
             points = twitchUser.getTriviaGamePoints()
 
         triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = twitchChannel,
+            twitchChannel = twitchUser.getHandle(),
             areQuestionAnswerTriviaQuestionsEnabled = False,
             isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled(),
             requireQuestionAnswerTriviaQuestion = False
