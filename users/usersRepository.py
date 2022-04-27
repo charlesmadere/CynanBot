@@ -91,11 +91,15 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
+        isSuperTriviaEnabled: bool = False
+        superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
         triviaGameTutorialCutenessThreshold: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
+            isSuperTriviaEnabled = utils.getBoolFromDict(userJson, 'superTriviaEnabled', isSuperTriviaEnabled)
+            superTriviaGameMultipler = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
@@ -138,12 +142,14 @@ class UsersRepository():
             isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
+            isSuperTriviaEnabled = isSuperTriviaEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
+            superTriviaGameMultiplier = superTriviaGameMultipler,
             triviaGamePoints = triviaGamePoints,
             triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,

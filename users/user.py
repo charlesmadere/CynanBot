@@ -37,12 +37,14 @@ class User():
         isRewardIdPrintingEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
+        isSuperTriviaEnabled: bool,
         isTamalesEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        superTriviaGameMultiplier: int,
         triviaGamePoints: int,
         triviaGameTutorialCutenessThreshold: int,
         waitForTriviaAnswerDelay: int,
@@ -112,6 +114,8 @@ class User():
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
             raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
+        elif not utils.isValidBool(isSuperTriviaEnabled):
+            raise ValueError(f'isSuperTriviaEnabled argument is malformed: \"{isSuperTriviaEnabled}\"')
         elif not utils.isValidBool(isTamalesEnabled):
             raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -124,6 +128,8 @@ class User():
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif superTriviaGameMultiplier is not None and not utils.isValidNum(superTriviaGameMultiplier):
+            raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
         elif triviaGamePoints is not None and not utils.isValidNum(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidNum(waitForTriviaAnswerDelay):
@@ -158,12 +164,14 @@ class User():
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
+        self.__isSuperTriviaEnabled: bool = isSuperTriviaEnabled
         self.__isTamalesEnabled: bool = isTamalesEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
+        self.__superTriviaGameMultiplier: int = superTriviaGameMultiplier
         self.__triviaGamePoints: int = triviaGamePoints
         self.__triviaGameTutorialCutenessThreshold: int = triviaGameTutorialCutenessThreshold
         self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
@@ -231,6 +239,9 @@ class User():
     def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
+    def getSuperTriviaGameMultiplier(self) -> int:
+        return self.__superTriviaGameMultiplier
+
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
@@ -269,6 +280,9 @@ class User():
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
+
+    def hasSuperTriviaGameMultiplier(self) -> bool:
+        return utils.isValidNum(self.__superTriviaGameMultiplier)
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
@@ -359,6 +373,9 @@ class User():
 
     def isSubGiftThankingEnabled(self) -> bool:
         return self.__isSubGiftThankingEnabled
+
+    def isSuperTriviaEnabled(self) -> bool:
+        return self.__isSuperTriviaEnabled
 
     def isTamalesEnabled(self) -> bool:
         return self.__isTamalesEnabled

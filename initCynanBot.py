@@ -176,12 +176,13 @@ triviaRepository = TriviaRepository(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
-        triviaContentScanner = TriviaContentScanner(),
+        triviaContentScanner = TriviaContentScanner(
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
         triviaHistoryRepository = TriviaHistoryRepository(
             backingDatabase = backingDatabase,
             timber = timber
-        ),
-        triviaSettingsRepository = triviaSettingsRepository
+        )
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         clientSession = clientSession,

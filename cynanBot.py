@@ -49,7 +49,11 @@ from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
-from CynanBotCommon.trivia.newGameTriviaEvent import NewGameTriviaEvent
+from CynanBotCommon.trivia.newSuperTriviaGameEvent import \
+    NewSuperTriviaGameEvent
+from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
+from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
+    OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
@@ -533,9 +537,15 @@ class CynanBot(Bot):
         elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.NEW_GAME:
-            await self.__handleNewGameTriviaEvent(event)
+            await self.__handleNewTriviaGameEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.NEW_SUPER_GAME:
+            await self.__handleNewSuperTriviaGameEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
             await self.__handleOutOfTimeTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
+            await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
+            await self.__handleSuperGameOutOfTimeTriviaEvent(event)
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
@@ -565,7 +575,7 @@ class CynanBot(Bot):
             userNameThatRedeemed = event.getUserName()
         ))
 
-    async def __handleNewGameTriviaEvent(self, event: NewGameTriviaEvent):
+    async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
         twitchChannel = self.get_channel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
@@ -575,6 +585,10 @@ class CynanBot(Bot):
             userNameThatRedeemed = event.getUserName()
         ))
 
+    async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
+        # TODO
+        pass
+
     async def __handleOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
         twitchChannel = self.get_channel(event.getTwitchChannel())
 
@@ -582,6 +596,14 @@ class CynanBot(Bot):
             question = event.getTriviaQuestion(),
             userNameThatRedeemed = event.getUserName()
         ))
+
+    async def __handleSuperGameCorrectAnswerTriviaEvent(self, event):
+        # TODO
+        pass
+
+    async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
+        # TODO
+        pass
 
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):

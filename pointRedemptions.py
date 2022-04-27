@@ -10,8 +10,8 @@ from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.trivia.startNewGameTriviaAction import \
-    StartNewGameTriviaAction
+from CynanBotCommon.trivia.startNewTriviaGameAction import \
+    StartNewTriviaGameAction
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from generalSettingsRepository import GeneralSettingsRepository
@@ -502,7 +502,7 @@ class TriviaGameRedemption(AbsPointRedemption):
             requireQuestionAnswerTriviaQuestion = False
         )
 
-        self.__triviaGameMachine.submitAction(StartNewGameTriviaAction(
+        self.__triviaGameMachine.submitAction(StartNewTriviaGameAction(
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             twitchChannel = twitchUser.getHandle(),

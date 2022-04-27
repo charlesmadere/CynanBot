@@ -29,6 +29,10 @@ class GeneralSettingsRepository():
 
         return refreshPubSubTokensSeconds
 
+    def getSuperTriviaGameMultiplier(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGameMultiplier', 5)
+
     def getTriviaGamePoints(self) -> int:
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'triviaGamePoints', 5)

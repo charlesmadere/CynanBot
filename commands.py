@@ -28,6 +28,9 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
+from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -1108,12 +1111,15 @@ class SuperTriviaCommand(AbsCommand):
 
     def __init__(
         self,
+        generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if timber is None:
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameMachine is None:
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
@@ -1122,6 +1128,7 @@ class SuperTriviaCommand(AbsCommand):
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
@@ -1130,12 +1137,40 @@ class SuperTriviaCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isLoremIpsumEnabled():
+        if not user.isTriviaEnabled() or not user.isSuperTriviaEnabled():
             return
         elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
             return
+        elif not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+            return
 
-        # TODO
+        points = self.__generalSettingsRepository.getTriviaGamePoints()
+        if user.hasTriviaGamePoints():
+            points = user.getTriviaGamePoints()
+
+        multiplier = self.__generalSettingsRepository.getSuperTriviaGameMultiplier()
+        if user.hasSuperTriviaGameMultiplier():
+            multiplier = user.getSuperTriviaGameMultiplier()
+
+        points = points * multiplier
+
+        secondsToLive = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        if user.hasWaitForTriviaAnswerDelay():
+            secondsToLive = user.getWaitForTriviaAnswerDelay()
+
+        triviaFetchOptions = TriviaFetchOptions(
+            twitchChannel = user.getHandle(),
+            areQuestionAnswerTriviaQuestionsEnabled = True,
+            requireQuestionAnswerTriviaQuestion = True
+        )
+
+        self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+            pointsMultiplier = multiplier,
+            pointsForWinning = points,
+            secondsToLive = secondsToLive,
+            twitchChannel = user.getHandle(),
+            triviaFetchOptions = triviaFetchOptions
+        ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertriviacommand for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
