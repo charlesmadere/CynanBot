@@ -114,9 +114,9 @@ class TriviaUtils():
 
         streakStr = ''
         if triviaResult.getStreak() >= 3:
-            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
         elif triviaResult.getStreak() <= -3:
-            streakStr = f'... and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
         return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
