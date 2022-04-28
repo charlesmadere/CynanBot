@@ -530,14 +530,14 @@ class CynanBot(Bot):
             await self.__handleCorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.GAME_OUT_OF_TIME:
+            await self.__handleGameOutOfTimeTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.NEW_GAME:
             await self.__handleNewTriviaGameEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.NEW_SUPER_GAME:
             await self.__handleNewSuperTriviaGameEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.OUT_OF_TIME:
-            await self.__handleOutOfTimeTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
@@ -563,6 +563,14 @@ class CynanBot(Bot):
         twitchChannel = self.get_channel(event.getTwitchChannel())
         await twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
 
+    async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
+            question = event.getTriviaQuestion(),
+            userNameThatRedeemed = event.getUserName()
+        ))
+
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
         twitchChannel = self.get_channel(event.getTwitchChannel())
 
@@ -584,14 +592,6 @@ class CynanBot(Bot):
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
         # TODO
         pass
-
-    async def __handleOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
-
-        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion(),
-            userNameThatRedeemed = event.getUserName()
-        ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event):
         # TODO
