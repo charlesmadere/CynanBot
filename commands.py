@@ -28,6 +28,8 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
+from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
+    CheckSuperAnswerTriviaAction
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
@@ -1110,6 +1112,56 @@ class StubCommand(AbsCommand):
         pass
 
 
+class SuperAnswerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameMachine: TriviaGameMachine,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameMachine is None:
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        user = self.__usersRepository.getUser(ctx.channel.name)
+
+        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+            return
+        elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaEnabled():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            await twitchUtils.safeSend(ctx, '⚠ You must provide the exact answer with the !superanswer command.')
+            return
+
+        answer = ' '.join(splits[1:])
+
+        self.__triviaGameMachine.submitAction(CheckSuperAnswerTriviaAction(
+            answer = answer,
+            twitchChannel = user.getHandle(),
+            userId = str(ctx.author.id),
+            userName = ctx.author.name
+        ))
+
+        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class SuperTriviaCommand(AbsCommand):
 
     def __init__(
@@ -1140,7 +1192,11 @@ class SuperTriviaCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not user.isTriviaEnabled() or not user.isSuperTriviaEnabled():
+        if not self.__generalSettingsRepository.isTriviaEnabled():
+            return
+        elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaEnabled() or not user.isSuperTriviaEnabled():
             return
         elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
             return
@@ -1164,6 +1220,7 @@ class SuperTriviaCommand(AbsCommand):
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
             areQuestionAnswerTriviaQuestionsEnabled = True,
+            isJokeTriviaRepositoryEnabled = False,
             requireQuestionAnswerTriviaQuestion = True
         )
 
@@ -1175,7 +1232,7 @@ class SuperTriviaCommand(AbsCommand):
             triviaFetchOptions = triviaFetchOptions
         ))
 
-        self.__timber.log('SuperTriviaCommand', f'Handled !supertriviacommand for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class SwQuoteCommand(AbsCommand):

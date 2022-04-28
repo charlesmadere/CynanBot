@@ -125,6 +125,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'subGiftThankingEnabled', True)
 
+    def isSuperTriviaGameEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'superTriviaGameEnabled', False)
+
     def isTamalesEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'tamalesEnabled', True)

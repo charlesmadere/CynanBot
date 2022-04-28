@@ -18,10 +18,10 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       DiscordCommand, GiveCutenessCommand, JishoCommand,
                       LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand, StubCommand, SwQuoteCommand,
-                      TamalesCommand, TimeCommand, TranslateCommand,
-                      TriviaScoreCommand, TwitterCommand, WeatherCommand,
-                      WordCommand)
+                      PkMoveCommand, RaceCommand, StubCommand,
+                      SuperAnswerCommand, SwQuoteCommand, TamalesCommand,
+                      TimeCommand, TranslateCommand, TriviaScoreCommand,
+                      TwitterCommand, WeatherCommand, WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
@@ -45,6 +45,8 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
     CorrectAnswerTriviaEvent
+from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
+    CorrectSuperAnswerTriviaEvent
 from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
@@ -166,8 +168,10 @@ class CynanBot(Bot):
 
         if cutenessRepository is None or doubleCutenessHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
+            self.__superAnswerCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
@@ -528,6 +532,8 @@ class CynanBot(Bot):
 
         if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.CORRECT_SUPER_ANSWER:
+            await self.__handleCorrectSuperAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.GAME_OUT_OF_TIME:
@@ -558,6 +564,10 @@ class CynanBot(Bot):
             newCuteness = cutenessResult,
             userNameThatRedeemed = event.getUserName()
         ))
+
+    async def __handleCorrectSuperAnswerTriviaEvent(event: CorrectSuperAnswerTriviaEvent):
+        # TODO
+        pass
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
         twitchChannel = self.get_channel(event.getTwitchChannel())
@@ -593,7 +603,7 @@ class CynanBot(Bot):
         # TODO
         pass
 
-    async def __handleSuperGameCorrectAnswerTriviaEvent(self, event):
+    async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
         # TODO
         pass
 
@@ -672,6 +682,10 @@ class CynanBot(Bot):
     @commands.command(name = 'race')
     async def command_race(self, ctx: Context):
         await self.__raceCommand.handleCommand(ctx)
+
+    @commands.command(name = 'superanswer')
+    async def command_superanswer(self, ctx: Context):
+        await self.__superAnswerCommand.handleCommand(ctx)
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
