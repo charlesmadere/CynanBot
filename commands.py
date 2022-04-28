@@ -1213,9 +1213,9 @@ class SuperTriviaCommand(AbsCommand):
 
         points = points * multiplier
 
-        secondsToLive = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
-        if user.hasWaitForTriviaAnswerDelay():
-            secondsToLive = user.getWaitForTriviaAnswerDelay()
+        secondsToLive = self.__generalSettingsRepository.getWaitForSuperTriviaAnswerDelay()
+        if user.hasWaitForSuperTriviaAnswerDelay():
+            secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),

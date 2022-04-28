@@ -47,6 +47,7 @@ class User():
         superTriviaGameMultiplier: int,
         triviaGamePoints: int,
         triviaGameTutorialCutenessThreshold: int,
+        waitForSuperTriviaAnswerDelay: int,
         waitForTriviaAnswerDelay: int,
         discord: str,
         handle: str,
@@ -132,6 +133,8 @@ class User():
             raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
         elif triviaGamePoints is not None and not utils.isValidNum(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
+        elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidNum(waitForSuperTriviaAnswerDelay):
+            raise ValueError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidNum(waitForTriviaAnswerDelay):
             raise ValueError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
         elif not utils.isValidStr(handle):
@@ -175,6 +178,7 @@ class User():
         self.__triviaGamePoints: int = triviaGamePoints
         self.__triviaGameTutorialCutenessThreshold: int = triviaGameTutorialCutenessThreshold
         self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
+        self.__waitForSuperTriviaAnswerDelay: int = waitForSuperTriviaAnswerDelay
         self.__discord: str = discord
         self.__handle: str = handle
         self.__instagram: str = instagram
@@ -260,6 +264,9 @@ class User():
     def getTwitterUrl(self) -> str:
         return self.__twitter
 
+    def getWaitForSuperTriviaAnswerDelay(self) -> int:
+        return self.__waitForSuperTriviaAnswerDelay
+
     def getWaitForTriviaAnswerDelay(self) -> int:
         return self.__waitForTriviaAnswerDelay
 
@@ -295,6 +302,9 @@ class User():
 
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitter)
+
+    def hasWaitForSuperTriviaAnswerDelay(self) -> bool:
+        return utils.isValidNum(self.__waitForSuperTriviaAnswerDelay)
 
     def hasWaitForTriviaAnswerDelay(self) -> bool:
         return utils.isValidNum(self.__waitForTriviaAnswerDelay)

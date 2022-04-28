@@ -96,6 +96,7 @@ class UsersRepository():
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
         triviaGameTutorialCutenessThreshold: int = None
+        waitForSuperTriviaAnswerDelay: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
             isSuperTriviaEnabled = utils.getBoolFromDict(userJson, 'superTriviaEnabled', isSuperTriviaEnabled)
@@ -103,6 +104,7 @@ class UsersRepository():
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
+            waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
         pkmnBattleRewardId: str = None
@@ -152,6 +154,7 @@ class UsersRepository():
             superTriviaGameMultiplier = superTriviaGameMultiplier,
             triviaGamePoints = triviaGamePoints,
             triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
+            waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
             handle = handle,
