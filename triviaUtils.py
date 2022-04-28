@@ -120,6 +120,34 @@ class TriviaUtils():
 
         return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
+    def getSuperTriviaGameQuestionPrompt(
+        self,
+        triviaQuestion: AbsTriviaQuestion,
+        delaySeconds: int,
+        points: int,
+        multiplier: int,
+        delimiter: str = ' '
+    ) -> str:
+        if triviaQuestion is None:
+            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        elif not utils.isValidNum(delaySeconds):
+            raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
+        elif delaySeconds < 1:
+            raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
+        elif not utils.isValidNum(points):
+            raise ValueError(f'points argument is malformed: \"{points}\"')
+        elif points < 1:
+            raise ValueError(f'points argument is out of bounds: {points}')
+        elif not utils.isValidNum(multiplier):
+            raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
+        elif multiplier < 1:
+            raise ValueError(f'multiplier argument is out of bounds: {multiplier}')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        # TODO
+        pass
+
     def getTriviaGameQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,

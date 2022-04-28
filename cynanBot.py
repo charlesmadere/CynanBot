@@ -600,8 +600,14 @@ class CynanBot(Bot):
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
-        # TODO
-        pass
+        twitchChannel = self.get_channel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
+            triviaQuestion = event.getTriviaQuestion(),
+            delaySeconds = event.getSecondsToLive(),
+            points = event.getPointsForWinning(),
+            multiplier = event.getPointsMultiplier()
+        ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
         # TODO
