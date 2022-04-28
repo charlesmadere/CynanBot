@@ -34,7 +34,7 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        maxConnectionsPerTwitchChannel: int = 3
+        maxConnectionsPerTwitchChannel: int = 10
     ):
         if eventLoop is None:
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -54,7 +54,7 @@ class PubSubUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 5:
+        elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 10:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
