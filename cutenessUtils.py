@@ -15,13 +15,15 @@ class CutenessUtils():
     def __init__(self):
         pass
 
-    def getCuteness(self, result: CutenessResult) -> str:
+    def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
         if result is None:
             raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.hasCuteness() and result.getCuteness() >= 1:
             if result.hasLocalLeaderboard():
-                localLeaderboard = self.getLocalLeaderboard(result.getLocalLeaderboard())
+                localLeaderboard = self.getLocalLeaderboard(result.getLocalLeaderboard(), delimiter)
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
             else:
                 return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'

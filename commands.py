@@ -791,6 +791,7 @@ class MyCutenessCommand(AbsCommand):
         cutenessUtils: CutenessUtils,
         timber: Timber,
         usersRepository: UsersRepository,
+        delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessUtils is None:
@@ -801,6 +802,8 @@ class MyCutenessCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
@@ -808,7 +811,7 @@ class MyCutenessCommand(AbsCommand):
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
+        self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -829,7 +832,7 @@ class MyCutenessCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result))
+            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result, self.__delimiter))
         except ValueError:
             self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
