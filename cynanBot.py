@@ -482,16 +482,12 @@ class CynanBot(Bot):
     async def event_pubsub_error(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
 
-        # TODO
-        # Verify that this should remain commented out!
-        # At the moment, it seems that this should probably remain this way.
-        # await self.__refreshPubSubTokens()
-
     async def event_pubsub_nonce(self, tags: Dict):
         self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
 
     async def event_pubsub_pong(self):
-        self.__timber.log('CynanBot', f'Received PubSub pong')
+        if self.__generalSettingsRepository.isPubSubPongLoggingEnabled():
+            self.__timber.log('CynanBot', f'Received PubSub pong')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
         if not utils.hasItems(tags):

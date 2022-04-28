@@ -105,6 +105,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', True)
 
+    def isPubSubPongLoggingEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'pubSubPongLoggingEnabled', False)
+
     def isRaidLinkMessagingEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'raidLinkMessagingEnabled', True)
