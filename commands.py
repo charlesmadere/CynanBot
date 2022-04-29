@@ -319,7 +319,6 @@ class CutenessCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     def __cutenessLeaderboardResultToStr(self, result: CutenessLeaderboardResult) -> str:
@@ -440,7 +439,6 @@ class CutenessChampionsCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -495,7 +493,6 @@ class CutenessHistoryCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__entryDelimiter: str = entryDelimiter
         self.__leaderboardDelimiter: str = leaderboardDelimiter
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -875,7 +872,6 @@ class MyCutenessHistoryCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -938,7 +934,6 @@ class PbsCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -979,7 +974,6 @@ class PkMonCommand(AbsCommand):
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -1036,7 +1030,6 @@ class PkMoveCommand(AbsCommand):
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -1085,7 +1078,6 @@ class RaceCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -1313,7 +1305,6 @@ class TamalesCommand(AbsCommand):
         self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -1353,7 +1344,6 @@ class TimeCommand(AbsCommand):
 
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
-
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
