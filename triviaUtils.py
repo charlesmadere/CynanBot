@@ -206,7 +206,7 @@ class TriviaUtils():
 
         questionPrompt: str = None
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
-            questionPrompt = f'— category is \"{triviaQuestion.getCategory()}\" — {triviaQuestion.getQuestion()}'
+            questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 

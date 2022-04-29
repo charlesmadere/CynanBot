@@ -43,7 +43,7 @@ class GeneralSettingsRepository():
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int:
         jsonContents = self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'waitForSuperTriviaAnswerDelay', 45)
+        return utils.getIntFromDict(jsonContents, 'waitForSuperTriviaAnswerDelay', 55)
 
     def getWaitForTriviaAnswerDelay(self) -> int:
         jsonContents = self.__readJson()
