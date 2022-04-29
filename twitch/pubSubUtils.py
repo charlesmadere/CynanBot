@@ -1,4 +1,5 @@
 import asyncio
+import queue
 from asyncio import AbstractEventLoop
 from collections import defaultdict
 from queue import SimpleQueue
@@ -178,7 +179,10 @@ class PubSubUtils():
         if utils.hasItems(self.__pubSubEntries):
             for topicQueue in self.__pubSubEntries.values():
                 if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
-                    pubSubTopicsToRemove.append(topicQueue.get())
+                    try:
+                        pubSubTopicsToRemove.append(topicQueue.get())
+                    except queue.Empty as e:
+                        self.__timber.log('PubSubUtils', f'Encountered queue.Empty error when adding a new PubSub topic to remove (queue size: {topicQueue.qsize()}): {e}')
 
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
