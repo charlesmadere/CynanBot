@@ -1184,7 +1184,7 @@ class SuperTriviaCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         user = self.__usersRepository.getUser(ctx.channel.name)
 
-        if not self.__generalSettingsRepository.isTriviaEnabled():
+        if not self.__generalSettingsRepository.isTriviaGameEnabled():
             return
         elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
             return
