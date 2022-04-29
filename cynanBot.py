@@ -615,10 +615,8 @@ class CynanBot(Bot):
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
-        incrementAmount = event.getPointsForWinning() * event.getPointsMultiplier()
-
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-            incrementAmount = incrementAmount,
+            incrementAmount = event.getPointsForWinning(),
             twitchChannel = event.getTwitchChannel(),
             userId = event.getUserId(),
             userName = event.getUserName()
