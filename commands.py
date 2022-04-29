@@ -1162,7 +1162,7 @@ class SuperTriviaCommand(AbsCommand):
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 5)
+        cooldown: timedelta = timedelta(minutes = 3)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
