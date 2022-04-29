@@ -37,7 +37,7 @@ class User():
         isRewardIdPrintingEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
-        isSuperTriviaEnabled: bool,
+        isSuperTriviaGameEnabled: bool,
         isTamalesEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
@@ -115,8 +115,8 @@ class User():
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
             raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
-        elif not utils.isValidBool(isSuperTriviaEnabled):
-            raise ValueError(f'isSuperTriviaEnabled argument is malformed: \"{isSuperTriviaEnabled}\"')
+        elif not utils.isValidBool(isSuperTriviaGameEnabled):
+            raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
         elif not utils.isValidBool(isTamalesEnabled):
             raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -167,7 +167,7 @@ class User():
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
-        self.__isSuperTriviaEnabled: bool = isSuperTriviaEnabled
+        self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
         self.__isTamalesEnabled: bool = isTamalesEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
@@ -384,8 +384,8 @@ class User():
     def isSubGiftThankingEnabled(self) -> bool:
         return self.__isSubGiftThankingEnabled
 
-    def isSuperTriviaEnabled(self) -> bool:
-        return self.__isSuperTriviaEnabled
+    def isSuperTriviaGameEnabled(self) -> bool:
+        return self.__isSuperTriviaGameEnabled
 
     def isTamalesEnabled(self) -> bool:
         return self.__isTamalesEnabled

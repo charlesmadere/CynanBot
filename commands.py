@@ -1134,7 +1134,7 @@ class SuperAnswerCommand(AbsCommand):
             return
         elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaEnabled():
+        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -1162,7 +1162,7 @@ class SuperTriviaCommand(AbsCommand):
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(minutes = 5)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -1188,7 +1188,7 @@ class SuperTriviaCommand(AbsCommand):
             return
         elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaEnabled() or not user.isSuperTriviaEnabled():
+        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
         elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
             return

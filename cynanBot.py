@@ -19,9 +19,10 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand,
-                      SuperAnswerCommand, SwQuoteCommand, TamalesCommand,
-                      TimeCommand, TranslateCommand, TriviaScoreCommand,
-                      TwitterCommand, WeatherCommand, WordCommand)
+                      SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
+                      TamalesCommand, TimeCommand, TranslateCommand,
+                      TriviaScoreCommand, TwitterCommand, WeatherCommand,
+                      WordCommand)
 from cuteness.cutenessRepository import CutenessRepository
 from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
@@ -171,9 +172,11 @@ class CynanBot(Bot):
         if cutenessRepository is None or doubleCutenessHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
+            self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
@@ -717,6 +720,10 @@ class CynanBot(Bot):
     @commands.command(name = 'superanswer')
     async def command_superanswer(self, ctx: Context):
         await self.__superAnswerCommand.handleCommand(ctx)
+
+    @commands.command(name = 'supertrivia')
+    async def command_supertrivia(self, ctx: Context):
+        await self.__superTriviaCommand.handleCommand(ctx)
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):

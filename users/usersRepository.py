@@ -91,7 +91,7 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
-        isSuperTriviaEnabled: bool = False
+        isSuperTriviaGameEnabled: bool = False
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
@@ -99,7 +99,7 @@ class UsersRepository():
         waitForSuperTriviaAnswerDelay: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
-            isSuperTriviaEnabled = utils.getBoolFromDict(userJson, 'superTriviaEnabled', isSuperTriviaEnabled)
+            isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
@@ -144,7 +144,7 @@ class UsersRepository():
             isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
-            isSuperTriviaEnabled = isSuperTriviaEnabled,
+            isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
             isTamalesEnabled = isTamalesEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
