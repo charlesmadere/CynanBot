@@ -769,7 +769,7 @@ class LoremIpsumCommand(AbsCommand):
 
         if not user.isLoremIpsumEnabled():
             return
-        elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
+        elif not ctx.author.is_mod or ctx.author.name.lower() != user.getHandle().lower():
             return
 
         loremIpsumText = ''
@@ -1190,7 +1190,7 @@ class SuperTriviaCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
-        elif not ctx.author.is_mod or not ctx.author.name.lower() == user.getHandle().lower():
+        elif not ctx.author.is_mod or ctx.author.name.lower() != user.getHandle().lower():
             return
         elif not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
