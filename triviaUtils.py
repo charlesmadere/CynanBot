@@ -120,7 +120,61 @@ class TriviaUtils():
 
         return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
-    def getSuperTriviaGameQuestionPrompt(
+    def getSuperTriviaCorrectAnswerReveal(
+        self,
+        question: AbsTriviaQuestion,
+        newCuteness: CutenessResult,
+        multiplier: int,
+        userName: str,
+        delimiter: str = '; '
+    ) -> str:
+        if question is None:
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif newCuteness is None:
+            raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
+        elif not utils.isValidNum(multiplier):
+            raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        multiplierStr = locale.format_string("%d", multiplier, grouping = True)
+        prefix = f'{self.getRandomTriviaEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
+        infix = f'Your new cuteness (WITH {multiplierStr}x MULTIPLIER ✨) is {newCuteness.getCutenessStr()}.'
+
+        correctAnswers = question.getCorrectAnswers()
+
+        if len(correctAnswers) == 1:
+            return f'{prefix} 🎉 {infix} ✨ The correct answer was: {correctAnswers[0]}'
+        else:
+            correctAnswersStr = delimiter.join(correctAnswers)
+            return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
+
+    def getSuperTriviaOutOfTimeAnswerReveal(
+        self,
+        question: AbsTriviaQuestion,
+        multiplier: int,
+        delimiter: str = '; '
+    ) -> str:
+        if question is None:
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif not utils.isValidNum(multiplier):
+            raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
+        elif delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        multiplierStr = locale.format_string("%d", multiplier, grouping = True)
+        prefix = f'{self.getRandomTriviaEmote()} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} Goodbye {multiplierStr}x multiplier 👋…'
+        correctAnswers = question.getCorrectAnswers()
+
+        if len(correctAnswers) == 1:
+            return f'{prefix} The correct answer is: {correctAnswers[0]}'
+        else:
+            correctAnswersStr = delimiter.join(correctAnswers)
+            return f'{prefix} The correct answers are: {correctAnswersStr}'
+
+    def getSuperTriviaQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
         delaySeconds: int,
@@ -145,8 +199,18 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        # TODO
-        pass
+        triviaEmote = self.getRandomTriviaEmote()
+        delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
+        pointsStr = locale.format_string("%d", points, grouping = True)
+        multiplierStr = locale.format_string("%d", multiplier, grouping = True)
+
+        questionPrompt: str = None
+        if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
+            questionPrompt = f'— category is \"{triviaQuestion.getCategory()}\" — {triviaQuestion.getQuestion()}'
+        else:
+            questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
+
+        return f'{triviaEmote} EVERYONE can play! !superanswer in {delaySecondsStr}s for {pointsStr} points ({multiplierStr}x multiplier ✨) {questionPrompt}'
 
     def getTriviaGameQuestionPrompt(
         self,

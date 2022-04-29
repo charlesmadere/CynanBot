@@ -176,7 +176,9 @@ triviaRepository = TriviaRepository(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
+        timber = timber,
         triviaContentScanner = TriviaContentScanner(
+            timber = timber,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         triviaHistoryRepository = TriviaHistoryRepository(
