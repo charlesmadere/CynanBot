@@ -1,4 +1,3 @@
-import asyncio
 from asyncio import AbstractEventLoop
 from typing import Dict, Optional
 
@@ -141,7 +140,6 @@ class CynanBot(Bot):
 
         self.__authRepository: AuthRepository = authRepository
         self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
@@ -149,7 +147,7 @@ class CynanBot(Bot):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-        self.__channelPointsLruCache: LruCache = LruCache(128)
+        self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################
         ## Initialization of command objects ##
