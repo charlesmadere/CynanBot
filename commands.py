@@ -1211,9 +1211,8 @@ class SuperTriviaCommand(AbsCommand):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
-            areQuestionAnswerTriviaQuestionsEnabled = True,
             isJokeTriviaRepositoryEnabled = False,
-            requireQuestionAnswerTriviaQuestion = True
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
@@ -1262,14 +1261,14 @@ class SwQuoteCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) < 2:
-            swQuote = self.__starWarsQuotesRepository.fetchRandomQuote()
+            swQuote = await self.__starWarsQuotesRepository.fetchRandomQuote()
             await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
             return
 
         query = ' '.join(splits[1:])
 
         try:
-            swQuote = self.__starWarsQuotesRepository.searchQuote(query)
+            swQuote = await self.__starWarsQuotesRepository.searchQuote(query)
 
             if utils.isValidStr(swQuote):
                 await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
