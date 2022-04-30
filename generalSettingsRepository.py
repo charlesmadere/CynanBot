@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict
+from typing import Dict, List
 
 import CynanBotCommon.utils as utils
 
@@ -15,6 +15,20 @@ class GeneralSettingsRepository():
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
         self.__generalSettingsFile: str = generalSettingsFile
+
+    def getGlobalSuperTriviaGameControllers(self) -> List[str]:
+        jsonContents = self.__readJson()
+
+        gameControllers: List[str] = list()
+        gameControllersJson: List[str] = jsonContents.get('superTriviaGameControllers')
+
+        if utils.hasItems(gameControllersJson):
+            for gameController in gameControllersJson:
+                gameControllers.append(gameController)
+
+            gameControllers.sort()
+
+        return gameControllers
 
     def getRaidLinkMessagingDelay(self) -> int:
         jsonContents = self.__readJson()

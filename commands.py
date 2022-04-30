@@ -30,6 +30,8 @@ from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
+from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
+    QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
@@ -1190,10 +1192,28 @@ class SuperTriviaCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
-        elif not ctx.author.is_mod or ctx.author.name.lower() != user.getHandle().lower():
+        elif not ctx.author.is_mod:
             return
         elif not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
+
+        userName = ctx.author.name.lower()
+
+        if userName != user.getHandle().lower():
+            gameControllers = self.__generalSettingsRepository.getGlobalSuperTriviaGameControllers()
+
+            if not utils.hasItems(gameControllers):
+                return
+
+            proceed = False
+
+            for gameController in gameControllers:
+                if userName == gameController.lower():
+                    proceed = True
+                    break
+
+            if not proceed:
+                return
 
         points = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
