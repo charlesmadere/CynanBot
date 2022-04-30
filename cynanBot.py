@@ -628,6 +628,7 @@ class CynanBot(Bot):
             question = event.getTriviaQuestion(),
             newCuteness = cutenessResult,
             multiplier = event.getPointsMultiplier(),
+            points = event.getPointsForWinning(),
             userName = event.getUserName()
         ))
 

@@ -125,6 +125,7 @@ class TriviaUtils():
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
         multiplier: int,
+        points: int,
         userName: str,
         delimiter: str = '; '
     ) -> str:
@@ -134,14 +135,17 @@ class TriviaUtils():
             raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidNum(multiplier):
             raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
+        elif not utils.isValidNum(points):
+            raise ValueError(f'points argument is malformed: \"{points}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
+        pointsStr = locale.format_string("%d", points, grouping = True)
         multiplierStr = locale.format_string("%d", multiplier, grouping = True)
         prefix = f'{self.getRandomTriviaEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
-        infix = f'Your new cuteness (WITH {multiplierStr}x MULTIPLIER ✨) is {newCuteness.getCutenessStr()}.'
+        infix = f'Your earned {pointsStr} cuteness ({multiplierStr}x MULTIPLIER) is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
