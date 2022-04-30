@@ -390,7 +390,10 @@ class CynanBot(Bot):
         userIdThatRedeemed = str(event.user.id)
         userNameThatRedeemed: str = event.user.name
         redemptionMessage: str = event.input
-        lruCacheId: str = f'{twitchUserNameStr}:{event.id}'.lower()
+        lruCacheId = f'{twitchUserNameStr}:{event.id}'.lower()
+
+        if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
+            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__channelPointsLruCache.contains(lruCacheId):
             self.__timber.log('CynanBot', f'Encountered duplicate reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{event.id}\"')
@@ -398,9 +401,6 @@ class CynanBot(Bot):
 
         self.__channelPointsLruCache.put(lruCacheId)
         twitchChannel = self.get_channel(twitchUser.getHandle())
-
-        if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__generalSettingsRepository.isPersistAllUsersEnabled():
             await self.__userIdsRepository.setUser(
