@@ -55,7 +55,7 @@ class PubSubUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 10:
+        elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 16:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
@@ -73,8 +73,8 @@ class PubSubUtils():
 
         self.__pubSubPool: PubSubPool = PubSubPool(
             client = client,
-            max_pool_size = 32,
-            max_connection_topics = 128
+            max_pool_size = max(32, maxConnectionsPerTwitchChannel * 4),
+            max_connection_topics = max(128, maxConnectionsPerTwitchChannel * 16)
         )
 
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
