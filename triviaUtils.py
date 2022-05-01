@@ -145,7 +145,7 @@ class TriviaUtils():
         pointsStr = locale.format_string("%d", points, grouping = True)
         multiplierStr = locale.format_string("%d", multiplier, grouping = True)
         prefix = f'{self.getRandomTriviaEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
-        infix = f'Your earned {pointsStr} cuteness ({multiplierStr}x MULTIPLIER) is {newCuteness.getCutenessStr()}.'
+        infix = f'You earned {pointsStr} cuteness ({multiplierStr}x multiplier), so your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
