@@ -10,6 +10,7 @@ from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
+    TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
 from generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
@@ -116,7 +117,7 @@ class PubSubUtils():
                 )
 
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-            except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchRefreshTokenMissingException) as e:
+            except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchJsonException, TwitchNetworkException, TwitchRefreshTokenMissingException) as e:
                 # if we run into this error, that most likely means that this user changed
                 # their password
                 usersToRemove.append(user)
