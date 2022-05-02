@@ -710,6 +710,10 @@ class CynanBot(Bot):
     async def command_race(self, ctx: Context):
         await self.__raceCommand.handleCommand(ctx)
 
+    @commands.command(name = 'sa')
+    async def command_sa(self, ctx: Context):
+        await self.__superAnswerCommand.handleCommand(ctx)
+
     @commands.command(name = 'sanswer')
     async def command_sanswer(self, ctx: Context):
         await self.__superAnswerCommand.handleCommand(ctx)
