@@ -91,7 +91,7 @@ class UsersRepository():
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
-        isSuperTriviaGameEnabled: bool = False
+        isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
