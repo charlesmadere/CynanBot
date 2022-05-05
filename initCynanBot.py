@@ -184,7 +184,8 @@ triviaRepository = TriviaRepository(
         ),
         triviaHistoryRepository = TriviaHistoryRepository(
             backingDatabase = backingDatabase,
-            timber = timber
+            timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
         )
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
