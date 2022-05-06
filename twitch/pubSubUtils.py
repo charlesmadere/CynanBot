@@ -8,7 +8,7 @@ from typing import Dict, List
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.twitchTokensRepository import (
+from CynanBotCommon.twitch.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
     TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
