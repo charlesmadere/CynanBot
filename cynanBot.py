@@ -28,6 +28,7 @@ from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
+from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -88,6 +89,7 @@ class CynanBot(Bot):
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
+        chatLogger: ChatLogger,
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
         doubleCutenessHelper: Optional[DoubleCutenessHelper],
@@ -123,6 +125,8 @@ class CynanBot(Bot):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
+        elif chatLogger is None:
+            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
@@ -139,6 +143,7 @@ class CynanBot(Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
+        self.__chatLogger: ChatLogger = chatLogger
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -324,13 +329,24 @@ class CynanBot(Bot):
             return
 
         if utils.isValidStr(message.content):
+            userId = str(message.author.id)
+            userName = message.author.name
+
             if self.__generalSettingsRepository.isPersistAllUsersEnabled():
                 await self.__userIdsRepository.setUser(
-                    userId = str(message.author.id),
-                    userName = message.author.name
+                    userId = userId,
+                    userName = userName
                 )
 
             twitchUser = self.__usersRepository.getUser(message.channel.name)
+
+            if twitchUser.isChatLoggingEnabled():
+                self.__chatLogger.log(
+                    twitchChannel = twitchUser.getHandle(),
+                    userId = userId,
+                    userName = userName,
+                    msg = message.content
+                )
 
             if await self.__chatBandMessage.handleMessage(
                 twitchUser = twitchUser,

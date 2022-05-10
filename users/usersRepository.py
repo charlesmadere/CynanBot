@@ -36,6 +36,7 @@ class UsersRepository():
         isAnalogueEnabled = utils.getBoolFromDict(userJson, 'analogueEnabled', False)
         isCatJamEnabled = utils.getBoolFromDict(userJson, 'catJamEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
+        isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
         isCynanMessageEnabled = utils.getBoolFromDict(userJson, 'cynanMessageEnabled', False)
         isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
@@ -122,6 +123,7 @@ class UsersRepository():
             isAnalogueEnabled = isAnalogueEnabled,
             isCatJamEnabled = isCatJamEnabled,
             isChatBandEnabled = isChatBandEnabled,
+            isChatLoggingEnabled = isChatLoggingEnabled,
             isCutenessEnabled = isCutenessEnabled,
             isCynanMessageEnabled = isCynanMessageEnabled,
             isCynanSourceEnabled = isCynanSourceEnabled,

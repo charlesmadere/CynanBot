@@ -15,6 +15,7 @@ class User():
         isAnalogueEnabled: bool,
         isCatJamEnabled: bool,
         isChatBandEnabled: bool,
+        isChatLoggingEnabled: bool,
         isCutenessEnabled: bool,
         isCynanMessageEnabled: bool,
         isCynanSourceEnabled: bool,
@@ -71,6 +72,8 @@ class User():
             raise ValueError(f'isCatJamEnabled argument is malformed: \"{isCatJamEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
+        elif not utils.isValidBool(isChatLoggingEnabled):
+            raise ValueError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise ValueError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
         elif not utils.isValidBool(isCynanMessageEnabled):
@@ -145,6 +148,7 @@ class User():
         self.__isAnalogueEnabled: bool = isAnalogueEnabled
         self.__isCatJamEnabled: bool = isCatJamEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
+        self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
         self.__isCynanMessageEnabled: bool = isCynanMessageEnabled
         self.__isCynanSourceEnabled: bool = isCynanSourceEnabled
@@ -317,6 +321,9 @@ class User():
 
     def isChatBandEnabled(self) -> bool:
         return self.__isChatBandEnabled
+
+    def isChatLoggingEnabled(self) -> bool:
+        return self.__isChatLoggingEnabled
 
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled

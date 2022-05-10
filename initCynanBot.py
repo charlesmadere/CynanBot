@@ -12,6 +12,7 @@ from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
+from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -216,6 +217,9 @@ cynanBot = CynanBot(
     chatBandManager = ChatBandManager(
         timber = timber,
         websocketConnectionServer = websocketConnectionServer
+    ),
+    chatLogger = ChatLogger(
+        eventLoop = eventLoop,
     ),
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
