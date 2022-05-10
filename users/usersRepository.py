@@ -3,6 +3,7 @@ import os
 from datetime import tzinfo
 from typing import Dict, List
 
+import aiofile
 import CynanBotCommon.utils as utils
 from cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -175,20 +176,9 @@ class UsersRepository():
             timeZones = timeZones
         )
 
-    def getUser(self, handle: str) -> User:
-        if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
-
-        jsonContents = self.__readJson()
-
-        for key in jsonContents:
-            if handle.lower() == key.lower():
-                return self.__createUser(handle, jsonContents[key])
-
-        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
-
-    def getUsers(self) -> List[User]:
-        jsonContents = self.__readJson()
+    def __createUsers(self, jsonContents: Dict[str, object]) -> List[User]:
+        if not utils.hasItems(jsonContents):
+            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         users: List[User] = list()
         for key in jsonContents:
@@ -200,6 +190,42 @@ class UsersRepository():
 
         users.sort(key = lambda user: user.getHandle().lower())
         return users
+
+    def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, object]) -> User:
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+        elif not utils.hasItems(jsonContents):
+            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+
+        handle = handle.lower()
+
+        for key in jsonContents:
+            if key.lower() == handle:
+                return self.__createUser(handle, jsonContents[key])
+
+        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
+
+    def getUser(self, handle: str) -> User:
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        jsonContents = self.__readJson()
+        return self.__findAndCreateUser(handle, jsonContents)
+
+    async def getUserAsync(self, handle: str) -> User:
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        jsonContents = await self.__readJsonAsync()
+        return self.__findAndCreateUser(handle, jsonContents)
+
+    def getUsers(self) -> List[User]:
+        jsonContents = self.__readJson()
+        return self.__createUsers(jsonContents)
+
+    async def getUsersAsync(self) -> List[User]:
+        jsonContents = await self.__readJsonAsync()
+        return self.__createUsers(jsonContents)
 
     def __parseCutenessBoosterPacksFromJson(self, jsonList: List[Dict]) -> List[CutenessBoosterPack]:
         if not utils.hasItems(jsonList):
@@ -246,6 +272,21 @@ class UsersRepository():
 
         with open(self.__usersFile, 'r') as file:
             jsonContents = json.load(file)
+
+        if jsonContents is None:
+            raise IOError(f'Error reading from users repository file: \"{self.__usersFile}\"')
+        elif len(jsonContents) == 0:
+            raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
+
+        return jsonContents
+
+    async def __readJsonAsync(self) -> Dict[str, object]:
+        if not os.path.exists(self.__usersFile):
+            raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
+
+        async with aiofile.async_open(self.__usersFile, 'r') as file:
+            data = await file.read()
+            jsonContents = json.loads(data)
 
         if jsonContents is None:
             raise IOError(f'Error reading from users repository file: \"{self.__usersFile}\"')

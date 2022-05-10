@@ -77,7 +77,7 @@ class AnalogueCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isAnalogueEnabled():
             return
@@ -123,7 +123,7 @@ class AnswerCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTriviaGameEnabled():
             return
@@ -170,7 +170,7 @@ class ChatBandClearCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isChatBandEnabled():
             return
@@ -212,7 +212,7 @@ class CommandsCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -356,7 +356,7 @@ class CutenessCommand(AbsCommand):
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
@@ -443,7 +443,7 @@ class CutenessChampionsCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
@@ -497,7 +497,7 @@ class CutenessHistoryCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
@@ -568,7 +568,7 @@ class CynanSourceCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCynanSourceEnabled():
             return
@@ -599,7 +599,7 @@ class DiscordCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.hasDiscord():
             return
@@ -638,7 +638,7 @@ class GiveCutenessCommand(AbsCommand):
         if not ctx.author.is_mod:
             return
 
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
             return
@@ -721,7 +721,7 @@ class JishoCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isJishoEnabled():
             return
@@ -766,7 +766,7 @@ class LoremIpsumCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isLoremIpsumEnabled():
             return
@@ -815,7 +815,7 @@ class MyCutenessCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
@@ -876,7 +876,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled():
             return
@@ -938,7 +938,7 @@ class PbsCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.hasSpeedrunProfile():
             return
@@ -978,7 +978,7 @@ class PkMonCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isPokepediaEnabled():
             return
@@ -1034,7 +1034,7 @@ class PkMoveCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isPokepediaEnabled():
             return
@@ -1085,7 +1085,7 @@ class RaceCommand(AbsCommand):
         if not ctx.author.is_mod:
             return
 
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isRaceEnabled():
             return
@@ -1129,7 +1129,7 @@ class SuperAnswerCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTriviaGameEnabled():
             return
@@ -1182,7 +1182,7 @@ class SuperTriviaCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTriviaGameEnabled():
             return
@@ -1268,7 +1268,7 @@ class SwQuoteCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isStarWarsQuotesEnabled():
             return
@@ -1325,7 +1325,7 @@ class TamalesCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTamalesEnabled():
             return
@@ -1364,7 +1364,7 @@ class TimeCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.hasTimeZones():
             return
@@ -1435,7 +1435,7 @@ class TranslateCommand(AbsCommand):
         return None
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTranslateEnabled():
             return
@@ -1503,7 +1503,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isTriviaGameEnabled():
             return
@@ -1566,7 +1566,7 @@ class TwitterCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.hasTwitter():
             return
@@ -1609,7 +1609,7 @@ class WeatherCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isWeatherEnabled():
             return
@@ -1666,7 +1666,7 @@ class WordCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
-        user = self.__usersRepository.getUser(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not self.__generalSettingsRepository.isWordOfTheDayEnabled():
             return

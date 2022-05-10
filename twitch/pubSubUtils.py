@@ -84,7 +84,7 @@ class PubSubUtils():
 
         if twitchHandles is None:
             # if twitchHandles is None, then we must do a full validate and refresh
-            users = self.__usersRepository.getUsers()
+            users = await self.__usersRepository.getUsersAsync()
         elif len(twitchHandles) == 0:
             # if twitchHandles is empty, then there is no need to do a validate or refresh of anyone
             return None
@@ -93,7 +93,7 @@ class PubSubUtils():
             users = list()
 
             for twitchHandle in twitchHandles:
-                users.append(self.__usersRepository.getUser(twitchHandle))
+                users.append(await self.__usersRepository.getUserAsync(twitchHandle))
 
         usersAndTwitchTokens: Dict[User, str] = dict()
 

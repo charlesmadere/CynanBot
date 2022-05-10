@@ -338,7 +338,7 @@ class CynanBot(Bot):
                     userName = userName
                 )
 
-            twitchUser = self.__usersRepository.getUser(message.channel.name)
+            twitchUser = await self.__usersRepository.getUserAsync(message.channel.name)
 
             if twitchUser.isChatLoggingEnabled():
                 self.__chatLogger.log(
@@ -401,7 +401,7 @@ class CynanBot(Bot):
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
         twitchUserIdStr = str(event.channel_id)
         twitchUserNameStr = await self.__userIdsRepository.fetchUserName(twitchUserIdStr)
-        twitchUser = self.__usersRepository.getUser(twitchUserNameStr)
+        twitchUser = await self.__usersRepository.getUserAsync(twitchUserNameStr)
         rewardId = str(event.reward.id)
         userIdThatRedeemed = str(event.user.id)
         userNameThatRedeemed: str = event.user.name
@@ -521,7 +521,7 @@ class CynanBot(Bot):
         if not utils.isValidStr(msgId):
             return
 
-        twitchUser = self.__usersRepository.getUser(channel.name)
+        twitchUser = await self.__usersRepository.getUserAsync(channel.name)
 
         if msgId == 'raid':
             await self.__raidEvent.handleEvent(
