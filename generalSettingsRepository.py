@@ -16,6 +16,10 @@ class GeneralSettingsRepository():
 
         self.__generalSettingsFile: str = generalSettingsFile
 
+    def getEventSubPort(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'eventSubPort', 33239)
+
     def getGlobalSuperTriviaGameControllers(self) -> List[str]:
         jsonContents = self.__readJson()
 
@@ -87,6 +91,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'deerForceMessageEnabled', False)
 
+    def isEventSubEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'eventSubEnabled', False)
+
     def isEyesMessageEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'eyesMessageEnabled', False)
@@ -122,6 +130,10 @@ class GeneralSettingsRepository():
     def isPokepediaEnabled(self) -> bool:
         jsonContents = self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'pokepediaEnabled', True)
+
+    def isPubSubEnabled(self) -> bool:
+        jsonContents = self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'pubSubEnabled', True)
 
     def isPubSubPongLoggingEnabled(self) -> bool:
         jsonContents = self.__readJson()
