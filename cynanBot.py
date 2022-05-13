@@ -418,7 +418,7 @@ class CynanBot(commands.Bot):
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
-        twitchChannel = self.get_channel(twitchUser.getHandle())
+        twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
         if self.__generalSettingsRepository.isPersistAllUsersEnabled():
             await self.__userIdsRepository.setUser(
@@ -549,6 +549,25 @@ class CynanBot(commands.Bot):
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
 
+    async def __getChannel(self, twitchChannel: str) -> Channel:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        channel: Channel = None
+
+        try:
+            channel = self.get_channel(twitchChannel)
+        except KeyError:
+            pass
+
+        if channel is None:
+            channel = await self.fetch_channel(twitchChannel)
+
+        if channel is None:
+            raise RuntimeError(f'Unable to get or fetch twitchChannel: \"{twitchChannel}\"')
+
+        return channel
+
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'Received new trivia event: {event.getTriviaEventType()}')
 
@@ -579,7 +598,7 @@ class CynanBot(commands.Bot):
             userName = event.getUserName()
         )
 
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -588,15 +607,15 @@ class CynanBot(commands.Bot):
         ))
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch trivia question')
 
     async def __handleFailedToFetchQuestionSuperTriviaEvent(self, event: FailedToFetchQuestionSuperTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await twitchUtils.safeSend(twitchChannel, f'⚠ Unable to fetch super trivia question')
 
     async def __handleGameOutOfTimeTriviaEvent(self, event: OutOfTimeTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -604,7 +623,7 @@ class CynanBot(commands.Bot):
         ))
 
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -612,7 +631,7 @@ class CynanBot(commands.Bot):
         ))
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
@@ -622,7 +641,7 @@ class CynanBot(commands.Bot):
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
@@ -639,7 +658,7 @@ class CynanBot(commands.Bot):
             userName = event.getUserName()
         )
 
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -650,7 +669,7 @@ class CynanBot(commands.Bot):
         ))
 
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
-        twitchChannel = self.get_channel(event.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
