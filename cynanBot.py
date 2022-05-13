@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from twitchio import Channel, Message
 from twitchio.ext import commands
-from twitchio.ext.commands import Bot, Context
+from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
@@ -81,7 +81,7 @@ from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(Bot):
+class CynanBot(commands.Bot):
 
     def __init__(
         self,
@@ -114,11 +114,11 @@ class CynanBot(Bot):
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
-            token = authRepository.requireTwitchIrcAuthToken(),
             client_secret = authRepository.requireTwitchClientSecret(),
-            nick = authRepository.requireNick(),
+            initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ],
+            loop = eventLoop,
             prefix = '!',
-            initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ]
+            token = authRepository.requireTwitchIrcAuthToken()
         )
 
         if eventLoop is None:
@@ -307,16 +307,18 @@ class CynanBot(Bot):
         ## Initialization of PubSub objects ##
         ######################################
 
-        self.__pubSubUtils: PubSubUtils = PubSubUtils(
-            eventLoop = eventLoop,
-            authRepository = authRepository,
-            client = self,
-            generalSettingsRepository = generalSettingsRepository,
-            timber = timber,
-            twitchTokensRepository = twitchTokensRepository,
-            userIdsRepository = userIdsRepository,
-            usersRepository = usersRepository
-        )
+        self.__pubSubUtils: PubSubUtils = None
+        if self.__generalSettingsRepository.isPubSubEnabled():
+            self.__pubSubUtils = PubSubUtils(
+                eventLoop = eventLoop,
+                authRepository = authRepository,
+                client = self,
+                generalSettingsRepository = generalSettingsRepository,
+                timber = timber,
+                twitchTokensRepository = twitchTokensRepository,
+                userIdsRepository = userIdsRepository,
+                usersRepository = usersRepository
+            )
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
@@ -544,7 +546,8 @@ class CynanBot(Bot):
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
 
-        self.__pubSubUtils.startPubSub()
+        if self.__pubSubUtils is not None:
+            self.__pubSubUtils.startPubSub()
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'Received new trivia event: {event.getTriviaEventType()}')
