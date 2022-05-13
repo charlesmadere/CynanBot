@@ -115,7 +115,7 @@ class CynanBot(commands.Bot):
     ):
         super().__init__(
             client_secret = authRepository.requireTwitchClientSecret(),
-            initial_channels = [ user.getHandle() for user in usersRepository.getUsers() ],
+            initial_channels = [ user.getHandle().lower() for user in usersRepository.getUsers() ],
             loop = eventLoop,
             prefix = '!',
             token = authRepository.requireTwitchIrcAuthToken()
