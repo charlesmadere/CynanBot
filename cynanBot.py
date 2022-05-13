@@ -345,7 +345,7 @@ class CynanBot(Bot):
                     twitchChannel = twitchUser.getHandle(),
                     userId = userId,
                     userName = userName,
-                    msg = message.content
+                    msg = utils.cleanStr(message.content)
                 )
 
             if await self.__chatBandMessage.handleMessage(
