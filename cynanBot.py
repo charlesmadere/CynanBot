@@ -342,13 +342,6 @@ class CynanBot(commands.Bot):
             raise error
 
     async def event_message(self, message: Message):
-        twitchUser = await self.__usersRepository.getUserAsync(message.channel.name)
-
-        await self.__chatLogMessage.handleMessage(
-            twitchUser = twitchUser,
-            message = message
-        )
-
         if message.echo:
             return
 
@@ -358,6 +351,13 @@ class CynanBot(commands.Bot):
                     userId = str(message.author.id),
                     userName = message.author.name
                 )
+
+            twitchUser = await self.__usersRepository.getUserAsync(message.channel.name)
+
+            await self.__chatLogMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            )
 
             if await self.__chatBandMessage.handleMessage(
                 twitchUser = twitchUser,
