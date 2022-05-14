@@ -673,6 +673,10 @@ class CynanBot(commands.Bot):
             multiplier = event.getPointsMultiplier()
         ))
 
+    @commands.command(name = 'a')
+    async def command_a(self, ctx: Context):
+        await self.__answerCommand.handleCommand(ctx)
+
     @commands.command(name = 'analogue')
     async def command_analogue(self, ctx: Context):
         await self.__analogueCommand.handleCommand(ctx)
