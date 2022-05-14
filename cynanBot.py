@@ -67,9 +67,10 @@ from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import AbsEvent, RaidEvent, SubGiftThankingEvent
 from generalSettingsRepository import GeneralSettingsRepository
-from messages import (AbsMessage, CatJamMessage, ChatBandMessage, CynanMessage,
-                      DeerForceMessage, EyesMessage, ImytSlurpMessage,
-                      JamCatMessage, RatJamMessage, StubMessage)
+from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
+                      ChatLogMessage, CynanMessage, DeerForceMessage,
+                      EyesMessage, ImytSlurpMessage, JamCatMessage,
+                      RatJamMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
@@ -89,7 +90,7 @@ class CynanBot(commands.Bot):
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
-        chatLogger: ChatLogger,
+        chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
         doubleCutenessHelper: Optional[DoubleCutenessHelper],
@@ -125,8 +126,6 @@ class CynanBot(commands.Bot):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif chatLogger is None:
-            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
@@ -143,7 +142,6 @@ class CynanBot(commands.Bot):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
-        self.__chatLogger: ChatLogger = chatLogger
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -267,6 +265,11 @@ class CynanBot(commands.Bot):
         else:
             self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository, timber)
 
+        if chatLogger is None:
+            self.__chatLogMessage: AbsMessage = StubMessage()
+        else:
+            self.__chatLogMessage: AbsMessage = ChatLogMessage(chatLogger)
+
         ########################################################
         ## Initialization of point redemption handler objects ##
         ########################################################
@@ -331,24 +334,18 @@ class CynanBot(commands.Bot):
             return
 
         if utils.isValidStr(message.content):
-            userId = str(message.author.id)
-            userName = message.author.name
-
             if self.__generalSettingsRepository.isPersistAllUsersEnabled():
                 await self.__userIdsRepository.setUser(
-                    userId = userId,
-                    userName = userName
+                    userId = str(message.author.id),
+                    userName = message.author.name
                 )
 
             twitchUser = await self.__usersRepository.getUserAsync(message.channel.name)
 
-            if twitchUser.isChatLoggingEnabled():
-                self.__chatLogger.log(
-                    twitchChannel = twitchUser.getHandle(),
-                    userId = userId,
-                    userName = userName,
-                    msg = utils.cleanStr(message.content)
-                )
+            await self.__chatLogMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            )
 
             if await self.__chatBandMessage.handleMessage(
                 twitchUser = twitchUser,

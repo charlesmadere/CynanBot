@@ -6,6 +6,7 @@ from twitchio import Message
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
+from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
@@ -114,6 +115,40 @@ class ChatBandMessage(AbsMessage):
             return True
 
         return False
+
+
+class ChatLogMessage(AbsMessage):
+
+    def __init__(
+        self,
+        chatLogger: ChatLogger
+    ):
+        if chatLogger is None:
+            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+
+        self.__chatLogger: ChatLogger = chatLogger
+
+    async def handleMessage(
+        self,
+        twitchUser: User,
+        message: Message
+    ) -> bool:
+        if twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif message is None:
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        if not twitchUser.isChatLoggingEnabled():
+            return False
+
+        self.__chatLogger.log(
+            twitchChannel = twitchUser.getHandle(),
+            userId = str(message.author.id),
+            userName = message.author.name,
+            msg = utils.cleanStr(message.content)
+        )
+
+        return True
 
 
 class CynanMessage(AbsMessage):
