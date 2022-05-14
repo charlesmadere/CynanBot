@@ -552,20 +552,18 @@ class CynanBot(commands.Bot):
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        channel: Channel = None
+        await self.wait_for_ready()
 
         try:
-            channel = self.get_channel(twitchChannel)
-        except KeyError:
-            pass
+            channel: Channel = self.get_channel(twitchChannel)
 
-        if channel is None:
-            channel = await self.fetch_channel(twitchChannel)
-
-        if channel is None:
-            raise RuntimeError(f'Unable to get or fetch twitchChannel: \"{twitchChannel}\"')
-
-        return channel
+            if channel is None:
+                raise RuntimeError(f'Unable to get twitchChannel: \"{twitchChannel}\"')
+            else:
+                return channel
+        except KeyError as e:
+            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}')
+            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}')
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'Received new trivia event: {event.getTriviaEventType()}')
