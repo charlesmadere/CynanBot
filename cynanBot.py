@@ -22,13 +22,13 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       TamalesCommand, TimeCommand, TranslateCommand,
                       TriviaScoreCommand, TwitterCommand, WeatherCommand,
                       WordCommand)
-from cuteness.cutenessRepository import CutenessRepository
-from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
+from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -64,6 +64,7 @@ from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import AbsEvent, RaidEvent, SubGiftThankingEvent
 from generalSettingsRepository import GeneralSettingsRepository
@@ -79,7 +80,6 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from triviaUtils import TriviaUtils
 from twitch.eventSubUtils import EventSubUtils
 from twitch.pubSubUtils import PubSubUtils
-from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
 

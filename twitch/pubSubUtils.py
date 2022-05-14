@@ -11,13 +11,13 @@ from CynanBotCommon.twitch.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
     TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
+from CynanBotCommon.userIdsRepository import UserIdsRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
 from twitchio.ext import pubsub
 from twitchio.ext.pubsub import PubSubPool
 from twitchio.ext.pubsub.topics import Topic
 from users.user import User
-from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
 from twitch.pubSubEntry import PubSubEntry

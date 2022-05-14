@@ -6,13 +6,14 @@ from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
-from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
-from cuteness.cutenessRepository import CutenessRepository
-from cuteness.cutenessResult import CutenessResult
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
+from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
+    CutenessLeaderboardResult
+from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -37,10 +38,10 @@ from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
-from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
 

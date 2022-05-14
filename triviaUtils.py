@@ -3,7 +3,7 @@ import random
 from typing import List
 
 import CynanBotCommon.utils as utils
-from cuteness.cutenessResult import CutenessResult
+from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType

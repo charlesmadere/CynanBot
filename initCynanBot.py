@@ -4,8 +4,6 @@ import locale
 import aiohttp
 
 from authRepository import AuthRepository
-from cuteness.cutenessRepository import CutenessRepository
-from cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
 from CynanBotCommon.analogue.analogueStoreRepository import \
@@ -13,6 +11,8 @@ from CynanBotCommon.analogue.analogueStoreRepository import \
 from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
+from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -59,12 +59,12 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
-from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
