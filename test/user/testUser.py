@@ -2,11 +2,10 @@ import unittest
 from datetime import tzinfo
 from typing import List
 
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
-
 from users.user import User
 
 

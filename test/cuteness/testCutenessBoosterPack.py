@@ -1,6 +1,6 @@
 import unittest
 
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 
 
 class TestCutenessBoosterPack(unittest.TestCase):

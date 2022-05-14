@@ -4,9 +4,9 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
-from cuteness.cutenessRepository import CutenessRepository
-from cuteness.doubleCutenessHelper import DoubleCutenessHelper
+from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber

@@ -4,7 +4,7 @@ from typing import List
 from urllib.parse import urlparse
 
 import CynanBotCommon.utils as utils
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 
 
