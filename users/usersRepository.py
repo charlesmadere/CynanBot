@@ -5,7 +5,7 @@ from typing import Dict, List
 
 import aiofile
 import CynanBotCommon.utils as utils
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
