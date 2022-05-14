@@ -558,6 +558,7 @@ class CynanBot(commands.Bot):
             channel: Channel = self.get_channel(twitchChannel)
 
             if channel is None:
+                self.__timber.log('CynanBot', f'Unable to get twitchChannel: \"{twitchChannel}\"')
                 raise RuntimeError(f'Unable to get twitchChannel: \"{twitchChannel}\"')
             else:
                 return channel
