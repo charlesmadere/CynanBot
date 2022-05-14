@@ -563,11 +563,11 @@ class CynanBot(commands.Bot):
             else:
                 return channel
         except KeyError as e:
-            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}')
-            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}')
+            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {repr(e)}')
+            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {repr(e)}')
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        self.__timber.log('CynanBot', f'Received new trivia event: {event.getTriviaEventType()}')
+        self.__timber.log('CynanBot', f'Received new trivia event: \"{event.getTriviaEventType()}\"')
 
         if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
