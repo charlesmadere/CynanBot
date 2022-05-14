@@ -323,6 +323,8 @@ class CynanBot(commands.Bot):
                 usersRepository = usersRepository
             )
 
+        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.requireNick()}')
+
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
             return
