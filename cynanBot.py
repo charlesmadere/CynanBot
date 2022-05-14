@@ -555,6 +555,9 @@ class CynanBot(commands.Bot):
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
 
+        if self.__eventSubUtils is not None:
+            self.__eventSubUtils.startEventSub()
+
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
 
