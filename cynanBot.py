@@ -77,6 +77,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PotdPointRedemption, StubPointRedemption,
                               TriviaGameRedemption)
 from triviaUtils import TriviaUtils
+from twitch.eventSubUtils import EventSubUtils
 from twitch.pubSubUtils import PubSubUtils
 from users.userIdsRepository import UserIdsRepository
 from users.usersRepository import UsersRepository
@@ -305,6 +306,15 @@ class CynanBot(commands.Bot):
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
             self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameMachine)
+
+        ########################################
+        ## Initialization of EventSub objects ##
+        ########################################
+
+        self.__eventSubUtils: EventSubUtils = None
+        if self.__generalSettingsRepository.isEventSubEnabled():
+            # TODO
+            pass
 
         ######################################
         ## Initialization of PubSub objects ##
