@@ -567,7 +567,9 @@ class CynanBot(commands.Bot):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         await self.wait_for_ready()
-        self.__timber.log('CynanBot', f'Connected channels: {self.connected_channels}')
+
+        if self.__generalSettingsRepository.isDebugLoggingEnabled():
+            self.__timber.log('CynanBot', f'Connected channels: {self.connected_channels}')
 
         try:
             channel: Channel = self.get_channel(twitchChannel)
