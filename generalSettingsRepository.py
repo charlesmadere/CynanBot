@@ -133,7 +133,7 @@ class GeneralSettingsRepository():
 
     def isPubSubEnabled(self) -> bool:
         jsonContents = self.__readJson()
-        return utils.getBoolFromDict(jsonContents, 'pubSubEnabled', True)
+        return utils.getBoolFromDict(jsonContents, 'pubSubEnabled', False)
 
     def isPubSubPongLoggingEnabled(self) -> bool:
         jsonContents = self.__readJson()
