@@ -121,6 +121,7 @@ class CynanBot(commands.Bot):
             loop = eventLoop,
             nick = authRepository.requireNick(),
             prefix = '!',
+            retain_cache = True,
             token = authRepository.requireTwitchIrcAuthToken()
         )
 
