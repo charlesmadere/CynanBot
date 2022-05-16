@@ -569,7 +569,8 @@ class CynanBot(commands.Bot):
         await self.wait_for_ready()
 
         if self.__generalSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'Connected channels: {self.connected_channels}')
+            connectedChannels = self.connected_channels
+            self.__timber.log('CynanBot', f'Connected channels ({len(connectedChannels)}): {connectedChannels}')
 
         try:
             channel: Channel = self.get_channel(twitchChannel)
