@@ -176,7 +176,7 @@ class CynanBot(commands.Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or doubleCutenessHelper is None or superTriviaHelper is None or  triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or doubleCutenessHelper is None or superTriviaHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
