@@ -20,7 +20,7 @@ class AbsEvent(ABC):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict
+        tags: Dict[str, object]
     ) -> bool:
         pass
 
@@ -44,7 +44,7 @@ class RaidThankEvent(AbsEvent):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict
+        tags: Dict[str, object]
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -144,3 +144,17 @@ class SubGiftThankingEvent(AbsEvent):
         self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
 
         return True
+
+
+class StubEvent(AbsEvent):
+
+    def __init__(self):
+        pass
+
+    async def handleEvent(
+        self,
+        twitchChannel: Channel,
+        twitchUser: User,
+        tags: Dict[str, object]
+    ) -> bool:
+        return False
