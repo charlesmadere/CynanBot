@@ -1,6 +1,7 @@
 import asyncio
 import locale
 from abc import ABC, abstractmethod
+from asyncio import AbstractEventLoop
 from typing import Dict
 
 from twitchio.channel import Channel
@@ -29,14 +30,18 @@ class RaidThankEvent(AbsEvent):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber
     ):
-        if generalSettingsRepository is None:
+        if eventLoop is None:
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
 
@@ -78,7 +83,7 @@ class RaidThankEvent(AbsEvent):
         else:
             message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
-        asyncio.create_task(twitchUtils.waitThenSend(
+        self.__eventLoop.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
             delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
             message = message
@@ -92,17 +97,21 @@ class SubGiftThankingEvent(AbsEvent):
 
     def __init__(
         self,
+        eventLoop: AbstractEventLoop,
         authRepository: AuthRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber
     ):
-        if authRepository is None:
+        if eventLoop is None:
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -140,9 +149,13 @@ class SubGiftThankingEvent(AbsEvent):
         elif giftedToName.lower() == giftedByName.lower():
             return False
 
-        await twitchUtils.safeSend(twitchChannel, f'😻 Thank you for the gifted sub @{giftedByName}! ✨')
-        self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
+        self.__eventLoop.create_task(twitchUtils.waitThenSend(
+            messageable = twitchChannel,
+            delaySeconds = 5,
+            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
+        ))
 
+        self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
         return True
 
 
