@@ -25,7 +25,7 @@ class AbsEvent(ABC):
         pass
 
 
-class RaidEvent(AbsEvent):
+class RaidThankEvent(AbsEvent):
 
     def __init__(
         self,

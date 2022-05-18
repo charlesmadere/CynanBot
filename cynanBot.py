@@ -248,7 +248,7 @@ class CynanBot(commands.Bot):
         ## Initialization of event handler objects ##
         #############################################
 
-        self.__raidEvent: AbsEvent = RaidEvent(generalSettingsRepository, timber)
+        self.__raidThankEvent: AbsEvent = RaidThankEvent(generalSettingsRepository, timber)
         self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authRepository, generalSettingsRepository, timber)
 
         ###############################################
@@ -537,7 +537,7 @@ class CynanBot(commands.Bot):
         twitchUser = await self.__usersRepository.getUserAsync(channel.name)
 
         if msgId == 'raid':
-            await self.__raidEvent.handleEvent(
+            await self.__raidThankEvent.handleEvent(
                 twitchChannel = channel,
                 twitchUser = twitchUser,
                 tags = tags
