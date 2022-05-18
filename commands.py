@@ -35,6 +35,7 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.superTriviaHelper import SuperTriviaHelper
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -1160,6 +1161,7 @@ class SuperTriviaCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
+        superTriviaHelper: SuperTriviaHelper,
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository,
@@ -1167,6 +1169,8 @@ class SuperTriviaCommand(AbsCommand):
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif superTriviaHelper is None:
+            raise ValueError(f'superTriviaHelper argument is malformed: \"{superTriviaHelper}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameMachine is None:
@@ -1177,10 +1181,10 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__superTriviaHelper: SuperTriviaHelper = superTriviaHelper
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
@@ -1189,11 +1193,11 @@ class SuperTriviaCommand(AbsCommand):
             return
         elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled():
+            return
+        elif not user.isSuperTriviaGameEnabled():
             return
         elif not ctx.author.is_mod:
-            return
-        elif not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         userName = ctx.author.name.lower()
@@ -1213,6 +1217,10 @@ class SuperTriviaCommand(AbsCommand):
 
             if not proceed:
                 return
+
+        if not self.__superTriviaHelper.startSuperTrivia(user.getHandle()):
+            self.__timber.log('SuperTriviaCommand', f'{ctx.author.name}:{ctx.author.id} attempted to start super trivia in {user.getHandle()}, but we\'re still on cooldown')
+            return
 
         points = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():

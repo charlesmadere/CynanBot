@@ -60,13 +60,15 @@ from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBotCommon.trivia.superTriviaHelper import SuperTriviaHelper
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from events import AbsEvent, RaidEvent, SubGiftThankingEvent
+from events import (AbsEvent, RaidSuperTriviaEvent, RaidThankEvent, StubEvent,
+                    SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
                       ChatLogMessage, CynanMessage, DeerForceMessage,
@@ -103,6 +105,7 @@ class CynanBot(commands.Bot):
         nonceRepository: NonceRepository,
         pokepediaRepository: Optional[PokepediaRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
+        superTriviaHelper: Optional[SuperTriviaHelper],
         tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
@@ -173,14 +176,14 @@ class CynanBot(commands.Bot):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or doubleCutenessHelper is None or superTriviaHelper is None or  triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
-            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, superTriviaHelper, timber, triviaGameMachine, usersRepository)
 
         if chatBandManager is None:
             self.__chatBandClearCommand: AbsCommand = StubCommand()
