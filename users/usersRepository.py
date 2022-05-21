@@ -94,6 +94,7 @@ class UsersRepository():
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
+        superTriviaGameControllers: List[str] = None
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
