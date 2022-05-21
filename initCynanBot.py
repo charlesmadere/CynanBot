@@ -41,7 +41,6 @@ from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
-from CynanBotCommon.trivia.superTriviaHelper import SuperTriviaHelper
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
@@ -246,7 +245,6 @@ cynanBot = CynanBot(
         timber = timber
     ),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
-    superTriviaHelper = SuperTriviaHelper(),
     tamaleGuyRepository = TamaleGuyRepository(
         clientSession = clientSession,
         timber = timber

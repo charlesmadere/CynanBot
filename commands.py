@@ -35,7 +35,6 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
-from CynanBotCommon.trivia.superTriviaHelper import SuperTriviaHelper
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -1161,27 +1160,20 @@ class SuperTriviaCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        superTriviaHelper: SuperTriviaHelper,
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 3)
+        usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif superTriviaHelper is None:
-            raise ValueError(f'superTriviaHelper argument is malformed: \"{superTriviaHelper}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameMachine is None:
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__superTriviaHelper: SuperTriviaHelper = superTriviaHelper
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
