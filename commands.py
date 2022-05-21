@@ -1217,9 +1217,7 @@ class SuperTriviaCommand(AbsCommand):
             if not proceed:
                 return
 
-        if not self.__superTriviaHelper.startSuperTrivia(user.getHandle()):
-            self.__timber.log('SuperTriviaCommand', f'{ctx.author.name}:{ctx.author.id} attempted to start super trivia in {user.getHandle()}, but we\'re still on cooldown')
-            return
+        perUserAttempts = self.__generalSettingsRepository.getSuperTriviaGamePerUserAttempts()
 
         points = self.__generalSettingsRepository.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
@@ -1242,6 +1240,7 @@ class SuperTriviaCommand(AbsCommand):
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+            perUserAttempts = perUserAttempts,
             pointsMultiplier = multiplier,
             pointsForWinning = points,
             secondsToLive = secondsToLive,

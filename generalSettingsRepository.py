@@ -51,6 +51,10 @@ class GeneralSettingsRepository():
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'superTriviaGameMultiplier', 5)
 
+    def getSuperTriviaGamePerUserAttempts(self) -> int:
+        jsonContents = self.__readJson()
+        return utils.getIntFromDict(jsonContents, 'superTriviaGamePerUserAttempts', 2)
+
     def getTriviaGamePoints(self) -> int:
         jsonContents = self.__readJson()
         return utils.getIntFromDict(jsonContents, 'triviaGamePoints', 5)
