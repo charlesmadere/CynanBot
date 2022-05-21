@@ -1195,14 +1195,21 @@ class SuperTriviaCommand(AbsCommand):
         userName = ctx.author.name.lower()
 
         if userName != user.getHandle().lower():
-            gameControllers = self.__generalSettingsRepository.getGlobalSuperTriviaGameControllers()
+            allGameControllers: List[str] = list()
 
-            if not utils.hasItems(gameControllers):
+            if user.hasSuperTriviaGameControllers():
+                allGameControllers.extend(user.getSuperTriviaGameControllers())
+
+            globalGameControllers = self.__generalSettingsRepository.getGlobalSuperTriviaGameControllers()
+            if utils.areValidStrs(globalGameControllers):
+                allGameControllers.extend(globalGameControllers)
+
+            if not utils.hasItems(allGameControllers):
                 return
 
             proceed = False
 
-            for gameController in gameControllers:
+            for gameController in allGameControllers:
                 if userName == gameController.lower():
                     proceed = True
                     break

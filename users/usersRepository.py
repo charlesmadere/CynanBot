@@ -102,6 +102,7 @@ class UsersRepository():
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
+            superTriviaGameControllers = userJson.get('superTriviaGameControllers')
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
@@ -173,6 +174,7 @@ class UsersRepository():
             twitter = twitter,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
+            superTriviaGameControllers = superTriviaGameControllers,
             timeZones = timeZones
         )
 
