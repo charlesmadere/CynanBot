@@ -96,7 +96,7 @@ class TriviaUtils():
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
         if triviaResult.getTotal() <= 0:
-            return f'{userName} has not played any trivia games 😿'
+            return f'@{userName} has not played any trivia games 😿'
 
         gamesStr = 'games'
         if triviaResult.getTotal() == 1:
@@ -118,7 +118,7 @@ class TriviaUtils():
         elif triviaResult.getStreak() <= -3:
             streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
-        return f'{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
 
     def getSuperTriviaCorrectAnswerReveal(
         self,

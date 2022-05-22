@@ -26,11 +26,11 @@ class CutenessUtils():
         if result.hasCuteness() and result.getCuteness() >= 1:
             if result.hasLocalLeaderboard():
                 localLeaderboard = self.getLocalLeaderboard(result.getLocalLeaderboard(), delimiter)
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
+                return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
             else:
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+                return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
-            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
+            return f'@{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
     def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
         if result is None:
@@ -65,13 +65,13 @@ class CutenessUtils():
         historyStr = delimiter.join(historyStrs)
 
         if result.hasBestCuteness() and result.hasTotalCuteness():
-            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}. And here is their recent cuteness history: {historyStr} ✨'
+            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}. And here is their recent cuteness history: {historyStr} ✨'
         elif result.hasBestCuteness() and not result.hasTotalCuteness():
-            return f'{result.getUserName()}\'s best ever cuteness was {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}, with a recent cuteness history of {historyStr} ✨'
+            return f'@{result.getUserName()}\'s best ever cuteness was {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}, with a recent cuteness history of {historyStr} ✨'
         elif not result.hasBestCuteness() and result.hasTotalCuteness():
-            return f'{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a recent cuteness history of {historyStr} ✨'
+            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a recent cuteness history of {historyStr} ✨'
         else:
-            return f'{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
+            return f'@{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
 
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):
@@ -100,7 +100,7 @@ class CutenessUtils():
             raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         if not result.hasLeaderboards():
-            return f'{result.getTwitchChannel()} has no cuteness leaderboard history 😿'
+            return f'@{result.getTwitchChannel()} has no cuteness leaderboard history 😿'
 
         leaderboardStrings: List[str] = list()
 
