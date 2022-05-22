@@ -22,16 +22,18 @@ class GeneralSettingsRepository():
 
     def getGlobalSuperTriviaGameControllers(self) -> List[str]:
         jsonContents = self.__readJson()
-
-        gameControllers: List[str] = list()
         gameControllersJson: List[str] = jsonContents.get('superTriviaGameControllers')
 
-        if utils.hasItems(gameControllersJson):
-            for gameController in gameControllersJson:
+        if not utils.hasItems(gameControllersJson):
+            return None
+
+        gameControllers: List[str] = list()
+
+        for gameController in gameControllersJson:
+            if utils.isValidStr(gameController):
                 gameControllers.append(gameController)
 
-            gameControllers.sort()
-
+        gameControllers.sort(key = lambda gameController: gameController.lower())
         return gameControllers
 
     def getRaidLinkMessagingDelay(self) -> int:
