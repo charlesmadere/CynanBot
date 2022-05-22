@@ -26,7 +26,6 @@ class User():
         isImytSlurpEnabled: bool,
         isJamCatEnabled: bool,
         isJishoEnabled: bool,
-        isJokesEnabled: bool,
         isJokeTriviaRepositoryEnabled: bool,
         isLoremIpsumEnabled: bool,
         isPicOfTheDayEnabled: bool,
@@ -95,8 +94,6 @@ class User():
             raise ValueError(f'isJamCatEnabled argument is malformed: \"{isJamCatEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
             raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
-        elif not utils.isValidBool(isJokesEnabled):
-            raise ValueError(f'isJokesEnabled argument is malformed: \"{isJokesEnabled}\"')
         elif not utils.isValidBool(isJokeTriviaRepositoryEnabled):
             raise ValueError(f'isJokeTriviaRepositoryEnabled argument is malformed: \"{isJokeTriviaRepositoryEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
@@ -160,7 +157,6 @@ class User():
         self.__isImytSlurpEnabled: bool = isImytSlurpEnabled
         self.__isJamCatEnabled: bool = isJamCatEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
-        self.__isJokesEnabled: bool = isJokesEnabled
         self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
         self.__isPicOfTheDayEnabled: bool = isPicOfTheDayEnabled
@@ -362,9 +358,6 @@ class User():
 
     def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled
-
-    def isJokesEnabled(self) -> bool:
-        return self.__isJokesEnabled
 
     def isJokeTriviaRepositoryEnabled(self) -> bool:
         return self.__isJokeTriviaRepositoryEnabled

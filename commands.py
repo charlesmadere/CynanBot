@@ -254,9 +254,6 @@ class CommandsCommand(AbsCommand):
         if self.__generalSettingsRepository.isJishoEnabled() and user.isJishoEnabled():
             commands.append('!jisho')
 
-        if user.isJokesEnabled():
-            commands.append('!joke')
-
         if self.__generalSettingsRepository.isPokepediaEnabled() and user.isPokepediaEnabled():
             commands.append('!pkmon')
             commands.append('!pkmove')
