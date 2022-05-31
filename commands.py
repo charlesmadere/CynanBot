@@ -40,7 +40,7 @@ from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
 

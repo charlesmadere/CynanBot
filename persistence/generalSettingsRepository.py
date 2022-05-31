@@ -3,8 +3,8 @@ import os
 from typing import Dict, List
 
 import aiofile
-
 import CynanBotCommon.utils as utils
+
 from persistence.generalSettingsSnapshot import GeneralSettingsSnapshot
 
 
@@ -12,7 +12,7 @@ class GeneralSettingsRepository():
 
     def __init__(
         self,
-        generalSettingsFile: str = 'generalSettingsRepository.json'
+        generalSettingsFile: str = 'persistence/generalSettingsRepository.json'
     ):
         if not utils.isValidStr(generalSettingsFile):
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')

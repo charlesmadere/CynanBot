@@ -12,7 +12,7 @@ from CynanBotCommon.twitch.twitchTokensRepository import (
     TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
 from CynanBotCommon.userIdsRepository import UserIdsRepository
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
 from twitchio.ext import pubsub
 from twitchio.ext.pubsub import PubSubPool

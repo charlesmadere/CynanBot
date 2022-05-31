@@ -1,4 +1,3 @@
-import asyncio
 import locale
 from abc import ABC, abstractmethod
 from asyncio import AbstractEventLoop
@@ -10,7 +9,7 @@ import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
 

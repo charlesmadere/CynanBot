@@ -9,7 +9,7 @@ from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
 

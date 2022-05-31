@@ -67,11 +67,11 @@ from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import AbsEvent, RaidThankEvent, SubGiftThankingEvent
-from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
                       ChatLogMessage, CynanMessage, DeerForceMessage,
                       EyesMessage, ImytSlurpMessage, JamCatMessage,
                       RatJamMessage, StubMessage)
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,

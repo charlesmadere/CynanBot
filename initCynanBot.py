@@ -63,7 +63,7 @@ from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
 

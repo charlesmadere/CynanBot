@@ -16,7 +16,7 @@ from CynanBotCommon.trivia.startNewTriviaGameAction import \
     StartNewTriviaGameAction
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
-from generalSettingsRepository import GeneralSettingsRepository
+from persistence.generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 from users.user import User
@@ -101,9 +101,9 @@ class CutenessRedemption(AbsPointRedemption):
                 userName = userNameThatRedeemed
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed cuteness redemption of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness redemption of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}: {e}')
+            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}: {e}')
             await twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
 
         return True
