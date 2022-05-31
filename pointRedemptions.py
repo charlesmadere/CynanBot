@@ -157,9 +157,10 @@ class PkmnBattleRedemption(AbsPointRedemption):
             return False
 
         opponentUserName = utils.removePreceedingAt(splits[0])
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
+        if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnBattle(
                 userThatRedeemed = userNameThatRedeemed,
                 userToBattle = opponentUserName,
@@ -167,11 +168,11 @@ class PkmnBattleRedemption(AbsPointRedemption):
             ):
                 actionCompleted = True
 
-        if not actionCompleted and self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
+        if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await twitchUtils.safeSend(twitchChannel, f'!battle {userNameThatRedeemed} {opponentUserName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle redemption for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
         return actionCompleted
 
 
@@ -231,21 +232,23 @@ class PkmnCatchRedemption(AbsPointRedemption):
         if pkmnCatchBoosterPack.hasCatchType():
             funtoonPkmnCatchType = self.__toFuntoonPkmnCatchType(pkmnCatchBoosterPack)
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed Pokemon Catch for {userNameThatRedeemed}:{userIdThatRedeemed} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        actionCompleted = False
 
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
+        if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnCatch(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle(),
                 funtoonPkmnCatchType = funtoonPkmnCatchType
             ):
-                return True
+                actionCompleted = True
 
-        if self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
+        if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await twitchUtils.safeSend(twitchChannel, f'!catch {userNameThatRedeemed}')
-            return True
-        else:
-            return False
+            actionCompleted = True
+
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {userNameThatRedeemed}:{userIdThatRedeemed} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
+        return actionCompleted
 
     def __toFuntoonPkmnCatchType(
         self,
@@ -306,20 +309,22 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         if not twitchUser.isPkmnEnabled():
             return False
 
-        self.__timber.log('PkmnEvolveRedemption', f'Redeemed Pokemon Evolve for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        actionCompleted = False
 
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
+        if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnGiveEvolve(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle()
             ):
-                return True
+                actionCompleted = True
 
-        if self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
+        if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await twitchUtils.safeSend(twitchChannel, f'!freeevolve {userNameThatRedeemed}')
-            return True
-        else:
-            return False
+            actionCompleted = True
+
+        self.__timber.log('PkmnEvolveRedemption', f'Redeemed pkmn evolve for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        return actionCompleted
 
 
 class PkmnShinyRedemption(AbsPointRedemption):
@@ -364,20 +369,22 @@ class PkmnShinyRedemption(AbsPointRedemption):
         if not twitchUser.isPkmnEnabled():
             return False
 
-        self.__timber.log('PkmnShinyRedemption', f'Redeemed Pokemon Shiny for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        actionCompleted = False
 
-        if self.__generalSettingsRepository.isFuntoonApiEnabled():
+        if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnGiveShiny(
                 userThatRedeemed = userNameThatRedeemed,
                 twitchChannel = twitchUser.getHandle()
             ):
-                return True
+                actionCompleted = True
 
-        if self.__generalSettingsRepository.isFuntoonTwitchChatFallbackEnabled():
+        if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await twitchUtils.safeSend(twitchChannel, f'!freeshiny {userNameThatRedeemed}')
-            return True
-        else:
-            return False
+            actionCompleted = True
+
+        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        return actionCompleted
 
 
 class PotdPointRedemption(AbsPointRedemption):

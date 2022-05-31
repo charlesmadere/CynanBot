@@ -174,8 +174,9 @@ class ChatBandClearCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isChatBandEnabled():
+        if not generalSettings.isChatBandEnabled():
             return
         elif not user.isChatBandEnabled():
             return
@@ -216,6 +217,7 @@ class CommandsCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
@@ -234,10 +236,10 @@ class CommandsCommand(AbsCommand):
         if user.hasTwitter():
             commands.append('!twitter')
 
-        if self.__generalSettingsRepository.isAnalogueEnabled() and user.isAnalogueEnabled():
+        if generalSettings.isAnalogueEnabled() and user.isAnalogueEnabled():
             commands.append('!analogue')
 
-        if self.__generalSettingsRepository.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
+        if generalSettings.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
             commands.append('!clearchatband')
 
         if user.isCutenessEnabled():
@@ -253,29 +255,29 @@ class CommandsCommand(AbsCommand):
         if user.isCynanSourceEnabled():
             commands.append('!cynansource')
 
-        if self.__generalSettingsRepository.isJishoEnabled() and user.isJishoEnabled():
+        if generalSettings.isJishoEnabled() and user.isJishoEnabled():
             commands.append('!jisho')
 
-        if self.__generalSettingsRepository.isPokepediaEnabled() and user.isPokepediaEnabled():
+        if generalSettings.isPokepediaEnabled() and user.isPokepediaEnabled():
             commands.append('!pkmon')
             commands.append('!pkmove')
 
         if user.isStarWarsQuotesEnabled():
             commands.append('!swquote')
 
-        if self.__generalSettingsRepository.isTamalesEnabled() and user.isTamalesEnabled():
+        if generalSettings.isTamalesEnabled() and user.isTamalesEnabled():
             commands.append('!tamales')
 
-        if self.__generalSettingsRepository.isTranslateEnabled() and user.isTranslateEnabled():
+        if generalSettings.isTranslateEnabled() and user.isTranslateEnabled():
             commands.append('!translate')
 
-        if self.__generalSettingsRepository.isTriviaGameEnabled() and user.isTriviaGameEnabled():
+        if generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled():
             commands.append('!triviascore')
 
-        if self.__generalSettingsRepository.isWeatherEnabled() and user.isWeatherEnabled():
+        if generalSettings.isWeatherEnabled() and user.isWeatherEnabled():
             commands.append('!weather')
 
-        if self.__generalSettingsRepository.isWordOfTheDayEnabled() and user.isWordOfTheDayEnabled():
+        if generalSettings.isWordOfTheDayEnabled() and user.isWordOfTheDayEnabled():
             commands.append('!word')
 
         if not utils.hasItems(commands):
@@ -722,8 +724,9 @@ class JishoCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isJishoEnabled():
+        if not generalSettings.isJishoEnabled():
             return
         elif not user.isJishoEnabled():
             return
@@ -979,8 +982,9 @@ class PkMonCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isPokepediaEnabled():
+        if not generalSettings.isPokepediaEnabled():
             return
         elif not user.isPokepediaEnabled():
             return
@@ -1035,8 +1039,9 @@ class PkMoveCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isPokepediaEnabled():
+        if not generalSettings.isPokepediaEnabled():
             return
         elif not user.isPokepediaEnabled():
             return
@@ -1130,12 +1135,15 @@ class SuperAnswerCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled():
             return
-        elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
+        elif not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled():
+            return
+        elif not user.isSuperTriviaGameEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -1179,10 +1187,11 @@ class SuperTriviaCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled():
             return
-        elif not self.__generalSettingsRepository.isSuperTriviaGameEnabled():
+        elif not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled():
             return
@@ -1199,7 +1208,7 @@ class SuperTriviaCommand(AbsCommand):
             if user.hasSuperTriviaGameControllers():
                 allGameControllers.extend(user.getSuperTriviaGameControllers())
 
-            globalGameControllers = self.__generalSettingsRepository.getGlobalSuperTriviaGameControllers()
+            globalGameControllers = generalSettings.getGlobalSuperTriviaGameControllers()
             if utils.areValidStrs(globalGameControllers):
                 allGameControllers.extend(globalGameControllers)
 
@@ -1216,19 +1225,19 @@ class SuperTriviaCommand(AbsCommand):
             if not proceed:
                 return
 
-        perUserAttempts = self.__generalSettingsRepository.getSuperTriviaGamePerUserAttempts()
+        perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
 
-        points = self.__generalSettingsRepository.getTriviaGamePoints()
+        points = generalSettings.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
             points = user.getTriviaGamePoints()
 
-        multiplier = self.__generalSettingsRepository.getSuperTriviaGameMultiplier()
+        multiplier = generalSettings.getSuperTriviaGameMultiplier()
         if user.hasSuperTriviaGameMultiplier():
             multiplier = user.getSuperTriviaGameMultiplier()
 
         points = points * multiplier
 
-        secondsToLive = self.__generalSettingsRepository.getWaitForSuperTriviaAnswerDelay()
+        secondsToLive = generalSettings.getWaitForSuperTriviaAnswerDelay()
         if user.hasWaitForSuperTriviaAnswerDelay():
             secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
 
@@ -1332,8 +1341,9 @@ class TamalesCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTamalesEnabled():
+        if not generalSettings.isTamalesEnabled():
             return
         elif not user.isTamalesEnabled():
             return
@@ -1442,8 +1452,9 @@ class TranslateCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTranslateEnabled():
+        if not generalSettings.isTranslateEnabled():
             return
         elif not user.isTranslateEnabled():
             return
@@ -1510,8 +1521,9 @@ class TriviaScoreCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled():
             return
@@ -1616,8 +1628,9 @@ class WeatherCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isWeatherEnabled():
+        if not generalSettings.isWeatherEnabled():
             return
         elif not user.isWeatherEnabled():
             return
@@ -1673,8 +1686,9 @@ class WordCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isWordOfTheDayEnabled():
+        if not generalSettings.isWordOfTheDayEnabled():
             return
         elif not user.isWordOfTheDayEnabled():
             return
