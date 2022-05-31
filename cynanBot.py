@@ -424,7 +424,7 @@ class CynanBot(commands.Bot):
         redemptionMessage: str = event.input
         lruCacheId = f'{twitchUserNameStr}:{event.id}'.lower()
 
-        if generalSettings.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
+        if generalSettings.isDebugLoggingEnabled() or generalSettings.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
             self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__channelPointsLruCache.contains(lruCacheId):
