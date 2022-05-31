@@ -79,8 +79,9 @@ class AnalogueCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isAnalogueEnabled():
+        if not generalSettings.isAnalogueEnabled():
             return
         elif not user.isAnalogueEnabled():
             return
@@ -125,8 +126,9 @@ class AnswerCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled():
             return

@@ -57,7 +57,9 @@ class CatJamMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isCatJamMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isCatJamMessageEnabled():
             return False
         elif not twitchUser.isCatJamEnabled():
             return False
@@ -101,7 +103,9 @@ class ChatBandMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isChatBandEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isChatBandEnabled():
             return False
         elif not twitchUser.isChatBandEnabled():
             return False
@@ -185,7 +189,9 @@ class CynanMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isCynanMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isCynanMessageEnabled():
             return False
         elif not twitchUser.isCynanMessageEnabled():
             return False
@@ -236,7 +242,9 @@ class DeerForceMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isDeerForceMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isDeerForceMessageEnabled():
             return False
         elif not twitchUser.isDeerForceMessageEnabled():
             return False
@@ -284,7 +292,9 @@ class EyesMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isEyesMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isEyesMessageEnabled():
             return False
         elif not twitchUser.isEyesMessageEnabled():
             return False
@@ -332,7 +342,9 @@ class ImytSlurpMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isImytSlurpMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isImytSlurpMessageEnabled():
             return False
         elif not twitchUser.isImytSlurpEnabled():
             return False
@@ -380,7 +392,9 @@ class JamCatMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isJamCatMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isJamCatMessageEnabled():
             return False
         elif not twitchUser.isJamCatEnabled():
             return False
@@ -428,7 +442,9 @@ class RatJamMessage(AbsMessage):
         elif message is None:
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        if not self.__generalSettingsRepository.isRatJamMessageEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isRatJamMessageEnabled():
             return False
         elif not twitchUser.isRatJamEnabled():
             return False

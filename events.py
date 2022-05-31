@@ -58,7 +58,9 @@ class RaidThankEvent(AbsEvent):
         elif tags is None:
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
 
-        if not self.__generalSettingsRepository.isRaidLinkMessagingEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isRaidLinkMessagingEnabled():
             return False
         elif not twitchUser.isRaidLinkMessagingEnabled():
             return False
@@ -83,9 +85,11 @@ class RaidThankEvent(AbsEvent):
         else:
             message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
+        delaySeconds = generalSettings.getRaidLinkMessagingDelay()
+
         self.__eventLoop.create_task(twitchUtils.waitThenSend(
             messageable = twitchChannel,
-            delaySeconds = self.__generalSettingsRepository.getRaidLinkMessagingDelay(),
+            delaySeconds = delaySeconds,
             message = message
         ))
 
@@ -129,7 +133,9 @@ class SubGiftThankingEvent(AbsEvent):
         elif tags is None:
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
 
-        if not self.__generalSettingsRepository.isSubGiftThankingEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isSubGiftThankingEnabled():
             return False
         elif not twitchUser.isSubGiftThankingEnabled():
             return False

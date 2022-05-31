@@ -348,7 +348,9 @@ class CynanBot(commands.Bot):
             return
 
         if utils.isValidStr(message.content):
-            if self.__generalSettingsRepository.isPersistAllUsersEnabled():
+            generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+            if generalSettings.isPersistAllUsersEnabled():
                 await self.__userIdsRepository.setUser(
                     userId = str(message.author.id),
                     userName = message.author.name
@@ -412,6 +414,7 @@ class CynanBot(commands.Bot):
         await self.handle_commands(message)
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         twitchUserIdStr = str(event.channel_id)
         twitchUserNameStr = await self.__userIdsRepository.fetchUserName(twitchUserIdStr)
         twitchUser = await self.__usersRepository.getUserAsync(twitchUserNameStr)
@@ -421,7 +424,7 @@ class CynanBot(commands.Bot):
         redemptionMessage: str = event.input
         lruCacheId = f'{twitchUserNameStr}:{event.id}'.lower()
 
-        if self.__generalSettingsRepository.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
+        if generalSettings.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
             self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__channelPointsLruCache.contains(lruCacheId):
@@ -431,7 +434,7 @@ class CynanBot(commands.Bot):
         self.__channelPointsLruCache.put(lruCacheId)
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
-        if self.__generalSettingsRepository.isPersistAllUsersEnabled():
+        if generalSettings.isPersistAllUsersEnabled():
             await self.__userIdsRepository.setUser(
                 userId = userIdThatRedeemed,
                 userName = userNameThatRedeemed
@@ -522,7 +525,8 @@ class CynanBot(commands.Bot):
         self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
 
     async def event_pubsub_pong(self):
-        if self.__generalSettingsRepository.isPubSubPongLoggingEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        if generalSettings.isPubSubPongLoggingEnabled():
             self.__timber.log('CynanBot', f'Received PubSub pong')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict):
@@ -535,6 +539,7 @@ class CynanBot(commands.Bot):
             return
 
         twitchUser = await self.__usersRepository.getUserAsync(channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if msgId == 'raid':
             await self.__raidThankEvent.handleEvent(
@@ -548,7 +553,7 @@ class CynanBot(commands.Bot):
                 twitchUser = twitchUser,
                 tags = tags
             )
-        elif self.__generalSettingsRepository.isDebugLoggingEnabled():
+        elif generalSettings.isDebugLoggingEnabled():
             self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
 
     async def event_ready(self):
@@ -568,8 +573,9 @@ class CynanBot(commands.Bot):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         await self.wait_for_ready()
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if self.__generalSettingsRepository.isDebugLoggingEnabled():
+        if generalSettings.isDebugLoggingEnabled():
             connectedChannels = self.connected_channels
             self.__timber.log('CynanBot', f'Connected channels ({len(connectedChannels)}): {connectedChannels}')
 

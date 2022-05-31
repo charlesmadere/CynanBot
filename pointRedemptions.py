@@ -484,16 +484,18 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
 
-        if not self.__generalSettingsRepository.isTriviaGameEnabled():
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
             return False
         elif not twitchUser.isTriviaGameEnabled():
             return False
 
-        secondsToLive = self.__generalSettingsRepository.getWaitForTriviaAnswerDelay()
+        secondsToLive = generalSettings.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
             secondsToLive = twitchUser.getWaitForTriviaAnswerDelay()
 
-        points = self.__generalSettingsRepository.getTriviaGamePoints()
+        points = generalSettings.getTriviaGamePoints()
         if twitchUser.hasTriviaGamePoints():
             points = twitchUser.getTriviaGamePoints()
 
