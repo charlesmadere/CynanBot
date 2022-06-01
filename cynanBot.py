@@ -309,12 +309,14 @@ class CynanBot(commands.Bot):
         else:
             self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameMachine)
 
+        generalSettings = self.__generalSettingsRepository.getAll()
+
         ########################################
         ## Initialization of EventSub objects ##
         ########################################
 
         self.__eventSubUtils: EventSubUtils = None
-        if self.__generalSettingsRepository.isEventSubEnabled():
+        if generalSettings.isEventSubEnabled():
             # TODO
             pass
 
@@ -323,7 +325,7 @@ class CynanBot(commands.Bot):
         ######################################
 
         self.__pubSubUtils: PubSubUtils = None
-        if self.__generalSettingsRepository.isPubSubEnabled():
+        if generalSettings.isPubSubEnabled():
             self.__pubSubUtils = PubSubUtils(
                 eventLoop = eventLoop,
                 authRepository = authRepository,
