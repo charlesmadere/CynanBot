@@ -1523,9 +1523,9 @@ class TriviaScoreCommand(AbsCommand):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not user.isTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
