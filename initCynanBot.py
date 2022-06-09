@@ -99,8 +99,7 @@ timeZoneRepository = TimeZoneRepository()
 
 websocketConnectionServer = WebsocketConnectionServer(
     eventLoop = eventLoop,
-    timber = timber,
-    isDebugLoggingEnabled = True
+    timber = timber
 )
 
 translationHelper: TranslationHelper = None
