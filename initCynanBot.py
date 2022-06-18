@@ -39,6 +39,8 @@ from CynanBotCommon.trivia.millionaireTriviaQuestionRepository import \
     MillionaireTriviaQuestionRepository
 from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
+    OpenTriviaQaTriviaQuestionRepository
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
@@ -174,6 +176,10 @@ triviaRepository = TriviaRepository(
         clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
+        timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
