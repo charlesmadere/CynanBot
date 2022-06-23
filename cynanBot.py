@@ -9,7 +9,6 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
-from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       ChatBandClearCommand, CommandsCommand,
                       CutenessChampionsCommand, CutenessCommand,
@@ -71,6 +70,7 @@ from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
                       ChatLogMessage, CynanMessage, DeerForceMessage,
                       EyesMessage, ImytSlurpMessage, JamCatMessage,
                       RatJamMessage, StubMessage)
+from persistence.authRepository import AuthRepository
 from persistence.generalSettingsRepository import GeneralSettingsRepository
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
@@ -116,13 +116,13 @@ class CynanBot(commands.Bot):
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
-            client_secret = authRepository.requireTwitchClientSecret(),
+            client_secret = authRepository.getAll().requireTwitchClientSecret(),
             initial_channels = [ user.getHandle().lower() for user in usersRepository.getUsers() ],
             loop = eventLoop,
-            nick = authRepository.requireNick(),
+            nick = authRepository.getAll().requireNick(),
             prefix = '!',
             retain_cache = True,
-            token = authRepository.requireTwitchIrcAuthToken()
+            token = authRepository.getAll().requireTwitchIrcAuthToken()
         )
 
         if eventLoop is None:
@@ -337,7 +337,7 @@ class CynanBot(commands.Bot):
                 usersRepository = usersRepository
             )
 
-        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.requireNick()}')
+        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
@@ -559,7 +559,8 @@ class CynanBot(commands.Bot):
             self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
 
     async def event_ready(self):
-        self.__timber.log('CynanBot', f'{self.__authRepository.requireNick()} is ready!')
+        authSnapshot = await self.__authRepository.getAllAsync()
+        self.__timber.log('CynanBot', f'{authSnapshot.requireNick()} is ready!')
 
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)

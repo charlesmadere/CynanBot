@@ -5,11 +5,18 @@ import CynanBotCommon.utils as utils
 
 class GeneralSettingsSnapshot():
 
-    def __init__(self, jsonContents: Dict[str, object]):
+    def __init__(
+        self,
+        jsonContents: Dict[str, object],
+        generalSettingsFile: str
+    ):
         if not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+        elif not utils.isValidStr(generalSettingsFile):
+            raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
         self.__jsonContents: Dict[str, object] = jsonContents
+        self.__generalSettingsFile: str = generalSettingsFile
 
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
@@ -34,8 +41,9 @@ class GeneralSettingsSnapshot():
 
     def getRefreshPubSubTokensSeconds(self) -> int:
         refreshPubSubTokensSeconds = utils.getIntFromDict(self.__jsonContents, 'refreshPubSubTokensSeconds', 120)
+
         if refreshPubSubTokensSeconds < 30:
-            raise ValueError(f'\"refreshPubSubTokensSeconds\" value is too aggressive: {refreshPubSubTokensSeconds}')
+            raise ValueError(f'\"refreshPubSubTokensSeconds\" value in General Settings file (\"{self.__generalSettingsFile}\") is too aggressive: {refreshPubSubTokensSeconds}')
 
         return refreshPubSubTokensSeconds
 

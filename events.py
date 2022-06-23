@@ -7,8 +7,8 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
-from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
+from persistence.authRepository import AuthRepository
 from persistence.generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
@@ -133,6 +133,7 @@ class SubGiftThankingEvent(AbsEvent):
             raise ValueError(f'tags argument is malformed: \"{tags}\"')
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        authSnapshot = await self.__authRepository.getAllAsync()
 
         if not generalSettings.isSubGiftThankingEnabled():
             return False
@@ -147,7 +148,7 @@ class SubGiftThankingEvent(AbsEvent):
         if not utils.isValidStr(giftedToName):
             giftedToName = tags.get('msg-param-recipient-user-name')
 
-        if giftedToName.lower() != self.__authRepository.requireNick().lower():
+        if giftedToName.lower() != authSnapshot.requireNick().lower():
             return False
         elif not utils.isValidStr(giftedByName):
             return False
@@ -160,7 +161,7 @@ class SubGiftThankingEvent(AbsEvent):
             message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
         ))
 
-        self.__timber.log('SubGiftThankingEvent', f'{self.__authRepository.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
+        self.__timber.log('SubGiftThankingEvent', f'{authSnapshot.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
         return True
 
 

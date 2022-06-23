@@ -5,13 +5,13 @@ from queue import SimpleQueue
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
-from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
     TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
 from CynanBotCommon.userIdsRepository import UserIdsRepository
+from persistence.authRepository import AuthRepository
 from persistence.generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
 from twitchio.ext import pubsub
@@ -79,6 +79,7 @@ class PubSubUtils():
 
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
         twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
+        authSnapshot = await self.__authRepository.getAllAsync()
         users: List[User] = None
 
         if twitchHandles is None:
@@ -110,8 +111,8 @@ class PubSubUtils():
         for user in usersAndTwitchTokens:
             try:
                 await self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchClientId = self.__authRepository.requireTwitchClientId(),
-                    twitchClientSecret = self.__authRepository.requireTwitchClientSecret(),
+                    twitchClientId = authSnapshot.requireTwitchClientId(),
+                    twitchClientSecret = authSnapshot.requireTwitchClientSecret(),
                     twitchHandle = user.getHandle()
                 )
 
@@ -134,7 +135,7 @@ class PubSubUtils():
             userId = await self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken,
-                twitchClientId = self.__authRepository.requireTwitchClientId()
+                twitchClientId = authSnapshot.requireTwitchClientId()
             )
 
             pubSubEntries.append(PubSubEntry(

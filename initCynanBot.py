@@ -3,7 +3,6 @@ import locale
 
 import aiohttp
 
-from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
 from CynanBotCommon.analogue.analogueStoreRepository import \
@@ -67,6 +66,7 @@ from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
+from persistence.authRepository import AuthRepository
 from persistence.generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
@@ -106,20 +106,22 @@ websocketConnectionServer = WebsocketConnectionServer(
     timber = timber
 )
 
+authSnapshot = authRepository.getAll()
+
 translationHelper: TranslationHelper = None
-if authRepository.hasDeepLAuthKey():
+if authSnapshot.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
         clientSession = clientSession,
         languagesRepository = languagesRepository,
-        deepLAuthKey = authRepository.requireDeepLAuthKey(),
+        deepLAuthKey = authSnapshot.requireDeepLAuthKey(),
         timber = timber
     )
 
 weatherRepository: WeatherRepository = None
-if authRepository.hasOneWeatherApiKey():
+if authSnapshot.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
         clientSession = clientSession,
-        oneWeatherApiKey = authRepository.requireOneWeatherApiKey(),
+        oneWeatherApiKey = authSnapshot.requireOneWeatherApiKey(),
         timber = timber
     )
 
@@ -136,10 +138,10 @@ triviaScoreRepository = TriviaScoreRepository(
 )
 
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
-if authRepository.hasQuizApiKey():
+if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
         clientSession = clientSession,
-        quizApiKey = authRepository.requireQuizApiKey(),
+        quizApiKey = authSnapshot.requireQuizApiKey(),
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository

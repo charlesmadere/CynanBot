@@ -21,37 +21,37 @@ class GeneralSettingsRepository():
 
     def getAll(self) -> GeneralSettingsSnapshot:
         jsonContents = self.__readJson()
-        return GeneralSettingsSnapshot(jsonContents)
+        return GeneralSettingsSnapshot(jsonContents, self.__generalSettingsFile)
 
     async def getAllAsync(self) -> GeneralSettingsSnapshot:
         jsonContents = await self.__readJsonAsync()
-        return GeneralSettingsSnapshot(jsonContents)
+        return GeneralSettingsSnapshot(jsonContents, self.__generalSettingsFile)
 
     def __readJson(self) -> Dict[str, object]:
         if not os.path.exists(self.__generalSettingsFile):
-            raise FileNotFoundError(f'General settings file not found: \"{self.__generalSettingsFile}\"')
+            raise FileNotFoundError(f'General Settings file not found: \"{self.__generalSettingsFile}\"')
 
         with open(self.__generalSettingsFile, 'r') as file:
             jsonContents = json.load(file)
 
         if jsonContents is None:
-            raise IOError(f'Error reading from general settings file: \"{self.__generalSettingsFile}\"')
+            raise IOError(f'Error reading from General Settings file: \"{self.__generalSettingsFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of general settings file \"{self.__generalSettingsFile}\" is empty')
+            raise ValueError(f'JSON contents of General Settings file \"{self.__generalSettingsFile}\" is empty')
 
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, object]:
         if not os.path.exists(self.__generalSettingsFile):
-            raise FileNotFoundError(f'General settings file not found: \"{self.__generalSettingsFile}\"')
+            raise FileNotFoundError(f'General Settings file not found: \"{self.__generalSettingsFile}\"')
 
         async with aiofile.async_open(self.__generalSettingsFile, 'r') as file:
             data = await file.read()
             jsonContents = json.loads(data)
 
         if jsonContents is None:
-            raise IOError(f'Error reading from general settings file: \"{self.__generalSettingsFile}\"')
+            raise IOError(f'Error reading from General Settings file: \"{self.__generalSettingsFile}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of general settings file \"{self.__generalSettingsFile}\" is empty')
+            raise ValueError(f'JSON contents of General Settings file \"{self.__generalSettingsFile}\" is empty')
 
         return jsonContents
