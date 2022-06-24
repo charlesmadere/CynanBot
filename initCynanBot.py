@@ -52,6 +52,7 @@ from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
@@ -132,6 +133,7 @@ if authSnapshot.hasOneWeatherApiKey():
 
 triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
+triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
 triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
@@ -163,6 +165,7 @@ triviaRepository = TriviaRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaIdGenerator = triviaIdGenerator,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
