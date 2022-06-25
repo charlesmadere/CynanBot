@@ -171,6 +171,7 @@ triviaRepository = TriviaRepository(
     lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
