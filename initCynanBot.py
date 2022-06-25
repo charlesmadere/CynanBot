@@ -154,6 +154,7 @@ triviaRepository = TriviaRepository(
         clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
