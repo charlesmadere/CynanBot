@@ -177,6 +177,7 @@ triviaRepository = TriviaRepository(
     ),
     millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
         timber = timber,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
@@ -188,6 +189,7 @@ triviaRepository = TriviaRepository(
     ),
     openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
         timber = timber,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
@@ -218,6 +220,7 @@ triviaRepository = TriviaRepository(
     ),
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     )
 )
