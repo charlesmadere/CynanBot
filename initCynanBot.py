@@ -196,6 +196,7 @@ triviaRepository = TriviaRepository(
     timber = timber,
     triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
         timber = timber,
+        triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     triviaSettingsRepository = triviaSettingsRepository,
