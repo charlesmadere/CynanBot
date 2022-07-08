@@ -4,6 +4,7 @@ from datetime import tzinfo
 from typing import Dict, List
 
 import aiofile
+import aiofiles.ospath
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -282,7 +283,7 @@ class UsersRepository():
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, object]:
-        if not os.path.exists(self.__usersFile):
+        if not await aiofiles.ospath.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
         async with aiofile.async_open(self.__usersFile, 'r') as file:

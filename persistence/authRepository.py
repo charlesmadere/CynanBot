@@ -3,6 +3,7 @@ import os
 from typing import Dict
 
 import aiofile
+import aiofiles.ospath
 import CynanBotCommon.utils as utils
 
 from persistence.authRepositorySnapshot import AuthRepositorySnapshot
@@ -42,7 +43,7 @@ class AuthRepository():
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, object]:
-        if not os.path.exists(self.__authFile):
+        if not await aiofiles.ospath.exists(self.__authFile):
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
 
         async with aiofile.async_open(self.__authFile, 'r') as file:
