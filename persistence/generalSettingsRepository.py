@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict
 
-import aiofile
+import aiofiles
 import aiofiles.ospath
 import CynanBotCommon.utils as utils
 
@@ -46,7 +46,7 @@ class GeneralSettingsRepository():
         if not await aiofiles.ospath.exists(self.__generalSettingsFile):
             raise FileNotFoundError(f'General Settings file not found: \"{self.__generalSettingsFile}\"')
 
-        async with aiofile.async_open(self.__generalSettingsFile, 'r') as file:
+        async with aiofiles.open(self.__generalSettingsFile, mode = 'r') as file:
             data = await file.read()
             jsonContents = json.loads(data)
 

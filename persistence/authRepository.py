@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict
 
-import aiofile
+import aiofiles
 import aiofiles.ospath
 import CynanBotCommon.utils as utils
 
@@ -46,7 +46,7 @@ class AuthRepository():
         if not await aiofiles.ospath.exists(self.__authFile):
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
 
-        async with aiofile.async_open(self.__authFile, 'r') as file:
+        async with aiofiles.open(self.__authFile, mode = 'r') as file:
             data = await file.read()
             jsonContents = json.loads(data)
 

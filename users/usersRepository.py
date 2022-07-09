@@ -3,7 +3,7 @@ import os
 from datetime import tzinfo
 from typing import Dict, List
 
-import aiofile
+import aiofiles
 import aiofiles.ospath
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -286,7 +286,7 @@ class UsersRepository():
         if not await aiofiles.ospath.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
-        async with aiofile.async_open(self.__usersFile, 'r') as file:
+        async with aiofiles.open(self.__usersFile, mode = 'r') as file:
             data = await file.read()
             jsonContents = json.loads(data)
 
