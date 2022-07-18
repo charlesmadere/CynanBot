@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from twitchio.ext.commands import Context
 
@@ -38,8 +38,11 @@ from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaSettingsRepository import \
+    TriviaSettingsRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from persistence.authRepository import AuthRepository
 from persistence.generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
@@ -149,17 +152,19 @@ class AnswerCommand(AbsCommand):
         self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
-class ChatBandClearCommand(AbsCommand):
+class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
-        chatBandManager: ChatBandManager,
+        authRepository: AuthRepository,
+        chatBandManager: Optional[ChatBandManager],
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        triviaSettingsRepository: Optional[TriviaSettingsRepository],
         usersRepository: UsersRepository
     ):
-        if chatBandManager is None:
-            raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
+        if authRepository is None:
+            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
@@ -167,25 +172,33 @@ class ChatBandClearCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__chatBandManager: ChatBandManager = chatBandManager
+        self.__authRepository: AuthRepository = authRepository
+        self.__chatBandManager: Optional[ChatBandManager] = chatBandManager
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
+        if not ctx.author.is_mod:
+            return
+
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isChatBandEnabled():
-            return
-        elif not user.isChatBandEnabled():
-            return
-        elif not ctx.author.is_mod:
-            return
+        await self.__authRepository.clearCaches()
 
-        self.__chatBandManager.clearCaches()
-        await twitchUtils.safeSend(ctx, 'ⓘ Chat Band caches cleared')
-        self.__timber.log('ChatBandClearCommand', f'Handled !clearchatband command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        if self.__chatBandManager is not None:
+            await self.__chatBandManager.clearCaches()
+
+        await self.__generalSettingsRepository.clearCaches()
+
+        if self.__triviaSettingsRepository is not None:
+            await self.__triviaSettingsRepository.clearCaches()
+
+        await self.__usersRepository.clearCaches()
+
+        await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
+        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class CommandsCommand(AbsCommand):

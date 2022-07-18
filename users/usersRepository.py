@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import tzinfo
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
 import aiofiles
 import aiofiles.ospath
@@ -29,7 +29,12 @@ class UsersRepository():
         self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
         self.__usersFile: str = usersFile
 
-    def __createUser(self, handle: str, userJson: dict) -> User:
+        self.__cache: Optional[Dict[str, Any]] = None
+
+    async def clearCaches(self):
+        self.__cache = None
+
+    def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif userJson is None:
@@ -178,7 +183,7 @@ class UsersRepository():
             timeZones = timeZones
         )
 
-    def __createUsers(self, jsonContents: Dict[str, object]) -> List[User]:
+    def __createUsers(self, jsonContents: Dict[str, Any]) -> List[User]:
         if not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
@@ -193,7 +198,7 @@ class UsersRepository():
         users.sort(key = lambda user: user.getHandle().lower())
         return users
 
-    def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, object]) -> User:
+    def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif not utils.hasItems(jsonContents):
@@ -268,7 +273,10 @@ class UsersRepository():
 
         return pkmnCatchBoosterPacks
 
-    def __readJson(self) -> Dict[str, object]:
+    def __readJson(self) -> Dict[str, Any]:
+        if self.__cache:
+            return self.__cache
+
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
@@ -280,9 +288,13 @@ class UsersRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
+        self.__cache = jsonContents
         return jsonContents
 
-    async def __readJsonAsync(self) -> Dict[str, object]:
+    async def __readJsonAsync(self) -> Dict[str, Any]:
+        if self.__cache:
+            return self.__cache
+
         if not await aiofiles.ospath.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
@@ -295,4 +307,5 @@ class UsersRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
+        self.__cache = jsonContents
         return jsonContents

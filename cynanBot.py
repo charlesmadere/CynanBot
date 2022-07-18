@@ -10,7 +10,7 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      ChatBandClearCommand, CommandsCommand,
+                      ClearCachesCommand, CommandsCommand,
                       CutenessChampionsCommand, CutenessCommand,
                       CutenessHistoryCommand, CynanSourceCommand,
                       DiscordCommand, GiveCutenessCommand, JishoCommand,
@@ -62,6 +62,8 @@ from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBotCommon.trivia.triviaSettingsRepository import \
+    TriviaSettingsRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -108,6 +110,7 @@ class CynanBot(commands.Bot):
         translationHelper: Optional[TranslationHelper],
         triviaGameMachine: Optional[TriviaGameMachine],
         triviaScoreRepository: Optional[TriviaScoreRepository],
+        triviaSettingsRepository: Optional[TriviaSettingsRepository],
         triviaUtils: Optional[TriviaUtils],
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
@@ -182,10 +185,7 @@ class CynanBot(commands.Bot):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        if chatBandManager is None:
-            self.__chatBandClearCommand: AbsCommand = StubCommand()
-        else:
-            self.__chatBandClearCommand: AbsCommand = ChatBandClearCommand(chatBandManager, generalSettingsRepository, timber, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, chatBandManager, generalSettingsRepository, timber, triviaSettingsRepository, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -714,9 +714,9 @@ class CynanBot(commands.Bot):
     async def command_answer(self, ctx: Context):
         await self.__answerCommand.handleCommand(ctx)
 
-    @commands.command(name = 'clearchatband')
+    @commands.command(name = 'clearcaches')
     async def command_clearchatband(self, ctx: Context):
-        await self.__chatBandClearCommand.handleCommand(ctx)
+        await self.__clearCachesCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
