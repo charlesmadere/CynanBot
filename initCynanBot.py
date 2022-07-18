@@ -26,6 +26,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
+    BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.jokeTriviaQuestionRepository import \
@@ -201,6 +203,11 @@ triviaRepository = TriviaRepository(
     ),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
+        bannedTriviaIdsRepository = BannedTriviaIdsRepository(
+            backingDatabase = backingDatabase,
+            timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
         timber = timber,
         triviaContentScanner = TriviaContentScanner(
             timber = timber,
