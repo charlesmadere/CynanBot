@@ -106,12 +106,6 @@ class TriviaUtils():
         if triviaResult.getTotalWins() == 1:
             winsStr = 'win'
 
-        superTriviaWinsStr: str = ''
-        if triviaResult.getSuperTriviaWins() > 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of which are super trivia wins)'
-        elif triviaResult.getSuperTriviaWins() == 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of which is a super trivia win)'
-
         lossesStr: str = 'losses'
         if triviaResult.getTotalLosses() == 1:
             lossesStr = 'loss'
@@ -124,7 +118,13 @@ class TriviaUtils():
         elif triviaResult.getStreak() <= -3:
             streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
-        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr}{superTriviaWinsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{streakStr}'
+        superTriviaWinsStr: str = ''
+        if triviaResult.getSuperTriviaWins() > 1:
+            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of the wins are from super trivia)'
+        elif triviaResult.getSuperTriviaWins() == 1:
+            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of the wins is from super trivia)'
+
+        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{superTriviaWinsStr}{streakStr}'
 
     def getSuperTriviaCorrectAnswerReveal(
         self,
