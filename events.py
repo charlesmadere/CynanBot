@@ -1,7 +1,7 @@
 import locale
 from abc import ABC, abstractmethod
 from asyncio import AbstractEventLoop
-from typing import Dict
+from typing import Any, Dict
 
 from twitchio.channel import Channel
 
@@ -20,7 +20,7 @@ class AbsEvent(ABC):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict[str, object]
+        tags: Dict[str, Any]
     ) -> bool:
         pass
 
@@ -48,7 +48,7 @@ class RaidThankEvent(AbsEvent):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict[str, object]
+        tags: Dict[str, Any]
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -123,7 +123,7 @@ class SubGiftThankingEvent(AbsEvent):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict[str, object]
+        tags: Dict[str, Any]
     ) -> bool:
         if twitchChannel is None:
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -174,6 +174,6 @@ class StubEvent(AbsEvent):
         self,
         twitchChannel: Channel,
         twitchUser: User,
-        tags: Dict[str, object]
+        tags: Dict[str, Any]
     ) -> bool:
         return False

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 import CynanBotCommon.utils as utils
 
@@ -7,7 +7,7 @@ class AuthRepositorySnapshot():
 
     def __init__(
         self,
-        jsonContents: Dict[str, object],
+        jsonContents: Dict[str, Any],
         authRepositoryFile: str
     ):
         if not utils.hasItems(jsonContents):
@@ -15,7 +15,7 @@ class AuthRepositorySnapshot():
         elif not utils.isValidStr(authRepositoryFile):
             raise ValueError(f'authRepositoryFile argument is malformed: \"{authRepositoryFile}\"')
 
-        self.__jsonContents: Dict[str, object] = jsonContents
+        self.__jsonContents: Dict[str, Any] = jsonContents
         self.__authRepositoryFile: str = authRepositoryFile
 
     def getDeepLAuthKey(self) -> str:

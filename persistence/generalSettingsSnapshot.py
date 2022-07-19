@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import CynanBotCommon.utils as utils
 
@@ -7,7 +7,7 @@ class GeneralSettingsSnapshot():
 
     def __init__(
         self,
-        jsonContents: Dict[str, object],
+        jsonContents: Dict[str, Any],
         generalSettingsFile: str
     ):
         if not utils.hasItems(jsonContents):
@@ -15,7 +15,7 @@ class GeneralSettingsSnapshot():
         elif not utils.isValidStr(generalSettingsFile):
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
-        self.__jsonContents: Dict[str, object] = jsonContents
+        self.__jsonContents: Dict[str, Any] = jsonContents
         self.__generalSettingsFile: str = generalSettingsFile
 
     def getEventSubPort(self) -> int:

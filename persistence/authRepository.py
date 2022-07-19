@@ -33,7 +33,7 @@ class AuthRepository():
         jsonContents = await self.__readJsonAsync()
         return AuthRepositorySnapshot(jsonContents, self.__authFile)
 
-    def __readJson(self) -> Dict[str, object]:
+    def __readJson(self) -> Dict[str, Any]:
         if self.__cache:
             return self.__cache
 
@@ -51,7 +51,7 @@ class AuthRepository():
         self.__cache = jsonContents
         return jsonContents
 
-    async def __readJsonAsync(self) -> Dict[str, object]:
+    async def __readJsonAsync(self) -> Dict[str, Any]:
         if self.__cache:
             return self.__cache
 
