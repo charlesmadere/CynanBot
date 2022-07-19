@@ -185,7 +185,7 @@ class CynanBot(commands.Bot):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, chatBandManager, generalSettingsRepository, timber, triviaSettingsRepository, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaSettingsRepository, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()

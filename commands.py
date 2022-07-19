@@ -14,6 +14,7 @@ from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
+from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -158,6 +159,7 @@ class ClearCachesCommand(AbsCommand):
         self,
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
+        funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
@@ -174,6 +176,7 @@ class ClearCachesCommand(AbsCommand):
 
         self.__authRepository: AuthRepository = authRepository
         self.__chatBandManager: Optional[ChatBandManager] = chatBandManager
+        self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
@@ -189,6 +192,9 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__chatBandManager is not None:
             await self.__chatBandManager.clearCaches()
+
+        if self.__funtoonRepository is not None:
+            await self.__funtoonRepository.clearCaches()
 
         await self.__generalSettingsRepository.clearCaches()
 
