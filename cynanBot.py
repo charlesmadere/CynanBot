@@ -10,11 +10,11 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
-                      ClearCachesCommand, CommandsCommand,
-                      CutenessChampionsCommand, CutenessCommand,
-                      CutenessHistoryCommand, CynanSourceCommand,
-                      DiscordCommand, GiveCutenessCommand, JishoCommand,
-                      LoremIpsumCommand, MyCutenessCommand,
+                      BanTriviaQuestionCommand, ClearCachesCommand,
+                      CommandsCommand, CutenessChampionsCommand,
+                      CutenessCommand, CutenessHistoryCommand,
+                      CynanSourceCommand, DiscordCommand, GiveCutenessCommand,
+                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
@@ -43,6 +43,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
+    BannedTriviaIdsRepository
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
     CorrectAnswerTriviaEvent
 from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
@@ -59,8 +61,11 @@ from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaHistoryRepository import \
+    TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
@@ -92,6 +97,7 @@ class CynanBot(commands.Bot):
         eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
+        bannedTriviaIdsRepository: Optional[BannedTriviaIdsRepository],
         chatBandManager: Optional[ChatBandManager],
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
@@ -108,7 +114,9 @@ class CynanBot(commands.Bot):
         tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
+        triviaContentScanner: Optional[TriviaContentScanner],
         triviaGameMachine: Optional[TriviaGameMachine],
+        triviaHistoryRepository: Optional[TriviaHistoryRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         triviaUtils: Optional[TriviaUtils],
@@ -185,7 +193,7 @@ class CynanBot(commands.Bot):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaSettingsRepository, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, usersRepository, weatherRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -229,9 +237,11 @@ class CynanBot(commands.Bot):
         else:
             self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, usersRepository)
 
-        if cutenessRepository is None or triviaScoreRepository is None:
+        if bannedTriviaIdsRepository is None or cutenessRepository is None or triviaHistoryRepository is None or triviaScoreRepository is None:
+            self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
+            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(bannedTriviaIdsRepository, timber, triviaHistoryRepository, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
@@ -713,6 +723,10 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'answer')
     async def command_answer(self, ctx: Context):
         await self.__answerCommand.handleCommand(ctx)
+
+    @commands.command(name = 'bantriviaquestion')
+    async def command_bantriviaquestion(self, ctx: Context):
+        await self.__banTriviaQuestionCommand.handleCommand(ctx)
 
     @commands.command(name = 'clearcaches')
     async def command_clearchatband(self, ctx: Context):

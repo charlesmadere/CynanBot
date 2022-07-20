@@ -28,6 +28,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
+    BannedTriviaIdsRepository
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
@@ -36,8 +38,11 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaHistoryRepository import \
+    TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
@@ -153,6 +158,54 @@ class AnswerCommand(AbsCommand):
         self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class BanTriviaQuestionCommand(AbsCommand):
+
+    def __init__(
+        self,
+        bannedTriviaIdsRepository: BannedTriviaIdsRepository,
+        timber: Timber,
+        triviaHistoryRepository: TriviaHistoryRepository,
+        usersRepository: UsersRepository
+    ):
+        if bannedTriviaIdsRepository is None:
+            raise ValueError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaHistoryRepository is None:
+            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__bannedTriviaIdsRepository: BannedTriviaIdsRepository = bannedTriviaIdsRepository
+        self.__timber: Timber = timber
+        self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        if not ctx.author.is_mod:
+            return
+
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
+            return
+
+        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(user.getHandle())
+
+        if reference is None:
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to find trivia question to ban')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle !bantriviaquestion command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found')
+            return
+
+        await self.__bannedTriviaIdsRepository.ban(
+            triviaSource = reference.getTriviaSource(),
+            triviaId = reference.getTriviaId()
+        )
+
+        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question ({reference.getTriviaSource()}:{reference.getTriviaId()})')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled !bantriviaquestion command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
+
+
 class ClearCachesCommand(AbsCommand):
 
     def __init__(
@@ -162,8 +215,10 @@ class ClearCachesCommand(AbsCommand):
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        triviaContentScanner: Optional[TriviaContentScanner],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        weatherRepository: Optional[WeatherRepository]
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
@@ -179,8 +234,10 @@ class ClearCachesCommand(AbsCommand):
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaContentScanner: Optional[TriviaContentScanner] = triviaContentScanner
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__usersRepository: UsersRepository = usersRepository
+        self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
 
     async def handleCommand(self, ctx: Context):
         if not ctx.author.is_mod:
@@ -198,10 +255,16 @@ class ClearCachesCommand(AbsCommand):
 
         await self.__generalSettingsRepository.clearCaches()
 
+        if self.__triviaContentScanner is not None:
+            await self.__triviaContentScanner.clearCaches()
+
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()
 
         await self.__usersRepository.clearCaches()
+
+        if self.__weatherRepository is not None:
+            await self.__weatherRepository.clearCaches()
 
         await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')

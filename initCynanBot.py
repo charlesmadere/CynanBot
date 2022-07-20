@@ -137,6 +137,15 @@ triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
+bannedTriviaIdsRepository = BannedTriviaIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+triviaContentScanner = TriviaContentScanner(
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
 triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
@@ -203,16 +212,9 @@ triviaRepository = TriviaRepository(
     ),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
-        bannedTriviaIdsRepository = BannedTriviaIdsRepository(
-            backingDatabase = backingDatabase,
-            timber = timber,
-            triviaSettingsRepository = triviaSettingsRepository
-        ),
+        bannedTriviaIdsRepository = bannedTriviaIdsRepository,
         timber = timber,
-        triviaContentScanner = TriviaContentScanner(
-            timber = timber,
-            triviaSettingsRepository = triviaSettingsRepository
-        ),
+        triviaContentScanner = triviaContentScanner,
         triviaHistoryRepository = TriviaHistoryRepository(
             backingDatabase = backingDatabase,
             timber = timber,
@@ -282,6 +284,7 @@ cynanBot = CynanBot(
     ),
     timber = timber,
     translationHelper = translationHelper,
+    triviaContentScanner = triviaContentScanner,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         timber = timber,
