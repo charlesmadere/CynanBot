@@ -146,6 +146,11 @@ triviaContentScanner = TriviaContentScanner(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
+triviaHistoryRepository = TriviaHistoryRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
 triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
@@ -215,11 +220,7 @@ triviaRepository = TriviaRepository(
         bannedTriviaIdsRepository = bannedTriviaIdsRepository,
         timber = timber,
         triviaContentScanner = triviaContentScanner,
-        triviaHistoryRepository = TriviaHistoryRepository(
-            backingDatabase = backingDatabase,
-            timber = timber,
-            triviaSettingsRepository = triviaSettingsRepository
-        )
+        triviaHistoryRepository = triviaHistoryRepository
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         clientSession = clientSession,
@@ -297,6 +298,7 @@ cynanBot = CynanBot(
         triviaRepository = triviaRepository,
         triviaScoreRepository = triviaScoreRepository
     ),
+    triviaHistoryRepository = triviaHistoryRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = TriviaUtils(),
