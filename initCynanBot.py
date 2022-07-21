@@ -248,6 +248,7 @@ cynanBot = CynanBot(
         timber = timber
     ),
     authRepository = authRepository,
+    bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     chatBandManager = ChatBandManager(
         timber = timber,
         websocketConnectionServer = websocketConnectionServer
