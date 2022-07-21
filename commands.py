@@ -163,12 +163,15 @@ class BanTriviaQuestionCommand(AbsCommand):
     def __init__(
         self,
         bannedTriviaIdsRepository: BannedTriviaIdsRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaHistoryRepository: TriviaHistoryRepository,
         usersRepository: UsersRepository
     ):
         if bannedTriviaIdsRepository is None:
             raise ValueError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
+        elif generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaHistoryRepository is None:
@@ -177,6 +180,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__bannedTriviaIdsRepository: BannedTriviaIdsRepository = bannedTriviaIdsRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -185,9 +189,12 @@ class BanTriviaQuestionCommand(AbsCommand):
         if not ctx.author.is_mod:
             return
 
+        generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
+        if not generalSettingsSnapshot.isTriviaEnabled() or not generalSettingsSnapshot.isTriviaGameEnabled():
+            return
+        elif not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(user.getHandle())
@@ -210,6 +217,7 @@ class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
+        analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         chatBandManager: Optional[ChatBandManager],
         funtoonRepository: Optional[FuntoonRepository],
@@ -229,6 +237,7 @@ class ClearCachesCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__analogueStoreRepository: Optional[AnalogueStoreRepository] = analogueStoreRepository
         self.__authRepository: AuthRepository = authRepository
         self.__chatBandManager: Optional[ChatBandManager] = chatBandManager
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
@@ -244,6 +253,9 @@ class ClearCachesCommand(AbsCommand):
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if self.__analogueStoreRepository is not None:
+            await self.__analogueStoreRepository.clearCaches()
 
         await self.__authRepository.clearCaches()
 
@@ -540,6 +552,7 @@ class CutenessChampionsCommand(AbsCommand):
 
         await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
         self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
 
 class CutenessHistoryCommand(AbsCommand):
 
