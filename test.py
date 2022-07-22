@@ -33,6 +33,7 @@ triviaQuestion = QuestionAnswerTriviaQuestion(
     correctAnswers = [ 'boars' ],
     cleanedCorrectAnswers = [ 'boars' ],
     category = 'Animals',
+    categoryId = 'xyz000',
     question = 'What is another name for a pig?',
     triviaId = 'abc123',
     triviaDifficulty = TriviaDifficulty.UNKNOWN,

@@ -30,6 +30,8 @@ from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
+from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
+    FuntoonTriviaQuestionRepository
 from CynanBotCommon.trivia.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
 from CynanBotCommon.trivia.jServiceTriviaQuestionRepository import \
@@ -170,6 +172,13 @@ triviaRepository = TriviaRepository(
         clientSession = clientSession,
         timber = timber,
         triviaIdGenerator = triviaIdGenerator,
+        triviaQuestionCompiler = triviaQuestionCompiler,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
+        clientSession = clientSession,
+        timber = timber,
+        triviaAnswerCompiler = triviaAnswerCompiler,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
