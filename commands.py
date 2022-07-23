@@ -197,9 +197,9 @@ class BanTriviaQuestionCommand(AbsCommand):
         generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not generalSettingsSnapshot.isTriviaEnabled() or not generalSettingsSnapshot.isTriviaGameEnabled():
+        if not generalSettingsSnapshot.isTriviaGameEnabled():
             return
-        elif not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
