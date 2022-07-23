@@ -167,6 +167,7 @@ if authSnapshot.hasQuizApiKey():
         clientSession = clientSession,
         quizApiKey = authSnapshot.requireQuizApiKey(),
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
