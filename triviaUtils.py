@@ -1,6 +1,4 @@
 import locale
-import random
-from typing import List
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
@@ -30,7 +28,7 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        prefix = f'{self.getRandomTriviaEmote()} Congratulations @{userNameThatRedeemed}, that\'s correct!'
+        prefix = f'{question.getEmote()} Congratulations @{userNameThatRedeemed}, that\'s correct!'
         infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
@@ -54,7 +52,7 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        prefix = f'{self.getRandomTriviaEmote()} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
+        prefix = f'{question.getEmote()} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
@@ -76,7 +74,7 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        prefix = f'{self.getRandomTriviaEmote()} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
+        prefix = f'{question.getEmote()} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
@@ -84,10 +82,6 @@ class TriviaUtils():
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
-
-    def getRandomTriviaEmote(self) -> str:
-        triviaEmotes: List[str] = [ '🏫', '🖍️', '✏️', '🧑‍🎓', '👨‍🎓', '👩‍🎓', '🧑‍🏫', '👨‍🏫', '👩‍🏫' ]
-        return random.choice(triviaEmotes)
 
     def getResults(self, userName: str, triviaResult: TriviaScoreResult) -> str:
         if not utils.isValidStr(userName):
@@ -150,7 +144,7 @@ class TriviaUtils():
 
         pointsStr = locale.format_string("%d", points, grouping = True)
         multiplierStr = locale.format_string("%d", multiplier, grouping = True)
-        prefix = f'{self.getRandomTriviaEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
+        prefix = f'{question.getEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
         infix = f'You earned {pointsStr} cuteness ({multiplierStr}x multiplier), so your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
@@ -175,7 +169,7 @@ class TriviaUtils():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         multiplierStr = locale.format_string("%d", multiplier, grouping = True)
-        prefix = f'{self.getRandomTriviaEmote()} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} Goodbye {multiplierStr}x multiplier 👋…'
+        prefix = f'{question.getEmote()} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} Goodbye {multiplierStr}x multiplier 👋…'
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
@@ -209,7 +203,7 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        triviaEmote = self.getRandomTriviaEmote()
+        triviaEmote = triviaQuestion.getEmote()
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
         multiplierStr = locale.format_string("%d", multiplier, grouping = True)
@@ -243,7 +237,7 @@ class TriviaUtils():
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        triviaEmote = self.getRandomTriviaEmote()
+        triviaEmote = triviaQuestion.getEmote()
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
 

@@ -51,6 +51,7 @@ from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -148,6 +149,9 @@ triviaContentScanner = TriviaContentScanner(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
+triviaEmoteGenerator = TriviaEmoteGenerator(
+    backingDatabase = backingDatabase
+)
 triviaHistoryRepository = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -171,6 +175,7 @@ triviaRepository = TriviaRepository(
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         clientSession = clientSession,
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
@@ -179,17 +184,20 @@ triviaRepository = TriviaRepository(
         clientSession = clientSession,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
         clientSession = clientSession,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
@@ -197,23 +205,27 @@ triviaRepository = TriviaRepository(
     lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
         clientSession = clientSession,
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -221,6 +233,7 @@ triviaRepository = TriviaRepository(
     timber = timber,
     triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -234,12 +247,14 @@ triviaRepository = TriviaRepository(
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         clientSession = clientSession,
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     )
@@ -296,6 +311,7 @@ cynanBot = CynanBot(
     timber = timber,
     translationHelper = translationHelper,
     triviaContentScanner = triviaContentScanner,
+    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         timber = timber,

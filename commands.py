@@ -39,6 +39,7 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
+from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -165,6 +166,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         bannedTriviaIdsRepository: BannedTriviaIdsRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         usersRepository: UsersRepository
     ):
@@ -174,6 +176,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaEmoteGenerator is None:
+            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif triviaHistoryRepository is None:
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif usersRepository is None:
@@ -182,6 +186,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__bannedTriviaIdsRepository: BannedTriviaIdsRepository = bannedTriviaIdsRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -197,11 +202,27 @@ class BanTriviaQuestionCommand(AbsCommand):
         elif not user.isTriviaEnabled() or not user.isTriviaGameEnabled():
             return
 
-        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(user.getHandle())
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        emote: str = splits[1]
+
+        if not await self.__triviaEmoteGenerator.isValidEmote(emote):
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an improper argument was supplied')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
+            emote = emote,
+            twitchChannel = user.getHandle()
+        )
 
         if reference is None:
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to find trivia question to ban')
-            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle !bantriviaquestion command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\"')
             return
 
         await self.__bannedTriviaIdsRepository.ban(
@@ -209,8 +230,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             triviaId = reference.getTriviaId()
         )
 
-        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question ({reference.getTriviaSource()}:{reference.getTriviaId()})')
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled !bantriviaquestion command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
+        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {emote} ({reference.getTriviaSource()}:{reference.getTriviaId()})')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({emote}) ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
 
 
 class ClearCachesCommand(AbsCommand):
