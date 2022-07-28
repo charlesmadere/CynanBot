@@ -61,6 +61,28 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
+    def getInvalidAnswerInputPrompt(
+        self,
+        question: AbsTriviaQuestion,
+        userNameThatRedeemed: str
+    ) -> str:
+        if question is None:
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+
+        prefix = f'{question.getEmote()} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
+        suffix: str = None
+
+        if question.getTriviaType() is TriviaType.MULTIPLE_CHOICE:
+            suffix = 'Please answer using A, B, C, …'
+        elif question.getTriviaType() is TriviaType.TRUE_FALSE:
+            suffix = 'Please answer using either true or false.'
+        else:
+            suffix = 'Please check your answer and try again.'
+
+        return f'{prefix} {suffix}'
+
     def getOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,

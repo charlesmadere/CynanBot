@@ -55,6 +55,8 @@ from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
+from CynanBotCommon.trivia.invalidAnswerInputTriviaEvent import \
+    InvalidAnswerInputTriviaEvent
 from CynanBotCommon.trivia.newSuperTriviaGameEvent import \
     NewSuperTriviaGameEvent
 from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
@@ -617,6 +619,8 @@ class CynanBot(commands.Bot):
             await self.__handleGameOutOfTimeTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.INVALID_ANSWER_INPUT:
+            await self.__handleInvalidAnswerInputTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.NEW_GAME:
             await self.__handleNewTriviaGameEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.NEW_SUPER_GAME:
@@ -664,6 +668,14 @@ class CynanBot(commands.Bot):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
+            question = event.getTriviaQuestion(),
+            userNameThatRedeemed = event.getUserName()
+        ))
+
+    async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+
+        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.getTriviaQuestion(),
             userNameThatRedeemed = event.getUserName()
         ))
