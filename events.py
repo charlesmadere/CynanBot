@@ -7,9 +7,9 @@ from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
+from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
-from persistence.authRepository import AuthRepository
-from persistence.generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
 
 

@@ -5,14 +5,14 @@ from queue import SimpleQueue
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
+from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.twitchTokensRepository import (
     TwitchAccessTokenMissingException, TwitchExpiresInMissingException,
     TwitchJsonException, TwitchNetworkException,
     TwitchRefreshTokenMissingException, TwitchTokensRepository)
 from CynanBotCommon.userIdsRepository import UserIdsRepository
-from persistence.authRepository import AuthRepository
-from persistence.generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
 from twitchio.ext import pubsub
 from twitchio.ext.pubsub import PubSubPool

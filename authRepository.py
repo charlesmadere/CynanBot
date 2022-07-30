@@ -4,22 +4,21 @@ from typing import Any, Dict, Optional
 
 import aiofiles
 import aiofiles.ospath
-import CynanBotCommon.utils as utils
 
-from persistence.authRepositorySnapshot import AuthRepositorySnapshot
+import CynanBotCommon.utils as utils
+from authRepositorySnapshot import AuthRepositorySnapshot
 
 
 class AuthRepository():
 
     def __init__(
         self,
-        authFile: str = 'persistence/authRepository.json'
+        authFile: str = 'authRepository.json'
     ):
         if not utils.isValidStr(authFile):
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
         self.__authFile: str = authFile
-
         self.__cache: Optional[Dict[str, Any]] = None
 
     async def clearCaches(self):

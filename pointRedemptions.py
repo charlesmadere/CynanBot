@@ -16,7 +16,7 @@ from CynanBotCommon.trivia.startNewTriviaGameAction import \
     StartNewTriviaGameAction
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
-from persistence.generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 from users.user import User

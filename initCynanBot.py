@@ -3,6 +3,7 @@ import locale
 
 import aiohttp
 
+from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
 from CynanBotCommon.analogue.analogueStoreRepository import \
@@ -72,8 +73,7 @@ from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
-from persistence.authRepository import AuthRepository
-from persistence.generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
 

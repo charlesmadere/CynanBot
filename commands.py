@@ -6,6 +6,7 @@ from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
+from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -49,8 +50,7 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from persistence.authRepository import AuthRepository
-from persistence.generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
 

@@ -9,6 +9,7 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
+from authRepository import AuthRepository
 from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       BanTriviaQuestionCommand, ClearCachesCommand,
                       CommandsCommand, CutenessChampionsCommand,
@@ -76,12 +77,11 @@ from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import AbsEvent, RaidThankEvent, SubGiftThankingEvent
+from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
                       ChatLogMessage, CynanMessage, DeerForceMessage,
                       EyesMessage, ImytSlurpMessage, JamCatMessage,
                       RatJamMessage, StubMessage)
-from persistence.authRepository import AuthRepository
-from persistence.generalSettingsRepository import GeneralSettingsRepository
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,

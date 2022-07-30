@@ -4,22 +4,21 @@ from typing import Any, Dict, Optional
 
 import aiofiles
 import aiofiles.ospath
-import CynanBotCommon.utils as utils
 
-from persistence.generalSettingsSnapshot import GeneralSettingsSnapshot
+import CynanBotCommon.utils as utils
+from generalSettingsSnapshot import GeneralSettingsSnapshot
 
 
 class GeneralSettingsRepository():
 
     def __init__(
         self,
-        generalSettingsFile: str = 'persistence/generalSettingsRepository.json'
+        generalSettingsFile: str = 'generalSettingsRepository.json'
     ):
         if not utils.isValidStr(generalSettingsFile):
             raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
         self.__generalSettingsFile: str = generalSettingsFile
-
         self.__cache: Optional[Dict[str, Any]] = None
 
     async def clearCaches(self):
