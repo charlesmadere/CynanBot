@@ -211,7 +211,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         emote: str = splits[1]
 
         if not await self.__triviaEmoteGenerator.isValidEmote(emote):
-            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an improper argument was supplied')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
