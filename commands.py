@@ -209,20 +209,21 @@ class BanTriviaQuestionCommand(AbsCommand):
             return
 
         emote: str = splits[1]
+        normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
-        if not await self.__triviaEmoteGenerator.isValidEmote(emote):
+        if not utils.isValidStr(normalizedEmote):
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
-            emote = emote,
+            emote = normalizedEmote,
             twitchChannel = user.getHandle()
         )
 
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\"')
+            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{normalizedEmote}\"')
             return
 
         await self.__bannedTriviaIdsRepository.ban(
@@ -230,8 +231,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             triviaId = reference.getTriviaId()
         )
 
-        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {emote} ({reference.getTriviaSource()}:{reference.getTriviaId()})')
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({emote}) ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
+        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} ({reference.getTriviaSource()}:{reference.getTriviaId()})')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
 
 
 class ClearCachesCommand(AbsCommand):
