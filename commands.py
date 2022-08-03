@@ -231,8 +231,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             triviaId = reference.getTriviaId()
         )
 
-        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} ({reference.getTriviaSource()}:{reference.getTriviaId()})')
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource()}:{reference.getTriviaId()} was banned)')
+        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()})')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
 
 
 class ClearCachesCommand(AbsCommand):
