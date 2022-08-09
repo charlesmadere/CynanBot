@@ -94,7 +94,6 @@ eventLoop = asyncio.get_event_loop()
 timber = Timber(
     eventLoop = eventLoop
 )
-
 userIdsRepository = UserIdsRepository(
     clientSession = clientSession,
     backingDatabase = backingDatabase,
@@ -104,9 +103,12 @@ cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
+funtoonRepository = FuntoonRepository(
+    clientSession = clientSession,
+    timber = timber
+)
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
-
 websocketConnectionServer = WebsocketConnectionServer(
     eventLoop = eventLoop,
     timber = timber
@@ -142,6 +144,7 @@ triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
+    funtoonRepository = funtoonRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -284,10 +287,7 @@ cynanBot = CynanBot(
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
     doubleCutenessHelper = DoubleCutenessHelper(),
-    funtoonRepository = FuntoonRepository(
-        clientSession = clientSession,
-        timber = timber
-    ),
+    funtoonRepository = funtoonRepository,
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(
         clientSession = clientSession,
