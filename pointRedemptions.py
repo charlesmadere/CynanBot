@@ -421,7 +421,7 @@ class PotdPointRedemption(AbsPointRedemption):
         self.__timber.log('PotdPointRedemption', f'Fetching Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}...')
 
         try:
-            picOfTheDay = twitchUser.fetchPicOfTheDay()
+            picOfTheDay = await twitchUser.fetchPicOfTheDay()
             await twitchUtils.safeSend(twitchChannel, f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
             self.__timber.log('PotdPointRedemption', f'Redeemed Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
             return True

@@ -1,8 +1,9 @@
-import os
 from datetime import tzinfo
 from typing import List
 from urllib.parse import urlparse
 
+import aiofiles
+import aiofiles.ospath
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -197,17 +198,19 @@ class User():
         self.__superTriviaGameControllers = superTriviaGameControllers
         self.__timeZones: List[tzinfo] = timeZones
 
-    def fetchPicOfTheDay(self) -> str:
+    async def fetchPicOfTheDay(self) -> str:
         if not self.__isPicOfTheDayEnabled:
-            raise RuntimeError(f'POTD is disabled for {self.__handle}')
-        elif not os.path.exists(self.__picOfTheDayFile):
-            raise FileNotFoundError(f'POTD file for {self.__handle} not found: \"{self.__picOfTheDayFile}\"')
+            raise RuntimeError(f'POTD is disabled for {self.__handle}!')
 
-        with open(self.__picOfTheDayFile, 'r') as file:
-            potdText = utils.cleanStr(file.read())
+        if not await aiofiles.ospath.exists(self.__picOfTheDayFile):
+            raise FileNotFoundError(f'POTD file for {self.__handle} not found: \"{self.__picOfTheDayFile}\"!')
+
+        async with aiofiles.open(self.__picOfTheDayFile, 'r') as file:
+            data = await file.read()
+            potdText = utils.cleanStr(data)
 
         if not utils.isValidUrl(potdText):
-            raise ValueError(f'POTD text for {self.__handle} is malformed: \"{potdText}\"')
+            raise ValueError(f'POTD text for {self.__handle} is malformed: \"{potdText}\"!')
 
         potdParsed = urlparse(potdText)
         return potdParsed.geturl()
