@@ -1,8 +1,6 @@
 import asyncio
 import locale
 
-import aiohttp
-
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
@@ -20,6 +18,7 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
@@ -86,17 +85,14 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 authRepository = AuthRepository()
 backingDatabase = BackingDatabase()
-clientSession = aiohttp.ClientSession(
-    cookie_jar = aiohttp.DummyCookieJar(),
-    timeout = aiohttp.ClientTimeout(total = 8)
-)
 eventLoop = asyncio.get_event_loop()
 timber = Timber(
     eventLoop = eventLoop
 )
+networkClientProvider = NetworkClientProvider()
 userIdsRepository = UserIdsRepository(
-    clientSession = clientSession,
     backingDatabase = backingDatabase,
+    networkClientProvider = networkClientProvider,
     timber = timber
 )
 cutenessRepository = CutenessRepository(
@@ -104,7 +100,7 @@ cutenessRepository = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 funtoonRepository = FuntoonRepository(
-    clientSession = clientSession,
+    networkClientProvider = networkClientProvider,
     timber = timber
 )
 languagesRepository = LanguagesRepository()
@@ -119,8 +115,8 @@ authSnapshot = authRepository.getAll()
 translationHelper: TranslationHelper = None
 if authSnapshot.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
-        clientSession = clientSession,
         languagesRepository = languagesRepository,
+        networkClientProvider = networkClientProvider,
         deepLAuthKey = authSnapshot.requireDeepLAuthKey(),
         timber = timber
     )
@@ -128,7 +124,7 @@ if authSnapshot.hasDeepLAuthKey():
 weatherRepository: WeatherRepository = None
 if authSnapshot.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         oneWeatherApiKey = authSnapshot.requireOneWeatherApiKey(),
         timber = timber
     )
@@ -167,7 +163,7 @@ triviaScoreRepository = TriviaScoreRepository(
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
 if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         quizApiKey = authSnapshot.requireQuizApiKey(),
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
@@ -177,7 +173,7 @@ if authSnapshot.hasQuizApiKey():
 
 triviaRepository = TriviaRepository(
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
@@ -185,7 +181,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaEmoteGenerator = triviaEmoteGenerator,
@@ -198,7 +194,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaEmoteGenerator = triviaEmoteGenerator,
@@ -220,7 +216,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
@@ -249,7 +245,7 @@ triviaRepository = TriviaRepository(
         triviaHistoryRepository = triviaHistoryRepository
     ),
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
@@ -272,7 +268,7 @@ triviaRepository = TriviaRepository(
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     analogueStoreRepository = AnalogueStoreRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     ),
     authRepository = authRepository,
@@ -290,7 +286,7 @@ cynanBot = CynanBot(
     funtoonRepository = funtoonRepository,
     generalSettingsRepository = GeneralSettingsRepository(),
     jishoHelper = JishoHelper(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     ),
     languagesRepository = languagesRepository,
@@ -301,12 +297,12 @@ cynanBot = CynanBot(
         timber = timber
     ),
     pokepediaRepository = PokepediaRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     ),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     tamaleGuyRepository = TamaleGuyRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     ),
     timber = timber,
@@ -330,7 +326,7 @@ cynanBot = CynanBot(
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = TriviaUtils(),
     twitchTokensRepository = TwitchTokensRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     ),
     userIdsRepository = userIdsRepository,
@@ -339,10 +335,15 @@ cynanBot = CynanBot(
     ),
     weatherRepository = weatherRepository,
     wordOfTheDayRepository = WordOfTheDayRepository(
-        clientSession = clientSession,
+        networkClientProvider = networkClientProvider,
         timber = timber
     )
 )
+
+
+#########################################
+## Section for starting the actual bot ##
+#########################################
 
 timber.log('initCynanBot', 'Starting CynanBot...')
 cynanBot.run()
