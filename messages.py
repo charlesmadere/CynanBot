@@ -145,7 +145,7 @@ class ChatLogMessage(AbsMessage):
         if not twitchUser.isChatLoggingEnabled():
             return False
 
-        self.__chatLogger.log(
+        self.__chatLogger.logMessage(
             twitchChannel = twitchUser.getHandle(),
             userId = str(message.author.id),
             userName = message.author.name,
