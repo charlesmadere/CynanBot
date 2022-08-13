@@ -8,6 +8,7 @@ from twitchio.channel import Channel
 import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
+from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from generalSettingsRepository import GeneralSettingsRepository
 from users.user import User
@@ -23,6 +24,58 @@ class AbsEvent(ABC):
         tags: Dict[str, Any]
     ) -> bool:
         pass
+
+
+class RaidLogEvent(AbsEvent):
+
+    def __init__(
+        self,
+        chatLogger: ChatLogger,
+        timber: Timber
+    ):
+        if chatLogger is None:
+            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__chatLogger: ChatLogger = chatLogger
+        self.__timber: Timber = timber
+
+    async def handleEvent(
+        self,
+        twitchChannel: Channel,
+        twitchUser: User,
+        tags: Dict[str, Any]
+    ) -> bool:
+        if twitchChannel is None:
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif twitchUser is None:
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif tags is None:
+            raise ValueError(f'tags argument is malformed: \"{tags}\"')
+
+        if not twitchUser.isChatLoggingEnabled():
+            return False
+
+        raidedByName = tags.get('msg-param-displayName')
+        if not utils.isValidStr(raidedByName):
+            raidedByName = tags.get('display-name')
+        if not utils.isValidStr(raidedByName):
+            raidedByName = tags.get('login')
+
+        if not utils.isValidStr(raidedByName):
+            self.__timber.log('RaidLogEvent', f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
+            return False
+
+        raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', 0)
+
+        self.__chatLogger.logRaid(
+            raidSize = raidSize,
+            fromWho = raidedByName,
+            twitchChannel = twitchChannel
+        )
+
+        return True
 
 
 class RaidThankEvent(AbsEvent):

@@ -76,7 +76,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from events import AbsEvent, RaidThankEvent, SubGiftThankingEvent
+from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
+                    SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
                       ChatLogMessage, CynanMessage, DeerForceMessage,
@@ -261,6 +262,11 @@ class CynanBot(commands.Bot):
         #############################################
         ## Initialization of event handler objects ##
         #############################################
+
+        if chatLogger is None:
+            self.__raidLogEvent: AbsEvent = StubEvent()
+        else:
+            self.__raidLogEvent: AbsEvent = RaidLogEvent(chatLogger, timber)
 
         self.__raidThankEvent: AbsEvent = RaidThankEvent(eventLoop, generalSettingsRepository, timber)
         self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(eventLoop, authRepository, generalSettingsRepository, timber)
@@ -558,6 +564,12 @@ class CynanBot(commands.Bot):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if msgId == 'raid':
+            await self.__raidLogEvent.handleEvent(
+                twitchChannel = channel,
+                twitchUser = twitchUser,
+                tags = tags
+            )
+
             await self.__raidThankEvent.handleEvent(
                 twitchChannel = channel,
                 twitchUser = twitchUser,
