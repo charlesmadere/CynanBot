@@ -48,6 +48,7 @@ from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
@@ -140,9 +141,12 @@ triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
-    funtoonRepository = funtoonRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
+)
+triviaBanHelper = TriviaBanHelper(
+    bannedTriviaIdsRepository = bannedTriviaIdsRepository,
+    funtoonRepository = funtoonRepository
 )
 triviaContentScanner = TriviaContentScanner(
     timber = timber,
@@ -272,7 +276,6 @@ cynanBot = CynanBot(
         timber = timber
     ),
     authRepository = authRepository,
-    bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     chatBandManager = ChatBandManager(
         timber = timber,
         websocketConnectionServer = websocketConnectionServer
@@ -307,6 +310,7 @@ cynanBot = CynanBot(
     ),
     timber = timber,
     translationHelper = translationHelper,
+    triviaBanHelper = triviaBanHelper,
     triviaContentScanner = triviaContentScanner,
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameMachine = TriviaGameMachine(

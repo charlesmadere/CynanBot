@@ -44,8 +44,6 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
-    BannedTriviaIdsRepository
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
     CorrectAnswerTriviaEvent
 from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
@@ -64,6 +62,7 @@ from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
@@ -101,7 +100,6 @@ class CynanBot(commands.Bot):
         eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
-        bannedTriviaIdsRepository: Optional[BannedTriviaIdsRepository],
         chatBandManager: Optional[ChatBandManager],
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
@@ -118,6 +116,7 @@ class CynanBot(commands.Bot):
         tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
+        triviaBanHelper: Optional[TriviaBanHelper],
         triviaContentScanner: Optional[TriviaContentScanner],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
         triviaGameMachine: Optional[TriviaGameMachine],
@@ -242,11 +241,11 @@ class CynanBot(commands.Bot):
         else:
             self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, usersRepository)
 
-        if bannedTriviaIdsRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None:
+        if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(bannedTriviaIdsRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
+            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(triviaBanHelper, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:

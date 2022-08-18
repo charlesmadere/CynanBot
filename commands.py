@@ -29,8 +29,6 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
-from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
-    BannedTriviaIdsRepository
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
@@ -39,6 +37,7 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
@@ -163,19 +162,19 @@ class BanTriviaQuestionCommand(AbsCommand):
 
     def __init__(
         self,
-        bannedTriviaIdsRepository: BannedTriviaIdsRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        triviaBanHelper: TriviaBanHelper,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         usersRepository: UsersRepository
     ):
-        if bannedTriviaIdsRepository is None:
-            raise ValueError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
-        elif generalSettingsRepository is None:
+        if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaBanHelper is None:
+            raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
         elif triviaEmoteGenerator is None:
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif triviaHistoryRepository is None:
@@ -183,9 +182,9 @@ class BanTriviaQuestionCommand(AbsCommand):
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__bannedTriviaIdsRepository: BannedTriviaIdsRepository = bannedTriviaIdsRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -226,9 +225,9 @@ class BanTriviaQuestionCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{normalizedEmote}\"')
             return
 
-        await self.__bannedTriviaIdsRepository.ban(
-            triviaSource = reference.getTriviaSource(),
-            triviaId = reference.getTriviaId()
+        await self.__triviaBanHelper.ban(
+            triviaId = reference.getTriviaId(),
+            triviaSource = reference.getTriviaSource()
         )
 
         await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()})')
