@@ -245,7 +245,7 @@ class CynanBot(commands.Bot):
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
         else:
-            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(triviaBanHelper, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
+            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, userIdsRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
