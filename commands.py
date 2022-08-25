@@ -222,7 +222,7 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{normalizedEmote}\"')
+            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
         await self.__triviaBanHelper.ban(
