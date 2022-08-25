@@ -47,6 +47,7 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
+from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -246,6 +247,7 @@ class ClearCachesCommand(AbsCommand):
         timber: Timber,
         triviaContentScanner: Optional[TriviaContentScanner],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
+        twitchTokensRepository: Optional[TwitchTokensRepository],
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository]
     ):
@@ -266,6 +268,7 @@ class ClearCachesCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__triviaContentScanner: Optional[TriviaContentScanner] = triviaContentScanner
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
+        self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
 
@@ -293,6 +296,9 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()
+
+        if self.__twitchTokensRepository is not None:
+            await self.__twitchTokensRepository.clearCaches()
 
         await self.__usersRepository.clearCaches()
 
