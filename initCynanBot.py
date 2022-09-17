@@ -90,7 +90,9 @@ eventLoop = asyncio.get_event_loop()
 timber = Timber(
     eventLoop = eventLoop
 )
-networkClientProvider = NetworkClientProvider()
+networkClientProvider = NetworkClientProvider(
+    eventLoop = eventLoop
+)
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
     networkClientProvider = networkClientProvider,
