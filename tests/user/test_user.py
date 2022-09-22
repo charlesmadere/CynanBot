@@ -1,4 +1,3 @@
-import unittest
 from datetime import tzinfo
 from typing import List
 
@@ -9,7 +8,7 @@ from pkmn.pkmnCatchType import PkmnCatchType
 from users.user import User
 
 
-class TestUser(unittest.TestCase):
+class TestUser():
 
     def createUser(
         self,
@@ -125,85 +124,85 @@ class TestUser(unittest.TestCase):
         user = self.createUser(cutenessBoosterPacks = [
             CutenessBoosterPack(amount = 1, rewardId = "a")
         ])
-        self.assertEqual(True, user.hasCutenessBoosterPacks())
+        assert user.hasCutenessBoosterPacks() is True
 
         user = self.createUser(cutenessBoosterPacks = [
             CutenessBoosterPack(amount = 1, rewardId = "a"),
             CutenessBoosterPack(amount = 2, rewardId = "b"),
             CutenessBoosterPack(amount = 3, rewardId = "c")
         ])
-        self.assertEqual(True, user.hasCutenessBoosterPacks())
+        assert user.hasCutenessBoosterPacks() is True
 
         user = self.createUser(cutenessBoosterPacks = list())
-        self.assertEqual(False, user.hasCutenessBoosterPacks())
+        assert user.hasCutenessBoosterPacks() is False
 
         user = self.createUser(cutenessBoosterPacks = None)
-        self.assertEqual(False, user.hasCutenessBoosterPacks())
+        assert user.hasCutenessBoosterPacks() is False
 
     def test_hasDiscord(self):
         user = self.createUser(discord = "https://example.com/")
-        self.assertEqual(True, user.hasDiscord())
+        assert user.hasDiscord() is True
 
         user = self.createUser(discord = "example")
-        self.assertEqual(False, user.hasDiscord())
+        assert user.hasDiscord() is False
 
         user = self.createUser(discord = "")
-        self.assertEqual(False, user.hasDiscord())
+        assert user.hasDiscord() is False
 
         user = self.createUser(discord = None)
-        self.assertEqual(False, user.hasDiscord())
+        assert user.hasDiscord() is False
 
     def test_hasInstagram(self):
         user = self.createUser(instagram = "https://example.com/")
-        self.assertEqual(True, user.hasInstagram())
+        assert user.hasInstagram() is True
 
         user = self.createUser(instagram = "example")
-        self.assertEqual(False, user.hasInstagram())
+        assert user.hasInstagram() is False
 
         user = self.createUser(instagram = "")
-        self.assertEqual(False, user.hasInstagram())
+        assert user.hasInstagram() is False
 
         user = self.createUser(instagram = None)
-        self.assertEqual(False, user.hasInstagram())
+        assert user.hasInstagram() is False
 
     def test_hasLocationId(self):
         user = self.createUser(locationId = "locationId")
-        self.assertEqual(True, user.hasLocationId())
+        assert user.hasLocationId() is True
 
         user = self.createUser(locationId = None)
-        self.assertEqual(False, user.hasLocationId())
+        assert user.hasLocationId() is False
 
     def test_hasPkmnCatchBoosterPacks(self):
         user = self.createUser(pkmnCatchBoosterPacks = [
             PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.NORMAL, rewardId = "a")
         ])
-        self.assertEqual(True, user.hasPkmnCatchBoosterPacks())
+        assert user.hasPkmnCatchBoosterPacks() is True
 
         user = self.createUser(pkmnCatchBoosterPacks = [
             PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.NORMAL, rewardId = "a"),
             PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.GREAT, rewardId = "b"),
             PkmnCatchBoosterPack(pkmnCatchType = PkmnCatchType.ULTRA, rewardId = "c")
         ])
-        self.assertEqual(True, user.hasPkmnCatchBoosterPacks())
+        assert user.hasPkmnCatchBoosterPacks() is True
 
         user = self.createUser(pkmnCatchBoosterPacks = list())
-        self.assertEqual(False, user.hasPkmnCatchBoosterPacks())
+        assert user.hasPkmnCatchBoosterPacks() is False
 
         user = self.createUser(pkmnCatchBoosterPacks = None)
-        self.assertEqual(False, user.hasPkmnCatchBoosterPacks())
+        assert user.hasPkmnCatchBoosterPacks() is False
 
     def test_hasSpeedrunProfile(self):
         user = self.createUser(speedrunProfile = "https://example.com/")
-        self.assertEqual(True, user.hasSpeedrunProfile())
+        assert user.hasSpeedrunProfile() is True
 
         user = self.createUser(speedrunProfile = "example")
-        self.assertEqual(False, user.hasSpeedrunProfile())
+        assert user.hasSpeedrunProfile() is False
 
         user = self.createUser(speedrunProfile = "")
-        self.assertEqual(False, user.hasSpeedrunProfile())
+        assert user.hasSpeedrunProfile() is False
 
         user = self.createUser(speedrunProfile = None)
-        self.assertEqual(False, user.hasSpeedrunProfile())
+        assert user.hasSpeedrunProfile() is False
 
     def hasTimeZones(self):
         timeZoneRepository = TimeZoneRepository()
@@ -212,67 +211,67 @@ class TestUser(unittest.TestCase):
             timeZoneRepository.getTimeZone("Asia/Tokyo"),
             timeZoneRepository.getTimeZone("US/Pacific")
         ])
-        self.assertEquals(True, user.hasTimeZones())
+        assert user.hasTimeZones() is True
 
         user = self.createUser(timeZones = [
             timeZoneRepository.getTimeZone("America/New_York")
         ])
-        self.assertEquals(True, user.hasTimeZones())
+        assert user.hasTimeZones() is True
 
         user = self.createUser(timeZones = list())
-        self.assertEqual(False, user.hasTimeZones())
+        assert user.hasTimeZones() is False
 
         user = self.createUser(timeZones = None)
-        self.assertEqual(False, user.hasTimeZones())
+        assert user.hasTimeZones() is False
 
     def test_hasTriviaGamePoints(self):
         user = self.createUser(triviaGamePoints = 0)
-        self.assertEqual(True, user.hasTriviaGamePoints())
+        assert user.hasTriviaGamePoints() is True
 
         user = self.createUser(triviaGamePoints = 1)
-        self.assertEqual(True, user.hasTriviaGamePoints())
+        assert user.hasTriviaGamePoints() is True
 
         user = self.createUser(triviaGamePoints = -1)
-        self.assertEqual(True, user.hasTriviaGamePoints())
+        assert user.hasTriviaGamePoints() is True
 
         user = self.createUser(triviaGamePoints = None)
-        self.assertEqual(False, user.hasTriviaGamePoints())
+        assert user.hasTriviaGamePoints() is False
 
     def test_hasTriviaGameTutorialCutenessThreshold(self):
         user = self.createUser(triviaGameTutorialCutenessThreshold = 0)
-        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+        assert user.hasTriviaGameTutorialCutenessThreshold() is True
 
         user = self.createUser(triviaGameTutorialCutenessThreshold = 1)
-        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+        assert user.hasTriviaGameTutorialCutenessThreshold() is True
 
         user = self.createUser(triviaGameTutorialCutenessThreshold = -1)
-        self.assertEqual(True, user.hasTriviaGameTutorialCutenessThreshold())
+        assert user.hasTriviaGameTutorialCutenessThreshold() is True
 
         user = self.createUser(triviaGameTutorialCutenessThreshold = None)
-        self.assertEqual(False, user.hasTriviaGameTutorialCutenessThreshold())
+        assert user.hasTriviaGameTutorialCutenessThreshold() is False
 
     def test_hasTwitter(self):
         user = self.createUser(twitter = "https://example.com/")
-        self.assertEqual(True, user.hasTwitter())
+        assert user.hasTwitter() is True
 
         user = self.createUser(twitter = "example")
-        self.assertEqual(False, user.hasTwitter())
+        assert user.hasTwitter() is False
 
         user = self.createUser(twitter = "")
-        self.assertEqual(False, user.hasTwitter())
+        assert user.hasTwitter() is False
 
         user = self.createUser(twitter = None)
-        self.assertEqual(False, user.hasTwitter())
+        assert user.hasTwitter() is False
 
     def test_hasWaitForTriviaAnswerDelay(self):
         user = self.createUser(waitForTriviaAnswerDelay = 0)
-        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+        assert user.hasWaitForTriviaAnswerDelay() is True
 
         user = self.createUser(waitForTriviaAnswerDelay = 1)
-        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+        assert user.hasWaitForTriviaAnswerDelay() is True
 
         user = self.createUser(waitForTriviaAnswerDelay = -1)
-        self.assertEqual(True, user.hasWaitForTriviaAnswerDelay())
+        assert user.hasWaitForTriviaAnswerDelay() is True
 
         user = self.createUser(waitForTriviaAnswerDelay = None)
-        self.assertEqual(False, user.hasWaitForTriviaAnswerDelay())
+        assert user.hasWaitForTriviaAnswerDelay() is False

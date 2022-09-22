@@ -1,27 +1,25 @@
-import unittest
-
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 
 
-class TestPkmnCatchBoosterPack(unittest.TestCase):
+class TestPkmnCatchBoosterPack():
 
     def test_getCatchType(self):
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.NORMAL, "rewardId")
-        self.assertEqual(PkmnCatchType.NORMAL, boosterPack.getCatchType())
+        assert boosterPack.getCatchType() == PkmnCatchType.NORMAL
 
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.GREAT, "rewardId")
-        self.assertEqual(PkmnCatchType.GREAT, boosterPack.getCatchType())
+        assert boosterPack.getCatchType() == PkmnCatchType.GREAT
 
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.ULTRA, "rewardId")
-        self.assertEqual(PkmnCatchType.ULTRA, boosterPack.getCatchType())
+        assert boosterPack.getCatchType() == PkmnCatchType.ULTRA
 
     def test_getRewardId(self):
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.NORMAL, "Samus")
-        self.assertEqual("Samus", boosterPack.getRewardId())
+        assert boosterPack.getRewardId() == "Samus"
 
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.GREAT, "Mario")
-        self.assertEqual("Mario", boosterPack.getRewardId())
+        assert boosterPack.getRewardId() == "Mario"
 
         boosterPack = PkmnCatchBoosterPack(PkmnCatchType.ULTRA, "Link")
-        self.assertEqual("Link", boosterPack.getRewardId())
+        assert boosterPack.getRewardId() == "Link"
