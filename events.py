@@ -72,7 +72,7 @@ class RaidLogEvent(AbsEvent):
         self.__chatLogger.logRaid(
             raidSize = raidSize,
             fromWho = raidedByName,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchUser.getHandle()
         )
 
         return True
