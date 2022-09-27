@@ -1370,6 +1370,7 @@ class SuperTriviaCommand(AbsCommand):
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+            numberOfGames = 1,
             perUserAttempts = perUserAttempts,
             pointsMultiplier = multiplier,
             pointsForWinning = points,

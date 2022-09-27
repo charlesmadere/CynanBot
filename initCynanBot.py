@@ -318,7 +318,10 @@ cynanBot = CynanBot(
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
-        queuedTriviaGameStore = QueuedTriviaGameStore(triviaSettingsRepository),
+        queuedTriviaGameStore = QueuedTriviaGameStore(
+            timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
         timber = timber,
         triviaAnswerChecker = TriviaAnswerChecker(
             timber = timber,
