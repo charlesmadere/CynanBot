@@ -1347,6 +1347,7 @@ class SuperTriviaCommand(AbsCommand):
             if not proceed:
                 return
 
+        numberOfGames = 1
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
 
         points = generalSettings.getTriviaGamePoints()
@@ -1370,7 +1371,7 @@ class SuperTriviaCommand(AbsCommand):
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-            numberOfGames = 1,
+            numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsMultiplier = multiplier,
             pointsForWinning = points,
