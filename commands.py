@@ -50,6 +50,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from CynanBotCommon.websocketConnection.websocketConnectionServer import \
+    WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
@@ -249,7 +251,8 @@ class ClearCachesCommand(AbsCommand):
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
         usersRepository: UsersRepository,
-        weatherRepository: Optional[WeatherRepository]
+        weatherRepository: Optional[WeatherRepository],
+        websocketConnectionServer: Optional[WebsocketConnectionServer],
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
@@ -271,6 +274,7 @@ class ClearCachesCommand(AbsCommand):
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
+        self.__websocketConnectionServer: Optional[WebsocketConnectionServer] = websocketConnectionServer
 
     async def handleCommand(self, ctx: Context):
         if not ctx.author.is_mod:
@@ -304,6 +308,9 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__weatherRepository is not None:
             await self.__weatherRepository.clearCaches()
+
+        if self.__websocketConnectionServer is not None:
+            await self.__websocketConnectionServer.clearCaches()
 
         await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')

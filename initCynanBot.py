@@ -345,6 +345,7 @@ cynanBot = CynanBot(
         timeZoneRepository = timeZoneRepository
     ),
     weatherRepository = weatherRepository,
+    websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayRepository = WordOfTheDayRepository(
         networkClientProvider = networkClientProvider,
         timber = timber

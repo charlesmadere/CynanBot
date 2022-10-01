@@ -112,35 +112,40 @@ class TriviaUtils():
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
         if triviaResult.getTotal() <= 0:
-            return f'@{userName} has not played any trivia games 😿'
+            if triviaResult.getSuperTriviaWins() > 1:
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
+            elif triviaResult.getSuperTriviaWins() == 1:
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
+            else:
+                return f'@{userName} has not played any trivia games 😿'
 
         gamesStr: str = 'games'
         if triviaResult.getTotal() == 1:
             gamesStr = 'game'
 
         winsStr: str = 'wins'
-        if triviaResult.getTotalWins() == 1:
+        if triviaResult.getTriviaWins() == 1:
             winsStr = 'win'
 
         lossesStr: str = 'losses'
-        if triviaResult.getTotalLosses() == 1:
+        if triviaResult.getTriviaLosses() == 1:
             lossesStr = 'loss'
 
         ratioStr: str = f' ({triviaResult.getWinPercentStr()} wins)'
 
         streakStr: str = ''
         if triviaResult.getStreak() >= 3:
-            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸 '
         elif triviaResult.getStreak() <= -3:
-            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀 '
 
         superTriviaWinsStr: str = ''
         if triviaResult.getSuperTriviaWins() > 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of the wins are from super trivia)'
+            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
         elif triviaResult.getSuperTriviaWins() == 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} of the wins is from super trivia)'
+            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} super trivia win)'
 
-        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTotalWinsStr()} {winsStr} and {triviaResult.getTotalLossesStr()} {lossesStr}{ratioStr}{superTriviaWinsStr}{streakStr}'
+        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTriviaWinsStr()} {winsStr} and {triviaResult.getTriviaLossesStr()} {lossesStr}{ratioStr}{streakStr}{superTriviaWinsStr}'.strip()
 
     def getSuperTriviaCorrectAnswerReveal(
         self,

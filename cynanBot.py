@@ -75,6 +75,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from CynanBotCommon.websocketConnection.websocketConnectionServer import \
+    WebsocketConnectionServer
 from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                     SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
@@ -128,6 +130,7 @@ class CynanBot(commands.Bot):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
+        websocketConnectionServer: Optional[WebsocketConnectionServer],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
@@ -197,7 +200,7 @@ class CynanBot(commands.Bot):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository, websocketConnectionServer)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
