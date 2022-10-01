@@ -15,4 +15,37 @@ async def main():
 
     print(await triviaEmoteGenerator.getNextEmoteFor('blah'))
 
+    connection = await backingDatabase.getConnection()
+    cursor = await connection.execute(
+        '''
+            SELECT streak, superTriviaWins, triviaLosses, triviaWins, twitchChannel, userId FROM triviaScores
+        '''
+    )
+
+    rows = await cursor.fetchall()
+
+    for row in rows:
+        streak: str = row[0]
+        superTriviaWins: int = row[1]
+        triviaLosses: int = row[2]
+        triviaWins: int = row[3]
+        twitchChannel: str = row[4]
+        userId: str = row[5]
+
+        newTriviaWins: int = triviaWins - superTriviaWins
+
+        await cursor.execute(
+            '''
+                UPDATE triviaScores
+                SET streak = ?, superTriviaWins = ?, triviaLosses = ?, triviaWins = ?
+                WHERE twitchChannel = ? AND userId = ?
+            ''',
+            ( streak, superTriviaWins, triviaLosses, newTriviaWins, twitchChannel, userId )
+        )
+
+    await connection.commit()
+    await cursor.close()
+
+    await connection.close()
+
 asyncio.run(main())
