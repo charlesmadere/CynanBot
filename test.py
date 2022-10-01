@@ -16,9 +16,24 @@ async def main():
     print(await triviaEmoteGenerator.getNextEmoteFor('blah'))
 
     connection = await backingDatabase.getConnection()
+    await connection.execute(
+        '''
+            ALTER TABLE triviaScores
+            RENAME COLUMN totalLosses TO triviaLosses
+        '''
+    )
+
+    await connection.execute(
+        '''
+            ALTER TABLE triviaScores
+            RENAME COLUMN totalWins TO triviaWins
+        '''
+    )
+
     cursor = await connection.execute(
         '''
             SELECT streak, superTriviaWins, triviaLosses, triviaWins, twitchChannel, userId FROM triviaScores
+            ORDER BY twitchChannel ASC
         '''
     )
 
@@ -45,7 +60,6 @@ async def main():
 
     await connection.commit()
     await cursor.close()
-
     await connection.close()
 
 asyncio.run(main())
