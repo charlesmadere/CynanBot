@@ -52,7 +52,9 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
+from generalSettingsSnapshot import GeneralSettingsSnapshot
 from triviaUtils import TriviaUtils
+from users.user import User
 from users.usersRepository import UsersRepository
 
 
@@ -276,7 +278,9 @@ class ClearCachesCommand(AbsCommand):
         self.__websocketConnectionServer: Optional[WebsocketConnectionServer] = websocketConnectionServer
 
     async def handleCommand(self, ctx: Context):
-        if not ctx.author.is_mod:
+        if ctx.author.name.lower() != ctx.channel.name.lower():
+            return
+        elif not ctx.author.is_mod:
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
@@ -342,6 +346,77 @@ class CommandsCommand(AbsCommand):
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
+    async def __buildLanguageCommandsList(
+        self,
+        generalSettings: GeneralSettingsSnapshot,
+        user: User
+    ) -> List[str]:
+        if generalSettings is None:
+            raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        commands: List[str] = list()
+
+        if generalSettings.isJishoEnabled() and user.isJishoEnabled():
+            commands.append('!jisho')
+
+        if generalSettings.isTranslateEnabled() and user.isTranslateEnabled():
+            commands.append('!translate')
+
+        if generalSettings.isWordOfTheDayEnabled() and user.isWordOfTheDayEnabled():
+            commands.append('!word')
+
+        return commands
+
+    async def __buildPkmnCommandsList(
+        self,
+        generalSettings: GeneralSettingsSnapshot,
+        user: User
+    ) -> List[str]:
+        if generalSettings is None:
+            raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        commands: List[str] = list()
+
+        if generalSettings.isPokepediaEnabled() and user.isPokepediaEnabled():
+            commands.append('!pkmon')
+            commands.append('!pkmove')
+
+        return commands
+
+    async def __buildTriviaCommandsList(
+        self,
+        isMod: bool,
+        generalSettings: GeneralSettingsSnapshot,
+        user: User
+    ) -> List[str]:
+        if not utils.isValidBool(isMod):
+            raise ValueError(f'isMod argument is malformed: \"{isMod}\"')
+        elif generalSettings is None:
+            raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        commands: List[str] = list()
+
+        if user.isCutenessEnabled():
+            commands.append('!cuteness')
+            commands.append('!cutenesschampions')
+            commands.append('!cutenesshistory')
+            commands.append('!mycuteness')
+            commands.append('!mycutenesshistory')
+
+            if isMod:
+                commands.append('!givecuteness')
+
+        if generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled():
+            commands.append('!triviascore')
+
+        return commands
+
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -366,51 +441,37 @@ class CommandsCommand(AbsCommand):
         if generalSettings.isAnalogueEnabled() and user.isAnalogueEnabled():
             commands.append('!analogue')
 
-        if generalSettings.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
-            commands.append('!clearchatband')
+        commands.extend(await self.__buildTriviaCommandsList(
+            isMod = ctx.author.is_mod,
+            generalSettings = generalSettings,
+            user = user
+        ))
 
-        if user.isCutenessEnabled():
-            commands.append('!cuteness')
-            commands.append('!cutenesschampions')
-            commands.append('!cutenesshistory')
-            commands.append('!mycuteness')
-            commands.append('!mycutenesshistory')
+        commands.extend(await self.__buildPkmnCommandsList(
+            generalSettings = generalSettings,
+            user = user
+        ))
 
-            if user.isGiveCutenessEnabled() and ctx.author.is_mod:
-                commands.append('!givecuteness')
-
-        if user.isCynanSourceEnabled():
-            commands.append('!cynansource')
-
-        if generalSettings.isJishoEnabled() and user.isJishoEnabled():
-            commands.append('!jisho')
-
-        if generalSettings.isPokepediaEnabled() and user.isPokepediaEnabled():
-            commands.append('!pkmon')
-            commands.append('!pkmove')
+        commands.extend(await self.__buildLanguageCommandsList(
+            generalSettings = generalSettings,
+            user = user
+        ))
 
         if user.isStarWarsQuotesEnabled():
             commands.append('!swquote')
 
-        if generalSettings.isTamalesEnabled() and user.isTamalesEnabled():
-            commands.append('!tamales')
-
-        if generalSettings.isTranslateEnabled() and user.isTranslateEnabled():
-            commands.append('!translate')
-
-        if generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled():
-            commands.append('!triviascore')
-
         if generalSettings.isWeatherEnabled() and user.isWeatherEnabled():
             commands.append('!weather')
 
-        if generalSettings.isWordOfTheDayEnabled() and user.isWordOfTheDayEnabled():
-            commands.append('!word')
+        if user.isCynanSourceEnabled():
+            commands.append('!cynansource')
+
+        if generalSettings.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
+            commands.append('!clearchatband')
 
         if not utils.hasItems(commands):
             return
 
-        commands.sort()
         commandsString = self.__delimiter.join(commands)
         await twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
         self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
