@@ -39,7 +39,6 @@ class User():
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
-        isTamalesEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
@@ -119,8 +118,6 @@ class User():
             raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
             raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
-        elif not utils.isValidBool(isTamalesEnabled):
-            raise ValueError(f'isTamalesEnabled argument is malformed: \"{isTamalesEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
             raise ValueError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
         elif not utils.isValidBool(isTriviaEnabled):
@@ -170,7 +167,6 @@ class User():
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
-        self.__isTamalesEnabled: bool = isTamalesEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
@@ -397,9 +393,6 @@ class User():
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return self.__isSuperTriviaGameEnabled
-
-    def isTamalesEnabled(self) -> bool:
-        return self.__isTamalesEnabled
 
     def isTranslateEnabled(self) -> bool:
         return self.__isTranslateEnabled

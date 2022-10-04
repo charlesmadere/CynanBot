@@ -65,7 +65,6 @@ class UsersRepository():
         isRewardIdPrintingEnabled = utils.getBoolFromDict(userJson, 'rewardIdPrintingEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
-        isTamalesEnabled = utils.getBoolFromDict(userJson, 'tamalesEnabled', False)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaEnabled = utils.getBoolFromDict(userJson, 'triviaEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
@@ -154,7 +153,6 @@ class UsersRepository():
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
-            isTamalesEnabled = isTamalesEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,

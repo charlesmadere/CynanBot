@@ -26,7 +26,6 @@ from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
-from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
@@ -1441,54 +1440,6 @@ class SwQuoteCommand(AbsCommand):
         except ValueError:
             self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
-
-
-class TamalesCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        tamaleGuyRepository: TamaleGuyRepository,
-        timber: Timber,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 5)
-    ):
-        if generalSettingsRepository is None:
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif tamaleGuyRepository is None:
-            raise ValueError(f'tamaleGuyRepository argument is malformed: \"{tamaleGuyRepository}\"')
-        elif timber is None:
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif usersRepository is None:
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__tamaleGuyRepository: TamaleGuyRepository = tamaleGuyRepository
-        self.__timber: Timber = timber
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isTamalesEnabled():
-            return
-        elif not user.isTamalesEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        try:
-            storeStock = await self.__tamaleGuyRepository.fetchStoreStock()
-            await twitchUtils.safeSend(ctx, storeStock.toStr())
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('TamalesCommand', f'Error retrieving Tamale Guy store stock: {e}')
-            await twitchUtils.safeSend(ctx, '⚠ Error retrieving Tamale Guy store stock')
-
-        self.__timber.log('TamalesCommand', f'Handled !tamales command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class TimeCommand(AbsCommand):

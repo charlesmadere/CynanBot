@@ -23,7 +23,6 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
-from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
@@ -307,10 +306,6 @@ cynanBot = CynanBot(
         timber = timber
     ),
     starWarsQuotesRepository = StarWarsQuotesRepository(),
-    tamaleGuyRepository = TamaleGuyRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    ),
     timber = timber,
     translationHelper = translationHelper,
     triviaBanHelper = triviaBanHelper,

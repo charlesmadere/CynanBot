@@ -19,9 +19,8 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
-                      TamalesCommand, TimeCommand, TranslateCommand,
-                      TriviaScoreCommand, TwitterCommand, WeatherCommand,
-                      WordCommand)
+                      TimeCommand, TranslateCommand, TriviaScoreCommand,
+                      TwitterCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -41,7 +40,6 @@ from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
-from CynanBotCommon.tamaleGuyRepository import TamaleGuyRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
@@ -115,7 +113,6 @@ class CynanBot(commands.Bot):
         nonceRepository: NonceRepository,
         pokepediaRepository: Optional[PokepediaRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
-        tamaleGuyRepository: Optional[TamaleGuyRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelper],
@@ -233,11 +230,6 @@ class CynanBot(commands.Bot):
             self.__swQuoteCommand: AbsCommand = StubCommand()
         else:
             self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, timber, usersRepository)
-
-        if tamaleGuyRepository is None:
-            self.__tamalesCommand: AbsCommand = StubCommand()
-        else:
-            self.__tamalesCommand: AbsCommand = TamalesCommand(generalSettingsRepository, tamaleGuyRepository, timber, usersRepository)
 
         if translationHelper is None:
             self.__translateCommand: AbsCommand = StubCommand()
@@ -834,10 +826,6 @@ class CynanBot(commands.Bot):
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
         await self.__swQuoteCommand.handleCommand(ctx)
-
-    @commands.command(name = 'tamales')
-    async def command_tamales(self, ctx: Context):
-        await self.__tamalesCommand.handleCommand(ctx)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):

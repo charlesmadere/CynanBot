@@ -134,9 +134,6 @@ class GeneralSettingsSnapshot():
     def isSuperTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'superTriviaGameEnabled', False)
 
-    def isTamalesEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'tamalesEnabled', True)
-
     def isTranslateEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'translateEnabled', True)
 
