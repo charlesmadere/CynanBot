@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 import CynanBotCommon.utils as utils
 
@@ -28,16 +28,15 @@ class GeneralSettingsSnapshot():
         gameControllersJson: List[str] = self.__jsonContents.get('superTriviaGameControllers')
 
         if not utils.hasItems(gameControllersJson):
-            return None
+            return list()
 
-        gameControllers: List[str] = list()
+        gameControllers: Set[str] = set()
 
         for gameController in gameControllersJson:
             if utils.isValidStr(gameController):
-                gameControllers.append(gameController)
+                gameControllers.add(gameController)
 
-        gameControllers.sort(key = lambda gameController: gameController.lower())
-        return gameControllers
+        return list(gameControllers)
 
     def getRaidLinkMessagingDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'raidLinkMessagingDelay', 60)
