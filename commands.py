@@ -1396,33 +1396,18 @@ class SuperTriviaCommand(AbsCommand):
             return
         elif not user.isSuperTriviaGameEnabled():
             return
-        elif not ctx.author.is_mod:
-            return
+
+        # For the time being, this command is intentionally not checking for mod status, as it has
+        # been determined that super trivia game controllers shouldn't necessarily have to be mod.
 
         userName = ctx.author.name.lower()
 
-        if userName != user.getHandle().lower():
-            allGameControllers: List[str] = list()
-
-            if user.hasSuperTriviaGameControllers():
-                allGameControllers.extend(user.getSuperTriviaGameControllers())
-
-            globalGameControllers = generalSettings.getGlobalSuperTriviaGameControllers()
-            if utils.areValidStrs(globalGameControllers):
-                allGameControllers.extend(globalGameControllers)
-
-            if not utils.hasItems(allGameControllers):
-                return
-
-            proceed = False
-
-            for gameController in allGameControllers:
-                if userName == gameController.lower():
-                    proceed = True
-                    break
-
-            if not proceed:
-                return
+        if userName != user.getHandle().lower() and not await self.__isUserAllowedForSuperTrivia(
+            generalSettings = generalSettings,
+            userName = userName,
+            user = user
+        ):
+            return
 
         numberOfGames = 1
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
@@ -1458,6 +1443,31 @@ class SuperTriviaCommand(AbsCommand):
         ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+    async def __isUserAllowedForSuperTrivia(
+        self,
+        generalSettings: GeneralSettingsSnapshot,
+        userName: str,
+        user: User
+    ) -> bool:
+        if generalSettings is None:
+            raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        allGameControllers: List[str] = list()
+        allGameControllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
+
+        if user.hasSuperTriviaGameControllers():
+            allGameControllers.extend(user.getSuperTriviaGameControllers())
+
+        for gameController in allGameControllers:
+            if userName == gameController.lower():
+                return True
+
+        return False
 
 
 class SwQuoteCommand(AbsCommand):
