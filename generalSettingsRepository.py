@@ -51,7 +51,7 @@ class GeneralSettingsRepository():
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, Any]:
-        if self.__cache:
+        if self.__cache is not None:
             return self.__cache
 
         if not await aiofiles.ospath.exists(self.__generalSettingsFile):
