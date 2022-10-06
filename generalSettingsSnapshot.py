@@ -18,6 +18,9 @@ class GeneralSettingsSnapshot():
         self.__jsonContents: Dict[str, Any] = jsonContents
         self.__generalSettingsFile: str = generalSettingsFile
 
+    def getAdministrator(self) -> str:
+        return utils.getStrFromDict(self.__jsonContents, 'administrator', '')
+
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
 
