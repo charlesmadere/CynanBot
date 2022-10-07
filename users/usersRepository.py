@@ -43,7 +43,7 @@ class UsersRepository():
             raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
 
         isAnalogueEnabled = utils.getBoolFromDict(userJson, 'analogueEnabled', False)
-        isCatJamEnabled = utils.getBoolFromDict(userJson, 'catJamEnabled', False)
+        isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
@@ -54,7 +54,7 @@ class UsersRepository():
         isGiftSubscriptionThanksMessageEnabled = utils.getBoolFromDict(userJson, 'isGiftSubscriptionThanksMessageEnabled', True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
         isImytSlurpEnabled = utils.getBoolFromDict(userJson, 'imytSlurpEnabled', False)
-        isJamCatEnabled = utils.getBoolFromDict(userJson, 'jamCatEnabled', False)
+        isJamCatMessageEnabled = utils.getBoolFromDict(userJson, 'jamCatMessageEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokeTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'jokeTriviaRepositoryEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
@@ -130,7 +130,7 @@ class UsersRepository():
 
         user = User(
             isAnalogueEnabled = isAnalogueEnabled,
-            isCatJamEnabled = isCatJamEnabled,
+            isCatJamMessageEnabled = isCatJamMessageEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCutenessEnabled = isCutenessEnabled,
@@ -141,7 +141,7 @@ class UsersRepository():
             isGiftSubscriptionThanksMessageEnabled = isGiftSubscriptionThanksMessageEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
             isImytSlurpEnabled = isImytSlurpEnabled,
-            isJamCatEnabled = isJamCatEnabled,
+            isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,

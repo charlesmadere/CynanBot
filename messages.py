@@ -61,7 +61,7 @@ class CatJamMessage(AbsMessage):
 
         if not generalSettings.isCatJamMessageEnabled():
             return False
-        elif not twitchUser.isCatJamEnabled():
+        elif not twitchUser.isCatJamMessageEnabled():
             return False
 
         splits = utils.getCleanedSplits(message.content)
@@ -396,7 +396,7 @@ class JamCatMessage(AbsMessage):
 
         if not generalSettings.isJamCatMessageEnabled():
             return False
-        elif not twitchUser.isJamCatEnabled():
+        elif not twitchUser.isJamCatMessageEnabled():
             return False
 
         splits = utils.getCleanedSplits(message.content)

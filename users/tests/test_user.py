@@ -13,7 +13,7 @@ class TestUser():
     def createUser(
         self,
         isAnalogueEnabled: bool = False,
-        isCatJamEnabled: bool = False,
+        isCatJamMessageEnabled: bool = False,
         isChatBandEnabled: bool = False,
         isChatLoggingEnabled: bool = False,
         isCutenessEnabled: bool = False,
@@ -23,7 +23,7 @@ class TestUser():
         isEyesMessageEnabled: bool = False,
         isGiftSubscriptionThanksMessageEnabled: bool = False,
         isGiveCutenessEnabled: bool = False,
-        isJamCatEnabled: bool = False,
+        isJamCatMessageEnabled: bool = False,
         isJishoEnabled: bool = False,
         isJokesEnabled: bool = False,
         isJokeTriviaRepositoryEnabled: bool = False,
@@ -66,7 +66,7 @@ class TestUser():
     ) -> User:
         return User(
             isAnalogueEnabled = isAnalogueEnabled,
-            isCatJamEnabled = isCatJamEnabled,
+            isCatJamMessageEnabled = isCatJamMessageEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCutenessEnabled = isCutenessEnabled,
@@ -76,7 +76,7 @@ class TestUser():
             isEyesMessageEnabled = isEyesMessageEnabled,
             isGiftSubscriptionThanksMessageEnabled = isGiftSubscriptionThanksMessageEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
-            isJamCatEnabled = isJamCatEnabled,
+            isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokesEnabled = isJokesEnabled,
             isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,

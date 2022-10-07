@@ -14,7 +14,7 @@ class User():
     def __init__(
         self,
         isAnalogueEnabled: bool,
-        isCatJamEnabled: bool,
+        isCatJamMessageEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isCutenessEnabled: bool,
@@ -25,7 +25,7 @@ class User():
         isGiftSubscriptionThanksMessageEnabled: bool,
         isGiveCutenessEnabled: bool,
         isImytSlurpEnabled: bool,
-        isJamCatEnabled: bool,
+        isJamCatMessageEnabled: bool,
         isJishoEnabled: bool,
         isJokeTriviaRepositoryEnabled: bool,
         isLoremIpsumEnabled: bool,
@@ -68,8 +68,8 @@ class User():
     ):
         if not utils.isValidBool(isAnalogueEnabled):
             raise ValueError(f'isAnalogueEnabled argument is malformed: \"{isAnalogueEnabled}\"')
-        elif not utils.isValidBool(isCatJamEnabled):
-            raise ValueError(f'isCatJamEnabled argument is malformed: \"{isCatJamEnabled}\"')
+        elif not utils.isValidBool(isCatJamMessageEnabled):
+            raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
@@ -90,8 +90,8 @@ class User():
             raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
         elif not utils.isValidBool(isImytSlurpEnabled):
             raise ValueError(f'isImytSlurpEnabled argument is malformed: \"{isImytSlurpEnabled}\"')
-        elif not utils.isValidBool(isJamCatEnabled):
-            raise ValueError(f'isJamCatEnabled argument is malformed: \"{isJamCatEnabled}\"')
+        elif not utils.isValidBool(isJamCatMessageEnabled):
+            raise ValueError(f'isJamCatMessageEnabled argument is malformed: \"{isJamCatMessageEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
             raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isJokeTriviaRepositoryEnabled):
@@ -142,7 +142,7 @@ class User():
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
 
         self.__isAnalogueEnabled: bool = isAnalogueEnabled
-        self.__isCatJamEnabled: bool = isCatJamEnabled
+        self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
@@ -153,7 +153,7 @@ class User():
         self.__isGiftSubscriptionThanksMessageEnabled: bool = isGiftSubscriptionThanksMessageEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
         self.__isImytSlurpEnabled: bool = isImytSlurpEnabled
-        self.__isJamCatEnabled: bool = isJamCatEnabled
+        self.__isJamCatMessageEnabled: bool = isJamCatMessageEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
@@ -319,8 +319,8 @@ class User():
     def isAnalogueEnabled(self) -> bool:
         return self.__isAnalogueEnabled
 
-    def isCatJamEnabled(self) -> bool:
-        return self.__isCatJamEnabled
+    def isCatJamMessageEnabled(self) -> bool:
+        return self.__isCatJamMessageEnabled
 
     def isChatBandEnabled(self) -> bool:
         return self.__isChatBandEnabled
@@ -352,8 +352,8 @@ class User():
     def isImytSlurpEnabled(self) -> bool:
         return self.__isImytSlurpEnabled
 
-    def isJamCatEnabled(self) -> bool:
-        return self.__isJamCatEnabled
+    def isJamCatMessageEnabled(self) -> bool:
+        return self.__isJamCatMessageEnabled
 
     def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled
