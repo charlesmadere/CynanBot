@@ -29,10 +29,12 @@ class UsersRepository():
         self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
         self.__usersFile: str = usersFile
 
-        self.__cache: Optional[Dict[str, Any]] = None
+        self.__jsonCache: Optional[Dict[str, Any]] = None
+        self.__userCache: Dict[str, User] = dict()
 
     async def clearCaches(self):
-        self.__cache = None
+        self.__jsonCache = None
+        self.__userCache.clear()
 
     def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
@@ -126,7 +128,7 @@ class UsersRepository():
             pkmnCatchBoosterPacksJson: List[Dict] = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
-        return User(
+        user = User(
             isAnalogueEnabled = isAnalogueEnabled,
             isCatJamEnabled = isCatJamEnabled,
             isChatBandEnabled = isChatBandEnabled,
@@ -181,6 +183,9 @@ class UsersRepository():
             timeZones = timeZones
         )
 
+        self.__userCache[handle.lower()] = user
+        return user
+
     def __createUsers(self, jsonContents: Dict[str, Any]) -> List[User]:
         if not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
@@ -202,10 +207,11 @@ class UsersRepository():
         elif not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        handle = handle.lower()
+        if handle.lower() in self.__userCache:
+            return self.__userCache[handle.lower()]
 
         for key in jsonContents:
-            if key.lower() == handle:
+            if handle.lower() == key.lower():
                 return self.__createUser(handle, jsonContents[key])
 
         raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
@@ -272,8 +278,8 @@ class UsersRepository():
         return pkmnCatchBoosterPacks
 
     def __readJson(self) -> Dict[str, Any]:
-        if self.__cache:
-            return self.__cache
+        if self.__jsonCache is not None:
+            return self.__jsonCache
 
         if not os.path.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
@@ -286,12 +292,12 @@ class UsersRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
-        self.__cache = jsonContents
+        self.__jsonCache = jsonContents
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, Any]:
-        if self.__cache:
-            return self.__cache
+        if self.__jsonCache is not None:
+            return self.__jsonCache
 
         if not await aiofiles.ospath.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
@@ -305,5 +311,5 @@ class UsersRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
-        self.__cache = jsonContents
+        self.__jsonCache = jsonContents
         return jsonContents
