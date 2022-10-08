@@ -1,9 +1,6 @@
 import CynanBotCommon.utils as utils
 
-try:
-    from pkmn.pkmnCatchType import PkmnCatchType
-except:
-    from ...pkmn.pkmnCatchType import PkmnCatchType
+from pkmn.pkmnCatchType import PkmnCatchType
 
 
 class PkmnCatchBoosterPack():

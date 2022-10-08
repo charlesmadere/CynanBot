@@ -1,5 +1,9 @@
-from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from pkmn.pkmnCatchType import PkmnCatchType
+try:
+    from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+    from pkmn.pkmnCatchType import PkmnCatchType
+except:
+    from ...pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+    from ...pkmn.pkmnCatchType import PkmnCatchType
 
 
 class TestPkmnCatchBoosterPack():
