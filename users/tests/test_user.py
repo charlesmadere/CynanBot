@@ -1,11 +1,17 @@
 from datetime import tzinfo
 from typing import List
 
-from ...CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from ...CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 from users.user import User
+
+try:
+    from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
+    from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+except:
+    from ...CynanBotCommon.cuteness.cutenessBoosterPack import \
+        CutenessBoosterPack
+    from ...CynanBotCommon.timeZoneRepository import TimeZoneRepository
 
 
 class TestUser():
