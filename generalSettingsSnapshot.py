@@ -18,9 +18,6 @@ class GeneralSettingsSnapshot():
         self.__jsonContents: Dict[str, Any] = jsonContents
         self.__generalSettingsFile: str = generalSettingsFile
 
-    def getAdministrator(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'administrator', '')
-
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
 
@@ -150,3 +147,11 @@ class GeneralSettingsSnapshot():
 
     def isWordOfTheDayEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'wordOfTheDayEnabled', True)
+
+    def requireAdministrator(self) -> str:
+        administrator = self.__jsonContents.get('administrator')
+
+        if not utils.isValidStr(administrator):
+            raise ValueError(f'\"administrator\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{administrator}\"')
+
+        return administrator

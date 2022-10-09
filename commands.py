@@ -278,9 +278,9 @@ class ClearCachesCommand(AbsCommand):
         self.__websocketConnectionServer: Optional[WebsocketConnectionServer] = websocketConnectionServer
 
     async def handleCommand(self, ctx: Context):
-        if ctx.author.name.lower() != ctx.channel.name.lower():
-            return
-        elif not ctx.author.is_mod:
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if ctx.author.name.lower() != generalSettings.requireAdministrator():
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
