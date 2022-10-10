@@ -52,7 +52,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
-from generalSettingsSnapshot import GeneralSettingsSnapshot
+from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
 from users.user import User
 from users.usersRepository import UsersRepository
@@ -194,15 +194,18 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        if not ctx.author.is_mod:
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
+            return
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator():
+            pass
+        elif not ctx.author.is_mod:
             return
 
-        generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not generalSettingsSnapshot.isTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -279,11 +282,11 @@ class ClearCachesCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if ctx.author.name.lower() != generalSettings.requireAdministrator():
+            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             return
-
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if self.__analogueStoreRepository is not None:
             await self.__analogueStoreRepository.clearCaches()
@@ -348,7 +351,7 @@ class CommandsCommand(AbsCommand):
 
     async def __buildLanguageCommandsList(
         self,
-        generalSettings: GeneralSettingsSnapshot,
+        generalSettings: GeneralSettingsRepositorySnapshot,
         user: User
     ) -> List[str]:
         if generalSettings is None:
@@ -371,7 +374,7 @@ class CommandsCommand(AbsCommand):
 
     async def __buildPkmnCommandsList(
         self,
-        generalSettings: GeneralSettingsSnapshot,
+        generalSettings: GeneralSettingsRepositorySnapshot,
         user: User
     ) -> List[str]:
         if generalSettings is None:
@@ -390,7 +393,7 @@ class CommandsCommand(AbsCommand):
     async def __buildTriviaCommandsList(
         self,
         isMod: bool,
-        generalSettings: GeneralSettingsSnapshot,
+        generalSettings: GeneralSettingsRepositorySnapshot,
         user: User
     ) -> List[str]:
         if not utils.isValidBool(isMod):
@@ -1446,7 +1449,7 @@ class SuperTriviaCommand(AbsCommand):
 
     async def __isUserAllowedForSuperTrivia(
         self,
-        generalSettings: GeneralSettingsSnapshot,
+        generalSettings: GeneralSettingsRepositorySnapshot,
         userName: str,
         user: User
     ) -> bool:

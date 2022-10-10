@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Set
 import CynanBotCommon.utils as utils
 
 
-class GeneralSettingsSnapshot():
+class GeneralSettingsRepositorySnapshot():
 
     def __init__(
         self,
