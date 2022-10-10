@@ -19,23 +19,32 @@ class AuthRepository():
             raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
 
         self.__authFile: str = authFile
-        self.__cache: Optional[Dict[str, Any]] = None
+        self.__cache: Optional[AuthRepositorySnapshot] = None
 
     async def clearCaches(self):
         self.__cache = None
 
     def getAll(self) -> AuthRepositorySnapshot:
-        jsonContents = self.__readJson()
-        return AuthRepositorySnapshot(jsonContents, self.__authFile)
-
-    async def getAllAsync(self) -> AuthRepositorySnapshot:
-        jsonContents = await self.__readJsonAsync()
-        return AuthRepositorySnapshot(jsonContents, self.__authFile)
-
-    def __readJson(self) -> Dict[str, Any]:
-        if self.__cache:
+        if self.__cache is not None:
             return self.__cache
 
+        jsonContents = self.__readJson()
+        snapshot = AuthRepositorySnapshot(jsonContents, self.__authFile)
+        self.__cache = snapshot
+
+        return snapshot
+
+    async def getAllAsync(self) -> AuthRepositorySnapshot:
+        if self.__cache is not None:
+            return self.__cache
+
+        jsonContents = await self.__readJsonAsync()
+        snapshot = AuthRepositorySnapshot(jsonContents, self.__authFile)
+        self.__cache = snapshot
+
+        return snapshot
+
+    def __readJson(self) -> Dict[str, Any]:
         if not os.path.exists(self.__authFile):
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
 
@@ -47,13 +56,9 @@ class AuthRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of Auth Repository file \"{self.__authFile}\" is empty')
 
-        self.__cache = jsonContents
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, Any]:
-        if self.__cache:
-            return self.__cache
-
         if not await aiofiles.ospath.exists(self.__authFile):
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
 
@@ -66,5 +71,4 @@ class AuthRepository():
         elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of Auth Repository file \"{self.__authFile}\" is empty')
 
-        self.__cache = jsonContents
         return jsonContents
