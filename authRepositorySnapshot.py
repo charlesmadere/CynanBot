@@ -105,4 +105,3 @@ class AuthRepositorySnapshot():
             raise ValueError(f'\"twitchIrcAuthToken\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchIrcAuthToken}\"')
 
         return twitchIrcAuthToken
-
