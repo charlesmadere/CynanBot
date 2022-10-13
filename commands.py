@@ -284,7 +284,7 @@ class ClearCachesCommand(AbsCommand):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if ctx.author.name.lower() != generalSettings.requireAdministrator():
+        if ctx.author.name.lower() != generalSettings.requireAdministrator().lower():
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             return
 
