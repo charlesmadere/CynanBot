@@ -6,10 +6,11 @@ import aiofiles
 import aiofiles.ospath
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.users.userInterface import UserInterface
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 
 
-class User():
+class User(UserInterface):
 
     def __init__(
         self,
