@@ -1,4 +1,5 @@
 import asyncio
+import queue
 from asyncio import AbstractEventLoop
 from collections import defaultdict
 from queue import SimpleQueue
@@ -40,7 +41,8 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        maxConnectionsPerTwitchChannel: int = 8
+        maxConnectionsPerTwitchChannel: int = 8,
+        queueTimeoutSeconds: int = 3
     ):
         if eventLoop is None:
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
@@ -62,6 +64,10 @@ class PubSubUtils():
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
         elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 16:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
+        elif not utils.isValidNum(queueTimeoutSeconds):
+            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 2 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
@@ -70,11 +76,12 @@ class PubSubUtils():
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
+        self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
+        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
         self.__isManagingPubSub: bool = False
         self.__isStarted: bool = False
         self.__pubSubEntries: Dict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
-        self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
 
         self.__pubSubPool: PubSubPool = PubSubPool(
             client = client,
@@ -183,10 +190,12 @@ class PubSubUtils():
                 pubSubTopicsToAdd.append(newPubSubEntry.getTopic())
                 self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic())
 
-        if utils.hasItems(self.__pubSubEntries):
-            for topicQueue in self.__pubSubEntries.values():
-                if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
-                    pubSubTopicsToRemove.append(topicQueue.get(block = True, timeout = 3))
+        for userName, topicQueue in self.__pubSubEntries.items():
+            if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
+                try:
+                    pubSubTopicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
+                except queue.Empty as e:
+                    self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}')
 
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
