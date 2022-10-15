@@ -170,10 +170,10 @@ class PubSubUtils():
 
     async def __startPubSubUpdateLoop(self):
         while True:
+            self.__timber.log('PubSubUtils', 'Refreshing...')
             await self.__updatePubSubSubscriptions()
             generalSettings = await self.__generalSettingsRepository.getAllAsync()
             await asyncio.sleep(generalSettings.getRefreshPubSubTokensSeconds())
-            self.__timber.log('PubSubUtils', 'Refreshing...')
 
     async def __updatePubSubSubscriptions(self):
         if self.__isManagingPubSub:
