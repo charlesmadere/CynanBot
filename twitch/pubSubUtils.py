@@ -18,13 +18,14 @@ from CynanBotCommon.twitch.twitchRefreshTokenMissingException import \
     TwitchRefreshTokenMissingException
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userInterface import UserInterface
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 from generalSettingsRepository import GeneralSettingsRepository
 from twitchio import Client
 from twitchio.ext import pubsub
 from twitchio.ext.pubsub import PubSubPool
 from twitchio.ext.pubsub.topics import Topic
-from users.user import User
-from users.usersRepository import UsersRepository
 
 from twitch.pubSubEntry import PubSubEntry
 
@@ -40,7 +41,7 @@ class PubSubUtils():
         timber: Timber,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
-        usersRepository: UsersRepository,
+        usersRepository: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 8,
         queueTimeoutSeconds: int = 3
     ):
@@ -75,7 +76,7 @@ class PubSubUtils():
         self.__timber: Timber = timber
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
@@ -92,7 +93,7 @@ class PubSubUtils():
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
         twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
         authSnapshot = await self.__authRepository.getAllAsync()
-        users: List[User] = None
+        users: List[UserInterface] = None
 
         if twitchHandles is None:
             # if twitchHandles is None, then we must do a full validate and refresh
@@ -107,7 +108,7 @@ class PubSubUtils():
             for twitchHandle in twitchHandles:
                 users.append(await self.__usersRepository.getUserAsync(twitchHandle))
 
-        usersAndTwitchTokens: Dict[User, str] = dict()
+        usersAndTwitchTokens: Dict[UserInterface, str] = dict()
 
         for user in users:
             twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
@@ -118,7 +119,7 @@ class PubSubUtils():
         if not utils.hasItems(usersAndTwitchTokens):
             return None
 
-        usersToRemove: List[User] = list()
+        usersToRemove: List[UserInterface] = list()
 
         for user in usersAndTwitchTokens:
             try:
