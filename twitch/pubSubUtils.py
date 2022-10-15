@@ -191,11 +191,11 @@ class PubSubUtils():
                 self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic())
 
         for userName, topicQueue in self.__pubSubEntries.items():
-            if topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
-                try:
+            try:
+                while topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
                     pubSubTopicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
-                except queue.Empty as e:
-                    self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}')
+            except queue.Empty as e:
+                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}')
 
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
