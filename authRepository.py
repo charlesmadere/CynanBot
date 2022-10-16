@@ -7,9 +7,11 @@ import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
 from authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
+    TwitchCredentialsProviderInterface
 
 
-class AuthRepository():
+class AuthRepository(TwitchCredentialsProviderInterface):
 
     def __init__(
         self,
@@ -43,6 +45,14 @@ class AuthRepository():
         self.__cache = snapshot
 
         return snapshot
+
+    async def getTwitchClientId(self) -> str:
+        snapshot = await self.getAllAsync()
+        return snapshot.requireTwitchClientId()
+
+    async def getTwitchClientSecret(self) -> str:
+        snapshot = await self.getAllAsync()
+        return snapshot.requireTwitchClientSecret()
 
     def __readJson(self) -> Dict[str, Any]:
         if not os.path.exists(self.__authFile):

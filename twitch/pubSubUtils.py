@@ -6,10 +6,11 @@ from queue import SimpleQueue
 from typing import Dict, List
 
 import CynanBotCommon.utils as utils
-from authRepository import AuthRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.twitchAccessTokenMissingException import \
     TwitchAccessTokenMissingException
+from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
+    TwitchCredentialsProviderInterface
 from CynanBotCommon.twitch.twitchExpiresInMissingException import \
     TwitchExpiresInMissingException
 from CynanBotCommon.twitch.twitchJsonException import TwitchJsonException
@@ -35,10 +36,10 @@ class PubSubUtils():
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        authRepository: AuthRepository,
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchCredentialsProviderInterface: TwitchCredentialsProviderInterface,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
@@ -47,14 +48,14 @@ class PubSubUtils():
     ):
         if eventLoop is None:
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif authRepository is None:
-            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif client is None:
             raise ValueError(f'client argument is malformed: \"{client}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchCredentialsProviderInterface is None:
+            raise ValueError(f'twitchCredentialsProviderInterface argument is malformed: \"{twitchCredentialsProviderInterface}\"')
         elif twitchTokensRepository is None:
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif userIdsRepository is None:
@@ -71,9 +72,9 @@ class PubSubUtils():
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchCredentialsProviderInterface: TwitchCredentialsProviderInterface = twitchCredentialsProviderInterface
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -92,7 +93,6 @@ class PubSubUtils():
 
     async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
         twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
-        authSnapshot = await self.__authRepository.getAllAsync()
         users: List[UserInterface] = None
 
         if twitchHandles is None:
@@ -119,13 +119,19 @@ class PubSubUtils():
         if not utils.hasItems(usersAndTwitchTokens):
             return None
 
+        twitchClientId = await self.__twitchCredentialsProviderInterface.getTwitchClientId()
+        twitchClientSecret = await self.__twitchCredentialsProviderInterface.getTwitchClientSecret()
+
+        if not utils.isValidStr(twitchClientId) or not utils.isValidStr(twitchClientSecret):
+            raise RuntimeError(f'twitchClientId ({twitchClientId}) and/or twitchClientSecret ({twitchClientSecret}) is malformed!')
+
         usersToRemove: List[UserInterface] = list()
 
         for user in usersAndTwitchTokens:
             try:
                 await self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchClientId = authSnapshot.requireTwitchClientId(),
-                    twitchClientSecret = authSnapshot.requireTwitchClientSecret(),
+                    twitchClientId = twitchClientId,
+                    twitchClientSecret = twitchClientSecret,
                     twitchHandle = user.getHandle()
                 )
 
@@ -148,7 +154,7 @@ class PubSubUtils():
             userId = await self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken,
-                twitchClientId = authSnapshot.requireTwitchClientId()
+                twitchClientId = twitchClientId
             )
 
             pubSubEntries.append(PubSubEntry(

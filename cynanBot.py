@@ -343,10 +343,10 @@ class CynanBot(commands.Bot):
         if generalSettings.isPubSubEnabled():
             self.__pubSubUtils = PubSubUtils(
                 eventLoop = eventLoop,
-                authRepository = authRepository,
                 client = self,
                 generalSettingsRepository = generalSettingsRepository,
                 timber = timber,
+                twitchCredentialsProviderInterface = authRepository,
                 twitchTokensRepository = twitchTokensRepository,
                 userIdsRepository = userIdsRepository,
                 usersRepository = usersRepository
