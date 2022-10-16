@@ -71,7 +71,7 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBotCommon.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer

@@ -17,7 +17,7 @@ from CynanBotCommon.twitch.twitchNetworkException import TwitchNetworkException
 from CynanBotCommon.twitch.twitchRefreshTokenMissingException import \
     TwitchRefreshTokenMissingException
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBotCommon.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface

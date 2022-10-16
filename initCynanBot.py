@@ -69,7 +69,7 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBotCommon.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.websocketConnection.websocketConnectionServer import \
     WebsocketConnectionServer
