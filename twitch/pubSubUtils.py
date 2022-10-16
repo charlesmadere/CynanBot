@@ -140,7 +140,7 @@ class PubSubUtils():
                 # if we run into this error, that most likely means that this user changed
                 # their password
                 usersToRemove.append(user)
-                self.__timber.log('CynanBot', f'Failed to validate and refresh access Twitch token for {user.getHandle()}: {e}')
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch token for \"{user.getHandle()}\": {e}')
 
         if utils.hasItems(usersToRemove):
             for user in usersToRemove:
