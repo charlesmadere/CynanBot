@@ -71,8 +71,6 @@ from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnection.websocketConnectionServer import \
-    WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from users.usersRepository import UsersRepository
@@ -108,10 +106,6 @@ funtoonRepository = FuntoonRepository(
 )
 languagesRepository = LanguagesRepository()
 timeZoneRepository = TimeZoneRepository()
-websocketConnectionServer = WebsocketConnectionServer(
-    eventLoop = eventLoop,
-    timber = timber
-)
 
 authSnapshot = authRepository.getAll()
 
@@ -278,10 +272,6 @@ cynanBot = CynanBot(
         timber = timber
     ),
     authRepository = authRepository,
-    chatBandManager = ChatBandManager(
-        timber = timber,
-        websocketConnectionServer = websocketConnectionServer
-    ),
     chatLogger = ChatLogger(
         eventLoop = eventLoop,
     ),
@@ -340,7 +330,6 @@ cynanBot = CynanBot(
         timeZoneRepository = timeZoneRepository
     ),
     weatherRepository = weatherRepository,
-    websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayRepository = WordOfTheDayRepository(
         networkClientProvider = networkClientProvider,
         timber = timber

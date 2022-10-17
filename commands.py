@@ -10,7 +10,6 @@ from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
-from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
@@ -49,8 +48,6 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnection.websocketConnectionServer import \
-    WebsocketConnectionServer
 from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
@@ -247,7 +244,6 @@ class ClearCachesCommand(AbsCommand):
         self,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
-        chatBandManager: Optional[ChatBandManager],
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
@@ -255,8 +251,7 @@ class ClearCachesCommand(AbsCommand):
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
         usersRepository: UsersRepository,
-        weatherRepository: Optional[WeatherRepository],
-        websocketConnectionServer: Optional[WebsocketConnectionServer],
+        weatherRepository: Optional[WeatherRepository]
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
@@ -269,7 +264,6 @@ class ClearCachesCommand(AbsCommand):
 
         self.__analogueStoreRepository: Optional[AnalogueStoreRepository] = analogueStoreRepository
         self.__authRepository: AuthRepository = authRepository
-        self.__chatBandManager: Optional[ChatBandManager] = chatBandManager
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -278,7 +272,6 @@ class ClearCachesCommand(AbsCommand):
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
-        self.__websocketConnectionServer: Optional[WebsocketConnectionServer] = websocketConnectionServer
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -292,9 +285,6 @@ class ClearCachesCommand(AbsCommand):
             await self.__analogueStoreRepository.clearCaches()
 
         await self.__authRepository.clearCaches()
-
-        if self.__chatBandManager is not None:
-            await self.__chatBandManager.clearCaches()
 
         if self.__funtoonRepository is not None:
             await self.__funtoonRepository.clearCaches()
@@ -314,9 +304,6 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__weatherRepository is not None:
             await self.__weatherRepository.clearCaches()
-
-        if self.__websocketConnectionServer is not None:
-            await self.__websocketConnectionServer.clearCaches()
 
         await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
@@ -468,9 +455,6 @@ class CommandsCommand(AbsCommand):
 
         if user.isCynanSourceEnabled():
             commands.append('!cynansource')
-
-        if generalSettings.isChatBandEnabled() and user.isChatBandEnabled() and ctx.author.is_mod:
-            commands.append('!clearchatband')
 
         if not utils.hasItems(commands):
             return

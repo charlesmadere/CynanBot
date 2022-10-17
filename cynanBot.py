@@ -24,7 +24,6 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
-from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
@@ -73,15 +72,12 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.websocketConnection.websocketConnectionServer import \
-    WebsocketConnectionServer
 from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                     SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
-from messages import (AbsMessage, CatJamMessage, ChatBandMessage,
-                      ChatLogMessage, CynanMessage, DeerForceMessage,
-                      EyesMessage, ImytSlurpMessage, JamCatMessage,
-                      RatJamMessage, StubMessage)
+from messages import (AbsMessage, CatJamMessage, ChatLogMessage, CynanMessage,
+                      DeerForceMessage, EyesMessage, ImytSlurpMessage,
+                      JamCatMessage, RatJamMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
@@ -100,7 +96,6 @@ class CynanBot(commands.Bot):
         eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
-        chatBandManager: Optional[ChatBandManager],
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
@@ -127,7 +122,6 @@ class CynanBot(commands.Bot):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
-        websocketConnectionServer: Optional[WebsocketConnectionServer],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(
@@ -198,7 +192,7 @@ class CynanBot(commands.Bot):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, chatBandManager, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository, websocketConnectionServer)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -277,11 +271,6 @@ class CynanBot(commands.Bot):
         self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber)
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber)
-
-        if chatBandManager is None:
-            self.__chatBandMessage: AbsMessage = StubMessage()
-        else:
-            self.__chatBandMessage: AbsMessage = ChatBandMessage(chatBandManager, generalSettingsRepository, timber)
 
         if chatLogger is None:
             self.__chatLogMessage: AbsMessage = StubMessage()
@@ -379,12 +368,6 @@ class CynanBot(commands.Bot):
                 twitchUser = twitchUser,
                 message = message
             )
-
-            if await self.__chatBandMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = message
-            ):
-                return
 
             if await self.__cynanMessage.handleMessage(
                 twitchUser = twitchUser,
@@ -745,7 +728,7 @@ class CynanBot(commands.Bot):
         await self.__banTriviaQuestionCommand.handleCommand(ctx)
 
     @commands.command(name = 'clearcaches')
-    async def command_clearchatband(self, ctx: Context):
+    async def command_clearcaches(self, ctx: Context):
         await self.__clearCachesCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
