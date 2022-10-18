@@ -3,7 +3,7 @@ from pkmn.pkmnCatchType import PkmnCatchType
 try:
     import CynanBotCommon.utils as utils
 except:
-    from ...CynanBotCommon.utils import utils
+    from .CynanBotCommon.utils import utils
 
 
 class PkmnCatchBoosterPack():
