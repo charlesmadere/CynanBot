@@ -1,4 +1,7 @@
-from pkmn.pkmnCatchType import PkmnCatchType
+try:
+    from pkmn.pkmnCatchType import PkmnCatchType
+except:
+    from .pkmn.pkmnCatchType import PkmnCatchType
 
 try:
     import CynanBotCommon.utils as utils
