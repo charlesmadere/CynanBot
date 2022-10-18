@@ -1,6 +1,9 @@
 from enum import Enum, auto
 
-import CynanBotCommon.utils as utils
+try:
+    import CynanBotCommon.utils as utils
+except:
+    from ...CynanBotCommon.utils import utils
 
 
 class PkmnCatchType(Enum):

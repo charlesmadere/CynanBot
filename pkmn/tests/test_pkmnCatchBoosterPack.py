@@ -2,8 +2,8 @@ try:
     from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
     from pkmn.pkmnCatchType import PkmnCatchType
 except:
-    from .pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-    from .pkmn.pkmnCatchType import PkmnCatchType
+    from ...pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+    from ...pkmn.pkmnCatchType import PkmnCatchType
 
 
 class TestPkmnCatchBoosterPack():
