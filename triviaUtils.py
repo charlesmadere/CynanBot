@@ -105,10 +105,8 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getResults(self, showStreak: bool, userName: str, triviaResult: TriviaScoreResult) -> str:
-        if not utils.isValidBool(showStreak):
-            raise ValueError(f'showStreak argument is malformed: \"{showStreak}\"')
-        elif not utils.isValidStr(userName):
+    def getResults(self, userName: str, triviaResult: TriviaScoreResult) -> str:
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif triviaResult is None:
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
@@ -136,11 +134,10 @@ class TriviaUtils():
         ratioStr: str = f' ({triviaResult.getWinPercentStr()} wins)'
 
         streakStr: str = ''
-        if showStreak:
-            if triviaResult.getStreak() >= 3:
-                streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
-            elif triviaResult.getStreak() <= -3:
-                streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+        if triviaResult.getStreak() >= 3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+        elif triviaResult.getStreak() <= -3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
         superTriviaWinsStr: str = ''
         if triviaResult.getSuperTriviaWins() > 1:

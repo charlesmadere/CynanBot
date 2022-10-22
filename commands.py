@@ -1662,7 +1662,6 @@ class TriviaScoreCommand(AbsCommand):
         triviaUtils: TriviaUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        showStreakStr: bool = False,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if generalSettingsRepository is None:
@@ -1677,8 +1676,6 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not utils.isValidBool(showStreakStr):
-            raise ValueError(f'showStreakStr argument is malformed: \"{showStreakStr}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
@@ -1688,7 +1685,6 @@ class TriviaScoreCommand(AbsCommand):
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__showStreakStr: bool = showStreakStr
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
@@ -1732,7 +1728,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__triviaUtils.getResults(self.__showStreakStr, userName, triviaResult))
+        await twitchUtils.safeSend(ctx, self.__triviaUtils.getResults(userName, triviaResult))
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
