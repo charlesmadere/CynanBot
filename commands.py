@@ -1396,7 +1396,7 @@ class SuperTriviaCommand(AbsCommand):
         ):
             return
 
-        numberOfGames = 1
+        numberOfGames = await self.__getNumberOfGames(ctx = ctx, user = user)
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
 
         points = generalSettings.getTriviaGamePoints()
@@ -1430,6 +1430,24 @@ class SuperTriviaCommand(AbsCommand):
         ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+    async def __getNumberOfGames(self, ctx: Context, user: User) -> int:
+        if ctx is None:
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif user is None:
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            return 1
+
+        numberOfGamesStr: str = splits[1]
+
+        try:
+            return int(numberOfGamesStr)
+        except (SyntaxError, TypeError, ValueError) as e:
+            self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
+            return 1
 
     async def __isUserAllowedForSuperTrivia(
         self,
