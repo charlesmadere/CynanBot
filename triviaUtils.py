@@ -105,7 +105,7 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getResults(self, userName: str, triviaResult: TriviaScoreResult) -> str:
+    def getTriviaScoreMessage(self, userName: str, triviaResult: TriviaScoreResult) -> str:
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif triviaResult is None:

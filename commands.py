@@ -1728,7 +1728,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__triviaUtils.getResults(userName, triviaResult))
+        await twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(userName, triviaResult))
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
