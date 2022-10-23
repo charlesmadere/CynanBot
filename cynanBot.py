@@ -698,7 +698,6 @@ class CynanBot(commands.Bot):
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
             newCuteness = cutenessResult,
-            multiplier = event.getPointsMultiplier(),
             points = event.getPointsForWinning(),
             userName = event.getUserName()
         ))
@@ -707,8 +706,7 @@ class CynanBot(commands.Bot):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion(),
-            multiplier = event.getPointsMultiplier()
+            question = event.getTriviaQuestion()
         ))
 
     @commands.command(name = 'a')

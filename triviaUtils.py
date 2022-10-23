@@ -151,7 +151,6 @@ class TriviaUtils():
         self,
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
-        multiplier: int,
         points: int,
         userName: str,
         delimiter: str = '; '
@@ -160,8 +159,6 @@ class TriviaUtils():
             raise ValueError(f'question argument is malformed: \"{question}\"')
         elif newCuteness is None:
             raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
-        elif not utils.isValidNum(multiplier):
-            raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
         elif not utils.isValidNum(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
         elif not utils.isValidStr(userName):
@@ -170,9 +167,8 @@ class TriviaUtils():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         pointsStr = locale.format_string("%d", points, grouping = True)
-        multiplierStr = locale.format_string("%d", multiplier, grouping = True)
         prefix = f'{question.getEmote()} CONGRATULATIONS @{userName}, that\'s correct!'
-        infix = f'You earned {pointsStr} cuteness ({multiplierStr}x multiplier), so your new cuteness is {newCuteness.getCutenessStr()}.'
+        infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
@@ -185,18 +181,14 @@ class TriviaUtils():
     def getSuperTriviaOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        multiplier: int,
         delimiter: str = '; '
     ) -> str:
         if question is None:
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidNum(multiplier):
-            raise ValueError(f'multiplier argument is malformed: \"{multiplier}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        multiplierStr = locale.format_string("%d", multiplier, grouping = True)
-        prefix = f'{question.getEmote()} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} Goodbye {multiplierStr}x multiplier 👋…'
+        prefix = f'{question.getEmote()} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} …'
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
@@ -241,7 +233,7 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{triviaEmote} EVERYONE can play! !superanswer in {delaySecondsStr}s for {pointsStr} points ({multiplierStr}x multiplier ✨) {questionPrompt}'
+        return f'{triviaEmote} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} points ({multiplierStr}x multiplier) {questionPrompt}'
 
     def getTriviaGameQuestionPrompt(
         self,
