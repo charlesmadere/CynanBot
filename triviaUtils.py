@@ -135,15 +135,15 @@ class TriviaUtils():
 
         streakStr: str = ''
         if triviaResult.getStreak() >= 3:
-            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸 '
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
         elif triviaResult.getStreak() <= -3:
-            streakStr = f'… and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀 '
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
         superTriviaWinsStr: str = ''
         if triviaResult.getSuperTriviaWins() > 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
+            superTriviaWinsStr = f', and has {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
         elif triviaResult.getSuperTriviaWins() == 1:
-            superTriviaWinsStr = f' ({triviaResult.getSuperTriviaWinsStr()} super trivia win)'
+            superTriviaWinsStr = f', and has {triviaResult.getSuperTriviaWinsStr()} super trivia win'
 
         return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, with {triviaResult.getTriviaWinsStr()} {winsStr} and {triviaResult.getTriviaLossesStr()} {lossesStr}{ratioStr}{streakStr}{superTriviaWinsStr}'.strip()
 
