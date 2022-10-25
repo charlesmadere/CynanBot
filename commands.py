@@ -1442,12 +1442,20 @@ class SuperTriviaCommand(AbsCommand):
             return 1
 
         numberOfGamesStr: str = splits[1]
+        numberOfGames: int = 1
 
         try:
-            return int(numberOfGamesStr)
+            numberOfGames = int(numberOfGamesStr)
         except (SyntaxError, TypeError, ValueError) as e:
             self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
             return 1
+
+        if numberOfGames < 1:
+            return 1
+        elif numberOfGames > 50:
+            return 50
+        else:
+            return numberOfGames
 
     async def __isUserAllowedForSuperTrivia(
         self,
