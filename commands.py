@@ -1396,7 +1396,24 @@ class SuperTriviaCommand(AbsCommand):
         ):
             return
 
-        numberOfGames = 1
+        numberOfGames: Optional[int] = None
+        splits = utils.getCleanedSplits(ctx.message.content)
+
+        if len(splits) >= 2:
+            numberOfGamesStr: str = splits[1]
+
+            try:
+                numberOfGames = int(numberOfGamesStr)
+            except (SyntaxError, TypeError, ValueError) as e:
+                self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
+                await twitchUtils.safeSend(ctx, f'⚠ Error converting numberOfGames argument into an int. Example: !supertrivia 3')
+                return
+
+            if utils.isValidNum(numberOfGames) and (numberOfGames < 1 or numberOfGames > 100):
+                self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
+                await twitchUtils.safeSend(ctx, f'⚠ The given numberOfGames argument is an unexpected number, please try again. Example: !supertrivia 3')
+                return
+
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
 
         points = generalSettings.getTriviaGamePoints()
@@ -1420,42 +1437,16 @@ class SuperTriviaCommand(AbsCommand):
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-            numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsMultiplier = multiplier,
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             twitchChannel = user.getHandle(),
-            triviaFetchOptions = triviaFetchOptions
+            triviaFetchOptions = triviaFetchOptions,
+            numberOfGames = numberOfGames
         ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-    async def __getNumberOfGames(self, ctx: Context, user: User) -> int:
-        if ctx is None:
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif user is None:
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        splits = utils.getCleanedSplits(ctx.message.content)
-        if len(splits) < 2:
-            return 1
-
-        numberOfGamesStr: str = splits[1]
-        numberOfGames: int = 1
-
-        try:
-            numberOfGames = int(numberOfGamesStr)
-        except (SyntaxError, TypeError, ValueError) as e:
-            self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
-            return 1
-
-        if numberOfGames < 1:
-            return 1
-        elif numberOfGames > 50:
-            return 50
-        else:
-            return numberOfGames
 
     async def __isUserAllowedForSuperTrivia(
         self,
