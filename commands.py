@@ -1396,7 +1396,7 @@ class SuperTriviaCommand(AbsCommand):
         ):
             return
 
-        numberOfGames = await self.__getNumberOfGames(ctx = ctx, user = user)
+        numberOfGames = 1
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
 
         points = generalSettings.getTriviaGamePoints()
