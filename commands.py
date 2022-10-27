@@ -1406,12 +1406,12 @@ class SuperTriviaCommand(AbsCommand):
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
                 self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
-                await twitchUtils.safeSend(ctx, f'⚠ Error converting numberOfGames argument into an int. Example: !supertrivia 3')
+                await twitchUtils.safeSend(ctx, f'⚠ Error converting the given amount into an int. Example: !supertrivia 3')
                 return
 
             if utils.isValidNum(numberOfGames) and (numberOfGames < 1 or numberOfGames > 100):
                 self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
-                await twitchUtils.safeSend(ctx, f'⚠ The given numberOfGames argument is an unexpected number, please try again. Example: !supertrivia 3')
+                await twitchUtils.safeSend(ctx, f'⚠ The given amount is an unexpected number, please try again. Example: !supertrivia 3')
                 return
 
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
