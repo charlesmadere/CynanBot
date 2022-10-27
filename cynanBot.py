@@ -62,6 +62,7 @@ from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -89,7 +90,7 @@ from twitch.pubSubUtils import PubSubUtils
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot):
+class CynanBot(commands.Bot, TriviaEventListener):
 
     def __init__(
         self,
@@ -567,7 +568,7 @@ class CynanBot(commands.Bot):
         self.__timber.log('CynanBot', f'{authSnapshot.requireNick()} is ready!')
 
         if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self.onNewTriviaEvent)
+            self.__triviaGameMachine.setEventListener(self)
 
         if self.__eventSubUtils is not None:
             self.__eventSubUtils.startEventSub()

@@ -53,6 +53,7 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaErrorDict import TriviaErrorDict
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -202,7 +203,7 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    lotrTriviaQuestionsRepository = LotrTriviaQuestionRepository(
+    lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaEmoteGenerator = triviaEmoteGenerator,
@@ -237,6 +238,7 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    triviaSourceInstabilityDict = TriviaErrorDict(),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         bannedTriviaIdsRepository = bannedTriviaIdsRepository,
