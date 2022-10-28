@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from twitchio.ext.commands import Context
 
@@ -251,7 +251,8 @@ class ClearCachesCommand(AbsCommand):
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
         usersRepository: UsersRepository,
-        weatherRepository: Optional[WeatherRepository]
+        weatherRepository: Optional[WeatherRepository],
+        wordOfTheDayRepository: WordOfTheDayRepository[Optional]
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
@@ -272,6 +273,7 @@ class ClearCachesCommand(AbsCommand):
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
+        self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -304,6 +306,9 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__weatherRepository is not None:
             await self.__weatherRepository.clearCaches()
+
+        if self.__wordOfTheDayRepository is not None:
+            await self.__wordOfTheDayRepository.clearCaches()
 
         await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')

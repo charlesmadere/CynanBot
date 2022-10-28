@@ -193,7 +193,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
