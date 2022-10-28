@@ -252,7 +252,7 @@ class ClearCachesCommand(AbsCommand):
         twitchTokensRepository: Optional[TwitchTokensRepository],
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
-        wordOfTheDayRepository: WordOfTheDayRepository[Optional]
+        wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
