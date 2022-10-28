@@ -195,7 +195,7 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         if not generalSettings.isTriviaGameEnabled():
             return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator():
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
             pass
         elif not ctx.author.is_mod:
             return
@@ -386,12 +386,15 @@ class CommandsCommand(AbsCommand):
         self,
         isMod: bool,
         generalSettings: GeneralSettingsRepositorySnapshot,
+        userName: str,
         user: User
     ) -> List[str]:
         if not utils.isValidBool(isMod):
             raise ValueError(f'isMod argument is malformed: \"{isMod}\"')
         elif generalSettings is None:
             raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif user is None:
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
@@ -404,8 +407,22 @@ class CommandsCommand(AbsCommand):
             commands.append('!mycuteness')
             commands.append('!mycutenesshistory')
 
-            if isMod:
+            if user.isGiveCutenessEnabled() and isMod:
                 commands.append('!givecuteness')
+
+        if generalSettings.isSuperTriviaGameEnabled() and user.isSuperTriviaGameEnabled():
+            controllers: List[str] = list()
+            controllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
+
+            if user.hasSuperTriviaGameControllers():
+                controllers.extend(user.getSuperTriviaGameControllers())
+
+            userName = userName.lower()
+
+            for controller in controllers:
+                if userName == controller.lower():
+                    commands.append('!supertrivia')
+                    break
 
         if generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled():
             commands.append('!triviascore')
@@ -433,12 +450,16 @@ class CommandsCommand(AbsCommand):
         if user.hasTwitter():
             commands.append('!twitter')
 
+        if generalSettings.isWeatherEnabled() and user.isWeatherEnabled():
+            commands.append('!weather')
+
         if generalSettings.isAnalogueEnabled() and user.isAnalogueEnabled():
             commands.append('!analogue')
 
         commands.extend(await self.__buildTriviaCommandsList(
             isMod = ctx.author.is_mod,
             generalSettings = generalSettings,
+            userName = ctx.author.name,
             user = user
         ))
 
@@ -451,12 +472,6 @@ class CommandsCommand(AbsCommand):
             generalSettings = generalSettings,
             user = user
         ))
-
-        if user.isStarWarsQuotesEnabled():
-            commands.append('!swquote')
-
-        if generalSettings.isWeatherEnabled() and user.isWeatherEnabled():
-            commands.append('!weather')
 
         if user.isCynanSourceEnabled():
             commands.append('!cynansource')
@@ -842,13 +857,13 @@ class GiveCutenessCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
-        userName = splits[1]
+        userName: str = splits[1]
         if not utils.isValidStr(userName):
             self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{userName}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
-        incrementAmountStr = splits[2]
+        incrementAmountStr: str = splits[2]
         if not utils.isValidStr(incrementAmountStr):
             self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
@@ -929,7 +944,7 @@ class JishoCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
-        query = splits[1]
+        query: str = splits[1]
         self.__lastMessageTimes.update(user.getHandle())
 
         try:
@@ -1187,7 +1202,7 @@ class PkMonCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
             return
 
-        name = splits[1]
+        name: str = splits[1]
 
         try:
             mon = await self.__pokepediaRepository.searchPokemon(name)
@@ -1392,16 +1407,16 @@ class SuperTriviaCommand(AbsCommand):
         # For the time being, this command is intentionally not checking for mod status, as it has
         # been determined that super trivia game controllers shouldn't necessarily have to be mod.
 
-        userName = ctx.author.name.lower()
+        userName: str = ctx.author.name
 
-        if userName != user.getHandle().lower() and not await self.__isUserAllowedForSuperTrivia(
+        if userName.lower() != user.getHandle().lower() and not await self.__isUserAllowedForSuperTrivia(
             generalSettings = generalSettings,
             userName = userName,
             user = user
         ):
             return
 
-        numberOfGames: Optional[int] = None
+        numberOfGames: int = 1
         splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) >= 2:
@@ -1410,13 +1425,13 @@ class SuperTriviaCommand(AbsCommand):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
-                self.__timber.log('SuperTriviaCommand', f'Unable to convert numberOfGamesStr ({numberOfGamesStr}) to an int given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}: {e}')
-                await twitchUtils.safeSend(ctx, f'⚠ Error converting the given amount into an int. Example: !supertrivia 3')
+                self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {userName}:{ctx.author.id} in {user.getHandle()}): {e}')
+                await twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
-            if utils.isValidNum(numberOfGames) and (numberOfGames < 1 or numberOfGames > 100):
-                self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
-                await twitchUtils.safeSend(ctx, f'⚠ The given amount is an unexpected number, please try again. Example: !supertrivia 3')
+            if numberOfGames < 1 or numberOfGames > 50:
+                self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {userName}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
+                await twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
 
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
@@ -1442,13 +1457,14 @@ class SuperTriviaCommand(AbsCommand):
         )
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+            isQueueActionConsumed = False,
+            numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsMultiplier = multiplier,
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             twitchChannel = user.getHandle(),
-            triviaFetchOptions = triviaFetchOptions,
-            numberOfGames = numberOfGames
+            triviaFetchOptions = triviaFetchOptions
         ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
@@ -1466,14 +1482,16 @@ class SuperTriviaCommand(AbsCommand):
         elif user is None:
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        allGameControllers: List[str] = list()
-        allGameControllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
+        controllers: List[str] = list()
+        controllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
 
         if user.hasSuperTriviaGameControllers():
-            allGameControllers.extend(user.getSuperTriviaGameControllers())
+            controllers.extend(user.getSuperTriviaGameControllers())
 
-        for gameController in allGameControllers:
-            if userName == gameController.lower():
+        userName = userName.lower()
+
+        for controller in controllers:
+            if userName == controller.lower():
                 return True
 
         return False
@@ -1875,7 +1893,7 @@ class WordCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
-        language = splits[1]
+        language: str = splits[1]
         languageEntry: LanguageEntry = None
 
         try:

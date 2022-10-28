@@ -5,6 +5,7 @@ from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
@@ -23,6 +24,8 @@ from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
+from CynanBotCommon.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
@@ -33,6 +36,7 @@ from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaErrorDict import TriviaErrorDict
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
@@ -188,37 +192,61 @@ triviaGameMachine.setEventListener(listenerThing)
 async def main():
     pass
 
-    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-        perUserAttempts = 2,
-        pointsForWinning = 25,
-        pointsMultiplier = 5,
-        secondsToLive = 5,
-        twitchChannel = 'smCharles',
-        triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = 'smCharles',
-            isJokeTriviaRepositoryEnabled = False,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        ),
-        numberOfGames = 1
-    ))
+    # triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+    #     isQueueActionConsumed = False,
+    #     numberOfGames = 1,
+    #     perUserAttempts = 2,
+    #     pointsForWinning = 25,
+    #     pointsMultiplier = 5,
+    #     secondsToLive = 5,
+    #     twitchChannel = 'smCharles',
+    #     triviaFetchOptions = TriviaFetchOptions(
+    #         twitchChannel = 'smCharles',
+    #         isJokeTriviaRepositoryEnabled = False,
+    #         questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+    #     )
+    # ))
 
-    await asyncio.sleep(0.75)
+    # await asyncio.sleep(0.75)
 
-    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-        perUserAttempts = 2,
-        pointsForWinning = 25,
-        pointsMultiplier = 5,
-        secondsToLive = 5,
-        twitchChannel = 'smCharles',
-        triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = 'smCharles',
-            isJokeTriviaRepositoryEnabled = False,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        ),
-        numberOfGames = 1
-    ))
+    # triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+    #     isQueueActionConsumed = False,
+    #     numberOfGames = 1,
+    #     perUserAttempts = 2,
+    #     pointsForWinning = 25,
+    #     pointsMultiplier = 5,
+    #     secondsToLive = 5,
+    #     twitchChannel = 'smCharles',
+    #     triviaFetchOptions = TriviaFetchOptions(
+    #         twitchChannel = 'smCharles',
+    #         isJokeTriviaRepositoryEnabled = False,
+    #         questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+    #     )
+    # ))
+
+    correctAnswer = 'the 1950s'
+    triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+        correctAnswers=[correctAnswer],
+        cleanedCorrectAnswers=await triviaAnswerCompiler.expandNumerals(correctAnswer)
+        ,
+        category='Test Category',
+        categoryId=None,
+        emote = '🏫',
+        question='In what decade did that one thing happen?',
+        triviaId='abc123',
+        triviaDifficulty=TriviaDifficulty.UNKNOWN,
+        triviaSource=TriviaSource.J_SERVICE,
+    )
+
+    result = await triviaAnswerChecker.checkAnswer(
+        answer = '1950s',
+        triviaQuestion = triviaQuestion,
+        extras = None
+    )
+
+    print(f'triviaQuestion={triviaQuestion}\nresult={result}')
 
     pass
-    await asyncio.sleep(360)
+    # await asyncio.sleep(360)
 
 eventLoop.run_until_complete(main())
