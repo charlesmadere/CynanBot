@@ -224,11 +224,10 @@ async def main():
     #     )
     # ))
 
-    correctAnswer = 'the 1950s'
+    correctAnswer = await triviaAnswerCompiler.compileTextAnswer('1950s')
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
         correctAnswers=[correctAnswer],
-        cleanedCorrectAnswers=await triviaAnswerCompiler.expandNumerals(correctAnswer)
-        ,
+        cleanedCorrectAnswers=await triviaAnswerCompiler.expandNumerals(correctAnswer),
         category='Test Category',
         categoryId=None,
         emote = '🏫',
