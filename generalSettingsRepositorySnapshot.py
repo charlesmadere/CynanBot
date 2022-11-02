@@ -59,10 +59,10 @@ class GeneralSettingsRepositorySnapshot():
         return utils.getIntFromDict(self.__jsonContents, 'triviaGameTutorialCutenessThreshold', 10)
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 55)
+        return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 50)
 
     def getWaitForTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 45)
+        return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 40)
 
     def isAnalogueEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'analogueEnabled', True)
