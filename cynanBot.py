@@ -35,7 +35,6 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.lruCache import LruCache
-from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
@@ -108,7 +107,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
         jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
         locationsRepository: Optional[LocationsRepository],
-        nonceRepository: NonceRepository,
         pokepediaRepository: Optional[PokepediaRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
         timber: Timber,
@@ -146,8 +144,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif languagesRepository is None:
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif nonceRepository is None:
-            raise ValueError(f'nonceRepository argument is malformed: \"{nonceRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif twitchTokensRepository is None:

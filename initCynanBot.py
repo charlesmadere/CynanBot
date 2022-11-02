@@ -19,7 +19,6 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.networkClientProvider import NetworkClientProvider
-from CynanBotCommon.nonceRepository import NonceRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
@@ -289,9 +288,6 @@ cynanBot = CynanBot(
     languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
-    ),
-    nonceRepository = NonceRepository(
-        timber = timber
     ),
     pokepediaRepository = PokepediaRepository(
         networkClientProvider = networkClientProvider,
