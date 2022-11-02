@@ -3,7 +3,7 @@ import queue
 from asyncio import AbstractEventLoop
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timber import Timber
@@ -68,7 +68,7 @@ class PubSubUtils():
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 2 or queueTimeoutSeconds > 5:
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
@@ -91,9 +91,9 @@ class PubSubUtils():
             max_connection_topics = max(128, maxConnectionsPerTwitchChannel * 16)
         )
 
-    async def __getSubscribeReadyPubSubEntries(self) -> List[PubSubEntry]:
+    async def __getSubscribeReadyPubSubEntries(self) -> Optional[List[PubSubEntry]]:
         twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
-        users: List[UserInterface] = None
+        users: Optional[List[UserInterface]] = None
 
         if twitchHandles is None:
             # if twitchHandles is None, then we must do a full validate and refresh
