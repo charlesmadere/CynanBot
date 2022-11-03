@@ -87,8 +87,8 @@ class PubSubUtils():
 
         self.__pubSubPool: PubSubPool = PubSubPool(
             client = client,
-            max_pool_size = max(32, maxConnectionsPerTwitchChannel * 4),
-            max_connection_topics = max(128, maxConnectionsPerTwitchChannel * 16)
+            max_pool_size = max(maxConnectionsPerTwitchChannel * 4),
+            max_connection_topics = max(maxConnectionsPerTwitchChannel * 16)
         )
 
     async def __getSubscribeReadyPubSubEntries(self) -> Optional[List[PubSubEntry]]:
