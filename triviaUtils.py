@@ -175,9 +175,11 @@ class TriviaUtils():
             raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
 
         suffix = ''
-        if remainingQueueSize >= 1:
+        if remainingQueueSize == 1:
+            suffix = f' (with one more game after that)'
+        elif remainingQueueSize > 1:
             remainingQueueSizeStr = locale.format_string("%d", remainingQueueSize, grouping = True)
-            suffix = f' (with another {remainingQueueSizeStr} after that)'
+            suffix = f' (and then another {remainingQueueSizeStr} games after that)'
 
         return f'Another super trivia game will start shortly!{suffix}'
 
