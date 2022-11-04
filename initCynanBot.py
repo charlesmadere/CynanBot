@@ -7,7 +7,6 @@ from cynanBot import CynanBot
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.backingDatabase import BackingDatabase
-from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
@@ -45,6 +44,8 @@ from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
+from CynanBotCommon.trivia.superTriviaCooldownHelper import \
+    SuperTriviaCooldownHelper
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -52,7 +53,6 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBotCommon.trivia.triviaErrorDict import TriviaErrorDict
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -63,6 +63,8 @@ from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
+from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
+    TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
@@ -237,7 +239,7 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    triviaSourceInstabilityDict = TriviaErrorDict(),
+    triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         bannedTriviaIdsRepository = bannedTriviaIdsRepository,
@@ -303,6 +305,9 @@ cynanBot = CynanBot(
         eventLoop = eventLoop,
         queuedTriviaGameStore = QueuedTriviaGameStore(
             timber = timber,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        superTriviaCooldownHelper = SuperTriviaCooldownHelper(
             triviaSettingsRepository = triviaSettingsRepository
         ),
         timber = timber,

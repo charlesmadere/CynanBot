@@ -170,6 +170,17 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
 
+    def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str:
+        if not utils.isValidNum(remainingQueueSize):
+            raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
+
+        suffix = ''
+        if remainingQueueSize >= 1:
+            remainingQueueSizeStr = locale.format_string("%d", remainingQueueSize, grouping = True)
+            suffix = f' (with another {remainingQueueSizeStr} after that)'
+
+        return f'Another super trivia game will start shortly!{suffix}'
+
     def getSuperTriviaOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,

@@ -38,7 +38,7 @@ from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBotCommon.trivia.triviaErrorDict import TriviaErrorDict
+from CynanBotCommon.trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
@@ -153,7 +153,7 @@ triviaGameMachine = TriviaGameMachine(
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
-        triviaSourceInstabilityDict = TriviaErrorDict(),
+        triviaSourceInstabilityDict = TriviaSourceInstabilityHelper(),
         triviaSettingsRepository = triviaSettingsRepository,
         triviaVerifier = TriviaVerifier(
             bannedTriviaIdsRepository = bannedTriviaIdsRepository,
