@@ -58,8 +58,6 @@ from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from CynanBotCommon.trivia.superGameLaunchpadTriviaEvent import \
-    SuperGameLaunchpadTriviaEvent
 from CynanBotCommon.trivia.tooLateToAnswerCheckAnswerTriviaEvent import \
     TooLateToAnswerCheckAnswerTriviaEvent
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -615,8 +613,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_LAUNCHPAD:
-            await self.__handleSuperGameLaunchpadTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.TOO_LATE_TO_ANSWER:
@@ -707,12 +703,12 @@ class CynanBot(commands.Bot, TriviaEventListener):
             userName = event.getUserName()
         ))
 
-    async def __handleSuperGameLaunchpadTriviaEvent(self, event: SuperGameLaunchpadTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-
-        await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
+        launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
             remainingQueueSize = event.getRemainingQueueSize()
-        ))
+        )
+
+        if utils.isValidStr(launchpadPrompt):
+            await twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
@@ -720,6 +716,13 @@ class CynanBot(commands.Bot, TriviaEventListener):
         await twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion()
         ))
+
+        launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
+            remainingQueueSize = event.getRemainingQueueSize()
+        )
+
+        if utils.isValidStr(launchpadPrompt):
+            await twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
     async def __handleTooLateToAnswerTriviaEvent(self, event: TooLateToAnswerCheckAnswerTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())

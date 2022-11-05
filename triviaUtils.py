@@ -1,4 +1,5 @@
 import locale
+from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
@@ -170,18 +171,17 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
 
-    def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str:
+    def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
         if not utils.isValidNum(remainingQueueSize):
             raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
 
-        suffix = ''
-        if remainingQueueSize == 1:
-            suffix = f' (with one more game after that)'
-        elif remainingQueueSize > 1:
+        if remainingQueueSize < 1:
+            return None
+        elif remainingQueueSize == 1:
+            return f'One more super trivia game coming up!'
+        else:
             remainingQueueSizeStr = locale.format_string("%d", remainingQueueSize, grouping = True)
-            suffix = f' (and then another {remainingQueueSizeStr} games after that)'
-
-        return f'Another super trivia game will start shortly!{suffix}'
+            return f'{remainingQueueSizeStr} more super trivia games coming up!'
 
     def getSuperTriviaOutOfTimeAnswerReveal(
         self,
