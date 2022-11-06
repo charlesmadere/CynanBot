@@ -43,7 +43,7 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
-        maxConnectionsPerTwitchChannel: int = 8,
+        maxConnectionsPerTwitchChannel: int = 16,
         queueTimeoutSeconds: int = 3
     ):
         if eventLoop is None:
@@ -64,7 +64,7 @@ class PubSubUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 2 or maxConnectionsPerTwitchChannel > 16:
+        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > 32:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
