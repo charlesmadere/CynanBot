@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from twitchio.ext.commands import Context
 
