@@ -20,7 +20,10 @@ from CynanBotCommon.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
+from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
+from CynanBotCommon.storage.psqlCredentialsProvider import \
+    PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
@@ -84,9 +87,12 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Misc initialization section ##
 #################################
 
-authRepository = AuthRepository()
-backingDatabase = BackingPsqlDatabase()
 eventLoop = asyncio.get_event_loop()
+backingDatabase: BackingDatabase = BackingPsqlDatabase(
+    eventLoop = eventLoop,
+    psqlCredentialsProvider = PsqlCredentialsProvider()
+)
+authRepository = AuthRepository()
 timber = Timber(
     eventLoop = eventLoop
 )
