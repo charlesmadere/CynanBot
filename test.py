@@ -1,8 +1,9 @@
 import asyncio
 from datetime import timedelta
 
-from CynanBotCommon.backingDatabase import BackingDatabase
 from CynanBotCommon.networkClientProvider import NetworkClientProvider
+from CynanBotCommon.storage.backingDatabase import BackingDatabase
+from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
@@ -31,6 +32,8 @@ from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.superTriviaCooldownHelper import \
+    SuperTriviaCooldownHelper
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
@@ -38,7 +41,6 @@ from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBotCommon.trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
@@ -52,6 +54,8 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.trivia.triviaSource import TriviaSource
+from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
+    TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
@@ -59,11 +63,11 @@ from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 
 eventLoop = asyncio.get_event_loop()
-backingDatabase = BackingDatabase()
+backingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
 networkClientProvider = NetworkClientProvider(eventLoop = eventLoop)
 timber = Timber(eventLoop = eventLoop)
 triviaAnswerCompiler = TriviaAnswerCompiler()
-triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase)
+triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase = backingDatabase)
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaSettingsRepository = TriviaSettingsRepository()
@@ -86,12 +90,15 @@ triviaAnswerChecker = TriviaAnswerChecker(
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase)
+triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase = backingDatabase)
 
 triviaGameMachine = TriviaGameMachine(
     eventLoop = eventLoop,
     queuedTriviaGameStore = QueuedTriviaGameStore(
         timber = timber,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    superTriviaCooldownHelper = SuperTriviaCooldownHelper(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     timber = timber,
@@ -153,7 +160,7 @@ triviaGameMachine = TriviaGameMachine(
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
-        triviaSourceInstabilityDict = TriviaSourceInstabilityHelper(),
+        triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(),
         triviaSettingsRepository = triviaSettingsRepository,
         triviaVerifier = TriviaVerifier(
             bannedTriviaIdsRepository = bannedTriviaIdsRepository,
@@ -192,37 +199,39 @@ triviaGameMachine.setEventListener(listenerThing)
 async def main():
     pass
 
-    # triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-    #     isQueueActionConsumed = False,
-    #     numberOfGames = 1,
-    #     perUserAttempts = 2,
-    #     pointsForWinning = 25,
-    #     pointsMultiplier = 5,
-    #     secondsToLive = 5,
-    #     twitchChannel = 'smCharles',
-    #     triviaFetchOptions = TriviaFetchOptions(
-    #         twitchChannel = 'smCharles',
-    #         isJokeTriviaRepositoryEnabled = False,
-    #         questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-    #     )
-    # ))
+    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+        isQueueActionConsumed = False,
+        numberOfGames = 1,
+        perUserAttempts = 2,
+        pointsForWinning = 25,
+        pointsMultiplier = 5,
+        secondsToLive = 5,
+        twitchChannel = 'smCharles',
+        triviaFetchOptions = TriviaFetchOptions(
+            twitchChannel = 'smCharles',
+            isJokeTriviaRepositoryEnabled = False,
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+        )
+    ))
 
-    # await asyncio.sleep(0.75)
+    await asyncio.sleep(1)
 
-    # triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-    #     isQueueActionConsumed = False,
-    #     numberOfGames = 1,
-    #     perUserAttempts = 2,
-    #     pointsForWinning = 25,
-    #     pointsMultiplier = 5,
-    #     secondsToLive = 5,
-    #     twitchChannel = 'smCharles',
-    #     triviaFetchOptions = TriviaFetchOptions(
-    #         twitchChannel = 'smCharles',
-    #         isJokeTriviaRepositoryEnabled = False,
-    #         questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-    #     )
-    # ))
+    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
+        isQueueActionConsumed = False,
+        numberOfGames = 1,
+        perUserAttempts = 2,
+        pointsForWinning = 25,
+        pointsMultiplier = 5,
+        secondsToLive = 5,
+        twitchChannel = 'smCharles',
+        triviaFetchOptions = TriviaFetchOptions(
+            twitchChannel = 'smCharles',
+            isJokeTriviaRepositoryEnabled = False,
+            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+        )
+    ))
+
+    await asyncio.sleep(1)
 
     correctAnswer = await triviaAnswerCompiler.compileTextAnswer('1950s')
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
