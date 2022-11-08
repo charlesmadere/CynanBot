@@ -22,6 +22,7 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
+from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
@@ -88,10 +89,13 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 #################################
 
 eventLoop = asyncio.get_event_loop()
-backingDatabase: BackingDatabase = BackingPsqlDatabase(
-    eventLoop = eventLoop,
-    psqlCredentialsProvider = PsqlCredentialsProvider()
+backingDatabase: BackingDatabase = BackingSqliteDatabase(
+    eventLoop = eventLoop
 )
+# backingDatabase: BackingDatabase = BackingPsqlDatabase(
+#     eventLoop = eventLoop,
+#     psqlCredentialsProvider = PsqlCredentialsProvider()
+# )
 authRepository = AuthRepository()
 timber = Timber(
     eventLoop = eventLoop
