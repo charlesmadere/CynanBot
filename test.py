@@ -214,7 +214,7 @@ async def main():
         )
     ))
 
-    await asyncio.sleep(0.75)
+    await asyncio.sleep(1)
 
     triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
         isQueueActionConsumed = False,
@@ -230,6 +230,8 @@ async def main():
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     ))
+
+    await asyncio.sleep(1)
 
     correctAnswer = await triviaAnswerCompiler.compileTextAnswer('1950s')
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
