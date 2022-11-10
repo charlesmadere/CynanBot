@@ -84,18 +84,33 @@ from users.usersRepository import UsersRepository
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
+######################################
+## Select a database implementation ##
+######################################
+
+usePsql: bool = False
+useSqlite: bool = True
+
+
 #################################
 ## Misc initialization section ##
 #################################
 
 eventLoop = asyncio.get_event_loop()
-backingDatabase: BackingDatabase = BackingSqliteDatabase(
-    eventLoop = eventLoop
-)
-# backingDatabase: BackingDatabase = BackingPsqlDatabase(
-#     eventLoop = eventLoop,
-#     psqlCredentialsProvider = PsqlCredentialsProvider()
-# )
+
+backingDatabase: BackingDatabase = None
+if usePsql:
+    backingDatabase: BackingDatabase = BackingPsqlDatabase(
+        eventLoop = eventLoop,
+        psqlCredentialsProvider = PsqlCredentialsProvider()
+    )
+elif useSqlite:
+    backingDatabase: BackingDatabase = BackingSqliteDatabase(
+        eventLoop = eventLoop
+    )
+else:
+    raise RuntimeError(f'No database implementation has been chosen!')
+
 authRepository = AuthRepository()
 timber = Timber(
     eventLoop = eventLoop
