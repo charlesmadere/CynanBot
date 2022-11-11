@@ -84,32 +84,25 @@ from users.usersRepository import UsersRepository
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
-######################################
-## Select a database implementation ##
-######################################
-
-usePsql: bool = False
-useSqlite: bool = True
-
-
 #################################
 ## Misc initialization section ##
 #################################
 
 eventLoop = asyncio.get_event_loop()
+generalSettingsRepository = GeneralSettingsRepository()
 
 backingDatabase: BackingDatabase = None
-if usePsql:
+if generalSettingsRepository.getAll().requireDatabaseType() == 'postgresql':
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider()
     )
-elif useSqlite:
+elif generalSettingsRepository.getAll().requireDatabaseType() == 'sqlite':
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
         eventLoop = eventLoop
     )
 else:
-    raise RuntimeError(f'No database implementation has been chosen!')
+    raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsRepository.getAll().requireDatabaseType()}\"')
 
 authRepository = AuthRepository()
 timber = Timber(
@@ -307,7 +300,7 @@ cynanBot = CynanBot(
     cutenessUtils = CutenessUtils(),
     doubleCutenessHelper = DoubleCutenessHelper(),
     funtoonRepository = funtoonRepository,
-    generalSettingsRepository = GeneralSettingsRepository(),
+    generalSettingsRepository = generalSettingsRepository,
     jishoHelper = JishoHelper(
         networkClientProvider = networkClientProvider,
         timber = timber

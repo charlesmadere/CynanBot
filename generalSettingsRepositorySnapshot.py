@@ -155,3 +155,11 @@ class GeneralSettingsRepositorySnapshot():
             raise ValueError(f'\"administrator\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{administrator}\"')
 
         return administrator
+
+    def requireDatabaseType(self) -> str:
+        databaseType = self.__jsonContents.get('databaseType')
+
+        if not utils.isValidStr(databaseType):
+            raise ValueError(f'\"databaseType\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{databaseType}\"')
+
+        return databaseType

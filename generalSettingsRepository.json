@@ -1,4 +1,5 @@
 {
+    "databaseType": "sqlite",
     "funtoonApiEnabled": false,
     "raidLinkMessagingDelay": 60,
     "triviaGamePoints": 5,
