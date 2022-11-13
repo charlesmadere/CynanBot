@@ -5,6 +5,11 @@ from collections import defaultdict
 from queue import SimpleQueue
 from typing import Dict, List, Optional
 
+from twitchio import Client
+from twitchio.ext import pubsub
+from twitchio.ext.pubsub import PubSubPool
+from twitchio.ext.pubsub.topics import Topic
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.twitchAccessTokenMissingException import \
@@ -23,11 +28,6 @@ from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from generalSettingsRepository import GeneralSettingsRepository
-from twitchio import Client
-from twitchio.ext import pubsub
-from twitchio.ext.pubsub import PubSubPool
-from twitchio.ext.pubsub.topics import Topic
-
 from twitch.pubSubEntry import PubSubEntry
 
 
@@ -177,17 +177,23 @@ class PubSubUtils():
     async def __startPubSubUpdateLoop(self):
         while True:
             self.__timber.log('PubSubUtils', 'Refreshing...')
-            await self.__updatePubSubSubscriptions()
+
+            if self.__isManagingPubSub:
+                self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
+            else:
+                self.__isManagingPubSub = True
+
+                try:
+                    await self.__updatePubSubSubscriptions()
+                except Exception as e:
+                    self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to update PubSub subscriptions: {e}', e)
+
+                self.__isManagingPubSub = False
+
             generalSettings = await self.__generalSettingsRepository.getAllAsync()
             await asyncio.sleep(generalSettings.getRefreshPubSubTokensSeconds())
 
     async def __updatePubSubSubscriptions(self):
-        if self.__isManagingPubSub:
-            self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently working!')
-            return
-
-        self.__isManagingPubSub = True
-
         pubSubTopicsToAdd: List[Topic] = list()
         pubSubTopicsToRemove: List[Topic] = list()
         newPubSubEntries = await self.__getSubscribeReadyPubSubEntries()
@@ -206,12 +212,20 @@ class PubSubUtils():
 
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
-            await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
+
+            try:
+                await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
+            except ValueError as e:
+                self.__timber.log('PubSubUtils', f'Encountered ValueError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
+
             self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub user(s)')
 
         if utils.hasItems(pubSubTopicsToRemove):
             self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)...')
-            await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
-            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
 
-        self.__isManagingPubSub = False
+            try:
+                await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
+            except ValueError as e:
+                self.__timber.log('PubSubUtils', f'Encountered ValueError when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
+
+            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
