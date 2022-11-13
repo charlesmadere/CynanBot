@@ -140,7 +140,7 @@ class PubSubUtils():
                 # if we run into this error, that most likely means that this user changed
                 # their password
                 usersToRemove.append(user)
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch token for \"{user.getHandle()}\": {e}')
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch token for \"{user.getHandle()}\": {e}', e)
 
         if utils.hasItems(usersToRemove):
             for user in usersToRemove:
@@ -202,7 +202,7 @@ class PubSubUtils():
                 while topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
                     pubSubTopicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
             except queue.Empty as e:
-                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}')
+                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
 
         if utils.hasItems(pubSubTopicsToAdd):
             self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')

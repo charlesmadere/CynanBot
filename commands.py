@@ -105,7 +105,7 @@ class AnalogueCommand(AbsCommand):
             result = await self.__analogueStoreRepository.fetchStoreStock()
             await twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}')
+            self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}', e)
             await twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue store stock')
 
         self.__timber.log('AnalogueCommand', f'Handled !analogue command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
