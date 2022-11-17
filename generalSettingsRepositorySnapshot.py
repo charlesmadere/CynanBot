@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Set
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.storage.databaseType import DatabaseType
 
 
 class GeneralSettingsRepositorySnapshot():
@@ -156,10 +157,10 @@ class GeneralSettingsRepositorySnapshot():
 
         return administrator
 
-    def requireDatabaseType(self) -> str:
+    def requireDatabaseType(self) -> DatabaseType:
         databaseType = self.__jsonContents.get('databaseType')
 
         if not utils.isValidStr(databaseType):
             raise ValueError(f'\"databaseType\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{databaseType}\"')
 
-        return databaseType
+        return DatabaseType.fromStr(databaseType)

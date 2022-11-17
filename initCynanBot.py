@@ -23,6 +23,7 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
+from CynanBotCommon.storage.databaseType import DatabaseType
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
@@ -92,12 +93,12 @@ eventLoop = asyncio.get_event_loop()
 generalSettingsRepository = GeneralSettingsRepository()
 
 backingDatabase: BackingDatabase = None
-if generalSettingsRepository.getAll().requireDatabaseType() == 'postgresql':
+if generalSettingsRepository.getAll().requireDatabaseType() == DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider()
     )
-elif generalSettingsRepository.getAll().requireDatabaseType() == 'sqlite':
+elif generalSettingsRepository.getAll().requireDatabaseType() == DatabaseType.SQLITE:
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
         eventLoop = eventLoop
     )
