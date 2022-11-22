@@ -1,7 +1,9 @@
 import asyncio
 from datetime import timedelta
 
-from CynanBotCommon.networkClientProvider import NetworkClientProvider
+from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
+from CynanBotCommon.network.requestsClientProvider import \
+    RequestsClientProvider
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.timber.timber import Timber
@@ -64,7 +66,7 @@ from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
 
 eventLoop = asyncio.get_event_loop()
 backingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
-networkClientProvider = NetworkClientProvider(eventLoop = eventLoop)
+networkClientProvider: NetworkClientProvider = RequestsClientProvider()
 timber = Timber(eventLoop = eventLoop)
 triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase = backingDatabase)

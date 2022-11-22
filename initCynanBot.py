@@ -16,7 +16,11 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
-from CynanBotCommon.networkClientProvider import NetworkClientProvider
+from CynanBotCommon.network.aioHttpClientProvider import AioHttpClientProvider
+from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
+from CynanBotCommon.network.networkClientType import NetworkClientType
+from CynanBotCommon.network.requestsClientProvider import \
+    RequestsClientProvider
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
@@ -93,23 +97,30 @@ eventLoop = asyncio.get_event_loop()
 generalSettingsRepository = GeneralSettingsRepository()
 
 backingDatabase: BackingDatabase = None
-if generalSettingsRepository.getAll().requireDatabaseType() == DatabaseType.POSTGRESQL:
+if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider()
     )
-elif generalSettingsRepository.getAll().requireDatabaseType() == DatabaseType.SQLITE:
+elif generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.SQLITE:
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
         eventLoop = eventLoop
     )
 else:
     raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsRepository.getAll().requireDatabaseType()}\"')
 
+networkClientProvider: NetworkClientProvider = None
+if generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.AIOHTTP:
+    networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
+        eventLoop = eventLoop
+    )
+elif generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.REQUESTS:
+    networkClientProvider: NetworkClientProvider = RequestsClientProvider()
+else:
+    raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsRepository.getAll().requireNetworkClientType()}\"')
+
 authRepository = AuthRepository()
 timber = Timber(
-    eventLoop = eventLoop
-)
-networkClientProvider = NetworkClientProvider(
     eventLoop = eventLoop
 )
 userIdsRepository = UserIdsRepository(
