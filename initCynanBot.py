@@ -95,6 +95,9 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 eventLoop = asyncio.get_event_loop()
 generalSettingsRepository = GeneralSettingsRepository()
+timber = Timber(
+    eventLoop = eventLoop
+)
 
 backingDatabase: BackingDatabase = None
 if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:
@@ -112,17 +115,17 @@ else:
 networkClientProvider: NetworkClientProvider = None
 if generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.AIOHTTP:
     networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
-        eventLoop = eventLoop
+        eventLoop = eventLoop,
+        timber = timber
     )
 elif generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.REQUESTS:
-    networkClientProvider: NetworkClientProvider = RequestsClientProvider()
+    networkClientProvider: NetworkClientProvider = RequestsClientProvider(
+        timber = timber
+    )
 else:
     raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsRepository.getAll().requireNetworkClientType()}\"')
 
 authRepository = AuthRepository()
-timber = Timber(
-    eventLoop = eventLoop
-)
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
     networkClientProvider = networkClientProvider,
