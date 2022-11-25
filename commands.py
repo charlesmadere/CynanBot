@@ -1785,6 +1785,85 @@ class TwitterCommand(AbsCommand):
         self.__timber.log('TwitterCommand', f'Handled !twitter command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class UnbanTriviaQuestionCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaBanHelper: TriviaBanHelper,
+        triviaEmoteGenerator: TriviaEmoteGenerator,
+        triviaHistoryRepository: TriviaHistoryRepository,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaBanHelper is None:
+            raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
+        elif triviaEmoteGenerator is None:
+            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif triviaHistoryRepository is None:
+            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
+        self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
+        self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
+            return
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
+            pass
+        elif not ctx.author.is_mod:
+            return
+
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        emote: str = splits[1]
+        normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
+
+        if not utils.isValidStr(normalizedEmote):
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as an invalid emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
+            emote = normalizedEmote,
+            twitchChannel = user.getHandle()
+        )
+
+        if reference is None:
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            return
+
+        await self.__triviaBanHelper.unban(
+            triviaId = reference.getTriviaId(),
+            triviaSource = reference.getTriviaSource()
+        )
+
+        await twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was unbanned)')
+
+
 class WeatherCommand(AbsCommand):
     
     def __init__(

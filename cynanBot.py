@@ -20,7 +20,8 @@ from commands import (AbsCommand, AnalogueCommand, AnswerCommand,
                       PkMoveCommand, RaceCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
                       TimeCommand, TranslateCommand, TriviaScoreCommand,
-                      TwitterCommand, WeatherCommand, WordCommand)
+                      TwitterCommand, UnbanTriviaQuestionCommand,
+                      WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -233,9 +234,11 @@ class CynanBot(commands.Bot, TriviaEventListener):
         if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
+            self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
             self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, userIdsRepository, usersRepository)
+            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
@@ -847,6 +850,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx: Context):
         await self.__twitterCommand.handleCommand(ctx)
+
+    @commands.command(name = 'unbantriviaquestion')
+    async def command_unbantriviaquestion(self, ctx: Context):
+        await self.__unbanTriviaQuestionCommand.handleCommand(ctx)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):
