@@ -720,7 +720,7 @@ class CutenessHistoryCommand(AbsCommand):
         else:
             userName = ctx.author.name
 
-        userId: str = None
+        userId: Optional[str] = None
 
         # this means that a user is querying for another user's cuteness history
         if userName.lower() != ctx.author.name.lower():
