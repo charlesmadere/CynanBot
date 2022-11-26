@@ -35,6 +35,8 @@ from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
+from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
+    RemoveTriviaGameControllerResult
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -151,7 +153,7 @@ class AddTriviaControllerCommand(AbsCommand):
             raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
         self.__timber.log('AddTriviaControllerCommand', f'Handled !addtriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-        
+
 
 class AnalogueCommand(AbsCommand):
 
@@ -1396,6 +1398,83 @@ class RaceCommand(AbsCommand):
 
         await twitchUtils.safeSend(ctx, '!race')
         self.__timber.log('RaceCommand', f'Handled !race command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
+class RemoveTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameControllersRepository: TriviaGameControllersRepository,
+        twitchTokensRepository: TwitchTokensRepository,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameControllersRepository is None:
+            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif twitchTokensRepository is None:
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif usersRepository is not None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
+            return
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
+            pass
+
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+        elif user.getHandle().lower() != ctx.author.name.lower():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
+            return
+
+        userName: Optional[str] = splits[1]
+        if not utils.isValidStr(userName):
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
+            return
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}{ctx.author.id} in {user.getHandle()}, but was unable to retrieve a viable Twitch access token')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as I have no viable access token for this Twitch channel.')
+            return
+
+        result = await self.__triviaGameControllersRepository.removeController(
+            twitchChannel = user.getHandle(),
+            userName = userName
+        )
+
+        if result is RemoveTriviaGameControllerResult.REMOVED:
+            await twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a trivia game controller.')
+        elif result is RemoveTriviaGameControllerResult.ERROR:
+            await twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a trivia game controller!')
+        else:
+            await twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a trivia game controller!')
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+        self.__timber.log('RemoveTriviaGameControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class StubCommand(AbsCommand):
