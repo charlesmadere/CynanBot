@@ -23,19 +23,22 @@ class GeneralSettingsRepositorySnapshot():
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
 
-    def getGlobalSuperTriviaGameControllers(self) -> List[str]:
-        gameControllersJson: List[str] = self.__jsonContents.get('superTriviaGameControllers')
+    def getGlobalTriviaGameControllers(self) -> List[str]:
+        gameControllersJson: List[str] = self.__jsonContents.get('globalTriviaGameControllers')
 
         if not utils.hasItems(gameControllersJson):
             return list()
 
-        gameControllers: Set[str] = set()
+        gameControllersSet: Set[str] = set()
 
         for gameController in gameControllersJson:
             if utils.isValidStr(gameController):
-                gameControllers.add(gameController)
+                gameControllersSet.add(gameController)
 
-        return list(gameControllers)
+        gameControllersList: List[str] = list(gameControllersSet)
+        gameControllersList.sort(key = lambda gameController: gameController.lower())
+
+        return gameControllersList
 
     def getRaidLinkMessagingDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'raidLinkMessagingDelay', 60)

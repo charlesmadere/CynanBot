@@ -412,7 +412,7 @@ class CommandsCommand(AbsCommand):
 
         if generalSettings.isSuperTriviaGameEnabled() and user.isSuperTriviaGameEnabled():
             controllers: List[str] = list()
-            controllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
+            controllers.extend(generalSettings.getGlobalTriviaGameControllers())
 
             if user.hasSuperTriviaGameControllers():
                 controllers.extend(user.getSuperTriviaGameControllers())
@@ -1483,7 +1483,7 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         controllers: List[str] = list()
-        controllers.extend(generalSettings.getGlobalSuperTriviaGameControllers())
+        controllers.extend(generalSettings.getGlobalTriviaGameControllers())
 
         if user.hasSuperTriviaGameControllers():
             controllers.extend(user.getSuperTriviaGameControllers())
