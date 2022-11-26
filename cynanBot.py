@@ -66,6 +66,8 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
+from CynanBotCommon.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
@@ -115,6 +117,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         triviaBanHelper: Optional[TriviaBanHelper],
         triviaContentScanner: Optional[TriviaContentScanner],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
+        triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachine],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],

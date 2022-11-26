@@ -27,6 +27,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.trivia.addTriviaGameControllerResult import \
+    AddTriviaGameControllerResult
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
@@ -39,6 +41,8 @@ from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBotCommon.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
@@ -61,6 +65,93 @@ class AbsCommand(ABC):
     async def handleCommand(self, ctx: Context):
         pass
 
+
+class AddTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        authRepository: AuthRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameControllersRepository: TriviaGameControllersRepository,
+        twitchTokensRepository: TwitchTokensRepository,
+        usersRepository: UsersRepository
+    ):
+        if authRepository is None:
+            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
+        elif generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameControllersRepository is None:
+            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif twitchTokensRepository is None:
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif usersRepository is not None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__authRepository: AuthRepository = authRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
+            return
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
+            pass
+
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+        elif user.getHandle().lower() != ctx.author.name.lower():
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
+            return
+
+        userName: Optional[str] = splits[1]
+        if not utils.isValidStr(userName):
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
+            return
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}{ctx.author.id} in {user.getHandle()}, but was unable to retrieve a viable Twitch access token')
+            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as I have no viable access token for this Twitch channel.')
+            return
+
+        authSettings = await self.__authRepository.getAllAsync()
+
+        result = await self.__triviaGameControllersRepository.addController(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannel = user.getHandle(),
+            twitchClientId = authSettings.requireTwitchClientId(),
+            userName = userName
+        )
+
+        if result is AddTriviaGameControllerResult.ADDED:
+            await twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller.')
+        elif result is AddTriviaGameControllerResult.ALREADY_EXISTS:
+            await twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one.')
+        elif result is AddTriviaGameControllerResult.ERROR:
+            await twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
+        else:
+            await twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!')
+            self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+        self.__timber.log('AddTriviaControllerCommand', f'Handled !addtriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        
 
 class AnalogueCommand(AbsCommand):
 

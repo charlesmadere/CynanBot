@@ -62,6 +62,8 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -334,6 +336,11 @@ cynanBot = CynanBot(
     triviaBanHelper = triviaBanHelper,
     triviaContentScanner = triviaContentScanner,
     triviaEmoteGenerator = triviaEmoteGenerator,
+    triviaGameControllersRepository = TriviaGameControllersRepository(
+        backingDatabase = backingDatabase,
+        timber = timber,
+        userIdsRepository = userIdsRepository
+    ),
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         queuedTriviaGameStore = QueuedTriviaGameStore(
