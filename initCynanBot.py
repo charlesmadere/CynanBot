@@ -274,7 +274,9 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(),
+    triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
+        timber = timber
+    ),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         bannedTriviaIdsRepository = bannedTriviaIdsRepository,
