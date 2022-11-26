@@ -1,5 +1,5 @@
 from asyncio import AbstractEventLoop
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from twitchio import Channel, Message
 from twitchio.ext import commands
@@ -531,11 +531,11 @@ class CynanBot(commands.Bot, TriviaEventListener):
         if generalSettings.isPubSubPongLoggingEnabled():
             self.__timber.log('CynanBot', f'Received PubSub pong')
 
-    async def event_raw_usernotice(self, channel: Channel, tags: Dict):
+    async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
         if not utils.hasItems(tags):
             return
 
-        msgId = tags.get('msg-id')
+        msgId: Optional[str] = tags.get('msg-id')
 
         if not utils.isValidStr(msgId):
             return
