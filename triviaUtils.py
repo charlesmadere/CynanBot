@@ -1,9 +1,10 @@
 import locale
-from typing import Optional
+from typing import List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
 
@@ -239,6 +240,24 @@ class TriviaUtils():
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
         return f'{triviaEmote} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} points ({multiplierStr}x multiplier) {questionPrompt}'
+
+    def getTriviaGameControllers(
+        self,
+        gameControllers: Optional[List[TriviaGameController]],
+        delimiter: str = ', '
+    ) -> str:
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not utils.hasItems(gameControllers):
+            return f'ⓘ Your channel has no trivia game controllers.'
+
+        gameControllersNames: List[str] = list()
+        for gameController in gameControllers:
+            gameControllersNames.append(gameController.getUserName())
+
+        gameControllersStr = delimiter.join(gameControllersNames)
+        return f'ⓘ Your trivia game controllers — {gameControllersStr}'
 
     def getTriviaGameQuestionPrompt(
         self,

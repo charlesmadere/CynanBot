@@ -76,7 +76,6 @@ class AddTriviaControllerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
-        twitchTokensRepository: TwitchTokensRepository,
         usersRepository: UsersRepository
     ):
         if authRepository is None:
@@ -87,8 +86,6 @@ class AddTriviaControllerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif twitchTokensRepository is None:
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif usersRepository is not None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -96,7 +93,6 @@ class AddTriviaControllerCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -120,22 +116,15 @@ class AddTriviaControllerCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = splits[1]
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
             return
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}{ctx.author.id} in {user.getHandle()}, but was unable to retrieve a viable Twitch access token')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as I have no viable access token for this Twitch channel.')
-            return
-
         authSettings = await self.__authRepository.getAllAsync()
 
         result = await self.__triviaGameControllersRepository.addController(
-            twitchAccessToken = twitchAccessToken,
             twitchChannel = user.getHandle(),
             twitchClientId = authSettings.requireTwitchClientId(),
             userName = userName
@@ -912,6 +901,51 @@ class DiscordCommand(AbsCommand):
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class GetTriviaControllersCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameControllersRepository: TriviaGameControllersRepository,
+        triviaUtils: TriviaUtils,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameControllersRepository is None:
+            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif usersRepository is not None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled():
+            return
+        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
+            pass
+
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not user.isTriviaGameEnabled():
+            return
+        elif user.getHandle().lower() != ctx.author.name.lower():
+            return
+
+        controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
+        await twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameControllers(controllers))
+        self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class GiveCutenessCommand(AbsCommand):
 
     def __init__(
@@ -1407,7 +1441,6 @@ class RemoveTriviaControllerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
-        twitchTokensRepository: TwitchTokensRepository,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -1416,15 +1449,12 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif twitchTokensRepository is None:
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif usersRepository is not None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -1448,16 +1478,10 @@ class RemoveTriviaControllerCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = splits[1]
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
             await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
-            return
-
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-        if not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}{ctx.author.id} in {user.getHandle()}, but was unable to retrieve a viable Twitch access token')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as I have no viable access token for this Twitch channel.')
             return
 
         result = await self.__triviaGameControllersRepository.removeController(

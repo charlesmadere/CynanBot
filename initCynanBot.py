@@ -163,6 +163,10 @@ if authSnapshot.hasOneWeatherApiKey():
         timber = timber
     )
 
+twitchTokensRepository = TwitchTokensRepository(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
 
 ###################################
 ## Trivia initialization section ##
@@ -341,6 +345,7 @@ cynanBot = CynanBot(
     triviaGameControllersRepository = TriviaGameControllersRepository(
         backingDatabase = backingDatabase,
         timber = timber,
+        twitchTokensRepository = twitchTokensRepository,
         userIdsRepository = userIdsRepository
     ),
     triviaGameMachine = TriviaGameMachine(
@@ -366,10 +371,7 @@ cynanBot = CynanBot(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = TriviaUtils(),
-    twitchTokensRepository = TwitchTokensRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    ),
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = UsersRepository(
         timeZoneRepository = timeZoneRepository
