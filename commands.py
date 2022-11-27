@@ -1543,13 +1543,9 @@ class SuperAnswerCommand(AbsCommand):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled():
-            return
-        elif not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
