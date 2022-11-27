@@ -96,14 +96,13 @@ class AddTriviaControllerCommand(AbsCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
-            pass
 
+        userName = ctx.author.name.lower()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif user.getHandle().lower() != ctx.author.name.lower():
+        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -937,14 +936,13 @@ class GetTriviaControllersCommand(AbsCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
-            pass
 
+        userName = ctx.author.name.lower()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif user.getHandle().lower() != ctx.author.name.lower():
+        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
@@ -1468,14 +1466,13 @@ class RemoveTriviaControllerCommand(AbsCommand):
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
-            pass
 
+        userName = ctx.author.name.lower()
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif user.getHandle().lower() != ctx.author.name.lower():
+        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
