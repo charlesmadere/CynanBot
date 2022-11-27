@@ -923,7 +923,7 @@ class GetTriviaControllersCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif usersRepository is not None:
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1455,7 +1455,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif usersRepository is not None:
+        elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
