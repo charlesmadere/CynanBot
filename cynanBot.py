@@ -444,7 +444,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
 
         if self.__channelPointsLruCache.contains(lruCacheId):
-            self.__timber.log('CynanBot', f'Encountered duplicate reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{event.id}\"')
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
