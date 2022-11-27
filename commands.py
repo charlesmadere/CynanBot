@@ -94,14 +94,14 @@ class AddTriviaControllerCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
             pass
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
         elif user.getHandle().lower() != ctx.author.name.lower():
             return
@@ -935,14 +935,14 @@ class GetTriviaControllersCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
             pass
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
         elif user.getHandle().lower() != ctx.author.name.lower():
             return
@@ -1466,14 +1466,14 @@ class RemoveTriviaControllerCommand(AbsCommand):
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
             pass
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
         elif user.getHandle().lower() != ctx.author.name.lower():
             return
