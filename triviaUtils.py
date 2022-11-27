@@ -324,10 +324,6 @@ class TriviaUtils():
 
         userName = userName.lower()
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if userName == generalSettings.requireAdministrator().lower():
-            return True
-
         user = await self.__usersRepository.getUserAsync(twitchChannel)
         if userName == user.getHandle().lower():
             return True
@@ -336,6 +332,10 @@ class TriviaUtils():
         for gameController in gameControllers:
             if userName == gameController.getUserName().lower():
                 return True
+
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        if userName == generalSettings.requireAdministrator().lower():
+            return True
 
         globalGameControllers = generalSettings.getGlobalTriviaGameControllers()
         for globalGameController in globalGameControllers:
