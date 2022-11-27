@@ -198,6 +198,7 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    twitchCredentialsProviderInterface = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )

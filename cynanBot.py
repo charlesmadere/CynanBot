@@ -241,7 +241,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__getTriviaControllersCommand: AbsCommand = StubCommand()
             self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
         else:
-            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(authRepository, generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
+            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
             self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
 
