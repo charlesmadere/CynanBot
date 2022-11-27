@@ -754,7 +754,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         await self.__answerCommand.handleCommand(ctx)
 
     @commands.command(name = 'addtriviacontroller')
-    async def command_race(self, ctx: Context):
+    async def command_addtriviacontroller(self, ctx: Context):
         await self.__addTriviaControllerCommand.handleCommand(ctx)
 
     @commands.command(name = 'analogue')
@@ -798,7 +798,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         await self.__discordCommand.handleCommand(ctx)
 
     @commands.command(name = 'gettriviacontrollers')
-    async def command_race(self, ctx: Context):
+    async def command_gettriviacontrollers(self, ctx: Context):
         await self.__getTriviaControllersCommand.handleCommand(ctx)
 
     @commands.command(name = 'givecuteness')
@@ -838,7 +838,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         await self.__raceCommand.handleCommand(ctx)
 
     @commands.command(name = 'removetriviacontroller')
-    async def command_race(self, ctx: Context):
+    async def command_removetriviacontroller(self, ctx: Context):
         await self.__removeTriviaControllerCommand.handleCommand(ctx)
 
     @commands.command(name = 'sa')
