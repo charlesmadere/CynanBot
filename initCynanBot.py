@@ -133,6 +133,10 @@ userIdsRepository = UserIdsRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
+timeZoneRepository = TimeZoneRepository()
+usersRepository = UsersRepository(
+    timeZoneRepository = timeZoneRepository
+)
 cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
@@ -142,7 +146,6 @@ funtoonRepository = FuntoonRepository(
     timber = timber
 )
 languagesRepository = LanguagesRepository()
-timeZoneRepository = TimeZoneRepository()
 
 authSnapshot = authRepository.getAll()
 
@@ -192,6 +195,12 @@ triviaContentScanner = TriviaContentScanner(
 triviaEmoteGenerator = TriviaEmoteGenerator(
     backingDatabase = backingDatabase
 )
+triviaGameControllersRepository = TriviaGameControllersRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
 triviaHistoryRepository = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -199,6 +208,11 @@ triviaHistoryRepository = TriviaHistoryRepository(
 )
 triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
+)
+triviaUtils = TriviaUtils(
+    generalSettingsRepository = generalSettingsRepository,
+    triviaGameControllersRepository = triviaGameControllersRepository,
+    usersRepository = usersRepository
 )
 
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
@@ -342,12 +356,7 @@ cynanBot = CynanBot(
     triviaBanHelper = triviaBanHelper,
     triviaContentScanner = triviaContentScanner,
     triviaEmoteGenerator = triviaEmoteGenerator,
-    triviaGameControllersRepository = TriviaGameControllersRepository(
-        backingDatabase = backingDatabase,
-        timber = timber,
-        twitchTokensRepository = twitchTokensRepository,
-        userIdsRepository = userIdsRepository
-    ),
+    triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         queuedTriviaGameStore = QueuedTriviaGameStore(
@@ -370,12 +379,10 @@ cynanBot = CynanBot(
     triviaHistoryRepository = triviaHistoryRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
-    triviaUtils = TriviaUtils(),
+    triviaUtils = triviaUtils,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
-    usersRepository = UsersRepository(
-        timeZoneRepository = timeZoneRepository
-    ),
+    usersRepository = usersRepository,
     weatherRepository = weatherRepository,
     wordOfTheDayRepository = WordOfTheDayRepository(
         networkClientProvider = networkClientProvider,

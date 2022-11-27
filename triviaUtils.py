@@ -5,14 +5,32 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
+from CynanBotCommon.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
+from generalSettingsRepository import GeneralSettingsRepository
+from users.usersRepository import UsersRepository
 
 
 class TriviaUtils():
 
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        triviaGameControllersRepository: TriviaGameControllersRepository,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif triviaGameControllersRepository is None:
+            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__usersRepository: UsersRepository = usersRepository
 
     def getCorrectAnswerReveal(
         self,
@@ -297,3 +315,31 @@ class TriviaUtils():
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
         return f'{triviaEmote} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'
+
+    async def isPrivilegedTriviaUser(self, twitchChannel: str, userName: str) -> bool:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
+        userName = userName.lower()
+
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        if userName == generalSettings.requireAdministrator().lower():
+            return True
+
+        user = await self.__usersRepository.getUserAsync(twitchChannel)
+        if userName == user.getHandle().lower():
+            return True
+
+        gameControllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
+        for gameController in gameControllers:
+            if userName == gameController.getUserName().lower():
+                return True
+
+        globalGameControllers = generalSettings.getGlobalTriviaGameControllers()
+        for globalGameController in globalGameControllers:
+            if userName == globalGameController.lower():
+                return True
+
+        return False

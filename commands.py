@@ -250,6 +250,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         triviaBanHelper: TriviaBanHelper,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
+        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -262,6 +263,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif triviaHistoryRepository is None:
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -270,21 +273,28 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
-            return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
-            pass
-        elif not ctx.author.is_mod:
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+
+        if await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = ctx.author.name
+        ):
+            pass
+        elif ctx.author.is_mod:
+            pass
+        else:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -293,7 +303,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: str = splits[1]
+        emote: Optional[str] = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -402,6 +412,7 @@ class CommandsCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        triviaUtils: Optional[TriviaUtils],
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
@@ -419,6 +430,7 @@ class CommandsCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -480,7 +492,22 @@ class CommandsCommand(AbsCommand):
         elif user is None:
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
+        isPrivilegedTriviaUser = self.__triviaUtils is not None and await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = userName
+        )
+
+        userName = userName.lower()
         commands: List[str] = list()
+
+        if userName == user.getHandle().lower():
+            commands.append('!addtriviacontroller')
+            commands.append('!gettriviacontrollers')
+            commands.append('!removetriviacontroller')
+
+        if isPrivilegedTriviaUser:
+            commands.append('!bantriviaquestion')
+            commands.append('!supertrivia')
 
         if user.isCutenessEnabled():
             commands.append('!cuteness')
@@ -489,24 +516,10 @@ class CommandsCommand(AbsCommand):
             commands.append('!mycuteness')
             commands.append('!mycutenesshistory')
 
-            if user.isGiveCutenessEnabled() and isMod:
+            if isMod and user.isGiveCutenessEnabled():
                 commands.append('!givecuteness')
 
-        if generalSettings.isSuperTriviaGameEnabled() and user.isSuperTriviaGameEnabled():
-            controllers: List[str] = list()
-            controllers.extend(generalSettings.getGlobalTriviaGameControllers())
-
-            if user.hasSuperTriviaGameControllers():
-                controllers.extend(user.getSuperTriviaGameControllers())
-
-            userName = userName.lower()
-
-            for controller in controllers:
-                if userName == controller.lower():
-                    commands.append('!supertrivia')
-                    break
-
-        if generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled():
+        if (generalSettings.isTriviaGameEnabled() and user.isTriviaGameEnabled()) or (generalSettings.isSuperTriviaGameEnabled() and user.isSuperTriviaGameEnabled()):
             commands.append('!triviascore')
 
         return commands
@@ -1569,6 +1582,7 @@ class SuperTriviaCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
+        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -1577,25 +1591,24 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameMachine is None:
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
+        if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
             return
-        elif not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled():
-            return
-        elif not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
 
         # For the time being, this command is intentionally not checking for mod status, as it has
@@ -1603,10 +1616,9 @@ class SuperTriviaCommand(AbsCommand):
 
         userName: str = ctx.author.name
 
-        if userName.lower() != user.getHandle().lower() and not await self.__isUserAllowedForSuperTrivia(
-            generalSettings = generalSettings,
-            userName = userName,
-            user = user
+        if not await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = userName
         ):
             return
 
@@ -1614,7 +1626,7 @@ class SuperTriviaCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
 
         if len(splits) >= 2:
-            numberOfGamesStr: str = splits[1]
+            numberOfGamesStr: Optional[str] = splits[1]
 
             try:
                 numberOfGames = int(numberOfGamesStr)
@@ -1662,33 +1674,6 @@ class SuperTriviaCommand(AbsCommand):
         ))
 
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-
-    async def __isUserAllowedForSuperTrivia(
-        self,
-        generalSettings: GeneralSettingsRepositorySnapshot,
-        userName: str,
-        user: User
-    ) -> bool:
-        if generalSettings is None:
-            raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif user is None:
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        controllers: List[str] = list()
-        controllers.extend(generalSettings.getGlobalTriviaGameControllers())
-
-        if user.hasSuperTriviaGameControllers():
-            controllers.extend(user.getSuperTriviaGameControllers())
-
-        userName = userName.lower()
-
-        for controller in controllers:
-            if userName == controller.lower():
-                return True
-
-        return False
 
 
 class SwQuoteCommand(AbsCommand):
@@ -1988,6 +1973,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         triviaBanHelper: TriviaBanHelper,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
+        triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -2000,6 +1986,8 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif triviaHistoryRepository is None:
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -2008,21 +1996,28 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTriviaGameEnabled():
-            return
-        elif ctx.author.name.lower() == generalSettings.requireAdministrator().lower():
-            pass
-        elif not ctx.author.is_mod:
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
 
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled():
+        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+
+        if await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = ctx.author.name
+        ):
+            pass
+        elif ctx.author.is_mod:
+            pass
+        else:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -2031,7 +2026,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: str = splits[1]
+        emote: Optional[str] = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):

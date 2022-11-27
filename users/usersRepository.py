@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 
 import aiofiles
 import aiofiles.ospath
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -12,7 +13,6 @@ from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
-
 from users.user import User
 
 
@@ -102,7 +102,6 @@ class UsersRepository(UsersRepositoryInterface):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        superTriviaGameControllers: List[str] = None
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
@@ -111,7 +110,6 @@ class UsersRepository(UsersRepositoryInterface):
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            superTriviaGameControllers = userJson.get('superTriviaGameControllers')
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
@@ -181,7 +179,6 @@ class UsersRepository(UsersRepositoryInterface):
             twitter = twitter,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
-            superTriviaGameControllers = superTriviaGameControllers,
             timeZones = timeZones
         )
 

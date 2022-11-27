@@ -174,7 +174,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         ## Initialization of command objects ##
         #######################################
 
-        self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, usersRepository)
+        self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, usersRepository)
@@ -195,7 +195,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
-            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, usersRepository)
 
         self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, funtoonRepository, generalSettingsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
 
@@ -245,14 +245,14 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
 
-        if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None:
+        if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
             self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
-            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
+            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, userIdsRepository, usersRepository)
-            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, usersRepository)
+            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()

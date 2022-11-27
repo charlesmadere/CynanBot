@@ -64,7 +64,6 @@ class User(UserInterface):
         twitter: str,
         cutenessBoosterPacks: List[CutenessBoosterPack],
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack],
-        superTriviaGameControllers: List[str],
         timeZones: List[tzinfo]
     ):
         if not utils.isValidBool(isAnalogueEnabled):
@@ -192,7 +191,6 @@ class User(UserInterface):
         self.__twitter: str = twitter
         self.__cutenessBoosterPacks: List[CutenessBoosterPack] = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = pkmnCatchBoosterPacks
-        self.__superTriviaGameControllers = superTriviaGameControllers
         self.__timeZones: List[tzinfo] = timeZones
 
     async def fetchPicOfTheDay(self) -> str:
@@ -245,9 +243,6 @@ class User(UserInterface):
     def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
-    def getSuperTriviaGameControllers(self) -> List[str]:
-        return self.__superTriviaGameControllers
-
     def getSuperTriviaGameMultiplier(self) -> int:
         return self.__superTriviaGameMultiplier
 
@@ -292,9 +287,6 @@ class User(UserInterface):
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
-
-    def hasSuperTriviaGameControllers(self) -> bool:
-        return utils.areValidStrs(self.__superTriviaGameControllers)
 
     def hasSuperTriviaGameMultiplier(self) -> bool:
         return utils.isValidNum(self.__superTriviaGameMultiplier)
