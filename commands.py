@@ -1075,7 +1075,7 @@ class JishoCommand(AbsCommand):
             await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
-        query: str = splits[1]
+        query: Optional[str] = splits[1]
         self.__lastMessageTimes.update(user.getHandle())
 
         try:
