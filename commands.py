@@ -763,7 +763,7 @@ class CutenessHistoryCommand(AbsCommand):
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' · ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1132,7 +1132,7 @@ class MyCutenessCommand(AbsCommand):
         timber: Timber,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if cutenessUtils is None:
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
@@ -1190,7 +1190,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1849,7 +1849,7 @@ class TriviaScoreCommand(AbsCommand):
         triviaUtils: TriviaUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
