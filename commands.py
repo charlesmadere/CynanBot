@@ -762,7 +762,7 @@ class CutenessHistoryCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
-        leaderboardDelimiter: str = ' ✨ ',
+        leaderboardDelimiter: str = ' · ',
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if cutenessRepository is None:
