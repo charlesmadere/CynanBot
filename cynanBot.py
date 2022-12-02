@@ -43,6 +43,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
+    ClearedSuperTriviaQueueTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
     CorrectAnswerTriviaEvent
 from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
@@ -612,7 +614,9 @@ class CynanBot(commands.Bot, TriviaEventListener):
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         self.__timber.log('CynanBot', f'Received new trivia event: \"{event.getTriviaEventType()}\"')
 
-        if event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
+        if event.getTriviaEventType() is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
+            await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
+        elif event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
@@ -634,6 +638,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
         elif event.getTriviaEventType() is TriviaEventType.TOO_LATE_TO_ANSWER:
             await self.__handleTooLateToAnswerTriviaEvent(event)
+
+    async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        await twitchUtils.safeSend(twitchChannel, f'ⓘ Cleared super trivia game queue ({event.getNumberOfGamesRemovedStr()} game(s) removed).')
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
