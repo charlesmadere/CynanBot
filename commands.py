@@ -33,6 +33,8 @@ from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
+from CynanBotCommon.trivia.clearSuperTriviaQueueTriviaAction import \
+    ClearSuperTriviaQueueTriviaAction
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
@@ -398,6 +400,54 @@ class ClearCachesCommand(AbsCommand):
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class ClearSuperTriviaQueueCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameMachine: TriviaGameMachine,
+        triviaUtils: TriviaUtils,
+        usersRepository: UsersRepository
+    ):
+        if generalSettingsRepository is None:
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif timber is None:
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaGameMachine is None:
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif triviaUtils is None:
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif usersRepository is None:
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not generalSettings.isSuperTriviaGameEnabled():
+            return
+        elif not user.isSuperTriviaGameEnabled():
+            return
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = ctx.author.name
+        ):
+            return
+
+        await self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
+            twitchChannel = user.getHandle()
+        ))
+
+        self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class CommandsCommand(AbsCommand):
 
     def __init__(
@@ -499,6 +549,7 @@ class CommandsCommand(AbsCommand):
 
         if isPrivilegedTriviaUser:
             commands.append('!bantriviaquestion')
+            commands.append('!clearsupertriviaqueue')
             commands.append('!supertrivia')
 
         if user.isCutenessEnabled():

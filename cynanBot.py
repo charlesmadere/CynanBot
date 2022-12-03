@@ -12,13 +12,14 @@ import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from commands import (AbsCommand, AddTriviaControllerCommand, AnalogueCommand,
                       AnswerCommand, BanTriviaQuestionCommand,
-                      ClearCachesCommand, CommandsCommand,
-                      CutenessChampionsCommand, CutenessCommand,
-                      CutenessHistoryCommand, CynanSourceCommand,
-                      DiscordCommand, GetTriviaControllersCommand,
-                      GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
-                      MyCutenessCommand, MyCutenessHistoryCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand,
+                      ClearCachesCommand, ClearSuperTriviaQueueCommand,
+                      CommandsCommand, CutenessChampionsCommand,
+                      CutenessCommand, CutenessHistoryCommand,
+                      CynanSourceCommand, DiscordCommand,
+                      GetTriviaControllersCommand, GiveCutenessCommand,
+                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
+                      MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand,
                       RemoveTriviaControllerCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
                       TimeCommand, TranslateCommand, TriviaScoreCommand,
@@ -246,6 +247,11 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
             self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, usersRepository)
+
+        if triviaGameMachine is None or triviaUtils is None:
+            self.__clearSuperTriviaQueueCommand: AbsCommand = StubCommand()
+        else:
+            self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, usersRepository)
 
         if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
@@ -780,6 +786,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
         await self.__clearCachesCommand.handleCommand(ctx)
+
+    @commands.command(name = 'clearsupertriviaqueue')
+    async def command_clearsupertriviaqueue(self, ctx: Context):
+        await self.__clearSuperTriviaQueueCommand.handleCommand(ctx)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
