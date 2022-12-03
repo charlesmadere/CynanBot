@@ -441,7 +441,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         ):
             return
 
-        await self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
+        self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
             twitchChannel = user.getHandle()
         ))
 
