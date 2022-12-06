@@ -153,8 +153,7 @@ class PubSubUtils():
 
             userId = await self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
-                twitchAccessToken = twitchAccessToken,
-                twitchClientId = twitchClientId
+                twitchAccessToken = twitchAccessToken
             )
 
             pubSubEntries.append(PubSubEntry(

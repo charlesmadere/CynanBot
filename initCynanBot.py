@@ -131,7 +131,8 @@ authRepository = AuthRepository()
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
     networkClientProvider = networkClientProvider,
-    timber = timber
+    timber = timber,
+    twitchCredentialsProviderInterface = authRepository
 )
 timeZoneRepository = TimeZoneRepository()
 usersRepository = UsersRepository(
@@ -198,7 +199,6 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchCredentialsProviderInterface = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
