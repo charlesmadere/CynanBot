@@ -8,7 +8,6 @@ from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -336,7 +335,6 @@ cynanBot = CynanBot(
     ),
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
-    doubleCutenessHelper = DoubleCutenessHelper(),
     funtoonRepository = funtoonRepository,
     generalSettingsRepository = generalSettingsRepository,
     jishoHelper = JishoHelper(

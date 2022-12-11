@@ -30,7 +30,6 @@ from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -109,7 +108,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
-        doubleCutenessHelper: Optional[DoubleCutenessHelper],
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: Optional[JishoHelper],
@@ -191,7 +189,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, usersRepository)
 
-        if cutenessRepository is None or doubleCutenessHelper is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
@@ -307,10 +305,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption(timber)
 
-        if cutenessRepository is None or doubleCutenessHelper is None:
+        if cutenessRepository is None:
             self.__cutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, doubleCutenessHelper, timber)
+            self.__cutenessPointRedemption: AbsPointRedemption = CutenessRedemption(cutenessRepository, timber)
 
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()

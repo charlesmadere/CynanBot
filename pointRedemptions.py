@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from twitchio.channel import Channel
 
@@ -6,7 +7,6 @@ import CynanBotCommon.utils as utils
 import twitch.twitchUtils as twitchUtils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.cuteness.doubleCutenessHelper import DoubleCutenessHelper
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timber import Timber
@@ -42,18 +42,14 @@ class CutenessRedemption(AbsPointRedemption):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
-        doubleCutenessHelper: DoubleCutenessHelper,
         timber: Timber
     ):
         if cutenessRepository is None:
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif doubleCutenessHelper is None:
-            raise ValueError(f'doubleCutenessHelper argument is malformed: \"{doubleCutenessHelper}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__doubleCutenessHelper: DoubleCutenessHelper = doubleCutenessHelper
         self.__timber: Timber = timber
 
     async def handlePointRedemption(
@@ -79,7 +75,7 @@ class CutenessRedemption(AbsPointRedemption):
         if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
             return False
 
-        cutenessBoosterPack: CutenessBoosterPack = None
+        cutenessBoosterPack: Optional[CutenessBoosterPack] = None
 
         for cbp in twitchUser.getCutenessBoosterPacks():
             if rewardId == cbp.getRewardId():
@@ -90,8 +86,6 @@ class CutenessRedemption(AbsPointRedemption):
             return False
 
         incrementAmount = cutenessBoosterPack.getAmount()
-        if self.__doubleCutenessHelper.isWithinDoubleCuteness(twitchUser.getHandle()):
-            incrementAmount = cutenessBoosterPack.getAmount() * 2
 
         try:
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
@@ -152,6 +146,7 @@ class PkmnBattleRedemption(AbsPointRedemption):
             return False
 
         splits = utils.getCleanedSplits(redemptionMessage)
+
         if not utils.hasItems(splits):
             await twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{userNameThatRedeemed}, you must specify the exact user name of the person you want to fight')
             return False
