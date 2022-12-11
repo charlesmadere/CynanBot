@@ -332,6 +332,7 @@ class ClearCachesCommand(AbsCommand):
         authRepository: AuthRepository,
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
+        locationsRepository: Optional[LocationsRepository],
         timber: Timber,
         triviaContentScanner: Optional[TriviaContentScanner],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
@@ -353,6 +354,7 @@ class ClearCachesCommand(AbsCommand):
         self.__authRepository: AuthRepository = authRepository
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__timber: Timber = timber
         self.__triviaContentScanner: Optional[TriviaContentScanner] = triviaContentScanner
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
@@ -378,6 +380,9 @@ class ClearCachesCommand(AbsCommand):
             await self.__funtoonRepository.clearCaches()
 
         await self.__generalSettingsRepository.clearCaches()
+
+        if self.__locationsRepository is not None:
+            await self.__locationsRepository.clearCaches()
 
         if self.__triviaContentScanner is not None:
             await self.__triviaContentScanner.clearCaches()
