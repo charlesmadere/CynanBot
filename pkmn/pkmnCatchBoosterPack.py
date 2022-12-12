@@ -1,3 +1,5 @@
+from typing import Optional
+
 try:
     from pkmn.pkmnCatchType import PkmnCatchType
 except:
@@ -13,7 +15,7 @@ class PkmnCatchBoosterPack():
 
     def __init__(
         self,
-        pkmnCatchType: PkmnCatchType,
+        pkmnCatchType: Optional[PkmnCatchType],
         rewardId: str
     ):
         if not utils.isValidStr(rewardId):
@@ -22,7 +24,7 @@ class PkmnCatchBoosterPack():
         self.__pkmnCatchType: PkmnCatchType = pkmnCatchType
         self.__rewardId: str = rewardId
 
-    def getCatchType(self) -> PkmnCatchType:
+    def getCatchType(self) -> Optional[PkmnCatchType]:
         return self.__pkmnCatchType
 
     def getRewardId(self) -> str:
