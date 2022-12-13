@@ -85,6 +85,7 @@ from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
+from twitch.twitchUtils import TwitchUtils
 from users.usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
@@ -380,6 +381,10 @@ cynanBot = CynanBot(
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
     twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = TwitchUtils(
+        eventLoop = eventLoop,
+        timber = timber
+    ),
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,

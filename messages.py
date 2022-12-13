@@ -4,12 +4,12 @@ from datetime import datetime, timedelta, timezone
 from twitchio import Message
 
 import CynanBotCommon.utils as utils
-import twitch.twitchUtils as twitchUtils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
+from twitch.twitchUtils import TwitchUtils
 from users.user import User
 
 
@@ -30,6 +30,7 @@ class CatJamMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         catJamMessage: str = 'catJAM',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -37,6 +38,8 @@ class CatJamMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(catJamMessage):
             raise ValueError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
         elif cooldown is None:
@@ -44,6 +47,7 @@ class CatJamMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__catJamMessage: str = catJamMessage
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -67,7 +71,7 @@ class CatJamMessage(AbsMessage):
         splits = utils.getCleanedSplits(message.content)
 
         if self.__catJamMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__catJamMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__catJamMessage)
             self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -161,6 +165,7 @@ class CynanMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         cynanUserName: str = 'CynanMachae',
         cooldown: timedelta = timedelta(days = 3)
     ):
@@ -168,6 +173,8 @@ class CynanMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(cynanUserName):
             raise ValueError(f'cynanUserName argument is malformed: \"{cynanUserName}\"')
         elif cooldown is None:
@@ -175,6 +182,7 @@ class CynanMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__cynanUserName: str = cynanUserName
         self.__cooldown: timedelta = cooldown
         self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
@@ -202,7 +210,7 @@ class CynanMessage(AbsMessage):
 
         if now > self.__lastCynanMessageTime + self.__cooldown:
             self.__lastCynanMessageTime = now
-            await twitchUtils.safeSend(message.channel, f'/me waves to @{self.__cynanUserName} 👋')
+            await self.__twitchUtils.safeSend(message.channel, f'/me waves to @{self.__cynanUserName} 👋')
             self.__timber.log('CynanMessage', f'Handled Cynan message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -215,6 +223,7 @@ class DeerForceMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         deerForceMessage: str = 'D e e R F o r C e',
         cooldown: timedelta = timedelta(minutes = 30)
     ):
@@ -222,6 +231,8 @@ class DeerForceMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(deerForceMessage):
             raise ValueError(f'deerForceMessage argument is malformed: \"{deerForceMessage}\"')
         elif cooldown is None:
@@ -229,6 +240,7 @@ class DeerForceMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__deerForceMessage: str = deerForceMessage
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -252,7 +264,7 @@ class DeerForceMessage(AbsMessage):
         text = utils.cleanStr(message.content)
 
         if text.lower() == self.__deerForceMessage.lower() and self.__lastDeerForceMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__deerForceMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__deerForceMessage)
             self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -265,6 +277,7 @@ class EyesMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         eyesMessage: str = '👀',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -272,6 +285,8 @@ class EyesMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(eyesMessage):
             raise ValueError(f'eyesMessage argument is malformed: \"{eyesMessage}\"')
         elif cooldown is None:
@@ -279,6 +294,7 @@ class EyesMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__eyesMessage: str = eyesMessage
         self.__lastEyesMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -302,7 +318,7 @@ class EyesMessage(AbsMessage):
         splits = utils.getCleanedSplits(message.content)
 
         if self.__eyesMessage in splits and self.__lastEyesMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__eyesMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__eyesMessage)
             self.__timber.log('EyesMessage', f'Handled eyes message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -315,6 +331,7 @@ class ImytSlurpMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         imytSlurpMessage: str = 'imytSlurp',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -322,6 +339,8 @@ class ImytSlurpMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(imytSlurpMessage):
             raise ValueError(f'imytSlurpMessage argument is malformed: \"{imytSlurpMessage}\"')
         elif cooldown is None:
@@ -329,6 +348,7 @@ class ImytSlurpMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__imytSlurpMessage: str = imytSlurpMessage
         self.__lastImytSlurpMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -352,7 +372,7 @@ class ImytSlurpMessage(AbsMessage):
         splits = utils.getCleanedSplits(message.content)
 
         if self.__imytSlurpMessage in splits and self.__lastImytSlurpMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__imytSlurpMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__imytSlurpMessage)
             self.__timber.log('ImytSlurpMessage', f'Handled imytSlurp message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -365,6 +385,7 @@ class JamCatMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         jamCatMessage: str = 'jamCAT',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -372,6 +393,8 @@ class JamCatMessage(AbsMessage):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(jamCatMessage):
             raise ValueError(f'jamCatMessage argument is malformed: \"{jamCatMessage}\"')
         elif cooldown is None:
@@ -379,6 +402,7 @@ class JamCatMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__jamCatMessage: str = jamCatMessage
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -402,7 +426,7 @@ class JamCatMessage(AbsMessage):
         splits = utils.getCleanedSplits(message.content)
 
         if self.__jamCatMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__jamCatMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__jamCatMessage)
             self.__timber.log('JamCatMessage', f'Handled jamCAT message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 
@@ -415,6 +439,7 @@ class RatJamMessage(AbsMessage):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         ratJamMessage: str = 'ratJAM',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -429,6 +454,7 @@ class RatJamMessage(AbsMessage):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__ratJamMessage: str = ratJamMessage
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -452,7 +478,7 @@ class RatJamMessage(AbsMessage):
         splits = utils.getCleanedSplits(message.content)
 
         if self.__ratJamMessage in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await twitchUtils.safeSend(message.channel, self.__ratJamMessage)
+            await self.__twitchUtils.safeSend(message.channel, self.__ratJamMessage)
             self.__timber.log('RatJamMessage', f'Handled ratJAM message for {message.author.name} in {twitchUser.getHandle()}')
             return True
 

@@ -59,6 +59,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
+from twitch.twitchUtils import TwitchUtils
 from users.user import User
 from users.usersRepository import UsersRepository
 
@@ -77,6 +78,7 @@ class AddTriviaControllerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -85,12 +87,15 @@ class AddTriviaControllerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -110,13 +115,13 @@ class AddTriviaControllerCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
             return
 
         result = await self.__triviaGameControllersRepository.addController(
@@ -125,13 +130,13 @@ class AddTriviaControllerCommand(AbsCommand):
         )
 
         if result is AddTriviaGameControllerResult.ADDED:
-            await twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller.')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller.')
         elif result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            await twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one.')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one.')
         elif result is AddTriviaGameControllerResult.ERROR:
-            await twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
         else:
-            await twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!')
             self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -145,6 +150,7 @@ class AnalogueCommand(AbsCommand):
         analogueStoreRepository: AnalogueStoreRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
@@ -152,6 +158,8 @@ class AnalogueCommand(AbsCommand):
             raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -160,6 +168,7 @@ class AnalogueCommand(AbsCommand):
         self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -179,10 +188,10 @@ class AnalogueCommand(AbsCommand):
 
         try:
             result = await self.__analogueStoreRepository.fetchStoreStock()
-            await twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
+            await self.__twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
         except (RuntimeError, ValueError) as e:
             self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}', e)
-            await twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue store stock')
+            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue store stock')
 
         self.__timber.log('AnalogueCommand', f'Handled !analogue command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -245,6 +254,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -259,6 +269,8 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif triviaUtils is None:
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -268,6 +280,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -294,7 +307,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         emote: Optional[str] = splits[1]
@@ -302,7 +315,7 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -312,7 +325,7 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         if reference is None:
             self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
         await self.__triviaBanHelper.ban(
@@ -320,7 +333,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             triviaSource = reference.getTriviaSource()
         )
 
-        await twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
 
 
@@ -337,6 +350,7 @@ class ClearCachesCommand(AbsCommand):
         triviaContentScanner: Optional[TriviaContentScanner],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
@@ -347,6 +361,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -359,6 +375,7 @@ class ClearCachesCommand(AbsCommand):
         self.__triviaContentScanner: Optional[TriviaContentScanner] = triviaContentScanner
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
         self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
@@ -401,7 +418,7 @@ class ClearCachesCommand(AbsCommand):
         if self.__wordOfTheDayRepository is not None:
             await self.__wordOfTheDayRepository.clearCaches()
 
-        await twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
+        await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -460,6 +477,7 @@ class CommandsCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaUtils: Optional[TriviaUtils],
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
@@ -468,6 +486,8 @@ class CommandsCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif delimiter is None:
@@ -478,6 +498,7 @@ class CommandsCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -623,7 +644,7 @@ class CommandsCommand(AbsCommand):
             return
 
         commandsString = self.__delimiter.join(commands)
-        await twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
         self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -634,6 +655,7 @@ class CutenessCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
@@ -645,6 +667,8 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -657,6 +681,7 @@ class CutenessCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
@@ -733,7 +758,7 @@ class CutenessCommand(AbsCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
             result = await self.__cutenessRepository.fetchCuteness(
@@ -743,7 +768,7 @@ class CutenessCommand(AbsCommand):
                 userName = userName
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessResultToStr(result))
+            await self.__twitchUtils.safeSend(ctx, self.__cutenessResultToStr(result))
         else:
             userId = str(ctx.author.id)
 
@@ -753,7 +778,7 @@ class CutenessCommand(AbsCommand):
                 specificLookupUserName = userName
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessLeaderboardResultToStr(result))
+            await self.__twitchUtils.safeSend(ctx, self.__cutenessLeaderboardResultToStr(result))
 
         self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -765,6 +790,7 @@ class CutenessChampionsCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
@@ -776,6 +802,8 @@ class CutenessChampionsCommand(AbsCommand):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -788,6 +816,7 @@ class CutenessChampionsCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -804,7 +833,7 @@ class CutenessChampionsCommand(AbsCommand):
             twitchChannel = user.getHandle()
         )
 
-        await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
+        await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
         self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -815,6 +844,7 @@ class CutenessHistoryCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
@@ -827,6 +857,8 @@ class CutenessHistoryCommand(AbsCommand):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -841,6 +873,7 @@ class CutenessHistoryCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__entryDelimiter: str = entryDelimiter
@@ -875,7 +908,7 @@ class CutenessHistoryCommand(AbsCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
             result = await self.__cutenessRepository.fetchCutenessHistory(
@@ -884,13 +917,13 @@ class CutenessHistoryCommand(AbsCommand):
                 userName = userName
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__entryDelimiter))
+            await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__entryDelimiter))
         else:
             result = await self.__cutenessRepository.fetchCutenessLeaderboardHistory(
                 twitchChannel = user.getHandle()
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessLeaderboardHistory(
+            await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessLeaderboardHistory(
                 result = result,
                 entryDelimiter = self.__entryDelimiter,
                 leaderboardDelimiter = self.__leaderboardDelimiter
@@ -904,17 +937,21 @@ class CynanSourceCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -926,7 +963,7 @@ class CynanSourceCommand(AbsCommand):
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(ctx.channel.name):
             return
 
-        await twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
+        await self.__twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -935,17 +972,21 @@ class DiscordCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -958,7 +999,7 @@ class DiscordCommand(AbsCommand):
             return
 
         discord = user.getDiscordUrl()
-        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -970,6 +1011,7 @@ class GetTriviaControllersCommand(AbsCommand):
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -978,6 +1020,8 @@ class GetTriviaControllersCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -985,6 +1029,7 @@ class GetTriviaControllersCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -1002,7 +1047,7 @@ class GetTriviaControllersCommand(AbsCommand):
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
-        await twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameControllers(controllers))
+        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameControllers(controllers))
         self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1012,6 +1057,7 @@ class GiveCutenessCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
     ):
@@ -1019,6 +1065,8 @@ class GiveCutenessCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -1026,6 +1074,7 @@ class GiveCutenessCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -1041,26 +1090,26 @@ class GiveCutenessCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 3:
             self.__timber.log('GiveCutenessCommand', f'Less than 3 arguments given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-            await twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName: str = splits[1]
         if not utils.isValidStr(userName):
             self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{userName}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr: str = splits[2]
         if not utils.isValidStr(incrementAmountStr):
             self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, TypeError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName = utils.removePreceedingAt(userName)
@@ -1069,7 +1118,7 @@ class GiveCutenessCommand(AbsCommand):
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
             self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
         try:
@@ -1080,10 +1129,10 @@ class GiveCutenessCommand(AbsCommand):
                 userName = userName
             )
 
-            await twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
+            await self.__twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except (OverflowError, ValueError) as e:
             self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
         self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1095,6 +1144,7 @@ class JishoCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 8)
     ):
@@ -1104,6 +1154,8 @@ class JishoCommand(AbsCommand):
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1112,6 +1164,7 @@ class JishoCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__jishoHelper: JishoHelper = jishoHelper
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1128,7 +1181,7 @@ class JishoCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
+            await self.__twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
 
         query: Optional[str] = splits[1]
@@ -1138,10 +1191,10 @@ class JishoCommand(AbsCommand):
             result = await self.__jishoHelper.search(query)
 
             for string in result.toStrList():
-                await twitchUtils.safeSend(ctx, string)
+                await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
             self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
         self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1151,14 +1204,18 @@ class LoremIpsumCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -1175,7 +1232,7 @@ class LoremIpsumCommand(AbsCommand):
         else:
             loremIpsumText = 'Bacon ipsum dolor amet t-bone sirloin tenderloin pork belly, shoulder landjaeger boudin. Leberkas short loin jowl short ribs, strip steak beef ribs flank pork belly ham corned beef. Spare ribs turkey sausage, tenderloin boudin brisket chislic shankle. Beef ribs ball tip ham hock beef t-bone porchetta bacon bresaola chislic swine. Pork meatball pancetta, jerky chuck burgdoggen tongue jowl fatback cupim doner rump flank landjaeger. Doner salami venison buffalo rump pork chop landjaeger jowl leberkas tail bresaola brisket spare ribs tri-tip sausage.'
 
-        await twitchUtils.safeSend(ctx, loremIpsumText)
+        await self.__twitchUtils.safeSend(ctx, loremIpsumText)
         self.__timber.log('LoremIpsumCommand', f'Handled !lorem command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1186,6 +1243,7 @@ class MyCutenessCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 15)
@@ -1196,6 +1254,8 @@ class MyCutenessCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif delimiter is None:
@@ -1206,6 +1266,7 @@ class MyCutenessCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1228,10 +1289,10 @@ class MyCutenessCommand(AbsCommand):
                 userName = ctx.author.name
             )
 
-            await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result, self.__delimiter))
+            await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result, self.__delimiter))
         except ValueError:
             self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
 
         self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {ctx.author.name}:{userId} in {user.getHandle()}')
 
@@ -1243,6 +1304,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
@@ -1254,6 +1316,8 @@ class MyCutenessHistoryCommand(AbsCommand):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -1266,6 +1330,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
@@ -1299,7 +1364,7 @@ class MyCutenessHistoryCommand(AbsCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('MyCutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
         else:
             userId = str(ctx.author.id)
@@ -1310,7 +1375,7 @@ class MyCutenessHistoryCommand(AbsCommand):
             userName = userName
         )
 
-        await twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__delimiter))
+        await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__delimiter))
         self.__timber.log('MyCutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1319,17 +1384,21 @@ class PbsCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1342,7 +1411,7 @@ class PbsCommand(AbsCommand):
             return
 
         speedrunProfile = user.getSpeedrunProfile()
-        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
         self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1353,6 +1422,7 @@ class PkMonCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
@@ -1362,6 +1432,8 @@ class PkMonCommand(AbsCommand):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1370,6 +1442,7 @@ class PkMonCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1386,7 +1459,7 @@ class PkMonCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
+            await self.__twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
             return
 
         name: str = splits[1]
@@ -1395,10 +1468,10 @@ class PkMonCommand(AbsCommand):
             mon = await self.__pokepediaRepository.searchPokemon(name)
 
             for string in mon.toStrList():
-                await twitchUtils.safeSend(ctx, string)
+                await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
             self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
         self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1410,6 +1483,7 @@ class PkMoveCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
@@ -1419,6 +1493,8 @@ class PkMoveCommand(AbsCommand):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1427,6 +1503,7 @@ class PkMoveCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1443,7 +1520,7 @@ class PkMoveCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await twitchUtils.safeSend(ctx, '⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
+            await self.__twitchUtils.safeSend(ctx, '⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
             return
 
         name = ' '.join(splits[1:])
@@ -1452,10 +1529,10 @@ class PkMoveCommand(AbsCommand):
             move = await self.__pokepediaRepository.searchMoves(name)
 
             for string in move.toStrList():
-                await twitchUtils.safeSend(ctx, string)
+                await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
             self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
         self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1465,17 +1542,21 @@ class RaceCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1490,7 +1571,7 @@ class RaceCommand(AbsCommand):
         elif not self.__lastRaceMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        await twitchUtils.safeSend(ctx, '!race')
+        await self.__twitchUtils.safeSend(ctx, '!race')
         self.__timber.log('RaceCommand', f'Handled !race command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1501,6 +1582,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -1509,12 +1591,15 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameControllersRepository is None:
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -1534,13 +1619,13 @@ class RemoveTriviaControllerCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
             return
 
         result = await self.__triviaGameControllersRepository.removeController(
@@ -1549,11 +1634,11 @@ class RemoveTriviaControllerCommand(AbsCommand):
         )
 
         if result is RemoveTriviaGameControllerResult.REMOVED:
-            await twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a trivia game controller.')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a trivia game controller.')
         elif result is RemoveTriviaGameControllerResult.ERROR:
-            await twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a trivia game controller!')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a trivia game controller!')
         else:
-            await twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a trivia game controller!')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a trivia game controller!')
             self.__timber.log('RemoveTriviaGameControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1625,6 +1710,7 @@ class SuperTriviaCommand(AbsCommand):
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
         triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -1635,6 +1721,8 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif triviaUtils is None:
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -1642,6 +1730,7 @@ class SuperTriviaCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -1674,12 +1763,12 @@ class SuperTriviaCommand(AbsCommand):
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
                 self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {userName}:{ctx.author.id} in {user.getHandle()}): {e}')
-                await twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
             if numberOfGames < 1 or numberOfGames > 50:
                 self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {userName}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
-                await twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
 
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
@@ -1724,6 +1813,7 @@ class SwQuoteCommand(AbsCommand):
         self,
         starWarsQuotesRepository: StarWarsQuotesRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
@@ -1731,6 +1821,8 @@ class SwQuoteCommand(AbsCommand):
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1738,6 +1830,7 @@ class SwQuoteCommand(AbsCommand):
 
         self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1754,7 +1847,7 @@ class SwQuoteCommand(AbsCommand):
 
         if len(splits) < 2:
             swQuote = await self.__starWarsQuotesRepository.fetchRandomQuote()
-            await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
+            await self.__twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
             return
 
         query = ' '.join(splits[1:])
@@ -1763,12 +1856,12 @@ class SwQuoteCommand(AbsCommand):
             swQuote = await self.__starWarsQuotesRepository.searchQuote(query)
 
             if utils.isValidStr(swQuote):
-                await twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
+                await self.__twitchUtils.safeSend(ctx, f'{swQuote} {randomSpaceEmoji}')
             else:
-                await twitchUtils.safeSend(ctx, f'⚠ No Star Wars quote found for the given query: \"{query}\"')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ No Star Wars quote found for the given query: \"{query}\"')
         except ValueError:
             self.__timber.log('SwQuoteCommand', f'Error retrieving Star Wars quote with query: \"{query}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Star Wars quote with query: \"{query}\"')
 
 
 class TimeCommand(AbsCommand):
@@ -1776,17 +1869,21 @@ class TimeCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1814,7 +1911,7 @@ class TimeCommand(AbsCommand):
                 timeZoneName = timeZone.tzname(datetime.utcnow())
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
-        await twitchUtils.safeSend(ctx, text)
+        await self.__twitchUtils.safeSend(ctx, text)
         self.__timber.log('TimeCommand', f'Handled !time command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1826,6 +1923,7 @@ class TranslateCommand(AbsCommand):
         languagesRepository: LanguagesRepository,
         timber: Timber,
         translationHelper: TranslationHelper,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 15)
     ):
@@ -1837,6 +1935,8 @@ class TranslateCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif translationHelper is None:
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
@@ -1846,6 +1946,7 @@ class TranslateCommand(AbsCommand):
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__timber: Timber = timber
         self.__translationHelper: TranslationHelper = translationHelper
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -1874,7 +1975,7 @@ class TranslateCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
-            await twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
         targetLanguageEntry = self.__determineOptionalLanguageEntry(splits)
@@ -1887,10 +1988,10 @@ class TranslateCommand(AbsCommand):
 
         try:
             response = await self.__translationHelper.translate(text, targetLanguageEntry)
-            await twitchUtils.safeSend(ctx, response.toStr())
+            await self.__twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')
-            await twitchUtils.safeSend(ctx, '⚠ Error translating')
+            await self.__twitchUtils.safeSend(ctx, '⚠ Error translating')
 
         self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -1903,6 +2004,7 @@ class TriviaScoreCommand(AbsCommand):
         timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 15)
@@ -1915,6 +2017,8 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif triviaUtils is None:
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif userIdsRepository is None:
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif usersRepository is None:
@@ -1926,6 +2030,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1961,7 +2066,7 @@ class TriviaScoreCommand(AbsCommand):
 
             if not utils.isValidStr(userId):
                 self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database')
-                await twitchUtils.safeSend(ctx, f'⚠ Unable to find user ID for \"{userName}\" in the database')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user ID for \"{userName}\" in the database')
                 return
         else:
             userId = str(ctx.author.id)
@@ -1971,7 +2076,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(userName, triviaResult))
+        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(userName, triviaResult))
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -1980,17 +2085,21 @@ class TwitterCommand(AbsCommand):
     def __init__(
         self,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
         if timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif cooldown is None:
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -2002,7 +2111,7 @@ class TwitterCommand(AbsCommand):
         elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        await twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
         self.__timber.log('TwitterCommand', f'Handled !twitter command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
@@ -2016,6 +2125,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if generalSettingsRepository is None:
@@ -2030,6 +2140,8 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif triviaUtils is None:
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -2039,6 +2151,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
@@ -2065,7 +2178,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         emote: Optional[str] = splits[1]
@@ -2073,7 +2186,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as an invalid emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as an invalid emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -2083,7 +2196,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
 
         if reference is None:
             self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
-            await twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
         await self.__triviaBanHelper.unban(
@@ -2091,7 +2204,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             triviaSource = reference.getTriviaSource()
         )
 
-        await twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was unbanned)')
 
 
@@ -2102,6 +2215,7 @@ class WeatherCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
         cooldown: timedelta = timedelta(minutes = 5)
@@ -2112,6 +2226,8 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is None:
@@ -2122,6 +2238,7 @@ class WeatherCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: LocationsRepository = locationsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: WeatherRepository = weatherRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2138,17 +2255,17 @@ class WeatherCommand(AbsCommand):
             return
 
         if not user.hasLocationId():
-            await twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
         location = await self.__locationsRepository.getLocation(user.getLocationId())
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
-            await twitchUtils.safeSend(ctx, weatherReport.toStr())
+            await self.__twitchUtils.safeSend(ctx, weatherReport.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
-            await twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
+            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
         self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
@@ -2160,6 +2277,7 @@ class WordCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
         timber: Timber,
+        twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository,
         cooldown: timedelta = timedelta(seconds = 10)
@@ -2170,6 +2288,8 @@ class WordCommand(AbsCommand):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif usersRepository is None:
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif wordOfTheDayRepository is None:
@@ -2180,6 +2300,7 @@ class WordCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2200,7 +2321,7 @@ class WordCommand(AbsCommand):
         if len(splits) < 2:
             exampleEntry = self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
-            await twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
         language: str = splits[1]
@@ -2213,14 +2334,14 @@ class WordCommand(AbsCommand):
             )
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
             return
 
         try:
             wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-            await twitchUtils.safeSend(ctx, wotd.toStr())
+            await self.__twitchUtils.safeSend(ctx, wotd.toStr())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
-            await twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
 
         self.__timber.log('WordCommand', f'Handled !word command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')

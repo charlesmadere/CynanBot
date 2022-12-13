@@ -6,11 +6,11 @@ from typing import Any, Dict
 from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
-import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from generalSettingsRepository import GeneralSettingsRepository
+from twitch.twitchUtils import TwitchUtils
 from users.user import User
 
 
@@ -82,20 +82,20 @@ class RaidThankEvent(AbsEvent):
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber
+        timber: Timber,
+        twitchUtils: TwitchUtils
     ):
-        if eventLoop is None:
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif generalSettingsRepository is None:
+        if generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
 
     async def handleEvent(
         self,
@@ -137,13 +137,12 @@ class RaidThankEvent(AbsEvent):
         else:
             message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
-        delaySeconds = generalSettings.getRaidLinkMessagingDelay()
-
-        self.__eventLoop.create_task(twitchUtils.waitThenSend(
+        await self.__twitchUtils.waitThenSend(
             messageable = twitchChannel,
-            delaySeconds = delaySeconds,
-            message = message
-        ))
+            delaySeconds = generalSettings.getRaidLinkMessagingDelay(),
+            message = message,
+            twitchChannel = twitchUser.getHandle()
+        )
 
         self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
         return True
@@ -153,24 +152,24 @@ class SubGiftThankingEvent(AbsEvent):
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
         authRepository: AuthRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber
+        timber: Timber,
+        twitchUtils: TwitchUtils
     ):
-        if eventLoop is None:
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif authRepository is None:
+        if authRepository is None:
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif generalSettingsRepository is None:
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif timber is None:
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif twitchUtils is None:
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
 
     async def handleEvent(
         self,
@@ -208,11 +207,12 @@ class SubGiftThankingEvent(AbsEvent):
         elif giftedToName.lower() == giftedByName.lower():
             return False
 
-        self.__eventLoop.create_task(twitchUtils.waitThenSend(
+        await self.__twitchUtils.waitThenSend(
             messageable = twitchChannel,
-            delaySeconds = 5,
-            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
-        ))
+            delaySeconds = 8,
+            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨',
+            twitchChannel = twitchUser.getHandle()
+        )
 
         self.__timber.log('SubGiftThankingEvent', f'{authSnapshot.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
         return True
