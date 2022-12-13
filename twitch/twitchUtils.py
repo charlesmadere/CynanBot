@@ -123,7 +123,7 @@ class TwitchUtils():
                 else:
                     await self.__submitTwitchMessage(twitchMessage)
 
-            asyncio.sleep(self.__sleepTimeSeconds)
+            await asyncio.sleep(self.__sleepTimeSeconds)
 
     async def __submitTwitchMessage(self, twitchMessage: TwitchMessage):
         if not isinstance(twitchMessage, TwitchMessage):
