@@ -41,7 +41,7 @@ class TwitchUtils():
         self.__messageQueue: SimpleQueue[TwitchMessage] = SimpleQueue()
         eventLoop.create_task(self.__startTwitchMessageLoop())
 
-    def getMaxMessageSize() -> int:
+    def getMaxMessageSize(self) -> int:
         return 500
 
     async def safeSend(
