@@ -145,7 +145,7 @@ class TwitchUtils():
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
+        elif delaySeconds < 1 or delaySeconds >= utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
