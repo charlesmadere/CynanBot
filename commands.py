@@ -205,13 +205,13 @@ class AnswerCommand(AbsCommand):
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameMachine is None:
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1663,13 +1663,13 @@ class SuperAnswerCommand(AbsCommand):
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameMachine is None:
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -2009,21 +2009,21 @@ class TriviaScoreCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaScoreRepository is None:
+        elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif triviaUtils is None:
+        elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
