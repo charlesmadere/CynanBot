@@ -33,6 +33,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
+from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
@@ -172,10 +173,14 @@ twitchTokensRepository = TwitchTokensRepository(
     timber = timber
 )
 
+
 ###################################
 ## Trivia initialization section ##
 ###################################
 
+bannedWordsRepository = BannedWordsRepository(
+    timber = timber
+)
 triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
@@ -190,6 +195,7 @@ triviaBanHelper = TriviaBanHelper(
     funtoonRepository = funtoonRepository
 )
 triviaContentScanner = TriviaContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -331,6 +337,7 @@ cynanBot = CynanBot(
         timber = timber
     ),
     authRepository = authRepository,
+    bannedWordsRepository = bannedWordsRepository,
     chatLogger = ChatLogger(
         eventLoop = eventLoop,
     ),
@@ -354,7 +361,6 @@ cynanBot = CynanBot(
     timber = timber,
     translationHelper = translationHelper,
     triviaBanHelper = triviaBanHelper,
-    triviaContentScanner = triviaContentScanner,
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameMachine = TriviaGameMachine(

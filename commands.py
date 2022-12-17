@@ -28,6 +28,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
+from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
@@ -41,7 +42,6 @@ from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
-from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
@@ -342,11 +342,11 @@ class ClearCachesCommand(AbsCommand):
         self,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
+        bannedWordsRepository: Optional[BannedWordsRepository],
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: Optional[LocationsRepository],
         timber: Timber,
-        triviaContentScanner: Optional[TriviaContentScanner],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
         twitchUtils: TwitchUtils,
@@ -367,11 +367,11 @@ class ClearCachesCommand(AbsCommand):
 
         self.__analogueStoreRepository: Optional[AnalogueStoreRepository] = analogueStoreRepository
         self.__authRepository: AuthRepository = authRepository
+        self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__timber: Timber = timber
-        self.__triviaContentScanner: Optional[TriviaContentScanner] = triviaContentScanner
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -392,6 +392,9 @@ class ClearCachesCommand(AbsCommand):
 
         await self.__authRepository.clearCaches()
 
+        if self.__bannedWordsRepository is not None:
+            await self.__bannedWordsRepository.clearCaches()
+
         if self.__funtoonRepository is not None:
             await self.__funtoonRepository.clearCaches()
 
@@ -399,9 +402,6 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__locationsRepository is not None:
             await self.__locationsRepository.clearCaches()
-
-        if self.__triviaContentScanner is not None:
-            await self.__triviaContentScanner.clearCaches()
 
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()

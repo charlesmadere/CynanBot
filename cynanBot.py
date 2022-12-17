@@ -42,6 +42,7 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
@@ -65,7 +66,6 @@ from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.tooLateToAnswerCheckAnswerTriviaEvent import \
     TooLateToAnswerCheckAnswerTriviaEvent
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
-from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
@@ -105,6 +105,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         eventLoop: AbstractEventLoop,
         analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
+        bannedWordsRepository: Optional[BannedWordsRepository],
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
@@ -118,7 +119,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelper],
-        triviaContentScanner: Optional[TriviaContentScanner],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachine],
@@ -202,7 +202,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, twitchUtils, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaContentScanner, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
