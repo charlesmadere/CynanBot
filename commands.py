@@ -5,7 +5,6 @@ from typing import List, Optional
 from twitchio.ext.commands import Context
 
 import CynanBotCommon.utils as utils
-import twitch.twitchUtils as twitchUtils
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
