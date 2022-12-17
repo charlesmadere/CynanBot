@@ -14,9 +14,9 @@ class TwitchMessage():
         message: str,
         twitchChannel: str
     ):
-        if delayUntilTime is None:
+        if not isinstance(delayUntilTime, datetime):
             raise ValueError(f'delayUntilTime argument is malformed: \"{delayUntilTime}\"')
-        elif messageable is None:
+        elif not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')

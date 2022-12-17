@@ -19,11 +19,12 @@ class TwitchUtils():
         eventLoop: AbstractEventLoop,
         timber: Timber,
         sleepTimeSeconds: float = 0.5,
-        queueTimeoutSeconds: int = 3
+        queueTimeoutSeconds: int = 3,
+        timeZone: timezone = timezone.utc
     ):
-        if eventLoop is None:
+        if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
@@ -33,10 +34,13 @@ class TwitchUtils():
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: Timber = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__timeZone: timezone = timeZone
 
         self.__messageQueue: SimpleQueue[TwitchMessage] = SimpleQueue()
         eventLoop.create_task(self.__startTwitchMessageLoop())
@@ -51,7 +55,7 @@ class TwitchUtils():
         perMessageMaxSize: int = 475,
         maxMessages: int = 3
     ):
-        if messageable is None:
+        if not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidNum(perMessageMaxSize):
             raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
@@ -112,7 +116,7 @@ class TwitchUtils():
             except queue.Empty as e:
                 self.__timber.log('TwitchUtils', f'Encountered queue.Empty when building up Twitch messages list (queue size: {self.__messageQueue.qsize()}) (actions size: {len(twitchMessages)}): {e}', e)
 
-            now = datetime.now(timezone.utc)
+            now = datetime.now(self.__timeZone)
 
             for twitchMessage in twitchMessages:
                 if now >= twitchMessage.getDelayUntilTime():
@@ -152,7 +156,7 @@ class TwitchUtils():
         elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(self.__timeZone)
         delayUntilTime = now + timedelta(seconds = delaySeconds)
 
         await self.__submitTwitchMessage(TwitchMessage(
