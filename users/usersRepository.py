@@ -101,7 +101,9 @@ class UsersRepository(UsersRepositoryInterface):
             if not utils.isValidStr(picOfTheDayFile):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
+        isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
+        shinyTriviaMultiplier: int = None
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
@@ -109,7 +111,9 @@ class UsersRepository(UsersRepositoryInterface):
         waitForSuperTriviaAnswerDelay: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
+            isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
+            shinyTriviaMultiplier = userJson.get('shinyTriviaMultiplier')
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
@@ -152,6 +156,7 @@ class UsersRepository(UsersRepositoryInterface):
             isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
             isRatJamEnabled = isRatJamEnabled,
             isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
+            isShinyTriviaEnabled = isShinyTriviaEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
@@ -160,6 +165,7 @@ class UsersRepository(UsersRepositoryInterface):
             isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
+            shinyTriviaMultiplier = shinyTriviaMultiplier,
             superTriviaGameMultiplier = superTriviaGameMultiplier,
             triviaGamePoints = triviaGamePoints,
             triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,

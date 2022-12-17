@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 import aiofiles
 import aiofiles.ospath
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.users.userInterface import UserInterface
@@ -37,6 +38,7 @@ class User(UserInterface):
         isRaidLinkMessagingEnabled: bool,
         isRatJamEnabled: bool,
         isRewardIdPrintingEnabled: bool,
+        isShinyTriviaEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
@@ -45,6 +47,7 @@ class User(UserInterface):
         isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        shinyTriviaMultiplier: int,
         superTriviaGameMultiplier: int,
         triviaGamePoints: int,
         triviaGameTutorialCutenessThreshold: int,
@@ -112,6 +115,8 @@ class User(UserInterface):
             raise ValueError(f'isRatJamEnabled argument is malformed: \"{isRatJamEnabled}\"')
         elif not utils.isValidBool(isRewardIdPrintingEnabled):
             raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
+        elif not utils.isValidBool(isShinyTriviaEnabled):
+            raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
@@ -128,6 +133,8 @@ class User(UserInterface):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif shinyTriviaMultiplier is not None and not utils.isValidNum(shinyTriviaMultiplier):
+            raise ValueError(f'shinyTriviaMulitplier argument is malformed: \"{shinyTriviaMultiplier}\"')
         elif superTriviaGameMultiplier is not None and not utils.isValidNum(superTriviaGameMultiplier):
             raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
         elif triviaGamePoints is not None and not utils.isValidNum(triviaGamePoints):
@@ -164,6 +171,7 @@ class User(UserInterface):
         self.__isRaidLinkMessagingEnabled: bool = isRaidLinkMessagingEnabled
         self.__isRatJamEnabled: bool = isRatJamEnabled
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
+        self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
@@ -172,6 +180,7 @@ class User(UserInterface):
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
+        self.__shinyTriviaMultiplier: int = shinyTriviaMultiplier
         self.__superTriviaGameMultiplier: int = superTriviaGameMultiplier
         self.__triviaGamePoints: int = triviaGamePoints
         self.__triviaGameTutorialCutenessThreshold: int = triviaGameTutorialCutenessThreshold
@@ -240,6 +249,9 @@ class User(UserInterface):
     def getPkmnShinyRewardId(self) -> str:
         return self.__pkmnShinyRewardId
 
+    def getShinyTriviaMultiplier(self) -> int:
+        return self.__shinyTriviaMultiplier
+
     def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
@@ -284,6 +296,9 @@ class User(UserInterface):
 
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
+
+    def hasShinyTriviaMultiplier(self) -> bool:
+        return utils.isValidNum(self.__shinyTriviaMultiplier)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
@@ -377,6 +392,9 @@ class User(UserInterface):
 
     def isRewardIdPrintingEnabled(self) -> bool:
         return self.__isRewardIdPrintingEnabled
+
+    def isShinyTriviaEnabled(self) -> bool:
+        return self.__isShinyTriviaEnabled
 
     def isStarWarsQuotesEnabled(self) -> bool:
         return self.__isStarWarsQuotesEnabled
