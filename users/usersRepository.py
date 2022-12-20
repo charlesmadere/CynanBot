@@ -23,7 +23,7 @@ class UsersRepository(UsersRepositoryInterface):
         timeZoneRepository: TimeZoneRepository,
         usersFile: str = 'users/usersRepository.json'
     ):
-        if timeZoneRepository is None:
+        if not isinstance(timeZoneRepository, TimeZoneRepository):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')

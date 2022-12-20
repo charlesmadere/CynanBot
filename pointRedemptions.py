@@ -45,10 +45,12 @@ class CutenessRedemption(AbsPointRedemption):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__timber: Timber = timber
@@ -407,9 +409,9 @@ class PotdPointRedemption(AbsPointRedemption):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if timber is None:
+        if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__timber: Timber = timber
@@ -477,11 +479,11 @@ class TriviaGameRedemption(AbsPointRedemption):
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameMachine is None:
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
