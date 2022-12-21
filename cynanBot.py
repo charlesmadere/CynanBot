@@ -621,31 +621,32 @@ class CynanBot(commands.Bot, TriviaEventListener):
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        self.__timber.log('CynanBot', f'Received new trivia event: \"{event.getTriviaEventType()}\"')
+        eventType = event.getTriviaEventType()
+        self.__timber.log('CynanBot', f'Received new trivia event: \"{eventType}\"')
 
-        if event.getTriviaEventType() is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
+        if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.CORRECT_ANSWER:
+        elif eventType is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
+        elif eventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.GAME_OUT_OF_TIME:
+        elif eventType is TriviaEventType.GAME_OUT_OF_TIME:
             await self.__handleGameOutOfTimeTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.INCORRECT_ANSWER:
+        elif eventType is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.INVALID_ANSWER_INPUT:
+        elif eventType is TriviaEventType.INVALID_ANSWER_INPUT:
             await self.__handleInvalidAnswerInputTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.NEW_GAME:
+        elif eventType is TriviaEventType.NEW_GAME:
             await self.__handleNewTriviaGameEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.NEW_SUPER_GAME:
+        elif eventType is TriviaEventType.NEW_SUPER_GAME:
             await self.__handleNewSuperTriviaGameEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
+        elif eventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
+        elif eventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
+        elif eventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
-        elif event.getTriviaEventType() is TriviaEventType.TOO_LATE_TO_ANSWER:
+        elif eventType is TriviaEventType.TOO_LATE_TO_ANSWER:
             await self.__handleTooLateToAnswerTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
