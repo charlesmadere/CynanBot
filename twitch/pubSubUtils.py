@@ -64,7 +64,7 @@ class PubSubUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidInt(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > 64:
+        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel >= 128:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
@@ -214,8 +214,8 @@ class PubSubUtils():
 
             try:
                 await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
-            except ValueError as e:
-                self.__timber.log('PubSubUtils', f'Encountered ValueError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
+            except Exception as e:
+                self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
 
             self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub user(s)')
 
@@ -224,7 +224,7 @@ class PubSubUtils():
 
             try:
                 await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
-            except ValueError as e:
-                self.__timber.log('PubSubUtils', f'Encountered ValueError when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
+            except Exception as e:
+                self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
 
             self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
