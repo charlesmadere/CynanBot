@@ -1,5 +1,6 @@
-import CynanBotCommon.utils as utils
 from twitchio.ext.pubsub.topics import Topic
+
+import CynanBotCommon.utils as utils
 
 
 class PubSubEntry():
@@ -9,7 +10,7 @@ class PubSubEntry():
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif topic is None:
+        elif not isinstance(topic, Topic):
             raise ValueError(f'topic argument is malformed: \"{topic}\"')
 
         self.__userId: int = userId

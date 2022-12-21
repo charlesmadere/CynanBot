@@ -51,6 +51,9 @@ class GeneralSettingsRepositorySnapshot():
 
         return refreshPubSubTokensSeconds
 
+    def getShinyTriviaMultiplier(self) -> int:
+        return utils.getIntFromDict(self.__jsonContents, 'shinyTriviaMultiplier', 8)
+
     def getSuperTriviaGameMultiplier(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameMultiplier', 5)
 
@@ -59,9 +62,6 @@ class GeneralSettingsRepositorySnapshot():
 
     def getTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'triviaGamePoints', 5)
-
-    def getTriviaGameTutorialCutenessThreshold(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'triviaGameTutorialCutenessThreshold', 10)
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 50)

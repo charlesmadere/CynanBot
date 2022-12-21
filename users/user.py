@@ -1,5 +1,5 @@
 from datetime import tzinfo
-from typing import List
+from typing import List, Optional
 from urllib.parse import urlparse
 
 import aiofiles
@@ -47,10 +47,9 @@ class User(UserInterface):
         isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
-        shinyTriviaMultiplier: int,
+        shinyTriviaMultiplier: Optional[int],
         superTriviaGameMultiplier: int,
         triviaGamePoints: int,
-        triviaGameTutorialCutenessThreshold: int,
         waitForSuperTriviaAnswerDelay: int,
         waitForTriviaAnswerDelay: int,
         discord: str,
@@ -133,15 +132,15 @@ class User(UserInterface):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
-        elif shinyTriviaMultiplier is not None and not utils.isValidNum(shinyTriviaMultiplier):
+        elif shinyTriviaMultiplier is not None and not utils.isValidInt(shinyTriviaMultiplier):
             raise ValueError(f'shinyTriviaMulitplier argument is malformed: \"{shinyTriviaMultiplier}\"')
-        elif superTriviaGameMultiplier is not None and not utils.isValidNum(superTriviaGameMultiplier):
+        elif superTriviaGameMultiplier is not None and not utils.isValidInt(superTriviaGameMultiplier):
             raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
-        elif triviaGamePoints is not None and not utils.isValidNum(triviaGamePoints):
+        elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
-        elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidNum(waitForSuperTriviaAnswerDelay):
+        elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidInt(waitForSuperTriviaAnswerDelay):
             raise ValueError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
-        elif waitForTriviaAnswerDelay is not None and not utils.isValidNum(waitForTriviaAnswerDelay):
+        elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
             raise ValueError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
         elif not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
@@ -183,7 +182,6 @@ class User(UserInterface):
         self.__shinyTriviaMultiplier: int = shinyTriviaMultiplier
         self.__superTriviaGameMultiplier: int = superTriviaGameMultiplier
         self.__triviaGamePoints: int = triviaGamePoints
-        self.__triviaGameTutorialCutenessThreshold: int = triviaGameTutorialCutenessThreshold
         self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int = waitForSuperTriviaAnswerDelay
         self.__discord: str = discord
@@ -249,7 +247,7 @@ class User(UserInterface):
     def getPkmnShinyRewardId(self) -> str:
         return self.__pkmnShinyRewardId
 
-    def getShinyTriviaMultiplier(self) -> int:
+    def getShinyTriviaMultiplier(self) -> Optional[int]:
         return self.__shinyTriviaMultiplier
 
     def getSpeedrunProfile(self) -> str:
@@ -266,9 +264,6 @@ class User(UserInterface):
 
     def getTriviaGamePoints(self) -> int:
         return self.__triviaGamePoints
-
-    def getTriviaGameTutorialCutenessThreshold(self) -> int:
-        return self.__triviaGameTutorialCutenessThreshold
 
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
@@ -298,31 +293,28 @@ class User(UserInterface):
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
     def hasShinyTriviaMultiplier(self) -> bool:
-        return utils.isValidNum(self.__shinyTriviaMultiplier)
+        return utils.isValidInt(self.__shinyTriviaMultiplier)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
 
     def hasSuperTriviaGameMultiplier(self) -> bool:
-        return utils.isValidNum(self.__superTriviaGameMultiplier)
+        return utils.isValidInt(self.__superTriviaGameMultiplier)
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
 
     def hasTriviaGamePoints(self) -> bool:
-        return utils.isValidNum(self.__triviaGamePoints)
-
-    def hasTriviaGameTutorialCutenessThreshold(self) -> bool:
-        return utils.isValidNum(self.__triviaGameTutorialCutenessThreshold)
+        return utils.isValidInt(self.__triviaGamePoints)
 
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitter)
 
     def hasWaitForSuperTriviaAnswerDelay(self) -> bool:
-        return utils.isValidNum(self.__waitForSuperTriviaAnswerDelay)
+        return utils.isValidInt(self.__waitForSuperTriviaAnswerDelay)
 
     def hasWaitForTriviaAnswerDelay(self) -> bool:
-        return utils.isValidNum(self.__waitForTriviaAnswerDelay)
+        return utils.isValidInt(self.__waitForTriviaAnswerDelay)
 
     def isAnalogueEnabled(self) -> bool:
         return self.__isAnalogueEnabled

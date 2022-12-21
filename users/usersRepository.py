@@ -107,7 +107,6 @@ class UsersRepository(UsersRepositoryInterface):
         superTriviaGameMultiplier: int = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
-        triviaGameTutorialCutenessThreshold: int = None
         waitForSuperTriviaAnswerDelay: int = None
         waitForTriviaAnswerDelay: int = None
         if isTriviaGameEnabled:
@@ -117,7 +116,6 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
-            triviaGameTutorialCutenessThreshold = userJson.get('triviaGameTutorialCutenessThreshold')
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
@@ -168,7 +166,6 @@ class UsersRepository(UsersRepositoryInterface):
             shinyTriviaMultiplier = shinyTriviaMultiplier,
             superTriviaGameMultiplier = superTriviaGameMultiplier,
             triviaGamePoints = triviaGamePoints,
-            triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
@@ -258,7 +255,10 @@ class UsersRepository(UsersRepositoryInterface):
         cutenessBoosterPacks.sort(key = lambda pack: pack.getAmount())
         return cutenessBoosterPacks
 
-    def __parsePkmnCatchBoosterPacksFromJson(self, jsonList: List[Dict]) -> List[PkmnCatchBoosterPack]:
+    def __parsePkmnCatchBoosterPacksFromJson(
+        self,
+        jsonList: Optional[List[Dict[str, Any]]]
+    ) -> Optional[List[PkmnCatchBoosterPack]]:
         if not utils.hasItems(jsonList):
             return None
 
@@ -271,7 +271,7 @@ class UsersRepository(UsersRepositoryInterface):
                 fallback = ''
             )
 
-            pkmnCatchType: PkmnCatchType = None
+            pkmnCatchType: Optional[PkmnCatchType] = None
             if utils.isValidStr(pkmnCatchTypeStr):
                 pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
 

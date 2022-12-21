@@ -99,16 +99,16 @@ class AddTriviaControllerCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
 
         userName = ctx.author.name.lower()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
-            return
-        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -284,23 +284,17 @@ class BanTriviaQuestionCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
-
-        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
-        if await self.__triviaUtils.isPrivilegedTriviaUser(
+        if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
             userName = ctx.author.name
         ):
-            pass
-        elif ctx.author.is_mod:
-            pass
-        else:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -576,6 +570,7 @@ class CommandsCommand(AbsCommand):
             commands.append('!bantriviaquestion')
             commands.append('!clearsupertriviaqueue')
             commands.append('!supertrivia')
+            commands.append('!triviainfo')
 
         if user.isCutenessEnabled():
             commands.append('!cuteness')
@@ -1019,16 +1014,16 @@ class GetTriviaControllersCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
 
         userName = ctx.author.name.lower()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
-            return
-        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
@@ -1589,16 +1584,16 @@ class RemoveTriviaControllerCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
 
         userName = ctx.author.name.lower()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
-        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
-            return
-        elif user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -1782,8 +1777,8 @@ class SuperTriviaCommand(AbsCommand):
             isQueueActionConsumed = False,
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
-            pointsMultiplier = multiplier,
             pointsForWinning = points,
+            pointsMultiplier = multiplier,
             secondsToLive = secondsToLive,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
@@ -1981,6 +1976,84 @@ class TranslateCommand(AbsCommand):
         self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class TriviaInfoCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaEmoteGenerator: TriviaEmoteGenerator,
+        triviaHistoryRepository: TriviaHistoryRepository,
+        triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
+            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
+            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif not isinstance(triviaUtils, TriviaUtils):
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
+        self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+
+        if not self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = ctx.author.name
+        ):
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.authhor.id} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        emote: Optional[str] = splits[1]
+        normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
+
+        if not utils.isValidStr(normalizedEmote):
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
+            emote = normalizedEmote,
+            twitchChannel = user.getHandle()
+        )
+
+        if reference is None:
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            return
+
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class TriviaScoreCommand(AbsCommand):
 
     def __init__(
@@ -2137,23 +2210,16 @@ class UnbanTriviaQuestionCommand(AbsCommand):
 
     async def handleCommand(self, ctx: Context):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
-
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
-
-        if not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-
-        if await self.__triviaUtils.isPrivilegedTriviaUser(
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
             userName = ctx.author.name
         ):
-            pass
-        elif ctx.author.is_mod:
-            pass
-        else:
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)

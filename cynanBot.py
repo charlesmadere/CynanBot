@@ -21,9 +21,9 @@ from commands import (AbsCommand, AddTriviaControllerCommand, AnalogueCommand,
                       PkMoveCommand, RaceCommand,
                       RemoveTriviaControllerCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
-                      TimeCommand, TranslateCommand, TriviaScoreCommand,
-                      TwitterCommand, UnbanTriviaQuestionCommand,
-                      WeatherCommand, WordCommand)
+                      TimeCommand, TranslateCommand, TriviaInfoCommand,
+                      TriviaScoreCommand, TwitterCommand,
+                      UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
@@ -257,10 +257,12 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
+            self.__triviaInfoCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
             self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
             self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
@@ -887,6 +889,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     @commands.command(name = 'translate')
     async def command_translate(self, ctx: Context):
         await self.__translateCommand.handleCommand(ctx)
+
+    @commands.command(name = 'triviainfo')
+    async def command_triviainfo(self, ctx: Context):
+        await self.__triviaInfoCommand.handleCommand(ctx)
 
     @commands.command(name = 'triviascore')
     async def command_triviascore(self, ctx: Context):

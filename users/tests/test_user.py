@@ -52,7 +52,6 @@ class TestUser():
         isWordOfTheDayEnabled: bool = False,
         superTriviaGameMultiplier: int = 5,
         triviaGamePoints: int = 5,
-        triviaGameTutorialCutenessThreshold: int = 50,
         waitForTriviaAnswerDelay: int = 45,
         discord: str = None,
         handle: str = "TestUser",
@@ -105,7 +104,6 @@ class TestUser():
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             superTriviaGameMultiplier = superTriviaGameMultiplier,
             triviaGamePoints = triviaGamePoints,
-            triviaGameTutorialCutenessThreshold = triviaGameTutorialCutenessThreshold,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,
             handle = handle,
@@ -242,19 +240,6 @@ class TestUser():
 
         user = self.createUser(triviaGamePoints = None)
         assert user.hasTriviaGamePoints() is False
-
-    def test_hasTriviaGameTutorialCutenessThreshold(self):
-        user = self.createUser(triviaGameTutorialCutenessThreshold = 0)
-        assert user.hasTriviaGameTutorialCutenessThreshold() is True
-
-        user = self.createUser(triviaGameTutorialCutenessThreshold = 1)
-        assert user.hasTriviaGameTutorialCutenessThreshold() is True
-
-        user = self.createUser(triviaGameTutorialCutenessThreshold = -1)
-        assert user.hasTriviaGameTutorialCutenessThreshold() is True
-
-        user = self.createUser(triviaGameTutorialCutenessThreshold = None)
-        assert user.hasTriviaGameTutorialCutenessThreshold() is False
 
     def test_hasTwitter(self):
         user = self.createUser(twitter = "https://example.com/")

@@ -46,29 +46,29 @@ class PubSubUtils():
         maxConnectionsPerTwitchChannel: int = 16,
         queueTimeoutSeconds: int = 3
     ):
-        if eventLoop is None:
+        if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif client is None:
+        elif not isinstance(client, Client):
             raise ValueError(f'client argument is malformed: \"{client}\"')
-        elif generalSettingsRepository is None:
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchCredentialsProviderInterface is None:
+        elif not isinstance(twitchCredentialsProviderInterface, TwitchCredentialsProviderInterface):
             raise ValueError(f'twitchCredentialsProviderInterface argument is malformed: \"{twitchCredentialsProviderInterface}\"')
-        elif twitchTokensRepository is None:
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not utils.isValidNum(maxConnectionsPerTwitchChannel):
+        elif not utils.isValidInt(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > 32:
+        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > 64:
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 8:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__eventLoop: AbstractEventLoop = eventLoop

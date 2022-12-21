@@ -53,6 +53,9 @@ from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
+from CynanBotCommon.trivia.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+    ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.superTriviaCooldownHelper import \
     SuperTriviaCooldownHelper
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
@@ -187,6 +190,16 @@ triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+shinyTriviaHelper = ShinyTriviaHelper(
+    cutenessRepository = cutenessRepository,
+    shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
+        backingDatabase = backingDatabase,
+        timber = timber,
+        userIdsRepository = userIdsRepository
+    ),
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -369,6 +382,7 @@ cynanBot = CynanBot(
             timber = timber,
             triviaSettingsRepository = triviaSettingsRepository
         ),
+        shinyTriviaHelper = shinyTriviaHelper,
         superTriviaCooldownHelper = SuperTriviaCooldownHelper(
             triviaSettingsRepository = triviaSettingsRepository
         ),

@@ -517,13 +517,17 @@ class TriviaGameRedemption(AbsPointRedemption):
         elif not twitchUser.isTriviaGameEnabled():
             return False
 
+        points = generalSettings.getTriviaGamePoints()
+        if twitchUser.hasTriviaGamePoints():
+            points = twitchUser.getTriviaGamePoints()
+
         secondsToLive = generalSettings.getWaitForTriviaAnswerDelay()
         if twitchUser.hasWaitForTriviaAnswerDelay():
             secondsToLive = twitchUser.getWaitForTriviaAnswerDelay()
 
-        points = generalSettings.getTriviaGamePoints()
-        if twitchUser.hasTriviaGamePoints():
-            points = twitchUser.getTriviaGamePoints()
+        shinyTriviaMultiplier = generalSettings.getShinyTriviaMultiplier()
+        if twitchUser.hasShinyTriviaMultiplier():
+            shinyTriviaMultiplier = twitchUser.getShinyTriviaMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = twitchUser.getHandle(),
@@ -532,8 +536,10 @@ class TriviaGameRedemption(AbsPointRedemption):
         )
 
         self.__triviaGameMachine.submitAction(StartNewTriviaGameAction(
+            isShinyTriviaEnabled = twitchUser.isShinyTriviaEnabled(),
             pointsForWinning = points,
             secondsToLive = secondsToLive,
+            shinyTriviaMultiplier = shinyTriviaMultiplier,
             twitchChannel = twitchUser.getHandle(),
             userId = userIdThatRedeemed,
             userName = userNameThatRedeemed,
