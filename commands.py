@@ -290,8 +290,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-
-        if not await self.__triviaUtils.isPrivilegedTriviaUser(
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
             userName = ctx.author.name
         ):
@@ -2019,8 +2018,7 @@ class TriviaInfoCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-
-        if not self.__triviaUtils.isPrivilegedTriviaUser(
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
             userName = ctx.author.name
         ):
@@ -2050,7 +2048,7 @@ class TriviaInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
