@@ -33,9 +33,9 @@ class RaidLogEvent(AbsEvent):
         chatLogger: ChatLogger,
         timber: Timber
     ):
-        if chatLogger is None:
+        if not isinstance(chatLogger, ChatLogger):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatLogger: ChatLogger = chatLogger
@@ -86,11 +86,11 @@ class RaidThankEvent(AbsEvent):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -157,13 +157,13 @@ class SubGiftThankingEvent(AbsEvent):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if authRepository is None:
+        if not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif generalSettingsRepository is None:
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__authRepository: AuthRepository = authRepository
