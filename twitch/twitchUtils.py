@@ -46,24 +46,24 @@ class TwitchUtils():
         eventLoop.create_task(self.__startTwitchMessageLoop())
 
     def getMaxMessageSize(self) -> int:
-        return 500
+        return 480
 
     async def safeSend(
         self,
         messageable: Messageable,
         message: str,
-        perMessageMaxSize: int = 475,
+        perMessageMaxSize: int = 480,
         maxMessages: int = 3
     ):
         if not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidNum(perMessageMaxSize):
+        elif not utils.isValidInt(perMessageMaxSize):
             raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
         elif perMessageMaxSize < 300:
             raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
-        elif perMessageMaxSize >= self.getMaxMessageSize():
+        elif perMessageMaxSize > self.getMaxMessageSize():
             raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.getMaxMessageSize()})')
-        elif not utils.isValidNum(maxMessages):
+        elif not utils.isValidInt(maxMessages):
             raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
         elif maxMessages < 1 or maxMessages > 5:
             raise ValueError(f'maxMessages is out of bounds: {maxMessages}')
