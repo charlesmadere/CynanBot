@@ -19,6 +19,7 @@ class TwitchUtils():
         eventLoop: AbstractEventLoop,
         timber: Timber,
         sleepTimeSeconds: float = 0.5,
+        maxRetries: int = 3,
         queueTimeoutSeconds: int = 3,
         timeZone: timezone = timezone.utc
     ):
@@ -30,6 +31,10 @@ class TwitchUtils():
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 2:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
+        elif not utils.isValidInt(maxRetries):
+            raise ValueError(f'maxRetries argument is malformed: \"{maxRetries}\"')
+        elif maxRetries < 0 or maxRetries >= utils.getIntMaxSafeSize():
+            raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
@@ -39,6 +44,7 @@ class TwitchUtils():
 
         self.__timber: Timber = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
+        self.__maxRetries: int = maxRetries
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__timeZone: timezone = timeZone
 
@@ -46,65 +52,58 @@ class TwitchUtils():
         eventLoop.create_task(self.__startTwitchMessageLoop())
 
     def getMaxMessageSize(self) -> int:
-        return 480
+        return 488
 
     async def safeSend(
         self,
         messageable: Messageable,
         message: str,
-        perMessageMaxSize: int = 480,
-        maxMessages: int = 3
+        maxMessages: int = 3,
+        perMessageMaxSize: int = 488
     ):
         if not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidInt(maxMessages):
+            raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
+        elif maxMessages < 1 or maxMessages > 5:
+            raise ValueError(f'maxMessages is out of bounds: {maxMessages}')
         elif not utils.isValidInt(perMessageMaxSize):
             raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
         elif perMessageMaxSize < 300:
             raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
         elif perMessageMaxSize > self.getMaxMessageSize():
             raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.getMaxMessageSize()})')
-        elif not utils.isValidInt(maxMessages):
-            raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
-        elif maxMessages < 1 or maxMessages > 5:
-            raise ValueError(f'maxMessages is out of bounds: {maxMessages}')
 
         if not utils.isValidStr(message):
             return
 
         if len(message) < self.getMaxMessageSize():
-            await messageable.send(message)
+            await self.__safeSend(messageable, message)
             return
 
-        messages: List[str] = list()
-        messages.append(message)
-
-        index: int = 0
-
-        while index < len(messages):
-            m: str = messages[index]
-
-            if len(m) >= self.getMaxMessageSize():
-                spaceIndex = m.rfind(' ')
-
-                while spaceIndex >= perMessageMaxSize:
-                    spaceIndex = m[0:spaceIndex].rfind(' ')
-
-                if spaceIndex == -1:
-                    raise RuntimeError(f'This message is insane and can\'t be sent (len is {len(message)}):\n{message}')
-
-                messages[index] = m[0:spaceIndex].strip()
-                messages.append(m[spaceIndex:len(m)].strip())
-
-            index = index + 1
-
-        if len(messages) > maxMessages:
-            raise RuntimeError(f'This message is too long and won\'t be sent (len is {len(message)}):\n{message}')
+        messages = utils.splitLongStringIntoMessages(
+            maxMessages = maxMessages,
+            perMessageMaxSize = perMessageMaxSize,
+            message = message
+        )
 
         for m in messages:
+            await self.__safeSend(messageable, m)
+
+    async def __safeSend(self, messageable: Messageable, message: str):
+        if not isinstance(messageable, Messageable):
+            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        for index in range(self.__maxRetries):
             try:
-                await messageable.send(m)
+                await messageable.send(message)
+                return
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send message \"{m}\": {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send message (retry #{index}) (len: {len(message)}) \"{message}\": {e}', e)
+
+        self.__timber.log('TwitchUtils', f'Failed to send message after {self.__maxRetries} retries (len: {len(message)} \"{message}\"')
 
     async def __startTwitchMessageLoop(self):
         while True:
