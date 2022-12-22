@@ -378,6 +378,7 @@ cynanBot = CynanBot(
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
+        cutenessRepository = cutenessRepository,
         queuedTriviaGameStore = QueuedTriviaGameStore(
             timber = timber,
             triviaSettingsRepository = triviaSettingsRepository
