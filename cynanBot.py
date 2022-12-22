@@ -164,7 +164,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
@@ -621,32 +620,32 @@ class CynanBot(commands.Bot, TriviaEventListener):
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        eventType = event.getTriviaEventType()
-        self.__timber.log('CynanBot', f'Received new trivia event: \"{eventType}\"')
+        triviaEventType = event.getTriviaEventType()
+        self.__timber.log('CynanBot', f'Received new trivia event: \"{triviaEventType}\"')
 
-        if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
+        if triviaEventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
-        elif eventType is TriviaEventType.CORRECT_ANSWER:
+        elif triviaEventType is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
+        elif triviaEventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif eventType is TriviaEventType.GAME_OUT_OF_TIME:
+        elif triviaEventType is TriviaEventType.GAME_OUT_OF_TIME:
             await self.__handleGameOutOfTimeTriviaEvent(event)
-        elif eventType is TriviaEventType.INCORRECT_ANSWER:
+        elif triviaEventType is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.INVALID_ANSWER_INPUT:
+        elif triviaEventType is TriviaEventType.INVALID_ANSWER_INPUT:
             await self.__handleInvalidAnswerInputTriviaEvent(event)
-        elif eventType is TriviaEventType.NEW_GAME:
+        elif triviaEventType is TriviaEventType.NEW_GAME:
             await self.__handleNewTriviaGameEvent(event)
-        elif eventType is TriviaEventType.NEW_SUPER_GAME:
+        elif triviaEventType is TriviaEventType.NEW_SUPER_GAME:
             await self.__handleNewSuperTriviaGameEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
+        elif triviaEventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
+        elif triviaEventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
+        elif triviaEventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
-        elif eventType is TriviaEventType.TOO_LATE_TO_ANSWER:
+        elif triviaEventType is TriviaEventType.TOO_LATE_TO_ANSWER:
             await self.__handleTooLateToAnswerTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
@@ -654,18 +653,12 @@ class CynanBot(commands.Bot, TriviaEventListener):
         await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Cleared super trivia game queue ({event.getNumberOfGamesRemovedStr()} game(s) removed).')
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
-        cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-            incrementAmount = event.getPointsForWinning(),
-            twitchChannel = event.getTwitchChannel(),
-            userId = event.getUserId(),
-            userName = event.getUserName()
-        )
-
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
-            newCuteness = cutenessResult,
+            isShiny = event.isShiny(),
+            newCuteness = event.getCutenessResult(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -682,6 +675,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -690,6 +684,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -698,6 +693,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -706,34 +702,30 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
+            shinyTriviaMultipler = event.getShinyTriviaMultiplier(),
             userNameThatRedeemed = event.getUserName()
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
-        await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaQuestionPrompt(
+        await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
-            points = event.getPointsForWinning(),
-            multiplier = event.getPointsMultiplier()
+            points = event.getPointsForWinning()
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
-        cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
-            incrementAmount = event.getPointsForWinning(),
-            twitchChannel = event.getTwitchChannel(),
-            userId = event.getUserId(),
-            userName = event.getUserName()
-        )
-
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
-            newCuteness = cutenessResult,
+            isShiny = event.isShiny(),
+            newCuteness = event.getCutenessResult(),
             points = event.getPointsForWinning(),
             userName = event.getUserName()
         ))
@@ -749,7 +741,8 @@ class CynanBot(commands.Bot, TriviaEventListener):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion()
+            question = event.getTriviaQuestion(),
+            isShiny = event.isShiny()
         ))
 
         launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
@@ -764,6 +757,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
+            isShiny = event.isShiny(),
             userNameThatRedeemed = event.getUserName()
         ))
 

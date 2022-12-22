@@ -1692,17 +1692,17 @@ class SuperTriviaCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameMachine is None:
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif triviaUtils is None:
+        elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1760,11 +1760,13 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaGameMultiplier():
             multiplier = user.getSuperTriviaGameMultiplier()
 
-        points = points * multiplier
-
         secondsToLive = generalSettings.getWaitForSuperTriviaAnswerDelay()
         if user.hasWaitForSuperTriviaAnswerDelay():
             secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
+
+        shinyTriviaMultiplier = generalSettings.getShinyTriviaMultiplier()
+        if user.hasShinyTriviaMultiplier():
+            shinyTriviaMultiplier = user.getShinyTriviaMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
@@ -1774,11 +1776,13 @@ class SuperTriviaCommand(AbsCommand):
 
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
             isQueueActionConsumed = False,
+            isShinyTriviaEnabled = user.isShinyTriviaEnabled(),
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsForWinning = points,
             pointsMultiplier = multiplier,
             secondsToLive = secondsToLive,
+            shinyTriviaMultiplier = shinyTriviaMultiplier,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
         ))
@@ -2048,7 +2052,7 @@ class TriviaInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} — isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 

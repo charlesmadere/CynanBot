@@ -18,7 +18,7 @@ class CutenessUtils():
         pass
 
     def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
-        if result is None:
+        if not isinstance(result, CutenessResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -33,7 +33,7 @@ class CutenessUtils():
             return f'@{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
     def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
-        if result is None:
+        if not isinstance(result, CutenessChampionsResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
         elif delimiter is None:
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -117,7 +117,7 @@ class CutenessUtils():
         return f'Cuteness leaderboard history — {leaderboardDelimiter.join(leaderboardStrings)}'
 
     def getLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
-        if entry is None:
+        if not isinstance(entry, CutenessLeaderboardEntry):
             raise ValueError(f'result argument is malformed: \"{entry}\"')
 
         rankStr: str = None
