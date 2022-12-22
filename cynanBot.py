@@ -705,7 +705,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
             isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
-            shinyTriviaMultipler = event.getShinyTriviaMultiplier(),
             userNameThatRedeemed = event.getUserName()
         ))
 
