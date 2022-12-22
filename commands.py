@@ -39,6 +39,8 @@ from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
+from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+    ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -2061,6 +2063,7 @@ class TriviaScoreCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
+        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository,
         timber: Timber,
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
@@ -2071,6 +2074,8 @@ class TriviaScoreCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
+            raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
@@ -2087,6 +2092,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository
         self.__timber: Timber = timber
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -2127,12 +2133,22 @@ class TriviaScoreCommand(AbsCommand):
         else:
             userId = str(ctx.author.id)
 
+        shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
+            twitchChannel = user.getHandle(),
+            userId = userId
+        )
+
         triviaResult = await self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.getHandle(),
             userId = userId
         )
 
-        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(userName, triviaResult))
+        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(
+            shinyResult = shinyResult,
+            userName = userName,
+            triviaResult = triviaResult
+        ))
+
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 

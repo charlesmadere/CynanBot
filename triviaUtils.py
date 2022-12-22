@@ -4,6 +4,7 @@ from typing import List, Optional
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -161,19 +162,33 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getTriviaScoreMessage(self, userName: str, triviaResult: TriviaScoreResult) -> str:
-        if not utils.isValidStr(userName):
+    def getTriviaScoreMessage(
+        self,
+        shinyResult: ShinyTriviaResult,
+        userName: str,
+        triviaResult: TriviaScoreResult
+    ) -> str:
+        if not isinstance(shinyResult, ShinyTriviaResult):
+            raise ValueError(f'shinyResult argument is malformed: \"{shinyResult}\"')
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(triviaResult, TriviaScoreResult):
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
+        shinyStr: str = ''
+        if shinyResult.getNewShinyCount() >= 1:
+            if shinyResult.getNewShinyCount() == 1:
+                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
+            else:
+                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
+
         if triviaResult.getTotal() <= 0:
             if triviaResult.getSuperTriviaWins() > 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins){shinyStr}'
             elif triviaResult.getSuperTriviaWins() == 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win){shinyStr}'
             else:
-                return f'@{userName} has not played any trivia games 😿'
+                return f'@{userName} has not played any trivia games 😿{shinyStr}'
 
         gamesStr: str = 'games'
         if triviaResult.getTotal() == 1:
@@ -193,7 +208,7 @@ class TriviaUtils():
         elif triviaResult.getSuperTriviaWins() == 1:
             superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
 
-        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, {triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()} {ratioStr}{streakStr}{superTriviaWinsStr}'.strip()
+        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, {triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()} {ratioStr}{streakStr}{superTriviaWinsStr}{shinyStr}'.strip()
 
     def getSuperTriviaCorrectAnswerReveal(
         self,

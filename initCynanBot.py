@@ -184,6 +184,11 @@ twitchTokensRepository = TwitchTokensRepository(
 bannedWordsRepository = BannedWordsRepository(
     timber = timber
 )
+shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    userIdsRepository = userIdsRepository
+)
 triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
@@ -195,11 +200,7 @@ bannedTriviaIdsRepository = BannedTriviaIdsRepository(
 )
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
-    shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
-        backingDatabase = backingDatabase,
-        timber = timber,
-        userIdsRepository = userIdsRepository
-    ),
+    shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -370,6 +371,7 @@ cynanBot = CynanBot(
         networkClientProvider = networkClientProvider,
         timber = timber
     ),
+    shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     timber = timber,
     translationHelper = translationHelper,

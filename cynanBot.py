@@ -63,6 +63,8 @@ from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+    ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.tooLateToAnswerCheckAnswerTriviaEvent import \
     TooLateToAnswerCheckAnswerTriviaEvent
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -115,6 +117,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         languagesRepository: LanguagesRepository,
         locationsRepository: Optional[LocationsRepository],
         pokepediaRepository: Optional[PokepediaRepository],
+        shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
         timber: Timber,
         translationHelper: Optional[TranslationHelper],
@@ -254,7 +257,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         else:
             self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, usersRepository)
 
-        if cutenessRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or shinyTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaInfoCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
@@ -262,7 +265,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         else:
             self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, timber, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
