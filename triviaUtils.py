@@ -178,9 +178,9 @@ class TriviaUtils():
         shinyStr: str = ''
         if shinyResult.getNewShinyCount() >= 1:
             if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
-            else:
                 shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
+            else:
+                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
 
         if triviaResult.getTotal() <= 0:
             if triviaResult.getSuperTriviaWins() > 1:
