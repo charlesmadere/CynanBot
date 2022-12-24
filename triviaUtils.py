@@ -54,7 +54,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -64,10 +64,10 @@ class TriviaUtils():
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
-            return f'{prefix} 🎉 {infix} ✨ The correct answer was: {correctAnswers[0]}'
+            return f'{prefix} 🎉 {infix} 🎉 The correct answer was: {correctAnswers[0]}'
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
+            return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
 
     def getIncorrectAnswerReveal(
         self,
@@ -87,7 +87,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -115,7 +115,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -149,7 +149,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -234,7 +234,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -245,10 +245,10 @@ class TriviaUtils():
         correctAnswers = question.getCorrectAnswers()
 
         if len(correctAnswers) == 1:
-            return f'{prefix} 🎉 {infix} ✨ The correct answer was: {correctAnswers[0]}'
+            return f'{prefix} 🎉 {infix} 🎉 The correct answer was: {correctAnswers[0]}'
         else:
             correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} 🎉 {infix} ✨ The correct answers were: {correctAnswersStr}'
+            return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
 
     def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
         if not utils.isValidInt(remainingQueueSize):
@@ -277,7 +277,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{question.getEmote()}✨'
+            emotePrompt = f'✨✨{question.getEmote()}✨✨'
         else:
             emotePrompt = question.getEmote()
 
@@ -315,7 +315,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{triviaQuestion.getEmote()}✨'
+            emotePrompt = f'✨✨{triviaQuestion.getEmote()}✨✨'
         else:
             emotePrompt = triviaQuestion.getEmote()
 
@@ -374,7 +374,7 @@ class TriviaUtils():
 
         emotePrompt: str = None
         if isShiny:
-            emotePrompt = f'✨{triviaQuestion.getEmote()}✨'
+            emotePrompt = f'✨✨{triviaQuestion.getEmote()}✨✨'
         else:
             emotePrompt = triviaQuestion.getEmote()
 

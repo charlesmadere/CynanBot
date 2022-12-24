@@ -1766,9 +1766,9 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasWaitForSuperTriviaAnswerDelay():
             secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
 
-        shinyTriviaMultiplier = generalSettings.getShinyTriviaMultiplier()
-        if user.hasShinyTriviaMultiplier():
-            shinyTriviaMultiplier = user.getShinyTriviaMultiplier()
+        shinyTriviaMultiplier = generalSettings.getSuperTriviaGameShinyMultiplier()
+        if user.hasSuperTriviaGameShinyMultiplier():
+            shinyTriviaMultiplier = user.getSuperTriviaGameShinyMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
