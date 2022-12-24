@@ -105,6 +105,7 @@ class UsersRepository(UsersRepositoryInterface):
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         shinyTriviaMultiplier: int = None
         superTriviaGameMultiplier: int = None
+        superTriviaGameShinyMultiplier: Optional[int] = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
         waitForSuperTriviaAnswerDelay: int = None
@@ -114,6 +115,7 @@ class UsersRepository(UsersRepositoryInterface):
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
             shinyTriviaMultiplier = userJson.get('shinyTriviaMultiplier')
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
+            superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
@@ -165,6 +167,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             shinyTriviaMultiplier = shinyTriviaMultiplier,
             superTriviaGameMultiplier = superTriviaGameMultiplier,
+            superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             triviaGamePoints = triviaGamePoints,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
