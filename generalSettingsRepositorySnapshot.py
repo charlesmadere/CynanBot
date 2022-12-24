@@ -58,7 +58,7 @@ class GeneralSettingsRepositorySnapshot():
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameMultiplier', 5)
 
     def getSuperTriviaGameShinyMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameShinyMultiplier', 3)
+        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameShinyMultiplier', 12)
 
     def getSuperTriviaGamePerUserAttempts(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePerUserAttempts', 2)
