@@ -718,23 +718,23 @@ class CutenessCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is None:
+        elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
@@ -839,23 +839,23 @@ class CutenessChampionsCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is None:
+        elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
@@ -896,23 +896,23 @@ class CutenessHistoryCommand(AbsCommand):
         leaderboardDelimiter: str = ' — ',
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is None:
+        elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif entryDelimiter is None:
+        elif not isinstance(entryDelimiter, str):
             raise ValueError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
-        elif leaderboardDelimiter is None:
+        elif not isinstance(leaderboardDelimiter, str):
             raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
@@ -1336,19 +1336,19 @@ class MyCutenessCommand(AbsCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if cutenessUtils is None:
+        if not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif cutenessRepository is None:
+        elif not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
@@ -1398,21 +1398,21 @@ class MyCutenessHistoryCommand(AbsCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 15)
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is None:
+        elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
