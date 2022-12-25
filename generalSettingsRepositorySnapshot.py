@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Set
+from typing import Any, Dict
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.network.networkClientType import NetworkClientType
@@ -22,23 +22,6 @@ class GeneralSettingsRepositorySnapshot():
 
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
-
-    def getGlobalTriviaGameControllers(self) -> List[str]:
-        gameControllersJson: List[str] = self.__jsonContents.get('globalTriviaGameControllers')
-
-        if not utils.hasItems(gameControllersJson):
-            return list()
-
-        gameControllersSet: Set[str] = set()
-
-        for gameController in gameControllersJson:
-            if utils.isValidStr(gameController):
-                gameControllersSet.add(gameController)
-
-        gameControllersList: List[str] = list(gameControllersSet)
-        gameControllersList.sort(key = lambda gameController: gameController.lower())
-
-        return gameControllersList
 
     def getRaidLinkMessagingDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'raidLinkMessagingDelay', 60)
