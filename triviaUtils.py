@@ -8,6 +8,8 @@ from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaGameGlobalController import \
+    TriviaGameGlobalController
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
 from generalSettingsRepository import GeneralSettingsRepository
@@ -347,6 +349,24 @@ class TriviaUtils():
 
         gameControllersStr = delimiter.join(gameControllersNames)
         return f'ⓘ Your trivia game controllers — {gameControllersStr}'
+
+    def getTriviaGameGlobalControllers(
+        self,
+        gameControllers: Optional[List[TriviaGameGlobalController]],
+        delimiter: str = ', '
+    ) -> str:
+        if delimiter is None:
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not utils.hasItems(gameControllers):
+            return f'ⓘ There are no global trivia game controllers.'
+
+        gameControllersNames: List[str] = list()
+        for gameController in gameControllers:
+            gameControllersNames.append(gameController.getUserName())
+
+        gameControllersStr = delimiter.join(gameControllersNames)
+        return f'ⓘ Global trivia game controllers — {gameControllersStr}'
 
     def getTriviaGameQuestionPrompt(
         self,

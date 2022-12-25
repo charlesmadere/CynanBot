@@ -48,6 +48,8 @@ from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+    TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
@@ -72,6 +74,67 @@ class AbsCommand(ABC):
         pass
 
 
+class AddGlobalTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        userName = ctx.author.name
+
+        if generalSettings.requireAdministrator().lower() != userName.lower():
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {ctx.channel.name}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as no username argument was given. Example: !addglobaltriviacontroller {generalSettings.requireAdministrator()}')
+            return
+
+        result = await self.__triviaGameGlobalControllersRepository.addController(
+            userName = userName
+        )
+
+        if result is AddTriviaGameControllerResult.ADDED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a global trivia game controller.')
+        elif result is AddTriviaGameControllerResult.ALREADY_EXISTS:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a global trivia game controller, but they already were one.')
+        elif result is AddTriviaGameControllerResult.ERROR:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!')
+        else:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+        self.__timber.log('AddGlobalTriviaControllerCommand', f'Handled !addglobaltriviacontroller command for {ctx.author.name}:{ctx.author.id} in {ctx.channel.name}')
+
+
 class AddTriviaControllerCommand(AbsCommand):
 
     def __init__(
@@ -82,15 +145,15 @@ class AddTriviaControllerCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameControllersRepository is None:
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -111,6 +174,7 @@ class AddTriviaControllerCommand(AbsCommand):
         userName = ctx.author.name.lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+            self.__timber.log('AddTriviaGameControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
@@ -258,21 +322,21 @@ class BanTriviaQuestionCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaBanHelper is None:
+        elif not isinstance(triviaBanHelper, TriviaBanHelper):
             raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
-        elif triviaEmoteGenerator is None:
+        elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
-        elif triviaHistoryRepository is None:
+        elif not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif triviaUtils is None:
+        elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -426,15 +490,15 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameMachine is None:
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif triviaUtils is None:
+        elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -984,6 +1048,49 @@ class DiscordCommand(AbsCommand):
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class GetGlobalTriviaControllersCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        userName = ctx.author.name.lower()
+
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+            return
+
+        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
+        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
+        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class GetTriviaControllersCommand(AbsCommand):
 
     def __init__(
@@ -995,15 +1102,15 @@ class GetTriviaControllersCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameControllersRepository is None:
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1042,15 +1149,15 @@ class GiveCutenessCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
     ):
-        if cutenessRepository is None:
+        if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif userIdsRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
@@ -1188,11 +1295,11 @@ class LoremIpsumCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if timber is None:
+        if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: Timber = timber
@@ -1556,6 +1663,76 @@ class RaceCommand(AbsCommand):
         self.__timber.log('RaceCommand', f'Handled !race command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
+class RemoveGlobalTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+
+        userName = ctx.author.name.lower()
+
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {user.getHandle()}')
+            return
+
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(userName):
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.getHandle()}')
+            return
+
+        result = await self.__triviaGameGlobalControllersRepository.removeController(
+            userName = userName
+        )
+
+        if result is RemoveTriviaGameControllerResult.REMOVED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a global trivia game controller.')
+        elif result is RemoveTriviaGameControllerResult.ERROR:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a global trivia game controller!')
+        else:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a global trivia game controller!')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+        self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Handled !removeglobaltriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
 class RemoveTriviaControllerCommand(AbsCommand):
 
     def __init__(
@@ -1566,15 +1743,15 @@ class RemoveTriviaControllerCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameControllersRepository is None:
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
