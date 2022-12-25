@@ -10,6 +10,8 @@ from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalController import \
     TriviaGameGlobalController
+from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+    TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
 from generalSettingsRepository import GeneralSettingsRepository
@@ -22,17 +24,21 @@ class TriviaUtils():
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         triviaGameControllersRepository: TriviaGameControllersRepository,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         usersRepository: UsersRepository
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     def getCorrectAnswerReveal(
@@ -432,13 +438,13 @@ class TriviaUtils():
             if userName == gameController.getUserName().lower():
                 return True
 
+        globalGameControllers = await self.__triviaGameGlobalControllersRepository.getControllers()
+        for globalGameController in globalGameControllers:
+            if userName == globalGameController.getUserName().lower():
+                return True
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         if userName == generalSettings.requireAdministrator().lower():
             return True
-
-        globalGameControllers = generalSettings.getGlobalTriviaGameControllers()
-        for globalGameController in globalGameControllers:
-            if userName == globalGameController.lower():
-                return True
 
         return False

@@ -67,6 +67,8 @@ from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+    TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
@@ -222,6 +224,13 @@ triviaGameControllersRepository = TriviaGameControllersRepository(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
+    backingDatabase = backingDatabase,
+    administrator = generalSettingsRepository.getAll().requireAdministrator(),
+    timber = timber,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
 triviaHistoryRepository = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -233,6 +242,7 @@ triviaScoreRepository = TriviaScoreRepository(
 triviaUtils = TriviaUtils(
     generalSettingsRepository = generalSettingsRepository,
     triviaGameControllersRepository = triviaGameControllersRepository,
+    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     usersRepository = usersRepository
 )
 
@@ -378,6 +388,7 @@ cynanBot = CynanBot(
     triviaBanHelper = triviaBanHelper,
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameControllersRepository = triviaGameControllersRepository,
+    triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaGameMachine = TriviaGameMachine(
         eventLoop = eventLoop,
         cutenessRepository = cutenessRepository,

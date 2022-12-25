@@ -9,16 +9,19 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
-from commands import (AbsCommand, AddTriviaControllerCommand, AnalogueCommand,
+from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
+                      AddTriviaControllerCommand, AnalogueCommand,
                       AnswerCommand, BanTriviaQuestionCommand,
                       ClearCachesCommand, ClearSuperTriviaQueueCommand,
                       CommandsCommand, CutenessChampionsCommand,
                       CutenessCommand, CutenessHistoryCommand,
                       CynanSourceCommand, DiscordCommand,
+                      GetGlobalTriviaControllersCommand,
                       GetTriviaControllersCommand, GiveCutenessCommand,
                       JishoCommand, LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand,
+                      RemoveGlobalTriviaControllerCommand,
                       RemoveTriviaControllerCommand, StubCommand,
                       SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
                       TimeCommand, TranslateCommand, TriviaInfoCommand,
@@ -73,6 +76,8 @@ from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+    TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
@@ -124,6 +129,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         triviaBanHelper: Optional[TriviaBanHelper],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
+        triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachine],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
@@ -194,6 +200,15 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__analogueCommand: AbsCommand = StubCommand()
         else:
             self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, twitchUtils, usersRepository)
+
+        if triviaGameGlobalControllersRepository is None or triviaUtils is None:
+            self.__addGlobalTriviaControllerCommand: AbsCommand = StubCommand()
+            self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
+        else:
+            self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(generalSettingsRepository,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
         if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
@@ -767,6 +782,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     async def command_a(self, ctx: Context):
         await self.__answerCommand.handleCommand(ctx)
 
+    @commands.command(name = 'addglobaltriviacontroller')
+    async def command_addglobaltriviacontroller(self, ctx: Context):
+        await self.__addGlobalTriviaControllerCommand.handleCommand(ctx)
+
     @commands.command(name = 'addtriviacontroller')
     async def command_addtriviacontroller(self, ctx: Context):
         await self.__addTriviaControllerCommand.handleCommand(ctx)
@@ -815,6 +834,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     async def command_discord(self, ctx: Context):
         await self.__discordCommand.handleCommand(ctx)
 
+    @commands.command(name = 'getglobaltriviacontrollers')
+    async def command_getglobaltriviacontrollers(self, ctx: Context):
+        await self.__getGlobalTriviaControllersCommand.handleCommand(ctx)
+
     @commands.command(name = 'gettriviacontrollers')
     async def command_gettriviacontrollers(self, ctx: Context):
         await self.__getTriviaControllersCommand.handleCommand(ctx)
@@ -854,6 +877,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     @commands.command(name = 'race')
     async def command_race(self, ctx: Context):
         await self.__raceCommand.handleCommand(ctx)
+
+    @commands.command(name = 'removeglobaltriviacontroller')
+    async def command_removeglobaltriviacontroller(self, ctx: Context):
+        await self.__removeGlobalTriviaControllerCommand.handleCommand(ctx)
 
     @commands.command(name = 'removetriviacontroller')
     async def command_removetriviacontroller(self, ctx: Context):
