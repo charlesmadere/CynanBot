@@ -1930,6 +1930,8 @@ class SuperTriviaCommand(AbsCommand):
                 return
 
         perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
+        if user.hasSuperTriviaPerUserAttempts():
+            perUserAttempts = user.getSuperTriviaPerUserAttempts()
 
         points = generalSettings.getTriviaGamePoints()
         if user.hasTriviaGamePoints():

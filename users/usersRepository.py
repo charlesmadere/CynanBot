@@ -106,6 +106,7 @@ class UsersRepository(UsersRepositoryInterface):
         shinyTriviaMultiplier: int = None
         superTriviaGameMultiplier: int = None
         superTriviaGameShinyMultiplier: Optional[int] = None
+        superTriviaPerUserAttempts: Optional[int] = None
         triviaGameRewardId: str = None
         triviaGamePoints: int = None
         waitForSuperTriviaAnswerDelay: int = None
@@ -116,6 +117,7 @@ class UsersRepository(UsersRepositoryInterface):
             shinyTriviaMultiplier = userJson.get('shinyTriviaMultiplier')
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
+            superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
@@ -168,6 +170,7 @@ class UsersRepository(UsersRepositoryInterface):
             shinyTriviaMultiplier = shinyTriviaMultiplier,
             superTriviaGameMultiplier = superTriviaGameMultiplier,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
+            superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             triviaGamePoints = triviaGamePoints,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,

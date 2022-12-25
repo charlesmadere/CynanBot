@@ -50,6 +50,7 @@ class User(UserInterface):
         shinyTriviaMultiplier: Optional[int],
         superTriviaGameMultiplier: int,
         superTriviaGameShinyMultiplier: Optional[int],
+        superTriviaPerUserAttempts: Optional[int],
         triviaGamePoints: int,
         waitForSuperTriviaAnswerDelay: int,
         waitForTriviaAnswerDelay: int,
@@ -139,6 +140,8 @@ class User(UserInterface):
             raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
+        elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
+            raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidInt(waitForSuperTriviaAnswerDelay):
@@ -185,6 +188,7 @@ class User(UserInterface):
         self.__shinyTriviaMultiplier: int = shinyTriviaMultiplier
         self.__superTriviaGameMultiplier: int = superTriviaGameMultiplier
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
+        self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
         self.__triviaGamePoints: int = triviaGamePoints
         self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: int = waitForSuperTriviaAnswerDelay
@@ -263,6 +267,9 @@ class User(UserInterface):
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
 
+    def getSuperTriviaPerUserAttempts(self) -> Optional[int]:
+        return self.__superTriviaPerUserAttempts
+
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
@@ -310,6 +317,9 @@ class User(UserInterface):
 
     def hasSuperTriviaGameShinyMultiplier(self) -> bool:
         return utils.isValidInt(self.__superTriviaGameShinyMultiplier)
+
+    def hasSuperTriviaPerUserAttempts(self) -> bool:
+        return utils.isValidInt(self.__superTriviaPerUserAttempts)
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
