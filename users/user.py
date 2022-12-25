@@ -48,7 +48,7 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         shinyTriviaMultiplier: Optional[int],
-        superTriviaGameMultiplier: int,
+        superTriviaGameMultiplier: Optional[int],
         superTriviaGameShinyMultiplier: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
         triviaGamePoints: int,
@@ -139,7 +139,7 @@ class User(UserInterface):
         elif superTriviaGameMultiplier is not None and not utils.isValidInt(superTriviaGameMultiplier):
             raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
-            raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
+            raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
         elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
             raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
@@ -186,7 +186,7 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__shinyTriviaMultiplier: int = shinyTriviaMultiplier
-        self.__superTriviaGameMultiplier: int = superTriviaGameMultiplier
+        self.__superTriviaGameMultiplier: Optional[int] = superTriviaGameMultiplier
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
         self.__triviaGamePoints: int = triviaGamePoints
@@ -261,7 +261,7 @@ class User(UserInterface):
     def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
-    def getSuperTriviaGameMultiplier(self) -> int:
+    def getSuperTriviaGameMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameMultiplier
 
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:

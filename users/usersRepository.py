@@ -104,7 +104,7 @@ class UsersRepository(UsersRepositoryInterface):
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         shinyTriviaMultiplier: int = None
-        superTriviaGameMultiplier: int = None
+        superTriviaGameMultiplier: Optional[int] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
         triviaGameRewardId: str = None
