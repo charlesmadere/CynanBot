@@ -117,6 +117,12 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as no username argument was given. Example: !addglobaltriviacontroller {generalSettings.requireAdministrator()}')
             return
 
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(userName):
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as username argument is malformed. Example: !addglobaltriviacontroller {user.getHandle()}')
+            return
+
         result = await self.__triviaGameGlobalControllersRepository.addController(
             userName = userName
         )
@@ -185,7 +191,7 @@ class AddTriviaControllerCommand(AbsCommand):
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
             return
 
@@ -1714,7 +1720,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
@@ -1783,7 +1789,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
             return
 
