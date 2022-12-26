@@ -1084,6 +1084,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         userName = ctx.author.name.lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
             return
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
