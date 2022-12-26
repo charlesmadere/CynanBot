@@ -1243,17 +1243,17 @@ class JishoCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 8)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif jishoHelper is None:
+        elif not isinstance(jishoHelper, JishoHelper):
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -2386,21 +2386,21 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaBanHelper is None:
+        elif not isinstance(triviaBanHelper, TriviaBanHelper):
             raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
-        elif triviaEmoteGenerator is None:
+        elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
-        elif triviaHistoryRepository is None:
+        elif not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif triviaUtils is None:
+        elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -2471,19 +2471,19 @@ class WeatherCommand(AbsCommand):
         weatherRepository: WeatherRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif locationsRepository is None:
+        elif not isinstance(locationsRepository, LocationsRepository):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif weatherRepository is None:
+        elif not isinstance(weatherRepository, WeatherRepository):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -2533,19 +2533,19 @@ class WordCommand(AbsCommand):
         wordOfTheDayRepository: WordOfTheDayRepository,
         cooldown: timedelta = timedelta(seconds = 10)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif languagesRepository is None:
+        elif not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif wordOfTheDayRepository is None:
+        elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepository):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
