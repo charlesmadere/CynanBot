@@ -397,6 +397,7 @@ cynanBot = CynanBot(
             triviaSettingsRepository = triviaSettingsRepository
         ),
         shinyTriviaHelper = shinyTriviaHelper,
+        shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
         superTriviaCooldownHelper = SuperTriviaCooldownHelper(
             triviaSettingsRepository = triviaSettingsRepository
         ),
