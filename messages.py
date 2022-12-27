@@ -34,15 +34,15 @@ class CatJamMessage(AbsMessage):
         catJamMessage: str = 'catJAM',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(catJamMessage):
             raise ValueError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -86,11 +86,11 @@ class ChatBandMessage(AbsMessage):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber
     ):
-        if chatBandManager is None:
+        if not isinstance(chatBandManager, ChatBandManager):
             raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
-        elif generalSettingsRepository is None:
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatBandManager: ChatBandManager = chatBandManager
@@ -131,7 +131,7 @@ class ChatLogMessage(AbsMessage):
         self,
         chatLogger: ChatLogger
     ):
-        if chatLogger is None:
+        if not isinstance(chatLogger, ChatLogger):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
 
         self.__chatLogger: ChatLogger = chatLogger
@@ -169,11 +169,11 @@ class CynanMessage(AbsMessage):
         cynanUserName: str = 'CynanMachae',
         cooldown: timedelta = timedelta(days = 3)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(cynanUserName):
             raise ValueError(f'cynanUserName argument is malformed: \"{cynanUserName}\"')
@@ -227,15 +227,15 @@ class DeerForceMessage(AbsMessage):
         deerForceMessage: str = 'D e e R F o r C e',
         cooldown: timedelta = timedelta(minutes = 30)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(deerForceMessage):
             raise ValueError(f'deerForceMessage argument is malformed: \"{deerForceMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -281,15 +281,15 @@ class EyesMessage(AbsMessage):
         eyesMessage: str = '👀',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(eyesMessage):
             raise ValueError(f'eyesMessage argument is malformed: \"{eyesMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -335,15 +335,15 @@ class ImytSlurpMessage(AbsMessage):
         imytSlurpMessage: str = 'imytSlurp',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(imytSlurpMessage):
             raise ValueError(f'imytSlurpMessage argument is malformed: \"{imytSlurpMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -389,15 +389,15 @@ class JamCatMessage(AbsMessage):
         jamCatMessage: str = 'jamCAT',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(jamCatMessage):
             raise ValueError(f'jamCatMessage argument is malformed: \"{jamCatMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -443,13 +443,13 @@ class RatJamMessage(AbsMessage):
         ratJamMessage: str = 'ratJAM',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
-        if generalSettingsRepository is None:
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidStr(ratJamMessage):
             raise ValueError(f'ratJamMessage argument is malformed: \"{ratJamMessage}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
