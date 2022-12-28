@@ -216,7 +216,8 @@ triviaContentScanner = TriviaContentScanner(
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaEmoteGenerator = TriviaEmoteGenerator(
-    backingDatabase = backingDatabase
+    backingDatabase = backingDatabase,
+    timber = timber
 )
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
@@ -397,7 +398,6 @@ cynanBot = CynanBot(
             triviaSettingsRepository = triviaSettingsRepository
         ),
         shinyTriviaHelper = shinyTriviaHelper,
-        shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
         superTriviaCooldownHelper = SuperTriviaCooldownHelper(
             triviaSettingsRepository = triviaSettingsRepository
         ),
