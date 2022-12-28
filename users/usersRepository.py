@@ -103,14 +103,14 @@ class UsersRepository(UsersRepositoryInterface):
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        shinyTriviaMultiplier: int = None
+        shinyTriviaMultiplier: Optional[int] = None
         superTriviaGameMultiplier: Optional[int] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
-        triviaGameRewardId: str = None
-        triviaGamePoints: int = None
-        waitForSuperTriviaAnswerDelay: int = None
-        waitForTriviaAnswerDelay: int = None
+        triviaGamePoints: Optional[int] = None
+        triviaGameRewardId: Optional[str] = None
+        waitForSuperTriviaAnswerDelay: Optional[int] = None
+        waitForTriviaAnswerDelay: Optional[int] = None
         if isTriviaGameEnabled:
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
@@ -118,8 +118,8 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
-            triviaGameRewardId = userJson.get('triviaGameRewardId')
             triviaGamePoints = userJson.get('triviaGamePoints')
+            triviaGameRewardId = userJson.get('triviaGameRewardId')
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 

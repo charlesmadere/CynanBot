@@ -20,7 +20,7 @@ class CutenessUtils():
     def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
         if not isinstance(result, CutenessResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.hasCuteness() and result.getCuteness() >= 1:
@@ -35,7 +35,7 @@ class CutenessUtils():
     def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
         if not isinstance(result, CutenessChampionsResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not result.hasChampions():
@@ -49,9 +49,9 @@ class CutenessUtils():
         return f'Cuteness champions — {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
-        if result is None:
+        if not isinstance(result, CutenessHistoryResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not result.hasEntries():
@@ -76,7 +76,7 @@ class CutenessUtils():
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):
             raise ValueError(f'entries argument is malformed: \"{entries}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entryStrings: List[str] = list()
@@ -92,11 +92,11 @@ class CutenessUtils():
         entryDelimiter: str,
         leaderboardDelimiter: str
     ) -> str:
-        if result is None:
+        if not isinstance(result, CutenessLeaderboardHistoryResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
-        elif entryDelimiter is None:
+        elif not isinstance(entryDelimiter, str):
             raise ValueError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
-        elif leaderboardDelimiter is None:
+        elif not isinstance(leaderboardDelimiter, str):
             raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         if not result.hasLeaderboards():
@@ -135,7 +135,7 @@ class CutenessUtils():
     def getLocalLeaderboard(self, entries: List[CutenessEntry], delimiter: str) -> str:
         if not utils.hasItems(entries):
             raise ValueError(f'entries argument is malformed: \"{entries}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entryStrings: List[str] = list()
@@ -145,7 +145,7 @@ class CutenessUtils():
         return delimiter.join(entryStrings)
 
     def getLocalLeaderboardPlacement(self, entry: CutenessEntry) -> str:
-        if entry is None:
+        if not isinstance(entry, CutenessEntry):
             raise ValueError(f'entry argument is malformed: \"{entry}\"')
 
         return f'{entry.getUserName()} ({entry.getCutenessStr()})'

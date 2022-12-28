@@ -57,7 +57,7 @@ class TriviaUtils():
             raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -90,7 +90,7 @@ class TriviaUtils():
             raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -152,7 +152,7 @@ class TriviaUtils():
             raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -237,7 +237,7 @@ class TriviaUtils():
             raise ValueError(f'points argument is malformed: \"{points}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -280,7 +280,7 @@ class TriviaUtils():
             raise ValueError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidBool(isShiny):
             raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -318,7 +318,7 @@ class TriviaUtils():
             raise ValueError(f'points argument is malformed: \"{points}\"')
         elif points < 1 or points >= utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None
@@ -343,7 +343,7 @@ class TriviaUtils():
         gameControllers: Optional[List[TriviaGameController]],
         delimiter: str = ', '
     ) -> str:
-        if delimiter is None:
+        if not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not utils.hasItems(gameControllers):
@@ -361,7 +361,7 @@ class TriviaUtils():
         gameControllers: Optional[List[TriviaGameGlobalController]],
         delimiter: str = ', '
     ) -> str:
-        if delimiter is None:
+        if not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if not utils.hasItems(gameControllers):
@@ -395,7 +395,7 @@ class TriviaUtils():
             raise ValueError(f'points argument is malformed: \"{points}\"')
         elif points < 1 or points >= utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
-        elif delimiter is None:
+        elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt: str = None

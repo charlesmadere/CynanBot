@@ -65,9 +65,9 @@ class CutenessRedemption(AbsPointRedemption):
         userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
-        if twitchChannel is None:
+        if not isinstance(twitchChannel, Channel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
+        elif not isinstance(twitchUser, User):
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
@@ -116,13 +116,13 @@ class PkmnBattleRedemption(AbsPointRedemption):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if funtoonRepository is None:
+        if not isinstance(funtoonRepository, FuntoonRepository):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif generalSettingsRepository is None:
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
@@ -139,9 +139,9 @@ class PkmnBattleRedemption(AbsPointRedemption):
         userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
-        if twitchChannel is None:
+        if not isinstance(twitchChannel, Channel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
+        elif not isinstance(twitchUser, User):
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
@@ -188,13 +188,13 @@ class PkmnCatchRedemption(AbsPointRedemption):
         timber: Timber,
         twitchUtils: TwitchUtils
     ):
-        if funtoonRepository is None:
+        if not isinstance(funtoonRepository, FuntoonRepository):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif generalSettingsRepository is None:
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__funtoonRepository: FuntoonRepository = funtoonRepository
@@ -211,9 +211,9 @@ class PkmnCatchRedemption(AbsPointRedemption):
         userIdThatRedeemed: str,
         userNameThatRedeemed: str
     ) -> bool:
-        if twitchChannel is None:
+        if not isinstance(twitchChannel, Channel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
+        elif not isinstance(twitchUser, User):
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')

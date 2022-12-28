@@ -51,12 +51,12 @@ class User(UserInterface):
         superTriviaGameMultiplier: Optional[int],
         superTriviaGameShinyMultiplier: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
-        triviaGamePoints: int,
-        waitForSuperTriviaAnswerDelay: int,
-        waitForTriviaAnswerDelay: int,
-        discord: str,
+        triviaGamePoints: Optional[int],
+        waitForSuperTriviaAnswerDelay: Optional[int],
+        waitForTriviaAnswerDelay: Optional[int],
+        discord: Optional[str],
         handle: str,
-        instagram: str,
+        instagram: Optional[str],
         locationId: str,
         picOfTheDayFile: str,
         picOfTheDayRewardId: str,
@@ -64,7 +64,7 @@ class User(UserInterface):
         pkmnEvolveRewardId: str,
         pkmnShinyRewardId: str,
         speedrunProfile: str,
-        triviaGameRewardId: str,
+        triviaGameRewardId: Optional[str],
         twitter: str,
         cutenessBoosterPacks: List[CutenessBoosterPack],
         pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack],
@@ -148,10 +148,16 @@ class User(UserInterface):
             raise ValueError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
             raise ValueError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
+        elif discord is not None and not isinstance(discord, str):
+            raise ValueError(f'discord argument is malformed: \"{discord}\"')
         elif not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
+        elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
+            raise ValueError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
+        elif twitter is not None and not isinstance(twitter, str):
+            raise ValueError(f'twitter argument is malformed: \"{twitter}\"')
 
         self.__isAnalogueEnabled: bool = isAnalogueEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
@@ -185,16 +191,16 @@ class User(UserInterface):
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
-        self.__shinyTriviaMultiplier: int = shinyTriviaMultiplier
+        self.__shinyTriviaMultiplier: Optional[int] = shinyTriviaMultiplier
         self.__superTriviaGameMultiplier: Optional[int] = superTriviaGameMultiplier
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
-        self.__triviaGamePoints: int = triviaGamePoints
-        self.__waitForTriviaAnswerDelay: int = waitForTriviaAnswerDelay
-        self.__waitForSuperTriviaAnswerDelay: int = waitForSuperTriviaAnswerDelay
-        self.__discord: str = discord
+        self.__triviaGamePoints: Optional[int] = triviaGamePoints
+        self.__waitForTriviaAnswerDelay: Optional[int] = waitForTriviaAnswerDelay
+        self.__waitForSuperTriviaAnswerDelay: Optional[int] = waitForSuperTriviaAnswerDelay
+        self.__discord: Optional[str] = discord
         self.__handle: str = handle
-        self.__instagram: str = instagram
+        self.__instagram: Optional[str] = instagram
         self.__locationId: str = locationId
         self.__picOfTheDayFile: str = picOfTheDayFile
         self.__picOfTheDayRewardId: str = picOfTheDayRewardId
@@ -202,8 +208,8 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: str = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str = pkmnShinyRewardId
         self.__speedrunProfile: str = speedrunProfile
-        self.__triviaGameRewardId: str = triviaGameRewardId
-        self.__twitter: str = twitter
+        self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
+        self.__twitter: Optional[str] = twitter
         self.__cutenessBoosterPacks: List[CutenessBoosterPack] = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = pkmnCatchBoosterPacks
         self.__timeZones: List[tzinfo] = timeZones
@@ -228,13 +234,13 @@ class User(UserInterface):
     def getCutenessBoosterPacks(self) -> List[CutenessBoosterPack]:
         return self.__cutenessBoosterPacks
 
-    def getDiscordUrl(self) -> str:
+    def getDiscordUrl(self) -> Optional[str]:
         return self.__discord
 
     def getHandle(self) -> str:
         return self.__handle
 
-    def getInstagramUrl(self) -> str:
+    def getInstagramUrl(self) -> Optional[str]:
         return self.__instagram
 
     def getLocationId(self) -> str:
@@ -273,22 +279,22 @@ class User(UserInterface):
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
-    def getTriviaGameRewardId(self) -> str:
+    def getTriviaGameRewardId(self) -> Optional[str]:
         return self.__triviaGameRewardId
 
-    def getTriviaGamePoints(self) -> int:
+    def getTriviaGamePoints(self) -> Optional[int]:
         return self.__triviaGamePoints
 
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
 
-    def getTwitterUrl(self) -> str:
+    def getTwitterUrl(self) -> Optional[str]:
         return self.__twitter
 
-    def getWaitForSuperTriviaAnswerDelay(self) -> int:
+    def getWaitForSuperTriviaAnswerDelay(self) -> Optional[int]:
         return self.__waitForSuperTriviaAnswerDelay
 
-    def getWaitForTriviaAnswerDelay(self) -> int:
+    def getWaitForTriviaAnswerDelay(self) -> Optional[int]:
         return self.__waitForTriviaAnswerDelay
 
     def hasCutenessBoosterPacks(self) -> bool:
