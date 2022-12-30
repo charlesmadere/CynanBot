@@ -29,7 +29,7 @@ class TwitchUtils():
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 2:
+        elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxRetries):
             raise ValueError(f'maxRetries argument is malformed: \"{maxRetries}\"')
