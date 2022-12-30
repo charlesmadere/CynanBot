@@ -50,6 +50,8 @@ from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
+from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
+    PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
@@ -251,6 +253,11 @@ triviaUtils = TriviaUtils(
     usersRepository = usersRepository
 )
 
+pokepediaRepository = PokepediaRepository(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
 if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
@@ -320,6 +327,13 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
+        pokepediaRepository = pokepediaRepository,
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaIdGenerator = triviaIdGenerator,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
     triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
@@ -382,10 +396,7 @@ cynanBot = CynanBot(
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
     ),
-    pokepediaRepository = PokepediaRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    ),
+    pokepediaRepository = pokepediaRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     timber = timber,
