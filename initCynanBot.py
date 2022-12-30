@@ -86,6 +86,7 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
+from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -134,11 +135,19 @@ else:
     raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsRepository.getAll().requireNetworkClientType()}\"')
 
 authRepository = AuthRepository()
-userIdsRepository = UserIdsRepository(
-    backingDatabase = backingDatabase,
+twitchApiService = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     twitchCredentialsProviderInterface = authRepository
+)
+twitchTokensRepository = TwitchTokensRepository(
+    timber = timber,
+    twitchApiService = twitchApiService
+)
+userIdsRepository = UserIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    twitchApiService = twitchApiService
 )
 timeZoneRepository = TimeZoneRepository()
 usersRepository = UsersRepository(
@@ -172,11 +181,6 @@ if authSnapshot.hasOneWeatherApiKey():
         oneWeatherApiKey = authSnapshot.requireOneWeatherApiKey(),
         timber = timber
     )
-
-twitchTokensRepository = TwitchTokensRepository(
-    networkClientProvider = networkClientProvider,
-    timber = timber
-)
 
 
 ###################################
@@ -407,6 +411,7 @@ cynanBot = CynanBot(
             triviaAnswerCompiler = triviaAnswerCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
+        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaGameStore = TriviaGameStore(),
         triviaRepository = triviaRepository,
         triviaScoreRepository = triviaScoreRepository

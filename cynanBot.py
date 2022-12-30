@@ -380,7 +380,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
                 client = self,
                 generalSettingsRepository = generalSettingsRepository,
                 timber = timber,
-                twitchCredentialsProviderInterface = authRepository,
                 twitchTokensRepository = twitchTokensRepository,
                 userIdsRepository = userIdsRepository,
                 usersRepository = usersRepository

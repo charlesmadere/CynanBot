@@ -11,17 +11,11 @@ from twitchio.ext.pubsub import PubSubPool
 from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.twitch.twitchAccessTokenMissingException import \
-    TwitchAccessTokenMissingException
-from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
-    TwitchCredentialsProviderInterface
-from CynanBotCommon.twitch.twitchExpiresInMissingException import \
-    TwitchExpiresInMissingException
-from CynanBotCommon.twitch.twitchJsonException import TwitchJsonException
-from CynanBotCommon.twitch.twitchNetworkException import TwitchNetworkException
-from CynanBotCommon.twitch.twitchRefreshTokenMissingException import \
-    TwitchRefreshTokenMissingException
+from CynanBotCommon.twitch.exceptions import (
+    TwitchAccessTokenMissingException, TwitchErrorException,
+    TwitchJsonException, TwitchRefreshTokenMissingException)
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
@@ -39,7 +33,6 @@ class PubSubUtils():
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
-        twitchCredentialsProviderInterface: TwitchCredentialsProviderInterface,
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
@@ -54,8 +47,6 @@ class PubSubUtils():
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchCredentialsProviderInterface, TwitchCredentialsProviderInterface):
-            raise ValueError(f'twitchCredentialsProviderInterface argument is malformed: \"{twitchCredentialsProviderInterface}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
@@ -74,7 +65,6 @@ class PubSubUtils():
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__twitchCredentialsProviderInterface: TwitchCredentialsProviderInterface = twitchCredentialsProviderInterface
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -108,49 +98,31 @@ class PubSubUtils():
             for twitchHandle in twitchHandles:
                 users.append(await self.__usersRepository.getUserAsync(twitchHandle))
 
-        usersAndTwitchTokens: Dict[UserInterface, str] = dict()
+        usersWithTwitchTokens: List[UserInterface] = list()
 
         for user in users:
-            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+            if await self.__twitchTokensRepository.hasAccessToken(user.getHandle()):
+                usersWithTwitchTokens.append(user)
 
-            if utils.isValidStr(twitchAccessToken):
-                usersAndTwitchTokens[user] = twitchAccessToken
-
-        if not utils.hasItems(usersAndTwitchTokens):
+        if not utils.hasItems(usersWithTwitchTokens):
             return None
 
-        twitchClientId = await self.__twitchCredentialsProviderInterface.getTwitchClientId()
-        twitchClientSecret = await self.__twitchCredentialsProviderInterface.getTwitchClientSecret()
+        usersAndTwitchTokens: Dict[UserInterface, str] = dict()
 
-        if not utils.isValidStr(twitchClientId) or not utils.isValidStr(twitchClientSecret):
-            raise RuntimeError(f'twitchClientId ({twitchClientId}) and/or twitchClientSecret ({twitchClientSecret}) is malformed!')
-
-        usersToRemove: List[UserInterface] = list()
-
-        for user in usersAndTwitchTokens:
+        for user in usersWithTwitchTokens:
             try:
                 await self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchClientId = twitchClientId,
-                    twitchClientSecret = twitchClientSecret,
                     twitchHandle = user.getHandle()
                 )
 
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-            except (TwitchAccessTokenMissingException, TwitchExpiresInMissingException, TwitchJsonException, TwitchNetworkException, TwitchRefreshTokenMissingException) as e:
-                # if we run into this error, that most likely means that this user changed
-                # their password
-                usersToRemove.append(user)
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch token for \"{user.getHandle()}\": {e}', e)
-
-        if utils.hasItems(usersToRemove):
-            for user in usersToRemove:
-                del usersAndTwitchTokens[user]
+            except (GenericNetworkException, TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:
+                # if we run into one of the Twitch errors, that most likely means that this user changed their password
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\": {e}', e)
 
         pubSubEntries: List[PubSubEntry] = list()
 
-        for user in usersAndTwitchTokens:
-            twitchAccessToken = usersAndTwitchTokens[user]
-
+        for user, twitchAccessToken in usersAndTwitchTokens.items():
             userId = await self.__userIdsRepository.fetchUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken
