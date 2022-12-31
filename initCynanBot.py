@@ -422,7 +422,6 @@ cynanBot = CynanBot(
             triviaAnswerCompiler = triviaAnswerCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaGameStore = TriviaGameStore(),
         triviaRepository = triviaRepository,
         triviaScoreRepository = triviaScoreRepository
