@@ -206,8 +206,8 @@ async def main():
         numberOfGames = 1,
         perUserAttempts = 2,
         pointsForWinning = 25,
-        pointsMultiplier = 5,
         secondsToLive = 5,
+        shinyMultiplier = 8,
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
@@ -223,8 +223,8 @@ async def main():
         numberOfGames = 1,
         perUserAttempts = 2,
         pointsForWinning = 25,
-        pointsMultiplier = 5,
         secondsToLive = 5,
+        shinyMultiplier = 8,
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
