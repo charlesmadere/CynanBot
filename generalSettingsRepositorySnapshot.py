@@ -34,20 +34,20 @@ class GeneralSettingsRepositorySnapshot():
 
         return refreshPubSubTokensSeconds
 
-    def getShinyTriviaMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'shinyTriviaMultiplier', 8)
-
-    def getSuperTriviaGameMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameMultiplier', 5)
+    def getSuperTriviaGamePoints(self) -> int:
+        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
 
     def getSuperTriviaGameShinyMultiplier(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameShinyMultiplier', 15)
+        return utils.getIntFromDict(self.__jsonContents, 'superTriviaGameShinyMultiplier', 3)
 
     def getSuperTriviaGamePerUserAttempts(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePerUserAttempts', 2)
 
     def getTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'triviaGamePoints', 5)
+
+    def getTriviaGameShinyMultiplier(self) -> int:
+        return utils.getIntFromDict(self.__jsonContents, 'triviaGameShinyMultiplier', 5)
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 50)

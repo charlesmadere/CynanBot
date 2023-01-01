@@ -47,11 +47,11 @@ class User(UserInterface):
         isTriviaGameEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
-        shinyTriviaMultiplier: Optional[int],
-        superTriviaGameMultiplier: Optional[int],
+        superTriviaGamePoints: Optional[int],
         superTriviaGameShinyMultiplier: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
         triviaGamePoints: Optional[int],
+        triviaGameShinyMultiplier: Optional[int],
         waitForSuperTriviaAnswerDelay: Optional[int],
         waitForTriviaAnswerDelay: Optional[int],
         discord: Optional[str],
@@ -134,16 +134,16 @@ class User(UserInterface):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
-        elif shinyTriviaMultiplier is not None and not utils.isValidInt(shinyTriviaMultiplier):
-            raise ValueError(f'shinyTriviaMulitplier argument is malformed: \"{shinyTriviaMultiplier}\"')
-        elif superTriviaGameMultiplier is not None and not utils.isValidInt(superTriviaGameMultiplier):
-            raise ValueError(f'superTriviaGameMultiplier argument is malformed: \"{superTriviaGameMultiplier}\"')
+        elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
+            raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
         elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
             raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
+        elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
+            raise ValueError(f'triviaGameShinyMultiplier argument is malformed: \"{triviaGameShinyMultiplier}\"')
         elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidInt(waitForSuperTriviaAnswerDelay):
             raise ValueError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
@@ -191,11 +191,11 @@ class User(UserInterface):
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
-        self.__shinyTriviaMultiplier: Optional[int] = shinyTriviaMultiplier
-        self.__superTriviaGameMultiplier: Optional[int] = superTriviaGameMultiplier
+        self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
         self.__triviaGamePoints: Optional[int] = triviaGamePoints
+        self.__triviaGameShinyMultiplier: Optional[int] = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: Optional[int] = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: Optional[int] = waitForSuperTriviaAnswerDelay
         self.__discord: Optional[str] = discord
@@ -261,14 +261,11 @@ class User(UserInterface):
     def getPkmnShinyRewardId(self) -> str:
         return self.__pkmnShinyRewardId
 
-    def getShinyTriviaMultiplier(self) -> Optional[int]:
-        return self.__shinyTriviaMultiplier
-
     def getSpeedrunProfile(self) -> str:
         return self.__speedrunProfile
 
-    def getSuperTriviaGameMultiplier(self) -> Optional[int]:
-        return self.__superTriviaGameMultiplier
+    def getSuperTriviaGamePoints(self) -> Optional[int]:
+        return self.__superTriviaGamePoints
 
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
@@ -279,11 +276,14 @@ class User(UserInterface):
     def getTimeZones(self) -> List[tzinfo]:
         return self.__timeZones
 
+    def getTriviaGamePoints(self) -> Optional[int]:
+        return self.__triviaGamePoints
+
     def getTriviaGameRewardId(self) -> Optional[str]:
         return self.__triviaGameRewardId
 
-    def getTriviaGamePoints(self) -> Optional[int]:
-        return self.__triviaGamePoints
+    def getTriviaGameShinyMultiplier(self) -> Optional[int]:
+        return self.__triviaGameShinyMultiplier
 
     def getTwitchUrl(self) -> str:
         return f'https://twitch.tv/{self.__handle.lower()}'
@@ -312,14 +312,11 @@ class User(UserInterface):
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
-    def hasShinyTriviaMultiplier(self) -> bool:
-        return utils.isValidInt(self.__shinyTriviaMultiplier)
-
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
 
-    def hasSuperTriviaGameMultiplier(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGameMultiplier)
+    def hasSuperTriviaGamePoints(self) -> bool:
+        return utils.isValidInt(self.__superTriviaGamePoints)
 
     def hasSuperTriviaGameShinyMultiplier(self) -> bool:
         return utils.isValidInt(self.__superTriviaGameShinyMultiplier)
@@ -332,6 +329,9 @@ class User(UserInterface):
 
     def hasTriviaGamePoints(self) -> bool:
         return utils.isValidInt(self.__triviaGamePoints)
+
+    def hasTriviaGameShinyMultiplier(self) -> bool:
+        return utils.isValidInt(self.__triviaGameShinyMultiplier)
 
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitter)

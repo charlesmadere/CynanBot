@@ -1940,21 +1940,17 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaPerUserAttempts():
             perUserAttempts = user.getSuperTriviaPerUserAttempts()
 
-        points = generalSettings.getTriviaGamePoints()
-        if user.hasTriviaGamePoints():
-            points = user.getTriviaGamePoints()
-
-        multiplier = generalSettings.getSuperTriviaGameMultiplier()
-        if user.hasSuperTriviaGameMultiplier():
-            multiplier = user.getSuperTriviaGameMultiplier()
+        points = generalSettings.getSuperTriviaGamePoints()
+        if user.hasSuperTriviaGamePoints():
+            points = user.getSuperTriviaGamePoints()
 
         secondsToLive = generalSettings.getWaitForSuperTriviaAnswerDelay()
         if user.hasWaitForSuperTriviaAnswerDelay():
             secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
 
-        shinyTriviaMultiplier = generalSettings.getSuperTriviaGameShinyMultiplier()
+        shinyMultiplier = generalSettings.getSuperTriviaGameShinyMultiplier()
         if user.hasSuperTriviaGameShinyMultiplier():
-            shinyTriviaMultiplier = user.getSuperTriviaGameShinyMultiplier()
+            shinyMultiplier = user.getSuperTriviaGameShinyMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
@@ -1968,9 +1964,8 @@ class SuperTriviaCommand(AbsCommand):
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsForWinning = points,
-            pointsMultiplier = multiplier,
             secondsToLive = secondsToLive,
-            shinyTriviaMultiplier = shinyTriviaMultiplier,
+            shinyMultiplier = shinyMultiplier,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
         ))

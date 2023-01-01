@@ -103,22 +103,22 @@ class UsersRepository(UsersRepositoryInterface):
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        shinyTriviaMultiplier: Optional[int] = None
-        superTriviaGameMultiplier: Optional[int] = None
+        superTriviaGamePoints: Optional[int] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
         triviaGamePoints: Optional[int] = None
+        triviaGameShinyMultiplier: Optional[int] = None
         triviaGameRewardId: Optional[str] = None
         waitForSuperTriviaAnswerDelay: Optional[int] = None
         waitForTriviaAnswerDelay: Optional[int] = None
         if isTriviaGameEnabled:
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            shinyTriviaMultiplier = userJson.get('shinyTriviaMultiplier')
-            superTriviaGameMultiplier = userJson.get('superTriviaGameMultiplier')
+            superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
             triviaGamePoints = userJson.get('triviaGamePoints')
+            triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
@@ -167,11 +167,11 @@ class UsersRepository(UsersRepositoryInterface):
             isTriviaGameEnabled = isTriviaGameEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
-            shinyTriviaMultiplier = shinyTriviaMultiplier,
-            superTriviaGameMultiplier = superTriviaGameMultiplier,
+            superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             triviaGamePoints = triviaGamePoints,
+            triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
             discord = discord,

@@ -525,9 +525,9 @@ class TriviaGameRedemption(AbsPointRedemption):
         if twitchUser.hasWaitForTriviaAnswerDelay():
             secondsToLive = twitchUser.getWaitForTriviaAnswerDelay()
 
-        shinyTriviaMultiplier = generalSettings.getShinyTriviaMultiplier()
-        if twitchUser.hasShinyTriviaMultiplier():
-            shinyTriviaMultiplier = twitchUser.getShinyTriviaMultiplier()
+        shinyTriviaMultiplier = generalSettings.getTriviaGameShinyMultiplier()
+        if twitchUser.hasTriviaGameShinyMultiplier():
+            shinyTriviaMultiplier = twitchUser.getTriviaGameShinyMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = twitchUser.getHandle(),
