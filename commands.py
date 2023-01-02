@@ -1375,21 +1375,22 @@ class MyCutenessCommand(AbsCommand):
             return
 
         userId = str(ctx.author.id)
+        userName = ctx.author.name
 
         try:
             result = await self.__cutenessRepository.fetchCuteness(
                 fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
-                userName = ctx.author.name
+                userName = userName
             )
 
             await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result, self.__delimiter))
         except ValueError:
-            self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {ctx.author.name}:{userId}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {ctx.author.name}')
+            self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {userName}:{userId}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {userName}')
 
-        self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {ctx.author.name}:{userId} in {user.getHandle()}')
+        self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {userName}:{userId} in {user.getHandle()}')
 
 
 class MyCutenessHistoryCommand(AbsCommand):
@@ -1454,10 +1455,6 @@ class MyCutenessHistoryCommand(AbsCommand):
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError):
-                # this exception can be safely ignored
-                pass
-
-            if not utils.isValidStr(userId):
                 self.__timber.log('MyCutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
@@ -2309,7 +2306,7 @@ class TriviaScoreCommand(AbsCommand):
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError) as e:
                 self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e)
-                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user ID for \"{userName}\" in the database')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database')
                 return
         else:
             userId = str(ctx.author.id)
