@@ -193,9 +193,7 @@ bannedWordsRepository = BannedWordsRepository(
     timber = timber
 )
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    userIdsRepository = userIdsRepository
+    backingDatabase = backingDatabase
 )
 triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
