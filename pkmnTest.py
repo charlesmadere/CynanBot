@@ -58,8 +58,8 @@ async def main():
     move = await pokepediaRepository.fetchRandomMove(PokepediaGeneration.GENERATION_3)
     print(move)
 
-    question = await pkmnTriviaQuestionRepository.fetchTriviaQuestion(twitchChannel = 'smCharles')
-    print(question)
+    # question = await pkmnTriviaQuestionRepository.fetchTriviaQuestion(twitchChannel = 'smCharles')
+    # print(question)
 
     pass
 
