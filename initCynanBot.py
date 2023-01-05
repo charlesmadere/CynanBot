@@ -4,8 +4,6 @@ import locale
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
-from CynanBotCommon.analogue.analogueStoreRepository import \
-    AnalogueStoreRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
@@ -95,6 +93,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from twitch.twitchUtils import TwitchUtils
+from users.addUserDataHelper import AddUserDataHelper
 from users.usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
@@ -153,6 +152,7 @@ userIdsRepository = UserIdsRepository(
 )
 timeZoneRepository = TimeZoneRepository()
 usersRepository = UsersRepository(
+    timber = timber,
     timeZoneRepository = timeZoneRepository
 )
 cutenessRepository = CutenessRepository(
@@ -230,8 +230,8 @@ triviaGameControllersRepository = TriviaGameControllersRepository(
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
+    administratorProviderInterface = generalSettingsRepository,
     backingDatabase = backingDatabase,
-    administrator = generalSettingsRepository.getAll().requireAdministrator(),
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
@@ -245,7 +245,7 @@ triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
 triviaUtils = TriviaUtils(
-    generalSettingsRepository = generalSettingsRepository,
+    administratorProviderInterface = generalSettingsRepository,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     usersRepository = usersRepository
@@ -373,8 +373,7 @@ triviaRepository = TriviaRepository(
 
 cynanBot = CynanBot(
     eventLoop = eventLoop,
-    analogueStoreRepository = AnalogueStoreRepository(
-        networkClientProvider = networkClientProvider,
+    addUserDataHelper = AddUserDataHelper(
         timber = timber
     ),
     authRepository = authRepository,

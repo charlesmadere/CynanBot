@@ -7,6 +7,8 @@ from twitchio.ext.commands import Context
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBotCommon.analogue.analogueStoreRepository import \
     AnalogueStoreRepository
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
@@ -21,6 +23,7 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
@@ -63,6 +66,7 @@ from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
 from twitch.twitchUtils import TwitchUtils
+from users.addUserDataHelper import AddUserDataHelper
 from users.user import User
 from users.usersRepository import UsersRepository
 
@@ -214,57 +218,98 @@ class AddTriviaControllerCommand(AbsCommand):
         self.__timber.log('AddTriviaControllerCommand', f'Handled !addtriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
-class AnalogueCommand(AbsCommand):
+class AddUserCommand(AbsCommand):
 
     def __init__(
         self,
-        analogueStoreRepository: AnalogueStoreRepository,
-        generalSettingsRepository: GeneralSettingsRepository,
+        addUserDataHelper: AddUserDataHelper,
+        administratorProviderInterface: AdministratorProviderInterface,
         timber: Timber,
+        twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 5)
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository
     ):
-        if analogueStoreRepository is None:
-            raise ValueError(f'analogueStoreRepository argument is malformed: \"{analogueStoreRepository}\"')
-        elif generalSettingsRepository is None:
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif twitchUtils is None:
+        if not isinstance(addUserDataHelper, AddUserDataHelper):
+            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
+        elif not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(userIdsRepository, UserIdsRepository):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__analogueStoreRepository: AnalogueStoreRepository = analogueStoreRepository
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: Timber = timber
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: Context):
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        administrator = await self.__administratorProviderInterface.getAdministrator()
 
-        if not generalSettings.isAnalogueEnabled():
-            return
-        elif not user.isAnalogueEnabled():
-            return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if ctx.author.name.lower() != administrator.lower():
+            self.__timber.log('AddUserCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
-        includePrices = 'includePrices' in splits
+        splits = utils.getCleanedSplits(ctx.message.contents)
+        if len(splits) < 2:
+            self.__timber.log('AddUserCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
+            return
+
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+
+        if not utils.isValidStr(userName):
+            self.__timber.log('AddUserCommand', f'Invalid username argument given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
+            return
 
         try:
-            result = await self.__analogueStoreRepository.fetchStoreStock()
-            await self.__twitchUtils.safeSend(ctx, result.toStr(includePrices = includePrices))
-        except (RuntimeError, ValueError) as e:
-            self.__timber.log('AnalogueCommand', f'Error fetching Analogue store stock: {e}', e)
-            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching Analogue store stock')
+            await self.__usersRepository.getUserAsync(userName)
+            self.__timber.log('AddUserCommand', f'Username argument (\"{userName}\") given by {ctx.author.name}:{ctx.author.id} already exists as a user')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
+            return
+        except RuntimeError as e:
+            # this exception can be safely ignored
+            pass
 
-        self.__timber.log('AnalogueCommand', f'Handled !analogue command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        userId: Optional[str] = None
+
+        try:
+            userId = await self.__userIdsRepository.fetchUserId(
+                userName = userName,
+                twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to a generic network exception: {e}', e)
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to a generic network error!')
+            return
+        except RuntimeError as e:
+            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to an internal error: {e}', e)
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to an internal error!')
+            return
+
+        if not utils.isValidStr(userId):
+            self.__timber.log('AddUserCommand', f'Failed to fetch userId for \"{userName}\" due to an unknown internal error')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to fetch user ID for \"{userName}\" due to an unknown internal error')
+            return
+
+        await self.__addUserDataHelper.setUserData(
+            userId = userId,
+            userName = userName
+        )
+
+        self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class AnswerCommand(AbsCommand):
@@ -405,7 +450,6 @@ class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
-        analogueStoreRepository: Optional[AnalogueStoreRepository],
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
         funtoonRepository: Optional[FuntoonRepository],
@@ -430,7 +474,6 @@ class ClearCachesCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__analogueStoreRepository: Optional[AnalogueStoreRepository] = analogueStoreRepository
         self.__authRepository: AuthRepository = authRepository
         self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
@@ -451,9 +494,6 @@ class ClearCachesCommand(AbsCommand):
         if ctx.author.name.lower() != generalSettings.requireAdministrator().lower():
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             return
-
-        if self.__analogueStoreRepository is not None:
-            await self.__analogueStoreRepository.clearCaches()
 
         await self.__authRepository.clearCaches()
 
@@ -711,6 +751,52 @@ class CommandsCommand(AbsCommand):
         commandsString = self.__delimiter.join(commands)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
         self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
+class ConfirmCommand(AbsCommand):
+
+    def __init__(
+        self,
+        addUserDataHelper: AddUserDataHelper,
+        administratorProviderInterface: AdministratorProviderInterface,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(addUserDataHelper, AddUserDataHelper):
+            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
+        elif not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__timber: Timber = timber
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        administrator = await self.__administratorProviderInterface.getAdministrator()
+
+        if ctx.author.name.lower() != administrator.lower():
+            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            return
+
+        userData = await self.__addUserDataHelper.getUserData()
+
+        if userData is None:
+            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried confirming the addition of a new user, but there is no persisted user data')
+            return
+
+        await self.__usersRepository.addUser(userData.getUserName())
+        await self.__addUserDataHelper.notifyAddUserListenerAndClearData()
+
+        self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class CutenessCommand(AbsCommand):

@@ -1,5 +1,5 @@
 from asyncio import AbstractEventLoop
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from twitchio import Channel, Message
 from twitchio.ext import commands
@@ -10,13 +10,13 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
-                      AddTriviaControllerCommand, AnalogueCommand,
+                      AddTriviaControllerCommand, AddUserCommand,
                       AnswerCommand, BanTriviaQuestionCommand,
                       ClearCachesCommand, ClearSuperTriviaQueueCommand,
-                      CommandsCommand, CutenessChampionsCommand,
-                      CutenessCommand, CutenessHistoryCommand,
-                      CynanSourceCommand, DiscordCommand,
-                      GetGlobalTriviaControllersCommand,
+                      CommandsCommand, ConfirmCommand,
+                      CutenessChampionsCommand, CutenessCommand,
+                      CutenessHistoryCommand, CynanSourceCommand,
+                      DiscordCommand, GetGlobalTriviaControllersCommand,
                       GetTriviaControllersCommand, GiveCutenessCommand,
                       JishoCommand, LoremIpsumCommand, MyCutenessCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
@@ -28,8 +28,6 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       TriviaScoreCommand, TwitterCommand,
                       UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
-from CynanBotCommon.analogue.analogueStoreRepository import \
-    AnalogueStoreRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
@@ -102,15 +100,18 @@ from triviaUtils import TriviaUtils
 from twitch.eventSubUtils import EventSubUtils
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchUtils import TwitchUtils
+from users.addUserData import AddUserData
+from users.addUserDataHelper import AddUserDataHelper
+from users.addUserEventListener import AddUserEventListener
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot, TriviaEventListener):
+class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
 
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        analogueStoreRepository: Optional[AnalogueStoreRepository],
+        addUserDataHelper: AddUserDataHelper,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
         chatLogger: Optional[ChatLogger],
@@ -155,6 +156,8 @@ class CynanBot(commands.Bot, TriviaEventListener):
 
         if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(addUserDataHelper, AddUserDataHelper):
+            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -172,6 +175,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
@@ -187,7 +191,9 @@ class CynanBot(commands.Bot, TriviaEventListener):
         ## Initialization of command objects ##
         #######################################
 
+        self.__addUserCommand: AbsCommand = AddUserCommand(addUserDataHelper, generalSettingsRepository, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsCommand = ConfirmCommand(addUserDataHelper, generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
@@ -195,11 +201,6 @@ class CynanBot(commands.Bot, TriviaEventListener):
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
-
-        if analogueStoreRepository is None:
-            self.__analogueCommand: AbsCommand = StubCommand()
-        else:
-            self.__analogueCommand: AbsCommand = AnalogueCommand(analogueStoreRepository, generalSettingsRepository, timber, twitchUtils, usersRepository)
 
         if triviaGameGlobalControllersRepository is None or triviaUtils is None:
             self.__addGlobalTriviaControllerCommand: AbsCommand = StubCommand()
@@ -219,7 +220,7 @@ class CynanBot(commands.Bot, TriviaEventListener):
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, twitchUtils, usersRepository)
 
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(analogueStoreRepository, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -609,6 +610,8 @@ class CynanBot(commands.Bot, TriviaEventListener):
         authSnapshot = await self.__authRepository.getAllAsync()
         self.__timber.log('CynanBot', f'{authSnapshot.requireNick()} is ready!')
 
+        self.__addUserDataHelper.setAddUserEventListener(self)
+
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self)
 
@@ -635,6 +638,12 @@ class CynanBot(commands.Bot, TriviaEventListener):
         except KeyError as e:
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
+
+    async def onAddNewUserEvent(self, event: AddUserData):
+        self.__timber.log('CynanBot', f'Received new add user data event: \"{event}\"')
+        channels: List[str] = list()
+        channels.append(event.getUserName())
+        await self.join_channels(channels)
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         triviaEventType = event.getTriviaEventType()
@@ -789,9 +798,9 @@ class CynanBot(commands.Bot, TriviaEventListener):
     async def command_addtriviacontroller(self, ctx: Context):
         await self.__addTriviaControllerCommand.handleCommand(ctx)
 
-    @commands.command(name = 'analogue')
-    async def command_analogue(self, ctx: Context):
-        await self.__analogueCommand.handleCommand(ctx)
+    @commands.command(name = 'adduser')
+    async def command_adduser(self, ctx: Context):
+        await self.__addUserCommand.handleCommand(ctx)
 
     @commands.command(name = 'answer')
     async def command_answer(self, ctx: Context):
@@ -812,6 +821,10 @@ class CynanBot(commands.Bot, TriviaEventListener):
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
         await self.__commandsCommand.handleCommand(ctx)
+
+    @commands.command(name = 'confirm')
+    async def command_confirm(self, ctx: Context):
+        await self.__confirmCommand.handleCommand(ctx)
 
     @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx: Context):

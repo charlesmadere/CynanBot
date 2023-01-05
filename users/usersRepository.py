@@ -8,6 +8,7 @@ import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
@@ -20,19 +21,40 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
+        timber: Timber,
         timeZoneRepository: TimeZoneRepository,
         usersFile: str = 'users/usersRepository.json'
     ):
-        if not isinstance(timeZoneRepository, TimeZoneRepository):
+        if not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepository):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
+        self.__timber: Timber = timber
         self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
         self.__usersFile: str = usersFile
 
         self.__jsonCache: Optional[Dict[str, Any]] = None
         self.__userCache: Dict[str, User] = dict()
+
+    async def addUser(self, handle: str):
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        self.__timber.log('UsersRepository', f'Adding user \"{handle}\"...')
+
+        jsonContents = await self.__readJsonAsync()
+
+        async with aiofiles.open(self.__usersFile, mode = 'w') as file:
+            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
+            await file.write(jsonString)
+
+        # be sure to clear caches, as JSON file contents have now been updated
+        await self.clearCaches()
+
+        self.__timber.log('UsersRepository', f'Finished adding user \"{handle}\"')
 
     async def clearCaches(self):
         self.__jsonCache = None

@@ -6,10 +6,12 @@ import aiofiles
 import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
-class GeneralSettingsRepository():
+class GeneralSettingsRepository(AdministratorProviderInterface):
 
     def __init__(
         self,
@@ -23,6 +25,10 @@ class GeneralSettingsRepository():
 
     async def clearCaches(self):
         self.__cache = None
+
+    async def getAdministrator(self) -> str:
+        snapshot = await self.getAllAsync()
+        return snapshot.requireAdministrator()
 
     def getAll(self) -> GeneralSettingsRepositorySnapshot:
         if self.__cache is not None:

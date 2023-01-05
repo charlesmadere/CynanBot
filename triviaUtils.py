@@ -2,6 +2,8 @@ import locale
 from typing import List, Optional
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
@@ -14,7 +16,6 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
-from generalSettingsRepository import GeneralSettingsRepository
 from users.usersRepository import UsersRepository
 
 
@@ -22,13 +23,13 @@ class TriviaUtils():
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
+        administratorProviderInterface: AdministratorProviderInterface,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         usersRepository: UsersRepository
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
@@ -36,7 +37,7 @@ class TriviaUtils():
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -443,8 +444,8 @@ class TriviaUtils():
             if userName == globalGameController.getUserName().lower():
                 return True
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        if userName == generalSettings.requireAdministrator().lower():
+        administrator = await self.__administratorProviderInterface.getAdministrator()
+        if userName == administrator.lower():
             return True
 
         return False
