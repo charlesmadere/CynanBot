@@ -92,8 +92,8 @@ class UsersRepository(UsersRepositoryInterface):
             cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
-        picOfTheDayFile: str = None
-        picOfTheDayRewardId: str = None
+        picOfTheDayFile: Optional[str] = None
+        picOfTheDayRewardId: Optional[str] = None
         if isPicOfTheDayEnabled:
             picOfTheDayFile = userJson.get('picOfTheDayFile')
             picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
@@ -199,8 +199,8 @@ class UsersRepository(UsersRepositoryInterface):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         users: List[User] = list()
-        for key in jsonContents:
-            user = self.__createUser(key, jsonContents[key])
+        for key, userJson in jsonContents.items():
+            user = self.__createUser(key, userJson)
             users.append(user)
 
         if not utils.hasItems(users):
@@ -212,7 +212,7 @@ class UsersRepository(UsersRepositoryInterface):
     def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif not utils.hasItems(jsonContents):
+        elif jsonContents is None:
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         if handle.lower() in self.__userCache:
