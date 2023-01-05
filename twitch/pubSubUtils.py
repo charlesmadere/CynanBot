@@ -116,7 +116,9 @@ class PubSubUtils():
                 )
 
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-            except (GenericNetworkException, TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:
+            except GenericNetworkException as e:
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e)
+            except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:
                 # if we run into one of the Twitch errors, that most likely means that this user changed their password
                 self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\": {e}', e)
 
