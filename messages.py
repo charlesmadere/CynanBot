@@ -177,7 +177,7 @@ class CynanMessage(AbsMessage):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(cynanUserName):
             raise ValueError(f'cynanUserName argument is malformed: \"{cynanUserName}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
