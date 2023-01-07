@@ -628,7 +628,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         await self.wait_for_ready()
 
         try:
-            channel: Channel = self.get_channel(twitchChannel)
+            channel = self.get_channel(twitchChannel)
 
             if channel is None:
                 self.__timber.log('CynanBot', f'Unable to get twitchChannel: \"{twitchChannel}\"')
