@@ -55,7 +55,7 @@ class AddUserDataHelper():
             return
 
         await self.clearUserData()
-        await self.__addUserEventListener.onAddNewUserEvent(addUserData)
+        await addUserEventListener.onAddNewUserEvent(addUserData)
 
     def setAddUserEventListener(self, listener: Optional[AddUserEventListener]):
         self.__addUserEventListener = listener
