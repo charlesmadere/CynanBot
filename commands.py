@@ -259,7 +259,7 @@ class AddUserCommand(AbsCommand):
             self.__timber.log('AddUserCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.contents)
+        splits = utils.getCleanedSplits(ctx.message.content)
         if len(splits) < 2:
             self.__timber.log('AddUserCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
