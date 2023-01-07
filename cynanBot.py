@@ -473,7 +473,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
-        self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
+        self.__timber.log('CynanBot', f'Reward \"{rewardId}\" redeemed by {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}:{twitchUserIdStr}')
 
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
