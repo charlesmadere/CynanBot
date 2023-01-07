@@ -469,13 +469,12 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         redemptionMessage: str = event.input
         lruCacheId = f'{twitchUserNameStr}:{event.id}'.lower()
 
-        if generalSettings.isDebugLoggingEnabled() or generalSettings.isRewardIdPrintingEnabled() or twitchUser.isRewardIdPrintingEnabled():
-            self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
-
         if self.__channelPointsLruCache.contains(lruCacheId):
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
+        self.__timber.log('CynanBot', f'Reward ID for {twitchUser.getHandle()}:{twitchUserIdStr} (redeemed by {userNameThatRedeemed}:{userIdThatRedeemed}): \"{rewardId}\"')
+
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
         if generalSettings.isPersistAllUsersEnabled():
