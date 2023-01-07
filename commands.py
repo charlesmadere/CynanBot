@@ -9,8 +9,6 @@ from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.analogue.analogueStoreRepository import \
-    AnalogueStoreRepository
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
