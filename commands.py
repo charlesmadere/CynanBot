@@ -449,6 +449,7 @@ class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
+        addUserDataHelper: AddUserDataHelper,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
         funtoonRepository: Optional[FuntoonRepository],
@@ -462,7 +463,9 @@ class ClearCachesCommand(AbsCommand):
         weatherRepository: Optional[WeatherRepository],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
-        if not isinstance(authRepository, AuthRepository):
+        if not isinstance(addUserDataHelper, AddUserDataHelper):
+            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
+        elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -473,6 +476,7 @@ class ClearCachesCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
@@ -494,6 +498,7 @@ class ClearCachesCommand(AbsCommand):
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             return
 
+        await self.__addUserDataHelper.clearCaches()
         await self.__authRepository.clearCaches()
 
         if self.__bannedWordsRepository is not None:

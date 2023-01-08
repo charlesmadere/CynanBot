@@ -30,7 +30,7 @@ class AddUserDataHelper():
         self.__addUserEventListener: Optional[AddUserEventListener] = None
         self.__setTime: Optional[datetime] = None
 
-    async def clearUserData(self):
+    async def clearCaches(self):
         self.__addUserData = None
         self.__setTime = None
 
@@ -54,7 +54,7 @@ class AddUserDataHelper():
             self.__timber.log('AddUserDataHelper', f'Attempted to notify listener of a new user being added, but no user data has been set')
             return
 
-        await self.clearUserData()
+        await self.clearCaches()
         await addUserEventListener.onAddNewUserEvent(addUserData)
 
     def setAddUserEventListener(self, listener: Optional[AddUserEventListener]):

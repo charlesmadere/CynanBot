@@ -192,6 +192,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(addUserDataHelper, generalSettingsRepository, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(addUserDataHelper, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(addUserDataHelper, generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -219,8 +220,6 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, twitchUtils, usersRepository)
-
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
