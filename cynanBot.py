@@ -639,7 +639,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
     async def onAddNewUserEvent(self, event: AddUserData):
-        self.__timber.log('CynanBot', f'Received new add user data event: \"{event}\"')
+        self.__timber.log('CynanBot', f'Received new add user data event: (userId=\"{event.getUserId()}\") (userName=\"{event.getUserName()}\")')
         channels: List[str] = list()
         channels.append(event.getUserName())
         await self.join_channels(channels)
