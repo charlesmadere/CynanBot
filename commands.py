@@ -307,6 +307,7 @@ class AddUserCommand(AbsCommand):
             userName = userName
         )
 
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`')
         self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 

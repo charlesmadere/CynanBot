@@ -46,6 +46,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__timber.log('UsersRepository', f'Adding user \"{handle}\"...')
 
         jsonContents = await self.__readJsonAsync()
+        jsonContents[handle] = dict()
 
         async with aiofiles.open(self.__usersFile, mode = 'w') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
