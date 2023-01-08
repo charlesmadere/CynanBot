@@ -31,11 +31,11 @@ class AddUserDataHelper():
         self.__setTime: Optional[datetime] = None
 
     async def clearUserData(self):
-        self.__setTime = None
         self.__addUserData = None
+        self.__setTime = None
 
     async def getUserData(self) -> Optional[AddUserData]:
-        now = datetime(self.__timeZone)
+        now = datetime.now(self.__timeZone)
 
         if self.__setTime is None or self.__setTime + self.__timeToLive < now:
             self.__addUserData = None
@@ -72,7 +72,7 @@ class AddUserDataHelper():
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__setTime = datetime(self.__timeZone)
+        self.__setTime = datetime.now(self.__timeZone)
 
         self.__addUserData = AddUserData(
             userId = userId,
