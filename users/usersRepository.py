@@ -241,9 +241,9 @@ class UsersRepository(UsersRepositoryInterface):
         if handle.lower() in self.__userCache:
             return self.__userCache[handle.lower()]
 
-        for key in jsonContents:
+        for key, userJson in jsonContents.items():
             if handle.lower() == key.lower():
-                return self.__createUser(handle, jsonContents[key])
+                return self.__createUser(handle, userJson)
 
         raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
 
