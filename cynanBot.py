@@ -620,6 +620,10 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
 
+    async def event_usernotice_subscription(self, metadata):
+        self.__timber.log('CynanBot', f'event_usernotice_subscription(): \"{metadata}\"')
+        pass
+
     async def __getChannel(self, twitchChannel: str) -> Channel:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
