@@ -44,8 +44,13 @@ class UsersRepository(UsersRepositoryInterface):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
 
         self.__timber.log('UsersRepository', f'Adding user \"{handle}\"...')
-
         jsonContents = await self.__readJsonAsync()
+
+        for key in jsonContents.keys():
+            if key.lower() == handle.lower():
+                self.__timber.log('UsersRepository', f'Unable to add user \"{handle}\" as a user with that handle already exists')
+                return
+
         jsonContents[handle] = dict()
 
         async with aiofiles.open(self.__usersFile, mode = 'w') as file:
@@ -347,3 +352,31 @@ class UsersRepository(UsersRepositoryInterface):
 
         self.__jsonCache = jsonContents
         return jsonContents
+
+    async def removeUser(self, handle: str):
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        self.__timber.log('UsersRepository', f'Removing user \"{handle}\"...')
+        jsonContents = await self.__readJsonAsync()
+        preExistingHandle: Optional[str] = None
+
+        for key in jsonContents.keys():
+            if key.lower() == handle.lower():
+                preExistingHandle = key
+                break
+
+        if not utils.isValidStr(preExistingHandle):
+            self.__timber.log('UsersRepository', f'Unable to remove user \"{handle}\" as no user with that handle currently exists')
+            return
+
+        del jsonContents[preExistingHandle]
+
+        async with aiofiles.open(self.__usersFile, mode = 'w') as file:
+            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
+            await file.write(jsonString)
+
+        # be sure to clear caches, as JSON file contents have now been updated
+        await self.clearCaches()
+
+        self.__timber.log('UsersRepository', f'Finished removing user \"{handle}\"')

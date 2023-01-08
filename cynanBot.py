@@ -100,18 +100,18 @@ from triviaUtils import TriviaUtils
 from twitch.eventSubUtils import EventSubUtils
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchUtils import TwitchUtils
-from users.addUserData import AddUserData
-from users.addUserDataHelper import AddUserDataHelper
-from users.addUserEventListener import AddUserEventListener
+from users.modifyUserActionType import ModifyUserActionType
+from users.modifyUserData import ModifyUserData
+from users.modifyUserDataHelper import ModifyUserDataHelper
+from users.modifyUserEventListener import ModifyUserEventListener
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
+class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
 
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        addUserDataHelper: AddUserDataHelper,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
         chatLogger: Optional[ChatLogger],
@@ -122,6 +122,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
         locationsRepository: Optional[LocationsRepository],
+        modifyUserDataHelper: ModifyUserDataHelper,
         pokepediaRepository: Optional[PokepediaRepository],
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
@@ -156,14 +157,14 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
 
         if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(addUserDataHelper, AddUserDataHelper):
-            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
@@ -175,9 +176,9 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -191,10 +192,10 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         ## Initialization of command objects ##
         #######################################
 
-        self.__addUserCommand: AbsCommand = AddUserCommand(addUserDataHelper, generalSettingsRepository, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(addUserDataHelper, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__addUserCommand: AbsCommand = AddUserCommand(generalSettingsRepository, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(modifyUserDataHelper, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
-        self.__confirmCommand: AbsCommand = ConfirmCommand(addUserDataHelper, generalSettingsRepository, timber, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsCommand = ConfirmCommand(modifyUserDataHelper, generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
@@ -610,7 +611,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         authSnapshot = await self.__authRepository.getAllAsync()
         self.__timber.log('CynanBot', f'{authSnapshot.requireNick()} is ready!')
 
-        self.__addUserDataHelper.setAddUserEventListener(self)
+        self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self)
@@ -643,11 +644,19 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
-    async def onAddNewUserEvent(self, event: AddUserData):
-        self.__timber.log('CynanBot', f'Received new add user data event: {event.toStr()}')
-        channels: List[str] = list()
-        channels.append(event.getUserName())
-        await self.join_channels(channels)
+    async def onModifyUserEvent(self, event: ModifyUserData):
+        self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
+
+        await self.wait_for_ready()
+
+        if event.getActionType() is ModifyUserActionType.ADD:
+            channels: List[str] = list()
+            channels.append(event.getUserName())
+            await self.join_channels(channels)
+        elif event.getActionType() is ModifyUserActionType.REMOVE:
+            pass
+        else:
+            raise RuntimeError(f'unknown ModifyUserActionType: \"{event.getActionType()}\"')
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         triviaEventType = event.getTriviaEventType()

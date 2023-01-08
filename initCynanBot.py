@@ -93,7 +93,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from twitch.twitchUtils import TwitchUtils
-from users.addUserDataHelper import AddUserDataHelper
+from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
@@ -373,9 +373,6 @@ triviaRepository = TriviaRepository(
 
 cynanBot = CynanBot(
     eventLoop = eventLoop,
-    addUserDataHelper = AddUserDataHelper(
-        timber = timber
-    ),
     authRepository = authRepository,
     bannedWordsRepository = bannedWordsRepository,
     chatLogger = ChatLogger(
@@ -392,6 +389,9 @@ cynanBot = CynanBot(
     languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
         timeZoneRepository = timeZoneRepository
+    ),
+    modifyUserDataHelper = ModifyUserDataHelper(
+        timber = timber
     ),
     pokepediaRepository = pokepediaRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,

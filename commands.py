@@ -64,7 +64,8 @@ from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
 from twitch.twitchUtils import TwitchUtils
-from users.addUserDataHelper import AddUserDataHelper
+from users.modifyUserActionType import ModifyUserActionType
+from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.user import User
 from users.usersRepository import UsersRepository
 
@@ -220,18 +221,18 @@ class AddUserCommand(AbsCommand):
 
     def __init__(
         self,
-        addUserDataHelper: AddUserDataHelper,
         administratorProviderInterface: AdministratorProviderInterface,
+        modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
     ):
-        if not isinstance(addUserDataHelper, AddUserDataHelper):
-            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
-        elif not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
@@ -243,8 +244,8 @@ class AddUserCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -302,7 +303,8 @@ class AddUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to fetch user ID for \"{userName}\" due to an unknown internal error')
             return
 
-        await self.__addUserDataHelper.setUserData(
+        await self.__modifyUserDataHelper.setUserData(
+            actionType = ModifyUserActionType.ADD,
             userId = userId,
             userName = userName
         )
@@ -449,12 +451,12 @@ class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
-        addUserDataHelper: AddUserDataHelper,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
         funtoonRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: Optional[LocationsRepository],
+        modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepository: Optional[TwitchTokensRepository],
@@ -463,12 +465,12 @@ class ClearCachesCommand(AbsCommand):
         weatherRepository: Optional[WeatherRepository],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
-        if not isinstance(addUserDataHelper, AddUserDataHelper):
-            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
-        elif not isinstance(authRepository, AuthRepository):
+        if not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
@@ -476,12 +478,12 @@ class ClearCachesCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
         self.__authRepository: AuthRepository = authRepository
         self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
         self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
+        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
@@ -498,7 +500,6 @@ class ClearCachesCommand(AbsCommand):
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
             return
 
-        await self.__addUserDataHelper.clearCaches()
         await self.__authRepository.clearCaches()
 
         if self.__bannedWordsRepository is not None:
@@ -511,6 +512,8 @@ class ClearCachesCommand(AbsCommand):
 
         if self.__locationsRepository is not None:
             await self.__locationsRepository.clearCaches()
+
+        await self.__modifyUserDataHelper.clearCaches()
 
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()
@@ -761,16 +764,16 @@ class ConfirmCommand(AbsCommand):
 
     def __init__(
         self,
-        addUserDataHelper: AddUserDataHelper,
         administratorProviderInterface: AdministratorProviderInterface,
+        modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(addUserDataHelper, AddUserDataHelper):
-            raise ValueError(f'addUserDataHelper argument is malformed: \"{addUserDataHelper}\"')
-        elif not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
@@ -778,7 +781,7 @@ class ConfirmCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__addUserDataHelper: AddUserDataHelper = addUserDataHelper
+        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
@@ -791,14 +794,20 @@ class ConfirmCommand(AbsCommand):
             self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
             return
 
-        userData = await self.__addUserDataHelper.getUserData()
+        userData = await self.__modifyUserDataHelper.getUserData()
 
         if userData is None:
-            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried confirming the addition of a new user, but there is no persisted user data')
+            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
             return
 
-        await self.__usersRepository.addUser(userData.getUserName())
-        await self.__addUserDataHelper.notifyAddUserListenerAndClearData()
+        if userData.getActionType() is ModifyUserActionType.ADD:
+            await self.__usersRepository.addUser(userData.getUserName())
+        elif userData.getActionType() is ModifyUserActionType.REMOVE:
+            await self.__usersRepository.removeUser(userData.getUserName())
+        else:
+            raise RuntimeError(f'unknown ModifyUserActionType: \"{userData.getActionType()}\"')
+
+        await self.__modifyUserDataHelper.notifyModifyUserListenerAndClearData()
 
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 

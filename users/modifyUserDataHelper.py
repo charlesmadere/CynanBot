@@ -3,11 +3,12 @@ from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timber import Timber
-from users.addUserData import AddUserData
-from users.addUserEventListener import AddUserEventListener
+from users.modifyUserActionType import ModifyUserActionType
+from users.modifyUserData import ModifyUserData
+from users.modifyUserEventListener import ModifyUserEventListener
 
 
-class AddUserDataHelper():
+class ModifyUserDataHelper():
 
     def __init__(
         self,
@@ -26,46 +27,49 @@ class AddUserDataHelper():
         self.__timeToLive: timedelta = timeToLive
         self.__timeZone: timezone = timeZone
 
-        self.__addUserData: Optional[AddUserData] = None
-        self.__addUserEventListener: Optional[AddUserEventListener] = None
+        self.__modifyUserData: Optional[ModifyUserData] = None
+        self.__modifyUserEventListener: Optional[ModifyUserEventListener] = None
         self.__setTime: Optional[datetime] = None
 
     async def clearCaches(self):
-        self.__addUserData = None
+        self.__modifyUserData = None
         self.__setTime = None
 
-    async def getUserData(self) -> Optional[AddUserData]:
+    async def getUserData(self) -> Optional[ModifyUserData]:
         now = datetime.now(self.__timeZone)
 
         if self.__setTime is None or self.__setTime + self.__timeToLive < now:
-            self.__addUserData = None
+            self.__modifyUserData = None
             return None
 
-        return self.__addUserData
+        return self.__modifyUserData
 
-    async def notifyAddUserListenerAndClearData(self):
-        addUserEventListener = self.__addUserEventListener
-        if addUserEventListener is None:
-            self.__timber.log('AddUserDataHelper', f'Attempted to notify listener of a new user being added, but no listener has been set')
+    async def notifyModifyUserListenerAndClearData(self):
+        modifyUserEventListener = self.__modifyUserEventListener
+        if modifyUserEventListener is None:
+            self.__timber.log('ModifyUserDataHelper', f'Attempted to notify listener of a user being modified, but no listener has been set')
             return
 
-        addUserData = self.__addUserData
-        if addUserData is None:
-            self.__timber.log('AddUserDataHelper', f'Attempted to notify listener of a new user being added, but no user data has been set')
+        modifyUserData = self.__modifyUserData
+        if modifyUserData is None:
+            self.__timber.log('ModifyUserDataHelper', f'Attempted to notify listener of a user being modified, but no user data has been set')
             return
 
         await self.clearCaches()
-        await addUserEventListener.onAddNewUserEvent(addUserData)
+        await modifyUserEventListener.onModifyUserEvent(modifyUserData)
 
-    def setAddUserEventListener(self, listener: Optional[AddUserEventListener]):
-        self.__addUserEventListener = listener
+    def setModifyUserEventListener(self, listener: Optional[ModifyUserEventListener]):
+        self.__modifyUserEventListener = listener
 
     async def setUserData(
         self,
+        actionType: ModifyUserActionType,
         userId: str,
         userName: str
     ):
-        if not utils.isValidStr(userId):
+        if not isinstance(actionType, ModifyUserActionType):
+            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
@@ -74,9 +78,10 @@ class AddUserDataHelper():
 
         self.__setTime = datetime.now(self.__timeZone)
 
-        self.__addUserData = AddUserData(
+        self.__modifyUserData = ModifyUserData(
+            actionType = actionType,
             userId = userId,
             userName = userName
         )
 
-        self.__timber.log('AddUserDataHelper', f'Persisted user data: (userId=\"{userId}\") (userName=\"{userName}\")')
+        self.__timber.log('ModifyUserDataHelper', f'Persisted user data: (actionType=\"{actionType}\") (userId=\"{userId}\") (userName=\"{userName}\")')
