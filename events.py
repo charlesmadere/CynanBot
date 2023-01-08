@@ -17,12 +17,7 @@ from users.user import User
 class AbsEvent(ABC):
 
     @abstractmethod
-    async def handleEvent(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        tags: Dict[str, Any]
-    ) -> bool:
+    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
         pass
 
 
@@ -41,20 +36,8 @@ class RaidLogEvent(AbsEvent):
         self.__chatLogger: ChatLogger = chatLogger
         self.__timber: Timber = timber
 
-    async def handleEvent(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        tags: Dict[str, Any]
-    ) -> bool:
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif tags is None:
-            raise ValueError(f'tags argument is malformed: \"{tags}\"')
-
-        if not twitchUser.isChatLoggingEnabled():
+    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+        if not user.isChatLoggingEnabled():
             return False
 
         raidedByName = tags.get('msg-param-displayName')
@@ -64,7 +47,7 @@ class RaidLogEvent(AbsEvent):
             raidedByName = tags.get('login')
 
         if not utils.isValidStr(raidedByName):
-            self.__timber.log('RaidLogEvent', f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
+            self.__timber.log('RaidLogEvent', f'{user.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
             return False
 
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', 0)
@@ -72,7 +55,7 @@ class RaidLogEvent(AbsEvent):
         self.__chatLogger.logRaid(
             raidSize = raidSize,
             fromWho = raidedByName,
-            twitchChannel = twitchUser.getHandle()
+            twitchChannel = user.getHandle()
         )
 
         return True
@@ -97,24 +80,12 @@ class RaidThankEvent(AbsEvent):
         self.__timber: Timber = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
 
-    async def handleEvent(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        tags: Dict[str, Any]
-    ) -> bool:
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif tags is None:
-            raise ValueError(f'tags argument is malformed: \"{tags}\"')
-
+    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isRaidLinkMessagingEnabled():
             return False
-        elif not twitchUser.isRaidLinkMessagingEnabled():
+        elif not user.isRaidLinkMessagingEnabled():
             return False
 
         raidedByName = tags.get('msg-param-displayName')
@@ -124,10 +95,10 @@ class RaidThankEvent(AbsEvent):
             raidedByName = tags.get('login')
 
         if not utils.isValidStr(raidedByName):
-            self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
+            self.__timber.log('RaidEvent', f'{user.getHandle()} was raided, but the tags dictionary seems to have strange values: {tags}')
             return False
 
-        messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {twitchUser.getTwitchUrl()} Thank you! ✨'
+        messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {user.getTwitchUrl()} Thank you! 😻'
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', -1)
 
         message: str = None
@@ -138,13 +109,13 @@ class RaidThankEvent(AbsEvent):
             message = f'Thank you for the raid {raidedByName}! {messageSuffix}'
 
         await self.__twitchUtils.waitThenSend(
-            messageable = twitchChannel,
+            messageable = channel,
             delaySeconds = generalSettings.getRaidLinkMessagingDelay(),
             message = message,
-            twitchChannel = twitchUser.getHandle()
+            twitchChannel = user.getHandle()
         )
 
-        self.__timber.log('RaidEvent', f'{twitchUser.getHandle()} received raid of {raidSize} from {raidedByName}!')
+        self.__timber.log('RaidEvent', f'{user.getHandle()} received raid of {raidSize} from {raidedByName}!')
         return True
 
 
@@ -171,25 +142,13 @@ class SubGiftThankingEvent(AbsEvent):
         self.__timber: Timber = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
 
-    async def handleEvent(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        tags: Dict[str, Any]
-    ) -> bool:
-        if twitchChannel is None:
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif tags is None:
-            raise ValueError(f'tags argument is malformed: \"{tags}\"')
-
+    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         authSnapshot = await self.__authRepository.getAllAsync()
 
         if not generalSettings.isSubGiftThankingEnabled():
             return False
-        elif not twitchUser.isSubGiftThankingEnabled():
+        elif not user.isSubGiftThankingEnabled():
             return False
 
         giftedByName: str = tags.get('display-name')
@@ -208,13 +167,13 @@ class SubGiftThankingEvent(AbsEvent):
             return False
 
         await self.__twitchUtils.waitThenSend(
-            messageable = twitchChannel,
+            messageable = channel,
             delaySeconds = 8,
             message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨',
-            twitchChannel = twitchUser.getHandle()
+            twitchChannel = user.getHandle()
         )
 
-        self.__timber.log('SubGiftThankingEvent', f'{authSnapshot.requireNick()} received sub gift to {twitchUser.getHandle()} from {giftedByName}!')
+        self.__timber.log('SubGiftThankingEvent', f'{authSnapshot.requireNick()} received sub gift to {user.getHandle()} from {giftedByName}!')
         return True
 
 
@@ -223,10 +182,5 @@ class StubEvent(AbsEvent):
     def __init__(self):
         pass
 
-    async def handleEvent(
-        self,
-        twitchChannel: Channel,
-        twitchUser: User,
-        tags: Dict[str, Any]
-    ) -> bool:
+    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
         return False

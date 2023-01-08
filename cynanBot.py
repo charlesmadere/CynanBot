@@ -568,6 +568,7 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
 
     async def event_pubsub_pong(self):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
         if generalSettings.isPubSubPongLoggingEnabled():
             self.__timber.log('CynanBot', f'Received PubSub pong')
 
@@ -580,29 +581,30 @@ class CynanBot(commands.Bot, AddUserEventListener, TriviaEventListener):
         if not utils.isValidStr(msgId):
             return
 
-        twitchUser = await self.__usersRepository.getUserAsync(channel.name)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        twitchUser = await self.__usersRepository.getUserAsync(channel.name)
 
         if msgId == 'raid':
             await self.__raidLogEvent.handleEvent(
-                twitchChannel = channel,
-                twitchUser = twitchUser,
+                channel = channel,
+                user = twitchUser,
                 tags = tags
             )
 
             await self.__raidThankEvent.handleEvent(
-                twitchChannel = channel,
-                twitchUser = twitchUser,
+                channel = channel,
+                user = twitchUser,
                 tags = tags
             )
         elif msgId == 'subgift' or msgId == 'anonsubgift':
             await self.__subGiftThankingEvent.handleEvent(
-                twitchChannel = channel,
-                twitchUser = twitchUser,
+                channel = channel,
+                user = twitchUser,
                 tags = tags
             )
-        elif generalSettings.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_usernotice(): {tags}')
+
+        if generalSettings.isDebugLoggingEnabled():
+            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{channel}\") (tags=\"{tags}\")')
 
     async def event_ready(self):
         authSnapshot = await self.__authRepository.getAllAsync()
