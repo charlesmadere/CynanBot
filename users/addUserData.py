@@ -17,3 +17,6 @@ class AddUserData():
 
     def getUserName(self) -> str:
         return self.__userName
+
+    def toStr(self) -> str:
+        return f'(userId=\"{self.__userId}\") (userName=\"{self.__userName}\")'
