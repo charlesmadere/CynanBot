@@ -195,7 +195,7 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         self.__addUserCommand: AbsCommand = AddUserCommand(generalSettingsRepository, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
-        self.__confirmCommand: AbsCommand = ConfirmCommand(modifyUserDataHelper, generalSettingsRepository, timber, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsCommand = ConfirmCommand(generalSettingsRepository, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
