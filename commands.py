@@ -686,9 +686,13 @@ class CommandsCommand(AbsCommand):
 
         if isPrivilegedTriviaUser:
             commands.append('!bantriviaquestion')
-            commands.append('!clearsupertriviaqueue')
-            commands.append('!supertrivia')
-            commands.append('!triviainfo')
+
+            if user.isSuperTriviaGameEnabled():
+                commands.append('!clearsupertriviaqueue')
+                commands.append('!supertrivia')
+
+            if user.isTriviaGameEnabled() or user.isSuperTriviaGameEnabled():
+                commands.append('!triviainfo')
 
         if user.isCutenessEnabled():
             commands.append('!cuteness')
