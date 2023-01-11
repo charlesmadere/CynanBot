@@ -592,8 +592,8 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{channel}\") (tags=\"{tags}\")')
 
     async def event_ready(self):
-        authSnapshot = await self.__authRepository.getAllAsync()
-        self.__timber.log('CynanBot', f'{authSnapshot.requireNick()} is ready!')
+        twitchHandle = await self.__authRepository.getTwitchHandle()
+        self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
 
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
