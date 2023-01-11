@@ -336,22 +336,13 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
 
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsPointRedemption = StubPointRedemption()
-        else:
-            self.__pkmnBattlePointRedemption: AbsPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-
-        if funtoonRepository is None:
             self.__pkmnCatchPointRedemption: AbsPointRedemption = StubPointRedemption()
-        else:
-            self.__pkmnCatchPointRedemption: AbsPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-
-        if funtoonRepository is None:
             self.__pkmnEvolvePointRedemption: AbsPointRedemption = StubPointRedemption()
-        else:
-            self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-
-        if funtoonRepository is None:
             self.__pkmnShinyPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
+            self.__pkmnBattlePointRedemption: AbsPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnCatchPointRedemption: AbsPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
         if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
