@@ -683,7 +683,10 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Cleared super trivia game queue ({event.getNumberOfGamesRemovedStr()} game(s) removed).')
+
+        await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getClearedSuperTriviaQueueMessage(
+            numberOfGamesRemoved = event.getNumberOfGamesRemoved()
+        ))
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
