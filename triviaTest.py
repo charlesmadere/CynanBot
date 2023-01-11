@@ -1,9 +1,12 @@
 import asyncio
 from datetime import timedelta
 
+from authRepository import AuthRepository
+from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.network.requestsClientProvider import \
     RequestsClientProvider
+from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.timber.timber import Timber
@@ -11,6 +14,7 @@ from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
+from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
@@ -25,6 +29,8 @@ from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
+from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
+    PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.questionAnswerTriviaQuestion import \
@@ -32,6 +38,9 @@ from CynanBotCommon.trivia.questionAnswerTriviaQuestion import \
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
+from CynanBotCommon.trivia.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+    ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.superTriviaCooldownHelper import \
@@ -63,22 +72,57 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
+from CynanBotCommon.twitch.twitchApiService import TwitchApiService
+from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 
 eventLoop = asyncio.get_event_loop()
-backingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
-networkClientProvider: NetworkClientProvider = RequestsClientProvider()
 timber = Timber(eventLoop = eventLoop)
+authRepository = AuthRepository()
+backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
+networkClientProvider: NetworkClientProvider = RequestsClientProvider(
+    timber = timber
+)
+twitchApiService = TwitchApiService(
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    twitchCredentialsProviderInterface = authRepository
+)
+userIdsRepository = UserIdsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    twitchApiService = twitchApiService
+)
+cutenessRepository = CutenessRepository(
+    backingDatabase = backingDatabase,
+    userIdsRepository = userIdsRepository
+)
+bannedWordsRepository = BannedWordsRepository(
+    timber = timber
+)
 triviaAnswerCompiler = TriviaAnswerCompiler()
-triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase = backingDatabase)
+triviaEmoteGenerator = TriviaEmoteGenerator(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+triviaSettingsRepository = TriviaSettingsRepository()
+shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
+    backingDatabase = backingDatabase
+)
+shinyTriviaHelper = ShinyTriviaHelper(
+    cutenessRepository = cutenessRepository,
+    shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaIdGenerator = TriviaIdGenerator()
-triviaSettingsRepository = TriviaSettingsRepository()
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaContentScanner = TriviaContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -92,14 +136,14 @@ triviaAnswerChecker = TriviaAnswerChecker(
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaEmoteGenerator = TriviaEmoteGenerator(backingDatabase = backingDatabase)
-
 triviaGameMachine = TriviaGameMachine(
     eventLoop = eventLoop,
+    cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
         timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    shinyTriviaHelper = shinyTriviaHelper,
     superTriviaCooldownHelper = SuperTriviaCooldownHelper(
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -154,6 +198,16 @@ triviaGameMachine = TriviaGameMachine(
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
+        pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
+            pokepediaRepository = PokepediaRepository(
+                networkClientProvider = networkClientProvider,
+                timber = timber
+            ),
+            timber = timber,
+            triviaEmoteGenerator = triviaEmoteGenerator,
+            triviaIdGenerator = triviaIdGenerator,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
         quizApiTriviaQuestionRepository = None,
         timber = timber,
         triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
@@ -162,7 +216,9 @@ triviaGameMachine = TriviaGameMachine(
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
-        triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(),
+        triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
+            timber = timber
+        ),
         triviaSettingsRepository = triviaSettingsRepository,
         triviaVerifier = TriviaVerifier(
             bannedTriviaIdsRepository = bannedTriviaIdsRepository,
@@ -203,6 +259,7 @@ async def main():
 
     triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
         isQueueActionConsumed = False,
+        isShinyTriviaEnabled = True,
         numberOfGames = 1,
         perUserAttempts = 2,
         pointsForWinning = 25,
@@ -220,6 +277,7 @@ async def main():
 
     triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
         isQueueActionConsumed = False,
+        isShinyTriviaEnabled = True,
         numberOfGames = 1,
         perUserAttempts = 2,
         pointsForWinning = 25,
@@ -257,6 +315,6 @@ async def main():
     print(f'triviaQuestion={triviaQuestion}\nresult={result}')
 
     pass
-    # await asyncio.sleep(360)
+    await asyncio.sleep(360)
 
 eventLoop.run_until_complete(main())
