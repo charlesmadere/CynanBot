@@ -1,14 +1,14 @@
 import locale
 from abc import ABC, abstractmethod
-from asyncio import AbstractEventLoop
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from twitchio.channel import Channel
 
 import CynanBotCommon.utils as utils
-from authRepository import AuthRepository
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 from generalSettingsRepository import GeneralSettingsRepository
 from twitch.twitchUtils import TwitchUtils
 from users.user import User
@@ -40,7 +40,7 @@ class RaidLogEvent(AbsEvent):
         if not user.isChatLoggingEnabled():
             return False
 
-        raidedByName = tags.get('msg-param-displayName')
+        raidedByName: Optional[str] = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
             raidedByName = tags.get('display-name')
         if not utils.isValidStr(raidedByName):
@@ -88,7 +88,7 @@ class RaidThankEvent(AbsEvent):
         elif not user.isRaidLinkMessagingEnabled():
             return False
 
-        raidedByName = tags.get('msg-param-displayName')
+        raidedByName: Optional[str] = tags.get('msg-param-displayName')
         if not utils.isValidStr(raidedByName):
             raidedByName = tags.get('display-name')
         if not utils.isValidStr(raidedByName):
@@ -101,7 +101,7 @@ class RaidThankEvent(AbsEvent):
         messageSuffix = f'😻 Raiders, if you could, I\'d really appreciate you clicking this link to watch the stream. It helps me on my path to partner. {user.getTwitchUrl()} Thank you! 😻'
         raidSize = utils.getIntFromDict(tags, 'msg-param-viewerCount', -1)
 
-        message: str = None
+        message: str = ''
         if raidSize >= 10:
             raidSizeStr = locale.format_string("%d", raidSize, grouping = True)
             message = f'Thank you for the raid of {raidSizeStr} {raidedByName}! {messageSuffix}'
@@ -123,47 +123,51 @@ class SubGiftThankingEvent(AbsEvent):
 
     def __init__(
         self,
-        authRepository: AuthRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
+        twitchHandleProviderInterface: TwitchHandleProviderInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(authRepository, AuthRepository):
-            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchHandleProviderInterface, TwitchHandleProviderInterface):
+            raise ValueError(f'twitchHandleProviderInterface argument is malformed: \"{twitchHandleProviderInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__authRepository: AuthRepository = authRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
+        self.__twitchHandleProviderInterface: TwitchHandleProviderInterface = twitchHandleProviderInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
 
     async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        authSnapshot = await self.__authRepository.getAllAsync()
 
         if not generalSettings.isSubGiftThankingEnabled():
             return False
         elif not user.isSubGiftThankingEnabled():
             return False
 
-        giftedByName: str = tags.get('display-name')
+        giftedByName: Optional[str] = tags.get('display-name')
         if not utils.isValidStr(giftedByName):
             giftedByName = tags.get('login')
 
-        giftedToName: str = tags.get('msg-param-recipient-display-name')
+        giftedToName: Optional[str] = tags.get('msg-param-recipient-display-name')
         if not utils.isValidStr(giftedToName):
             giftedToName = tags.get('msg-param-recipient-user-name')
 
-        if giftedToName.lower() != authSnapshot.requireNick().lower():
+        if not utils.isValidStr(giftedByName) or not utils.isValidStr(giftedToName):
+            self.__timber.log('SubGiftThankingEvent', f'A subscription was gifted, but the tags dictionary seems to have strange values: {tags}')
             return False
-        elif not utils.isValidStr(giftedByName):
+
+        twitchHandle = await self.__twitchHandleProviderInterface.getTwitchHandle()
+
+        if giftedToName.lower() != twitchHandle.lower():
             return False
-        elif giftedToName.lower() == giftedByName.lower():
+        elif giftedByName.lower() == twitchHandle.lower():
+            # prevent thanking if the gifter is someone signed in as the bot itself
             return False
 
         await self.__twitchUtils.waitThenSend(
@@ -173,7 +177,7 @@ class SubGiftThankingEvent(AbsEvent):
             twitchChannel = user.getHandle()
         )
 
-        self.__timber.log('SubGiftThankingEvent', f'{authSnapshot.requireNick()} received sub gift to {user.getHandle()} from {giftedByName}!')
+        self.__timber.log('SubGiftThankingEvent', f'{twitchHandle} received sub gift in {user.getHandle()} from {giftedByName}! Thank you!')
         return True
 
 

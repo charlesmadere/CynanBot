@@ -304,7 +304,7 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             self.__raidLogEvent: AbsEvent = RaidLogEvent(chatLogger, timber)
 
         self.__raidThankEvent: AbsEvent = RaidThankEvent(generalSettingsRepository, timber, twitchUtils)
-        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(authRepository, generalSettingsRepository, timber, twitchUtils)
+        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(generalSettingsRepository, timber, authRepository, twitchUtils)
 
         ###############################################
         ## Initialization of message handler objects ##
