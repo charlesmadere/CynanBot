@@ -617,7 +617,6 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
 
     async def event_usernotice_subscription(self, metadata):
         self.__timber.log('CynanBot', f'event_usernotice_subscription(): \"{metadata}\"')
-        pass
 
     async def __getChannel(self, twitchChannel: str) -> Channel:
         if not utils.isValidStr(twitchChannel):
