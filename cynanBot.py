@@ -459,7 +459,6 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         await self.handle_commands(message)
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         twitchUserIdStr = str(event.channel_id)
         twitchUserNameStr = await self.__userIdsRepository.fetchUserName(twitchUserIdStr)
         twitchUser = await self.__usersRepository.getUserAsync(twitchUserNameStr)
@@ -476,12 +475,6 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         self.__timber.log('CynanBot', f'Reward \"{rewardId}\" redeemed by {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}:{twitchUserIdStr}')
 
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
-
-        if generalSettings.isPersistAllUsersEnabled():
-            await self.__userIdsRepository.setUser(
-                userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed
-            )
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
