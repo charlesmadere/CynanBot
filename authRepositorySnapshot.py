@@ -98,6 +98,14 @@ class AuthRepositorySnapshot():
 
         return twitchClientSecret
 
+    def requireTwitchHandle(self) -> str:
+        twitchHandle = self.__jsonContents.get('twitchHandle')
+
+        if not utils.isValidStr(twitchHandle):
+            raise ValueError(f'\"twitchHandle\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchHandle}\"')
+
+        return twitchHandle
+
     def requireTwitchIrcAuthToken(self) -> str:
         twitchIrcAuthToken = self.__jsonContents.get('twitchIrcAuthToken')
 

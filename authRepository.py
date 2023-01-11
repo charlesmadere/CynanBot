@@ -9,9 +9,11 @@ import CynanBotCommon.utils as utils
 from authRepositorySnapshot import AuthRepositorySnapshot
 from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
+from CynanBotCommon.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 
 
-class AuthRepository(TwitchCredentialsProviderInterface):
+class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
 
     def __init__(
         self,
@@ -53,6 +55,10 @@ class AuthRepository(TwitchCredentialsProviderInterface):
     async def getTwitchClientSecret(self) -> str:
         snapshot = await self.getAllAsync()
         return snapshot.requireTwitchClientSecret()
+
+    async def getTwitchHandle(self) -> str:
+        snapshot = await self.getAllAsync()
+        return snapshot.requireTwitchHandle()
 
     def __readJson(self) -> Dict[str, Any]:
         if not os.path.exists(self.__authFile):
