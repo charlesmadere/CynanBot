@@ -654,7 +654,9 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             channels.append(event.getUserName())
             await self.join_channels(channels)
         elif event.getActionType() is ModifyUserActionType.REMOVE:
-            pass
+            channels: List[str] = list()
+            channels.append(event.getUserName())
+            await self.part_channels(channels)
         else:
             raise RuntimeError(f'unknown ModifyUserActionType: \"{event.getActionType()}\"')
 
