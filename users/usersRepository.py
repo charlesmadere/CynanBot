@@ -10,6 +10,8 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.users.exceptions import (NoSuchUserException,
+                                             NoUsersException)
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -65,6 +67,26 @@ class UsersRepository(UsersRepositoryInterface):
     async def clearCaches(self):
         self.__jsonCache = None
         self.__userCache.clear()
+
+    def containsUser(self, handle: str) -> bool:
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        try:
+            self.getUser(handle)
+            return True
+        except NoSuchUserException:
+            return False
+
+    async def containsUserAsync(self, handle: str) -> bool:
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+
+        try:
+            await self.getUserAsync(handle)
+            return True
+        except NoSuchUserException:
+            return False
 
     def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
@@ -232,7 +254,7 @@ class UsersRepository(UsersRepositoryInterface):
             users.append(user)
 
         if not utils.hasItems(users):
-            raise RuntimeError(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
+            raise NoUsersException(f'Unable to read in any users from users repository file: \"{self.__usersFile}\"')
 
         users.sort(key = lambda user: user.getHandle().lower())
         return users
@@ -250,7 +272,7 @@ class UsersRepository(UsersRepositoryInterface):
             if handle.lower() == key.lower():
                 return self.__createUser(handle, userJson)
 
-        raise RuntimeError(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
+        raise NoSuchUserException(f'Unable to find user with handle \"{handle}\" in users repository file: \"{self.__usersFile}\"')
 
     def getUser(self, handle: str) -> User:
         if not utils.isValidStr(handle):

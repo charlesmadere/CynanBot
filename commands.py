@@ -273,14 +273,10 @@ class AddUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
             return
 
-        try:
-            await self.__usersRepository.getUserAsync(userName)
+        if await self.__usersRepository.containsUserAsync(userName):
             self.__timber.log('AddUserCommand', f'Username argument (\"{userName}\") given by {ctx.author.name}:{ctx.author.id} already exists as a user')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
             return
-        except RuntimeError as e:
-            # this exception can be safely ignored
-            pass
 
         userId: Optional[str] = None
 
@@ -1908,6 +1904,75 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
         self.__timber.log('RemoveTriviaGameControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
+class RemoveUserCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        modifyUserDataHelper: ModifyUserDataHelper,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        userIdsRepository: UserIdsRepository,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
+            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepository):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        administrator = await self.__administratorProviderInterface.getAdministrator()
+
+        if ctx.author.name.lower() != administrator.lower():
+            self.__timber.log('RemoveUserCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.content)
+        if len(splits) < 2:
+            self.__timber.log('RemoveUserCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
+            return
+
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+
+        if not utils.isValidStr(userName):
+            self.__timber.log('RemoveUserCommand', f'Invalid username argument given by {ctx.author.name}:{ctx.author.id} for the !removeuser command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
+            return
+
+        if not await self.__usersRepository.containsUserAsync(userName):
+            self.__timber.log('RemoveUserCommand', f'Username argument (\"{userName}\") given by {ctx.author.name}:{ctx.author.id} does not already exist as a user')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
+            return
+
+        userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+
+        await self.__modifyUserDataHelper.setUserData(
+            actionType = ModifyUserActionType.REMOVE,
+            userId = userId,
+            userName = userName
+        )
+
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
+        self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
 
 
 class StubCommand(AbsCommand):
