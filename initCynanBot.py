@@ -74,6 +74,8 @@ from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
+    TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -335,6 +337,12 @@ triviaRepository = TriviaRepository(
     quizApiTriviaQuestionRepository = quizApiTriviaQuestionRepository,
     timber = timber,
     triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
+        timber = timber,
+        triviaEmoteGenerator = triviaEmoteGenerator,
+        triviaQuestionCompiler = triviaQuestionCompiler,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
         timber = timber,
         triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
