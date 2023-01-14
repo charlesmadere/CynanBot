@@ -1913,6 +1913,7 @@ class RemoveUserCommand(AbsCommand):
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
+        twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
@@ -1923,6 +1924,8 @@ class RemoveUserCommand(AbsCommand):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
@@ -1933,6 +1936,7 @@ class RemoveUserCommand(AbsCommand):
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1963,6 +1967,7 @@ class RemoveUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
             return
 
+        await self.__twitchTokensRepository.removeUser(userName)
         userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
         await self.__modifyUserDataHelper.setUserData(
