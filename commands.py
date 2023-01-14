@@ -858,7 +858,7 @@ class CutenessCommand(AbsCommand):
         if not result.hasEntries():
             return f'Unfortunately the {result.getCutenessDate().toStr()} cuteness leaderboard is empty 😿'
 
-        specificLookupText: str = None
+        specificLookupText: Optional[str] = None
         if result.hasSpecificLookupCutenessResult():
             userName = result.getSpecificLookupCutenessResult().getUserName()
             cutenessStr = result.getSpecificLookupCutenessResult().getCutenessStr()
