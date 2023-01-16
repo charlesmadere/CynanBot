@@ -118,6 +118,9 @@ class GeneralSettingsRepositorySnapshot():
     def isRewardIdPrintingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'rewardIdPrintingEnabled', False)
 
+    def isRoachMessageEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'roachMessageEnabled', False)
+
     def isSubGiftThankingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'subGiftThankingEnabled', True)
 

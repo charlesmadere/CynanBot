@@ -16,11 +16,7 @@ from users.user import User
 class AbsMessage(ABC):
 
     @abstractmethod
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         pass
 
 
@@ -51,16 +47,7 @@ class CatJamMessage(AbsMessage):
         self.__catJamMessage: str = catJamMessage
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isCatJamMessageEnabled():
@@ -97,16 +84,7 @@ class ChatBandMessage(AbsMessage):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isChatBandEnabled():
@@ -136,16 +114,7 @@ class ChatLogMessage(AbsMessage):
 
         self.__chatLogger: ChatLogger = chatLogger
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         if not twitchUser.isChatLoggingEnabled():
             return False
 
@@ -187,11 +156,7 @@ class CynanMessage(AbsMessage):
         self.__cooldown: timedelta = cooldown
         self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         if twitchUser is None:
             raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif message is None:
@@ -244,16 +209,7 @@ class DeerForceMessage(AbsMessage):
         self.__deerForceMessage: str = deerForceMessage
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isDeerForceMessageEnabled():
@@ -298,16 +254,7 @@ class EyesMessage(AbsMessage):
         self.__eyesMessage: str = eyesMessage
         self.__lastEyesMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isEyesMessageEnabled():
@@ -352,16 +299,7 @@ class ImytSlurpMessage(AbsMessage):
         self.__imytSlurpMessage: str = imytSlurpMessage
         self.__lastImytSlurpMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isImytSlurpMessageEnabled():
@@ -458,16 +396,7 @@ class RatJamMessage(AbsMessage):
         self.__ratJamMessage: str = ratJamMessage
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isRatJamMessageEnabled():
@@ -485,14 +414,53 @@ class RatJamMessage(AbsMessage):
         return False
 
 
+class RoachMessage(AbsMessage):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        roachMessage: str = 'ROACH',
+        cooldown: timedelta = timedelta(minutes = 20)
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidStr(roachMessage):
+            raise ValueError(f'roachMessage argument is malformed: \"{roachMessage}\"')
+        elif not isinstance(cooldown, timedelta):
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__roachMessage: str = roachMessage
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isRoachMessageEnabled():
+            return False
+        elif not twitchUser.isRoachMessageEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if self.__roachMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
+            await self.__twitchUtils.safeSend(message.channel, self.__roachMessage)
+            self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.author.name} in {twitchUser.getHandle()}')
+            return True
+
+        return False
+
+
 class StubMessage(AbsMessage):
 
     def __init__(self):
         pass
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
         return False

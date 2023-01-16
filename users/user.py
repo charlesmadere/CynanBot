@@ -36,8 +36,9 @@ class User(UserInterface):
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
         isRaidLinkMessagingEnabled: bool,
-        isRatJamEnabled: bool,
+        isRatJamMessageEnabled: bool,
         isRewardIdPrintingEnabled: bool,
+        isRoachMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
@@ -112,10 +113,12 @@ class User(UserInterface):
             raise ValueError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
         elif not utils.isValidBool(isRaidLinkMessagingEnabled):
             raise ValueError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
-        elif not utils.isValidBool(isRatJamEnabled):
-            raise ValueError(f'isRatJamEnabled argument is malformed: \"{isRatJamEnabled}\"')
+        elif not utils.isValidBool(isRatJamMessageEnabled):
+            raise ValueError(f'isRatJamMessageEnabled argument is malformed: \"{isRatJamMessageEnabled}\"')
         elif not utils.isValidBool(isRewardIdPrintingEnabled):
             raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
+        elif not utils.isValidBool(isRoachMessageEnabled):
+            raise ValueError(f'isRoachMessageEnabled argument is malformed: \"{isRoachMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
@@ -180,8 +183,9 @@ class User(UserInterface):
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
         self.__isRaidLinkMessagingEnabled: bool = isRaidLinkMessagingEnabled
-        self.__isRatJamEnabled: bool = isRatJamEnabled
+        self.__isRatJamMessageEnabled: bool = isRatJamMessageEnabled
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
+        self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
@@ -405,11 +409,14 @@ class User(UserInterface):
     def isRaidLinkMessagingEnabled(self) -> bool:
         return self.__isRaidLinkMessagingEnabled
 
-    def isRatJamEnabled(self) -> bool:
-        return self.__isRatJamEnabled
+    def isRatJamMessageEnabled(self) -> bool:
+        return self.__isRatJamMessageEnabled
 
     def isRewardIdPrintingEnabled(self) -> bool:
         return self.__isRewardIdPrintingEnabled
+
+    def isRoachMessageEnabled(self) -> bool:
+        return self.__isRoachMessageEnabled
 
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled

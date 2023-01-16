@@ -115,8 +115,9 @@ class UsersRepository(UsersRepositoryInterface):
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
         isRaidLinkMessagingEnabled = utils.getBoolFromDict(userJson, 'raidLinkMessagingEnabled', False)
-        isRatJamEnabled = utils.getBoolFromDict(userJson, 'ratJamEnabled', False)
+        isRatJamMessageEnabled = utils.getBoolFromDict(userJson, 'ratJamMessageEnabled', False)
         isRewardIdPrintingEnabled = utils.getBoolFromDict(userJson, 'rewardIdPrintingEnabled', False)
+        isRoachMessageEnabled = utils.getBoolFromDict(userJson, 'roachMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
@@ -206,8 +207,9 @@ class UsersRepository(UsersRepositoryInterface):
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
             isRaidLinkMessagingEnabled = isRaidLinkMessagingEnabled,
-            isRatJamEnabled = isRatJamEnabled,
+            isRatJamMessageEnabled = isRatJamMessageEnabled,
             isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
+            isRoachMessageEnabled = isRoachMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,

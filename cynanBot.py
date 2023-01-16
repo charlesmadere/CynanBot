@@ -90,7 +90,7 @@ from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatLogMessage, CynanMessage,
                       DeerForceMessage, EyesMessage, ImytSlurpMessage,
-                      JamCatMessage, RatJamMessage, StubMessage)
+                      JamCatMessage, RatJamMessage, RoachMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
@@ -317,6 +317,7 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber, twitchUtils)
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber, twitchUtils)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber, twitchUtils)
+        self.__roachMessage: AbsMessage = RoachMessage(generalSettingsRepository, timber, twitchUtils)
 
         if chatLogger is None:
             self.__chatLogMessage: AbsMessage = StubMessage()
@@ -423,6 +424,12 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             ):
                 return
 
+            if await self.__eyesMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
+                return
+
             if await self.__imytSlurpMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = message
@@ -441,7 +448,7 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             ):
                 return
 
-            if await self.__eyesMessage.handleMessage(
+            if await self.__roachMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = message
             ):
