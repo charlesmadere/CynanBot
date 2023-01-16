@@ -401,7 +401,7 @@ class RatJamMessage(AbsMessage):
 
         if not generalSettings.isRatJamMessageEnabled():
             return False
-        elif not twitchUser.isRatJamEnabled():
+        elif not twitchUser.isRatJamMessageEnabled():
             return False
 
         splits = utils.getCleanedSplits(message.content)
