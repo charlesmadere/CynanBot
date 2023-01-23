@@ -384,7 +384,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ## Sequentially join Twitch channels so as to prevent throttling ##
         ###################################################################
 
-        self.__channelJoinHelper: ChannelJoinHelper(
+        self.__channelJoinHelper: ChannelJoinHelper = ChannelJoinHelper(
             eventLoop = eventLoop,
             channelJoinListener = self,
             timber = timber,
