@@ -571,15 +571,16 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
             self.__timber.log('CynanBot', f'event_raw_data(): (data=\"{data}\")')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
-        if not utils.hasItems(tags):
-            return
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        msgId: Optional[str] = tags.get('msg-id')
+        if generalSettings.isDebugLoggingEnabled():
+            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{channel}\") (tags=\"{tags}\")')
+
+        msgId = utils.getStrFromDict(tags, 'msg-id', fallback = '')
 
         if not utils.isValidStr(msgId):
             return
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         twitchUser = await self.__usersRepository.getUserAsync(channel.name)
 
         if msgId == 'raid':
@@ -600,9 +601,6 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
                 user = twitchUser,
                 tags = tags
             )
-
-        if generalSettings.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{channel}\") (tags=\"{tags}\")')
 
     async def event_ready(self):
         twitchHandle = await self.__authRepository.getTwitchHandle()
