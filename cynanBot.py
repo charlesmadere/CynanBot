@@ -148,7 +148,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     ):
         super().__init__(
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
-            initial_channels = [ user.getHandle().lower() for user in usersRepository.getUsers() ],
+            initial_channels = list(),
             loop = eventLoop,
             nick = authRepository.getAll().requireNick(),
             prefix = '!',
@@ -652,7 +652,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
     async def joinChannels(self, channels: List[str]):
-        self.__timber.log('CynanBot', f'Joining channels: {channels}')
+        self.__timber.log('CynanBot', f'Joining channels: (channels=\"{channels}\")...')
         await self.join_channels(channels)
 
     async def isReadyToJoinChannels(self) -> bool:

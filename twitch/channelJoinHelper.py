@@ -59,6 +59,8 @@ class ChannelJoinHelper():
                 for user in allUsers:
                     self.__allChannels.append(user.getHandle())
 
+                self.__timber.log('ChannelJoinHelper', f'Will be joining a total of {len(allUsers)} channel(s)...')
+
             channels: List[str] = list()
 
             while len(self.__allChannels) >= 1 and len(channels) < self.__maxChannelsToJoin - 1:
