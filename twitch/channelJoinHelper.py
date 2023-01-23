@@ -30,7 +30,7 @@ class ChannelJoinHelper():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 11 or sleepTimeSeconds > 60:
+        elif sleepTimeSeconds < 12 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxChannelsToJoin):
             raise ValueError(f'maxChannelsToJoin argument is malformed: \"{maxChannelsToJoin}\"')
