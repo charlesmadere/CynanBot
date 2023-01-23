@@ -115,6 +115,9 @@ class GeneralSettingsRepositorySnapshot():
     def isRatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'ratJamMessageEnabled', False)
 
+    def isRawEventDataLoggingEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'rawEventDataLoggingEnabled', False)
+
     def isRewardIdPrintingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'rewardIdPrintingEnabled', False)
 

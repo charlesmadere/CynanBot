@@ -567,7 +567,7 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
     async def event_raw_data(self, data: str):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if generalSettings.isDebugLoggingEnabled():
+        if generalSettings.isRawEventDataLoggingEnabled():
             self.__timber.log('CynanBot', f'event_raw_data(): (data=\"{data}\")')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
