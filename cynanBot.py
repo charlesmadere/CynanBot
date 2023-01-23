@@ -97,6 +97,8 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PotdPointRedemption, StubPointRedemption,
                               TriviaGameRedemption)
 from triviaUtils import TriviaUtils
+from twitch.channelJoinHelper import ChannelJoinHelper
+from twitch.channelJoinListener import ChannelJoinListener
 from twitch.eventSubUtils import EventSubUtils
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchUtils import TwitchUtils
@@ -107,7 +109,7 @@ from users.modifyUserEventListener import ModifyUserEventListener
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
+class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, TriviaEventListener):
 
     def __init__(
         self,
@@ -378,6 +380,17 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
                 usersRepository = usersRepository
             )
 
+        ###################################################################
+        ## Sequentially join Twitch channels so as to prevent throttling ##
+        ###################################################################
+
+        ChannelJoinHelper(
+            eventLoop = eventLoop,
+            channelJoinListener = self,
+            timber = timber,
+            usersRepository = usersRepository
+        )
+
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
 
     async def event_command_error(self, context: Context, error: Exception):
@@ -637,6 +650,10 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         except KeyError as e:
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
+
+    async def joinChannels(self, channels: List[str]):
+        self.__timber.log('CynanBot', f'Joining channels: {channels}')
+        await self.join_channels(channels)
 
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
