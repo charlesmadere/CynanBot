@@ -564,6 +564,12 @@ class CynanBot(commands.Bot, ModifyUserEventListener, TriviaEventListener):
         if generalSettings.isPubSubPongLoggingEnabled():
             self.__timber.log('CynanBot', f'Received PubSub pong')
 
+    async def event_raw_data(self, data: str):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if generalSettings.isDebugLoggingEnabled():
+            self.__timber.log('CynanBot', f'event_raw_data(): (data=\"{data}\")')
+
     async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
         if not utils.hasItems(tags):
             return
