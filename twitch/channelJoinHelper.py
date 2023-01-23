@@ -17,7 +17,7 @@ class ChannelJoinHelper():
         channelJoinListener: ChannelJoinListener,
         timber: Timber,
         usersRepository: UsersRepository,
-        sleepTimeSeconds: float = 12,
+        sleepTimeSeconds: float = 16,
         maxChannelsToJoin: int = 10
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
@@ -30,28 +30,34 @@ class ChannelJoinHelper():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 11 or sleepTimeSeconds > 30:
+        elif sleepTimeSeconds < 11 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxChannelsToJoin):
             raise ValueError(f'maxChannelsToJoin argument is malformed: \"{maxChannelsToJoin}\"')
-        elif maxChannelsToJoin < 4 or maxChannelsToJoin > 10:
+        elif maxChannelsToJoin < 3 or maxChannelsToJoin > 10:
             raise ValueError(f'maxChannelsToJoin argument is out of bounds: {maxChannelsToJoin}')
 
+        self.__eventLoop: AbstractEventLoop = eventLoop
         self.__channelJoinListener: ChannelJoinListener = channelJoinListener
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxChannelsToJoin: int = maxChannelsToJoin
 
+        self.__isStarted: bool = False
         self.__allChannels: Optional[List[str]] = None
-        eventLoop.create_task(self.__startChannelJoinLoop())
 
-    async def __startChannelJoinLoop(self):
+    def startJoiningChannels(self):
+        if self.__isStarted:
+            self.__timber.log('ChannelJoinHelper', 'Not starting channel join loop as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('ChannelJoinHelper', f'Starting channel joining...')
+        self.__eventLoop.create_task(self.__startJoiningChannelsLoop())
+
+    async def __startJoiningChannelsLoop(self):
         while True:
-            if not await self.__channelJoinListener.isReadyToJoinChannels():
-                await asyncio.sleep(self.__sleepTimeSeconds)
-                continue
-
             if self.__allChannels is None:
                 self.__allChannels = list()
                 allUsers = await self.__usersRepository.getUsersAsync()

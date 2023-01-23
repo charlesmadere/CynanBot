@@ -384,7 +384,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ## Sequentially join Twitch channels so as to prevent throttling ##
         ###################################################################
 
-        ChannelJoinHelper(
+        self.__channelJoinHelper: ChannelJoinHelper(
             eventLoop = eventLoop,
             channelJoinListener = self,
             timber = timber,
@@ -619,6 +619,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         twitchHandle = await self.__authRepository.getTwitchHandle()
         self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
 
+        self.__channelJoinHelper.startJoiningChannels()
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
         if self.__triviaGameMachine is not None:
@@ -654,9 +655,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def joinChannels(self, channels: List[str]):
         self.__timber.log('CynanBot', f'Joining channels: (channels=\"{channels}\")...')
         await self.join_channels(channels)
-
-    async def isReadyToJoinChannels(self) -> bool:
-        return await self.wait_for_ready()
 
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
