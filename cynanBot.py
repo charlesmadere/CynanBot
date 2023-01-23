@@ -655,6 +655,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__timber.log('CynanBot', f'Joining channels: {channels}')
         await self.join_channels(channels)
 
+    async def isReadyToJoinChannels(self) -> bool:
+        return await self.wait_for_ready()
+
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
 

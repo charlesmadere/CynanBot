@@ -48,6 +48,10 @@ class ChannelJoinHelper():
 
     async def __startChannelJoinLoop(self):
         while True:
+            if not await self.__channelJoinListener.isReadyToJoinChannels():
+                await asyncio.sleep(self.__sleepTimeSeconds)
+                continue
+
             if self.__allChannels is None:
                 self.__allChannels = list()
                 allUsers = await self.__usersRepository.getUsersAsync()
