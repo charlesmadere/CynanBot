@@ -386,7 +386,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ## Sequentially join Twitch channels so as to prevent throttling ##
         ###################################################################
 
-        self.__channelJoinHelper: ChannelJoinHelper = ChannelJoinHelper(
+        self.__channelJoinHelper = ChannelJoinHelper(
             eventLoop = eventLoop,
             channelJoinListener = self,
             timber = timber,
@@ -640,7 +640,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__pubSubUtils.startPubSub()
 
     async def event_usernotice_subscription(self, metadata):
-        self.__timber.log('CynanBot', f'event_usernotice_subscription(): \"{metadata}\"')
+        self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
 
     async def __getChannel(self, twitchChannel: str) -> Channel:
         if not utils.isValidStr(twitchChannel):
@@ -681,32 +681,32 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise RuntimeError(f'unknown ModifyUserActionType: \"{event.getActionType()}\"')
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        triviaEventType = event.getTriviaEventType()
-        self.__timber.log('CynanBot', f'Received new trivia event: \"{triviaEventType}\"')
+        eventType = event.getTriviaEventType()
+        self.__timber.log('CynanBot', f'Received new trivia event: \"{eventType}\"')
 
-        if triviaEventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
+        if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.CORRECT_ANSWER:
+        elif eventType is TriviaEventType.CORRECT_ANSWER:
             await self.__handleCorrectAnswerTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
+        elif eventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.GAME_OUT_OF_TIME:
+        elif eventType is TriviaEventType.GAME_OUT_OF_TIME:
             await self.__handleGameOutOfTimeTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.INCORRECT_ANSWER:
+        elif eventType is TriviaEventType.INCORRECT_ANSWER:
             await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.INVALID_ANSWER_INPUT:
+        elif eventType is TriviaEventType.INVALID_ANSWER_INPUT:
             await self.__handleInvalidAnswerInputTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.NEW_GAME:
+        elif eventType is TriviaEventType.NEW_GAME:
             await self.__handleNewTriviaGameEvent(event)
-        elif triviaEventType is TriviaEventType.NEW_SUPER_GAME:
+        elif eventType is TriviaEventType.NEW_SUPER_GAME:
             await self.__handleNewSuperTriviaGameEvent(event)
-        elif triviaEventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
+        elif eventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
+        elif eventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
+        elif eventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
-        elif triviaEventType is TriviaEventType.TOO_LATE_TO_ANSWER:
+        elif eventType is TriviaEventType.TOO_LATE_TO_ANSWER:
             await self.__handleTooLateToAnswerTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
