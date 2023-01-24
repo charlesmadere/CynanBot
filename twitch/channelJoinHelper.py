@@ -1,11 +1,13 @@
 import asyncio
 import random
 from asyncio import AbstractEventLoop
-from typing import List, Optional
+from typing import List
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timber import Timber
 from twitch.channelJoinListener import ChannelJoinListener
+from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
+from twitch.joinChannelsEvent import JoinChannelsEvent
 from users.usersRepository import UsersRepository
 
 
@@ -44,39 +46,54 @@ class ChannelJoinHelper():
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxChannelsToJoin: int = maxChannelsToJoin
 
-        self.__isStarted: bool = False
-        self.__allChannels: Optional[List[str]] = None
+        self.__isJoiningChannels: bool = False
 
-    def startJoiningChannels(self):
-        if self.__isStarted:
-            self.__timber.log('ChannelJoinHelper', 'Not starting channel join loop as it has already been started')
+    def joinChannels(self):
+        if self.__isJoiningChannels:
+            self.__timber.log('ChannelJoinHelper', 'Not starting channel join process as it has already been started!')
             return
 
-        self.__isStarted = True
-        self.__timber.log('ChannelJoinHelper', f'Starting channel joining...')
-        self.__eventLoop.create_task(self.__startJoiningChannelsLoop())
+        self.__isJoiningChannels = True
+        self.__timber.log('ChannelJoinHelper', f'Starting channel join process...')
+        self.__eventLoop.create_task(self.__joinChannels())
 
-    async def __startJoiningChannelsLoop(self):
-        while True:
-            if self.__allChannels is None:
-                self.__allChannels = list()
-                allUsers = await self.__usersRepository.getUsersAsync()
+    async def __joinChannels(self):
+        allChannels: List[str] = list()
+        users = await self.__usersRepository.getUsersAsync()
 
-                for user in allUsers:
-                    self.__allChannels.append(user.getHandle())
+        for user in users:
+            allChannels.append(user.getHandle())
 
-                self.__timber.log('ChannelJoinHelper', f'Will be joining a total of {len(allUsers)} channel(s)...')
+        if len(allChannels) == 0:
+            self.__timber.log('ChannelJoinHelper', f'There are no channels to join')
+            self.__isJoiningChannels = False
+            return
 
-            channels: List[str] = list()
+        allChannels.sort(key = lambda userHandle: userHandle.lower())
+        self.__timber.log('ChannelJoinHelper', f'Will be joining a total of {len(allChannels)} channel(s)...')
 
-            while len(self.__allChannels) >= 1 and len(channels) < self.__maxChannelsToJoin - 1:
-                userHandle = random.choice(self.__allChannels)
-                self.__allChannels.remove(userHandle)
-                channels.append(userHandle)
+        workingChannels: List[str] = list()
+        workingChannels.extend(allChannels)
 
-            if len(channels) == 0:
-                self.__timber.log('ChannelJoinHelper', f'Finished joining channels')
-                return
+        while len(workingChannels) >= 1:
+            newChannelsToJoin: List[str] = list()
 
-            await self.__channelJoinListener.joinChannels(channels)
+            while len(workingChannels) >= 1 and len(newChannelsToJoin) < self.__maxChannelsToJoin - 1:
+                userHandle = random.choice(workingChannels)
+                workingChannels.remove(userHandle)
+                newChannelsToJoin.append(userHandle)
+
+            newChannelsToJoin.sort(key = lambda userHandle: userHandle.lower())
+
+            await self.__channelJoinListener.onNewChannelJoinEvent(JoinChannelsEvent(
+                channels = newChannelsToJoin
+            ))
+
             await asyncio.sleep(self.__sleepTimeSeconds)
+
+        await self.__channelJoinListener.onNewChannelJoinEvent(FinishedJoiningChannelsEvent(
+            allChannels = allChannels
+        ))
+
+        self.__timber.log('ChannelJoinHelper', f'Finished joining {len(allChannels)} channel(s)')
+        self.__isJoiningChannels = False

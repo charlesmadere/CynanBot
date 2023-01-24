@@ -59,7 +59,7 @@ class CatJamMessage(AbsMessage):
 
         if self.__catJamMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__catJamMessage)
-            self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -97,7 +97,7 @@ class ChatBandMessage(AbsMessage):
             author = message.author.name,
             message = utils.cleanStr(message.content)
         ):
-            self.__timber.log('ChatBandMessage', f'Handled chat band message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('ChatBandMessage', f'Handled chat band message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -157,11 +157,6 @@ class CynanMessage(AbsMessage):
         self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
 
     async def handleMessage(self, twitchUser: User, message: Message) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isCynanMessageEnabled():
@@ -176,7 +171,7 @@ class CynanMessage(AbsMessage):
         if now > self.__lastCynanMessageTime + self.__cooldown:
             self.__lastCynanMessageTime = now
             await self.__twitchUtils.safeSend(message.channel, f'/me waves to @{self.__cynanUserName} 👋')
-            self.__timber.log('CynanMessage', f'Handled Cynan message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('CynanMessage', f'Handled Cynan message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -221,7 +216,7 @@ class DeerForceMessage(AbsMessage):
 
         if text.lower() == self.__deerForceMessage.lower() and self.__lastDeerForceMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__deerForceMessage)
-            self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -266,7 +261,7 @@ class EyesMessage(AbsMessage):
 
         if self.__eyesMessage in splits and self.__lastEyesMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__eyesMessage)
-            self.__timber.log('EyesMessage', f'Handled eyes message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('EyesMessage', f'Handled eyes message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -311,7 +306,7 @@ class ImytSlurpMessage(AbsMessage):
 
         if self.__imytSlurpMessage in splits and self.__lastImytSlurpMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__imytSlurpMessage)
-            self.__timber.log('ImytSlurpMessage', f'Handled imytSlurp message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('ImytSlurpMessage', f'Handled imytSlurp message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -349,11 +344,6 @@ class JamCatMessage(AbsMessage):
         twitchUser: User,
         message: Message
     ) -> bool:
-        if twitchUser is None:
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif message is None:
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isJamCatMessageEnabled():
@@ -365,7 +355,7 @@ class JamCatMessage(AbsMessage):
 
         if self.__jamCatMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__jamCatMessage)
-            self.__timber.log('JamCatMessage', f'Handled jamCAT message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('JamCatMessage', f'Handled jamCAT message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -408,7 +398,7 @@ class RatJamMessage(AbsMessage):
 
         if self.__ratJamMessage in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__ratJamMessage)
-            self.__timber.log('RatJamMessage', f'Handled ratJAM message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('RatJamMessage', f'Handled ratJAM message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -451,7 +441,7 @@ class RoachMessage(AbsMessage):
 
         if self.__roachMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__roachMessage)
-            self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.author.name} in {twitchUser.getHandle()}')
+            self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False

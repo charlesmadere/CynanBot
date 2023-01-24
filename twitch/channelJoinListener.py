@@ -1,7 +1,7 @@
-from typing import List
+from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 
 
 class ChannelJoinListener():
 
-    async def joinChannels(self, channels: List[str]):
+    async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
         pass

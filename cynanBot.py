@@ -98,9 +98,13 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PotdPointRedemption, StubPointRedemption,
                               TriviaGameRedemption)
 from triviaUtils import TriviaUtils
+from twitch.absChannelJoinEvent import AbsChannelJoinEvent
+from twitch.channelJoinEventType import ChannelJoinEventType
 from twitch.channelJoinHelper import ChannelJoinHelper
 from twitch.channelJoinListener import ChannelJoinListener
 from twitch.eventSubUtils import EventSubUtils
+from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
+from twitch.joinChannelsEvent import JoinChannelsEvent
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserActionType import ModifyUserActionType
@@ -624,20 +628,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             )
 
     async def event_ready(self):
+        await self.wait_for_ready()
+
         twitchHandle = await self.__authRepository.getTwitchHandle()
         self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
 
-        self.__channelJoinHelper.startJoiningChannels()
+        self.__channelJoinHelper.joinChannels()
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
-
-        if self.__triviaGameMachine is not None:
-            self.__triviaGameMachine.setEventListener(self)
-
-        if self.__eventSubUtils is not None:
-            self.__eventSubUtils.startEventSub()
-
-        if self.__pubSubUtils is not None:
-            self.__pubSubUtils.startPubSub()
 
     async def event_usernotice_subscription(self, metadata):
         self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
@@ -660,10 +657,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
 
-    async def joinChannels(self, channels: List[str]):
-        self.__timber.log('CynanBot', f'Joining channels: (channels=\"{channels}\")...')
-        await self.join_channels(channels)
-
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
 
@@ -679,6 +672,33 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             await self.part_channels(channels)
         else:
             raise RuntimeError(f'unknown ModifyUserActionType: \"{event.getActionType()}\"')
+
+    async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
+        eventType = event.getEventType()
+        self.__timber.log('CynanBot', f'Received new channel join event: \"{eventType}\"')
+
+        await self.wait_for_ready()
+
+        if eventType is ChannelJoinEventType.FINISHED:
+            await self.__handleFinishedJoiningChannelsEvent(event)
+        elif eventType is ChannelJoinEventType.JOIN:
+            await self.__handleJoinChannelsEvent(event)
+
+    async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
+        self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
+
+        if self.__triviaGameMachine is not None:
+            self.__triviaGameMachine.setEventListener(self)
+
+        if self.__eventSubUtils is not None:
+            self.__eventSubUtils.startEventSub()
+
+        if self.__pubSubUtils is not None:
+            self.__pubSubUtils.startPubSub()
+
+    async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
+        self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')
+        await self.join_channels(event.getChannels())
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         eventType = event.getTriviaEventType()
