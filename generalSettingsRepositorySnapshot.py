@@ -124,6 +124,9 @@ class GeneralSettingsRepositorySnapshot():
     def isRoachMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'roachMessageEnabled', False)
 
+    def isSchubertWalkMessageEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'schubertWalkMessageEnabled', False)
+
     def isSubGiftThankingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'subGiftThankingEnabled', True)
 

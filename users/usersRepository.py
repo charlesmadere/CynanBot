@@ -118,6 +118,7 @@ class UsersRepository(UsersRepositoryInterface):
         isRatJamMessageEnabled = utils.getBoolFromDict(userJson, 'ratJamMessageEnabled', False)
         isRewardIdPrintingEnabled = utils.getBoolFromDict(userJson, 'rewardIdPrintingEnabled', False)
         isRoachMessageEnabled = utils.getBoolFromDict(userJson, 'roachMessageEnabled', False)
+        isSchubertWalkMessageEnabled = utils.getBoolFromDict(userJson, 'schubertWalkMessageEnabled', False)
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
@@ -210,6 +211,7 @@ class UsersRepository(UsersRepositoryInterface):
             isRatJamMessageEnabled = isRatJamMessageEnabled,
             isRewardIdPrintingEnabled = isRewardIdPrintingEnabled,
             isRoachMessageEnabled = isRoachMessageEnabled,
+            isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,

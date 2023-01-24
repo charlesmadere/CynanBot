@@ -457,6 +457,49 @@ class RoachMessage(AbsMessage):
         return False
 
 
+class SchubertWalkMessage(AbsMessage):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        schubertWalkMessage: str = 'SchubertWalk',
+        cooldown: timedelta = timedelta(minutes = 20)
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidStr(schubertWalkMessage):
+            raise ValueError(f'schubertWalkMessage argument is malformed: \"{schubertWalkMessage}\"')
+        elif not isinstance(cooldown, timedelta):
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__schubertWalkMessage: str = schubertWalkMessage
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
+
+    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettings.isSchubertWalkMessageEnabled():
+            return False
+        elif not twitchUser.isRoachMessageEnabled():
+            return False
+
+        splits = utils.getCleanedSplits(message.content)
+
+        if self.__schubertWalkMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
+            await self.__twitchUtils.safeSend(message.channel, self.__schubertWalkMessage)
+            self.__timber.log('RoachMessage', f'Handled {self.__schubertWalkMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            return True
+
+        return False
+
+
 class StubMessage(AbsMessage):
 
     def __init__(self):

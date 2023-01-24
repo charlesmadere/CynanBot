@@ -90,7 +90,8 @@ from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
 from generalSettingsRepository import GeneralSettingsRepository
 from messages import (AbsMessage, CatJamMessage, ChatLogMessage, CynanMessage,
                       DeerForceMessage, EyesMessage, ImytSlurpMessage,
-                      JamCatMessage, RatJamMessage, RoachMessage, StubMessage)
+                      JamCatMessage, RatJamMessage, RoachMessage,
+                      SchubertWalkMessage, StubMessage)
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
@@ -320,6 +321,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber, twitchUtils)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber, twitchUtils)
         self.__roachMessage: AbsMessage = RoachMessage(generalSettingsRepository, timber, twitchUtils)
+        self.__schubertWalkMessage: AbsMessage = SchubertWalkMessage(generalSettingsRepository, timber, twitchUtils)
 
         if chatLogger is None:
             self.__chatLogMessage: AbsMessage = StubMessage()
@@ -462,6 +464,12 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 return
 
             if await self.__roachMessage.handleMessage(
+                twitchUser = twitchUser,
+                message = message
+            ):
+                return
+
+            if await self.__schubertWalkMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = message
             ):

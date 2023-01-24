@@ -39,6 +39,7 @@ class User(UserInterface):
         isRatJamMessageEnabled: bool,
         isRewardIdPrintingEnabled: bool,
         isRoachMessageEnabled: bool,
+        isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
@@ -67,9 +68,9 @@ class User(UserInterface):
         speedrunProfile: str,
         triviaGameRewardId: Optional[str],
         twitter: str,
-        cutenessBoosterPacks: List[CutenessBoosterPack],
-        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack],
-        timeZones: List[tzinfo]
+        cutenessBoosterPacks: Optional[List[CutenessBoosterPack]],
+        pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]],
+        timeZones: Optional[List[tzinfo]]
     ):
         if not utils.isValidBool(isAnalogueEnabled):
             raise ValueError(f'isAnalogueEnabled argument is malformed: \"{isAnalogueEnabled}\"')
@@ -119,6 +120,8 @@ class User(UserInterface):
             raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
         elif not utils.isValidBool(isRoachMessageEnabled):
             raise ValueError(f'isRoachMessageEnabled argument is malformed: \"{isRoachMessageEnabled}\"')
+        elif not utils.isValidBool(isSchubertWalkMessageEnabled):
+            raise ValueError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
@@ -186,6 +189,7 @@ class User(UserInterface):
         self.__isRatJamMessageEnabled: bool = isRatJamMessageEnabled
         self.__isRewardIdPrintingEnabled: bool = isRewardIdPrintingEnabled
         self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
+        self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
@@ -214,9 +218,9 @@ class User(UserInterface):
         self.__speedrunProfile: str = speedrunProfile
         self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
         self.__twitter: Optional[str] = twitter
-        self.__cutenessBoosterPacks: List[CutenessBoosterPack] = cutenessBoosterPacks
-        self.__pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = pkmnCatchBoosterPacks
-        self.__timeZones: List[tzinfo] = timeZones
+        self.__cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = cutenessBoosterPacks
+        self.__pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]] = pkmnCatchBoosterPacks
+        self.__timeZones: Optional[List[tzinfo]] = timeZones
 
     async def fetchPicOfTheDay(self) -> str:
         if not self.__isPicOfTheDayEnabled:
@@ -235,7 +239,7 @@ class User(UserInterface):
         potdParsed = urlparse(potdText)
         return potdParsed.geturl()
 
-    def getCutenessBoosterPacks(self) -> List[CutenessBoosterPack]:
+    def getCutenessBoosterPacks(self) -> Optional[List[CutenessBoosterPack]]:
         return self.__cutenessBoosterPacks
 
     def getDiscordUrl(self) -> Optional[str]:
@@ -256,7 +260,7 @@ class User(UserInterface):
     def getPkmnBattleRewardId(self) -> str:
         return self.__pkmnBattleRewardId
 
-    def getPkmnCatchBoosterPacks(self) -> List[PkmnCatchBoosterPack]:
+    def getPkmnCatchBoosterPacks(self) -> Optional[List[PkmnCatchBoosterPack]]:
         return self.__pkmnCatchBoosterPacks
 
     def getPkmnEvolveRewardId(self) -> str:
@@ -277,7 +281,7 @@ class User(UserInterface):
     def getSuperTriviaPerUserAttempts(self) -> Optional[int]:
         return self.__superTriviaPerUserAttempts
 
-    def getTimeZones(self) -> List[tzinfo]:
+    def getTimeZones(self) -> Optional[List[tzinfo]]:
         return self.__timeZones
 
     def getTriviaGamePoints(self) -> Optional[int]:
@@ -417,6 +421,9 @@ class User(UserInterface):
 
     def isRoachMessageEnabled(self) -> bool:
         return self.__isRoachMessageEnabled
+
+    def isSchubertWalkMessageEnabled(self) -> bool:
+        return self.__isSchubertWalkMessageEnabled
 
     def isShinyTriviaEnabled(self) -> bool:
         return self.__isShinyTriviaEnabled
