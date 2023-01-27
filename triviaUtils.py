@@ -45,7 +45,7 @@ class TriviaUtils():
     def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
             raise ValueError(f'numberOfGamesRemoved argument is malformed: \"{numberOfGamesRemoved}\"')
-        elif numberOfGamesRemoved < 0 or numberOfGamesRemoved >= utils.getIntMaxSafeSize():
+        elif numberOfGamesRemoved < 0 or numberOfGamesRemoved > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGamesRemoved argument is out of bounds: {numberOfGamesRemoved}')
 
         numberOfGamesRemovedStr = locale.format_string("%d", numberOfGamesRemoved, grouping = True)
@@ -322,11 +322,11 @@ class TriviaUtils():
             raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds >= utils.getIntMaxSafeSize():
+        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidInt(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
-        elif points < 1 or points >= utils.getIntMaxSafeSize():
+        elif points < 1 or points > utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -399,11 +399,11 @@ class TriviaUtils():
             raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds >= utils.getIntMaxSafeSize():
+        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidInt(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
-        elif points < 1 or points >= utils.getIntMaxSafeSize():
+        elif points < 1 or points > utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')

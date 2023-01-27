@@ -33,7 +33,7 @@ class TwitchUtils():
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxRetries):
             raise ValueError(f'maxRetries argument is malformed: \"{maxRetries}\"')
-        elif maxRetries < 0 or maxRetries >= utils.getIntMaxSafeSize():
+        elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
@@ -148,7 +148,7 @@ class TwitchUtils():
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds >= utils.getIntMaxSafeSize():
+        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
