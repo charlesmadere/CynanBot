@@ -22,10 +22,10 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand,
                       RemoveGlobalTriviaControllerCommand,
-                      RemoveTriviaControllerCommand, StubCommand,
-                      SuperAnswerCommand, SuperTriviaCommand, SwQuoteCommand,
-                      TimeCommand, TranslateCommand, TriviaInfoCommand,
-                      TriviaScoreCommand, TwitterCommand,
+                      RemoveTriviaControllerCommand, SetTwitchCodeCommand,
+                      StubCommand, SuperAnswerCommand, SuperTriviaCommand,
+                      SwQuoteCommand, TimeCommand, TranslateCommand,
+                      TriviaInfoCommand, TriviaScoreCommand, TwitterCommand,
                       UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
@@ -208,6 +208,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
+        self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(generalSettingsRepository, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
@@ -963,6 +964,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     @commands.command(name = 'sanswer')
     async def command_sanswer(self, ctx: Context):
         await self.__superAnswerCommand.handleCommand(ctx)
+
+    @commands.command(name = 'settwitchcode')
+    async def command_settwitchcode(self, ctx: Context):
+        await self.__setTwitchCodeCommand.handleCommand(ctx)
 
     @commands.command(name = 'superanswer')
     async def command_superanswer(self, ctx: Context):

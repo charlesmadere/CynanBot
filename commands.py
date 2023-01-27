@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Optional
@@ -1978,6 +1979,72 @@ class RemoveUserCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
         self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+
+class SetTwitchCodeCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        timber: Timber,
+        twitchTokensRepository: TwitchTokensRepository,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__timber: Timber = timber
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: Context):
+        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        administrator = await self.__administratorProviderInterface.getAdministrator()
+        userName = ctx.author.name.lower()
+
+        if userName != user.getHandle().lower() and userName != administrator.lower():
+            self.__timber.log('SetTwitchCodeCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.message.contents)
+        if len(splits) < 2:
+            self.__timber.log('SetTwitchCodeCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !settwitchcode command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
+            return
+
+        code: Optional[str] = splits[1]
+
+        if not utils.isValidStr(code):
+            self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {ctx.author.name}:{ctx.author.id} for the !settwitchcode command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
+            return
+
+        await self.__twitchTokensRepository.addUser(
+            twitchHandle = user.getHandle(),
+            code = code
+        )
+
+        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+
+    def __getRandomCodeStr(self) -> str:
+        randomUuid = str(uuid.uuid4())
+        randomUuid = randomUuid.replace('-', '')
+
+        if len(randomUuid) > 16:
+            randomUuid = randomUuid[0:16]
+
+        return randomUuid
 
 
 class StubCommand(AbsCommand):
