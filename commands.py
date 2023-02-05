@@ -1252,6 +1252,7 @@ class GiveCutenessCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         timber: Timber,
+        triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
@@ -1260,6 +1261,8 @@ class GiveCutenessCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaUtils, TriviaUtils):
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
@@ -1269,17 +1272,20 @@ class GiveCutenessCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__timber: Timber = timber
+        self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: Context):
-        if not ctx.author.is_mod:
-            return
-
         user = await self.__usersRepository.getUserAsync(ctx.channel.name)
 
         if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
+            return
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userName = ctx.author.name
+        ):
             return
 
         splits = utils.getCleanedSplits(ctx.message.content)
