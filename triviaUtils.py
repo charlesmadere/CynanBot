@@ -5,6 +5,7 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
+from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
@@ -16,7 +17,10 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
-from users.usersRepository import UsersRepository
+from CynanBotCommon.users.exceptions import NoSuchUserException
+from CynanBotCommon.users.userInterface import UserInterface
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 
 
 class TriviaUtils():
@@ -24,23 +28,27 @@ class TriviaUtils():
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
+        timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
@@ -438,9 +446,17 @@ class TriviaUtils():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         userName = userName.lower()
+        user: Optional[UserInterface] = None
 
-        user = await self.__usersRepository.getUserAsync(twitchChannel)
-        if userName == user.getHandle().lower():
+        try:
+            user = await self.__usersRepository.getUserAsync(twitchChannel)
+        except NoSuchUserException as e:
+            # this exception should be impossible here, but let's just be safe
+            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userName \"{userName}\" for privileged trivia permissions', e)
+
+        if user is None:
+            return False
+        elif userName == user.getHandle().lower():
             return True
 
         gameControllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())

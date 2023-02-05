@@ -248,6 +248,7 @@ triviaScoreRepository = TriviaScoreRepository(
 )
 triviaUtils = TriviaUtils(
     administratorProviderInterface = generalSettingsRepository,
+    timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     usersRepository = usersRepository
