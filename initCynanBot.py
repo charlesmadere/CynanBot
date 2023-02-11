@@ -251,6 +251,8 @@ triviaUtils = TriviaUtils(
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
 

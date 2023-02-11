@@ -17,7 +17,9 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
+from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.exceptions import NoSuchUserException
+from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
@@ -31,6 +33,8 @@ class TriviaUtils():
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        twitchTokensRepository: TwitchTokensRepository,
+        userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
@@ -41,6 +45,10 @@ class TriviaUtils():
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepository):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -48,6 +56,8 @@ class TriviaUtils():
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
@@ -439,38 +449,49 @@ class TriviaUtils():
 
         return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'
 
-    async def isPrivilegedTriviaUser(self, twitchChannel: str, userName: str) -> bool:
+    async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
-        userName = userName.lower()
-        user: Optional[UserInterface] = None
+        twitchUser: Optional[UserInterface] = None
 
         try:
-            user = await self.__usersRepository.getUserAsync(twitchChannel)
+            twitchUser = await self.__usersRepository.getUserAsync(twitchChannel)
         except NoSuchUserException as e:
             # this exception should be impossible here, but let's just be safe
-            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userName \"{userName}\" for privileged trivia permissions', e)
+            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e)
 
-        if user is None:
+        if twitchUser is None:
             return False
-        elif userName == user.getHandle().lower():
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchUser.getHandle())
+
+        twitchUserId = await self.__userIdsRepository.fetchUserId(
+            userName = twitchUser.getHandle(),
+            twitchAccessToken = twitchAccessToken
+        )
+
+        if userId == twitchUserId:
             return True
 
-        gameControllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
+        gameControllers = await self.__triviaGameControllersRepository.getControllers(twitchUser.getHandle())
         for gameController in gameControllers:
-            if userName == gameController.getUserName().lower():
+            if userId == gameController.getUserId():
                 return True
 
         globalGameControllers = await self.__triviaGameGlobalControllersRepository.getControllers()
         for globalGameController in globalGameControllers:
-            if userName == globalGameController.getUserName().lower():
+            if userId == globalGameController.getUserId():
                 return True
 
-        administrator = await self.__administratorProviderInterface.getAdministrator()
-        if userName == administrator.lower():
+        administratorUserId = await self.__userIdsRepository.fetchUserId(
+            userName = await self.__administratorProviderInterface.getAdministrator(),
+            twitchAccessToken = twitchAccessToken
+        )
+
+        if userId == administratorUserId:
             return True
 
         return False

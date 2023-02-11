@@ -407,7 +407,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = ctx.author.name
+            userId = str(ctx.author.id)
         ):
             return
 
@@ -567,7 +567,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = ctx.author.name
+            userId = str(ctx.author.id)
         ):
             return
 
@@ -656,6 +656,7 @@ class CommandsCommand(AbsCommand):
         self,
         isMod: bool,
         generalSettings: GeneralSettingsRepositorySnapshot,
+        userId: str,
         userName: str,
         user: User
     ) -> List[str]:
@@ -663,14 +664,16 @@ class CommandsCommand(AbsCommand):
             raise ValueError(f'isMod argument is malformed: \"{isMod}\"')
         elif generalSettings is None:
             raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif user is None:
+        elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         isPrivilegedTriviaUser = self.__triviaUtils is not None and await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = userName
+            userId = userId
         )
 
         userName = userName.lower()
@@ -736,6 +739,7 @@ class CommandsCommand(AbsCommand):
         commands.extend(await self.__buildTriviaCommandsList(
             isMod = ctx.author.is_mod,
             generalSettings = generalSettings,
+            userId = str(ctx.author.id),
             userName = ctx.author.name,
             user = user
         ))
@@ -1284,7 +1288,7 @@ class GiveCutenessCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = ctx.author.name
+            userId = str(ctx.author.id)
         ):
             return
 
@@ -2157,7 +2161,7 @@ class SuperTriviaCommand(AbsCommand):
 
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = userName
+            userId = str(ctx.author.id)
         ):
             return
 
@@ -2450,7 +2454,7 @@ class TriviaInfoCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = ctx.author.name
+            userId = str(ctx.author.id)
         ):
             return
 
@@ -2660,7 +2664,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userName = ctx.author.name
+            userId = str(ctx.author.id)
         ):
             return
 
