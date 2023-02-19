@@ -428,18 +428,12 @@ class TriviaUtils():
 
         emotePrompt: str = ''
         if isShiny:
-            emotePrompt = f'✨✨{triviaQuestion.getEmote()}✨✨'
+            emotePrompt = f'✨✨✨{triviaQuestion.getEmote()}✨✨✨'
         else:
             emotePrompt = triviaQuestion.getEmote()
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
-
-        pointsPlurality: str = ''
-        if points == 1:
-            pointsPlurality = 'point'
-        else:
-            pointsPlurality = 'points'
 
         questionPrompt: str = ''
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
@@ -447,7 +441,7 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} {pointsPlurality} {questionPrompt}'
+        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
 
     async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):
@@ -464,6 +458,7 @@ class TriviaUtils():
             self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e)
 
         if twitchUser is None:
+            self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')
             return False
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchUser.getHandle())
