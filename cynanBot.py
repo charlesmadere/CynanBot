@@ -221,14 +221,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(generalSettingsRepository,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
-        if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
-            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, twitchUtils, usersRepository)
+            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()

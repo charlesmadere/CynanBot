@@ -2121,6 +2121,7 @@ class SuperTriviaCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameMachine: TriviaGameMachine,
+        triviaSettingsRepository: TriviaSettingsRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
@@ -2131,6 +2132,8 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepository):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
@@ -2141,6 +2144,7 @@ class SuperTriviaCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaSettingsRepository: TriviaSettingsRepository = triviaSettingsRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -2178,7 +2182,9 @@ class SuperTriviaCommand(AbsCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
-            if numberOfGames < 1 or numberOfGames > 50:
+            maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperGameQueueSize()
+
+            if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
                 self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {userName}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
