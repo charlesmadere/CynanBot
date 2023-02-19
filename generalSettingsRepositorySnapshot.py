@@ -50,10 +50,10 @@ class GeneralSettingsRepositorySnapshot():
         return utils.getIntFromDict(self.__jsonContents, 'triviaGameShinyMultiplier', 5)
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 50)
+        return utils.getIntFromDict(self.__jsonContents, 'waitForSuperTriviaAnswerDelay', 45)
 
     def getWaitForTriviaAnswerDelay(self) -> int:
-        return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 40)
+        return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 30)
 
     def isAnalogueEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'analogueEnabled', True)
