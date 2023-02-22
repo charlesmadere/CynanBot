@@ -59,6 +59,9 @@ class ModifyUserDataHelper():
         await modifyUserEventListener.onModifyUserEvent(modifyUserData)
 
     def setModifyUserEventListener(self, listener: Optional[ModifyUserEventListener]):
+        if listener is not None and not isinstance(listener, ModifyUserEventListener):
+            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+
         self.__modifyUserEventListener = listener
 
     async def setUserData(

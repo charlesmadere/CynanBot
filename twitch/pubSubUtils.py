@@ -1,6 +1,5 @@
 import asyncio
 import queue
-from asyncio import AbstractEventLoop
 from collections import defaultdict
 from queue import SimpleQueue
 from typing import Dict, List, Optional
@@ -11,6 +10,7 @@ from twitchio.ext.pubsub import PubSubPool
 from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.exceptions import (
@@ -29,7 +29,7 @@ class PubSubUtils():
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
+        backgroundTaskHelper: BackgroundTaskHelper,
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
@@ -39,8 +39,8 @@ class PubSubUtils():
         maxConnectionsPerTwitchChannel: int = 16,
         queueTimeoutSeconds: int = 3
     ):
-        if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(client, Client):
             raise ValueError(f'client argument is malformed: \"{client}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -62,7 +62,7 @@ class PubSubUtils():
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 8:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
@@ -145,7 +145,7 @@ class PubSubUtils():
 
         self.__isStarted = True
         self.__timber.log('PubSubUtils', 'Starting PubSub...')
-        self.__eventLoop.create_task(self.__startPubSubUpdateLoop())
+        self.__backgroundTaskHelper.createTask(self.__startPubSubUpdateLoop())
 
     async def __startPubSubUpdateLoop(self):
         while True:

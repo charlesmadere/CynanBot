@@ -4,6 +4,7 @@ import locale
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
@@ -94,6 +95,7 @@ from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
+from twitch.channelJoinHelper import ChannelJoinHelper
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
@@ -106,10 +108,9 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 #################################
 
 eventLoop = asyncio.get_event_loop()
+backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
 generalSettingsRepository = GeneralSettingsRepository()
-timber = Timber(
-    eventLoop = eventLoop
-)
+timber = Timber(backgroundTaskHelper = backgroundTaskHelper)
 
 backingDatabase: BackingDatabase = None
 if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:
@@ -385,9 +386,15 @@ triviaRepository = TriviaRepository(
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     authRepository = authRepository,
+    backgroundTaskHelper = backgroundTaskHelper,
     bannedWordsRepository = bannedWordsRepository,
+    channelJoinHelper = ChannelJoinHelper(
+        backgroundTaskHelper = backgroundTaskHelper,
+        timber = timber,
+        usersRepository = usersRepository
+    ),
     chatLogger = ChatLogger(
-        eventLoop = eventLoop,
+        backgroundTaskHelper = backgroundTaskHelper
     ),
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
@@ -414,7 +421,7 @@ cynanBot = CynanBot(
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaGameMachine = TriviaGameMachine(
-        eventLoop = eventLoop,
+        backgroundTaskHelper = backgroundTaskHelper,
         cutenessRepository = cutenessRepository,
         queuedTriviaGameStore = QueuedTriviaGameStore(
             timber = timber,
@@ -440,7 +447,7 @@ cynanBot = CynanBot(
     triviaUtils = triviaUtils,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = TwitchUtils(
-        eventLoop = eventLoop,
+        backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
     ),
     userIdsRepository = userIdsRepository,

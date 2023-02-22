@@ -28,6 +28,7 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       TriviaInfoCommand, TriviaScoreCommand, TwitterCommand,
                       UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
@@ -120,7 +121,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self,
         eventLoop: AbstractEventLoop,
         authRepository: AuthRepository,
+        backgroundTaskHelper: BackgroundTaskHelper,
         bannedWordsRepository: Optional[BannedWordsRepository],
+        channelJoinHelper: ChannelJoinHelper,
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
@@ -166,6 +169,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
+        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(channelJoinHelper, ChannelJoinHelper):
+            raise ValueError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(languagesRepository, LanguagesRepository):
@@ -184,6 +191,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
+        self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
@@ -378,7 +386,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__pubSubUtils: Optional[PubSubUtils] = None
         if generalSettings.isPubSubEnabled():
             self.__pubSubUtils = PubSubUtils(
-                eventLoop = eventLoop,
+                backgroundTaskHelper = backgroundTaskHelper,
                 client = self,
                 generalSettingsRepository = generalSettingsRepository,
                 timber = timber,
@@ -386,17 +394,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 userIdsRepository = userIdsRepository,
                 usersRepository = usersRepository
             )
-
-        ###################################################################
-        ## Sequentially join Twitch channels so as to prevent throttling ##
-        ###################################################################
-
-        self.__channelJoinHelper = ChannelJoinHelper(
-            eventLoop = eventLoop,
-            channelJoinListener = self,
-            timber = timber,
-            usersRepository = usersRepository
-        )
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
 
@@ -634,6 +631,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         twitchHandle = await self.__authRepository.getTwitchHandle()
         self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
 
+        self.__channelJoinHelper.setChannelJoinListener(self)
         self.__channelJoinHelper.joinChannels()
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
 

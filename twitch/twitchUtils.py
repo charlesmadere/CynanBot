@@ -1,6 +1,5 @@
 import asyncio
 import queue
-from asyncio import AbstractEventLoop
 from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import List
@@ -8,6 +7,7 @@ from typing import List
 from twitchio.abcs import Messageable
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.timber.timber import Timber
 from twitch.twitchMessage import TwitchMessage
 
@@ -16,15 +16,15 @@ class TwitchUtils():
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
+        backgroundTaskHelper: BackgroundTaskHelper,
         timber: Timber,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
         queueTimeoutSeconds: int = 3,
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -49,7 +49,7 @@ class TwitchUtils():
         self.__timeZone: timezone = timeZone
 
         self.__messageQueue: SimpleQueue[TwitchMessage] = SimpleQueue()
-        eventLoop.create_task(self.__startTwitchMessageLoop())
+        backgroundTaskHelper.createTask(self.__startTwitchMessageLoop())
 
     def getMaxMessageSize(self) -> int:
         return 488

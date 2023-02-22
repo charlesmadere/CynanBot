@@ -1,9 +1,9 @@
 import asyncio
 import random
-from asyncio import AbstractEventLoop
-from typing import List
+from typing import List, Optional
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.timber.timber import Timber
 from twitch.channelJoinListener import ChannelJoinListener
 from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
@@ -15,17 +15,14 @@ class ChannelJoinHelper():
 
     def __init__(
         self,
-        eventLoop: AbstractEventLoop,
-        channelJoinListener: ChannelJoinListener,
+        backgroundTaskHelper: BackgroundTaskHelper,
         timber: Timber,
         usersRepository: UsersRepository,
         sleepTimeSeconds: float = 16,
         maxChannelsToJoin: int = 10
     ):
-        if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif not isinstance(channelJoinListener, ChannelJoinListener):
-            raise ValueError(f'channelJoinListener argument is malformed: \"{channelJoinListener}\"')
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(usersRepository, UsersRepository):
@@ -39,13 +36,13 @@ class ChannelJoinHelper():
         elif maxChannelsToJoin < 3 or maxChannelsToJoin > 10:
             raise ValueError(f'maxChannelsToJoin argument is out of bounds: {maxChannelsToJoin}')
 
-        self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__channelJoinListener: ChannelJoinListener = channelJoinListener
+        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxChannelsToJoin: int = maxChannelsToJoin
 
+        self.__channelJoinListener: Optional[ChannelJoinListener] = None
         self.__isJoiningChannels: bool = False
 
     def joinChannels(self):
@@ -55,9 +52,14 @@ class ChannelJoinHelper():
 
         self.__isJoiningChannels = True
         self.__timber.log('ChannelJoinHelper', f'Starting channel join process...')
-        self.__eventLoop.create_task(self.__joinChannels())
+        self.__backgroundTaskHelper.createTask(self.__joinChannels())
 
     async def __joinChannels(self):
+        channelJoinListener = self.__channelJoinListener
+
+        if channelJoinListener is None:
+            raise RuntimeError(f'channelJoinListener has not been set: \"{channelJoinListener}\"')
+
         allChannels: List[str] = list()
         users = await self.__usersRepository.getUsersAsync()
 
@@ -85,15 +87,21 @@ class ChannelJoinHelper():
 
             newChannelsToJoin.sort(key = lambda userHandle: userHandle.lower())
 
-            await self.__channelJoinListener.onNewChannelJoinEvent(JoinChannelsEvent(
+            await channelJoinListener.onNewChannelJoinEvent(JoinChannelsEvent(
                 channels = newChannelsToJoin
             ))
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-        await self.__channelJoinListener.onNewChannelJoinEvent(FinishedJoiningChannelsEvent(
+        await channelJoinListener.onNewChannelJoinEvent(FinishedJoiningChannelsEvent(
             allChannels = allChannels
         ))
 
         self.__timber.log('ChannelJoinHelper', f'Finished joining {len(allChannels)} channel(s)')
         self.__isJoiningChannels = False
+
+    def setChannelJoinListener(self, listener: Optional[ChannelJoinListener]):
+        if listener is not None and not isinstance(listener, ChannelJoinListener):
+            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+
+        self.__channelJoinListener = listener
