@@ -36,7 +36,7 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
-        maxConnectionsPerTwitchChannel: int = 16,
+        maxConnectionsPerTwitchChannel: int = 32,
         queueTimeoutSeconds: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
