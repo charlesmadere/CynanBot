@@ -133,10 +133,7 @@ class PubSubUtils():
 
         for user in usersWithTwitchTokens:
             try:
-                await self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchHandle = user.getHandle()
-                )
-
+                await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getHandle())
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
             except GenericNetworkException as e:
                 self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e)
