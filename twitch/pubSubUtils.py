@@ -37,6 +37,8 @@ class PubSubUtils():
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 32,
+        maxPubSubConnectionTopics: int = 1024,
+        maxPubSubPoolSize: int = 128,
         queueTimeoutSeconds: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -55,8 +57,16 @@ class PubSubUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidInt(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
-        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel >= 128:
+        elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > utils.getIntMaxSafeSize():
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is out of bounds: {maxConnectionsPerTwitchChannel}')
+        elif not utils.isValidInt(maxPubSubConnectionTopics):
+            raise ValueError(f'maxPubSubConnectionTopics argument is malformed: \"{maxPubSubConnectionTopics}\"')
+        elif maxPubSubConnectionTopics < 32 or maxPubSubConnectionTopics > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxPubSubConnectionTopics argument is out of bounds: {maxPubSubConnectionTopics}')
+        elif not utils.isValidInt(maxPubSubPoolSize):
+            raise ValueError(f'maxPubSubPoolSize argument is malformed: \"{maxPubSubPoolSize}\"')
+        elif maxPubSubPoolSize < 16 or maxPubSubPoolSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxPubSubPoolSize argument is out of bounds: {maxPubSubPoolSize}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 8:
@@ -77,8 +87,8 @@ class PubSubUtils():
 
         self.__pubSubPool: PubSubPool = PubSubPool(
             client = client,
-            max_pool_size = maxConnectionsPerTwitchChannel * 4,
-            max_connection_topics = maxConnectionsPerTwitchChannel * 16
+            max_pool_size = maxPubSubPoolSize,
+            max_connection_topics = maxPubSubConnectionTopics
         )
 
     async def forceFullRefresh(self):
