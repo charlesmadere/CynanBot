@@ -81,8 +81,20 @@ class PubSubUtils():
             max_connection_topics = maxConnectionsPerTwitchChannel * 16
         )
 
-    async def __getSubscribeReadyPubSubEntries(self) -> Optional[List[PubSubEntry]]:
-        twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
+    async def forceFullRefresh(self):
+        self.__timber.log('PubSubUtils', f'Performing a full forced refresh of all PubSub connections...')
+        await self.__refresh(forceFullRefresh = True)
+        self.__timber.log('PubSubUtils', f'Finished performing full forced refresh of all PubSub connections')
+
+    async def __getSubscribeReadyPubSubEntries(self, forceFullRefresh: bool) -> Optional[List[PubSubEntry]]:
+        if not utils.isValidBool(forceFullRefresh):
+            raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
+
+        twitchHandles: Optional[List[str]] = None
+
+        if not forceFullRefresh:
+            twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
+
         users: Optional[List[UserInterface]] = None
 
         if twitchHandles is None:
@@ -138,6 +150,25 @@ class PubSubUtils():
 
         return pubSubEntries
 
+    async def __refresh(self, forceFullRefresh: bool):
+        if not utils.isValidBool(forceFullRefresh):
+            raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
+
+        self.__timber.log('PubSubUtils', f'Refreshing... (forceFullRefresh=\"{forceFullRefresh}\")')
+
+        if self.__isManagingPubSub:
+            self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
+            return
+
+        self.__isManagingPubSub = True
+
+        try:
+            await self.__updatePubSubSubscriptions(forceFullRefresh)
+        except Exception as e:
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to update PubSub subscriptions: {e}', e)
+
+        self.__isManagingPubSub = False
+
     def startPubSub(self):
         if self.__isStarted:
             self.__timber.log('PubSubUtils', 'Not starting PubSub as it has already been started')
@@ -149,27 +180,18 @@ class PubSubUtils():
 
     async def __startPubSubUpdateLoop(self):
         while True:
-            self.__timber.log('PubSubUtils', 'Refreshing...')
-
-            if self.__isManagingPubSub:
-                self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
-            else:
-                self.__isManagingPubSub = True
-
-                try:
-                    await self.__updatePubSubSubscriptions()
-                except Exception as e:
-                    self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to update PubSub subscriptions: {e}', e)
-
-                self.__isManagingPubSub = False
+            await self.__refresh(forceFullRefresh = False)
 
             generalSettings = await self.__generalSettingsRepository.getAllAsync()
             await asyncio.sleep(generalSettings.getRefreshPubSubTokensSeconds())
 
-    async def __updatePubSubSubscriptions(self):
+    async def __updatePubSubSubscriptions(self, forceFullRefresh: bool):
+        if not utils.isValidBool(forceFullRefresh):
+            raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
+
         pubSubTopicsToAdd: List[Topic] = list()
         pubSubTopicsToRemove: List[Topic] = list()
-        newPubSubEntries = await self.__getSubscribeReadyPubSubEntries()
+        newPubSubEntries = await self.__getSubscribeReadyPubSubEntries(forceFullRefresh)
 
         if utils.hasItems(newPubSubEntries):
             for newPubSubEntry in newPubSubEntries:

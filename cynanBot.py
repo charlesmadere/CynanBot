@@ -635,6 +635,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__channelJoinHelper.joinChannels()
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
+    async def event_reconnect(self):
+        self.__timber.log('CynanBot', f'Received new reconnect event')
+
+        await self.wait_for_ready()
+
+        if self.__pubSubUtils is not None:
+            await self.__pubSubUtils.forceFullRefresh()
+
     async def event_usernotice_subscription(self, metadata):
         self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
 
