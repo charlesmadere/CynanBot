@@ -202,8 +202,11 @@ class PubSubUtils():
 
         if utils.hasItems(newPubSubEntries):
             for newPubSubEntry in newPubSubEntries:
-                pubSubTopicsToAdd.append(newPubSubEntry.getTopic())
-                self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic())
+                try:
+                    self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic(), block = True, timeout = self.__queueTimeoutSeconds)
+                    pubSubTopicsToAdd.append(newPubSubEntry.getTopic())
+                except queue.Full as e:
+                    self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
 
         for userName, topicQueue in self.__pubSubEntries.items():
             try:
