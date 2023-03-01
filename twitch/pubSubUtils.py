@@ -7,6 +7,7 @@ from typing import Dict, List, Optional
 from twitchio import Client
 from twitchio.ext import pubsub
 from twitchio.ext.pubsub import PubSubPool
+from twitchio.ext.pubsub.models import PubSubError
 from twitchio.ext.pubsub.topics import Topic
 
 import CynanBotCommon.utils as utils
@@ -216,21 +217,23 @@ class PubSubUtils():
                 self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
 
         if utils.hasItems(pubSubTopicsToAdd):
-            self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub user(s)...')
+            self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub topic(s)...')
 
             try:
                 await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
+                self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub topic(s)')
+            except PubSubError as e:
+                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
             except Exception as e:
                 self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
 
-            self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub user(s)')
-
         if utils.hasItems(pubSubTopicsToRemove):
-            self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)...')
+            self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub topic(s)...')
 
             try:
                 await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
+                self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub topic(s)')
+            except PubSubError as e:
+                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
             except Exception as e:
                 self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
-
-            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub user(s)')
