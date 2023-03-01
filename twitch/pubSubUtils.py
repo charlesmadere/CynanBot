@@ -36,9 +36,9 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
-        maxConnectionsPerTwitchChannel: int = 32,
-        maxPubSubConnectionTopics: int = 1024,
-        maxPubSubPoolSize: int = 128,
+        maxConnectionsPerTwitchChannel: int = 16,
+        maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
+        maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
         queueTimeoutSeconds: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
