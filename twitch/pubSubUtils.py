@@ -162,7 +162,7 @@ class PubSubUtils():
         if not utils.isValidBool(forceFullRefresh):
             raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
 
-        self.__timber.log('PubSubUtils', f'Refreshing... (forceFullRefresh=\"{forceFullRefresh}\")')
+        self.__timber.log('PubSubUtils', f'Refreshing... (forceFullRefresh={forceFullRefresh})')
 
         if self.__isManagingPubSub:
             self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
