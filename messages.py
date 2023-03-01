@@ -477,14 +477,14 @@ class SchubertWalkMessage(AbsMessage):
 
         if not generalSettings.isSchubertWalkMessageEnabled():
             return False
-        elif not twitchUser.isRoachMessageEnabled():
+        elif not twitchUser.isSchubertWalkMessageEnabled():
             return False
 
         splits = utils.getCleanedSplits(message.content)
 
         if self.__schubertWalkMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.channel, self.__schubertWalkMessage)
-            self.__timber.log('RoachMessage', f'Handled {self.__schubertWalkMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            self.__timber.log('SchubertWalkMessage', f'Handled {self.__schubertWalkMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
             return True
 
         return False
