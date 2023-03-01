@@ -37,7 +37,7 @@ class PubSubUtils():
         twitchTokensRepository: TwitchTokensRepository,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
-        maxConnectionsPerTwitchChannel: int = 16,
+        maxConnectionsPerTwitchChannel: int = 8,
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
         maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
         queueTimeoutSeconds: int = 3
