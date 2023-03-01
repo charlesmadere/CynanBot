@@ -217,11 +217,11 @@ class PubSubUtils():
                 self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
 
         if utils.hasItems(pubSubTopicsToAdd):
-            self.__timber.log('PubSubUtils', f'Subscribing to {len(newPubSubEntries)} PubSub topic(s)...')
+            self.__timber.log('PubSubUtils', f'Subscribing to {len(pubSubTopicsToAdd)} PubSub topic(s)...')
 
             try:
                 await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
-                self.__timber.log('PubSubUtils', f'Finished subscribing to {len(newPubSubEntries)} PubSub topic(s)')
+                self.__timber.log('PubSubUtils', f'Finished subscribing to {len(pubSubTopicsToAdd)} PubSub topic(s)')
             except PubSubError as e:
                 self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
             except Exception as e:
@@ -234,6 +234,6 @@ class PubSubUtils():
                 await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
                 self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub topic(s)')
             except PubSubError as e:
-                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
+                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
             except Exception as e:
                 self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
