@@ -6,7 +6,7 @@ import CynanBotCommon.utils as utils
 class PubSubEntry():
 
     def __init__(self, userId: int, userName: str, topic: Topic):
-        if not utils.isValidNum(userId):
+        if not utils.isValidInt(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
