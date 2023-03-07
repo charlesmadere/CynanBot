@@ -242,7 +242,6 @@ triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
 triviaHistoryRepository = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaScoreRepository = TriviaScoreRepository(
