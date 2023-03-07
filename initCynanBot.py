@@ -242,6 +242,7 @@ triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
 triviaHistoryRepository = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaScoreRepository = TriviaScoreRepository(
@@ -277,7 +278,6 @@ triviaRepository = TriviaRepository(
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
@@ -286,20 +286,17 @@ triviaRepository = TriviaRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
@@ -307,34 +304,29 @@ triviaRepository = TriviaRepository(
     lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(
         pokepediaRepository = pokepediaRepository,
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -342,13 +334,12 @@ triviaRepository = TriviaRepository(
     timber = timber,
     triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -365,7 +356,6 @@ triviaRepository = TriviaRepository(
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository

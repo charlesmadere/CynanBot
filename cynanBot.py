@@ -750,7 +750,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
             newCuteness = event.getCutenessResult(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -768,7 +768,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -778,7 +778,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getIncorrectAnswerReveal(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -788,7 +788,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getInvalidAnswerInputPrompt(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -800,7 +800,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
@@ -812,7 +812,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
-            emote = event.getTriviaQuestion().getEmote()
+            emote = event.getEmote()
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
@@ -823,7 +823,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             isShiny = event.isShiny(),
             newCuteness = event.getCutenessResult(),
             points = event.getPointsForWinning(),
-            emote = event.getTriviaQuestion().getEmote(),
+            emote = event.getEmote(),
             userName = event.getUserName()
         ))
 
@@ -840,7 +840,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
-            emote = event.getTriviaQuestion().getEmote()
+            emote = event.getEmote()
         ))
 
         launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
@@ -856,6 +856,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
+            emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName()
         ))
 
