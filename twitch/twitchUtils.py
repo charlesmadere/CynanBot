@@ -2,7 +2,7 @@ import asyncio
 import queue
 from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
-from typing import List
+from typing import List, Optional
 
 from twitchio.abcs import Messageable
 
@@ -57,7 +57,7 @@ class TwitchUtils():
     async def safeSend(
         self,
         messageable: Messageable,
-        message: str,
+        message: Optional[str],
         maxMessages: int = 3,
         perMessageMaxSize: int = 488
     ):
