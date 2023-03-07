@@ -335,7 +335,6 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,
