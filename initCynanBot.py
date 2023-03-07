@@ -268,7 +268,6 @@ if authSnapshot.hasQuizApiKey():
         networkClientProvider = networkClientProvider,
         quizApiKey = authSnapshot.requireQuizApiKey(),
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
@@ -361,7 +360,6 @@ triviaRepository = TriviaRepository(
     ),
     wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
         timber = timber,
-        triviaEmoteGenerator = triviaEmoteGenerator,
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     )
