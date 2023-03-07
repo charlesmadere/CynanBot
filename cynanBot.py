@@ -112,6 +112,7 @@ from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserData import ModifyUserData
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.modifyUserEventListener import ModifyUserEventListener
+from users.user import User
 from users.usersRepository import UsersRepository
 
 
@@ -396,6 +397,22 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             )
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
+
+    async def event_channel_join_failure(self, channel: str):
+        userId: Optional[str] = None
+        user: Optional[User] = None
+
+        try:
+            userId = await self.__userIdsRepository.fetchUserId(channel)
+        except:
+            pass
+
+        try:
+            user = self.__usersRepository.getUserAsync(channel)
+        except:
+            pass
+
+        self.__timber.log('CynanBot', f'Failed to join channel \"{channel}\" (userId=\"{userId}\") (user=\"{user}\")')
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
@@ -710,6 +727,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         eventType = event.getTriviaEventType()
         self.__timber.log('CynanBot', f'Received new trivia event: \"{eventType}\"')
+
+        await self.wait_for_ready()
 
         if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
