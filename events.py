@@ -2,14 +2,13 @@ import locale
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from twitchio.channel import Channel
-
 import CynanBotCommon.utils as utils
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from generalSettingsRepository import GeneralSettingsRepository
+from twitch.twitchChannel import TwitchChannel
 from twitch.twitchUtils import TwitchUtils
 from users.user import User
 
@@ -17,7 +16,12 @@ from users.user import User
 class AbsEvent(ABC):
 
     @abstractmethod
-    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+    async def handleEvent(
+        self,
+        channel: TwitchChannel,
+        user: User,
+        tags: Dict[str, Any]
+    ) -> bool:
         pass
 
 
@@ -36,7 +40,7 @@ class RaidLogEvent(AbsEvent):
         self.__chatLogger: ChatLogger = chatLogger
         self.__timber: Timber = timber
 
-    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+    async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         if not user.isChatLoggingEnabled():
             return False
 
@@ -80,7 +84,7 @@ class RaidThankEvent(AbsEvent):
         self.__timber: Timber = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
 
-    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+    async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isRaidLinkMessagingEnabled():
@@ -142,7 +146,7 @@ class SubGiftThankingEvent(AbsEvent):
         self.__twitchHandleProviderInterface: TwitchHandleProviderInterface = twitchHandleProviderInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
 
-    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+    async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isSubGiftThankingEnabled():
@@ -186,5 +190,5 @@ class StubEvent(AbsEvent):
     def __init__(self):
         pass
 
-    async def handleEvent(self, channel: Channel, user: User, tags: Dict[str, Any]) -> bool:
+    async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         return False

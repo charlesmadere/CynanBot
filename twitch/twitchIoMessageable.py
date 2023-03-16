@@ -1,8 +1,8 @@
 from twitchio.abcs import Messageable
 
 import CynanBotCommon.utils as utils
+from twitch.twitchConfigurationType import TwitchConfigurationType
 from twitch.twitchMessageable import TwitchMessageable
-from twitch.twitchMessageableType import TwitchMessageableType
 
 
 class TwitchIoMessageable(TwitchMessageable):
@@ -19,8 +19,8 @@ class TwitchIoMessageable(TwitchMessageable):
     def getTwitchChannelName(self) -> str:
         return self.__twitchChannelName
 
-    def getTwitchMessageableType(self) -> TwitchMessageableType:
-        return TwitchMessageableType.TWITCHIO
+    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
+        return TwitchConfigurationType.TWITCHIO
 
     async def send(self, message: str):
         await self.__messageable.send(message)

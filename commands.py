@@ -3,8 +3,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from twitchio.ext.commands import Context
-
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
@@ -64,6 +62,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
+from twitch.twitchContext import TwitchContext
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserDataHelper import ModifyUserDataHelper
@@ -74,7 +73,7 @@ from users.usersRepository import UsersRepository
 class AbsCommand(ABC):
 
     @abstractmethod
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         pass
 
 
@@ -105,25 +104,25 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        userName = ctx.author.name
+        userName = ctx.getAuthorName()
 
         if generalSettings.requireAdministrator().lower() != userName.lower():
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {ctx.channel.name}, but no arguments were supplied')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as no username argument was given. Example: !addglobaltriviacontroller {generalSettings.requireAdministrator()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as username argument is malformed. Example: !addglobaltriviacontroller {user.getHandle()}')
             return
 
@@ -139,10 +138,10 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a global trivia game controller!')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a global trivia game controller!')
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-        self.__timber.log('AddGlobalTriviaControllerCommand', f'Handled !addglobaltriviacontroller command for {ctx.author.name}:{ctx.author.id} in {ctx.channel.name}')
+        self.__timber.log('AddGlobalTriviaControllerCommand', f'Handled !addglobaltriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
 
 
 class AddTriviaControllerCommand(AbsCommand):
@@ -172,30 +171,30 @@ class AddTriviaControllerCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
-            self.__timber.log('AddTriviaGameControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            self.__timber.log('AddTriviaGameControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
             return
 
@@ -212,10 +211,10 @@ class AddTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a trivia game controller!')
-            self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            self.__timber.log('AddTriviaControllerCommand', f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown AddTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-        self.__timber.log('AddTriviaControllerCommand', f'Handled !addtriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('AddTriviaControllerCommand', f'Handled !addtriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class AddUserCommand(AbsCommand):
@@ -253,29 +252,29 @@ class AddUserCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProviderInterface.getAdministrator()
 
-        if ctx.author.name.lower() != administrator.lower():
-            self.__timber.log('AddUserCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+        if ctx.getAuthorName().lower() != administrator.lower():
+            self.__timber.log('AddUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('AddUserCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            self.__timber.log('AddUserCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
 
         if not utils.isValidStr(userName):
-            self.__timber.log('AddUserCommand', f'Invalid username argument given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            self.__timber.log('AddUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !adduser command. Example: !adduser {user.getHandle()}')
             return
 
         if await self.__usersRepository.containsUserAsync(userName):
-            self.__timber.log('AddUserCommand', f'Username argument (\"{userName}\") given by {ctx.author.name}:{ctx.author.id} already exists as a user')
+            self.__timber.log('AddUserCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} already exists as a user')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
             return
 
@@ -307,7 +306,7 @@ class AddUserCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ To add user \"{userName}\" ({userId}), please respond with `!confirm`')
-        self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('AddUserCommand', f'Handled !adduser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class AnswerCommand(AbsCommand):
@@ -333,8 +332,8 @@ class AnswerCommand(AbsCommand):
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTriviaGameEnabled():
@@ -342,7 +341,7 @@ class AnswerCommand(AbsCommand):
         elif not user.isTriviaGameEnabled():
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             return
 
@@ -351,11 +350,11 @@ class AnswerCommand(AbsCommand):
         self.__triviaGameMachine.submitAction(CheckAnswerTriviaAction(
             answer = answer,
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id),
-            userName = ctx.author.name
+            userId = ctx.getAuthorId(),
+            userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('AnswerCommand', f'Handled !answer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class BanTriviaQuestionCommand(AbsCommand):
@@ -397,9 +396,9 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
@@ -407,13 +406,13 @@ class BanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -421,7 +420,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as an invalid emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -431,7 +430,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         )
 
         if reference is None:
-            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('BanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
@@ -441,7 +440,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Banned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
 
 
 class ClearCachesCommand(AbsCommand):
@@ -489,12 +488,12 @@ class ClearCachesCommand(AbsCommand):
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
         self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if ctx.author.name.lower() != generalSettings.requireAdministrator().lower():
-            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        if ctx.getAuthorName().lower() != generalSettings.requireAdministrator().lower():
+            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
             return
 
         await self.__authRepository.clearCaches()
@@ -527,7 +526,7 @@ class ClearCachesCommand(AbsCommand):
             await self.__wordOfTheDayRepository.clearCaches()
 
         await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
-        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class ClearSuperTriviaQueueCommand(AbsCommand):
@@ -557,9 +556,9 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isSuperTriviaGameEnabled():
             return
@@ -567,7 +566,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
@@ -575,7 +574,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             twitchChannel = user.getHandle()
         ))
 
-        self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CommandsCommand(AbsCommand):
@@ -709,11 +708,11 @@ class CommandsCommand(AbsCommand):
 
         return commands
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         commands: List[str] = list()
@@ -737,10 +736,10 @@ class CommandsCommand(AbsCommand):
             commands.append('!analogue')
 
         commands.extend(await self.__buildTriviaCommandsList(
-            isMod = ctx.author.is_mod,
+            isMod = ctx.isAuthorMod(),
             generalSettings = generalSettings,
-            userId = str(ctx.author.id),
-            userName = ctx.author.name,
+            userId = ctx.getAuthorId(),
+            userName = ctx.getAuthorName(),
             user = user
         ))
 
@@ -762,7 +761,7 @@ class CommandsCommand(AbsCommand):
 
         commandsString = self.__delimiter.join(commands)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Available commands: {commandsString}')
-        self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CommandsCommand', f'Handled !commands command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class ConfirmCommand(AbsCommand):
@@ -791,18 +790,18 @@ class ConfirmCommand(AbsCommand):
         self.__timber: Timber = timber
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProviderInterface.getAdministrator()
 
-        if ctx.author.name.lower() != administrator.lower():
-            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+        if ctx.getAuthorName().lower() != administrator.lower():
+            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
         userData = await self.__modifyUserDataHelper.getUserData()
 
         if userData is None:
-            self.__timber.log('ConfirmCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
+            self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
             return
 
         if userData.getActionType() is ModifyUserActionType.ADD:
@@ -813,8 +812,7 @@ class ConfirmCommand(AbsCommand):
             raise RuntimeError(f'unknown ModifyUserActionType: \"{userData.getActionType()}\"')
 
         await self.__modifyUserDataHelper.notifyModifyUserListenerAndClearData()
-
-        self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CutenessCommand(AbsCommand):
@@ -857,7 +855,7 @@ class CutenessCommand(AbsCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     def __cutenessLeaderboardResultToStr(self, result: CutenessLeaderboardResult) -> str:
-        if result is None:
+        if not isinstance(result, CutenessLeaderboardResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
         if not result.hasEntries():
@@ -877,7 +875,7 @@ class CutenessCommand(AbsCommand):
             return f'The {result.getCutenessDate().toStr()} leaderboard is {leaderboard} ✨'
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
-        if result is None:
+        if not isinstance(result, CutenessResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
         if result.hasCuteness() and result.getCuteness() >= 1:
@@ -889,15 +887,15 @@ class CutenessCommand(AbsCommand):
         else:
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         userId: str = None
         userName: str = None
@@ -905,10 +903,10 @@ class CutenessCommand(AbsCommand):
         if len(splits) >= 2:
             userName = utils.removePreceedingAt(splits[1])
         else:
-            userName = ctx.author.name
+            userName = ctx.getAuthorName()
 
         # this means that a user is querying for another user's cuteness
-        if userName.lower() != ctx.author.name.lower():
+        if userName.lower() != ctx.getAuthorName().lower():
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError) as e:
@@ -925,7 +923,7 @@ class CutenessCommand(AbsCommand):
 
             await self.__twitchUtils.safeSend(ctx, self.__cutenessResultToStr(result))
         else:
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
 
             result = await self.__cutenessRepository.fetchCutenessLeaderboard(
                 twitchChannel = user.getHandle(),
@@ -935,7 +933,7 @@ class CutenessCommand(AbsCommand):
 
             await self.__twitchUtils.safeSend(ctx, self.__cutenessLeaderboardResultToStr(result))
 
-        self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CutenessCommand', f'Handled !cuteness command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CutenessChampionsCommand(AbsCommand):
@@ -976,12 +974,12 @@ class CutenessChampionsCommand(AbsCommand):
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         result = await self.__cutenessRepository.fetchCutenessChampions(
@@ -989,7 +987,7 @@ class CutenessChampionsCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
-        self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CutenessChampionsCommand', f'Handled !cutenesschampions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CutenessHistoryCommand(AbsCommand):
@@ -1035,26 +1033,26 @@ class CutenessHistoryCommand(AbsCommand):
         self.__leaderboardDelimiter: str = leaderboardDelimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         userName: str = None
         if len(splits) >= 2:
             userName = utils.removePreceedingAt(splits[1])
         else:
-            userName = ctx.author.name
+            userName = ctx.getAuthorName()
 
         userId: Optional[str] = None
 
         # this means that a user is querying for another user's cuteness history
-        if userName.lower() != ctx.author.name.lower():
+        if userName.lower() != ctx.getAuthorName().lower():
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError):
@@ -1084,7 +1082,7 @@ class CutenessHistoryCommand(AbsCommand):
                 leaderboardDelimiter = self.__leaderboardDelimiter
             ))
 
-        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CutenessHistoryCommand', f'Handled !cutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CynanSourceCommand(AbsCommand):
@@ -1110,16 +1108,16 @@ class CynanSourceCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCynanSourceEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(ctx.channel.name):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
             return
 
         await self.__twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
-        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class DiscordCommand(AbsCommand):
@@ -1145,17 +1143,17 @@ class DiscordCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.hasDiscord():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         discord = user.getDiscordUrl()
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
-        self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetGlobalTriviaControllersCommand(AbsCommand):
@@ -1187,19 +1185,19 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
-            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
         await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
-        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetTriviaControllersCommand(AbsCommand):
@@ -1231,23 +1229,23 @@ class GetTriviaControllersCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
         await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameControllers(controllers))
-        self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GiveCutenessCommand(AbsCommand):
@@ -1281,39 +1279,39 @@ class GiveCutenessCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled() or not user.isGiveCutenessEnabled():
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
-            self.__timber.log('GiveCutenessCommand', f'Less than 3 arguments given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            self.__timber.log('GiveCutenessCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
         userName: str = splits[1]
         if not utils.isValidStr(userName):
-            self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{userName}\"')
+            self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         incrementAmountStr: str = splits[2]
         if not utils.isValidStr(incrementAmountStr):
-            self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
+            self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, TypeError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.author.name}:{ctx.author.id} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}')
+            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -1322,7 +1320,7 @@ class GiveCutenessCommand(AbsCommand):
         try:
             userId = await self.__userIdsRepository.fetchUserId(userName = userName)
         except ValueError:
-            self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
+            self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
             return
 
@@ -1336,10 +1334,10 @@ class GiveCutenessCommand(AbsCommand):
 
             await self.__twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.author.name}:{ctx.author.id} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}')
+            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
-        self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class JishoCommand(AbsCommand):
@@ -1373,8 +1371,8 @@ class JishoCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isJishoEnabled():
@@ -1423,12 +1421,12 @@ class LoremIpsumCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isLoremIpsumEnabled():
             return
-        elif not ctx.author.is_mod or ctx.author.name.lower() != user.getHandle().lower():
+        elif not ctx.isAuthorMod() or ctx.getAuthorName().lower() != user.getHandle().lower():
             return
 
         loremIpsumText = ''
@@ -1438,7 +1436,7 @@ class LoremIpsumCommand(AbsCommand):
             loremIpsumText = 'Bacon ipsum dolor amet t-bone sirloin tenderloin pork belly, shoulder landjaeger boudin. Leberkas short loin jowl short ribs, strip steak beef ribs flank pork belly ham corned beef. Spare ribs turkey sausage, tenderloin boudin brisket chislic shankle. Beef ribs ball tip ham hock beef t-bone porchetta bacon bresaola chislic swine. Pork meatball pancetta, jerky chuck burgdoggen tongue jowl fatback cupim doner rump flank landjaeger. Doner salami venison buffalo rump pork chop landjaeger jowl leberkas tail bresaola brisket spare ribs tri-tip sausage.'
 
         await self.__twitchUtils.safeSend(ctx, loremIpsumText)
-        self.__timber.log('LoremIpsumCommand', f'Handled !lorem command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('LoremIpsumCommand', f'Handled !lorem command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class MyCutenessCommand(AbsCommand):
@@ -1476,16 +1474,16 @@ class MyCutenessCommand(AbsCommand):
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        userId = str(ctx.author.id)
-        userName = ctx.author.name
+        userId = ctx.getAuthorId()
+        userName = ctx.getAuthorName()
 
         try:
             result = await self.__cutenessRepository.fetchCuteness(
@@ -1542,26 +1540,26 @@ class MyCutenessHistoryCommand(AbsCommand):
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         userName: str = None
         if len(splits) >= 2:
             userName = utils.removePreceedingAt(splits[1])
         else:
-            userName = ctx.author.name
+            userName = ctx.getAuthorName()
 
         userId: str = None
 
         # this means that a user is querying for another user's cuteness history
-        if userName.lower() != ctx.author.name.lower():
+        if userName.lower() != ctx.getAuthorName().lower():
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError):
@@ -1569,7 +1567,7 @@ class MyCutenessHistoryCommand(AbsCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
         else:
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
 
         result = await self.__cutenessRepository.fetchCutenessHistory(
             twitchChannel = user.getHandle(),
@@ -1578,7 +1576,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__delimiter))
-        self.__timber.log('MyCutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('MyCutenessHistoryCommand', f'Handled !mycutenesshistory command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class PbsCommand(AbsCommand):
@@ -1604,17 +1602,17 @@ class PbsCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.hasSpeedrunProfile():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         speedrunProfile = user.getSpeedrunProfile()
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
-        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class PkMonCommand(AbsCommand):
@@ -1648,18 +1646,18 @@ class PkMonCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isPokepediaEnabled():
             return
         elif not user.isPokepediaEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             await self.__twitchUtils.safeSend(ctx, '⚠ A Pokémon name is necessary for the !pkmon command. Example: !pkmon charizard')
             return
@@ -1675,7 +1673,7 @@ class PkMonCommand(AbsCommand):
             self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
-        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class PkMoveCommand(AbsCommand):
@@ -1709,18 +1707,18 @@ class PkMoveCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isPokepediaEnabled():
             return
         elif not user.isPokepediaEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             await self.__twitchUtils.safeSend(ctx, '⚠ A move name is necessary for the !pkmove command. Example: !pkmove fire spin')
             return
@@ -1736,7 +1734,7 @@ class PkMoveCommand(AbsCommand):
             self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
-        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class RaceCommand(AbsCommand):
@@ -1762,11 +1760,11 @@ class RaceCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        if not ctx.author.is_mod:
+    async def handleCommand(self, ctx: TwitchContext):
+        if not ctx.isAuthorMod():
             return
 
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isRaceEnabled():
             return
@@ -1774,7 +1772,7 @@ class RaceCommand(AbsCommand):
             return
 
         await self.__twitchUtils.safeSend(ctx, '!race')
-        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class RemoveGlobalTriviaControllerCommand(AbsCommand):
@@ -1804,30 +1802,30 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
@@ -1841,10 +1839,10 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a global trivia game controller!')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a global trivia game controller!')
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-        self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Handled !removeglobaltriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Handled !removeglobaltriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class RemoveTriviaControllerCommand(AbsCommand):
@@ -1874,29 +1872,29 @@ class RemoveTriviaControllerCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as no username argument was given. Example: !removetriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove trivia controller as username argument is malformed. Example: !removetriviacontroller {user.getHandle()}')
             return
 
@@ -1911,10 +1909,10 @@ class RemoveTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a trivia game controller!')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a trivia game controller!')
-            self.__timber.log('RemoveTriviaGameControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+            self.__timber.log('RemoveTriviaGameControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-        self.__timber.log('RemoveTriviaGameControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('RemoveTriviaGameControllerCommand', f'Handled !removetriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class RemoveUserCommand(AbsCommand):
@@ -1952,29 +1950,29 @@ class RemoveUserCommand(AbsCommand):
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProviderInterface.getAdministrator()
 
-        if ctx.author.name.lower() != administrator.lower():
-            self.__timber.log('RemoveUserCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+        if ctx.getAuthorName().lower() != administrator.lower():
+            self.__timber.log('RemoveUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('RemoveUserCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !adduser command: \"{splits}\"')
+            self.__timber.log('RemoveUserCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !adduser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
 
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveUserCommand', f'Invalid username argument given by {ctx.author.name}:{ctx.author.id} for the !removeuser command: \"{splits}\"')
+            self.__timber.log('RemoveUserCommand', f'Invalid username argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !removeuser command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is necessary for the !removeuser command. Example: !removeuser {user.getHandle()}')
             return
 
         if not await self.__usersRepository.containsUserAsync(userName):
-            self.__timber.log('RemoveUserCommand', f'Username argument (\"{userName}\") given by {ctx.author.name}:{ctx.author.id} does not already exist as a user')
+            self.__timber.log('RemoveUserCommand', f'Username argument (\"{userName}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} does not already exist as a user')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
             return
 
@@ -1988,7 +1986,7 @@ class RemoveUserCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ To remove user \"{userName}\" ({userId}), please respond with `!confirm`')
-        self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class SetTwitchCodeCommand(AbsCommand):
@@ -2018,25 +2016,25 @@ class SetTwitchCodeCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProviderInterface.getAdministrator()
-        userName = ctx.author.name.lower()
+        userName = ctx.getAuthorName().lower()
 
         if userName != user.getHandle().lower() and userName != administrator.lower():
-            self.__timber.log('SetTwitchCodeCommand', f'{ctx.author.name}:{ctx.author.id} in {user.getHandle()} tried using this command!')
+            self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        splits = utils.getCleanedSplits(ctx.message.contents)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('SetTwitchCodeCommand', f'Not enough arguments given by {ctx.author.name}:{ctx.author.id} for the !settwitchcode command: \"{splits}\"')
+            self.__timber.log('SetTwitchCodeCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
         code: Optional[str] = splits[1]
 
         if not utils.isValidStr(code):
-            self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {ctx.author.name}:{ctx.author.id} for the !settwitchcode command: \"{splits}\"')
+            self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
@@ -2045,7 +2043,7 @@ class SetTwitchCodeCommand(AbsCommand):
             code = code
         )
 
-        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     def __getRandomCodeStr(self) -> str:
         randomUuid = str(uuid.uuid4())
@@ -2062,7 +2060,7 @@ class StubCommand(AbsCommand):
     def __init__(self):
         pass
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         pass
 
 
@@ -2089,8 +2087,8 @@ class SuperAnswerCommand(AbsCommand):
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
@@ -2098,7 +2096,7 @@ class SuperAnswerCommand(AbsCommand):
         elif not user.isTriviaGameEnabled() or not user.isSuperTriviaGameEnabled():
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             return
 
@@ -2107,11 +2105,11 @@ class SuperAnswerCommand(AbsCommand):
         self.__triviaGameMachine.submitAction(CheckSuperAnswerTriviaAction(
             answer = answer,
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id),
-            userName = ctx.author.name
+            userId = ctx.getAuthorId(),
+            userName = ctx.getAuthorName()
         ))
 
-        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('SuperAnswerCommand', f'Handled !superanswer command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class SuperTriviaCommand(AbsCommand):
@@ -2149,8 +2147,8 @@ class SuperTriviaCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTriviaGameEnabled() or not generalSettings.isSuperTriviaGameEnabled():
@@ -2161,16 +2159,16 @@ class SuperTriviaCommand(AbsCommand):
         # For the time being, this command is intentionally not checking for mod status, as it has
         # been determined that super trivia game controllers shouldn't necessarily have to be mod.
 
-        userName: str = ctx.author.name
+        userName = ctx.getAuthorName()
 
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
         numberOfGames: int = 1
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         if len(splits) >= 2:
             numberOfGamesStr: Optional[str] = splits[1]
@@ -2178,14 +2176,14 @@ class SuperTriviaCommand(AbsCommand):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
-                self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {userName}:{ctx.author.id} in {user.getHandle()}): {e}')
+                self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}): {e}')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
             maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
-                self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {userName}:{ctx.author.id} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
+                self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
 
@@ -2223,7 +2221,7 @@ class SuperTriviaCommand(AbsCommand):
             triviaFetchOptions = triviaFetchOptions
         ))
 
-        self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class SwQuoteCommand(AbsCommand):
@@ -2236,15 +2234,15 @@ class SwQuoteCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if starWarsQuotesRepository is None:
+        if not isinstance(starWarsQuotesRepository, StarWarsQuotesRepository):
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
-        elif timber is None:
+        elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
@@ -2253,16 +2251,16 @@ class SwQuoteCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.isStarWarsQuotesEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         randomSpaceEmoji = utils.getRandomSpaceEmoji()
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         if len(splits) < 2:
             swQuote = await self.__starWarsQuotesRepository.fetchRandomQuote()
@@ -2292,13 +2290,13 @@ class TimeCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
-        if timber is None:
+        if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
@@ -2306,12 +2304,12 @@ class TimeCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.hasTimeZones():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         timeZones = user.getTimeZones()
@@ -2331,7 +2329,7 @@ class TimeCommand(AbsCommand):
                 text = f'{text} {timeZoneName} time is {formattedTime}.'
 
         await self.__twitchUtils.safeSend(ctx, text)
-        self.__timber.log('TimeCommand', f'Handled !time command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('TimeCommand', f'Handled !time command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TranslateCommand(AbsCommand):
@@ -2369,7 +2367,7 @@ class TranslateCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    def __determineOptionalLanguageEntry(self, splits: List[str]) -> LanguageEntry:
+    def __determineOptionalLanguageEntry(self, splits: List[str]) -> Optional[LanguageEntry]:
         if not utils.hasItems(splits):
             raise ValueError(f'splits argument is malformed: \"{splits}\"')
 
@@ -2381,18 +2379,18 @@ class TranslateCommand(AbsCommand):
 
         return None
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTranslateEnabled():
             return
         elif not user.isTranslateEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
@@ -2412,7 +2410,7 @@ class TranslateCommand(AbsCommand):
             self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')
             await self.__twitchUtils.safeSend(ctx, '⚠ Error translating')
 
-        self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TriviaInfoCommand(AbsCommand):
@@ -2450,8 +2448,8 @@ class TriviaInfoCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
@@ -2460,13 +2458,13 @@ class TriviaInfoCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.authhor.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -2474,7 +2472,7 @@ class TriviaInfoCommand(AbsCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -2484,12 +2482,12 @@ class TriviaInfoCommand(AbsCommand):
         )
 
         if reference is None:
-            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('TriviaInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
         await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} — isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
-        self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TriviaScoreCommand(AbsCommand):
@@ -2535,29 +2533,29 @@ class TriviaScoreCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         userName: str = None
         if len(splits) >= 2:
             userName = utils.removePreceedingAt(splits[1])
         else:
-            userName = ctx.author.name
+            userName = ctx.getAuthorName()
 
         userId: str = None
 
         # this means that a user is querying for another user's trivia score
-        if userName.lower() != ctx.author.name.lower():
+        if userName.lower() != ctx.getAuthorName().lower():
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError) as e:
@@ -2565,7 +2563,7 @@ class TriviaScoreCommand(AbsCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database')
                 return
         else:
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.getHandle(),
@@ -2583,7 +2581,7 @@ class TriviaScoreCommand(AbsCommand):
             triviaResult = triviaResult
         ))
 
-        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TwitterCommand(AbsCommand):
@@ -2595,13 +2593,13 @@ class TwitterCommand(AbsCommand):
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if timber is None:
+        if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchUtils is None:
+        elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif usersRepository is None:
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif cooldown is None:
+        elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: Timber = timber
@@ -2609,16 +2607,16 @@ class TwitterCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not user.hasTwitter():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
-        self.__timber.log('TwitterCommand', f'Handled !twitter command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('TwitterCommand', f'Handled !twitter command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class UnbanTriviaQuestionCommand(AbsCommand):
@@ -2660,9 +2658,9 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def handleCommand(self, ctx: Context):
+    async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
@@ -2670,13 +2668,13 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
-            userId = str(ctx.author.id)
+            userId = ctx.getAuthorId()
         ):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -2684,7 +2682,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as an invalid emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -2694,7 +2692,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         )
 
         if reference is None:
-            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('UnbanTriviaQuestionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
@@ -2704,7 +2702,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
-        self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was unbanned)')
+        self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was unbanned)')
 
 
 class WeatherCommand(AbsCommand):
@@ -2742,15 +2740,15 @@ class WeatherCommand(AbsCommand):
         self.__weatherRepository: WeatherRepository = weatherRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isWeatherEnabled():
             return
         elif not user.isWeatherEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         if not user.hasLocationId():
@@ -2766,7 +2764,7 @@ class WeatherCommand(AbsCommand):
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
-        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class WordCommand(AbsCommand):
@@ -2804,19 +2802,18 @@ class WordCommand(AbsCommand):
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleCommand(self, ctx: Context):
-        user = await self.__usersRepository.getUserAsync(ctx.channel.name)
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isWordOfTheDayEnabled():
             return
         elif not user.isWordOfTheDayEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
-
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             exampleEntry = self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
@@ -2843,4 +2840,4 @@ class WordCommand(AbsCommand):
             self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
 
-        self.__timber.log('WordCommand', f'Handled !word command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

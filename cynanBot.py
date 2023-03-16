@@ -107,6 +107,8 @@ from twitch.eventSubUtils import EventSubUtils
 from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
 from twitch.pubSubUtils import PubSubUtils
+from twitch.twitchChannel import TwitchChannel
+from twitch.twitchConfiguration import TwitchConfiguration
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserData import ModifyUserData
@@ -148,6 +150,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         triviaUtils: Optional[TriviaUtils],
+        twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
@@ -182,6 +185,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchConfiguration, TwitchConfiguration):
+            raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
@@ -198,6 +203,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__timber: Timber = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -611,10 +617,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__timber.log('CynanBot', f'event_raw_data(): (data=\"{data}\")')
 
     async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
+        twitchChannel = self.__twitchConfiguration.getChannel(channel)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{channel}\") (tags=\"{tags}\")')
+            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{twitchChannel}\") (tags=\"{tags}\")')
 
         msgId = utils.getStrFromDict(tags, 'msg-id', fallback = '')
 
@@ -625,19 +632,19 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
 
         if msgId == 'raid':
             await self.__raidLogEvent.handleEvent(
-                channel = channel,
+                channel = twitchChannel,
                 user = twitchUser,
                 tags = tags
             )
 
             await self.__raidThankEvent.handleEvent(
-                channel = channel,
+                channel = twitchChannel,
                 user = twitchUser,
                 tags = tags
             )
         elif msgId == 'subgift' or msgId == 'anonsubgift':
             await self.__subGiftThankingEvent.handleEvent(
-                channel = channel,
+                channel = twitchChannel,
                 user = twitchUser,
                 tags = tags
             )
@@ -663,7 +670,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def event_usernotice_subscription(self, metadata):
         self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
 
-    async def __getChannel(self, twitchChannel: str) -> Channel:
+    async def __getChannel(self, twitchChannel: str) -> TwitchChannel:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -676,7 +683,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 self.__timber.log('CynanBot', f'Unable to get twitchChannel: \"{twitchChannel}\"')
                 raise RuntimeError(f'Unable to get twitchChannel: \"{twitchChannel}\"')
             else:
-                return channel
+                return self.__twitchConfiguration.getChannel(channel)
         except KeyError as e:
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)

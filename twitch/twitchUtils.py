@@ -4,14 +4,13 @@ from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import List, Optional
 
-from twitchio.abcs import Messageable
-
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
     SentMessageLogger
 from CynanBotCommon.timber.timber import Timber
 from twitch.outboundMessage import OutboundMessage
+from twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchUtils():
@@ -62,16 +61,13 @@ class TwitchUtils():
 
     async def safeSend(
         self,
-        messageable: Messageable,
+        messageable: TwitchMessageable,
         message: Optional[str],
-        twitchChannel: str,
         maxMessages: int = 3,
         perMessageMaxSize: int = 494
     ):
-        if not isinstance(messageable, Messageable):
+        if not isinstance(messageable, TwitchMessageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidInt(maxMessages):
             raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
         elif maxMessages < 1 or maxMessages > 5:
@@ -89,8 +85,7 @@ class TwitchUtils():
         if len(message) < self.getMaxMessageSize():
             await self.__safeSend(
                 messageable = messageable,
-                message = message,
-                twitchChannel = twitchChannel
+                message = message
             )
             return
 
@@ -103,22 +98,18 @@ class TwitchUtils():
         for m in messages:
             await self.__safeSend(
                 messageable = messageable,
-                message = m,
-                twitchChannel = twitchChannel
+                message = m
             )
 
     async def __safeSend(
         self,
-        messageable: Messageable,
-        message: str,
-        twitchChannel: str
+        messageable: TwitchMessageable,
+        message: str
     ):
-        if not isinstance(messageable, Messageable):
+        if not isinstance(messageable, TwitchMessageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         successfullySent: bool = False
         exceptions: Optional[List[Exception]] = None
@@ -128,7 +119,7 @@ class TwitchUtils():
                 await messageable.send(message)
                 successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={twitchChannel}) (retry={index}) (len={len(message)}) \"{message}\": {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={index}) (len={len(message)}) \"{message}\": {e}', e)
 
                 if exceptions is None:
                     exceptions = list()
@@ -144,11 +135,11 @@ class TwitchUtils():
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
             msg = message,
-            twitchChannel = twitchChannel
+            twitchChannel = messageable.getTwitchChannelName()
         )
 
         if not successfullySent:
-            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries (twitchChannel={twitchChannel}) (len={len(message)}) \"{message}\"')
+            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries (twitchChannel={messageable.getTwitchChannelName()}) (len={len(message)}) \"{message}\"')
 
     async def __sendOutboundMessage(self, outboundMessage: OutboundMessage):
         if not isinstance(outboundMessage, OutboundMessage):
@@ -175,8 +166,7 @@ class TwitchUtils():
                 if now >= outboundMessage.getDelayUntilTime():
                     await self.safeSend(
                         messageable = outboundMessage.getMessageable(),
-                        message = outboundMessage.getMessage(),
-                        twitchChannel = outboundMessage.getTwitchChannel()
+                        message = outboundMessage.getMessage()
                     )
                 else:
                     await self.__sendOutboundMessage(outboundMessage)
@@ -185,12 +175,11 @@ class TwitchUtils():
 
     async def waitThenSend(
         self,
-        messageable: Messageable,
+        messageable: TwitchMessageable,
         delaySeconds: int,
-        message: str,
-        twitchChannel: str
+        message: str
     ):
-        if not isinstance(messageable, Messageable):
+        if not isinstance(messageable, TwitchMessageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
@@ -198,8 +187,6 @@ class TwitchUtils():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         now = datetime.now(self.__timeZone)
         delayUntilTime = now + timedelta(seconds = delaySeconds)
@@ -207,6 +194,5 @@ class TwitchUtils():
         await self.__sendOutboundMessage(OutboundMessage(
             delayUntilTime = delayUntilTime,
             messageable = messageable,
-            message = message,
-            twitchChannel = twitchChannel
+            message = message
         ))

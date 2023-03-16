@@ -1,4 +1,4 @@
-from twitch.twitchMessageableType import TwitchMessageableType
+from twitch.twitchConfigurationType import TwitchConfigurationType
 
 
 class TwitchMessageable():
@@ -6,7 +6,7 @@ class TwitchMessageable():
     def getTwitchChannelName(self) -> str:
         pass
 
-    def getTwitchMessageableType(self) -> TwitchMessageableType:
+    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         pass
 
     async def send(self, message: str):

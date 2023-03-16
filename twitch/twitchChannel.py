@@ -1,8 +1,8 @@
-from twitch.twitchChannelType import TwitchChannelType
+from twitch.twitchConfigurationType import TwitchConfigurationType
 from twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchChannel(TwitchMessageable):
 
-    def getTwitchChannelType(self) -> TwitchChannelType:
+    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         pass
