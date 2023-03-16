@@ -5,7 +5,7 @@ from twitchio.abcs import Messageable
 import CynanBotCommon.utils as utils
 
 
-class TwitchMessage():
+class OutboundMessage():
 
     def __init__(
         self,

@@ -8,8 +8,10 @@ from twitchio.abcs import Messageable
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
+    SentMessageLogger
 from CynanBotCommon.timber.timber import Timber
-from twitch.twitchMessage import TwitchMessage
+from twitch.outboundMessage import OutboundMessage
 
 
 class TwitchUtils():
@@ -17,6 +19,7 @@ class TwitchUtils():
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
+        sentMessageLogger: SentMessageLogger,
         timber: Timber,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
@@ -25,6 +28,8 @@ class TwitchUtils():
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(sentMessageLogger, SentMessageLogger):
+            raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -42,27 +47,31 @@ class TwitchUtils():
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__sentMessageLogger: SentMessageLogger = sentMessageLogger
         self.__timber: Timber = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__timeZone: timezone = timeZone
 
-        self.__messageQueue: SimpleQueue[TwitchMessage] = SimpleQueue()
-        backgroundTaskHelper.createTask(self.__startTwitchMessageLoop())
+        self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
+        backgroundTaskHelper.createTask(self.__startOutboundMessageLoop())
 
     def getMaxMessageSize(self) -> int:
-        return 488
+        return 494
 
     async def safeSend(
         self,
         messageable: Messageable,
         message: Optional[str],
+        twitchChannel: str,
         maxMessages: int = 3,
-        perMessageMaxSize: int = 488
+        perMessageMaxSize: int = 494
     ):
         if not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidInt(maxMessages):
             raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
         elif maxMessages < 1 or maxMessages > 5:
@@ -78,7 +87,11 @@ class TwitchUtils():
             return
 
         if len(message) < self.getMaxMessageSize():
-            await self.__safeSend(messageable, message)
+            await self.__safeSend(
+                messageable = messageable,
+                message = message,
+                twitchChannel = twitchChannel
+            )
             return
 
         messages = utils.splitLongStringIntoMessages(
@@ -88,54 +101,87 @@ class TwitchUtils():
         )
 
         for m in messages:
-            await self.__safeSend(messageable, m)
+            await self.__safeSend(
+                messageable = messageable,
+                message = m,
+                twitchChannel = twitchChannel
+            )
 
-    async def __safeSend(self, messageable: Messageable, message: str):
+    async def __safeSend(
+        self,
+        messageable: Messageable,
+        message: str,
+        twitchChannel: str
+    ):
         if not isinstance(messageable, Messageable):
             raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        successfullySent: bool = False
+        exceptions: Optional[List[Exception]] = None
 
         for index in range(self.__maxRetries):
             try:
                 await messageable.send(message)
-                return
+                successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send message (retry #{index}) (len: {len(message)}) \"{message}\": {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={twitchChannel}) (retry={index}) (len={len(message)}) \"{message}\": {e}', e)
 
-        self.__timber.log('TwitchUtils', f'Failed to send message after {self.__maxRetries} retries (len: {len(message)} \"{message}\"')
+                if exceptions is None:
+                    exceptions = list()
 
-    async def __startTwitchMessageLoop(self):
+                exceptions.append(e)
+
+        numberOfRetries: int = 0
+        if utils.hasItems(exceptions):
+            numberOfRetries = len(exceptions)
+
+        self.__sentMessageLogger.logMessage(
+            successfullySent = successfullySent,
+            numberOfRetries = numberOfRetries,
+            exceptions = exceptions,
+            msg = message,
+            twitchChannel = twitchChannel
+        )
+
+        if not successfullySent:
+            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries (twitchChannel={twitchChannel}) (len={len(message)}) \"{message}\"')
+
+    async def __sendOutboundMessage(self, outboundMessage: OutboundMessage):
+        if not isinstance(outboundMessage, OutboundMessage):
+            raise ValueError(f'outboundMessage argument is malformed: \"{outboundMessage}\"')
+
+        try:
+            self.__messageQueue.put(outboundMessage, block = True, timeout = self.__queueTimeoutSeconds)
+        except queue.Full as e:
+            self.__timber.log('TwitchUtils', f'Encountered queue.Full when submitting a new outbound message ({outboundMessage}) into the outbound message queue (queue size: {self.__messageQueue.qsize()}): {e}', e)
+
+    async def __startOutboundMessageLoop(self):
         while True:
-            twitchMessages: List[TwitchMessage] = list()
+            outboundMessages: List[OutboundMessage] = list()
 
             try:
                 while not self.__messageQueue.empty():
-                    twitchMessages.append(self.__messageQueue.get_nowait())
+                    outboundMessages.append(self.__messageQueue.get_nowait())
             except queue.Empty as e:
-                self.__timber.log('TwitchUtils', f'Encountered queue.Empty when building up Twitch messages list (queue size: {self.__messageQueue.qsize()}) (actions size: {len(twitchMessages)}): {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered queue.Empty when building up Twitch messages list (queue size: {self.__messageQueue.qsize()}) (actions size: {len(outboundMessages)}): {e}', e)
 
             now = datetime.now(self.__timeZone)
 
-            for twitchMessage in twitchMessages:
-                if now >= twitchMessage.getDelayUntilTime():
+            for outboundMessage in outboundMessages:
+                if now >= outboundMessage.getDelayUntilTime():
                     await self.safeSend(
-                        messageable = twitchMessage.getMessageable(),
-                        message = twitchMessage.getMessage()
+                        messageable = outboundMessage.getMessageable(),
+                        message = outboundMessage.getMessage(),
+                        twitchChannel = outboundMessage.getTwitchChannel()
                     )
                 else:
-                    await self.__submitTwitchMessage(twitchMessage)
+                    await self.__sendOutboundMessage(outboundMessage)
 
             await asyncio.sleep(self.__sleepTimeSeconds)
-
-    async def __submitTwitchMessage(self, twitchMessage: TwitchMessage):
-        if not isinstance(twitchMessage, TwitchMessage):
-            raise ValueError(f'twitchMessage argument is malformed: \"{twitchMessage}\"')
-
-        try:
-            self.__messageQueue.put(twitchMessage, block = True, timeout = self.__queueTimeoutSeconds)
-        except queue.Full as e:
-            self.__timber.log('TwitchUtils', f'Encountered queue.Full when submitting a new Twitch Message ({twitchMessage}) into the message queue (queue size: {self.__messageQueue.qsize()}): {e}', e)
 
     async def waitThenSend(
         self,
@@ -158,7 +204,7 @@ class TwitchUtils():
         now = datetime.now(self.__timeZone)
         delayUntilTime = now + timedelta(seconds = delaySeconds)
 
-        await self.__submitTwitchMessage(TwitchMessage(
+        await self.__sendOutboundMessage(OutboundMessage(
             delayUntilTime = delayUntilTime,
             messageable = messageable,
             message = message,

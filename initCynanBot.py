@@ -20,6 +20,8 @@ from CynanBotCommon.network.networkClientType import NetworkClientType
 from CynanBotCommon.network.requestsClientProvider import \
     RequestsClientProvider
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
+    SentMessageLogger
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
@@ -96,6 +98,8 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from twitch.channelJoinHelper import ChannelJoinHelper
+from twitch.twitchConfiguration import TwitchConfiguration
+from twitch.twitchIoConfiguration import TwitchIoConfiguration
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
@@ -167,6 +171,11 @@ funtoonRepository = FuntoonRepository(
     timber = timber
 )
 languagesRepository = LanguagesRepository()
+pokepediaRepository = PokepediaRepository(
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration()
 
 authSnapshot = authRepository.getAll()
 
@@ -255,11 +264,6 @@ triviaUtils = TriviaUtils(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
-)
-
-pokepediaRepository = PokepediaRepository(
-    networkClientProvider = networkClientProvider,
-    timber = timber
 )
 
 quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
@@ -435,6 +439,9 @@ cynanBot = CynanBot(
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = TwitchUtils(
         backgroundTaskHelper = backgroundTaskHelper,
+        sentMessageLogger = SentMessageLogger(
+            backgroundTaskHelper = backgroundTaskHelper
+        ),
         timber = timber
     ),
     userIdsRepository = userIdsRepository,
