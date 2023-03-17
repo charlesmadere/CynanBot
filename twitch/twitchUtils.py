@@ -112,14 +112,16 @@ class TwitchUtils():
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         successfullySent: bool = False
+        numberOfRetries: int = 0
         exceptions: Optional[List[Exception]] = None
 
-        for index in range(self.__maxRetries):
+        while not successfullySent and numberOfRetries < self.__maxRetries:
             try:
                 await messageable.send(message)
                 successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={index}) (len={len(message)}) \"{message}\": {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={numberOfRetries}) (len={len(message)}) \"{message}\": {e}', e)
+                numberOfRetries = numberOfRetries + 1
 
                 if exceptions is None:
                     exceptions = list()
