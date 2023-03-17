@@ -20,6 +20,7 @@ class TwitchUtils():
         backgroundTaskHelper: BackgroundTaskHelper,
         sentMessageLogger: SentMessageLogger,
         timber: Timber,
+        sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
         queueTimeoutSeconds: int = 3,
@@ -31,6 +32,10 @@ class TwitchUtils():
             raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(sleepBeforeRetryTimeSeconds):
+            raise ValueError(f'sleepBeforeRetryTimeSeconds argument is malformed: \"{sleepBeforeRetryTimeSeconds}\"')
+        elif sleepBeforeRetryTimeSeconds < 0.25 or sleepBeforeRetryTimeSeconds > 3:
+            raise ValueError(f'sleepBeforeRetryTimeSeconds argument is out of bounds: {sleepBeforeRetryTimeSeconds}')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
@@ -48,6 +53,7 @@ class TwitchUtils():
 
         self.__sentMessageLogger: SentMessageLogger = sentMessageLogger
         self.__timber: Timber = timber
+        self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
@@ -127,6 +133,7 @@ class TwitchUtils():
                     exceptions = list()
 
                 exceptions.append(e)
+                await asyncio.sleep(self.__sleepBeforeRetryTimeSeconds)
 
         numberOfRetries: int = 0
         if utils.hasItems(exceptions):
