@@ -1,3 +1,4 @@
+from twitchio import Message
 from twitchio.abcs import Messageable
 from twitchio.channel import Channel
 from twitchio.ext.commands import Context
@@ -9,7 +10,9 @@ from twitch.twitchConfigurationType import TwitchConfigurationType
 from twitch.twitchContext import TwitchContext
 from twitch.twitchIoChannel import TwitchIoChannel
 from twitch.twitchIoContext import TwitchIoContext
+from twitch.twitchIoMessage import TwitchIoMessage
 from twitch.twitchIoMessageable import TwitchIoMessageable
+from twitch.twitchMessage import TwitchMessage
 from twitch.twitchMessageable import TwitchMessageable
 
 
@@ -29,6 +32,12 @@ class TwitchIoConfiguration(TwitchConfiguration):
             raise ValueError(f'context argument is malformed: \"{context}\"')
 
         return TwitchIoContext(context = context)
+
+    def getMessage(self, message: Message) -> TwitchMessage:
+        if not isinstance(message, Message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        return TwitchIoMessage(message = message)
 
     def getMessageable(
         self,

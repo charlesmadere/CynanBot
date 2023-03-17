@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
 
-from twitchio import Message
-
 import CynanBotCommon.utils as utils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
+from twitch.twitchMessage import TwitchMessage
 from twitch.twitchUtils import TwitchUtils
 from users.user import User
 
@@ -16,7 +15,7 @@ from users.user import User
 class AbsMessage(ABC):
 
     @abstractmethod
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         pass
 
 
@@ -47,7 +46,7 @@ class CatJamMessage(AbsMessage):
         self.__catJamMessage: str = catJamMessage
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isCatJamMessageEnabled():
@@ -55,11 +54,11 @@ class CatJamMessage(AbsMessage):
         elif not twitchUser.isCatJamMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__catJamMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__catJamMessage)
-            self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__catJamMessage)
+            self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -84,7 +83,7 @@ class ChatBandMessage(AbsMessage):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isChatBandEnabled():
@@ -94,10 +93,10 @@ class ChatBandMessage(AbsMessage):
 
         if await self.__chatBandManager.playInstrumentForMessage(
             twitchChannel = twitchUser.getHandle(),
-            author = message.author.name,
-            message = utils.cleanStr(message.content)
+            author = message.getAuthorName(),
+            message = utils.cleanStr(message.getContent())
         ):
-            self.__timber.log('ChatBandMessage', f'Handled chat band message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            self.__timber.log('ChatBandMessage', f'Handled chat band message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -114,15 +113,15 @@ class ChatLogMessage(AbsMessage):
 
         self.__chatLogger: ChatLogger = chatLogger
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         if not twitchUser.isChatLoggingEnabled():
             return False
 
         self.__chatLogger.logMessage(
             twitchChannel = twitchUser.getHandle(),
-            userId = str(message.author.id),
-            userName = message.author.name,
-            msg = utils.cleanStr(message.content)
+            userId = message.getAuthorId(),
+            userName = message.getAuthorName(),
+            msg = utils.cleanStr(message.getContent())
         )
 
         return True
@@ -156,22 +155,22 @@ class CynanMessage(AbsMessage):
         self.__cooldown: timedelta = cooldown
         self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isCynanMessageEnabled():
             return False
         elif not twitchUser.isCynanMessageEnabled():
             return False
-        elif message.author.name.lower() != self.__cynanUserName.lower():
+        elif message.getAuthorName().lower() != self.__cynanUserName.lower():
             return False
 
         now = datetime.now(timezone.utc)
 
         if now > self.__lastCynanMessageTime + self.__cooldown:
             self.__lastCynanMessageTime = now
-            await self.__twitchUtils.safeSend(message.channel, f'/me waves to @{self.__cynanUserName} 👋')
-            self.__timber.log('CynanMessage', f'Handled Cynan message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), f'/me waves to @{self.__cynanUserName} 👋')
+            self.__timber.log('CynanMessage', f'Handled Cynan message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -204,7 +203,7 @@ class DeerForceMessage(AbsMessage):
         self.__deerForceMessage: str = deerForceMessage
         self.__lastDeerForceMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isDeerForceMessageEnabled():
@@ -212,11 +211,11 @@ class DeerForceMessage(AbsMessage):
         elif not twitchUser.isDeerForceMessageEnabled():
             return False
 
-        text = utils.cleanStr(message.content)
+        text = utils.cleanStr(message.getContent())
 
         if text.lower() == self.__deerForceMessage.lower() and self.__lastDeerForceMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__deerForceMessage)
-            self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__deerForceMessage)
+            self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -249,7 +248,7 @@ class EyesMessage(AbsMessage):
         self.__eyesMessage: str = eyesMessage
         self.__lastEyesMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isEyesMessageEnabled():
@@ -257,11 +256,11 @@ class EyesMessage(AbsMessage):
         elif not twitchUser.isEyesMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__eyesMessage in splits and self.__lastEyesMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__eyesMessage)
-            self.__timber.log('EyesMessage', f'Handled eyes message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__eyesMessage)
+            self.__timber.log('EyesMessage', f'Handled eyes message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -294,7 +293,7 @@ class ImytSlurpMessage(AbsMessage):
         self.__imytSlurpMessage: str = imytSlurpMessage
         self.__lastImytSlurpMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isImytSlurpMessageEnabled():
@@ -302,11 +301,11 @@ class ImytSlurpMessage(AbsMessage):
         elif not twitchUser.isImytSlurpEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__imytSlurpMessage in splits and self.__lastImytSlurpMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__imytSlurpMessage)
-            self.__timber.log('ImytSlurpMessage', f'Handled imytSlurp message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__imytSlurpMessage)
+            self.__timber.log('ImytSlurpMessage', f'Handled imytSlurp message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -339,11 +338,7 @@ class JamCatMessage(AbsMessage):
         self.__jamCatMessage: str = jamCatMessage
         self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(
-        self,
-        twitchUser: User,
-        message: Message
-    ) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isJamCatMessageEnabled():
@@ -351,11 +346,11 @@ class JamCatMessage(AbsMessage):
         elif not twitchUser.isJamCatMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__jamCatMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__jamCatMessage)
-            self.__timber.log('JamCatMessage', f'Handled jamCAT message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__jamCatMessage)
+            self.__timber.log('JamCatMessage', f'Handled jamCAT message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -386,7 +381,7 @@ class RatJamMessage(AbsMessage):
         self.__ratJamMessage: str = ratJamMessage
         self.__lastRatJamMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isRatJamMessageEnabled():
@@ -394,11 +389,11 @@ class RatJamMessage(AbsMessage):
         elif not twitchUser.isRatJamMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__ratJamMessage in splits and self.__lastRatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__ratJamMessage)
-            self.__timber.log('RatJamMessage', f'Handled ratJAM message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__ratJamMessage)
+            self.__timber.log('RatJamMessage', f'Handled ratJAM message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -429,7 +424,7 @@ class RoachMessage(AbsMessage):
         self.__roachMessage: str = roachMessage
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isRoachMessageEnabled():
@@ -437,11 +432,11 @@ class RoachMessage(AbsMessage):
         elif not twitchUser.isRoachMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__roachMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__roachMessage)
-            self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__roachMessage)
+            self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -472,7 +467,7 @@ class SchubertWalkMessage(AbsMessage):
         self.__schubertWalkMessage: str = schubertWalkMessage
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isSchubertWalkMessageEnabled():
@@ -480,11 +475,11 @@ class SchubertWalkMessage(AbsMessage):
         elif not twitchUser.isSchubertWalkMessageEnabled():
             return False
 
-        splits = utils.getCleanedSplits(message.content)
+        splits = utils.getCleanedSplits(message.getContent())
 
         if self.__schubertWalkMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.channel, self.__schubertWalkMessage)
-            self.__timber.log('SchubertWalkMessage', f'Handled {self.__schubertWalkMessage} message for {message.author.name}:{message.author.id} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(message.getChannel(), self.__schubertWalkMessage)
+            self.__timber.log('SchubertWalkMessage', f'Handled {self.__schubertWalkMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False
@@ -495,5 +490,5 @@ class StubMessage(AbsMessage):
     def __init__(self):
         pass
 
-    async def handleMessage(self, twitchUser: User, message: Message) -> bool:
+    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         return False

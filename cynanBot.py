@@ -430,73 +430,75 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         if message.echo:
             return
 
-        if utils.isValidStr(message.content):
+        twitchMessage = self.__twitchConfiguration.getMessage(message)
+
+        if utils.isValidStr(twitchMessage.getContent()):
             generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
             if generalSettings.isPersistAllUsersEnabled():
                 await self.__userIdsRepository.setUser(
-                    userId = str(message.author.id),
-                    userName = message.author.name
+                    userId = twitchMessage.getAuthorId(),
+                    userName = twitchMessage.getAuthorName()
                 )
 
-            twitchUser = await self.__usersRepository.getUserAsync(message.channel.name)
+            twitchUser = await self.__usersRepository.getUserAsync(twitchMessage.getTwitchChannelName())
 
             await self.__chatLogMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             )
 
             if await self.__cynanMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__deerForceMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__catJamMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__eyesMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__imytSlurpMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__jamCatMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__ratJamMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__roachMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
             if await self.__schubertWalkMessage.handleMessage(
                 twitchUser = twitchUser,
-                message = message
+                message = twitchMessage
             ):
                 return
 
@@ -888,168 +890,210 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
 
     @commands.command(name = 'a')
     async def command_a(self, ctx: Context):
-        await self.__answerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__answerCommand.handleCommand(context)
 
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
-        await self.__addGlobalTriviaControllerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addGlobalTriviaControllerCommand.handleCommand(context)
 
     @commands.command(name = 'addtriviacontroller')
     async def command_addtriviacontroller(self, ctx: Context):
-        await self.__addTriviaControllerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addTriviaControllerCommand.handleCommand(context)
 
     @commands.command(name = 'adduser')
     async def command_adduser(self, ctx: Context):
-        await self.__addUserCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addUserCommand.handleCommand(context)
 
     @commands.command(name = 'answer')
     async def command_answer(self, ctx: Context):
-        await self.__answerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__answerCommand.handleCommand(context)
 
     @commands.command(name = 'bantriviaquestion')
     async def command_bantriviaquestion(self, ctx: Context):
-        await self.__banTriviaQuestionCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__banTriviaQuestionCommand.handleCommand(context)
 
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
-        await self.__clearCachesCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__clearCachesCommand.handleCommand(context)
 
     @commands.command(name = 'clearsupertriviaqueue')
     async def command_clearsupertriviaqueue(self, ctx: Context):
-        await self.__clearSuperTriviaQueueCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__clearSuperTriviaQueueCommand.handleCommand(context)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
-        await self.__commandsCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__commandsCommand.handleCommand(context)
 
     @commands.command(name = 'confirm')
     async def command_confirm(self, ctx: Context):
-        await self.__confirmCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__confirmCommand.handleCommand(context)
 
     @commands.command(name = 'cuteness')
     async def command_cuteness(self, ctx: Context):
-        await self.__cutenessCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__cutenessCommand.handleCommand(context)
 
     @commands.command(name = 'cutenesschampions')
     async def command_cutenesschampions(self, ctx: Context):
-        await self.__cutenessChampionsCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__cutenessChampionsCommand.handleCommand(context)
 
     @commands.command(name = 'cutenesshistory')
     async def command_cutenesshistory(self, ctx: Context):
-        await self.__cutenessHistoryCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__cutenessHistoryCommand.handleCommand(context)
 
     @commands.command(name = 'cynansource')
     async def command_cynansource(self, ctx: Context):
-        await self.__cynanSourceCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__cynanSourceCommand.handleCommand(context)
 
     @commands.command(name = 'discord')
     async def command_discord(self, ctx: Context):
-        await self.__discordCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__discordCommand.handleCommand(context)
 
     @commands.command(name = 'getglobaltriviacontrollers')
     async def command_getglobaltriviacontrollers(self, ctx: Context):
-        await self.__getGlobalTriviaControllersCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__getGlobalTriviaControllersCommand.handleCommand(context)
 
     @commands.command(name = 'gettriviacontrollers')
     async def command_gettriviacontrollers(self, ctx: Context):
-        await self.__getTriviaControllersCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__getTriviaControllersCommand.handleCommand(context)
 
     @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx: Context):
-        await self.__giveCutenessCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__giveCutenessCommand.handleCommand(context)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
-        await self.__jishoCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__jishoCommand.handleCommand(context)
 
     @commands.command(name = 'lorem')
     async def command_lorem(self, ctx: Context):
-        await self.__loremIpsumCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__loremIpsumCommand.handleCommand(context)
 
     @commands.command(name = 'mycuteness')
     async def command_mycuteness(self, ctx: Context):
-        await self.__myCutenessCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__myCutenessCommand.handleCommand(context)
 
     @commands.command(name = 'mycutenesshistory')
     async def command_mycutenesshistory(self, ctx: Context):
-        await self.__myCutenessHistoryCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__myCutenessHistoryCommand.handleCommand(context)
 
     @commands.command(name = 'pbs')
     async def command_pbs(self, ctx: Context):
-        await self.__pbsCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__pbsCommand.handleCommand(context)
 
     @commands.command(name = 'pkmon')
     async def command_pkmon(self, ctx: Context):
-        await self.__pkMonCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__pkMonCommand.handleCommand(context)
 
     @commands.command(name = 'pkmove')
     async def command_pkmove(self, ctx: Context):
-        await self.__pkMoveCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__pkMoveCommand.handleCommand(context)
 
     @commands.command(name = 'race')
     async def command_race(self, ctx: Context):
-        await self.__raceCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__raceCommand.handleCommand(context)
 
     @commands.command(name = 'removeglobaltriviacontroller')
     async def command_removeglobaltriviacontroller(self, ctx: Context):
-        await self.__removeGlobalTriviaControllerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
 
     @commands.command(name = 'removetriviacontroller')
     async def command_removetriviacontroller(self, ctx: Context):
-        await self.__removeTriviaControllerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeTriviaControllerCommand.handleCommand(context)
 
     @commands.command(name = 'sa')
     async def command_sa(self, ctx: Context):
-        await self.__superAnswerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__superAnswerCommand.handleCommand(context)
 
     @commands.command(name = 'sanswer')
     async def command_sanswer(self, ctx: Context):
-        await self.__superAnswerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__superAnswerCommand.handleCommand(context)
 
     @commands.command(name = 'settwitchcode')
     async def command_settwitchcode(self, ctx: Context):
-        await self.__setTwitchCodeCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__setTwitchCodeCommand.handleCommand(context)
 
     @commands.command(name = 'superanswer')
     async def command_superanswer(self, ctx: Context):
-        await self.__superAnswerCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__superAnswerCommand.handleCommand(context)
 
     @commands.command(name = 'supertrivia')
     async def command_supertrivia(self, ctx: Context):
-        await self.__superTriviaCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__superTriviaCommand.handleCommand(context)
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
-        await self.__swQuoteCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__swQuoteCommand.handleCommand(context)
 
     @commands.command(name = 'time')
     async def command_time(self, ctx: Context):
-        await self.__timeCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__timeCommand.handleCommand(context)
 
     @commands.command(name = 'translate')
     async def command_translate(self, ctx: Context):
-        await self.__translateCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__translateCommand.handleCommand(context)
 
     @commands.command(name = 'triviainfo')
     async def command_triviainfo(self, ctx: Context):
-        await self.__triviaInfoCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__triviaInfoCommand.handleCommand(context)
 
     @commands.command(name = 'triviascore')
     async def command_triviascore(self, ctx: Context):
-        await self.__triviaScoreCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__triviaScoreCommand.handleCommand(context)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx: Context):
-        await self.__twitterCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__twitterCommand.handleCommand(context)
 
     @commands.command(name = 'unbantriviaquestion')
     async def command_unbantriviaquestion(self, ctx: Context):
-        await self.__unbanTriviaQuestionCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__unbanTriviaQuestionCommand.handleCommand(context)
 
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):
-        await self.__weatherCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__weatherCommand.handleCommand(context)
 
     @commands.command(name = 'word')
     async def command_word(self, ctx: Context):
-        await self.__wordCommand.handleCommand(ctx)
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__wordCommand.handleCommand(context)

@@ -81,14 +81,14 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
+        administratorProviderInterface: AdministratorProviderInterface,
         timber: Timber,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
@@ -98,19 +98,19 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: Timber = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        administrator = await self.__administratorProviderInterface.getAdministrator()
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
         userName = ctx.getAuthorName()
 
-        if generalSettings.requireAdministrator().lower() != userName.lower():
+        if administrator.lower() != userName.lower():
             self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
