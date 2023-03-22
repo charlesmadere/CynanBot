@@ -139,7 +139,7 @@ class TwitchUtils():
         if utils.hasItems(exceptions):
             numberOfRetries = len(exceptions)
 
-        self.__sentMessageLogger.logMessage(
+        self.__sentMessageLogger.log(
             successfullySent = successfullySent,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
