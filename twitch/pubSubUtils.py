@@ -92,6 +92,20 @@ class PubSubUtils():
             max_connection_topics = maxPubSubConnectionTopics
         )
 
+    async def __addPubSubSubscriptions(self, topicsToAdd: Optional[List[Topic]]):
+        if not utils.hasItems(topicsToAdd):
+            return
+
+        self.__timber.log('PubSubUtils', f'Subscribing to {len(topicsToAdd)} PubSub topic(s)...')
+
+        try:
+            await self.__pubSubPool.subscribe_topics(topicsToAdd)
+            self.__timber.log('PubSubUtils', f'Finished subscribing to {len(topicsToAdd)} PubSub topic(s)')
+        except PubSubError as e:
+            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e)
+        except Exception as e:
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e)
+
     async def forceFullRefresh(self):
         self.__timber.log('PubSubUtils', f'Performing a full forced refresh of all PubSub connections...')
         await self.__refresh(forceFullRefresh = True)
@@ -158,6 +172,20 @@ class PubSubUtils():
 
         return pubSubEntries
 
+    async def __removePubSubSubscriptions(self, topicsToRemove: Optional[List[Topic]]):
+        if not utils.hasItems(topicsToRemove):
+            return
+
+        self.__timber.log('PubSubUtils', f'Unsubscribing from {len(topicsToRemove)} PubSub topic(s)...')
+
+        try:
+            await self.__pubSubPool.unsubscribe_topics(topicsToRemove)
+            self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(topicsToRemove)} PubSub topic(s)')
+        except PubSubError as e:
+            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e)
+        except Exception as e:
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e)
+
     async def __refresh(self, forceFullRefresh: bool):
         if not utils.isValidBool(forceFullRefresh):
             raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
@@ -216,24 +244,5 @@ class PubSubUtils():
             except queue.Empty as e:
                 self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
 
-        if utils.hasItems(pubSubTopicsToAdd):
-            self.__timber.log('PubSubUtils', f'Subscribing to {len(pubSubTopicsToAdd)} PubSub topic(s)...')
-
-            try:
-                await self.__pubSubPool.subscribe_topics(pubSubTopicsToAdd)
-                self.__timber.log('PubSubUtils', f'Finished subscribing to {len(pubSubTopicsToAdd)} PubSub topic(s)')
-            except PubSubError as e:
-                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
-            except Exception as e:
-                self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(pubSubTopicsToAdd)} topic(s): {e}', e)
-
-        if utils.hasItems(pubSubTopicsToRemove):
-            self.__timber.log('PubSubUtils', f'Unsubscribing from {len(pubSubTopicsToRemove)} PubSub topic(s)...')
-
-            try:
-                await self.__pubSubPool.unsubscribe_topics(pubSubTopicsToRemove)
-                self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(pubSubTopicsToRemove)} PubSub topic(s)')
-            except PubSubError as e:
-                self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
-            except Exception as e:
-                self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(pubSubTopicsToRemove)} topic(s): {e}', e)
+        await self.__addPubSubSubscriptions(pubSubTopicsToAdd)
+        await self.__removePubSubSubscriptions(pubSubTopicsToRemove)
