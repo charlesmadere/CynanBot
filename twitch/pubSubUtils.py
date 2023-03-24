@@ -23,10 +23,12 @@ from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from generalSettingsRepository import GeneralSettingsRepository
+from twitch.pubSub.cynanBotPubSubPool import CynanBotPubSubPool
+from twitch.pubSub.pubSubReconnectListener import PubSubReconnectListener
 from twitch.pubSubEntry import PubSubEntry
 
 
-class PubSubUtils():
+class PubSubUtils(PubSubReconnectListener):
 
     def __init__(
         self,
@@ -86,10 +88,12 @@ class PubSubUtils():
         self.__isStarted: bool = False
         self.__pubSubEntries: Dict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
 
-        self.__pubSubPool: PubSubPool = PubSubPool(
+        self.__pubSubPool: PubSubPool = CynanBotPubSubPool(
             client = client,
-            max_pool_size = maxPubSubPoolSize,
-            max_connection_topics = maxPubSubConnectionTopics
+            maxConnectionTopics = maxPubSubConnectionTopics,
+            maxPoolSize = maxPubSubPoolSize,
+            pubSubReconnectListener = self,
+            timber = timber
         )
 
     async def __addPubSubSubscriptions(self, topicsToAdd: Optional[List[Topic]]):
@@ -172,6 +176,29 @@ class PubSubUtils():
 
         return pubSubEntries
 
+    async def onPubSubReconnect(self, topics: Optional[List[Topic]]) -> List[Topic]:
+        self.__timber.log('PubSubUtils', f'onPubSubReconnect(): (topics=\"{topics}\")')
+
+        for userName, topicQueue in self.__pubSubEntries.items():
+            while not topicQueue.empty():
+                try:
+                    topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds)
+                except queue.Empty as e:
+                    self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
+
+        newPubSubEntries = await self.__getSubscribeReadyPubSubEntries(forceFullRefresh = True)
+        topicsToAdd: List[Topic] = list()
+
+        for newPubSubEntry in newPubSubEntries:
+            try:
+                self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic(), block = True, timeout = self.__queueTimeoutSeconds)
+                topicsToAdd.append(newPubSubEntry.getTopic())
+            except queue.Full as e:
+                self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
+
+        self.__timber.log('PubSubUtils', f'Determined new list of PubSub topics (len={len(topicsToAdd)}): {topics}')
+        return topicsToAdd
+
     async def __removePubSubSubscriptions(self, topicsToRemove: Optional[List[Topic]]):
         if not utils.hasItems(topicsToRemove):
             return
@@ -225,24 +252,24 @@ class PubSubUtils():
         if not utils.isValidBool(forceFullRefresh):
             raise ValueError(f'forceFullRefresh argument is malformed: \"{forceFullRefresh}\"')
 
-        pubSubTopicsToAdd: List[Topic] = list()
-        pubSubTopicsToRemove: List[Topic] = list()
         newPubSubEntries = await self.__getSubscribeReadyPubSubEntries(forceFullRefresh)
+        topicsToAdd: List[Topic] = list()
+        topicsToRemove: List[Topic] = list()
 
         if utils.hasItems(newPubSubEntries):
             for newPubSubEntry in newPubSubEntries:
                 try:
                     self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic(), block = True, timeout = self.__queueTimeoutSeconds)
-                    pubSubTopicsToAdd.append(newPubSubEntry.getTopic())
+                    topicsToAdd.append(newPubSubEntry.getTopic())
                 except queue.Full as e:
                     self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
 
         for userName, topicQueue in self.__pubSubEntries.items():
             try:
                 while topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
-                    pubSubTopicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
+                    topicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
             except queue.Empty as e:
                 self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
 
-        await self.__addPubSubSubscriptions(pubSubTopicsToAdd)
-        await self.__removePubSubSubscriptions(pubSubTopicsToRemove)
+        await self.__addPubSubSubscriptions(topicsToAdd)
+        await self.__removePubSubSubscriptions(topicsToRemove)
