@@ -1379,10 +1379,10 @@ class JishoCommand(AbsCommand):
             return
         elif not user.isJishoEnabled():
             return
-        elif not ctx.author.is_mod and not self.__lastMessageTimes.isReady(user.getHandle()):
+        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReady(user.getHandle()):
             return
 
-        splits = utils.getCleanedSplits(ctx.message.content)
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             await self.__twitchUtils.safeSend(ctx, '⚠ A search term is necessary for the !jisho command. Example: !jisho 食べる')
             return
@@ -1399,7 +1399,7 @@ class JishoCommand(AbsCommand):
             self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
-        self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.author.name}:{ctx.author.id} in {user.getHandle()}')
+        self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class LoremIpsumCommand(AbsCommand):
