@@ -4,7 +4,6 @@ from twitch.twitchChannel import TwitchChannel
 from twitch.twitchConfigurationType import TwitchConfigurationType
 from twitch.twitchContext import TwitchContext
 from twitch.twitchMessage import TwitchMessage
-from twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchConfiguration():
@@ -16,13 +15,6 @@ class TwitchConfiguration():
         pass
 
     def getMessage(self, message: Any) -> TwitchMessage:
-        pass
-
-    def getMessageable(
-        self,
-        messageable: Any,
-        twitchChannelName: str
-    ) -> TwitchMessageable:
         pass
 
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:

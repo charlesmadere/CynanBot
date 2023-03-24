@@ -202,6 +202,6 @@ class TwitchUtils():
 
         await self.__sendOutboundMessage(OutboundMessage(
             delayUntilTime = delayUntilTime,
-            messageable = messageable,
-            message = message
+            message = message,
+            messageable = messageable
         ))
