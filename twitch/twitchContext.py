@@ -31,5 +31,8 @@ class TwitchContext(TwitchMessageable):
     def isAuthorMod(self) -> bool:
         pass
 
+    def isAuthorVip(self) -> bool:
+        pass
+
     async def send(self, message: str):
         pass

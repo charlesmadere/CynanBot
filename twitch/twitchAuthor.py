@@ -17,3 +17,6 @@ class TwitchAuthor():
 
     def isMod(self) -> bool:
         pass
+
+    def isVip(self) -> bool:
+        pass

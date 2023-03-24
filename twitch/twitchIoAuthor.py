@@ -28,3 +28,6 @@ class TwitchIoAuthor(TwitchAuthor):
 
     def isMod(self) -> bool:
         return self.__author.is_mod
+
+    def isVip(self) -> bool:
+        return self.__author.is_vip
