@@ -427,10 +427,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise error
 
     async def event_message(self, message: Message):
-        if message.echo:
-            return
-
         twitchMessage = self.__twitchConfiguration.getMessage(message)
+
+        if twitchMessage.isEcho():
+            return
 
         if utils.isValidStr(twitchMessage.getContent()):
             generalSettings = await self.__generalSettingsRepository.getAllAsync()

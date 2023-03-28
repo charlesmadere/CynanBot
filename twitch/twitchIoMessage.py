@@ -40,3 +40,6 @@ class TwitchIoMessage(TwitchMessage):
 
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO
+
+    def isEcho(self) -> bool:
+        return self.__message.echo

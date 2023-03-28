@@ -27,3 +27,6 @@ class TwitchMessage():
 
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         pass
+
+    def isEcho(self) -> bool:
+        pass
