@@ -1,5 +1,6 @@
 import asyncio
 import locale
+from typing import Optional
 
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
@@ -179,7 +180,7 @@ twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration()
 
 authSnapshot = authRepository.getAll()
 
-translationHelper: TranslationHelper = None
+translationHelper: Optional[TranslationHelper] = None
 if authSnapshot.hasDeepLAuthKey():
     translationHelper = TranslationHelper(
         languagesRepository = languagesRepository,
@@ -188,7 +189,7 @@ if authSnapshot.hasDeepLAuthKey():
         timber = timber
     )
 
-weatherRepository: WeatherRepository = None
+weatherRepository: Optional[WeatherRepository] = None
 if authSnapshot.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
         networkClientProvider = networkClientProvider,
@@ -266,7 +267,7 @@ triviaUtils = TriviaUtils(
     usersRepository = usersRepository
 )
 
-quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository = None
+quizApiTriviaQuestionRepository: Optional[QuizApiTriviaQuestionRepository] = None
 if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
