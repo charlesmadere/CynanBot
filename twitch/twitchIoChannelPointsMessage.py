@@ -9,15 +9,16 @@ class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):
 
     def __init__(
         self,
-        pubSubChannelPointsMessage: PubSubChannelPointsMessage,
+        channelPointsMessage: PubSubChannelPointsMessage,
         user: User
     ):
-        if not isinstance(pubSubChannelPointsMessage, PubSubChannelPointsMessage):
-            raise ValueError(f'pubSubChannelPointsMessage argument is malformed: \"{pubSubChannelPointsMessage}\"')
+        if not isinstance(channelPointsMessage, PubSubChannelPointsMessage):
+            raise ValueError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
         elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        self.__pubSubChannelPointsMessage: PubSubChannelPointsMessage = pubSubChannelPointsMessage
+        self.__channelPointsMessage: PubSubChannelPointsMessage = channelPointsMessage
+        self.__user: User = user
 
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO

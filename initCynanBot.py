@@ -176,7 +176,10 @@ pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
-twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration()
+twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
+    userIdsRepository = userIdsRepository,
+    usersRepository = usersRepository
+)
 
 authSnapshot = authRepository.getAll()
 
