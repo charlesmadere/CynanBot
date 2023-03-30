@@ -1,5 +1,6 @@
 import asyncio
 import locale
+import logging
 from typing import Optional
 
 from authRepository import AuthRepository
@@ -104,6 +105,15 @@ from twitch.twitchIoConfiguration import TwitchIoConfiguration
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
+
+
+# temporary? currently using this to create logs for this ticket:
+# https://github.com/TwitchIO/TwitchIO/issues/388
+logging.basicConfig(
+    filename = 'generalLogging.log',
+    level = logging.DEBUG
+)
+
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
