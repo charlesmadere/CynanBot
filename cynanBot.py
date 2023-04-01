@@ -506,97 +506,66 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
 
     async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
         twitchUserIdStr = str(event.channel_id)
-        twitchUserNameStr = await self.__userIdsRepository.fetchUserName(twitchUserIdStr)
-        twitchUser = await self.__usersRepository.getUserAsync(twitchUserNameStr)
-        rewardId = str(event.reward.id)
-        userIdThatRedeemed = str(event.user.id)
-        userNameThatRedeemed: str = event.user.name
-        redemptionMessage: str = event.input
-        lruCacheId = f'{twitchUserNameStr}:{event.id}'.lower()
+        lruCacheId = f'{twitchUserIdStr}:{event.id}'.lower()
 
         if self.__channelPointsLruCache.contains(lruCacheId):
             return
 
         self.__channelPointsLruCache.put(lruCacheId)
-        self.__timber.log('CynanBot', f'Reward \"{rewardId}\" redeemed by {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}:{twitchUserIdStr}')
+        channelPointsMessage = await self.__twitchConfiguration.getChannelPointsMessage(event)
+        twitchUser = channelPointsMessage.getTwitchUser()
+
+        self.__timber.log('CynanBot', f'Reward \"{channelPointsMessage.getRewardId()}\" redeemed by {channelPointsMessage.getUserName()}:{channelPointsMessage.getUserName()} in {twitchUser.getHandle()}')
 
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchUser = twitchUser,
-                redemptionMessage = redemptionMessage,
-                rewardId = rewardId,
-                userIdThatRedeemed = userIdThatRedeemed,
-                userNameThatRedeemed = userNameThatRedeemed
+                twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
-        if twitchUser.isPicOfTheDayEnabled() and rewardId == twitchUser.getPicOfTheDayRewardId():
+        if twitchUser.isPicOfTheDayEnabled() and channelPointsMessage.getRewardId() == twitchUser.getPicOfTheDayRewardId():
             if await self.__potdPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchUser = twitchUser,
-                redemptionMessage = redemptionMessage,
-                rewardId = rewardId,
-                userIdThatRedeemed = userIdThatRedeemed,
-                userNameThatRedeemed = userNameThatRedeemed
+                twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 
         if twitchUser.isPkmnEnabled():
-            if rewardId == twitchUser.getPkmnBattleRewardId():
+            if channelPointsMessage.getRewardId() == twitchUser.getPkmnBattleRewardId():
                 if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchUser = twitchUser,
-                    redemptionMessage = redemptionMessage,
-                    rewardId = rewardId,
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed
+                    twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
             if twitchUser.hasPkmnCatchBoosterPacks():
                 if await self.__pkmnCatchPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchUser = twitchUser,
-                    redemptionMessage = redemptionMessage,
-                    rewardId = rewardId,
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed
+                    twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-            if rewardId == twitchUser.getPkmnEvolveRewardId():
+            if channelPointsMessage.getRewardId() == twitchUser.getPkmnEvolveRewardId():
                 if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchUser = twitchUser,
-                    redemptionMessage = redemptionMessage,
-                    rewardId = rewardId,
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed
+                    twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-            if rewardId == twitchUser.getPkmnShinyRewardId():
+            if channelPointsMessage.getRewardId() == twitchUser.getPkmnShinyRewardId():
                 if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    twitchUser = twitchUser,
-                    redemptionMessage = redemptionMessage,
-                    rewardId = rewardId,
-                    userIdThatRedeemed = userIdThatRedeemed,
-                    userNameThatRedeemed = userNameThatRedeemed
+                    twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
-        if twitchUser.isTriviaGameEnabled() and rewardId == twitchUser.getTriviaGameRewardId():
+        if twitchUser.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == twitchUser.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchUser = twitchUser,
-                redemptionMessage = redemptionMessage,
-                rewardId = rewardId,
-                userIdThatRedeemed = userIdThatRedeemed,
-                userNameThatRedeemed = userNameThatRedeemed
+                twitchChannelPointsMessage = channelPointsMessage
             ):
                 return
 

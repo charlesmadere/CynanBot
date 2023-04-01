@@ -17,8 +17,8 @@ from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
 from twitch.twitchChannel import TwitchChannel
+from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from twitch.twitchUtils import TwitchUtils
-from users.user import User
 
 
 class AbsPointRedemption(ABC):
@@ -27,11 +27,7 @@ class AbsPointRedemption(ABC):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         pass
 
@@ -58,22 +54,9 @@ class CutenessRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not twitchUser.isCutenessEnabled() or not twitchUser.hasCutenessBoosterPacks():
             return False
@@ -81,7 +64,7 @@ class CutenessRedemption(AbsPointRedemption):
         cutenessBoosterPack: Optional[CutenessBoosterPack] = None
 
         for cbp in twitchUser.getCutenessBoosterPacks():
-            if rewardId == cbp.getRewardId():
+            if twitchChannelPointsMessage.getRewardId() == cbp.getRewardId():
                 cutenessBoosterPack = cbp
                 break
 
@@ -94,14 +77,14 @@ class CutenessRedemption(AbsPointRedemption):
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
-                userId = userIdThatRedeemed,
-                userName = userNameThatRedeemed
+                userId = twitchChannelPointsMessage.getUserId(),
+                userName = twitchChannelPointsMessage.getUserName()
             )
 
-            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+            self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}: {e}', e)
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {userNameThatRedeemed}')
+            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}: {e}', e)
+            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.getUserName()}')
 
         return True
 
@@ -132,30 +115,17 @@ class PkmnBattleRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not twitchUser.isPkmnEnabled():
             return False
 
-        splits = utils.getCleanedSplits(redemptionMessage)
+        splits = utils.getCleanedSplits(twitchChannelPointsMessage.getRedemptionMessage())
 
         if not utils.hasItems(splits):
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{userNameThatRedeemed}, you must specify the exact user name of the person you want to fight')
+            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Sorry @{twitchChannelPointsMessage.getUserName()}, you must specify the exact user name of the person you want to fight')
             return False
 
         opponentUserName = utils.removePreceedingAt(splits[0])
@@ -164,17 +134,17 @@ class PkmnBattleRedemption(AbsPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnBattle(
-                userThatRedeemed = userNameThatRedeemed,
+                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
                 userToBattle = opponentUserName,
                 twitchChannel = twitchUser.getHandle()
             ):
                 actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!battle {userNameThatRedeemed} {opponentUserName}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!battle {twitchChannelPointsMessage.getUserName()} {opponentUserName}')
             actionCompleted = True
 
-        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnBattleRedemption', f'Redeemed pkmn battle for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return actionCompleted
 
 
@@ -204,29 +174,16 @@ class PkmnCatchRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not twitchUser.isPkmnEnabled() or not twitchUser.hasPkmnCatchBoosterPacks():
             return False
 
         pkmnCatchBoosterPack: Optional[PkmnCatchBoosterPack] = None
         for pkbp in twitchUser.getPkmnCatchBoosterPacks():
-            if rewardId == pkbp.getRewardId():
+            if twitchChannelPointsMessage.getRewardId() == pkbp.getRewardId():
                 pkmnCatchBoosterPack = pkbp
                 break
 
@@ -242,17 +199,17 @@ class PkmnCatchRedemption(AbsPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnCatch(
-                userThatRedeemed = userNameThatRedeemed,
+                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
                 twitchChannel = twitchUser.getHandle(),
                 funtoonPkmnCatchType = funtoonPkmnCatchType
             ):
                 actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!catch {userNameThatRedeemed}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.getUserName()}')
             actionCompleted = True
 
-        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {userNameThatRedeemed}:{userIdThatRedeemed} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnCatchRedemption', f'Redeemed pkmn catch for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} (catch type: {pkmnCatchBoosterPack.getCatchType()}) in {twitchUser.getHandle()}')
         return actionCompleted
 
     def __toFuntoonPkmnCatchType(
@@ -298,22 +255,9 @@ class PkmnEvolveRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not twitchUser.isPkmnEnabled():
             return False
@@ -323,16 +267,16 @@ class PkmnEvolveRedemption(AbsPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnGiveEvolve(
-                userThatRedeemed = userNameThatRedeemed,
+                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
                 twitchChannel = twitchUser.getHandle()
             ):
                 actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!freeevolve {userNameThatRedeemed}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!freeevolve {twitchChannelPointsMessage.getUserName()}')
             actionCompleted = True
 
-        self.__timber.log('PkmnEvolveRedemption', f'Redeemed pkmn evolve for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnEvolveRedemption', f'Redeemed pkmn evolve for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return actionCompleted
 
 
@@ -362,22 +306,9 @@ class PkmnShinyRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not twitchUser.isPkmnEnabled():
             return False
@@ -387,16 +318,16 @@ class PkmnShinyRedemption(AbsPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled():
             if await self.__funtoonRepository.pkmnGiveShiny(
-                userThatRedeemed = userNameThatRedeemed,
+                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
                 twitchChannel = twitchUser.getHandle()
             ):
                 actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
-            await self.__twitchUtils.safeSend(twitchChannel, f'!freeshiny {userNameThatRedeemed}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'!freeshiny {twitchChannelPointsMessage.getUserName()}')
             actionCompleted = True
 
-        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        self.__timber.log('PkmnShinyRedemption', f'Redeemed pkmn shiny for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return actionCompleted
 
 
@@ -418,35 +349,21 @@ class PotdPointRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-
-        self.__timber.log('PotdPointRedemption', f'Fetching Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}...')
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
+        self.__timber.log('PotdPointRedemption', f'Fetching Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}...')
 
         try:
             picOfTheDay = await twitchUser.fetchPicOfTheDay()
-            await self.__twitchUtils.safeSend(twitchChannel, f'@{userNameThatRedeemed} here\'s the POTD: {picOfTheDay}')
-            self.__timber.log('PotdPointRedemption', f'Redeemed Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+            await self.__twitchUtils.safeSend(twitchChannel, f'@{twitchChannelPointsMessage.getUserName()} here\'s the POTD: {picOfTheDay}')
+            self.__timber.log('PotdPointRedemption', f'Redeemed Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
             return True
         except FileNotFoundError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}, but the POTD file is missing: {e}')
+            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD file is missing: {e}')
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day file for {twitchUser.getHandle()} is missing')
         except ValueError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}, but the POTD content is malformed: {e}')
+            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD content is malformed: {e}')
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day content for {twitchUser.getHandle()} is malformed')
 
         return False
@@ -460,11 +377,7 @@ class StubPointRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         return False
 
@@ -491,24 +404,10 @@ class TriviaGameRedemption(AbsPointRedemption):
     async def handlePointRedemption(
         self,
         twitchChannel: TwitchChannel,
-        twitchUser: User,
-        redemptionMessage: str,
-        rewardId: str,
-        userIdThatRedeemed: str,
-        userNameThatRedeemed: str
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        if not isinstance(twitchChannel, TwitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(twitchUser, User):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(userIdThatRedeemed):
-            raise ValueError(f'userIdThatRedeemed argument is malformed: \"{userIdThatRedeemed}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
-            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
         if not generalSettings.isTriviaGameEnabled():
             return False
@@ -539,10 +438,10 @@ class TriviaGameRedemption(AbsPointRedemption):
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             twitchChannel = twitchUser.getHandle(),
-            userId = userIdThatRedeemed,
-            userName = userNameThatRedeemed,
+            userId = twitchChannelPointsMessage.getUserId(),
+            userName = twitchChannelPointsMessage.getUserName(),
             triviaFetchOptions = triviaFetchOptions
         ))
 
-        self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {userNameThatRedeemed}:{userIdThatRedeemed} in {twitchUser.getHandle()}')
+        self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return True

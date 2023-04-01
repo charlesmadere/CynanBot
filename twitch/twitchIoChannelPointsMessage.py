@@ -1,3 +1,5 @@
+from typing import Optional
+
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
@@ -20,5 +22,23 @@ class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):
         self.__channelPointsMessage: PubSubChannelPointsMessage = channelPointsMessage
         self.__user: User = user
 
+    def getEventId(self) -> str:
+        return self.__channelPointsMessage.id
+
+    def getRedemptionMessage(self) -> Optional[str]:
+        return self.__channelPointsMessage.input
+
+    def getRewardId(self) -> str:
+        return self.__channelPointsMessage.reward.id
+
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO
+
+    def getTwitchUser(self) -> User:
+        return self.__user
+
+    def getUserId(self) -> str:
+        return str(self.__channelPointsMessage.user.id)
+
+    def getUserName(self) -> str:
+        return self.__channelPointsMessage.user.name
