@@ -34,6 +34,8 @@ from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
+    AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
@@ -225,6 +227,11 @@ triviaAnswerCompiler = TriviaAnswerCompiler()
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
+additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
+    backingDatabase = backingDatabase,
+    triviaSettingsRepository = triviaSettingsRepository,
+    timber = timber
+)
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -291,6 +298,7 @@ if authSnapshot.hasQuizApiKey():
     )
 
 triviaRepository = TriviaRepository(
+    additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
