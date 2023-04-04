@@ -515,7 +515,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         channelPointsMessage = await self.__twitchConfiguration.getChannelPointsMessage(event)
         twitchUser = channelPointsMessage.getTwitchUser()
 
-        self.__timber.log('CynanBot', f'Reward \"{channelPointsMessage.getRewardId()}\" redeemed by {channelPointsMessage.getUserName()}:{channelPointsMessage.getUserName()} in {twitchUser.getHandle()}')
+        self.__timber.log('CynanBot', f'Reward \"{channelPointsMessage.getRewardId()}\" redeemed by {channelPointsMessage.getUserName()}:{channelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
 
         twitchChannel = await self.__getChannel(twitchUser.getHandle())
 
