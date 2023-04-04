@@ -1300,8 +1300,12 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             triviaType = reference.getTriviaType()
         )
 
-        additionalAnswers = ', '.join(result.getAdditionalAnswers())
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+        if result is None:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ There are no additional trivia answers for {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
+        else:
+            additionalAnswers = ', '.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -1468,8 +1472,12 @@ class GetTriviaAnswersCommand(AbsCommand):
             triviaType = reference.getTriviaType()
         )
 
-        additionalAnswers = ', '.join(result.getAdditionalAnswers())
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+        if result is None:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ There are no additional trivia answers for {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
+        else:
+            additionalAnswers = ', '.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
