@@ -238,7 +238,7 @@ class AddTriviaAnswerCommand(AbsCommand):
 
         additionalAnswers = ', '.join(result.getAdditionalAnswers())
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Added additional trivia answer for {result.getTriviaSource().toStr()} — {result.getTriviaId()}; additional answers: {additionalAnswers}')
-        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswercommand with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class AddTriviaControllerCommand(AbsCommand):
@@ -1306,7 +1306,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             additionalAnswers = ', '.join(result.getAdditionalAnswers())
             await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
 
-        self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class DiscordCommand(AbsCommand):
