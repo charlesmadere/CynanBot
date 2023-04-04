@@ -2774,7 +2774,7 @@ class TriviaScoreCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 15)
+        cooldown: timedelta = timedelta(seconds = 8)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
