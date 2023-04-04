@@ -47,6 +47,10 @@ from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaExceptions import (
+    AdditionalTriviaAnswerAlreadyExistsException,
+    AdditionalTriviaAnswerIsMalformedException,
+    AdditionalTriviaAnswerIsUnsupportedTriviaTypeException)
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -229,16 +233,28 @@ class AddTriviaAnswerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as an invalid answer argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt')
             return
 
-        result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
-            additionalAnswer = additionalAnswer,
-            triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource(),
-            triviaType = reference.getTriviaType()
-        )
+        try:
+            result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
+                additionalAnswer = additionalAnswer,
+                triviaId = reference.getTriviaId(),
+                triviaSource = reference.getTriviaSource(),
+                triviaType = reference.getTriviaType()
+            )
 
-        additionalAnswers = ', '.join(result.getAdditionalAnswers())
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Added additional trivia answer for {result.getTriviaSource().toStr()} — {result.getTriviaId()}; additional answers: {additionalAnswers}')
-        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            additionalAnswers = ', '.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added additional trivia answer for {result.getTriviaSource().toStr()} — {result.getTriviaId()} — all additional answers: {additionalAnswers}')
+            self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
+        except AdditionalTriviaAnswerAlreadyExistsException as e:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as it already exists')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e)
+        except AdditionalTriviaAnswerIsMalformedException as e:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as it is malformed')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e)
+        except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as the question is an unsupported type')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType()}\"', e)
+
+        self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class AddTriviaControllerCommand(AbsCommand):
