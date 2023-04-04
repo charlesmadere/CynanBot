@@ -17,10 +17,10 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       CutenessChampionsCommand, CutenessCommand,
                       CutenessHistoryCommand, CynanSourceCommand,
                       DiscordCommand, GetGlobalTriviaControllersCommand,
-                      GetTriviaControllersCommand, GiveCutenessCommand,
-                      JishoCommand, LoremIpsumCommand, MyCutenessCommand,
-                      MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand,
+                      GetTriviaAnswersCommand, GetTriviaControllersCommand,
+                      GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
+                      MyCutenessCommand, MyCutenessHistoryCommand, PbsCommand,
+                      PkMonCommand, PkMoveCommand, RaceCommand,
                       RemoveGlobalTriviaControllerCommand,
                       RemoveTriviaControllerCommand, SetTwitchCodeCommand,
                       StubCommand, SuperAnswerCommand, SuperTriviaCommand,
@@ -242,11 +242,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
+            self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
