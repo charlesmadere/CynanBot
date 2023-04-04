@@ -16,7 +16,8 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       CommandsCommand, ConfirmCommand,
                       CutenessChampionsCommand, CutenessCommand,
                       CutenessHistoryCommand, CynanSourceCommand,
-                      DiscordCommand, GetGlobalTriviaControllersCommand,
+                      DeleteTriviaAnswersCommand, DiscordCommand,
+                      GetGlobalTriviaControllersCommand,
                       GetTriviaAnswersCommand, GetTriviaControllersCommand,
                       GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
                       MyCutenessCommand, MyCutenessHistoryCommand, PbsCommand,
@@ -242,12 +243,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
+            self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
@@ -874,6 +877,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGlobalTriviaControllerCommand.handleCommand(context)
 
+    @commands.command(name = 'addtriviaanswer')
+    async def command_addtriviaanswer(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addTriviaAnswerCommand.handleCommand(context)
+
     @commands.command(name = 'addtriviacontroller')
     async def command_addtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -934,6 +942,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__cynanSourceCommand.handleCommand(context)
 
+    @commands.command(name = 'deletetriviaanswers')
+    async def command_deletetriviaanswers(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__deleteTriviaAnswersCommand.handleCommand(context)
+
     @commands.command(name = 'discord')
     async def command_discord(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -943,6 +956,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def command_getglobaltriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__getGlobalTriviaControllersCommand.handleCommand(context)
+
+    @commands.command(name = 'gettriviaanswers')
+    async def command_gettriviaanswers(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__getTriviaAnswersCommand.handleCommand(context)
 
     @commands.command(name = 'gettriviacontrollers')
     async def command_gettriviacontrollers(self, ctx: Context):

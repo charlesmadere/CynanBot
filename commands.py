@@ -1217,6 +1217,94 @@ class CynanSourceCommand(AbsCommand):
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class DeleteTriviaAnswersCommand(AbsCommand):
+
+    def __init__(
+        self,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaEmoteGenerator: TriviaEmoteGenerator,
+        triviaHistoryRepository: TriviaHistoryRepository,
+        triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+            raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
+            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
+            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif not isinstance(triviaUtils, TriviaUtils):
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
+        self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+
+        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
+            twitchChannel = user.getHandle(),
+            userId = ctx.getAuthorId()
+        ):
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but not enough arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as not enough arguments were given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        emote: Optional[str] = splits[1]
+        normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
+
+        if not utils.isValidStr(normalizedEmote):
+            self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as an invalid emote argument was given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+            return
+
+        reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
+            emote = normalizedEmote,
+            twitchChannel = user.getHandle()
+        )
+
+        if reference is None:
+            self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
+            return
+
+        result = await self.__additionalTriviaAnswersRepository.deleteAdditionalTriviaAnswers(
+            triviaId = reference.getTriviaId(),
+            triviaSource = reference.getTriviaSource(),
+            triviaType = reference.getTriviaType()
+        )
+
+        additionalAnswers = ', '.join(result.getAdditionalAnswers())
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+        self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
 class DiscordCommand(AbsCommand):
 
     def __init__(
@@ -1251,6 +1339,50 @@ class DiscordCommand(AbsCommand):
         discord = user.getDiscordUrl()
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
+class GetGlobalTriviaControllersCommand(AbsCommand):
+
+    def __init__(
+        self,
+        generalSettingsRepository: GeneralSettingsRepository,
+        timber: Timber,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__timber: Timber = timber
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+
+        userName = ctx.getAuthorName().lower()
+
+        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
+        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
+        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetTriviaAnswersCommand(AbsCommand):
@@ -1309,7 +1441,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but not enough arguments were supplied')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as not enough arguments were given. Example: !gettriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get additional trivia answers as not enough arguments were given. Example: !gettriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         emote: Optional[str] = splits[1]
@@ -1317,7 +1449,7 @@ class GetTriviaAnswersCommand(AbsCommand):
 
         if not utils.isValidStr(normalizedEmote):
             self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as an invalid emote argument was given. Example: !gettriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get additional trivia answers as an invalid emote argument was given. Example: !gettriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
@@ -1339,50 +1471,6 @@ class GetTriviaAnswersCommand(AbsCommand):
         additionalAnswers = ', '.join(result.getAdditionalAnswers())
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class GetGlobalTriviaControllersCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
-        triviaUtils: TriviaUtils,
-        twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
-            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__usersRepository: UsersRepository = usersRepository
-
-    async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        userName = ctx.getAuthorName().lower()
-
-        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
-            self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-
-        controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
-        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
-        self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetTriviaControllersCommand(AbsCommand):
