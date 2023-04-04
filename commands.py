@@ -1478,7 +1478,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             additionalAnswers = ', '.join(result.getAdditionalAnswers())
             await self.__twitchUtils.safeSend(ctx, f'ⓘ Additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
 
-        self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviasnswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetTriviaControllersCommand(AbsCommand):
