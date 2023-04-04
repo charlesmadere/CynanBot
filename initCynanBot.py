@@ -298,7 +298,6 @@ if authSnapshot.hasQuizApiKey():
     )
 
 triviaRepository = TriviaRepository(
-    additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
@@ -307,6 +306,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
@@ -318,6 +318,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         networkClientProvider = networkClientProvider,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
@@ -397,6 +398,7 @@ triviaRepository = TriviaRepository(
 
 cynanBot = CynanBot(
     eventLoop = eventLoop,
+    additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedWordsRepository = bannedWordsRepository,

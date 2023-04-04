@@ -13,7 +13,6 @@ from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.trivia.additionalTriviaAnswersRepository import AdditionalTriviaAnswersRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -27,6 +26,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
+    AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
@@ -231,7 +232,8 @@ class AddTriviaAnswerCommand(AbsCommand):
         result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
             additionalAnswer = additionalAnswer,
             triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource()
+            triviaSource = reference.getTriviaSource(),
+            triviaType = reference.getTriviaType()
         )
 
         additionalAnswers = ', '.join(result.getAdditionalAnswers())

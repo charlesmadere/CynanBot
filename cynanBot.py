@@ -10,8 +10,8 @@ from twitchio.ext.pubsub import PubSubChannelPointsMessage
 import CynanBotCommon.utils as utils
 from authRepository import AuthRepository
 from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
-                      AddTriviaControllerCommand, AddUserCommand,
-                      AnswerCommand, BanTriviaQuestionCommand,
+                      AddTriviaAnswerCommand, AddTriviaControllerCommand,
+                      AddUserCommand, AnswerCommand, BanTriviaQuestionCommand,
                       ClearCachesCommand, ClearSuperTriviaQueueCommand,
                       CommandsCommand, ConfirmCommand,
                       CutenessChampionsCommand, CutenessCommand,
@@ -44,6 +44,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
+    AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
@@ -123,6 +125,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        additionalTriviaAnswersRepository: Optional[AdditionalTriviaAnswersRepository],
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
         bannedWordsRepository: Optional[BannedWordsRepository],
@@ -236,11 +239,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(generalSettingsRepository,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
-        if cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
+            self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsCommand = StubCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
+            self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
