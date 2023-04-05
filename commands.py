@@ -1425,7 +1425,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        answerDelimiter: str
+        answerDelimiter: str = ', '
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
