@@ -161,7 +161,8 @@ class AddTriviaAnswerCommand(AbsCommand):
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        answerDelimiter: str = ', '
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
@@ -179,6 +180,8 @@ class AddTriviaAnswerCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(answerDelimiter, str):
+            raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -188,6 +191,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
+        self.__answerDelimiter: str = answerDelimiter
 
     async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -241,18 +245,18 @@ class AddTriviaAnswerCommand(AbsCommand):
                 triviaType = reference.getTriviaType()
             )
 
-            additionalAnswers = ', '.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added additional trivia answer for {result.getTriviaSource().toStr()} — {result.getTriviaId()} — all additional answers: {additionalAnswers}')
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
             self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as it already exists')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as it already exists')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e)
         except AdditionalTriviaAnswerIsMalformedException as e:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as it is malformed')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as it is malformed')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e)
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as the question is an unsupported type')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType()}\"', e)
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as the question is an unsupported type ({reference.getTriviaType().toStr()})')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType().toStr()}\"', e)
 
         self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1244,7 +1248,8 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        answerDelimiter: str = ', '
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
@@ -1262,6 +1267,8 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(answerDelimiter, str):
+            raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1271,6 +1278,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
+        self.__answerDelimiter: str = answerDelimiter
 
     async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -1317,10 +1325,10 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         )
 
         if result is None:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ There are no additional trivia answers for {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
-            additionalAnswers = ', '.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1416,7 +1424,8 @@ class GetTriviaAnswersCommand(AbsCommand):
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepository,
+        answerDelimiter: str
     ):
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
@@ -1434,6 +1443,8 @@ class GetTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(answerDelimiter, str):
+            raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -1443,6 +1454,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
+        self.__answerDelimiter: str = answerDelimiter
 
     async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -1489,10 +1501,10 @@ class GetTriviaAnswersCommand(AbsCommand):
         )
 
         if result is None:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ There are no additional trivia answers for {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
-            additionalAnswers = ', '.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Additional trivia answers for {result.getTriviaSource().toStr()} — {result.getTriviaId()}: {additionalAnswers}')
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
