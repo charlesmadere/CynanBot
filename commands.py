@@ -50,7 +50,8 @@ from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,
     AdditionalTriviaAnswerIsMalformedException,
-    AdditionalTriviaAnswerIsUnsupportedTriviaTypeException)
+    AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
+    TooManyAdditionalTriviaAnswersException)
 from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -246,7 +247,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             )
 
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
             self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as it already exists')
@@ -257,6 +258,9 @@ class AddTriviaAnswerCommand(AbsCommand):
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as the question is an unsupported type ({reference.getTriviaType().toStr()})')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType().toStr()}\"', e)
+        except TooManyAdditionalTriviaAnswersException as e:
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} as the question has too many additional answers ({reference.getTriviaType().toStr()})')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question has too many additional answers', e)
 
         self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1504,7 +1508,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 

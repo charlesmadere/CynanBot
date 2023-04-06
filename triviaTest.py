@@ -99,7 +99,9 @@ cutenessRepository = CutenessRepository(
 bannedWordsRepository = BannedWordsRepository(
     timber = timber
 )
-triviaAnswerCompiler = TriviaAnswerCompiler()
+triviaAnswerCompiler = TriviaAnswerCompiler(
+    timber = timber
+)
 triviaEmoteGenerator = TriviaEmoteGenerator(
     backingDatabase = backingDatabase,
     timber = timber
