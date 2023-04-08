@@ -135,10 +135,6 @@ class TwitchUtils():
                 exceptions.append(e)
                 await asyncio.sleep(self.__sleepBeforeRetryTimeSeconds)
 
-        numberOfRetries: int = 0
-        if utils.hasItems(exceptions):
-            numberOfRetries = len(exceptions)
-
         self.__sentMessageLogger.log(
             successfullySent = successfullySent,
             numberOfRetries = numberOfRetries,
