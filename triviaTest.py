@@ -270,7 +270,7 @@ async def main():
 
     await asyncio.sleep(1)
 
-    correctAnswers = await triviaQuestionCompiler.compileResponses([ 'grown/groan' ])
+    correctAnswers = await triviaQuestionCompiler.compileResponses([ '$1000000000.559 USD' ])
     cleanedCorrectAnswers = await triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
@@ -285,7 +285,7 @@ async def main():
     )
 
     result = await triviaAnswerChecker.checkAnswer(
-        answer = 'grown',
+        answer = 'friends',
         triviaQuestion = triviaQuestion
     )
 
