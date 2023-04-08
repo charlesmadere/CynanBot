@@ -231,8 +231,8 @@ triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository()
 additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
-    triviaSettingsRepository = triviaSettingsRepository,
-    timber = timber
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,

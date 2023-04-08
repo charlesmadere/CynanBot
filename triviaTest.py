@@ -2,6 +2,7 @@ import asyncio
 from datetime import timedelta
 
 from authRepository import AuthRepository
+from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.network.requestsClientProvider import \
@@ -12,6 +13,8 @@ from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
+    AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
@@ -59,6 +62,8 @@ from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
+    TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -76,7 +81,8 @@ from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 
 eventLoop = asyncio.get_event_loop()
-timber = Timber(eventLoop = eventLoop)
+backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
+timber = Timber(backgroundTaskHelper = backgroundTaskHelper)
 authRepository = AuthRepository()
 backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(
@@ -107,6 +113,11 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
     timber = timber
 )
 triviaSettingsRepository = TriviaSettingsRepository()
+additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
@@ -139,7 +150,7 @@ triviaAnswerChecker = TriviaAnswerChecker(
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaGameMachine = TriviaGameMachine(
-    eventLoop = eventLoop,
+    backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
         timber = timber,
@@ -151,30 +162,30 @@ triviaGameMachine = TriviaGameMachine(
     ),
     timber = timber,
     triviaAnswerChecker = triviaAnswerChecker,
+    triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameStore = TriviaGameStore(),
     triviaRepository = TriviaRepository(
         bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
             networkClientProvider = networkClientProvider,
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaIdGenerator = triviaIdGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         funtoonTriviaQuestionRepository = FuntoonTriviaQuestionRepository(
+            additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
             networkClientProvider = networkClientProvider,
             timber = timber,
             triviaAnswerCompiler = triviaAnswerCompiler,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         jokeTriviaQuestionRepository = None,
         jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
+            additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
             networkClientProvider = networkClientProvider,
             timber = timber,
             triviaAnswerCompiler = triviaAnswerCompiler,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaIdGenerator = triviaIdGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
@@ -182,21 +193,18 @@ triviaGameMachine = TriviaGameMachine(
         lotrTriviaQuestionRepository = None,
         millionaireTriviaQuestionRepository = MillionaireTriviaQuestionRepository(
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
             networkClientProvider = networkClientProvider,
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaIdGenerator = triviaIdGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
@@ -206,7 +214,6 @@ triviaGameMachine = TriviaGameMachine(
                 timber = timber
             ),
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaIdGenerator = triviaIdGenerator,
             triviaSettingsRepository = triviaSettingsRepository
         ),
@@ -214,7 +221,11 @@ triviaGameMachine = TriviaGameMachine(
         timber = timber,
         triviaDatabaseTriviaQuestionRepository = TriviaDatabaseTriviaQuestionRepository(
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
+            triviaQuestionCompiler = triviaQuestionCompiler,
+            triviaSettingsRepository = triviaSettingsRepository
+        ),
+        triviaQuestionCompanyTriviaQuestionRepository = TriviaQuestionCompanyTriviaQuestionRepository(
+            timber = timber,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
@@ -231,14 +242,12 @@ triviaGameMachine = TriviaGameMachine(
         willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
             networkClientProvider = networkClientProvider,
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaIdGenerator = triviaIdGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
         wwtbamTriviaQuestionRepository = WwtbamTriviaQuestionRepository(
             timber = timber,
-            triviaEmoteGenerator = triviaEmoteGenerator,
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         )
@@ -259,49 +268,16 @@ triviaGameMachine.setEventListener(listenerThing)
 async def main():
     pass
 
-    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-        isQueueActionConsumed = False,
-        isShinyTriviaEnabled = True,
-        numberOfGames = 1,
-        perUserAttempts = 2,
-        pointsForWinning = 25,
-        secondsToLive = 5,
-        shinyMultiplier = 8,
-        twitchChannel = 'smCharles',
-        triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = 'smCharles',
-            isJokeTriviaRepositoryEnabled = False,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
-    ))
-
     await asyncio.sleep(1)
 
-    triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-        isQueueActionConsumed = False,
-        isShinyTriviaEnabled = True,
-        numberOfGames = 1,
-        perUserAttempts = 2,
-        pointsForWinning = 25,
-        secondsToLive = 5,
-        shinyMultiplier = 8,
-        twitchChannel = 'smCharles',
-        triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = 'smCharles',
-            isJokeTriviaRepositoryEnabled = False,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-        )
-    ))
+    correctAnswers = await triviaQuestionCompiler.compileResponses([ 'grown/groan' ])
+    cleanedCorrectAnswers = await triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-    await asyncio.sleep(1)
-
-    correctAnswer = await triviaAnswerCompiler.compileTextAnswer('1950s')
     triviaQuestion: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-        correctAnswers=[correctAnswer],
-        cleanedCorrectAnswers=await triviaAnswerCompiler.expandNumerals(correctAnswer),
+        correctAnswers=correctAnswers,
+        cleanedCorrectAnswers=cleanedCorrectAnswers,
         category='Test Category',
         categoryId=None,
-        emote = '🏫',
         question='In what decade did that one thing happen?',
         triviaId='abc123',
         triviaDifficulty=TriviaDifficulty.UNKNOWN,
@@ -309,14 +285,13 @@ async def main():
     )
 
     result = await triviaAnswerChecker.checkAnswer(
-        answer = '1950s',
-        triviaQuestion = triviaQuestion,
-        extras = None
+        answer = 'grown',
+        triviaQuestion = triviaQuestion
     )
 
     print(f'triviaQuestion={triviaQuestion}\nresult={result}')
 
     pass
-    await asyncio.sleep(360)
+    # await asyncio.sleep(360)
 
 eventLoop.run_until_complete(main())
