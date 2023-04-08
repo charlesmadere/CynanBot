@@ -20,8 +20,8 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       GetGlobalTriviaControllersCommand,
                       GetTriviaAnswersCommand, GetTriviaControllersCommand,
                       GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
-                      MyCutenessCommand, MyCutenessHistoryCommand, PbsCommand,
-                      PkMonCommand, PkMoveCommand, RaceCommand,
+                      MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
+                      PkMoveCommand, RaceCommand,
                       RemoveGlobalTriviaControllerCommand,
                       RemoveTriviaControllerCommand, SetTwitchCodeCommand,
                       StubCommand, SuperAnswerCommand, SuperTriviaCommand,
@@ -260,14 +260,12 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__cutenessHistoryCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsCommand = StubCommand()
-            self.__myCutenessCommand: AbsCommand = StubCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
-            self.__myCutenessCommand: AbsCommand = MyCutenessCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if jishoHelper is None:
@@ -981,11 +979,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def command_lorem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__loremIpsumCommand.handleCommand(context)
-
-    @commands.command(name = 'mycuteness')
-    async def command_mycuteness(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__myCutenessCommand.handleCommand(context)
 
     @commands.command(name = 'mycutenesshistory')
     async def command_mycutenesshistory(self, ctx: Context):

@@ -24,11 +24,7 @@ class CutenessUtils():
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if result.hasCuteness() and result.getCuteness() >= 1:
-            if result.hasLocalLeaderboard():
-                localLeaderboard = self.getLocalLeaderboard(result.getLocalLeaderboard(), delimiter)
-                return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
-            else:
-                return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+            return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'@{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
@@ -131,21 +127,3 @@ class CutenessUtils():
             rankStr = f'#{entry.getRankStr()}'
 
         return f'{rankStr} {entry.getUserName()} ({entry.getCutenessStr()})'
-
-    def getLocalLeaderboard(self, entries: List[CutenessEntry], delimiter: str) -> str:
-        if not utils.hasItems(entries):
-            raise ValueError(f'entries argument is malformed: \"{entries}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        entryStrings: List[str] = list()
-        for entry in entries:
-            entryStrings.append(self.getLocalLeaderboardPlacement(entry))
-
-        return delimiter.join(entryStrings)
-
-    def getLocalLeaderboardPlacement(self, entry: CutenessEntry) -> str:
-        if not isinstance(entry, CutenessEntry):
-            raise ValueError(f'entry argument is malformed: \"{entry}\"')
-
-        return f'{entry.getUserName()} ({entry.getCutenessStr()})'

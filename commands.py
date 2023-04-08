@@ -1000,11 +1000,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
         if result.hasCuteness() and result.getCuteness() >= 1:
-            if result.hasLocalLeaderboard():
-                localLeaderboard = self.__cutenessUtils.getLocalLeaderboard(result.getLocalLeaderboard(), self.__delimiter)
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()}, and their local leaderboard is: {localLeaderboard} ✨'
-            else:
-                return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+            return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
 
@@ -1036,7 +1032,6 @@ class CutenessCommand(AbsCommand):
                 return
 
             result = await self.__cutenessRepository.fetchCuteness(
-                fetchLocalLeaderboard = True,
                 twitchChannel = user.getHandle(),
                 userId = userId,
                 userName = userName
@@ -1065,7 +1060,6 @@ class CutenessChampionsCommand(AbsCommand):
         cutenessUtils: CutenessUtils,
         timber: Timber,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 30)
@@ -1078,8 +1072,6 @@ class CutenessChampionsCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(delimiter, str):
@@ -1750,68 +1742,6 @@ class LoremIpsumCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, loremIpsumText)
         self.__timber.log('LoremIpsumCommand', f'Handled !lorem command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class MyCutenessCommand(AbsCommand):
-
-    def __init__(
-        self,
-        cutenessRepository: CutenessRepository,
-        cutenessUtils: CutenessUtils,
-        timber: Timber,
-        twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository,
-        delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 15)
-    ):
-        if not isinstance(cutenessUtils, CutenessUtils):
-            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(cutenessRepository, CutenessRepository):
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(timber, Timber):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__cutenessUtils: CutenessUtils = cutenessUtils
-        self.__timber: Timber = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__usersRepository: UsersRepository = usersRepository
-        self.__delimiter: str = delimiter
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not user.isCutenessEnabled():
-            return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
-            return
-
-        userId = ctx.getAuthorId()
-        userName = ctx.getAuthorName()
-
-        try:
-            result = await self.__cutenessRepository.fetchCuteness(
-                fetchLocalLeaderboard = True,
-                twitchChannel = user.getHandle(),
-                userId = userId,
-                userName = userName
-            )
-
-            await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCuteness(result, self.__delimiter))
-        except ValueError:
-            self.__timber.log('MyCutenessCommand', f'Error retrieving cuteness for {userName}:{userId}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving cuteness for {userName}')
-
-        self.__timber.log('MyCutenessCommand', f'Handled !mycuteness command for {userName}:{userId} in {user.getHandle()}')
 
 
 class MyCutenessHistoryCommand(AbsCommand):
