@@ -947,7 +947,7 @@ class CutenessCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 15)
+        cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1115,7 +1115,7 @@ class CutenessHistoryCommand(AbsCommand):
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' — ',
-        cooldown: timedelta = timedelta(seconds = 15)
+        cooldown: timedelta = timedelta(seconds = 30)
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1654,7 +1654,7 @@ class JishoCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 8)
+        cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -1755,7 +1755,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 15)
+        cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1867,7 +1867,7 @@ class PkMonCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 10)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -1928,7 +1928,7 @@ class PkMoveCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 10)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -2744,7 +2744,7 @@ class TriviaScoreCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(seconds = 8)
+        cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -3019,7 +3019,7 @@ class WordCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository,
-        cooldown: timedelta = timedelta(seconds = 10)
+        cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
