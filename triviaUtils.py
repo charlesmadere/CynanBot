@@ -166,7 +166,7 @@ class TriviaUtils():
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
-        suffix: str = ''
+        suffix = ''
         if question.getTriviaType() is TriviaType.MULTIPLE_CHOICE:
             suffix = 'Please answer using A, B, C, …'
         elif question.getTriviaType() is TriviaType.TRUE_FALSE:
@@ -223,7 +223,7 @@ class TriviaUtils():
         elif not isinstance(triviaResult, TriviaScoreResult):
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
-        shinyStr: str = ''
+        shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
             if shinyResult.getNewShinyCount() == 1:
                 shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
@@ -238,19 +238,19 @@ class TriviaUtils():
             else:
                 return f'@{userName} has not played any trivia games 😿{shinyStr}'
 
-        gamesStr: str = 'games'
+        gamesStr = 'games'
         if triviaResult.getTotal() == 1:
             gamesStr = 'game'
 
-        ratioStr: str = f' ({triviaResult.getWinPercentStr()} wins)'
+        ratioStr = f' ({triviaResult.getWinPercentStr()} wins)'
 
-        streakStr: str = ''
+        streakStr = ''
         if triviaResult.getStreak() >= 3:
             streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
         elif triviaResult.getStreak() <= -3:
             streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
-        superTriviaWinsStr: str = ''
+        superTriviaWinsStr = ''
         if triviaResult.getSuperTriviaWins() > 1:
             superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
         elif triviaResult.getSuperTriviaWins() == 1:
@@ -379,7 +379,7 @@ class TriviaUtils():
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        questionPrompt: str = ''
+        questionPrompt = ''
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
             questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
         else:
@@ -459,7 +459,7 @@ class TriviaUtils():
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
 
-        questionPrompt: str = ''
+        questionPrompt = ''
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
             questionPrompt = f'(category is \"{triviaQuestion.getCategory()}\") — {triviaQuestion.getQuestion()}'
         else:
