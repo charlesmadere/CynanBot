@@ -736,9 +736,9 @@ class CommandsCommand(AbsCommand):
         generalSettings: GeneralSettingsRepositorySnapshot,
         user: User
     ) -> List[str]:
-        if generalSettings is None:
+        if not isinstance(generalSettings, GeneralSettingsRepositorySnapshot):
             raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
-        elif user is None:
+        elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         commands: List[str] = list()
@@ -759,9 +759,9 @@ class CommandsCommand(AbsCommand):
         generalSettings: GeneralSettingsRepositorySnapshot,
         user: User
     ) -> List[str]:
-        if generalSettings is None:
+        if not isinstance(generalSettings, GeneralSettingsRepositorySnapshot):
             raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
-        elif user is None:
+        elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         commands: List[str] = list()
@@ -782,7 +782,7 @@ class CommandsCommand(AbsCommand):
     ) -> List[str]:
         if not utils.isValidBool(isMod):
             raise ValueError(f'isMod argument is malformed: \"{isMod}\"')
-        elif generalSettings is None:
+        elif not isinstance(generalSettings, GeneralSettingsRepositorySnapshot):
             raise ValueError(f'generalSettings argument is malformed: \"{generalSettings}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
