@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import traceback
 from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import List, Optional
@@ -126,7 +127,7 @@ class TwitchUtils():
                 await messageable.send(message)
                 successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={numberOfRetries}) (len={len(message)}) \"{message}\": {e}', e)
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={numberOfRetries}) (len={len(message)}) \"{message}\": {e}', e, traceback.format_exc())
                 numberOfRetries = numberOfRetries + 1
 
                 if exceptions is None:
