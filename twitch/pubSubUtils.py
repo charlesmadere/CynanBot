@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import traceback
 from collections import defaultdict
 from queue import SimpleQueue
 from typing import Dict, List, Optional
@@ -108,7 +109,7 @@ class PubSubUtils(PubSubReconnectListener):
         except PubSubError as e:
             self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e)
         except Exception as e:
-            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e)
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e, traceback.format_exc())
 
     async def forceFullRefresh(self):
         self.__timber.log('PubSubUtils', f'Performing a full forced refresh of all PubSub connections...')
@@ -211,7 +212,7 @@ class PubSubUtils(PubSubReconnectListener):
         except PubSubError as e:
             self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e)
         except Exception as e:
-            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e)
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e, traceback.format_exc())
 
     async def __refresh(self, forceFullRefresh: bool):
         if not utils.isValidBool(forceFullRefresh):
@@ -228,7 +229,7 @@ class PubSubUtils(PubSubReconnectListener):
         try:
             await self.__updatePubSubSubscriptions(forceFullRefresh)
         except Exception as e:
-            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to update PubSub subscriptions: {e}', e)
+            self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to update PubSub subscriptions: {e}', e, traceback.format_exc())
 
         self.__isManagingPubSub = False
 
