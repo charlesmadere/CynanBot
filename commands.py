@@ -818,7 +818,6 @@ class CommandsCommand(AbsCommand):
             commands.append('!cuteness')
             commands.append('!cutenesschampions')
             commands.append('!cutenesshistory')
-            commands.append('!mycuteness')
             commands.append('!mycutenesshistory')
 
             if isMod and user.isGiveCutenessEnabled():
