@@ -852,9 +852,6 @@ class CommandsCommand(AbsCommand):
         if generalSettings.isWeatherEnabled() and user.isWeatherEnabled():
             commands.append('!weather')
 
-        if generalSettings.isAnalogueEnabled() and user.isAnalogueEnabled():
-            commands.append('!analogue')
-
         commands.extend(await self.__buildTriviaCommandsList(
             isMod = ctx.isAuthorMod(),
             generalSettings = generalSettings,
