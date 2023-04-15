@@ -3,7 +3,6 @@ from typing import List
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessChampionsResult import \
     CutenessChampionsResult
-from CynanBotCommon.cuteness.cutenessEntry import CutenessEntry
 from CynanBotCommon.cuteness.cutenessHistoryResult import CutenessHistoryResult
 from CynanBotCommon.cuteness.cutenessLeaderboardEntry import \
     CutenessLeaderboardEntry
@@ -42,7 +41,7 @@ class CutenessUtils():
             championsStrs.append(self.getLeaderboardPlacement(entry))
 
         championsStr = delimiter.join(championsStrs)
-        return f'Cuteness champions — {championsStr} ✨'
+        return f'Cuteness Champions ✨ {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if not isinstance(result, CutenessHistoryResult):
@@ -116,7 +115,7 @@ class CutenessUtils():
         if not isinstance(entry, CutenessLeaderboardEntry):
             raise ValueError(f'result argument is malformed: \"{entry}\"')
 
-        rankStr: str = None
+        rankStr: str = ''
         if entry.getRank() == 1:
             rankStr = '🥇'
         elif entry.getRank() == 2:
