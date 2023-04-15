@@ -109,12 +109,11 @@ from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
 
 
-# temporary? currently using this to create logs for this ticket:
-# https://github.com/TwitchIO/TwitchIO/issues/388
-logging.basicConfig(
-    filename = 'generalLogging.log',
-    level = logging.DEBUG
-)
+# Uncomment this chunk to turn on extra extra debug logging
+# logging.basicConfig(
+#     filename = 'generalLogging.log',
+#     level = logging.DEBUG
+# )
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.utf8')
