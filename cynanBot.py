@@ -70,8 +70,6 @@ from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBotCommon.trivia.tooLateToAnswerCheckAnswerTriviaEvent import \
-    TooLateToAnswerCheckAnswerTriviaEvent
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
@@ -738,8 +736,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
         elif eventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
-        elif eventType is TriviaEventType.TOO_LATE_TO_ANSWER:
-            await self.__handleTooLateToAnswerTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
@@ -854,16 +850,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
 
         if utils.isValidStr(launchpadPrompt):
             await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
-
-    async def __handleTooLateToAnswerTriviaEvent(self, event: TooLateToAnswerCheckAnswerTriviaEvent):
-        twitchChannel = await self.__getChannel(event.getTwitchChannel())
-
-        await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getOutOfTimeAnswerReveal(
-            question = event.getTriviaQuestion(),
-            isShiny = event.isShiny(),
-            emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
-        ))
 
     @commands.command(name = 'a')
     async def command_a(self, ctx: Context):
