@@ -2724,7 +2724,7 @@ class TriviaInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} — isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()} — {reference.getTriviaId()} — isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
