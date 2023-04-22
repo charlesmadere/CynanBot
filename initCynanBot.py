@@ -65,6 +65,9 @@ from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.superTriviaCooldownHelper import \
     SuperTriviaCooldownHelper
+from CynanBotCommon.trivia.toxicTriviaHelper import ToxicTriviaHelper
+from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
+    ToxicTriviaOccurencesRepository
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -107,7 +110,6 @@ from twitch.twitchIoConfiguration import TwitchIoConfiguration
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.usersRepository import UsersRepository
-
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -222,6 +224,9 @@ bannedWordsRepository = BannedWordsRepository(
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
+toxicTriviaOccurencesRepository = ToxicTriviaOccurencesRepository(
+    backingDatabase = backingDatabase
+)
 triviaAnswerCompiler = TriviaAnswerCompiler(
     timber = timber
 )
@@ -241,6 +246,11 @@ bannedTriviaIdsRepository = BannedTriviaIdsRepository(
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+toxicTriviaHelper = ToxicTriviaHelper(
+    toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -447,6 +457,7 @@ cynanBot = CynanBot(
             triviaSettingsRepository = triviaSettingsRepository
         ),
         timber = timber,
+        toxicTriviaHelper = toxicTriviaHelper,
         triviaAnswerChecker = TriviaAnswerChecker(
             timber = timber,
             triviaAnswerCompiler = triviaAnswerCompiler,
