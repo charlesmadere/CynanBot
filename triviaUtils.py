@@ -1,5 +1,6 @@
 import locale
-from typing import List, Optional
+from collections import defaultdict
+from typing import Dict, List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.administratorProviderInterface import \
@@ -9,6 +10,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBotCommon.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -183,6 +185,25 @@ class TriviaUtils():
 
         return f'{prefix} {suffix}'
 
+    def __getLongToxicTriviaPunishmentPrompt(
+        self,
+        toxicTriviaPunishments: List[ToxicTriviaPunishment],
+        emote: str,
+        delimiter: str = ', '
+    ) -> str:
+        if not utils.isValidStr(emote):
+            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        punishmentStrings: List[str] = list()
+
+        for punishment in toxicTriviaPunishments:
+            punishmentStrings.append(f'{punishment.getUserName()} ({punishment.getPunishedByPointsStr()})')
+
+        emotePrompt = f'☠️☠️{emote}☠️☠️'
+        return f'{emotePrompt} {delimiter.join(punishmentStrings)}'
+
     def getOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
@@ -219,53 +240,40 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getTriviaScoreMessage(
+    def __getShortToxicTriviaPunishmentPrompt(
         self,
-        shinyResult: ShinyTriviaResult,
-        userName: str,
-        triviaResult: TriviaScoreResult
+        toxicTriviaPunishments: List[ToxicTriviaPunishment],
+        emote: str,
+        delimiter: str = ', '
     ) -> str:
-        if not isinstance(shinyResult, ShinyTriviaResult):
-            raise ValueError(f'shinyResult argument is malformed: \"{shinyResult}\"')
-        elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif not isinstance(triviaResult, TriviaScoreResult):
-            raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
+        if not utils.isValidStr(emote):
+            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        shinyStr = ''
-        if shinyResult.getNewShinyCount() >= 1:
-            if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
+        punishmentAmountToUserName: Dict[int, List[str]] = defaultdict(lambda: list())
+
+        for punishment in toxicTriviaPunishments:
+            punishmentAmountToUserName[punishment.getPunishedByPoints()].append(punishment.getUserName())
+
+        sortedKeys: List[int] = list(punishmentAmountToUserName.keys())
+
+        # using reverse here because these should be negative numbers
+        sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount, reverse = True)
+
+        buckets: List[str] = list()
+
+        for punishmentAmount in sortedKeys:
+            numberPunished = len(punishmentAmountToUserName[punishmentAmount])
+            punishmentAmountString = locale.format_string("%d", punishmentAmount, grouping = True)
+
+            if len(numberPunished) == 1:
+                buckets.append(f'1 person lost {punishmentAmountString} points')
             else:
-                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
+                buckets.append(f'{numberPunished} people lost {punishmentAmountString} points')
 
-        if triviaResult.getTotal() <= 0:
-            if triviaResult.getSuperTriviaWins() > 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins){shinyStr}'
-            elif triviaResult.getSuperTriviaWins() == 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win){shinyStr}'
-            else:
-                return f'@{userName} has not played any trivia games 😿{shinyStr}'
-
-        gamesStr = 'games'
-        if triviaResult.getTotal() == 1:
-            gamesStr = 'game'
-
-        ratioStr = f' ({triviaResult.getWinPercentStr()} wins)'
-
-        streakStr = ''
-        if triviaResult.getStreak() >= 3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
-        elif triviaResult.getStreak() <= -3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
-
-        superTriviaWinsStr = ''
-        if triviaResult.getSuperTriviaWins() > 1:
-            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
-        elif triviaResult.getSuperTriviaWins() == 1:
-            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
-
-        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, {triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()} {ratioStr}{streakStr}{superTriviaWinsStr}{shinyStr}'.strip()
+        emotePrompt = f'☠️☠️{emote}☠️☠️'
+        return f'{emotePrompt} {delimiter.join(buckets)}'
 
     def getSuperTriviaCorrectAnswerReveal(
         self,
@@ -402,6 +410,33 @@ class TriviaUtils():
 
         return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} points {questionPrompt}'
 
+    def getToxicTriviaPunishmentPrompt(
+        self,
+        toxicTriviaPunishments: Optional[List[ToxicTriviaPunishment]],
+        emote: str,
+        delimiter: str = ', '
+    ) -> str:
+        if not utils.isValidStr(emote):
+            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not utils.hasItems(toxicTriviaPunishments):
+            return None
+
+        if len(toxicTriviaPunishments) > 8:
+            return self.__getShortToxicTriviaPunishmentPrompt(
+                toxicTriviaPunishments = toxicTriviaPunishments,
+                emote = emote,
+                delimiter = delimiter
+            )
+        else:
+            return self.__getLongToxicTriviaPunishmentPrompt(
+                toxicTriviaPunishments = toxicTriviaPunishments,
+                emote = emote,
+                delimiter = delimiter
+            )
+
     def getTriviaGameControllers(
         self,
         gameControllers: Optional[List[TriviaGameController]],
@@ -485,6 +520,54 @@ class TriviaUtils():
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
         return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
+
+    def getTriviaScoreMessage(
+        self,
+        shinyResult: ShinyTriviaResult,
+        userName: str,
+        triviaResult: TriviaScoreResult
+    ) -> str:
+        if not isinstance(shinyResult, ShinyTriviaResult):
+            raise ValueError(f'shinyResult argument is malformed: \"{shinyResult}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif not isinstance(triviaResult, TriviaScoreResult):
+            raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
+
+        shinyStr = ''
+        if shinyResult.getNewShinyCount() >= 1:
+            if shinyResult.getNewShinyCount() == 1:
+                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
+            else:
+                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
+
+        if triviaResult.getTotal() <= 0:
+            if triviaResult.getSuperTriviaWins() > 1:
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins){shinyStr}'
+            elif triviaResult.getSuperTriviaWins() == 1:
+                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win){shinyStr}'
+            else:
+                return f'@{userName} has not played any trivia games 😿{shinyStr}'
+
+        gamesStr = 'games'
+        if triviaResult.getTotal() == 1:
+            gamesStr = 'game'
+
+        ratioStr = f' ({triviaResult.getWinPercentStr()} wins)'
+
+        streakStr = ''
+        if triviaResult.getStreak() >= 3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+        elif triviaResult.getStreak() <= -3:
+            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+
+        superTriviaWinsStr = ''
+        if triviaResult.getSuperTriviaWins() > 1:
+            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
+        elif triviaResult.getSuperTriviaWins() == 1:
+            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
+
+        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, {triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()} {ratioStr}{streakStr}{superTriviaWinsStr}{shinyStr}'.strip()
 
     async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):

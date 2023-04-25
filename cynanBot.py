@@ -852,6 +852,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
+        toxicTriviaPunishmentPrompt = self.__triviaUtils.getToxicTriviaPunishmentPrompt(
+            toxicTriviaPunishments = event.getToxicTriviaPunishments(),
+            emote = event.getEmote()
+        )
+
+        if utils.isValidStr(toxicTriviaPunishmentPrompt):
+            await self.__twitchUtils.safeSend(twitchChannel, toxicTriviaPunishmentPrompt)
+
         launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
             remainingQueueSize = event.getRemainingQueueSize()
         )
