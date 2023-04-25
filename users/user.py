@@ -51,7 +51,7 @@ class User(UserInterface):
         isWordOfTheDayEnabled: bool,
         superTriviaGamePoints: Optional[int],
         superTriviaGameShinyMultiplier: Optional[int],
-        superTriviaGameToxicMultiplier: Optional[int],
+        superTriviaGameToxicPunishmentAmount: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
         triviaGamePoints: Optional[int],
         triviaGameShinyMultiplier: Optional[int],
@@ -145,8 +145,8 @@ class User(UserInterface):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
-        elif superTriviaGameToxicMultiplier is not None and not utils.isValidInt(superTriviaGameToxicMultiplier):
-            raise ValueError(f'superTriviaGameToxicMultiplier argument is malformed: \"{superTriviaGameToxicMultiplier}\"')
+        elif superTriviaGameToxicPunishmentAmount is not None and not utils.isValidInt(superTriviaGameToxicPunishmentAmount):
+            raise ValueError(f'superTriviaGameToxicPunishmentAmount argument is malformed: \"{superTriviaGameToxicPunishmentAmount}\"')
         elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
             raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
@@ -204,7 +204,7 @@ class User(UserInterface):
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
-        self.__superTriviaGameToxicMultiplier: Optional[int] = superTriviaGameToxicMultiplier
+        self.__superTriviaGameToxicPunishmentAmount: Optional[int] = superTriviaGameToxicPunishmentAmount
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
         self.__triviaGamePoints: Optional[int] = triviaGamePoints
         self.__triviaGameShinyMultiplier: Optional[int] = triviaGameShinyMultiplier
@@ -282,8 +282,8 @@ class User(UserInterface):
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
 
-    def getSuperTriviaGameToxicMultiplier(self) -> Optional[int]:
-        return self.__superTriviaGameToxicMultiplier
+    def getSuperTriviaGameToxicPunishmentAmount(self) -> Optional[int]:
+        return self.__superTriviaGameToxicPunishmentAmount
 
     def getSuperTriviaPerUserAttempts(self) -> Optional[int]:
         return self.__superTriviaPerUserAttempts
@@ -336,8 +336,8 @@ class User(UserInterface):
     def hasSuperTriviaGameShinyMultiplier(self) -> bool:
         return utils.isValidInt(self.__superTriviaGameShinyMultiplier)
 
-    def hasSuperTriviaGameToxicMultiplier(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGameToxicMultiplier)
+    def hasSuperTriviaGameToxicPunishmentAmount(self) -> bool:
+        return utils.isValidInt(self.__superTriviaGameToxicPunishmentAmount)
 
     def hasSuperTriviaPerUserAttempts(self) -> bool:
         return utils.isValidInt(self.__superTriviaPerUserAttempts)

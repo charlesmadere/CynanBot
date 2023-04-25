@@ -2441,6 +2441,10 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaGameShinyMultiplier():
             shinyMultiplier = user.getSuperTriviaGameShinyMultiplier()
 
+        toxicTriviaPunishmentAmount = generalSettings.getSuperTriviaGameToxicPunishmentAmount()
+        if user.hasSuperTriviaGameToxicPunishmentAmount():
+            toxicTriviaPunishmentAmount = user.getSuperTriviaGameToxicPunishmentAmount()
+
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
             isJokeTriviaRepositoryEnabled = False,
@@ -2455,6 +2459,7 @@ class SuperTriviaCommand(AbsCommand):
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
+            toxicTriviaPunishmentAmount = toxicTriviaPunishmentAmount,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
         ))
