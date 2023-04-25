@@ -257,9 +257,7 @@ class TriviaUtils():
             punishmentAmountToUserName[punishment.getPunishedByPoints()].append(punishment.getUserName())
 
         sortedKeys: List[int] = list(punishmentAmountToUserName.keys())
-
-        # using reverse here because these should be negative numbers
-        sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount, reverse = True)
+        sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
 
         buckets: List[str] = list()
 
