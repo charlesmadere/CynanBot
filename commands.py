@@ -982,7 +982,7 @@ class CutenessCommand(AbsCommand):
         if result.hasSpecificLookupCutenessResult():
             userName = result.getSpecificLookupCutenessResult().getUserName()
             cutenessStr = result.getSpecificLookupCutenessResult().getCutenessStr()
-            specificLookupText = f'{userName} your cuteness is {cutenessStr}'
+            specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
 
         leaderboard = self.__cutenessUtils.getLeaderboard(result.getEntries(), self.__delimiter)
 
