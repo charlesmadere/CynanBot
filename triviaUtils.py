@@ -199,7 +199,7 @@ class TriviaUtils():
         punishmentStrings: List[str] = list()
 
         for punishment in toxicTriviaPunishments:
-            punishmentStrings.append(f'{punishment.getUserName()} ({punishment.getPunishedByPointsStr()})')
+            punishmentStrings.append(f'{punishment.getUserName()} {punishment.getPunishedByPointsStr()} cuteness')
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
         return f'{emotePrompt} {delimiter.join(punishmentStrings)}'
@@ -268,9 +268,9 @@ class TriviaUtils():
             punishmentAmountString = locale.format_string("%d", punishmentAmount, grouping = True)
 
             if len(numberPunished) == 1:
-                buckets.append(f'1 person lost {punishmentAmountString} points')
+                buckets.append(f'1 person lost {punishmentAmountString} cuteness')
             else:
-                buckets.append(f'{numberPunished} people lost {punishmentAmountString} points')
+                buckets.append(f'{numberPunished} people lost {punishmentAmountString} cuteness')
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
         return f'{emotePrompt} {delimiter.join(buckets)}'
@@ -424,7 +424,7 @@ class TriviaUtils():
         if not utils.hasItems(toxicTriviaPunishments):
             return None
 
-        if len(toxicTriviaPunishments) > 8:
+        if len(toxicTriviaPunishments) >= 8:
             return self.__getShortToxicTriviaPunishmentPrompt(
                 toxicTriviaPunishments = toxicTriviaPunishments,
                 emote = emote,
