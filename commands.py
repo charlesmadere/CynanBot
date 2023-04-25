@@ -2439,6 +2439,10 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaGameShinyMultiplier():
             shinyMultiplier = user.getSuperTriviaGameShinyMultiplier()
 
+        toxicMultiplier = generalSettings.getSuperTriviaGameToxicMultiplier()
+        if user.hasSuperTriviaGameToxicMultiplier():
+            toxicMultiplier = user.getSuperTriviaGameToxicMultipler()
+
         toxicTriviaPunishmentAmount = generalSettings.getSuperTriviaGameToxicPunishmentAmount()
         if user.hasSuperTriviaGameToxicPunishmentAmount():
             toxicTriviaPunishmentAmount = user.getSuperTriviaGameToxicPunishmentAmount()
@@ -2452,11 +2456,13 @@ class SuperTriviaCommand(AbsCommand):
         self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
             isQueueActionConsumed = False,
             isShinyTriviaEnabled = user.isShinyTriviaEnabled(),
+            isToxicTriviaEnabled = user.isToxicTriviaEnabled(),
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
+            toxicMultiplier = toxicMultiplier,
             toxicTriviaPunishmentAmount = toxicTriviaPunishmentAmount,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions

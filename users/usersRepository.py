@@ -154,9 +154,11 @@ class UsersRepository(UsersRepositoryInterface):
                 raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
+        isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         superTriviaGamePoints: Optional[int] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
+        superTriviaGameToxicMultiplier: Optional[int] = None
         superTriviaGameToxicPunishmentAmount: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
         triviaGamePoints: Optional[int] = None
@@ -166,9 +168,11 @@ class UsersRepository(UsersRepositoryInterface):
         waitForTriviaAnswerDelay: Optional[int] = None
         if isTriviaGameEnabled:
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
+            isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
+            superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentAmount = userJson.get('superTriviaGameToxicPunishmentAmount')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
             triviaGamePoints = userJson.get('triviaGamePoints')
@@ -215,6 +219,7 @@ class UsersRepository(UsersRepositoryInterface):
             isRoachMessageEnabled = isRoachMessageEnabled,
             isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
+            isToxicTriviaEnabled = isToxicTriviaEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
@@ -225,6 +230,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
+            superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
             superTriviaGameToxicPunishmentAmount = superTriviaGameToxicPunishmentAmount,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             triviaGamePoints = triviaGamePoints,

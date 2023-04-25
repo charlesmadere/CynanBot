@@ -41,6 +41,7 @@ class User(UserInterface):
         isRoachMessageEnabled: bool,
         isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
+        isToxicTriviaEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
@@ -51,6 +52,7 @@ class User(UserInterface):
         isWordOfTheDayEnabled: bool,
         superTriviaGamePoints: Optional[int],
         superTriviaGameShinyMultiplier: Optional[int],
+        superTriviaGameToxicMultiplier: Optional[int],
         superTriviaGameToxicPunishmentAmount: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
         triviaGamePoints: Optional[int],
@@ -125,6 +127,8 @@ class User(UserInterface):
             raise ValueError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
+        elif not utils.isValidBool(isToxicTriviaEnabled):
+            raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
@@ -194,6 +198,7 @@ class User(UserInterface):
         self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
         self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
+        self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
@@ -204,6 +209,7 @@ class User(UserInterface):
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
+        self.__superTriviaGameToxicMultiplier: Optional[int] = superTriviaGameToxicMultiplier
         self.__superTriviaGameToxicPunishmentAmount: Optional[int] = superTriviaGameToxicPunishmentAmount
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
         self.__triviaGamePoints: Optional[int] = triviaGamePoints
@@ -282,6 +288,9 @@ class User(UserInterface):
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
 
+    def getSuperTriviaGameToxicMultipler(self) -> Optional[int]:
+        return self.__superTriviaGameToxicMultiplier
+
     def getSuperTriviaGameToxicPunishmentAmount(self) -> Optional[int]:
         return self.__superTriviaGameToxicPunishmentAmount
 
@@ -335,6 +344,9 @@ class User(UserInterface):
 
     def hasSuperTriviaGameShinyMultiplier(self) -> bool:
         return utils.isValidInt(self.__superTriviaGameShinyMultiplier)
+
+    def hasSuperTriviaGameToxicMultiplier(self) -> bool:
+        return utils.isValidInt(self.__superTriviaGameToxicMultiplier)
 
     def hasSuperTriviaGameToxicPunishmentAmount(self) -> bool:
         return utils.isValidInt(self.__superTriviaGameToxicPunishmentAmount)
@@ -446,6 +458,9 @@ class User(UserInterface):
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return self.__isSuperTriviaGameEnabled
+
+    def isToxicTriviaEnabled(self) -> bool:
+        return self.__isToxicTriviaEnabled
 
     def isTranslateEnabled(self) -> bool:
         return self.__isTranslateEnabled
