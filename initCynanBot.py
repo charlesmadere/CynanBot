@@ -338,6 +338,7 @@ triviaRepository = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     lotrTriviaQuestionRepository = LotrTriviaQuestionRepository(
+        additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaQuestionCompiler = triviaQuestionCompiler,
