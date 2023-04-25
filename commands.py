@@ -2397,8 +2397,6 @@ class SuperTriviaCommand(AbsCommand):
         # For the time being, this command is intentionally not checking for mod status, as it has
         # been determined that super trivia game controllers shouldn't necessarily have to be mod.
 
-        userName = ctx.getAuthorName()
-
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
             userId = ctx.getAuthorId()
