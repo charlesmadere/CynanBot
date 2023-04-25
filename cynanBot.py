@@ -752,7 +752,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             isShiny = event.isShiny(),
             newCuteness = event.getCutenessResult(),
             emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
+            userNameThatRedeemed = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleFailedToFetchQuestionTriviaEvent(self, event: FailedToFetchQuestionTriviaEvent):
@@ -770,7 +771,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
             emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
+            userNameThatRedeemed = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleIncorrectAnswerTriviaEvent(self, event: IncorrectAnswerTriviaEvent):
@@ -780,7 +782,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
             emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
+            userNameThatRedeemed = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleInvalidAnswerInputTriviaEvent(self, event: InvalidAnswerInputTriviaEvent):
@@ -790,7 +793,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
             emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
+            userNameThatRedeemed = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
@@ -802,7 +806,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
-            userNameThatRedeemed = event.getUserName()
+            userNameThatRedeemed = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
@@ -813,7 +818,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             isShiny = event.isShiny(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
@@ -825,7 +831,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             newCuteness = event.getCutenessResult(),
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
-            userName = event.getUserName()
+            userName = event.getUserName(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
         launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(
@@ -841,7 +848,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         await self.__twitchUtils.safeSend(twitchChannel, self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
             isShiny = event.isShiny(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
         launchpadPrompt = self.__triviaUtils.getSuperTriviaLaunchpadPrompt(

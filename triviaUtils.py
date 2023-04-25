@@ -8,6 +8,7 @@ from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
+from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -72,28 +73,30 @@ class TriviaUtils():
     def getCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         newCuteness: CutenessResult,
         emote: str,
         userNameThatRedeemed: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not isinstance(newCuteness, CutenessResult):
             raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -111,25 +114,27 @@ class TriviaUtils():
     def getIncorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         emote: str,
         userNameThatRedeemed: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -145,22 +150,24 @@ class TriviaUtils():
     def getInvalidAnswerInputPrompt(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         emote: str,
-        userNameThatRedeemed: str
+        userNameThatRedeemed: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -179,25 +186,27 @@ class TriviaUtils():
     def getOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         emote: str,
         userNameThatRedeemed: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -261,17 +270,15 @@ class TriviaUtils():
     def getSuperTriviaCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         newCuteness: CutenessResult,
         points: int,
         emote: str,
         userName: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not isinstance(newCuteness, CutenessResult):
             raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
         elif not utils.isValidInt(points):
@@ -280,12 +287,16 @@ class TriviaUtils():
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -316,22 +327,24 @@ class TriviaUtils():
     def getSuperTriviaOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
-        isShiny: bool,
         emote: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -347,16 +360,14 @@ class TriviaUtils():
     def getSuperTriviaGameQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        isShiny: bool,
         delaySeconds: int,
         points: int,
         emote: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
         elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
@@ -367,12 +378,16 @@ class TriviaUtils():
             raise ValueError(f'points argument is out of bounds: {points}')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
@@ -426,17 +441,15 @@ class TriviaUtils():
     def getTriviaGameQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        isShiny: bool,
         delaySeconds: int,
         points: int,
         emote: str,
         userNameThatRedeemed: str,
+        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not utils.isValidBool(isShiny):
-            raise ValueError(f'isShiny argument is malformed: \"{isShiny}\"')
         elif not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
         elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
@@ -447,12 +460,18 @@ class TriviaUtils():
             raise ValueError(f'points argument is out of bounds: {points}')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not utils.isValidStr(userNameThatRedeemed):
+            raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         emotePrompt = ''
-        if isShiny:
+        if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
+        elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
         else:
             emotePrompt = emote
 
