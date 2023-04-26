@@ -37,11 +37,12 @@ class CutenessUtils():
             return f'There are no cuteness champions 😿'
 
         championsStrs: List[str] = list()
+
         for entry in result.getChampions():
             championsStrs.append(self.getLeaderboardPlacement(entry))
 
         championsStr = delimiter.join(championsStrs)
-        return f'Cuteness Champions ✨ {championsStr} ✨'
+        return f'Cuteness Champions {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if not isinstance(result, CutenessHistoryResult):

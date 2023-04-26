@@ -45,6 +45,8 @@ from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
+    ToxicTriviaOccurencesRepository
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaExceptions import (
@@ -976,7 +978,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
         if not result.hasEntries():
-            return f'Unfortunately the {result.getCutenessDate().toStr()} cuteness leaderboard is empty 😿'
+            return f'{result.getCutenessDate().toStr()} leaderboard is empty 😿'
 
         specificLookupText: Optional[str] = None
         if result.hasSpecificLookupCutenessResult():
@@ -984,12 +986,15 @@ class CutenessCommand(AbsCommand):
             cutenessStr = result.getSpecificLookupCutenessResult().getCutenessStr()
             specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
 
-        leaderboard = self.__cutenessUtils.getLeaderboard(result.getEntries(), self.__delimiter)
+        leaderboard = self.__cutenessUtils.getLeaderboard(
+            entries = result.getEntries(),
+            delimiter = self.__delimiter
+        )
 
         if utils.isValidStr(specificLookupText):
             return f'{specificLookupText}, and the {result.getCutenessDate().toStr()} leaderboard is: {leaderboard} ✨'
         else:
-            return f'The {result.getCutenessDate().toStr()} leaderboard is {leaderboard} ✨'
+            return f'{result.getCutenessDate().toStr()} leaderboard is: {leaderboard} ✨'
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
         if not isinstance(result, CutenessResult):
@@ -2744,6 +2749,7 @@ class TriviaScoreCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository,
         timber: Timber,
+        toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository,
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
@@ -2757,6 +2763,8 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepository):
+            raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
@@ -2773,6 +2781,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository
         self.__timber: Timber = timber
+        self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -2813,6 +2822,11 @@ class TriviaScoreCommand(AbsCommand):
             userId = ctx.getAuthorId()
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
+            twitchChannel = user.getHandle(),
+            userId = userId
+        )
+
+        toxicResult = await self.__toxicTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.getHandle(),
             userId = userId
         )

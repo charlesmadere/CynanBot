@@ -70,6 +70,8 @@ from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
+from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
+    ToxicTriviaOccurencesRepository
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
@@ -142,6 +144,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
         timber: Timber,
+        toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepository],
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelper],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
@@ -302,7 +305,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         else:
             self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, usersRepository)
 
-        if cutenessRepository is None or shinyTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaInfoCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsCommand = StubCommand()
@@ -310,7 +313,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         else:
             self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:

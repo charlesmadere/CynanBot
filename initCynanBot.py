@@ -441,6 +441,7 @@ cynanBot = CynanBot(
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     timber = timber,
+    toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
     triviaBanHelper = triviaBanHelper,
     triviaEmoteGenerator = triviaEmoteGenerator,
