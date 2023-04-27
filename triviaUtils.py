@@ -11,6 +11,7 @@ from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBotCommon.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBotCommon.trivia.toxicTriviaResult import ToxicTriviaResult
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
@@ -523,49 +524,57 @@ class TriviaUtils():
         self,
         shinyResult: ShinyTriviaResult,
         userName: str,
+        toxicResult: ToxicTriviaResult,
         triviaResult: TriviaScoreResult
     ) -> str:
         if not isinstance(shinyResult, ShinyTriviaResult):
             raise ValueError(f'shinyResult argument is malformed: \"{shinyResult}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif not isinstance(toxicResult, ToxicTriviaResult):
+            raise ValueError(f'toxicResult argument is malformed: \"{toxicResult}\"')
         elif not isinstance(triviaResult, TriviaScoreResult):
             raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
+
+        triviaStr = ''
+        if triviaResult.getTotal() >= 1:
+            winLossStr = f'{triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()}'
+            winsRatioStr = f'{triviaResult.getWinPercentStr()} wins'
+
+            if triviaResult.getTotal() == 1:
+                triviaStr = f'@{userName} has played {triviaResult.getTotalStr()} trivia game ({winLossStr}, {winsRatioStr})'
+            else:
+                triviaStr = f'@{userName} has played {triviaResult.getTotalStr()} trivia games ({winLossStr}, {winsRatioStr})'
+
+            if triviaResult.getStreak() >= 3:
+                triviaStr = f'{triviaStr}, is on a {triviaResult.getAbsStreakStr()} winning streak 😸'
+            elif triviaResult.getStreak() <= -3:
+                triviaStr = f'{triviaStr}, is on a {triviaResult.getAbsStreakStr()} losing streak 🙀'
+        else:
+            triviaStr = f'@{userName} hasn\'t played any trivia games 😿'
+
+        superTriviaStr = ''
+        if triviaResult.getSuperTriviaWins() >= 1:
+            if triviaResult.getSuperTriviaWins() == 1:
+                superTriviaStr = f'; has {triviaResult.getSuperTriviaWinsStr()} super trivia win'
+            else:
+                superTriviaStr = f'; has {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
 
         shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
             if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shiny)'
+                shinyStr = f'; discovered {shinyResult.getNewShinyCountStr()} shiny'
             else:
-                shinyStr = f' (and found {shinyResult.getNewShinyCountStr()} shinies)'
+                shinyStr = f'; discovered {shinyResult.getNewShinyCountStr()} shinies'
 
-        if triviaResult.getTotal() <= 0:
-            if triviaResult.getSuperTriviaWins() > 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia wins){shinyStr}'
-            elif triviaResult.getSuperTriviaWins() == 1:
-                return f'@{userName} has not played any trivia games 😿 (but has {triviaResult.getSuperTriviaWinsStr()} super trivia win){shinyStr}'
+        toxicStr = ''
+        if toxicResult.getNewToxicCount() >= 1:
+            if toxicResult.getNewToxicCount() == 1:
+                toxicStr = f'; encountered {toxicResult.getNewToxicCountStr()} toxic'
             else:
-                return f'@{userName} has not played any trivia games 😿{shinyStr}'
+                toxicStr = f'; encountered {toxicResult.getNewToxicCountStr()} toxics'
 
-        gamesStr = 'games'
-        if triviaResult.getTotal() == 1:
-            gamesStr = 'game'
-
-        ratioStr = f' ({triviaResult.getWinPercentStr()} wins)'
-
-        streakStr = ''
-        if triviaResult.getStreak() >= 3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
-        elif triviaResult.getStreak() <= -3:
-            streakStr = f', and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
-
-        superTriviaWinsStr = ''
-        if triviaResult.getSuperTriviaWins() > 1:
-            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia wins)'
-        elif triviaResult.getSuperTriviaWins() == 1:
-            superTriviaWinsStr = f' (and has {triviaResult.getSuperTriviaWinsStr()} super trivia win)'
-
-        return f'@{userName} has played {triviaResult.getTotalStr()} trivia {gamesStr}, {triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()} {ratioStr}{streakStr}{superTriviaWinsStr}{shinyStr}'.strip()
+        return f'{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'
 
     async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):

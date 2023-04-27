@@ -2839,6 +2839,7 @@ class TriviaScoreCommand(AbsCommand):
         await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(
             shinyResult = shinyResult,
             userName = userName,
+            toxicResult = toxicResult,
             triviaResult = triviaResult
         ))
 
