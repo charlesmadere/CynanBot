@@ -190,10 +190,13 @@ class TriviaUtils():
         self,
         toxicTriviaPunishments: List[ToxicTriviaPunishment],
         emote: str,
+        bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> str:
         if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(bucketDelimiter, str):
+            raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
@@ -247,7 +250,9 @@ class TriviaUtils():
         emote: str,
         delimiter: str = ', '
     ) -> str:
-        if not utils.isValidStr(emote):
+        if not utils.hasItems(toxicTriviaPunishments):
+            raise ValueError(f'toxicTriviaPunishments argument is malformed: \"{toxicTriviaPunishments}\"')
+        elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -413,10 +418,13 @@ class TriviaUtils():
         self,
         toxicTriviaPunishments: Optional[List[ToxicTriviaPunishment]],
         emote: str,
+        bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> str:
         if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(bucketDelimiter, str):
+            raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
@@ -433,6 +441,7 @@ class TriviaUtils():
             return self.__getLongToxicTriviaPunishmentPrompt(
                 toxicTriviaPunishments = toxicTriviaPunishments,
                 emote = emote,
+                bucketDelimiter = bucketDelimiter,
                 delimiter = delimiter
             )
 
