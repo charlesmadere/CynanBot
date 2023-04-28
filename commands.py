@@ -2669,6 +2669,7 @@ class TriviaInfoCommand(AbsCommand):
 
     def __init__(
         self,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaEmoteGenerator: TriviaEmoteGenerator,
@@ -2677,7 +2678,9 @@ class TriviaInfoCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+            raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -2692,6 +2695,7 @@ class TriviaInfoCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
@@ -2738,7 +2742,17 @@ class TriviaInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()} — {reference.getTriviaId()} — isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
+        additionalAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
+            triviaId = reference.getTriviaId(),
+            triviaSource = reference.getTriviaSource(),
+            triviaType = reference.getTriviaType()
+        )
+
+        additionalAnswersLen = 0
+        if additionalAnswers is not None:
+            additionalAnswersLen = additionalAnswers.getAdditionalAnswersLen()
+
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} triviaType:{reference.getTriviaType().toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
