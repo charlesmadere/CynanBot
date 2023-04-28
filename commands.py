@@ -1301,7 +1301,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
-            self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
+            self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid emote argument was given: \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to delete additional trivia answers as an invalid emote argument was given. Example: !deletetriviaanswers {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
@@ -1311,7 +1311,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         )
 
         if reference is None:
-            self.__timber.log('GetTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
+            self.__timber.log('DeleteTriviaAnswersCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no trivia question reference was found with emote \"{emote}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
@@ -1325,9 +1325,9 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — all additional answers: {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
-        self.__timber.log('GetTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('DeleteTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class DiscordCommand(AbsCommand):
