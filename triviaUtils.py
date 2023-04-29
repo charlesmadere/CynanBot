@@ -95,13 +95,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         prefix = f'{emotePrompt} Congratulations @{userNameThatRedeemed}, that\'s correct!'
         infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
@@ -133,13 +131,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -166,13 +162,11 @@ class TriviaUtils():
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
@@ -242,13 +236,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -318,13 +310,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         pointsStr = locale.format_string("%d", points, grouping = True)
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
@@ -366,13 +356,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} …'
         correctAnswers = question.getCorrectAnswers()
@@ -409,13 +397,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
@@ -526,13 +512,11 @@ class TriviaUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        emotePrompt = ''
+        emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
-        else:
-            emotePrompt = emote
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
