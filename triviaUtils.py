@@ -426,7 +426,7 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} points {questionPrompt}'
+        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
 
     async def getToxicTriviaPunishmentMessage(
         self,
