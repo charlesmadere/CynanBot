@@ -1406,7 +1406,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
             return
 
         controllers = await self.__triviaGameGlobalControllersRepository.getControllers()
-        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
+        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameGlobalControllers(controllers))
         self.__timber.log('GetGlobalTriviaControllersCommand', f'Handled !getglobaltriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -1550,7 +1550,7 @@ class GetTriviaControllersCommand(AbsCommand):
             return
 
         controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
-        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaGameControllers(controllers))
+        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameControllers(controllers))
         self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -2850,7 +2850,7 @@ class TriviaScoreCommand(AbsCommand):
             userId = userId
         )
 
-        await self.__twitchUtils.safeSend(ctx, self.__triviaUtils.getTriviaScoreMessage(
+        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaScoreMessage(
             shinyResult = shinyResult,
             userName = userName,
             toxicResult = toxicResult,

@@ -64,7 +64,7 @@ class TriviaUtils():
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-    def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
+    async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
             raise ValueError(f'numberOfGamesRemoved argument is malformed: \"{numberOfGamesRemoved}\"')
         elif numberOfGamesRemoved < 0 or numberOfGamesRemoved > utils.getIntMaxSafeSize():
@@ -73,7 +73,7 @@ class TriviaUtils():
         numberOfGamesRemovedStr = locale.format_string("%d", numberOfGamesRemoved, grouping = True)
         return f'ⓘ Cleared super trivia game queue ({numberOfGamesRemovedStr} game(s) removed).'
 
-    def getCorrectAnswerReveal(
+    async def getCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
@@ -99,7 +99,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         prefix = f'{emotePrompt} Congratulations @{userNameThatRedeemed}, that\'s correct!'
         infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
@@ -112,7 +112,7 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
 
-    def getIncorrectAnswerReveal(
+    async def getIncorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
         emote: str,
@@ -135,7 +135,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -146,7 +146,7 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getInvalidAnswerInputPrompt(
+    async def getInvalidAnswerInputPrompt(
         self,
         question: AbsTriviaQuestion,
         emote: str,
@@ -166,7 +166,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
@@ -217,7 +217,7 @@ class TriviaUtils():
 
         return f'{emotePrompt} {bucketDelimiter.join(buckets)}'.strip()
 
-    def getOutOfTimeAnswerReveal(
+    async def getOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
         emote: str,
@@ -240,7 +240,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -285,7 +285,7 @@ class TriviaUtils():
 
         return f'{emotePrompt} {delimiter.join(buckets)}'.strip()
 
-    def getSuperTriviaCorrectAnswerReveal(
+    async def getSuperTriviaCorrectAnswerReveal(
         self,
         question: AbsTriviaQuestion,
         newCuteness: CutenessResult,
@@ -314,7 +314,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         pointsStr = locale.format_string("%d", points, grouping = True)
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
@@ -328,7 +328,7 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
 
-    def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
+    async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
         if not utils.isValidInt(remainingQueueSize):
             raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
 
@@ -340,7 +340,7 @@ class TriviaUtils():
             remainingQueueSizeStr = locale.format_string("%d", remainingQueueSize, grouping = True)
             return f'{remainingQueueSizeStr} more super trivia games coming up!'
 
-    def getSuperTriviaOutOfTimeAnswerReveal(
+    async def getSuperTriviaOutOfTimeAnswerReveal(
         self,
         question: AbsTriviaQuestion,
         emote: str,
@@ -360,7 +360,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} …'
         correctAnswers = question.getCorrectAnswers()
@@ -371,7 +371,7 @@ class TriviaUtils():
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} The correct answers are: {correctAnswersStr}'
 
-    def getSuperTriviaGameQuestionPrompt(
+    async def getSuperTriviaGameQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
         delaySeconds: int,
@@ -401,7 +401,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
@@ -431,7 +431,7 @@ class TriviaUtils():
         if not utils.hasItems(toxicTriviaPunishments):
             return None
 
-        emotePrompt = f'☠️☠️{emote}☠️☠️'
+        emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         if len(toxicTriviaPunishments) >= 8:
             return await self.__getShortToxicTriviaPunishmentMessage(
@@ -447,7 +447,7 @@ class TriviaUtils():
                 delimiter = delimiter
             )
 
-    def getTriviaGameControllers(
+    async def getTriviaGameControllers(
         self,
         gameControllers: Optional[List[TriviaGameController]],
         delimiter: str = ', '
@@ -465,7 +465,7 @@ class TriviaUtils():
         gameControllersStr = delimiter.join(gameControllersNames)
         return f'ⓘ Your trivia game controllers — {gameControllersStr}'
 
-    def getTriviaGameGlobalControllers(
+    async def getTriviaGameGlobalControllers(
         self,
         gameControllers: Optional[List[TriviaGameGlobalController]],
         delimiter: str = ', '
@@ -483,7 +483,7 @@ class TriviaUtils():
         gameControllersStr = delimiter.join(gameControllersNames)
         return f'ⓘ Global trivia game controllers — {gameControllersStr}'
 
-    def getTriviaGameQuestionPrompt(
+    async def getTriviaGameQuestionPrompt(
         self,
         triviaQuestion: AbsTriviaQuestion,
         delaySeconds: int,
@@ -516,7 +516,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️☠️{emote}☠️☠️'
+            emotePrompt = f'☠️🧪{emote}🧪☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
@@ -529,7 +529,7 @@ class TriviaUtils():
 
         return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
 
-    def getTriviaScoreMessage(
+    async def getTriviaScoreMessage(
         self,
         shinyResult: ShinyTriviaResult,
         userName: str,
