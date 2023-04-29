@@ -193,7 +193,9 @@ class TriviaUtils():
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> str:
-        if not utils.isValidStr(emotePrompt):
+        if not utils.hasItems(toxicTriviaPunishments):
+            raise ValueError(f'toxicTriviaPunishments argument is malformed: \"{toxicTriviaPunishments}\"')
+        elif not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
         elif not isinstance(bucketDelimiter, str):
             raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
