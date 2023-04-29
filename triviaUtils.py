@@ -99,7 +99,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Congratulations @{userNameThatRedeemed}, that\'s correct!'
         infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
@@ -135,7 +135,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -166,7 +166,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
@@ -240,7 +240,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
         correctAnswers = question.getCorrectAnswers()
@@ -314,7 +314,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         pointsStr = locale.format_string("%d", points, grouping = True)
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
@@ -360,7 +360,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} …'
         correctAnswers = question.getCorrectAnswers()
@@ -401,7 +401,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
@@ -431,7 +431,7 @@ class TriviaUtils():
         if not utils.hasItems(toxicTriviaPunishments):
             return None
 
-        emotePrompt = f'☠️🧪{emote}🧪☠️'
+        emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         if len(toxicTriviaPunishments) >= 8:
             return await self.__getShortToxicTriviaPunishmentMessage(
@@ -516,7 +516,7 @@ class TriviaUtils():
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
             emotePrompt = f'✨✨{emote}✨✨'
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
-            emotePrompt = f'☠️🧪{emote}🧪☠️'
+            emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
         pointsStr = locale.format_string("%d", points, grouping = True)
