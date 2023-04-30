@@ -309,6 +309,7 @@ if authSnapshot.hasQuizApiKey():
     )
 
 triviaRepository = TriviaRepository(
+    backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
@@ -389,6 +390,7 @@ triviaRepository = TriviaRepository(
         triviaContentScanner = triviaContentScanner,
         triviaHistoryRepository = triviaHistoryRepository
     ),
+    twitchHandleProviderInterface = authRepository,
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
