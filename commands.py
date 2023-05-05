@@ -992,9 +992,9 @@ class CutenessCommand(AbsCommand):
         )
 
         if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {result.getCutenessDate().toStr()} leaderboard is: {leaderboard} ✨'
+            return f'{specificLookupText}, and the {result.getCutenessDate().toStr()} Leaderboard is: {leaderboard} ✨'
         else:
-            return f'{result.getCutenessDate().toStr()} leaderboard is: {leaderboard} ✨'
+            return f'{result.getCutenessDate().toStr()} Leaderboard {leaderboard} ✨'
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
         if not isinstance(result, CutenessResult):
