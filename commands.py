@@ -978,7 +978,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
         if not result.hasEntries():
-            return f'{result.getCutenessDate().toStr()} leaderboard is empty 😿'
+            return f'{result.getCutenessDate().toStr()} Leaderboard is empty 😿'
 
         specificLookupText: Optional[str] = None
         if result.hasSpecificLookupCutenessResult():
