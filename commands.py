@@ -1012,7 +1012,7 @@ class CutenessCommand(AbsCommand):
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -1095,7 +1095,7 @@ class CutenessChampionsCommand(AbsCommand):
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         result = await self.__cutenessRepository.fetchCutenessChampions(
@@ -1791,7 +1791,7 @@ class MyCutenessHistoryCommand(AbsCommand):
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -1853,7 +1853,7 @@ class PbsCommand(AbsCommand):
 
         if not user.hasSpeedrunProfile():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         speedrunProfile = user.getSpeedrunProfile()
@@ -1900,7 +1900,7 @@ class PkMonCommand(AbsCommand):
             return
         elif not user.isPokepediaEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -1961,7 +1961,7 @@ class PkMoveCommand(AbsCommand):
             return
         elif not user.isPokepediaEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
