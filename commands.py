@@ -1118,7 +1118,7 @@ class CutenessHistoryCommand(AbsCommand):
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' — ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 5)
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1154,7 +1154,7 @@ class CutenessHistoryCommand(AbsCommand):
 
         if not user.isCutenessEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -1208,7 +1208,7 @@ class CynanSourceCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1229,7 +1229,7 @@ class CynanSourceCommand(AbsCommand):
 
         if not user.isCynanSourceEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
             return
 
         await self.__twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
@@ -1360,11 +1360,10 @@ class DiscordCommand(AbsCommand):
 
         if not user.hasDiscord():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        discord = user.getDiscordUrl()
-        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {discord}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s discord: {user.getDiscordUrl()}')
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -1687,7 +1686,7 @@ class JishoCommand(AbsCommand):
             return
         elif not user.isJishoEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReady(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReady(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -1832,7 +1831,7 @@ class PbsCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1856,8 +1855,7 @@ class PbsCommand(AbsCommand):
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        speedrunProfile = user.getSpeedrunProfile()
-        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {speedrunProfile}')
+        await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s speedrun profile: {user.getSpeedrunProfile()}')
         self.__timber.log('PbsCommand', f'Handled !pbs command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -1990,7 +1988,7 @@ class RaceCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -2542,7 +2540,7 @@ class TimeCommand(AbsCommand):
         timber: Timber,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
-        cooldown: timedelta = timedelta(minutes = 2, seconds = 30)
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -2563,7 +2561,7 @@ class TimeCommand(AbsCommand):
 
         if not user.hasTimeZones():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         timeZones = user.getTimeZones()
