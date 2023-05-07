@@ -623,10 +623,7 @@ class TriviaUtils():
             if userId == globalGameController.getUserId():
                 return True
 
-        administratorUserId = await self.__userIdsRepository.fetchUserId(
-            userName = await self.__administratorProviderInterface.getAdministrator(),
-            twitchAccessToken = twitchAccessToken
-        )
+        administratorUserId = await self.__administratorProviderInterface.getAdministratorUserId()
 
         if userId == administratorUserId:
             return True

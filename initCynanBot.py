@@ -3,9 +3,12 @@ import locale
 import logging
 from typing import Optional
 
+from administratorProvider import AdministratorProvider
 from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
@@ -100,6 +103,8 @@ from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -162,7 +167,7 @@ twitchApiService = TwitchApiService(
     timber = timber,
     twitchCredentialsProviderInterface = authRepository
 )
-twitchTokensRepository = TwitchTokensRepository(
+twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     timber = timber,
     twitchApiService = twitchApiService
 )
@@ -170,6 +175,11 @@ userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService
+)
+administratorProvider: AdministratorProviderInterface = AdministratorProvider(
+    generalSettingsRepository = generalSettingsRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
 usersRepository = UsersRepository(
@@ -277,7 +287,7 @@ triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
     administratorProviderInterface = generalSettingsRepository,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepository = twitchTokensRepository,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaHistoryRepository = TriviaHistoryRepository(
@@ -413,6 +423,7 @@ triviaRepository = TriviaRepository(
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
+    administratorProviderInterface = administratorProvider,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedWordsRepository = bannedWordsRepository,

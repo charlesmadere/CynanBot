@@ -114,12 +114,10 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
-        administrator = await self.__administratorProviderInterface.getAdministrator()
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
 
-        userName = ctx.getAuthorName()
-
-        if administrator.lower() != userName.lower():
+        if ctx.getAuthorId() != administrator:
             self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -131,7 +129,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as username argument is malformed. Example: !addglobaltriviacontroller {user.getHandle()}')
             return
 
@@ -377,7 +375,7 @@ class AddUserCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministrator()
+        administrator = await self.__administratorProviderInterface.getAdministratorUserName()
 
         if ctx.getAuthorName().lower() != administrator.lower():
             self.__timber.log('AddUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
@@ -913,7 +911,7 @@ class ConfirmCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministrator()
+        administrator = await self.__administratorProviderInterface.getAdministratorUserName()
 
         if ctx.getAuthorName().lower() != administrator.lower():
             self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
@@ -1371,15 +1369,15 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
+        administratorProviderInterface: AdministratorProviderInterface,
         timber: Timber,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
@@ -1389,7 +1387,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: Timber = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -1397,12 +1395,12 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
 
         userName = ctx.getAuthorName().lower()
 
-        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
+        if user.getHandle().lower() != userName and ctx.getAuthorId() != administrator:
             self.__timber.log('GetGlobalTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -2023,13 +2021,16 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
 
     def __init__(
         self,
+        administratorProviderInterface: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -2040,6 +2041,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
@@ -2055,21 +2057,22 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
         userName = ctx.getAuthorName().lower()
 
-        if user.getHandle().lower() != userName and generalSettings.requireAdministrator().lower() != userName:
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+        if user.getHandle().lower() != userName and administrator != ctx.getAuthorId():
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'{userName}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
         userName: Optional[str] = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
-            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
@@ -2197,7 +2200,7 @@ class RemoveUserCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministrator()
+        administrator = await self.__administratorProviderInterface.getAdministratorUserName()
 
         if ctx.getAuthorName().lower() != administrator.lower():
             self.__timber.log('RemoveUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
@@ -2262,22 +2265,23 @@ class SetTwitchCodeCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministrator()
+        administrator = await self.__administratorProviderInterface.getAdministratorUserName()
+
         userName = ctx.getAuthorName().lower()
 
         if userName != user.getHandle().lower() and userName != administrator.lower():
-            self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('SetTwitchCodeCommand', f'{userName}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            self.__timber.log('SetTwitchCodeCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
+            self.__timber.log('SetTwitchCodeCommand', f'Not enough arguments given by {userName}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
         code: Optional[str] = splits[1]
         if not utils.isValidStr(code):
-            self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
+            self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {userName}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
@@ -2286,7 +2290,7 @@ class SetTwitchCodeCommand(AbsCommand):
             code = code
         )
 
-        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     def __getRandomCodeStr(self) -> str:
         randomUuid = str(uuid.uuid4())

@@ -29,6 +29,8 @@ from commands import (AbsCommand, AddGlobalTriviaControllerCommand,
                       TriviaInfoCommand, TriviaScoreCommand, TwitterCommand,
                       UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
@@ -127,6 +129,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self,
         eventLoop: AbstractEventLoop,
         additionalTriviaAnswersRepository: Optional[AdditionalTriviaAnswersRepository],
+        administratorProviderInterface: AdministratorProviderInterface,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
         bannedWordsRepository: Optional[BannedWordsRepository],
@@ -176,6 +179,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
 
         if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -237,9 +242,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
             self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
         else:
-            self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
-            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(generalSettingsRepository,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(administratorProviderInterface, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProviderInterface,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()

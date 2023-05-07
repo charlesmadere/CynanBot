@@ -6,12 +6,10 @@ import aiofiles
 import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
-from CynanBotCommon.administratorProviderInterface import \
-    AdministratorProviderInterface
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
-class GeneralSettingsRepository(AdministratorProviderInterface):
+class GeneralSettingsRepository():
 
     def __init__(
         self,
