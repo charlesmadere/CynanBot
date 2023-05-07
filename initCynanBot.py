@@ -176,7 +176,7 @@ userIdsRepository = UserIdsRepository(
     timber = timber,
     twitchApiService = twitchApiService
 )
-administratorProvider: AdministratorProviderInterface = AdministratorProvider(
+administratorProviderInterface: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository
@@ -284,7 +284,7 @@ triviaGameControllersRepository = TriviaGameControllersRepository(
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
-    administratorProviderInterface = generalSettingsRepository,
+    administratorProviderInterface = administratorProviderInterface,
     backingDatabase = backingDatabase,
     timber = timber,
     twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
@@ -423,7 +423,7 @@ triviaRepository = TriviaRepository(
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-    administratorProviderInterface = administratorProvider,
+    administratorProviderInterface = administratorProviderInterface,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedWordsRepository = bannedWordsRepository,
