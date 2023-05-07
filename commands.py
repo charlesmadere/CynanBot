@@ -3000,7 +3000,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
 
 
 class WeatherCommand(AbsCommand):
-    
+
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -3009,7 +3009,7 @@ class WeatherCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
-        cooldown: timedelta = timedelta(minutes = 5)
+        cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -3104,7 +3104,7 @@ class WordCommand(AbsCommand):
             return
         elif not user.isWordOfTheDayEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
