@@ -224,16 +224,16 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ## Initialization of command objects ##
         #######################################
 
-        self.__addUserCommand: AbsCommand = AddUserCommand(generalSettingsRepository, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__addUserCommand: AbsCommand = AddUserCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
-        self.__confirmCommand: AbsCommand = ConfirmCommand(generalSettingsRepository, modifyUserDataHelper, timber, twitchUtils, usersRepository)
+        self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
-        self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(generalSettingsRepository, timber, twitchTokensRepository, twitchUtils, usersRepository)
+        self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProviderInterface, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
@@ -244,7 +244,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         else:
             self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(administratorProviderInterface, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProviderInterface,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(generalSettingsRepository, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProviderInterface, generalSettingsRepository, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
@@ -301,9 +301,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__getTriviaControllersCommand: AbsCommand = StubCommand()
             self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
         else:
-            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
-            self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
+            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(administratorProviderInterface, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
+            self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(administratorProviderInterface, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProviderInterface, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
 
         if triviaGameMachine is None or triviaUtils is None:
             self.__clearSuperTriviaQueueCommand: AbsCommand = StubCommand()
