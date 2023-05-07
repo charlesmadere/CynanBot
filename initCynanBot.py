@@ -167,7 +167,7 @@ twitchApiService = TwitchApiService(
     timber = timber,
     twitchCredentialsProviderInterface = authRepository
 )
-twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     timber = timber,
     twitchApiService = twitchApiService
 )
@@ -178,7 +178,7 @@ userIdsRepository = UserIdsRepository(
 )
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
-    twitchTokensRepository = twitchTokensRepository,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
@@ -280,14 +280,14 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepository = twitchTokensRepository,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
     administratorProviderInterface = generalSettingsRepository,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository
 )
 triviaHistoryRepository = TriviaHistoryRepository(
@@ -303,7 +303,7 @@ triviaUtils = TriviaUtils(
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    twitchTokensRepository = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
@@ -489,7 +489,7 @@ cynanBot = CynanBot(
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
     twitchConfiguration = twitchConfiguration,
-    twitchTokensRepository = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepositoryInterface,
     twitchUtils = TwitchUtils(
         backgroundTaskHelper = backgroundTaskHelper,
         sentMessageLogger = SentMessageLogger(
