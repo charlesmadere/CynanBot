@@ -244,7 +244,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         else:
             self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(administratorProviderInterface, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProviderInterface,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProviderInterface, generalSettingsRepository, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProviderInterface, generalSettingsRepository, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
