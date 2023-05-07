@@ -299,7 +299,7 @@ triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
 triviaUtils = TriviaUtils(
-    administratorProviderInterface = generalSettingsRepository,
+    administratorProviderInterface = administratorProviderInterface,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
