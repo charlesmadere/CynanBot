@@ -837,7 +837,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ))
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishments = event.getToxicTriviaPunishments(),
+            toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
             emote = event.getEmote()
         )
 
@@ -861,7 +861,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ))
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
-            toxicTriviaPunishments = event.getToxicTriviaPunishments(),
+            toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
             emote = event.getEmote()
         )
 

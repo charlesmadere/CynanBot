@@ -288,7 +288,7 @@ class User(UserInterface):
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
 
-    def getSuperTriviaGameToxicMultipler(self) -> Optional[int]:
+    def getSuperTriviaGameToxicMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameToxicMultiplier
 
     def getSuperTriviaGameToxicPunishmentAmount(self) -> Optional[int]:

@@ -2465,7 +2465,7 @@ class SuperTriviaCommand(AbsCommand):
 
         toxicMultiplier = generalSettings.getSuperTriviaGameToxicMultiplier()
         if user.hasSuperTriviaGameToxicMultiplier():
-            toxicMultiplier = user.getSuperTriviaGameToxicMultipler()
+            toxicMultiplier = user.getSuperTriviaGameToxicMultiplier()
 
         toxicTriviaPunishmentAmount = generalSettings.getSuperTriviaGameToxicPunishmentAmount()
         if user.hasSuperTriviaGameToxicPunishmentAmount():

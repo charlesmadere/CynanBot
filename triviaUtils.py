@@ -11,6 +11,8 @@ from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBotCommon.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBotCommon.trivia.toxicTriviaPunishmentResult import \
+    ToxicTriviaPunishmentResult
 from CynanBotCommon.trivia.toxicTriviaResult import ToxicTriviaResult
 from CynanBotCommon.trivia.triviaGameController import TriviaGameController
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
@@ -417,22 +419,25 @@ class TriviaUtils():
 
     async def getToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishments: Optional[List[ToxicTriviaPunishment]],
+        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult],
         emote: str,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> Optional[str]:
-        if not utils.isValidStr(emote):
+        if toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
+            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
+        elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not isinstance(bucketDelimiter, str):
             raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not utils.hasItems(toxicTriviaPunishments):
+        if toxicTriviaPunishmentResult is None:
             return None
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
+        toxicTriviaPunishments = toxicTriviaPunishmentResult.getToxicTriviaPunishments()
 
         if len(toxicTriviaPunishments) >= 8:
             return await self.__getShortToxicTriviaPunishmentMessage(
