@@ -65,7 +65,8 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
@@ -349,7 +350,7 @@ class AddUserCommand(AbsCommand):
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
@@ -360,8 +361,8 @@ class AddUserCommand(AbsCommand):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
@@ -372,7 +373,7 @@ class AddUserCommand(AbsCommand):
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -408,7 +409,7 @@ class AddUserCommand(AbsCommand):
         try:
             userId = await self.__userIdsRepository.fetchUserId(
                 userName = userName,
-                twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+                twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
             )
         except GenericNetworkException as e:
             self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to a generic network exception: {e}', e)
@@ -581,7 +582,7 @@ class ClearCachesCommand(AbsCommand):
         modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
-        twitchTokensRepository: Optional[TwitchTokensRepository],
+        twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepository],
@@ -611,7 +612,7 @@ class ClearCachesCommand(AbsCommand):
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
-        self.__twitchTokensRepository: Optional[TwitchTokensRepository] = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
@@ -643,8 +644,8 @@ class ClearCachesCommand(AbsCommand):
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()
 
-        if self.__twitchTokensRepository is not None:
-            await self.__twitchTokensRepository.clearCaches()
+        if self.__twitchTokensRepositoryInterface is not None:
+            await self.__twitchTokensRepositoryInterface.clearCaches()
 
         await self.__usersRepository.clearCaches()
 
@@ -2186,7 +2187,7 @@ class RemoveUserCommand(AbsCommand):
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
         timber: Timber,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository
@@ -2197,8 +2198,8 @@ class RemoveUserCommand(AbsCommand):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
@@ -2209,7 +2210,7 @@ class RemoveUserCommand(AbsCommand):
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: Timber = timber
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -2239,7 +2240,7 @@ class RemoveUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
             return
 
-        await self.__twitchTokensRepository.removeUser(userName)
+        await self.__twitchTokensRepositoryInterface.removeUser(userName)
         userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
         await self.__modifyUserDataHelper.setUserData(
@@ -2258,7 +2259,7 @@ class SetTwitchCodeCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         timber: Timber,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
@@ -2266,8 +2267,8 @@ class SetTwitchCodeCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepository):
@@ -2275,7 +2276,7 @@ class SetTwitchCodeCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: Timber = timber
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -2299,7 +2300,7 @@ class SetTwitchCodeCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
-        await self.__twitchTokensRepository.addUser(
+        await self.__twitchTokensRepositoryInterface.addUser(
             twitchHandle = user.getHandle(),
             code = code
         )

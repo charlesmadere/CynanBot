@@ -303,7 +303,7 @@ triviaUtils = TriviaUtils(
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    twitchTokensRepository = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )

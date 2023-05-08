@@ -411,7 +411,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 client = self,
                 generalSettingsRepository = generalSettingsRepository,
                 timber = timber,
-                twitchTokensRepository = twitchTokensRepository,
+                twitchTokensRepositoryInterface = twitchTokensRepository,
                 userIdsRepository = userIdsRepository,
                 usersRepository = usersRepository
             )

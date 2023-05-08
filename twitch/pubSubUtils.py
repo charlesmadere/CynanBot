@@ -18,7 +18,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.exceptions import (
     TwitchAccessTokenMissingException, TwitchErrorException,
     TwitchJsonException, TwitchRefreshTokenMissingException)
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
@@ -37,7 +37,7 @@ class PubSubUtils(PubSubReconnectListener):
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 8,
@@ -53,8 +53,8 @@ class PubSubUtils(PubSubReconnectListener):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -79,7 +79,7 @@ class PubSubUtils(PubSubReconnectListener):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
@@ -123,7 +123,7 @@ class PubSubUtils(PubSubReconnectListener):
         twitchHandles: Optional[List[str]] = None
 
         if not forceFullRefresh:
-            twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchHandles()
+            twitchHandles = await self.__twitchTokensRepositoryInterface.getExpiringTwitchHandles()
 
         users: Optional[List[UserInterface]] = None
 
@@ -143,7 +143,7 @@ class PubSubUtils(PubSubReconnectListener):
         usersWithTwitchTokens: List[UserInterface] = list()
 
         for user in users:
-            if await self.__twitchTokensRepository.hasAccessToken(user.getHandle()):
+            if await self.__twitchTokensRepositoryInterface.hasAccessToken(user.getHandle()):
                 usersWithTwitchTokens.append(user)
 
         if not utils.hasItems(usersWithTwitchTokens):
@@ -153,8 +153,8 @@ class PubSubUtils(PubSubReconnectListener):
 
         for user in usersWithTwitchTokens:
             try:
-                await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getHandle())
-                usersAndTwitchTokens[user] = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+                await self.__twitchTokensRepositoryInterface.validateAndRefreshAccessToken(user.getHandle())
+                usersAndTwitchTokens[user] = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
             except GenericNetworkException as e:
                 self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e)
             except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:

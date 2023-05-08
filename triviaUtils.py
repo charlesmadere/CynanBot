@@ -21,7 +21,8 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBotCommon.trivia.triviaType import TriviaType
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.users.exceptions import NoSuchUserException
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
@@ -37,7 +38,7 @@ class TriviaUtils():
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepositoryInterface
     ):
@@ -49,8 +50,8 @@ class TriviaUtils():
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -60,7 +61,7 @@ class TriviaUtils():
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
-        self.__twitchTokensRepository: TwitchTokensRepository = twitchTokensRepository
+        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -603,7 +604,7 @@ class TriviaUtils():
             self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')
             return False
 
-        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchUser.getHandle())
+        twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(twitchUser.getHandle())
 
         twitchUserId = await self.__userIdsRepository.fetchUserId(
             userName = twitchUser.getHandle(),
@@ -625,7 +626,4 @@ class TriviaUtils():
 
         administratorUserId = await self.__administratorProviderInterface.getAdministratorUserId()
 
-        if userId == administratorUserId:
-            return True
-
-        return False
+        return userId == administratorUserId
