@@ -10,7 +10,6 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
-from CynanBotCommon.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
 from CynanBotCommon.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBotCommon.trivia.toxicTriviaResult import ToxicTriviaResult
@@ -181,19 +180,19 @@ class TriviaUtils():
         else:
             suffix = 'Please check your answer and try again.'
 
-        return f'{prefix} {suffix}'
+        return f'{prefix} {suffix}'.strip()
 
     async def __getLongToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishments: List[ToxicTriviaPunishment],
         emotePrompt: str,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> str:
-        if not utils.hasItems(toxicTriviaPunishments):
-            raise ValueError(f'toxicTriviaPunishments argument is malformed: \"{toxicTriviaPunishments}\"')
-        elif not utils.isValidStr(emotePrompt):
+        if not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
+        elif not utils.hasItems(toxicTriviaPunishmentResult):
+            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not isinstance(bucketDelimiter, str):
             raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
         elif not isinstance(delimiter, str):
@@ -201,7 +200,7 @@ class TriviaUtils():
 
         punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
 
-        for punishment in toxicTriviaPunishments:
+        for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
             punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
 
         sortedKeys: List[int] = list(punishmentAmountToUserNames.keys())
@@ -218,7 +217,8 @@ class TriviaUtils():
             punishmentAmountString = locale.format_string("%d", abs(punishmentAmount), grouping = True)
             buckets.append(f'{delimiter.join(userNames)} punished by {punishmentAmountString} cuteness'.strip())
 
-        return f'{emotePrompt} {bucketDelimiter.join(buckets)}'.strip()
+        punishmentTotal = f'{bucketDelimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'
+        return f'{emotePrompt} {bucketDelimiter.join(buckets)} {punishmentTotal}'.strip()
 
     async def getOutOfTimeAnswerReveal(
         self,
@@ -256,20 +256,20 @@ class TriviaUtils():
 
     async def __getShortToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishments: List[ToxicTriviaPunishment],
         emotePrompt: str,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult,
         delimiter: str = ', '
     ) -> str:
-        if not utils.hasItems(toxicTriviaPunishments):
-            raise ValueError(f'toxicTriviaPunishments argument is malformed: \"{toxicTriviaPunishments}\"')
-        elif not utils.isValidStr(emotePrompt):
+        if not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
+        elif not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
+            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
 
-        for punishment in toxicTriviaPunishments:
+        for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
             punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
 
         sortedKeys: List[int] = list(punishmentAmountToUserNames.keys())
@@ -286,7 +286,8 @@ class TriviaUtils():
             else:
                 buckets.append(f'{numberPunished} people lost {punishmentAmountString} cuteness'.strip())
 
-        return f'{emotePrompt} {delimiter.join(buckets)}'.strip()
+        punishmentTotal = f'{delimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'
+        return f'{emotePrompt} {delimiter.join(buckets)} {punishmentTotal}'.strip()
 
     async def getSuperTriviaCorrectAnswerReveal(
         self,
@@ -437,18 +438,17 @@ class TriviaUtils():
             return None
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
-        toxicTriviaPunishments = toxicTriviaPunishmentResult.getToxicTriviaPunishments()
 
-        if len(toxicTriviaPunishments) >= 8:
+        if toxicTriviaPunishmentResult.getNumberOfToxicTriviaPunishments() >= 8:
             return await self.__getShortToxicTriviaPunishmentMessage(
-                toxicTriviaPunishments = toxicTriviaPunishments,
                 emotePrompt = emotePrompt,
+                toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
                 delimiter = delimiter
             )
         else:
             return await self.__getLongToxicTriviaPunishmentMessage(
-                toxicTriviaPunishments = toxicTriviaPunishments,
                 emotePrompt = emotePrompt,
+                toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
                 bucketDelimiter = bucketDelimiter,
                 delimiter = delimiter
             )
@@ -578,16 +578,16 @@ class TriviaUtils():
         shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
             if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f'; discovered {shinyResult.getNewShinyCountStr()} shiny'
+                shinyStr = f'; {shinyResult.getNewShinyCountStr()} shiny'
             else:
-                shinyStr = f'; discovered {shinyResult.getNewShinyCountStr()} shinies'
+                shinyStr = f'; {shinyResult.getNewShinyCountStr()} shinies'
 
         toxicStr = ''
         if toxicResult.getNewToxicCount() >= 1:
             if toxicResult.getNewToxicCount() == 1:
-                toxicStr = f'; encountered {toxicResult.getNewToxicCountStr()} toxic'
+                toxicStr = f'; {toxicResult.getNewToxicCountStr()} toxic'
             else:
-                toxicStr = f'; encountered {toxicResult.getNewToxicCountStr()} toxics'
+                toxicStr = f'; {toxicResult.getNewToxicCountStr()} toxics'
 
         return f'{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
 
