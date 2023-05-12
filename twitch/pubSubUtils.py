@@ -18,7 +18,8 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.exceptions import (
     TwitchAccessTokenMissingException, TwitchErrorException,
     TwitchJsonException, TwitchRefreshTokenMissingException)
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
@@ -143,7 +144,7 @@ class PubSubUtils(PubSubReconnectListener):
         usersWithTwitchTokens: List[UserInterface] = list()
 
         for user in users:
-            if await self.__twitchTokensRepositoryInterface.hasAccessToken(user.getHandle()):
+            if user.isEnabled() and await self.__twitchTokensRepositoryInterface.hasAccessToken(user.getHandle()):
                 usersWithTwitchTokens.append(user)
 
         if not utils.hasItems(usersWithTwitchTokens):

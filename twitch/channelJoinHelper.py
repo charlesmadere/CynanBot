@@ -61,10 +61,17 @@ class ChannelJoinHelper():
             raise RuntimeError(f'channelJoinListener has not been set: \"{channelJoinListener}\"')
 
         allChannels: List[str] = list()
+        disabledChannels: List[str] = list()
         users = await self.__usersRepository.getUsersAsync()
 
         for user in users:
-            allChannels.append(user.getHandle())
+            if user.isEnabled():
+                allChannels.append(user.getHandle())
+            else:
+                disabledChannels.append(user.getHandle())
+
+        if len(disabledChannels) >= 1:
+            self.__timber.log('ChannelJoinHelper', f'Disabled channel(s) that will not be joined: {disabledChannels}')
 
         if len(allChannels) == 0:
             self.__timber.log('ChannelJoinHelper', f'There are no channels to join')
