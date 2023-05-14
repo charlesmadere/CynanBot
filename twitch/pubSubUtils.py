@@ -40,7 +40,7 @@ class PubSubUtils(PubSubReconnectListener):
         timber: Timber,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepository,
-        usersRepository: UsersRepositoryInterface,
+        usersRepositoryInterface: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 8,
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
         maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
@@ -58,8 +58,8 @@ class PubSubUtils(PubSubReconnectListener):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(usersRepositoryInterface, UsersRepositoryInterface):
+            raise ValueError(f'usersRepositoryInterface argument is malformed: \"{usersRepositoryInterface}\"')
         elif not utils.isValidInt(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
         elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > utils.getIntMaxSafeSize():
@@ -82,7 +82,7 @@ class PubSubUtils(PubSubReconnectListener):
         self.__timber: Timber = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__usersRepositoryInterface: UsersRepositoryInterface = usersRepositoryInterface
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
 
@@ -130,7 +130,7 @@ class PubSubUtils(PubSubReconnectListener):
 
         if twitchHandles is None:
             # if twitchHandles is None, then we must do a full validate and refresh
-            users = await self.__usersRepository.getUsersAsync()
+            users = await self.__usersRepositoryInterface.getUsersAsync()
         elif len(twitchHandles) == 0:
             # if twitchHandles is empty, then there is no need to do a validate or refresh of anyone
             return None
@@ -139,7 +139,7 @@ class PubSubUtils(PubSubReconnectListener):
             users = list()
 
             for twitchHandle in twitchHandles:
-                users.append(await self.__usersRepository.getUserAsync(twitchHandle))
+                users.append(await self.__usersRepositoryInterface.getUserAsync(twitchHandle))
 
         usersWithTwitchTokens: List[UserInterface] = list()
 

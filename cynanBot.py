@@ -413,7 +413,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 timber = timber,
                 twitchTokensRepositoryInterface = twitchTokensRepository,
                 userIdsRepository = userIdsRepository,
-                usersRepository = usersRepository
+                usersRepositoryInterface = usersRepository
             )
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
