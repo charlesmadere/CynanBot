@@ -2,6 +2,7 @@ import asyncio
 import queue
 import traceback
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import Dict, List, Optional
 
@@ -41,10 +42,12 @@ class PubSubUtils(PubSubReconnectListener):
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepository,
         usersRepositoryInterface: UsersRepositoryInterface,
-        maxConnectionsPerTwitchChannel: int = 8,
+        maxConnectionsPerTwitchChannel: int = 5,
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
         maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
-        queueTimeoutSeconds: int = 3
+        queueTimeoutSeconds: int = 3,
+        pubSubReconnectCooldown: timedelta = timedelta(minutes = 5),
+        timeZone: timezone = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -76,6 +79,10 @@ class PubSubUtils(PubSubReconnectListener):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 8:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
+        elif not isinstance(pubSubReconnectCooldown, timedelta):
+            raise ValueError(f'pubSubReconnectCooldown argument is malformed: \"{pubSubReconnectCooldown}\"')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -85,10 +92,13 @@ class PubSubUtils(PubSubReconnectListener):
         self.__usersRepositoryInterface: UsersRepositoryInterface = usersRepositoryInterface
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__pubSubReconnectCooldown: timedelta = pubSubReconnectCooldown
+        self.__timeZone: timezone = timeZone
 
         self.__isManagingPubSub: bool = False
         self.__isStarted: bool = False
         self.__pubSubEntries: Dict[str, SimpleQueue[Topic]] = defaultdict(lambda: SimpleQueue())
+        self.__lastPubSubReconnect: datetime = datetime.now(timeZone)
 
         self.__pubSubPool: PubSubPool = CynanBotPubSubPool(
             client = client,
@@ -180,6 +190,13 @@ class PubSubUtils(PubSubReconnectListener):
 
     async def onPubSubReconnect(self, topics: Optional[List[Topic]]) -> List[Topic]:
         self.__timber.log('PubSubUtils', f'onPubSubReconnect(): (topics=\"{topics}\")')
+
+        now = datetime.now(self.__timeZone)
+        if now <= self.__lastPubSubReconnect + self.__pubSubReconnectCooldown:
+            self.__timber.log('PubSubUtils', f'Not performing full PubSub reconnect logic as this new reconnect attempt is within the previous reconnect\'s cooldown: {topics}')
+            return topics
+
+        self.__lastPubSubReconnect = now
 
         for userName, topicQueue in self.__pubSubEntries.items():
             while not topicQueue.empty():
