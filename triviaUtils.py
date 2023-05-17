@@ -563,18 +563,18 @@ class TriviaUtils():
                 triviaStr = f'@{userName} has played {triviaResult.getTotalStr()} trivia games ({winLossStr}, {winsRatioStr})'
 
             if triviaResult.getStreak() >= 3:
-                triviaStr = f'{triviaStr}, is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
+                triviaStr = f'{triviaStr}, and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
             elif triviaResult.getStreak() <= -3:
-                triviaStr = f'{triviaStr}, is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
+                triviaStr = f'{triviaStr}, and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
         else:
             triviaStr = f'@{userName} hasn\'t played any trivia games 😿'
 
         superTriviaStr = ''
         if triviaResult.getSuperTriviaWins() >= 1:
             if triviaResult.getSuperTriviaWins() == 1:
-                superTriviaStr = f'; with {triviaResult.getSuperTriviaWinsStr()} super trivia win'
+                superTriviaStr = f'; {triviaResult.getSuperTriviaWinsStr()} super trivia win'
             else:
-                superTriviaStr = f'; with {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
+                superTriviaStr = f'; {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
 
         shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
