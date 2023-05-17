@@ -108,7 +108,7 @@ class PubSubUtils(PubSubReconnectListener):
             await self.__pubSubPool.subscribe_topics(topicsToAdd)
             self.__timber.log('PubSubUtils', f'Finished subscribing to {len(topicsToAdd)} PubSub topic(s)')
         except PubSubError as e:
-            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e)
+            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e, traceback.format_exc())
         except Exception as e:
             self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to subscribe to {len(topicsToAdd)} topic(s): {e}', e, traceback.format_exc())
 
@@ -157,10 +157,10 @@ class PubSubUtils(PubSubReconnectListener):
                 await self.__twitchTokensRepositoryInterface.validateAndRefreshAccessToken(user.getHandle())
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
             except GenericNetworkException as e:
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e)
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e, traceback.format_exc())
             except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:
                 # if we run into one of the Twitch errors, that most likely means that this user changed their password
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\": {e}', e)
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\": {e}', e, traceback.format_exc())
 
         pubSubEntries: List[PubSubEntry] = list()
 
@@ -198,7 +198,7 @@ class PubSubUtils(PubSubReconnectListener):
             except queue.Full as e:
                 self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
 
-        self.__timber.log('PubSubUtils', f'Determined new list of PubSub topics (len={len(topicsToAdd)}): {topics}')
+        self.__timber.log('PubSubUtils', f'Determined new list of PubSub topics (len={len(topicsToAdd)}): {topicsToAdd}')
         return topicsToAdd
 
     async def __removePubSubSubscriptions(self, topicsToRemove: Optional[List[Topic]]):
@@ -211,7 +211,7 @@ class PubSubUtils(PubSubReconnectListener):
             await self.__pubSubPool.unsubscribe_topics(topicsToRemove)
             self.__timber.log('PubSubUtils', f'Finished unsubscribing from {len(topicsToRemove)} PubSub topic(s)')
         except PubSubError as e:
-            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e)
+            self.__timber.log('PubSubUtils', f'Encountered PubSubError when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e, traceback.format_exc())
         except Exception as e:
             self.__timber.log('PubSubUtils', f'Encountered Exception when attempting to unsubscribe from {len(topicsToRemove)} topic(s): {e}', e, traceback.format_exc())
 

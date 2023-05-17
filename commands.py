@@ -1,3 +1,4 @@
+import traceback
 import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
@@ -252,16 +253,16 @@ class AddTriviaAnswerCommand(AbsCommand):
             self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as it already exists')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e)
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsMalformedException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as it is malformed')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e)
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as the question is an unsupported type ({reference.getTriviaType().toStr()})')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType().toStr()}\"', e)
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType().toStr()}\"', e, traceback.format_exc())
         except TooManyAdditionalTriviaAnswersException as e:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as the question has too many additional answers ({reference.getTriviaType().toStr()})')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question has too many additional answers', e)
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question has too many additional answers', e, traceback.format_exc())
 
         self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -412,11 +413,11 @@ class AddUserCommand(AbsCommand):
                 twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
             )
         except GenericNetworkException as e:
-            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to a generic network exception: {e}', e)
+            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to a generic network exception: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to a generic network error!')
             return
         except RuntimeError as e:
-            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to an internal error: {e}', e)
+            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to an internal error: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to an internal error!')
             return
 
@@ -1037,7 +1038,7 @@ class CutenessCommand(AbsCommand):
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError) as e:
-                self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e)
+                self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e, traceback.format_exc())
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
@@ -1630,7 +1631,7 @@ class GiveCutenessCommand(AbsCommand):
         try:
             incrementAmount = int(incrementAmountStr)
         except (SyntaxError, TypeError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}')
+            self.__timber.log('GiveCutenessCommand', f'Unable to convert increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} into an int: \"{incrementAmountStr}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
@@ -1653,7 +1654,7 @@ class GiveCutenessCommand(AbsCommand):
 
             await self.__twitchUtils.safeSend(ctx, f'✨ Cuteness for {userName} is now {result.getCutenessStr()} ✨')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}')
+            self.__timber.log('GiveCutenessCommand', f'Error giving {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to {userName}:{userId} in {user.getHandle()}: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error giving cuteness to \"{userName}\"')
 
         self.__timber.log('GiveCutenessCommand', f'Handled !givecuteness command of {incrementAmount} for {userName}:{userId} from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -1715,7 +1716,7 @@ class JishoCommand(AbsCommand):
             for string in result.toStrList():
                 await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}')
+            self.__timber.log('JishoCommand', f'Error searching Jisho for \"{query}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error searching Jisho for \"{query}\"')
 
         self.__timber.log('JishoCommand', f'Handled !jisho command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -1926,7 +1927,7 @@ class PkMonCommand(AbsCommand):
             for string in mon.toStrList():
                 await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}')
+            self.__timber.log('PkMonCommand', f'Error retrieving Pokemon \"{name}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon \"{name}\"')
 
         self.__timber.log('PkMonCommand', f'Handled !pkmon command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -1987,7 +1988,7 @@ class PkMoveCommand(AbsCommand):
             for string in move.toStrList():
                 await self.__twitchUtils.safeSend(ctx, string)
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}')
+            self.__timber.log('PkMoveCommand', f'Error retrieving Pokemon move: \"{name}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error retrieving Pokémon move: \"{name}\"')
 
         self.__timber.log('PkMoveCommand', f'Handled !pkmove command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2436,7 +2437,7 @@ class SuperTriviaCommand(AbsCommand):
             try:
                 numberOfGames = int(numberOfGamesStr)
             except (SyntaxError, TypeError, ValueError) as e:
-                self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}): {e}')
+                self.__timber.log('SuperTriviaCommand', f'Unable to convert the numberOfGamesStr ({numberOfGamesStr}) argument into an int (given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}): {e}', e, traceback.format_exc())
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
@@ -2678,7 +2679,7 @@ class TranslateCommand(AbsCommand):
             response = await self.__translationHelper.translate(text, targetLanguageEntry)
             await self.__twitchUtils.safeSend(ctx, response.toStr())
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}')
+            self.__timber.log('TranslateCommand', f'Error translating text: \"{text}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error translating')
 
         self.__timber.log('TranslateCommand', f'Handled !translate command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2848,7 +2849,7 @@ class TriviaScoreCommand(AbsCommand):
             try:
                 userId = await self.__userIdsRepository.fetchUserId(userName = userName)
             except (RuntimeError, ValueError) as e:
-                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e)
+                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e, traceback.format_exc())
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database')
                 return
         else:
@@ -3056,7 +3057,7 @@ class WeatherCommand(AbsCommand):
             weatherReport = await self.__weatherRepository.fetchWeather(location)
             await self.__twitchUtils.safeSend(ctx, weatherReport.toStr())
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}')
+            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
         self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -3124,7 +3125,7 @@ class WordCommand(AbsCommand):
                 hasWotdApiCode = True
             )
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}')
+            self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
             return
 
@@ -3132,7 +3133,7 @@ class WordCommand(AbsCommand):
             wotd = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
             await self.__twitchUtils.safeSend(ctx, wotd.toStr())
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}')
+            self.__timber.log('WordCommand', f'Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, f'⚠ Error fetching Word Of The Day for \"{languageEntry.getWotdApiCode()}\"')
 
         self.__timber.log('WordCommand', f'Handled !word command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

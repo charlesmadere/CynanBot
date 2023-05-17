@@ -61,9 +61,6 @@ class GeneralSettingsRepositorySnapshot():
     def getWaitForTriviaAnswerDelay(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'waitForTriviaAnswerDelay', 30)
 
-    def isAnalogueEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'analogueEnabled', True)
-
     def isCatJamMessageEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'catJamMessageEnabled', True)
 

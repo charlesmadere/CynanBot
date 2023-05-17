@@ -1,4 +1,5 @@
 import locale
+import traceback
 from collections import defaultdict
 from typing import Dict, List, Optional
 
@@ -603,7 +604,7 @@ class TriviaUtils():
             twitchUser = await self.__usersRepository.getUserAsync(twitchChannel)
         except NoSuchUserException as e:
             # this exception should be impossible here, but let's just be safe
-            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e)
+            self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e, traceback.format_exc())
 
         if twitchUser is None:
             self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')

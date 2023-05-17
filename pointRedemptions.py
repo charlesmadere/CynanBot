@@ -1,3 +1,4 @@
+import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -83,7 +84,7 @@ class CutenessRedemption(AbsPointRedemption):
 
             self.__timber.log('CutenessRedemption', f'Redeemed cuteness of {incrementAmount} for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         except (OverflowError, ValueError) as e:
-            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}: {e}', e)
+            self.__timber.log('CutenessRedemption', f'Error redeeming cuteness of {incrementAmount} for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Error increasing cuteness for {twitchChannelPointsMessage.getUserName()}')
 
         return True
@@ -360,10 +361,10 @@ class PotdPointRedemption(AbsPointRedemption):
             self.__timber.log('PotdPointRedemption', f'Redeemed Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
             return True
         except FileNotFoundError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD file is missing: {e}')
+            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD file is missing: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day file for {twitchUser.getHandle()} is missing')
         except ValueError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD content is malformed: {e}')
+            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD content is malformed: {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day content for {twitchUser.getHandle()} is malformed')
 
         return False

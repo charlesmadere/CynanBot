@@ -1,3 +1,4 @@
+import traceback
 from asyncio import AbstractEventLoop
 from typing import Any, Dict, List, Optional
 
@@ -670,8 +671,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             else:
                 return self.__twitchConfiguration.getChannel(channel)
         except KeyError as e:
-            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
-            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e)
+            self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
+            raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
 
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')

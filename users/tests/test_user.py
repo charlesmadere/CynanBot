@@ -20,7 +20,6 @@ class TestUser():
 
     def createUser(
         self,
-        isAnalogueEnabled: bool = False,
         isCatJamMessageEnabled: bool = False,
         isChatBandEnabled: bool = False,
         isChatLoggingEnabled: bool = False,
@@ -72,7 +71,6 @@ class TestUser():
         timeZones: List[tzinfo] = None
     ) -> User:
         return User(
-            isAnalogueEnabled = isAnalogueEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,

@@ -15,7 +15,6 @@ class User(UserInterface):
 
     def __init__(
         self,
-        isAnalogueEnabled: bool,
         isCatJamMessageEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
@@ -76,9 +75,7 @@ class User(UserInterface):
         pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]],
         timeZones: Optional[List[tzinfo]]
     ):
-        if not utils.isValidBool(isAnalogueEnabled):
-            raise ValueError(f'isAnalogueEnabled argument is malformed: \"{isAnalogueEnabled}\"')
-        elif not utils.isValidBool(isCatJamMessageEnabled):
+        if not utils.isValidBool(isCatJamMessageEnabled):
             raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
@@ -175,7 +172,6 @@ class User(UserInterface):
         elif twitter is not None and not isinstance(twitter, str):
             raise ValueError(f'twitter argument is malformed: \"{twitter}\"')
 
-        self.__isAnalogueEnabled: bool = isAnalogueEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
@@ -375,9 +371,6 @@ class User(UserInterface):
 
     def hasWaitForTriviaAnswerDelay(self) -> bool:
         return utils.isValidInt(self.__waitForTriviaAnswerDelay)
-
-    def isAnalogueEnabled(self) -> bool:
-        return self.__isAnalogueEnabled
 
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled
