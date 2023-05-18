@@ -46,7 +46,7 @@ class PubSubUtils(PubSubReconnectListener):
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
         maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
         queueTimeoutSeconds: int = 3,
-        pubSubReconnectCooldown: timedelta = timedelta(minutes = 5),
+        pubSubReconnectCooldown: timedelta = timedelta(minutes = 30),
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
