@@ -610,7 +610,9 @@ class TriviaUtils():
             self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')
             return False
 
-        twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(twitchUser.getHandle())
+        twitchAccessToken: Optional[str] = None
+        if await self.__twitchTokensRepositoryInterface.hasAccessToken(twitchUser.getHandle()):
+            twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(twitchUser.getHandle())
 
         twitchUserId = await self.__userIdsRepository.fetchUserId(
             userName = twitchUser.getHandle(),
