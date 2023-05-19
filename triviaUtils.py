@@ -192,7 +192,7 @@ class TriviaUtils():
     ) -> str:
         if not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
-        elif not utils.hasItems(toxicTriviaPunishmentResult):
+        elif not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
             raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not isinstance(bucketDelimiter, str):
             raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
