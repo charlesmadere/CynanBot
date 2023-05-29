@@ -218,8 +218,8 @@ class TriviaUtils():
             punishmentAmountString = locale.format_string("%d", abs(punishmentAmount), grouping = True)
             buckets.append(f'{delimiter.join(userNames)} punished by {punishmentAmountString} cuteness'.strip())
 
-        punishmentTotal = f'{bucketDelimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'
-        return f'{emotePrompt} {bucketDelimiter.join(buckets)} {punishmentTotal}'.strip()
+        punishmentTotal = f'{bucketDelimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'.strip()
+        return f'{emotePrompt} {bucketDelimiter.join(buckets)}{punishmentTotal}'.strip()
 
     async def getOutOfTimeAnswerReveal(
         self,
@@ -287,8 +287,8 @@ class TriviaUtils():
             else:
                 buckets.append(f'{numberPunished} people lost {punishmentAmountString} cuteness'.strip())
 
-        punishmentTotal = f'{delimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'
-        return f'{emotePrompt} {delimiter.join(buckets)} {punishmentTotal}'.strip()
+        punishmentTotal = f'{delimiter} for a total of {toxicTriviaPunishmentResult.getTotalPointsStolenStr()} cuteness stolen'.strip()
+        return f'{emotePrompt} {delimiter.join(buckets)}{punishmentTotal}'.strip()
 
     async def getSuperTriviaCorrectAnswerReveal(
         self,
@@ -440,7 +440,7 @@ class TriviaUtils():
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        if toxicTriviaPunishmentResult.getNumberOfToxicTriviaPunishments() >= 8:
+        if toxicTriviaPunishmentResult.getNumberOfToxicTriviaPunishments() >= 6:
             return await self.__getShortToxicTriviaPunishmentMessage(
                 emotePrompt = emotePrompt,
                 toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
