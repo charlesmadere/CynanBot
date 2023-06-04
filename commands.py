@@ -2456,6 +2456,10 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaGamePoints():
             points = user.getSuperTriviaGamePoints()
 
+        regularTriviaPointsForWinning = generalSettings.getTriviaGamePoints()
+        if user.hasTriviaGamePoints():
+            regularTriviaPointsForWinning = user.getTriviaGamePoints()
+
         secondsToLive = generalSettings.getWaitForSuperTriviaAnswerDelay()
         if user.hasWaitForSuperTriviaAnswerDelay():
             secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
@@ -2468,9 +2472,9 @@ class SuperTriviaCommand(AbsCommand):
         if user.hasSuperTriviaGameToxicMultiplier():
             toxicMultiplier = user.getSuperTriviaGameToxicMultiplier()
 
-        toxicTriviaPunishmentAmount = generalSettings.getSuperTriviaGameToxicPunishmentAmount()
-        if user.hasSuperTriviaGameToxicPunishmentAmount():
-            toxicTriviaPunishmentAmount = user.getSuperTriviaGameToxicPunishmentAmount()
+        toxicTriviaPunishmentMultiplier = generalSettings.getSuperTriviaGameToxicPunishmentMultiplier()
+        if user.hasSuperTriviaGameToxicPunishmentMultiplier():
+            toxicTriviaPunishmentMultiplier = user.getSuperTriviaGameToxicPunishmentMultiplier()
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
@@ -2485,10 +2489,11 @@ class SuperTriviaCommand(AbsCommand):
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsForWinning = points,
+            regularTriviaPointsForWinning = regularTriviaPointsForWinning,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             toxicMultiplier = toxicMultiplier,
-            toxicTriviaPunishmentAmount = toxicTriviaPunishmentAmount,
+            toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
         ))

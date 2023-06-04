@@ -159,7 +159,7 @@ class UsersRepository(UsersRepositoryInterface):
         superTriviaGamePoints: Optional[int] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaGameToxicMultiplier: Optional[int] = None
-        superTriviaGameToxicPunishmentAmount: Optional[int] = None
+        superTriviaGameToxicPunishmentMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
         triviaGamePoints: Optional[int] = None
         triviaGameShinyMultiplier: Optional[int] = None
@@ -173,7 +173,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
-            superTriviaGameToxicPunishmentAmount = userJson.get('superTriviaGameToxicPunishmentAmount')
+            superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
@@ -231,7 +231,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
-            superTriviaGameToxicPunishmentAmount = superTriviaGameToxicPunishmentAmount,
+            superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
