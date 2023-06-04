@@ -2659,7 +2659,7 @@ class TranslateCommand(AbsCommand):
             return
         elif not user.isTranslateEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -2831,7 +2831,7 @@ class TriviaScoreCommand(AbsCommand):
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
@@ -2908,7 +2908,7 @@ class TwitterCommand(AbsCommand):
 
         if not user.hasTwitter():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         await self.__twitchUtils.safeSend(ctx, f'{user.getHandle()}\'s twitter: {user.getTwitterUrl()}')
@@ -3044,7 +3044,7 @@ class WeatherCommand(AbsCommand):
             return
         elif not user.isWeatherEnabled():
             return
-        elif not ctx.isAuthorMod() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         if not user.hasLocationId():
