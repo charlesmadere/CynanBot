@@ -876,7 +876,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         if utils.isValidStr(launchpadPrompt):
             await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
-    @commands.command(name = 'a')
+    @commands.command(name = 'a', aliases = [ 'A' ])
     async def command_a(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleCommand(context)
@@ -901,7 +901,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleCommand(context)
 
-    @commands.command(name = 'answer')
+    @commands.command(name = 'answer', aliases = [ 'ANSWER' ])
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleCommand(context)
@@ -1026,7 +1026,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerCommand.handleCommand(context)
 
-    @commands.command(name = 'sa')
+    @commands.command(name = 'sa', aliases =  [ 'SA' ])
     async def command_sa(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleCommand(context)
@@ -1041,7 +1041,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setTwitchCodeCommand.handleCommand(context)
 
-    @commands.command(name = 'superanswer')
+    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER' ])
     async def command_superanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleCommand(context)
