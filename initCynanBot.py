@@ -39,6 +39,8 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
+from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
+    BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
@@ -277,6 +279,13 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
     backingDatabase = backingDatabase,
     timber = timber
 )
+bannedTriviaGameControllersRepository = BannedTriviaGameControllersRepository(
+    administratorProviderInterface = administratorProviderInterface,
+    backingDatabase = backingDatabase,
+    timber = timber,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    userIdsRepository = userIdsRepository
+)
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -300,6 +309,7 @@ triviaScoreRepository = TriviaScoreRepository(
 )
 triviaUtils = TriviaUtils(
     administratorProviderInterface = administratorProviderInterface,
+    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
@@ -426,6 +436,7 @@ cynanBot = CynanBot(
     administratorProviderInterface = administratorProviderInterface,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
+    bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     bannedWordsRepository = bannedWordsRepository,
     channelJoinHelper = ChannelJoinHelper(
         backgroundTaskHelper = backgroundTaskHelper,

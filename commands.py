@@ -27,10 +27,14 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timedDict import TimedDict
+from CynanBotCommon.trivia.addBannedTriviaGameControllerResult import \
+    AddBannedTriviaGameControllerResult
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
+from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
+    BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
@@ -40,6 +44,8 @@ from CynanBotCommon.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
+from CynanBotCommon.trivia.removeBannedTriviaGameControllerResult import \
+    RemoveBannedTriviaGameControllerResult
 from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
 from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
@@ -86,6 +92,71 @@ class AbsCommand(ABC):
     @abstractmethod
     async def handleCommand(self, ctx: TwitchContext):
         pass
+
+
+class AddBannedTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
+            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{timber}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+
+        if ctx.getAuthorId() != administrator:
+            self.__timber.log('AddBannedTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('AddBannedTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add banned trivia controller as no username argument was given. Example: !addbannedtriviacontroller {administrator}')
+            return
+
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(userName):
+            self.__timber.log('AddBannedTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add banned trivia controller as username argument is malformed. Example: !addbannedtriviacontroller {user.getHandle()}')
+            return
+
+        result = await self.__bannedTriviaGameControllersRepository.addBannedController(
+            userName = userName
+        )
+
+        if result is AddBannedTriviaGameControllerResult.ADDED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a banned trivia game controller.')
+        elif result is AddBannedTriviaGameControllerResult.ALREADY_EXISTS:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a banned trivia game controller, but they already were one.')
+        elif result is AddBannedTriviaGameControllerResult.ERROR:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a banned trivia game controller!')
+        else:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to add {userName} as a banned trivia game controller!')
+            self.__timber.log('AddBannedTriviaControllerCommand', f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown AddBannedTriviaGameControllerResult value ({result}) when trying to add \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+        self.__timber.log('AddBannedTriviaControllerCommand', f'Handled !addbannedtriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
 
 
 class AddGlobalTriviaControllerCommand(AbsCommand):
@@ -1375,6 +1446,50 @@ class DiscordCommand(AbsCommand):
         self.__timber.log('DiscordCommand', f'Handled !discord command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class GetBannedTriviaControllersCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
+        timber: Timber,
+        triviaUtils: TriviaUtils,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
+            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
+        self.__timber: Timber = timber
+        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+
+        userName = ctx.getAuthorName().lower()
+
+        if user.getHandle().lower() != userName and ctx.getAuthorId() != administrator:
+            self.__timber.log('GetBannedTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameBannedControllers(controllers))
+        self.__timber.log('GetBannedTriviaControllersCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
 class GetGlobalTriviaControllersCommand(AbsCommand):
 
     def __init__(
@@ -2032,12 +2147,74 @@ class RaceCommand(AbsCommand):
         self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class RemoveBannedTriviaControllerCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
+            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+
+        if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():
+            self.__timber.log('RemoveBannedTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('RemoveBannedTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as no username argument was given. Example: !removebannedtriviacontroller {user.getHandle()}')
+            return
+
+        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        if not utils.isValidStr(userName):
+            self.__timber.log('RemoveBannedTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as username argument is malformed. Example: !removebannedtriviacontroller {user.getHandle()}')
+            return
+
+        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
+            userName = userName
+        )
+
+        if result is RemoveBannedTriviaGameControllerResult.REMOVED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a banned trivia game controller.')
+        elif result is RemoveBannedTriviaGameControllerResult.ERROR:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a banned trivia game controller!')
+        else:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a banned trivia game controller!')
+            self.__timber.log('RemoveBannedTriviaControllerCommand', f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            raise ValueError(f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+        self.__timber.log('RemoveBannedTriviaControllerCommand', f'Handled !removebannedtriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
 class RemoveGlobalTriviaControllerCommand(AbsCommand):
 
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: Timber,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
@@ -2045,8 +2222,6 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
@@ -2057,21 +2232,13 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: Timber = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
-            return
-
         administrator = await self.__administratorProviderInterface.getAdministratorUserId()
 
         if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():

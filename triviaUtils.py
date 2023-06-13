@@ -9,6 +9,10 @@ from CynanBotCommon.administratorProviderInterface import \
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBotCommon.trivia.bannedTriviaGameController import \
+    BannedTriviaGameController
+from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
+    BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBotCommon.trivia.toxicTriviaPunishmentResult import \
@@ -37,6 +41,7 @@ class TriviaUtils():
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
         timber: Timber,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
@@ -46,6 +51,8 @@ class TriviaUtils():
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
+            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif not isinstance(timber, Timber):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
@@ -60,6 +67,7 @@ class TriviaUtils():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
         self.__timber: Timber = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
@@ -454,6 +462,24 @@ class TriviaUtils():
                 delimiter = delimiter
             )
 
+    async def getTriviaGameBannedControllers(
+        self,
+        bannedControllers: Optional[List[BannedTriviaGameController]],
+        delimiter: str = ', '
+    ) -> str:
+        if not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        if not utils.hasItems(bannedControllers):
+            return f'ⓘ There are no banned trivia game controllers.'
+
+        bannedControllersNames: List[str] = list()
+        for bannedController in bannedControllers:
+            bannedControllersNames.append(bannedController.getUserName())
+
+        bannedControllersStr = delimiter.join(bannedControllersNames)
+        return f'ⓘ Banned trivia game controllers — {bannedControllersStr}'
+
     async def getTriviaGameControllers(
         self,
         gameControllers: Optional[List[TriviaGameController]],
@@ -609,6 +635,11 @@ class TriviaUtils():
         if twitchUser is None:
             self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')
             return False
+
+        bannedGameControllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+        for bannedGameController in bannedGameControllers:
+            if userId == bannedGameController.getUserId():
+                return False
 
         twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(twitchUser.getHandle())
 
