@@ -127,55 +127,6 @@ class ChatLogMessage(AbsMessage):
         return True
 
 
-class CynanMessage(AbsMessage):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
-        twitchUtils: TwitchUtils,
-        cynanUserName: str = 'CynanMachae',
-        cooldown: timedelta = timedelta(days = 3)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not utils.isValidStr(cynanUserName):
-            raise ValueError(f'cynanUserName argument is malformed: \"{cynanUserName}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__cynanUserName: str = cynanUserName
-        self.__cooldown: timedelta = cooldown
-        self.__lastCynanMessageTime = datetime.now(timezone.utc) - cooldown
-
-    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isCynanMessageEnabled():
-            return False
-        elif not twitchUser.isCynanMessageEnabled():
-            return False
-        elif message.getAuthorName().lower() != self.__cynanUserName.lower():
-            return False
-
-        now = datetime.now(timezone.utc)
-
-        if now > self.__lastCynanMessageTime + self.__cooldown:
-            self.__lastCynanMessageTime = now
-            await self.__twitchUtils.safeSend(message.getChannel(), f'/me waves to @{self.__cynanUserName} 👋')
-            self.__timber.log('CynanMessage', f'Handled Cynan message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
-            return True
-
-        return False
-
-
 class DeerForceMessage(AbsMessage):
 
     def __init__(
@@ -298,7 +249,7 @@ class ImytSlurpMessage(AbsMessage):
 
         if not generalSettings.isImytSlurpMessageEnabled():
             return False
-        elif not twitchUser.isImytSlurpEnabled():
+        elif not twitchUser.isImytSlurpMessageEnabled():
             return False
 
         splits = utils.getCleanedSplits(message.getContent())

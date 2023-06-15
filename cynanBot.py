@@ -100,7 +100,7 @@ from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                     SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
-from messages import (AbsMessage, CatJamMessage, ChatLogMessage, CynanMessage,
+from messages import (AbsMessage, CatJamMessage, ChatLogMessage,
                       DeerForceMessage, EyesMessage, ImytSlurpMessage,
                       JamCatMessage, RatJamMessage, RoachMessage,
                       SchubertWalkMessage, StubMessage)
@@ -364,7 +364,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         ###############################################
 
         self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__cynanMessage: AbsMessage = CynanMessage(generalSettingsRepository, timber, twitchUtils)
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, timber, twitchUtils)
         self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository, timber, twitchUtils)
         self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber, twitchUtils)
@@ -477,12 +476,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
                 twitchUser = twitchUser,
                 message = twitchMessage
             )
-
-            if await self.__cynanMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
 
             if await self.__deerForceMessage.handleMessage(
                 twitchUser = twitchUser,

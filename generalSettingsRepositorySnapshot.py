@@ -67,9 +67,6 @@ class GeneralSettingsRepositorySnapshot():
     def isChatBandEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'chatBandEnabled', False)
 
-    def isCynanMessageEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'cynanMessageEnabled', False)
-
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 

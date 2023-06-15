@@ -98,7 +98,6 @@ class UsersRepository(UsersRepositoryInterface):
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
-        isCynanMessageEnabled = utils.getBoolFromDict(userJson, 'cynanMessageEnabled', False)
         isCynanSourceEnabled = utils.getBoolFromDict(userJson, 'cynanSourceEnabled', True)
         isDeerForceMessageEnabled = utils.getBoolFromDict(userJson, 'deerForceMessageEnabled', False)
         isEnabled = utils.getBoolFromDict(userJson, 'enabled', True)
@@ -197,7 +196,6 @@ class UsersRepository(UsersRepositoryInterface):
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCutenessEnabled = isCutenessEnabled,
-            isCynanMessageEnabled = isCynanMessageEnabled,
             isCynanSourceEnabled = isCynanSourceEnabled,
             isDeerForceMessageEnabled = isDeerForceMessageEnabled,
             isEnabled = isEnabled,

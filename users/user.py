@@ -19,7 +19,6 @@ class User(UserInterface):
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isCutenessEnabled: bool,
-        isCynanMessageEnabled: bool,
         isCynanSourceEnabled: bool,
         isDeerForceMessageEnabled: bool,
         isEnabled: bool,
@@ -83,8 +82,6 @@ class User(UserInterface):
             raise ValueError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
             raise ValueError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
-        elif not utils.isValidBool(isCynanMessageEnabled):
-            raise ValueError(f'isCynanMessageEnabled argument is malformed: \"{isCynanMessageEnabled}\"')
         elif not utils.isValidBool(isCynanSourceEnabled):
             raise ValueError(f'isCynanSourceEnabled argument is malformed: \"{isCynanSourceEnabled}\"')
         elif not utils.isValidBool(isDeerForceMessageEnabled):
@@ -176,7 +173,6 @@ class User(UserInterface):
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
-        self.__isCynanMessageEnabled: bool = isCynanMessageEnabled
         self.__isCynanSourceEnabled: bool = isCynanSourceEnabled
         self.__isDeerForceMessageEnabled: bool = isDeerForceMessageEnabled
         self.__isEnabled: bool = isEnabled
@@ -383,9 +379,6 @@ class User(UserInterface):
 
     def isCutenessEnabled(self) -> bool:
         return self.__isCutenessEnabled
-
-    def isCynanMessageEnabled(self) -> bool:
-        return self.__isCynanMessageEnabled
 
     def isCynanSourceEnabled(self) -> bool:
         return self.__isCynanSourceEnabled
