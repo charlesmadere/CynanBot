@@ -104,7 +104,7 @@ class UsersRepository(UsersRepositoryInterface):
         isEyesMessageEnabled = utils.getBoolFromDict(userJson, 'eyesMessageEnabled', False)
         isGiftSubscriptionThanksMessageEnabled = utils.getBoolFromDict(userJson, 'isGiftSubscriptionThanksMessageEnabled', True)
         isGiveCutenessEnabled = utils.getBoolFromDict(userJson, 'giveCutenessEnabled', False)
-        isImytSlurpEnabled = utils.getBoolFromDict(userJson, 'imytSlurpEnabled', False)
+        isImytSlurpMessageEnabled = utils.getBoolFromDict(userJson, 'imytSlurpMessageEnabled', False)
         isJamCatMessageEnabled = utils.getBoolFromDict(userJson, 'jamCatMessageEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokeTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'jokeTriviaRepositoryEnabled', False)
@@ -202,7 +202,7 @@ class UsersRepository(UsersRepositoryInterface):
             isEyesMessageEnabled = isEyesMessageEnabled,
             isGiftSubscriptionThanksMessageEnabled = isGiftSubscriptionThanksMessageEnabled,
             isGiveCutenessEnabled = isGiveCutenessEnabled,
-            isImytSlurpEnabled = isImytSlurpEnabled,
+            isImytSlurpMessageEnabled = isImytSlurpMessageEnabled,
             isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
             isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,

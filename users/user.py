@@ -25,7 +25,7 @@ class User(UserInterface):
         isEyesMessageEnabled: bool,
         isGiftSubscriptionThanksMessageEnabled: bool,
         isGiveCutenessEnabled: bool,
-        isImytSlurpEnabled: bool,
+        isImytSlurpMessageEnabled: bool,
         isJamCatMessageEnabled: bool,
         isJishoEnabled: bool,
         isJokeTriviaRepositoryEnabled: bool,
@@ -94,8 +94,8 @@ class User(UserInterface):
             raise ValueError(f'isGiftSubscriptionThanksMessageEnabled argument is malformed: \"{isGiftSubscriptionThanksMessageEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
             raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
-        elif not utils.isValidBool(isImytSlurpEnabled):
-            raise ValueError(f'isImytSlurpEnabled argument is malformed: \"{isImytSlurpEnabled}\"')
+        elif not utils.isValidBool(isImytSlurpMessageEnabled):
+            raise ValueError(f'isImytSlurpMessageEnabled argument is malformed: \"{isImytSlurpMessageEnabled}\"')
         elif not utils.isValidBool(isJamCatMessageEnabled):
             raise ValueError(f'isJamCatMessageEnabled argument is malformed: \"{isJamCatMessageEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
@@ -179,7 +179,7 @@ class User(UserInterface):
         self.__isEyesMessageEnabled: bool = isEyesMessageEnabled
         self.__isGiftSubscriptionThanksMessageEnabled: bool = isGiftSubscriptionThanksMessageEnabled
         self.__isGiveCutenessEnabled: bool = isGiveCutenessEnabled
-        self.__isImytSlurpEnabled: bool = isImytSlurpEnabled
+        self.__isImytSlurpMessageEnabled: bool = isImytSlurpMessageEnabled
         self.__isJamCatMessageEnabled: bool = isJamCatMessageEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
@@ -398,8 +398,8 @@ class User(UserInterface):
     def isGiveCutenessEnabled(self) -> bool:
         return self.__isGiveCutenessEnabled
 
-    def isImytSlurpEnabled(self) -> bool:
-        return self.__isImytSlurpEnabled
+    def isImytSlurpMessageEnabled(self) -> bool:
+        return self.__isImytSlurpMessageEnabled
 
     def isJamCatMessageEnabled(self) -> bool:
         return self.__isJamCatMessageEnabled
