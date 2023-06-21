@@ -17,7 +17,8 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
-from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
+    BannedWordsRepository
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \

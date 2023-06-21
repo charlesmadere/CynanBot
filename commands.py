@@ -35,7 +35,8 @@ from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
+    BannedWordsRepository
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \

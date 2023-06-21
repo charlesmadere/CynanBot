@@ -55,7 +55,8 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBotCommon.trivia.bannedWordsRepository import BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
+    BannedWordsRepository
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
