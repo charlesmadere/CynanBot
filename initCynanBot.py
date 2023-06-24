@@ -13,6 +13,8 @@ from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonTokensRepository import \
+    FuntoonTokensRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
@@ -171,6 +173,7 @@ twitchApiService = TwitchApiService(
     twitchCredentialsProviderInterface = authRepository
 )
 twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+    backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService
 )
@@ -193,7 +196,12 @@ cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
+funtoonTokensRepository = FuntoonTokensRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
 funtoonRepository = FuntoonRepository(
+    funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
     timber = timber
 )

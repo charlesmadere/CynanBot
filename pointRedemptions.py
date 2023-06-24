@@ -133,13 +133,12 @@ class PkmnBattleRedemption(AbsPointRedemption):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
-        if generalSettings.isFuntoonApiEnabled():
-            if await self.__funtoonRepository.pkmnBattle(
-                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
-                userToBattle = opponentUserName,
-                twitchChannel = twitchUser.getHandle()
-            ):
-                actionCompleted = True
+        if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnBattle(
+            twitchChannel = twitchUser.getHandle(),
+            userThatRedeemed = twitchChannelPointsMessage.getUserName(),
+            userToBattle = opponentUserName
+        ):
+            actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await self.__twitchUtils.safeSend(twitchChannel, f'!battle {twitchChannelPointsMessage.getUserName()} {opponentUserName}')
@@ -198,13 +197,12 @@ class PkmnCatchRedemption(AbsPointRedemption):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
-        if generalSettings.isFuntoonApiEnabled():
-            if await self.__funtoonRepository.pkmnCatch(
-                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
-                twitchChannel = twitchUser.getHandle(),
-                funtoonPkmnCatchType = funtoonPkmnCatchType
-            ):
-                actionCompleted = True
+        if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnCatch(
+            twitchChannel = twitchUser.getHandle(),
+            userThatRedeemed = twitchChannelPointsMessage.getUserName(),
+            funtoonPkmnCatchType = funtoonPkmnCatchType
+        ):
+            actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await self.__twitchUtils.safeSend(twitchChannel, f'!catch {twitchChannelPointsMessage.getUserName()}')
@@ -266,12 +264,11 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
-        if generalSettings.isFuntoonApiEnabled():
-            if await self.__funtoonRepository.pkmnGiveEvolve(
-                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
-                twitchChannel = twitchUser.getHandle()
-            ):
-                actionCompleted = True
+        if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnGiveEvolve(
+            twitchChannel = twitchUser.getHandle(),
+            userThatRedeemed = twitchChannelPointsMessage.getUserName()
+        ):
+            actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await self.__twitchUtils.safeSend(twitchChannel, f'!freeevolve {twitchChannelPointsMessage.getUserName()}')
@@ -317,12 +314,11 @@ class PkmnShinyRedemption(AbsPointRedemption):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         actionCompleted = False
 
-        if generalSettings.isFuntoonApiEnabled():
-            if await self.__funtoonRepository.pkmnGiveShiny(
-                userThatRedeemed = twitchChannelPointsMessage.getUserName(),
-                twitchChannel = twitchUser.getHandle()
-            ):
-                actionCompleted = True
+        if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnGiveShiny(
+            twitchChannel = twitchUser.getHandle(),
+            userThatRedeemed = twitchChannelPointsMessage.getUserName()
+        ):
+            actionCompleted = True
 
         if not actionCompleted and generalSettings.isFuntoonTwitchChatFallbackEnabled():
             await self.__twitchUtils.safeSend(twitchChannel, f'!freeshiny {twitchChannelPointsMessage.getUserName()}')
