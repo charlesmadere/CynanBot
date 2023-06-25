@@ -2470,8 +2470,8 @@ class SetTwitchCodeCommand(AbsCommand):
             return
 
         await self.__twitchTokensRepositoryInterface.addUser(
-            twitchHandle = user.getHandle(),
-            code = code
+            code = code,
+            twitchChannel = user.getHandle(),
         )
 
         self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

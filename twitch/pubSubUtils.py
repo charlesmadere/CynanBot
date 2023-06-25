@@ -134,7 +134,7 @@ class PubSubUtils(PubSubReconnectListener):
         twitchHandles: Optional[List[str]] = None
 
         if not forceFullRefresh:
-            twitchHandles = await self.__twitchTokensRepositoryInterface.getExpiringTwitchHandles()
+            twitchHandles = await self.__twitchTokensRepositoryInterface.getExpiringTwitchChannels()
 
         users: Optional[List[UserInterface]] = None
 
