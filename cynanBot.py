@@ -39,6 +39,8 @@ from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonTokensRepository import \
+    FuntoonTokensRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
@@ -146,6 +148,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
         funtoonRepository: Optional[FuntoonRepository],
+        funtoonTokensRepository: Optional[FuntoonTokensRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
@@ -233,7 +236,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepository, funtoonRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepository, funtoonTokensRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

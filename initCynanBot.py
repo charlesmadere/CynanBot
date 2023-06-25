@@ -458,6 +458,7 @@ cynanBot = CynanBot(
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
     funtoonRepository = funtoonRepository,
+    funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
     jishoHelper = JishoHelper(
         networkClientProvider = networkClientProvider,

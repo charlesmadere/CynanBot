@@ -14,6 +14,8 @@ from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonTokensRepository import \
+    FuntoonTokensRepository
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -649,7 +651,7 @@ class ClearCachesCommand(AbsCommand):
         administratorProviderInterface: AdministratorProviderInterface,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepository],
-        funtoonRepository: Optional[FuntoonRepository],
+        funtoonTokensRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: Optional[LocationsRepository],
         modifyUserDataHelper: ModifyUserDataHelper,
@@ -679,7 +681,7 @@ class ClearCachesCommand(AbsCommand):
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__authRepository: AuthRepository = authRepository
         self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
-        self.__funtoonRepository: Optional[FuntoonRepository] = funtoonRepository
+        self.__funtoonTokensRepository: Optional[FuntoonTokensRepository] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
@@ -704,8 +706,8 @@ class ClearCachesCommand(AbsCommand):
         if self.__bannedWordsRepository is not None:
             await self.__bannedWordsRepository.clearCaches()
 
-        if self.__funtoonRepository is not None:
-            await self.__funtoonRepository.clearCaches()
+        if self.__funtoonTokensRepository is not None:
+            await self.__funtoonTokensRepository.clearCaches()
 
         await self.__generalSettingsRepository.clearCaches()
 
