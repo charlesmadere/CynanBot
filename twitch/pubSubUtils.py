@@ -18,7 +18,8 @@ from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.twitch.exceptions import (
     TwitchAccessTokenMissingException, TwitchErrorException,
-    TwitchJsonException, TwitchRefreshTokenMissingException)
+    TwitchJsonException, TwitchPasswordChangedException,
+    TwitchRefreshTokenMissingException)
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
@@ -167,10 +168,10 @@ class PubSubUtils(PubSubReconnectListener):
                 await self.__twitchTokensRepositoryInterface.validateAndRefreshAccessToken(user.getHandle())
                 usersAndTwitchTokens[user] = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
             except GenericNetworkException as e:
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e, traceback.format_exc())
-            except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchRefreshTokenMissingException) as e:
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e, traceback.format_exc())
+            except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchPasswordChangedException, TwitchRefreshTokenMissingException) as e:
                 # if we run into one of the Twitch errors, that most likely means that this user changed their password
-                self.__timber.log('PubSubUtils', f'Failed to validate and refresh access Twitch tokens for \"{user.getHandle()}\": {e}', e, traceback.format_exc())
+                self.__timber.log('PubSubUtils', f'Failed to validate and refresh Twitch tokens for \"{user.getHandle()}\": {e}', e, traceback.format_exc())
 
         pubSubEntries: List[PubSubEntry] = list()
 
