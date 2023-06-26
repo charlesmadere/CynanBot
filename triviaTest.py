@@ -19,6 +19,8 @@ from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
     BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
@@ -103,7 +105,7 @@ cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
-bannedWordsRepository = BannedWordsRepository(
+bannedWordsRepositoryInterface: BannedWordsRepositoryInterface = BannedWordsRepository(
     timber = timber
 )
 triviaAnswerCompiler = TriviaAnswerCompiler(
