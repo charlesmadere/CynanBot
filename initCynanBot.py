@@ -47,6 +47,8 @@ from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
     BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
@@ -239,7 +241,7 @@ if authSnapshot.hasOneWeatherApiKey():
 ## Trivia initialization section ##
 ###################################
 
-bannedWordsRepository = BannedWordsRepository(
+bannedWordsRepositoryInterface: BannedWordsRepositoryInterface = BannedWordsRepository(
     timber = timber
 )
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
@@ -280,7 +282,7 @@ triviaBanHelper = TriviaBanHelper(
     funtoonRepository = funtoonRepository
 )
 triviaContentScanner = TriviaContentScanner(
-    bannedWordsRepository = bannedWordsRepository,
+    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -446,7 +448,7 @@ cynanBot = CynanBot(
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
-    bannedWordsRepository = bannedWordsRepository,
+    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
     channelJoinHelper = ChannelJoinHelper(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,

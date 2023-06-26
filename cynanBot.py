@@ -57,8 +57,8 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
-    BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
@@ -142,7 +142,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
         bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepository],
-        bannedWordsRepository: Optional[BannedWordsRepository],
+        bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
@@ -236,7 +236,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepository, funtoonTokensRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepositoryInterface, funtoonTokensRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

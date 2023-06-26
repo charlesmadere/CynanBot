@@ -37,8 +37,8 @@ from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
-    BannedWordsRepository
+from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
@@ -650,7 +650,7 @@ class ClearCachesCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         authRepository: AuthRepository,
-        bannedWordsRepository: Optional[BannedWordsRepository],
+        bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: Optional[LocationsRepository],
@@ -680,7 +680,7 @@ class ClearCachesCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__authRepository: AuthRepository = authRepository
-        self.__bannedWordsRepository: Optional[BannedWordsRepository] = bannedWordsRepository
+        self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepositoryInterface
         self.__funtoonTokensRepository: Optional[FuntoonTokensRepository] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
@@ -703,8 +703,8 @@ class ClearCachesCommand(AbsCommand):
 
         await self.__authRepository.clearCaches()
 
-        if self.__bannedWordsRepository is not None:
-            await self.__bannedWordsRepository.clearCaches()
+        if self.__bannedWordsRepositoryInterface is not None:
+            await self.__bannedWordsRepositoryInterface.clearCaches()
 
         if self.__funtoonTokensRepository is not None:
             await self.__funtoonTokensRepository.clearCaches()

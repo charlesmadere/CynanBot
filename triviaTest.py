@@ -136,7 +136,7 @@ bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaContentScanner = TriviaContentScanner(
-    bannedWordsRepository = bannedWordsRepository,
+    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
