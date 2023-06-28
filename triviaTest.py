@@ -10,6 +10,7 @@ from CynanBotCommon.network.requestsClientProvider import \
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
+from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
@@ -115,7 +116,9 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
     backingDatabase = backingDatabase,
     timber = timber
 )
-triviaSettingsRepository = TriviaSettingsRepository()
+triviaSettingsRepository = TriviaSettingsRepository(
+    settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
+)
 additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,

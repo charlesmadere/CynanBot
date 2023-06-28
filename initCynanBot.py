@@ -35,6 +35,7 @@ from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.storage.databaseType import DatabaseType
+from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.storage.linesFileReader import LinesFileReader
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
@@ -257,7 +258,9 @@ triviaAnswerCompiler = TriviaAnswerCompiler(
 )
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
-triviaSettingsRepository = TriviaSettingsRepository()
+triviaSettingsRepository = TriviaSettingsRepository(
+    settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
+)
 additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
