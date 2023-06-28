@@ -35,6 +35,7 @@ from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.storage.databaseType import DatabaseType
+from CynanBotCommon.storage.linesFileReader import LinesFileReader
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
@@ -242,6 +243,7 @@ if authSnapshot.hasOneWeatherApiKey():
 ###################################
 
 bannedWordsRepositoryInterface: BannedWordsRepositoryInterface = BannedWordsRepository(
+    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
     timber = timber
 )
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
