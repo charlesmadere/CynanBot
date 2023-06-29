@@ -20,8 +20,11 @@ from CynanBotCommon.twitch.exceptions import (
     TwitchAccessTokenMissingException, TwitchErrorException,
     TwitchJsonException, TwitchPasswordChangedException,
     TwitchRefreshTokenMissingException)
+from CynanBotCommon.twitch.twitchTokensDetails import TwitchTokensDetails
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBotCommon.twitch.twitchTokensRepositoryListener import \
+    TwitchTokensRepositoryListener
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
@@ -32,7 +35,7 @@ from twitch.pubSub.pubSubReconnectListener import PubSubReconnectListener
 from twitch.pubSubEntry import PubSubEntry
 
 
-class PubSubUtils(PubSubReconnectListener):
+class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
 
     def __init__(
         self,
@@ -204,7 +207,7 @@ class PubSubUtils(PubSubReconnectListener):
                 try:
                     topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds)
                 except queue.Empty as e:
-                    self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
+                    self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e, traceback.format_exc())
 
         newPubSubEntries = await self.__getSubscribeReadyPubSubEntries(forceFullRefresh = True)
         topicsToAdd: List[Topic] = list()
@@ -214,10 +217,46 @@ class PubSubUtils(PubSubReconnectListener):
                 self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic(), block = True, timeout = self.__queueTimeoutSeconds)
                 topicsToAdd.append(newPubSubEntry.getTopic())
             except queue.Full as e:
-                self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
+                self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e, traceback.format_exc())
 
         self.__timber.log('PubSubUtils', f'Determined new list of PubSub topics (len={len(topicsToAdd)}): {topicsToAdd}')
         return topicsToAdd
+
+    async def onUserAdded(self, tokensDetails: TwitchTokensDetails, twitchChannel: str):
+        self.__timber.log('PubSubUtils', f'Adding \"{twitchChannel}\" to PubSub...')
+        await self.onUserRemoved(twitchChannel = twitchChannel)
+        self.__refresh(forceFullRefresh = False)
+
+    async def onUserRemoved(self, twitchChannel: str):
+        self.__timber.log('PubSubUtils', f'Removing \"{twitchChannel}\" from PubSub...')
+        exactTwitchChannelName: Optional[str] = None
+
+        for entriesTwitchChannel in self.__pubSubEntries.keys():
+            if twitchChannel.lower() == entriesTwitchChannel.lower():
+                exactTwitchChannelName = entriesTwitchChannel
+                break
+
+        if not utils.isValidStr(exactTwitchChannelName):
+            self.__timber.log('PubSubUtils', f'\"{twitchChannel}\" has no PubSub entries queue')
+            return
+
+        pubSubEntries = self.__pubSubEntries.pop(exactTwitchChannelName, SimpleQueue())
+
+        if pubSubEntries is None:
+            self.__timber.log('PubSubUtils', f'\"{twitchChannel}\" PubSub entries queue doesn\'t exist')
+            return
+
+        topics: List[Topic] = list()
+
+        while not pubSubEntries.empty():
+            try:
+                topic = pubSubEntries.get(block = True, timeout = self.__queueTimeoutSeconds)
+                topics.append(topic)
+            except queue.Empty as e:
+                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{twitchChannel}\"\'s queue: {e}', e, traceback.format_exc())
+
+        await self.__removePubSubSubscriptions(topics)
+        self.__timber.log('PubSubUtils', f'Finished unsubscribing \"{twitchChannel}\" PubSub topic(s)')
 
     async def __removePubSubSubscriptions(self, topicsToRemove: Optional[List[Topic]]):
         if not utils.hasItems(topicsToRemove):
@@ -259,6 +298,8 @@ class PubSubUtils(PubSubReconnectListener):
 
         self.__isStarted = True
         self.__timber.log('PubSubUtils', 'Starting PubSub...')
+
+        self.__twitchTokensRepositoryInterface.setListener(self)
         self.__backgroundTaskHelper.createTask(self.__startPubSubUpdateLoop())
 
     async def __startPubSubUpdateLoop(self):
@@ -282,14 +323,14 @@ class PubSubUtils(PubSubReconnectListener):
                     self.__pubSubEntries[newPubSubEntry.getUserName()].put(newPubSubEntry.getTopic(), block = True, timeout = self.__queueTimeoutSeconds)
                     topicsToAdd.append(newPubSubEntry.getTopic())
                 except queue.Full as e:
-                    self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e)
+                    self.__timber.log('PubSubUtils', f'Encountered queue.Full when attempting to add new PubSub topic to \"{userName}\"\'s queue: {e}', e, traceback.format_exc())
 
         for userName, topicQueue in self.__pubSubEntries.items():
             try:
                 while topicQueue.qsize() > self.__maxConnectionsPerTwitchChannel:
                     topicsToRemove.append(topicQueue.get(block = True, timeout = self.__queueTimeoutSeconds))
             except queue.Empty as e:
-                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e)
+                self.__timber.log('PubSubUtils', f'Encountered queue.Empty when attempting to fetch PubSub topic from \"{userName}\"\'s queue: {e}', e, traceback.format_exc())
 
         await self.__addPubSubSubscriptions(topicsToAdd)
         await self.__removePubSubSubscriptions(topicsToRemove)
