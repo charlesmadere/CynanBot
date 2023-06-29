@@ -473,6 +473,7 @@ cynanBot = CynanBot(
     ),
     languagesRepository = languagesRepository,
     locationsRepository = LocationsRepository(
+        locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
         timeZoneRepository = timeZoneRepository
     ),
     modifyUserDataHelper = ModifyUserDataHelper(
