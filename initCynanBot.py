@@ -202,7 +202,8 @@ cutenessRepository = CutenessRepository(
 )
 funtoonTokensRepository = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    seedFileReader = JsonFileReader('CynanBotCommon/funtoon/funtoonTokensRepositorySeedFile.json')
 )
 funtoonRepository = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
