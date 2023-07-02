@@ -34,6 +34,9 @@ class GeneralSettingsRepositorySnapshot():
 
         return refreshPubSubTokensSeconds
 
+    def getSubGiftThankMessagingDelay(self) -> int:
+        return utils.getIntFromDict(self.__jsonContents, 'subGiftThankMessagingDelay', 8)
+
     def getSuperTriviaGamePoints(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'superTriviaGamePoints', 25)
 

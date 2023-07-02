@@ -115,8 +115,7 @@ class RaidThankEvent(AbsEvent):
         await self.__twitchUtils.waitThenSend(
             messageable = channel,
             delaySeconds = generalSettings.getRaidLinkMessagingDelay(),
-            message = message,
-            twitchChannel = user.getHandle()
+            message = message
         )
 
         self.__timber.log('RaidEvent', f'{user.getHandle()} received raid of {raidSize} from {raidedByName}!')
@@ -176,9 +175,8 @@ class SubGiftThankingEvent(AbsEvent):
 
         await self.__twitchUtils.waitThenSend(
             messageable = channel,
-            delaySeconds = 8,
-            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨',
-            twitchChannel = user.getHandle()
+            delaySeconds = generalSettings.getSubGiftThankMessagingDelay(),
+            message = f'😻 Thank you for the gifted sub @{giftedByName}! ✨'
         )
 
         self.__timber.log('SubGiftThankingEvent', f'{twitchHandle} received sub gift in {user.getHandle()} from {giftedByName}! Thank you!')
