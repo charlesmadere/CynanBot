@@ -2431,6 +2431,70 @@ class RemoveUserCommand(AbsCommand):
         self.__timber.log('RemoveUserCommand', f'Handled !removeuser command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class SetFuntoonTokenCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProviderInterface: AdministratorProviderInterface,
+        funtoonTokensRepository: FuntoonTokensRepository,
+        timber: Timber,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        elif not isinstance(funtoonTokensRepository, FuntoonTokensRepository):
+            raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
+        elif not isinstance(timber, Timber):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__funtoonTokensRepository: FuntoonTokensRepository = funtoonTokensRepository
+        self.__timber: Timber = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+
+        if ctx.getAuthorName().lower() != user.getHandle().lower() and ctx.getAuthorId() != administrator:
+            self.__timber.log('SetFuntoonTokenCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('SetFuntoonTokenCommand', f'Not enough arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !setfuntoontoken command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Token argument is necessary for the !setfuntoontoken command. Example: !setfuntoontoken {self.__getRandomTokenStr()}')
+            return
+
+        token: Optional[str] = splits[1]
+        if not utils.isValidStr(token):
+            self.__timber.log('SetFuntoonTokenCommand', f'Invalid token argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !setfuntoontoken command: \"{splits}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Token argument is necessary for the !setfuntoontoken command. Example: !setfuntoontoken {self.__getRandomTokenStr()}')
+            return
+
+        await self.__funtoonTokensRepository.setToken(
+            token = token,
+            twitchChannel = user.getHandle()
+        )
+
+        self.__timber.log('SetFuntoonTokenCommand', f'Handled !setfuntoontoken command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+    def __getRandomTokenStr(self) -> str:
+        randomUuid = str(uuid.uuid4())
+        randomUuid = randomUuid.replace('-', '')
+
+        if len(randomUuid) > 16:
+            randomUuid = randomUuid[0:16]
+
+        return randomUuid
+
+
 class SetTwitchCodeCommand(AbsCommand):
 
     def __init__(

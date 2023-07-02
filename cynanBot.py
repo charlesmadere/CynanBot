@@ -27,11 +27,12 @@ from commands import (AbsCommand, AddBannedTriviaControllerCommand,
                       PkMoveCommand, RaceCommand,
                       RemoveBannedTriviaControllerCommand,
                       RemoveGlobalTriviaControllerCommand,
-                      RemoveTriviaControllerCommand, SetTwitchCodeCommand,
-                      StubCommand, SuperAnswerCommand, SuperTriviaCommand,
-                      SwQuoteCommand, TimeCommand, TranslateCommand,
-                      TriviaInfoCommand, TriviaScoreCommand, TwitterCommand,
-                      UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
+                      RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
+                      SetTwitchCodeCommand, StubCommand, SuperAnswerCommand,
+                      SuperTriviaCommand, SwQuoteCommand, TimeCommand,
+                      TranslateCommand, TriviaInfoCommand, TriviaScoreCommand,
+                      TwitterCommand, UnbanTriviaQuestionCommand,
+                      WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -296,6 +297,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
+
+        if funtoonTokensRepository is None:
+            self.__setFuntoonTokenCommand: AbsCommand = StubCommand()
+        else:
+            self.__setFuntoonTokenCommand: AbsCommand = SetFuntoonTokenCommand(administratorProviderInterface, funtoonTokensRepository, timber, twitchUtils, usersRepository)
 
         if jishoHelper is None:
             self.__jishoCommand: AbsCommand = StubCommand()
@@ -1065,6 +1071,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
     async def command_sanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleCommand(context)
+
+    @commands.command(name = 'setfuntoontoken')
+    async def command_setfuntoontoken(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__setFuntoonTokenCommand.handleCommand(context)
 
     @commands.command(name = 'settwitchcode')
     async def command_settwitchcode(self, ctx: Context):
