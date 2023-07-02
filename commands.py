@@ -45,6 +45,8 @@ from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
 from CynanBotCommon.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
+from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.removeBannedTriviaGameControllerResult import \
@@ -655,6 +657,7 @@ class ClearCachesCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: Optional[LocationsRepository],
         modifyUserDataHelper: ModifyUserDataHelper,
+        openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         timber: Timber,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface],
@@ -685,6 +688,7 @@ class ClearCachesCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
+        self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
         self.__timber: Timber = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepositoryInterface
@@ -715,6 +719,9 @@ class ClearCachesCommand(AbsCommand):
             await self.__locationsRepository.clearCaches()
 
         await self.__modifyUserDataHelper.clearCaches()
+
+        if self.__openTriviaDatabaseTriviaQuestionRepository is not None:
+            await self.__openTriviaDatabaseTriviaQuestionRepository.clearCaches()
 
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()

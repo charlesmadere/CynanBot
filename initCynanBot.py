@@ -344,6 +344,15 @@ if authSnapshot.hasQuizApiKey():
         triviaSettingsRepository = triviaSettingsRepository
     )
 
+openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
+    backingDatabase = backingDatabase,
+    networkClientProvider = networkClientProvider,
+    timber = timber,
+    triviaIdGenerator = triviaIdGenerator,
+    triviaQuestionCompiler = triviaQuestionCompiler,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaRepository = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
@@ -386,13 +395,7 @@ triviaRepository = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
-    openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber,
-        triviaIdGenerator = triviaIdGenerator,
-        triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
+    openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     openTriviaQaTriviaQuestionRepository = OpenTriviaQaTriviaQuestionRepository(
         timber = timber,
         triviaQuestionCompiler = triviaQuestionCompiler,
@@ -479,6 +482,7 @@ cynanBot = CynanBot(
     modifyUserDataHelper = ModifyUserDataHelper(
         timber = timber
     ),
+    openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
