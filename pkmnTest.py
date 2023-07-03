@@ -10,6 +10,7 @@ from CynanBotCommon.pkmn.pokepediaGeneration import PokepediaGeneration
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
@@ -18,7 +19,7 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 
 eventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
-timber = Timber(backgroundTaskHelper = backgroundTaskHelper)
+timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(timber = timber)
 
 pokepediaRepository = PokepediaRepository(

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserData import ModifyUserData
 from users.modifyUserEventListener import ModifyUserEventListener
@@ -12,18 +12,18 @@ class ModifyUserDataHelper():
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         timeToLive: timedelta = timedelta(minutes = 2, seconds = 30),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeToLive, timedelta):
             raise ValueError(f'timeToLive argument is malformed: \"{timeToLive}\"')
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__timeToLive: timedelta = timeToLive
         self.__timeZone: timezone = timeZone
 

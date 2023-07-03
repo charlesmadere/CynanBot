@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from twitch.channelJoinListener import ChannelJoinListener
 from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
@@ -16,14 +16,14 @@ class ChannelJoinHelper():
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
-        timber: Timber,
+        timber: TimberInterface,
         usersRepository: UsersRepository,
         sleepTimeSeconds: float = 16,
         maxChannelsToJoin: int = 10
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -37,7 +37,7 @@ class ChannelJoinHelper():
             raise ValueError(f'maxChannelsToJoin argument is out of bounds: {maxChannelsToJoin}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__usersRepository: UsersRepository = usersRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxChannelsToJoin: int = maxChannelsToJoin

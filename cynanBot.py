@@ -52,7 +52,7 @@ from CynanBotCommon.lruCache import LruCache
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
@@ -161,7 +161,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         pokepediaRepository: Optional[PokepediaRepository],
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
-        timber: Timber,
+        timber: TimberInterface,
         toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepository],
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelper],
@@ -208,7 +208,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
@@ -225,7 +225,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration

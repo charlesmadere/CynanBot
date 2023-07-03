@@ -40,6 +40,7 @@ from CynanBotCommon.storage.linesFileReader import LinesFileReader
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
 from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
@@ -142,7 +143,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 eventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
 generalSettingsRepository = GeneralSettingsRepository()
-timber = Timber(backgroundTaskHelper = backgroundTaskHelper)
+timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
 
 backingDatabase: BackingDatabase = None
 if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:

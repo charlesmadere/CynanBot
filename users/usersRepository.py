@@ -8,7 +8,7 @@ import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.users.exceptions import (NoSuchUserException,
                                              NoUsersException)
@@ -23,18 +23,18 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         timeZoneRepository: TimeZoneRepository,
         usersFile: str = 'users/usersRepository.json'
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepository):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
         self.__usersFile: str = usersFile
 

@@ -12,6 +12,7 @@ from CynanBotCommon.storage.backingDatabase import BackingDatabase
 from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
@@ -86,7 +87,7 @@ from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 
 eventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
-timber = Timber(backgroundTaskHelper = backgroundTaskHelper)
+timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
 authRepository = AuthRepository()
 backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(

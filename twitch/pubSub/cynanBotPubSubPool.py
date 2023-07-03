@@ -5,7 +5,7 @@ from twitchio.ext.pubsub import PubSubPool
 from twitchio.ext.pubsub.topics import Topic
 from twitchio.ext.pubsub.websocket import PubSubWebsocket
 
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from twitch.pubSub.pubSubReconnectListener import PubSubReconnectListener
 
 
@@ -17,7 +17,7 @@ class CynanBotPubSubPool(PubSubPool):
         maxConnectionTopics: int,
         maxPoolSize: int,
         pubSubReconnectListener: PubSubReconnectListener,
-        timber: Timber
+        timber: TimberInterface
     ):
         super().__init__(
             client = client,
@@ -27,11 +27,11 @@ class CynanBotPubSubPool(PubSubPool):
 
         if not isinstance(pubSubReconnectListener, PubSubReconnectListener):
             raise ValueError(f'pubSubReconnectListener argument is malformed: \"{pubSubReconnectListener}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__pubSubReconnectListener: PubSubReconnectListener = pubSubReconnectListener
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
 
     async def auth_fail_hook(self, topics: List[Topic]):
         self.__timber.log('CynanBotPubSubPool', f'auth_fail_hook(): (topics=\"{topics}\")')

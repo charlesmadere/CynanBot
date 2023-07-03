@@ -1,9 +1,10 @@
 from asyncio import AbstractEventLoop
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timber import Timber
 from twitchio import Client
 from twitchio.ext.eventsub import EventSubClient
+
+import CynanBotCommon.utils as utils
+from CynanBotCommon.timber.timberInterface import TimberInterface
 
 
 class EventSubUtils():
@@ -14,7 +15,7 @@ class EventSubUtils():
         client: Client,
         port: int,
         webhookSecret: str,
-        timber: Timber,
+        timber: TimberInterface,
         callbackRoute: str = '/callback'
     ):
         if eventLoop is None:
@@ -34,7 +35,7 @@ class EventSubUtils():
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__port: int = port
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
 
         self.__isStarted: bool = False
         self.__eventSubClient: EventSubClient = EventSubClient(

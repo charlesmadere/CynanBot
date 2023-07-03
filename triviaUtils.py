@@ -7,7 +7,7 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBotCommon.trivia.bannedTriviaGameController import \
     BannedTriviaGameController
@@ -42,7 +42,7 @@ class TriviaUtils():
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
@@ -53,7 +53,7 @@ class TriviaUtils():
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
             raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
@@ -68,7 +68,7 @@ class TriviaUtils():
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface

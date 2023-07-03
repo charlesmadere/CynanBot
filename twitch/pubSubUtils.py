@@ -15,7 +15,7 @@ from twitchio.ext.pubsub.topics import Topic
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.network.exceptions import GenericNetworkException
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.exceptions import (
     TwitchAccessTokenMissingException, TwitchErrorException,
     TwitchJsonException, TwitchPasswordChangedException,
@@ -42,7 +42,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         backgroundTaskHelper: BackgroundTaskHelper,
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepository,
         usersRepositoryInterface: UsersRepositoryInterface,
@@ -59,7 +59,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
             raise ValueError(f'client argument is malformed: \"{client}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
@@ -90,7 +90,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepositoryInterface: UsersRepositoryInterface = usersRepositoryInterface
@@ -279,7 +279,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         self.__timber.log('PubSubUtils', f'Refreshing... (forceFullRefresh={forceFullRefresh})')
 
         if self.__isManagingPubSub:
-            self.__timber('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
+            self.__timber.log('PubSubUtils', f'Unable to update PubSub subscriptions because it is currently in progress!')
             return
 
         self.__isManagingPubSub = True

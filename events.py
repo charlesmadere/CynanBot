@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from generalSettingsRepository import GeneralSettingsRepository
@@ -30,15 +30,15 @@ class RaidLogEvent(AbsEvent):
     def __init__(
         self,
         chatLogger: ChatLogger,
-        timber: Timber
+        timber: TimberInterface
     ):
         if not isinstance(chatLogger, ChatLogger):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__chatLogger: ChatLogger = chatLogger
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         if not user.isChatLoggingEnabled():
@@ -70,18 +70,18 @@ class RaidThankEvent(AbsEvent):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
@@ -127,13 +127,13 @@ class SubGiftThankingEvent(AbsEvent):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchHandleProviderInterface: TwitchHandleProviderInterface,
         twitchUtils: TwitchUtils
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchHandleProviderInterface, TwitchHandleProviderInterface):
             raise ValueError(f'twitchHandleProviderInterface argument is malformed: \"{twitchHandleProviderInterface}\"')
@@ -141,7 +141,7 @@ class SubGiftThankingEvent(AbsEvent):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchHandleProviderInterface: TwitchHandleProviderInterface = twitchHandleProviderInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
 

@@ -9,7 +9,7 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
     SentMessageLogger
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from twitch.outboundMessage import OutboundMessage
 from twitch.twitchMessageable import TwitchMessageable
 
@@ -20,7 +20,7 @@ class TwitchUtils():
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
         sentMessageLogger: SentMessageLogger,
-        timber: Timber,
+        timber: TimberInterface,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
@@ -31,7 +31,7 @@ class TwitchUtils():
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(sentMessageLogger, SentMessageLogger):
             raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepBeforeRetryTimeSeconds):
             raise ValueError(f'sleepBeforeRetryTimeSeconds argument is malformed: \"{sleepBeforeRetryTimeSeconds}\"')
@@ -53,7 +53,7 @@ class TwitchUtils():
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__sentMessageLogger: SentMessageLogger = sentMessageLogger
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries

@@ -27,7 +27,7 @@ from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
-from CynanBotCommon.timber.timber import Timber
+from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
@@ -105,7 +105,7 @@ class AddBannedTriviaControllerCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
@@ -113,7 +113,7 @@ class AddBannedTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
             raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{timber}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -122,7 +122,7 @@ class AddBannedTriviaControllerCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -169,14 +169,14 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
@@ -186,7 +186,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -235,7 +235,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
@@ -247,7 +247,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
@@ -264,7 +264,7 @@ class AddTriviaAnswerCommand(AbsCommand):
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -349,7 +349,7 @@ class AddTriviaControllerCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
@@ -358,7 +358,7 @@ class AddTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
@@ -369,7 +369,7 @@ class AddTriviaControllerCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -426,7 +426,7 @@ class AddUserCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
-        timber: Timber,
+        timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
@@ -436,7 +436,7 @@ class AddUserCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
@@ -449,7 +449,7 @@ class AddUserCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
@@ -517,13 +517,13 @@ class AnswerCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
@@ -531,7 +531,7 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -565,7 +565,7 @@ class BanTriviaQuestionCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaBanHelper: TriviaBanHelper,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
@@ -575,7 +575,7 @@ class BanTriviaQuestionCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaBanHelper, TriviaBanHelper):
             raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
@@ -591,7 +591,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
@@ -658,7 +658,7 @@ class ClearCachesCommand(AbsCommand):
         locationsRepository: Optional[LocationsRepository],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
-        timber: Timber,
+        timber: TimberInterface,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
@@ -674,7 +674,7 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -689,7 +689,7 @@ class ClearCachesCommand(AbsCommand):
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -746,14 +746,14 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameMachine: TriviaGameMachine,
         triviaUtils: TriviaUtils,
         usersRepository: UsersRepository
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
@@ -763,7 +763,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -794,7 +794,7 @@ class CommandsCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaUtils: Optional[TriviaUtils],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
@@ -803,7 +803,7 @@ class CommandsCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
@@ -817,7 +817,7 @@ class CommandsCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -980,7 +980,7 @@ class ConfirmCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
@@ -988,7 +988,7 @@ class ConfirmCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -997,7 +997,7 @@ class ConfirmCommand(AbsCommand):
 
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -1031,7 +1031,7 @@ class CutenessCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -1042,7 +1042,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1057,7 +1057,7 @@ class CutenessCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1150,7 +1150,7 @@ class CutenessChampionsCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
@@ -1160,7 +1160,7 @@ class CutenessChampionsCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1173,7 +1173,7 @@ class CutenessChampionsCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
@@ -1201,7 +1201,7 @@ class CutenessHistoryCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -1213,7 +1213,7 @@ class CutenessHistoryCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1230,7 +1230,7 @@ class CutenessHistoryCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1294,12 +1294,12 @@ class CynanSourceCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1308,7 +1308,7 @@ class CynanSourceCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1331,7 +1331,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
@@ -1343,7 +1343,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
@@ -1360,7 +1360,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -1425,12 +1425,12 @@ class DiscordCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1439,7 +1439,7 @@ class DiscordCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1462,7 +1462,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
@@ -1471,7 +1471,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
             raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1480,7 +1480,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -1505,7 +1505,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
@@ -1513,7 +1513,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
@@ -1523,7 +1523,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1550,7 +1550,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
@@ -1562,7 +1562,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
@@ -1579,7 +1579,7 @@ class GetTriviaAnswersCommand(AbsCommand):
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -1646,7 +1646,7 @@ class GetTriviaControllersCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
@@ -1656,7 +1656,7 @@ class GetTriviaControllersCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
@@ -1667,7 +1667,7 @@ class GetTriviaControllersCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1698,7 +1698,7 @@ class GiveCutenessCommand(AbsCommand):
     def __init__(
         self,
         cutenessRepository: CutenessRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
@@ -1706,7 +1706,7 @@ class GiveCutenessCommand(AbsCommand):
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
@@ -1718,7 +1718,7 @@ class GiveCutenessCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
@@ -1791,7 +1791,7 @@ class JishoCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         jishoHelper: JishoHelper,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 3)
@@ -1800,7 +1800,7 @@ class JishoCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(jishoHelper, JishoHelper):
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1811,7 +1811,7 @@ class JishoCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__jishoHelper: JishoHelper = jishoHelper
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1851,18 +1851,18 @@ class LoremIpsumCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -1890,7 +1890,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepository,
         cutenessUtils: CutenessUtils,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
         usersRepository: UsersRepository,
@@ -1901,7 +1901,7 @@ class MyCutenessHistoryCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1916,7 +1916,7 @@ class MyCutenessHistoryCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepository = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
@@ -1966,12 +1966,12 @@ class PbsCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1980,7 +1980,7 @@ class PbsCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2003,7 +2003,7 @@ class PkMonCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 10)
@@ -2012,7 +2012,7 @@ class PkMonCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(pokepediaRepository, PokepediaRepository):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2023,7 +2023,7 @@ class PkMonCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2064,7 +2064,7 @@ class PkMoveCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         pokepediaRepository: PokepediaRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 10)
@@ -2073,7 +2073,7 @@ class PkMoveCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(pokepediaRepository, PokepediaRepository):
             raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2084,7 +2084,7 @@ class PkMoveCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2123,12 +2123,12 @@ class RaceCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2137,7 +2137,7 @@ class RaceCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastRaceMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2163,7 +2163,7 @@ class RemoveBannedTriviaControllerCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
@@ -2171,7 +2171,7 @@ class RemoveBannedTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepository):
             raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2180,7 +2180,7 @@ class RemoveBannedTriviaControllerCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -2225,14 +2225,14 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
@@ -2242,7 +2242,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -2289,7 +2289,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepository,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
@@ -2298,7 +2298,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
@@ -2309,7 +2309,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -2364,7 +2364,7 @@ class RemoveUserCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
-        timber: Timber,
+        timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
@@ -2374,7 +2374,7 @@ class RemoveUserCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
@@ -2387,7 +2387,7 @@ class RemoveUserCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
@@ -2437,7 +2437,7 @@ class SetFuntoonTokenCommand(AbsCommand):
         self,
         administratorProviderInterface: AdministratorProviderInterface,
         funtoonTokensRepository: FuntoonTokensRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
@@ -2445,7 +2445,7 @@ class SetFuntoonTokenCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
         elif not isinstance(funtoonTokensRepository, FuntoonTokensRepository):
             raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2454,7 +2454,7 @@ class SetFuntoonTokenCommand(AbsCommand):
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__funtoonTokensRepository: FuntoonTokensRepository = funtoonTokensRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -2500,14 +2500,14 @@ class SetTwitchCodeCommand(AbsCommand):
     def __init__(
         self,
         administratorProviderInterface: AdministratorProviderInterface,
-        timber: Timber,
+        timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
@@ -2517,7 +2517,7 @@ class SetTwitchCodeCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -2573,13 +2573,13 @@ class SuperAnswerCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameMachine: TriviaGameMachine,
         usersRepository: UsersRepository
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
@@ -2587,7 +2587,7 @@ class SuperAnswerCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__usersRepository: UsersRepository = usersRepository
 
@@ -2621,7 +2621,7 @@ class SuperTriviaCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaGameMachine: TriviaGameMachine,
         triviaSettingsRepository: TriviaSettingsRepository,
         triviaUtils: TriviaUtils,
@@ -2630,7 +2630,7 @@ class SuperTriviaCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
@@ -2644,7 +2644,7 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaSettingsRepository: TriviaSettingsRepository = triviaSettingsRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -2747,14 +2747,14 @@ class SwQuoteCommand(AbsCommand):
     def __init__(
         self,
         starWarsQuotesRepository: StarWarsQuotesRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
         if not isinstance(starWarsQuotesRepository, StarWarsQuotesRepository):
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2764,7 +2764,7 @@ class SwQuoteCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2803,12 +2803,12 @@ class TimeCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2817,7 +2817,7 @@ class TimeCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -2856,7 +2856,7 @@ class TranslateCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
-        timber: Timber,
+        timber: TimberInterface,
         translationHelper: TranslationHelper,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
@@ -2866,7 +2866,7 @@ class TranslateCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(translationHelper, TranslationHelper):
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
@@ -2879,7 +2879,7 @@ class TranslateCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__translationHelper: TranslationHelper = translationHelper
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
@@ -2937,7 +2937,7 @@ class TriviaInfoCommand(AbsCommand):
         self,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
         triviaUtils: TriviaUtils,
@@ -2948,7 +2948,7 @@ class TriviaInfoCommand(AbsCommand):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGenerator):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
@@ -2963,7 +2963,7 @@ class TriviaInfoCommand(AbsCommand):
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -3028,7 +3028,7 @@ class TriviaScoreCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository,
-        timber: Timber,
+        timber: TimberInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository,
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
@@ -3041,7 +3041,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepository):
             raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
@@ -3060,7 +3060,7 @@ class TriviaScoreCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -3130,12 +3130,12 @@ class TwitterCommand(AbsCommand):
 
     def __init__(
         self,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(minutes = 5)
     ):
-        if not isinstance(timber, Timber):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3144,7 +3144,7 @@ class TwitterCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -3166,7 +3166,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         triviaBanHelper: TriviaBanHelper,
         triviaEmoteGenerator: TriviaEmoteGenerator,
         triviaHistoryRepository: TriviaHistoryRepository,
@@ -3176,7 +3176,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaBanHelper, TriviaBanHelper):
             raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
@@ -3192,7 +3192,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__triviaBanHelper: TriviaBanHelper = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepository = triviaHistoryRepository
@@ -3253,7 +3253,7 @@ class WeatherCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         locationsRepository: LocationsRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         weatherRepository: WeatherRepository,
@@ -3263,7 +3263,7 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(locationsRepository, LocationsRepository):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3276,7 +3276,7 @@ class WeatherCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: LocationsRepository = locationsRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__weatherRepository: WeatherRepository = weatherRepository
@@ -3315,7 +3315,7 @@ class WordCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         languagesRepository: LanguagesRepository,
-        timber: Timber,
+        timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository,
         wordOfTheDayRepository: WordOfTheDayRepository,
@@ -3325,7 +3325,7 @@ class WordCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(timber, Timber):
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3338,7 +3338,7 @@ class WordCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__languagesRepository: LanguagesRepository = languagesRepository
-        self.__timber: Timber = timber
+        self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
