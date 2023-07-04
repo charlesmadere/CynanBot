@@ -5,18 +5,11 @@ import CynanBotCommon.utils as utils
 
 class AuthRepositorySnapshot():
 
-    def __init__(
-        self,
-        jsonContents: Dict[str, Any],
-        authRepositoryFile: str
-    ):
+    def __init__(self, jsonContents: Dict[str, Any]):
         if not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
-        elif not utils.isValidStr(authRepositoryFile):
-            raise ValueError(f'authRepositoryFile argument is malformed: \"{authRepositoryFile}\"')
 
         self.__jsonContents: Dict[str, Any] = jsonContents
-        self.__authRepositoryFile: str = authRepositoryFile
 
     def getDeepLAuthKey(self) -> str:
         return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', '')
@@ -46,7 +39,7 @@ class AuthRepositorySnapshot():
         deepLAuthKey = self.getDeepLAuthKey()
 
         if not utils.isValidStr(deepLAuthKey):
-            raise ValueError(f'\"deepLAuthKey\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{deepLAuthKey}\"')
+            raise ValueError(f'\"deepLAuthKey\" in Auth Repository file is malformed: \"{deepLAuthKey}\"')
 
         return deepLAuthKey
 
@@ -54,7 +47,7 @@ class AuthRepositorySnapshot():
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()
 
         if not utils.isValidStr(merriamWebsterApiKey):
-            raise ValueError(f'\"merriamWebsterApiKey\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{merriamWebsterApiKey}\"')
+            raise ValueError(f'\"merriamWebsterApiKey\" in Auth Repository file is malformed: \"{merriamWebsterApiKey}\"')
 
         return merriamWebsterApiKey
 
@@ -62,7 +55,7 @@ class AuthRepositorySnapshot():
         nick = self.__jsonContents.get('nick')
 
         if not utils.isValidStr(nick):
-            raise ValueError(f'\"nick\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{nick}\"')
+            raise ValueError(f'\"nick\" in Auth Repository file is malformed: \"{nick}\"')
 
         return nick
 
@@ -70,7 +63,7 @@ class AuthRepositorySnapshot():
         oneWeatherApiKey = self.getOneWeatherApiKey()
 
         if not utils.isValidStr(oneWeatherApiKey):
-            raise ValueError(f'\"oneWeatherApiKey\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{oneWeatherApiKey}\"')
+            raise ValueError(f'\"oneWeatherApiKey\" in Auth Repository file is malformed: \"{oneWeatherApiKey}\"')
 
         return oneWeatherApiKey
 
@@ -78,7 +71,7 @@ class AuthRepositorySnapshot():
         quizApiKey = self.getQuizApiKey()
 
         if not utils.isValidStr(quizApiKey):
-            raise ValueError(f'\"quizApiKey\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{quizApiKey}\"')
+            raise ValueError(f'\"quizApiKey\" in Auth Repository file is malformed: \"{quizApiKey}\"')
 
         return quizApiKey
 
@@ -86,7 +79,7 @@ class AuthRepositorySnapshot():
         twitchClientId = self.__jsonContents.get('twitchClientId')
 
         if not utils.isValidStr(twitchClientId):
-            raise ValueError(f'\"twitchClientId\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchClientId}\"')
+            raise ValueError(f'\"twitchClientId\" in Auth Repository file is malformed: \"{twitchClientId}\"')
 
         return twitchClientId
 
@@ -94,7 +87,7 @@ class AuthRepositorySnapshot():
         twitchClientSecret = self.__jsonContents.get('twitchClientSecret')
 
         if not utils.isValidStr(twitchClientSecret):
-            raise ValueError(f'\"twitchClientSecret\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchClientSecret}\"')
+            raise ValueError(f'\"twitchClientSecret\" in Auth Repository file is malformed: \"{twitchClientSecret}\"')
 
         return twitchClientSecret
 
@@ -102,7 +95,7 @@ class AuthRepositorySnapshot():
         twitchHandle = self.__jsonContents.get('twitchHandle')
 
         if not utils.isValidStr(twitchHandle):
-            raise ValueError(f'\"twitchHandle\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchHandle}\"')
+            raise ValueError(f'\"twitchHandle\" in Auth Repository file is malformed: \"{twitchHandle}\"')
 
         return twitchHandle
 
@@ -110,6 +103,6 @@ class AuthRepositorySnapshot():
         twitchIrcAuthToken = self.__jsonContents.get('twitchIrcAuthToken')
 
         if not utils.isValidStr(twitchIrcAuthToken):
-            raise ValueError(f'\"twitchIrcAuthToken\" in Auth Repository file (\"{self.__authRepositoryFile}\") is malformed: \"{twitchIrcAuthToken}\"')
+            raise ValueError(f'\"twitchIrcAuthToken\" in Auth Repository file is malformed: \"{twitchIrcAuthToken}\"')
 
         return twitchIrcAuthToken

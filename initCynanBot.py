@@ -142,8 +142,11 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 eventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
-generalSettingsRepository = GeneralSettingsRepository()
 timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
+
+generalSettingsRepository = GeneralSettingsRepository(
+    settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
+)
 
 backingDatabase: BackingDatabase = None
 if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:

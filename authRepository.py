@@ -1,12 +1,7 @@
-import json
-import os
 from typing import Any, Dict, Optional
 
-import aiofiles
-import aiofiles.ospath
-
-import CynanBotCommon.utils as utils
 from authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
 from CynanBotCommon.twitch.twitchHandleProviderInterface import \
@@ -15,14 +10,12 @@ from CynanBotCommon.twitch.twitchHandleProviderInterface import \
 
 class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
 
-    def __init__(
-        self,
-        authFile: str = 'authRepository.json'
-    ):
-        if not utils.isValidStr(authFile):
-            raise ValueError(f'authFile argument is malformed: \"{authFile}\"')
+    def __init__(self, authJsonReader: JsonReaderInterface):
+        if not isinstance(authJsonReader, JsonReaderInterface):
+            raise ValueError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
 
-        self.__authFile: str = authFile
+        self.__authJsonReader: JsonReaderInterface = authJsonReader
+
         self.__cache: Optional[AuthRepositorySnapshot] = None
 
     async def clearCaches(self):
@@ -33,7 +26,7 @@ class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInt
             return self.__cache
 
         jsonContents = self.__readJson()
-        snapshot = AuthRepositorySnapshot(jsonContents, self.__authFile)
+        snapshot = AuthRepositorySnapshot(jsonContents)
         self.__cache = snapshot
 
         return snapshot
@@ -43,7 +36,7 @@ class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInt
             return self.__cache
 
         jsonContents = await self.__readJsonAsync()
-        snapshot = AuthRepositorySnapshot(jsonContents, self.__authFile)
+        snapshot = AuthRepositorySnapshot(jsonContents)
         self.__cache = snapshot
 
         return snapshot
@@ -61,30 +54,27 @@ class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInt
         return snapshot.requireTwitchHandle()
 
     def __readJson(self) -> Dict[str, Any]:
-        if not os.path.exists(self.__authFile):
-            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
+        if not self.__authJsonReader.fileExists():
+            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
 
-        with open(self.__authFile, 'r') as file:
-            jsonContents = json.load(file)
+        jsonContents = self.__authJsonReader.readJson()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from Auth Repository file: \"{self.__authFile}\"')
+            raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authFile}\" is empty')
+            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
 
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, Any]:
-        if not await aiofiles.ospath.exists(self.__authFile):
-            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authFile}\"')
+        if not await self.__authJsonReader.fileExistsAsync():
+            raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
 
-        async with aiofiles.open(self.__authFile, mode = 'r') as file:
-            data = await file.read()
-            jsonContents = json.loads(data)
+        jsonContents = await self.__authJsonReader.readJsonAsync()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from Auth Repository file: \"{self.__authFile}\"')
+            raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authFile}\" is empty')
+            raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
 
         return jsonContents

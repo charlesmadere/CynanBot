@@ -1,24 +1,17 @@
-import json
-import os
 from typing import Any, Dict, Optional
 
-import aiofiles
-import aiofiles.ospath
-
-import CynanBotCommon.utils as utils
+from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
 class GeneralSettingsRepository():
 
-    def __init__(
-        self,
-        generalSettingsFile: str = 'generalSettingsRepository.json'
-    ):
-        if not utils.isValidStr(generalSettingsFile):
-            raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
+    def __init__(self, settingsJsonReader: JsonReaderInterface):
+        if not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
-        self.__generalSettingsFile: str = generalSettingsFile
+        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+
         self.__cache: Optional[GeneralSettingsRepositorySnapshot] = None
 
     async def clearCaches(self):
@@ -33,7 +26,7 @@ class GeneralSettingsRepository():
             return self.__cache
 
         jsonContents = self.__readJson()
-        snapshot = GeneralSettingsRepositorySnapshot(jsonContents, self.__generalSettingsFile)
+        snapshot = GeneralSettingsRepositorySnapshot(jsonContents)
         self.__cache = snapshot
 
         return snapshot
@@ -43,36 +36,33 @@ class GeneralSettingsRepository():
             return self.__cache
 
         jsonContents = await self.__readJsonAsync()
-        snapshot = GeneralSettingsRepositorySnapshot(jsonContents, self.__generalSettingsFile)
+        snapshot = GeneralSettingsRepositorySnapshot(jsonContents)
         self.__cache = snapshot
 
         return snapshot
 
     def __readJson(self) -> Dict[str, Any]:
-        if not os.path.exists(self.__generalSettingsFile):
-            raise FileNotFoundError(f'General Settings file not found: \"{self.__generalSettingsFile}\"')
+        if not self.__settingsJsonReader.fileExists():
+            raise FileNotFoundError(f'General Settings file not found: \"{self.__settingsJsonReader}\"')
 
-        with open(self.__generalSettingsFile, 'r') as file:
-            jsonContents = json.load(file)
+        jsonContents = self.__settingsJsonReader.readJson()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from General Settings file: \"{self.__generalSettingsFile}\"')
+            raise IOError(f'Error reading from General Settings file: \"{self.__settingsJsonReader}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of General Settings file \"{self.__generalSettingsFile}\" is empty')
+            raise ValueError(f'JSON contents of General Settings file \"{self.__settingsJsonReader}\" is empty')
 
         return jsonContents
 
     async def __readJsonAsync(self) -> Dict[str, Any]:
-        if not await aiofiles.ospath.exists(self.__generalSettingsFile):
-            raise FileNotFoundError(f'General Settings file not found: \"{self.__generalSettingsFile}\"')
+        if not await self.__settingsJsonReader.fileExistsAsync():
+            raise FileNotFoundError(f'General Settings file not found: \"{self.__settingsJsonReader}\"')
 
-        async with aiofiles.open(self.__generalSettingsFile, mode = 'r') as file:
-            data = await file.read()
-            jsonContents = json.loads(data)
+        jsonContents = await self.__settingsJsonReader.readJsonAsync()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from General Settings file: \"{self.__generalSettingsFile}\"')
+            raise IOError(f'Error reading from General Settings file: \"{self.__settingsJsonReader}\"')
         elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of General Settings file \"{self.__generalSettingsFile}\" is empty')
+            raise ValueError(f'JSON contents of General Settings file \"{self.__settingsJsonReader}\" is empty')
 
         return jsonContents

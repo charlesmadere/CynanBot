@@ -7,18 +7,11 @@ from CynanBotCommon.storage.databaseType import DatabaseType
 
 class GeneralSettingsRepositorySnapshot():
 
-    def __init__(
-        self,
-        jsonContents: Dict[str, Any],
-        generalSettingsFile: str
-    ):
+    def __init__(self, jsonContents: Dict[str, Any]):
         if not utils.hasItems(jsonContents):
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
-        elif not utils.isValidStr(generalSettingsFile):
-            raise ValueError(f'generalSettingsFile argument is malformed: \"{generalSettingsFile}\"')
 
         self.__jsonContents: Dict[str, Any] = jsonContents
-        self.__generalSettingsFile: str = generalSettingsFile
 
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)
@@ -155,7 +148,7 @@ class GeneralSettingsRepositorySnapshot():
         administrator = self.__jsonContents.get('administrator')
 
         if not utils.isValidStr(administrator):
-            raise ValueError(f'\"administrator\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{administrator}\"')
+            raise ValueError(f'\"administrator\" in General Settings file is malformed: \"{administrator}\"')
 
         return administrator
 
@@ -163,7 +156,7 @@ class GeneralSettingsRepositorySnapshot():
         databaseType = self.__jsonContents.get('databaseType')
 
         if not utils.isValidStr(databaseType):
-            raise ValueError(f'\"databaseType\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{databaseType}\"')
+            raise ValueError(f'\"databaseType\" in General Settings file is malformed: \"{databaseType}\"')
 
         return DatabaseType.fromStr(databaseType)
 
@@ -171,6 +164,6 @@ class GeneralSettingsRepositorySnapshot():
         networkClientType = self.__jsonContents.get('networkClientType')
 
         if not utils.isValidStr(networkClientType):
-            raise ValueError(f'\"networkClientType\" in General Settings file (\"{self.__generalSettingsFile}\") is malformed: \"{networkClientType}\"')
+            raise ValueError(f'\"networkClientType\" in General Settings file is malformed: \"{networkClientType}\"')
 
         return NetworkClientType.fromStr(networkClientType)
