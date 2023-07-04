@@ -174,7 +174,9 @@ elif generalSettingsRepository.getAll().requireNetworkClientType() is NetworkCli
 else:
     raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsRepository.getAll().requireNetworkClientType()}\"')
 
-authRepository = AuthRepository()
+authRepository = AuthRepository(
+    authJsonReader = JsonFileReader('authRepository.json')
+)
 twitchApiService = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
