@@ -456,7 +456,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             pass
 
         try:
-            user = self.__usersRepository.getUserAsync(channel)
+            user = await self.__usersRepository.getUserAsync(channel)
         except:
             pass
 
