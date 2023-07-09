@@ -413,3 +413,33 @@ class UsersRepository(UsersRepositoryInterface):
         await self.clearCaches()
 
         self.__timber.log('UsersRepository', f'Finished removing user \"{handle}\"')
+
+    async def setUserEnabled(self, handle: str, enabled: bool):
+        if not utils.isValidStr(handle):
+            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+        elif not utils.isValidBool(enabled):
+            raise ValueError(f'enabled argument is malformed: \"{enabled}\"')
+
+        self.__timber.log('UsersRepository', f'Changing enabled status for user \"{handle}\" to \"{enabled}\"...')
+        jsonContents = await self.__readJsonAsync()
+        preExistingHandle: Optional[str] = None
+
+        for key in jsonContents.keys():
+            if key.lower() == handle.lower():
+                preExistingHandle = key
+                break
+
+        if not utils.isValidStr(preExistingHandle):
+            self.__timber.log('UsersRepository', f'Unable to change enabled status for user \"{handle}\" as no user with that handle currently exists')
+            return
+
+        jsonContents[preExistingHandle]['enabled'] = enabled
+
+        async with aiofiles.open(self.__usersFile, mode = 'w') as file:
+            jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
+            await file.write(jsonString)
+
+        # be sure to clear caches, as JSON file contents have now been updated
+        await self.clearCaches()
+
+        self.__timber.log('UsersRepository', f'Finished changing enabled status for user \"{handle}\" to \"{enabled}\"')
