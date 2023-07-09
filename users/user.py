@@ -469,3 +469,6 @@ class User(UserInterface):
 
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
+
+    def __str__(self) -> str:
+        return self.getHandle()
