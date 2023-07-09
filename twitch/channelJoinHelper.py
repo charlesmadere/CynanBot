@@ -19,7 +19,7 @@ class ChannelJoinHelper():
         backgroundTaskHelper: BackgroundTaskHelper,
         timber: TimberInterface,
         usersRepository: UsersRepositoryInterface,
-        sleepTimeSeconds: float = 16,
+        sleepTimeSeconds: float = 12,
         maxChannelsToJoin: int = 10
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
