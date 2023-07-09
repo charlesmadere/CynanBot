@@ -462,7 +462,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         except:
             pass
 
-        self.__timber.log('CynanBot', f'Failed to join channel \"{channel}\" (userId=\"{userId}\") (user=\"{user}\")')
+        self.__timber.log('CynanBot', f'Failed to join channel \"{channel}\" (userId=\"{userId}\") (user=\"{user}\"), disabling this user...')
+
+        await self.__usersRepository.setUserEnabled(
+            handle = user.getHandle(),
+            enabled = False
+        )
+
+        self.__timber.log('CynanBot', f'Finished disabling user \"{user}\" due to channel join failure')
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
