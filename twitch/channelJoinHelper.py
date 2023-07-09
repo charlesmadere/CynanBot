@@ -5,10 +5,11 @@ from typing import List, Optional
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 from twitch.channelJoinListener import ChannelJoinListener
 from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
-from users.usersRepository import UsersRepository
 
 
 class ChannelJoinHelper():
@@ -17,7 +18,7 @@ class ChannelJoinHelper():
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
         timber: TimberInterface,
-        usersRepository: UsersRepository,
+        usersRepository: UsersRepositoryInterface,
         sleepTimeSeconds: float = 16,
         maxChannelsToJoin: int = 10
     ):
@@ -25,7 +26,7 @@ class ChannelJoinHelper():
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
@@ -38,7 +39,7 @@ class ChannelJoinHelper():
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: TimberInterface = timber
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxChannelsToJoin: int = maxChannelsToJoin
 

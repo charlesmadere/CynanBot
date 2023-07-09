@@ -80,6 +80,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
@@ -172,7 +174,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
@@ -182,14 +184,14 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
         self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -430,7 +432,7 @@ class AddUserCommand(AbsCommand):
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepository,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
@@ -444,7 +446,7 @@ class AddUserCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepository):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
@@ -453,7 +455,7 @@ class AddUserCommand(AbsCommand):
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -662,7 +664,7 @@ class ClearCachesCommand(AbsCommand):
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository,
+        usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepository],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
@@ -678,7 +680,7 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
@@ -693,7 +695,7 @@ class ClearCachesCommand(AbsCommand):
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
         self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
         self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
 

@@ -102,6 +102,8 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                     SubGiftThankingEvent)
@@ -231,7 +233,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
         self.__channelPointsLruCache: LruCache = LruCache(64)
 
