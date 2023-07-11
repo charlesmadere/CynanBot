@@ -2887,12 +2887,12 @@ class TranslateCommand(AbsCommand):
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
-    def __determineOptionalLanguageEntry(self, splits: List[str]) -> Optional[LanguageEntry]:
+    async def __determineOptionalLanguageEntry(self, splits: List[str]) -> Optional[LanguageEntry]:
         if not utils.hasItems(splits):
             raise ValueError(f'splits argument is malformed: \"{splits}\"')
 
         if len(splits[1]) >= 3 and splits[1][0:2] == '--':
-            return self.__languagesRepository.getLanguageForCommand(
+            return await self.__languagesRepository.getLanguageForCommand(
                 command = splits[1][2:],
                 hasIso6391Code = True
             )
@@ -2915,7 +2915,7 @@ class TranslateCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Please specify the text you want to translate. Example: !translate I like tamales')
             return
 
-        targetLanguageEntry = self.__determineOptionalLanguageEntry(splits)
+        targetLanguageEntry = await self.__determineOptionalLanguageEntry(splits)
 
         startSplitIndex: int = 1
         if targetLanguageEntry is not None:
@@ -3359,8 +3359,8 @@ class WordCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
-            exampleEntry = self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
-            allWotdApiCodes = self.__languagesRepository.getAllWotdApiCodes()
+            exampleEntry = await self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
+            allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
             await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
@@ -3368,13 +3368,14 @@ class WordCommand(AbsCommand):
         languageEntry: LanguageEntry = None
 
         try:
-            languageEntry = self.__languagesRepository.requireLanguageForCommand(
+            languageEntry = await self.__languagesRepository.requireLanguageForCommand(
                 command = language,
                 hasWotdApiCode = True
             )
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WordCommand', f'Error retrieving language entry: \"{language}\": {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {self.__languagesRepository.getAllWotdApiCodes()}')
+            allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
+            await self.__twitchUtils.safeSend(ctx, f'⚠ The given language code is not supported by the !word command. Available languages: {allWotdApiCodes}')
             return
 
         try:
