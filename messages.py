@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
