@@ -185,7 +185,8 @@ twitchApiService = TwitchApiService(
 twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
+    seedFileReader = JsonFileReader('CynanBotCommon/twitch/twitchTokensRepositorySeedFile.json')
 )
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
