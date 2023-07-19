@@ -15,6 +15,7 @@ class User(UserInterface):
 
     def __init__(
         self,
+        areRecurringActionsEnabled: bool,
         isCatJamMessageEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
@@ -74,7 +75,9 @@ class User(UserInterface):
         pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]],
         timeZones: Optional[List[tzinfo]]
     ):
-        if not utils.isValidBool(isCatJamMessageEnabled):
+        if not utils.isValidBool(areRecurringActionsEnabled):
+            raise ValueError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
+        elif not utils.isValidBool(isCatJamMessageEnabled):
             raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
@@ -169,6 +172,7 @@ class User(UserInterface):
         elif twitter is not None and not isinstance(twitter, str):
             raise ValueError(f'twitter argument is malformed: \"{twitter}\"')
 
+        self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
@@ -227,6 +231,9 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]] = pkmnCatchBoosterPacks
         self.__timeZones: Optional[List[tzinfo]] = timeZones
+
+    def areRecurringActionsEnabled(self) -> bool:
+        return self.__areRecurringActionsEnabled
 
     async def fetchPicOfTheDay(self) -> str:
         if not self.__isPicOfTheDayEnabled:
