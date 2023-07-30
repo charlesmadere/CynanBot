@@ -1,10 +1,12 @@
 from typing import Any, Dict, Optional
 
 from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBotCommon.trivia.triviaGameBuilderSettingsInterface import \
+    TriviaGameBuilderSettingsInterface
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
-class GeneralSettingsRepository():
+class GeneralSettingsRepository(TriviaGameBuilderSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -40,6 +42,42 @@ class GeneralSettingsRepository():
         self.__cache = snapshot
 
         return snapshot
+
+    async def getSuperTriviaGamePerUserAttempts(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getSuperTriviaGamePerUserAttempts()
+
+    async def getSuperTriviaGamePoints(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getSuperTriviaGamePoints()
+
+    async def getSuperTriviaGameShinyMultiplier(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getSuperTriviaGameShinyMultiplier()
+
+    async def getSuperTriviaGameToxicMultiplier(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getSuperTriviaGameToxicMultiplier()
+
+    async def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getSuperTriviaGameToxicPunishmentMultiplier()
+
+    async def getTriviaGamePoints(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getTriviaGamePoints()
+
+    async def getTriviaGameShinyMultiplier(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getTriviaGameShinyMultiplier()
+
+    async def getWaitForSuperTriviaAnswerDelay(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getWaitForSuperTriviaAnswerDelay()
+
+    async def getWaitForTriviaAnswerDelay(self) -> int:
+        snapshot = await self.getAllAsync()
+        return snapshot.getWaitForTriviaAnswerDelay()
 
     def __readJson(self) -> Dict[str, Any]:
         if not self.__settingsJsonReader.fileExists():
