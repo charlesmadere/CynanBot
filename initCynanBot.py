@@ -523,6 +523,14 @@ triviaGameMachine = TriviaGameMachine(
 ## Recurring Actions initialization section ##
 ##############################################
 
+recurringActionsRepository: RecurringActionsRepositoryInterface = RecurringActionsRepository(
+    backingDatabase = backingDatabase,
+    recurringActionsJsonParser = RecurringActionsJsonParser(
+        languagesRepository = languagesRepository
+    ),
+    timber = timber
+)
+
 recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -531,13 +539,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
         backingDatabase = backingDatabase,
         timber = timber
     ),
-    recurringActionsRepository = RecurringActionsRepository(
-        backingDatabase = backingDatabase,
-        recurringActionsJsonParser = RecurringActionsJsonParser(
-            languagesRepository = languagesRepository
-        ),
-        timber = timber
-    ),
+    recurringActionsRepository = recurringActionsRepository,
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
@@ -585,6 +587,7 @@ cynanBot = CynanBot(
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,
     recurringActionsMachine = recurringActionsMachine,
+    recurringActionsRepository = recurringActionsRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     timber = timber,

@@ -24,7 +24,7 @@ from commands import (AbsCommand, AddBannedTriviaControllerCommand,
                       GetTriviaAnswersCommand, GetTriviaControllersCommand,
                       GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand,
+                      PkMoveCommand, RaceCommand, RecurringActionCommand,
                       RemoveBannedTriviaControllerCommand,
                       RemoveGlobalTriviaControllerCommand,
                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
@@ -55,6 +55,8 @@ from CynanBotCommon.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
+from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
+    RecurringActionsRepositoryInterface
 from CynanBotCommon.recurringActions.recurringActionType import \
     RecurringActionType
 from CynanBotCommon.recurringActions.superTriviaRecurringAction import \
@@ -179,7 +181,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         pokepediaRepository: Optional[PokepediaRepository],
-        recurringActionsMachine: Optional[RecurringActionsMachineInterface],
+        recurringActionsMachine: RecurringActionsMachineInterface,
+        recurringActionsRepository: RecurringActionsRepositoryInterface,
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
         timber: TimberInterface,
@@ -230,6 +233,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif not isinstance(recurringActionsMachine, RecurringActionsMachineInterface):
+            raise ValueError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
+        elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
+            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
@@ -249,7 +256,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
+        self.__recurringActionsMachine: RecurringActionsMachineInterface = recurringActionsMachine
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -273,6 +280,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
+        self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProviderInterface, recurringActionsRepository, timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProviderInterface, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
