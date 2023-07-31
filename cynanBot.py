@@ -1127,6 +1127,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__raceCommand.handleCommand(context)
 
+    @commands.command(name = 'recurringaction')
+    async def command_recurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__recurringActionCommand.handleCommand(context)
+
     @commands.command(name = 'removebannedtriviacontroller')
     async def command_removebannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
