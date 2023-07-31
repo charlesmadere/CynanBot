@@ -50,6 +50,19 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.lruCache import LruCache
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.recurringActions.recurringAction import RecurringAction
+from CynanBotCommon.recurringActions.recurringActionEventListener import \
+    RecurringActionEventListener
+from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
+    RecurringActionsMachineInterface
+from CynanBotCommon.recurringActions.recurringActionType import \
+    RecurringActionType
+from CynanBotCommon.recurringActions.superTriviaRecurringAction import \
+    SuperTriviaRecurringAction
+from CynanBotCommon.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBotCommon.recurringActions.wordOfTheDayRecurringAction import \
+    WordOfTheDayRecurringAction
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
@@ -90,6 +103,8 @@ from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
@@ -100,6 +115,8 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
+from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.usersRepositoryInterface import \
@@ -137,7 +154,7 @@ from users.user import User
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, TriviaEventListener):
+class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, TriviaEventListener):
 
     def __init__(
         self,
@@ -155,12 +172,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         funtoonRepository: Optional[FuntoonRepository],
         funtoonTokensRepository: Optional[FuntoonTokensRepository],
         generalSettingsRepository: GeneralSettingsRepository,
+        isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
         locationsRepository: Optional[LocationsRepository],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         pokepediaRepository: Optional[PokepediaRepository],
+        recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
         timber: TimberInterface,
@@ -168,13 +187,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelper],
         triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
+        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachine],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
-        triviaUtils: Optional[TriviaUtils],
+        triviaUtils: TriviaUtils,
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
@@ -212,6 +232,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaUtils, TriviaUtils):
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
@@ -227,6 +249,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
+        self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -242,7 +265,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepositoryInterface, funtoonTokensRepository, generalSettingsRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProviderInterface, authRepository, bannedWordsRepositoryInterface, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, timber, triviaSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProviderInterface, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -272,7 +295,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProviderInterface,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProviderInterface, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
@@ -285,7 +308,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
-            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -743,9 +766,49 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Trivi
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
 
+        if self.__recurringActionsMachine is not None:
+            self.__recurringActionsMachine.setRecurringActionListener(self)
+            self.__recurringActionsMachine.startRecurringActions()
+
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')
         await self.join_channels(event.getChannels())
+
+    async def onNewRecurringActionEvent(self, event: RecurringAction):
+        actionType = event.getActionType()
+        self.__timber.log('CynanBot', f'Received new recurring action event: \"{actionType}\"')
+
+        await self.wait_for_ready()
+
+        if actionType is RecurringActionType.SUPER_TRIVIA:
+            await self.__handleSuperTriviaRecurringAction(event)
+        elif actionType is RecurringActionType.WEATHER:
+            await self.__handleWeatherRecurringAction(event)
+        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+            await self.__handleWordOfTheDayRecurringAction(event)
+
+    async def __handleSuperTriviaRecurringAction(self, action: SuperTriviaRecurringAction):
+        if not isinstance(action, SuperTriviaRecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+
+        twitchChannel = await self.__getChannel(action.getTwitchChannel())
+        await self.__twitchUtils.safeSend(twitchChannel, 'Super trivia starting soon!')
+
+    async def __handleWeatherRecurringAction(self, action: WeatherRecurringAction):
+        if not isinstance(action, WeatherRecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+
+        twitchChannel = await self.__getChannel(action.getTwitchChannel())
+        weatherReport = action.requireWeatherReport()
+        await self.__twitchUtils.safeSend(twitchChannel, weatherReport.toStr())
+
+    async def __handleWordOfTheDayRecurringAction(self, action: WordOfTheDayRecurringAction):
+        if not isinstance(action, WordOfTheDayRecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+
+        twitchChannel = await self.__getChannel(action.getTwitchChannel())
+        wordOfTheDay = action.requireWordOfTheDayResponse()
+        await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDay.toStr())
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         eventType = event.getTriviaEventType()

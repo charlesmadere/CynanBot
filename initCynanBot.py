@@ -27,6 +27,22 @@ from CynanBotCommon.network.networkClientType import NetworkClientType
 from CynanBotCommon.network.requestsClientProvider import \
     RequestsClientProvider
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.recurringActions.mostRecentRecurringActionRepository import \
+    MostRecentRecurringActionRepository
+from CynanBotCommon.recurringActions.mostRecentRecurringActionRepositoryInterface import \
+    MostRecentRecurringActionRepositoryInterface
+from CynanBotCommon.recurringActions.recurringActionsJsonParser import \
+    RecurringActionsJsonParser
+from CynanBotCommon.recurringActions.recurringActionsJsonParserInterface import \
+    RecurringActionsJsonParserInterface
+from CynanBotCommon.recurringActions.recurringActionsMachine import \
+    RecurringActionsMachine
+from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
+    RecurringActionsMachineInterface
+from CynanBotCommon.recurringActions.recurringActionsRepository import \
+    RecurringActionsRepository
+from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
+    RecurringActionsRepositoryInterface
 from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
     SentMessageLogger
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
@@ -88,6 +104,9 @@ from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaGameBuilder import TriviaGameBuilder
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
@@ -111,6 +130,10 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
+from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
+    IsLiveOnTwitchRepository
+from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
@@ -217,7 +240,16 @@ funtoonRepository = FuntoonRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
+isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
+    administratorProviderInterface = administratorProviderInterface,
+    twitchApiService = twitchApiService,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+)
 languagesRepository = LanguagesRepository()
+locationsRepository = LocationsRepository(
+    locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
+    timeZoneRepository = timeZoneRepository
+)
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -225,6 +257,10 @@ pokepediaRepository = PokepediaRepository(
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
+)
+wordOfTheDayRepository = WordOfTheDayRepository(
+    networkClientProvider = networkClientProvider,
+    timber = timber
 )
 
 authSnapshot = authRepository.getAll()
@@ -302,6 +338,10 @@ triviaContentScanner = TriviaContentScanner(
 triviaEmoteGenerator = TriviaEmoteGenerator(
     backingDatabase = backingDatabase,
     timber = timber
+)
+triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
+    triviaGameBuilderSettings = generalSettingsRepository,
+    usersRepository = usersRepository
 )
 bannedTriviaGameControllersRepository = BannedTriviaGameControllersRepository(
     administratorProviderInterface = administratorProviderInterface,
@@ -452,6 +492,60 @@ triviaRepository = TriviaRepository(
     )
 )
 
+triviaGameMachine = TriviaGameMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    cutenessRepository = cutenessRepository,
+    queuedTriviaGameStore = QueuedTriviaGameStore(
+        timber = timber,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    shinyTriviaHelper = shinyTriviaHelper,
+    superTriviaCooldownHelper = SuperTriviaCooldownHelper(
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    timber = timber,
+    toxicTriviaHelper = toxicTriviaHelper,
+    triviaAnswerChecker = TriviaAnswerChecker(
+        timber = timber,
+        triviaAnswerCompiler = triviaAnswerCompiler,
+        triviaSettingsRepository = triviaSettingsRepository
+    ),
+    triviaEmoteGenerator = triviaEmoteGenerator,
+    triviaGameStore = TriviaGameStore(),
+    triviaRepository = triviaRepository,
+    triviaScoreRepository = triviaScoreRepository,
+    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    userIdsRepository = userIdsRepository
+)
+
+
+##############################################
+## Recurring Actions initialization section ##
+##############################################
+
+recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMachine(
+    backgroundTaskHelper = backgroundTaskHelper,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
+    locationsRepository = locationsRepository,
+    mostRecentRecurringActionRepository = MostRecentRecurringActionRepository(
+        backingDatabase = backingDatabase,
+        timber = timber
+    ),
+    recurringActionsRepository = RecurringActionsRepository(
+        backingDatabase = backingDatabase,
+        recurringActionsJsonParser = RecurringActionsJsonParser(
+            languagesRepository = languagesRepository
+        ),
+        timber = timber
+    ),
+    timber = timber,
+    triviaGameBuilder = triviaGameBuilder,
+    triviaGameMachine = triviaGameMachine,
+    usersRepository = usersRepository,
+    weatherRepository = weatherRepository,
+    wordOfTheDayRepository = wordOfTheDayRepository
+)
+
 
 #####################################
 ## CynanBot initialization section ##
@@ -482,16 +576,15 @@ cynanBot = CynanBot(
         networkClientProvider = networkClientProvider,
         timber = timber
     ),
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     languagesRepository = languagesRepository,
-    locationsRepository = LocationsRepository(
-        locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
-        timeZoneRepository = timeZoneRepository
-    ),
+    locationsRepository = locationsRepository,
     modifyUserDataHelper = ModifyUserDataHelper(
         timber = timber
     ),
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,
+    recurringActionsMachine = recurringActionsMachine,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(),
     timber = timber,
@@ -501,31 +594,7 @@ cynanBot = CynanBot(
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    triviaGameMachine = TriviaGameMachine(
-        backgroundTaskHelper = backgroundTaskHelper,
-        cutenessRepository = cutenessRepository,
-        queuedTriviaGameStore = QueuedTriviaGameStore(
-            timber = timber,
-            triviaSettingsRepository = triviaSettingsRepository
-        ),
-        shinyTriviaHelper = shinyTriviaHelper,
-        superTriviaCooldownHelper = SuperTriviaCooldownHelper(
-            triviaSettingsRepository = triviaSettingsRepository
-        ),
-        timber = timber,
-        toxicTriviaHelper = toxicTriviaHelper,
-        triviaAnswerChecker = TriviaAnswerChecker(
-            timber = timber,
-            triviaAnswerCompiler = triviaAnswerCompiler,
-            triviaSettingsRepository = triviaSettingsRepository
-        ),
-        triviaEmoteGenerator = triviaEmoteGenerator,
-        triviaGameStore = TriviaGameStore(),
-        triviaRepository = triviaRepository,
-        triviaScoreRepository = triviaScoreRepository,
-        twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
-        userIdsRepository = userIdsRepository
-    ),
+    triviaGameMachine = triviaGameMachine,
     triviaHistoryRepository = triviaHistoryRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
@@ -542,10 +611,7 @@ cynanBot = CynanBot(
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,
-    wordOfTheDayRepository = WordOfTheDayRepository(
-        networkClientProvider = networkClientProvider,
-        timber = timber
-    )
+    wordOfTheDayRepository = wordOfTheDayRepository
 )
 
 

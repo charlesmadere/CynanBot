@@ -1,3 +1,4 @@
+import random
 import traceback
 import uuid
 from abc import ABC, abstractmethod
@@ -25,6 +26,23 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBotCommon.recurringActions.immutableSuperTriviaRecurringAction import \
+    ImmutableSuperTriviaRecurringAction
+from CynanBotCommon.recurringActions.immutableWeatherRecurringAction import \
+    ImmutableWeatherRecurringAction
+from CynanBotCommon.recurringActions.immutableWordOfTheDayRecurringAction import \
+    ImmutableWordOfTheDayRecurringAction
+from CynanBotCommon.recurringActions.recurringAction import RecurringAction
+from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
+    RecurringActionsRepositoryInterface
+from CynanBotCommon.recurringActions.recurringActionType import \
+    RecurringActionType
+from CynanBotCommon.recurringActions.superTriviaRecurringAction import \
+    SuperTriviaRecurringAction
+from CynanBotCommon.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBotCommon.recurringActions.wordOfTheDayRecurringAction import \
+    WordOfTheDayRecurringAction
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
@@ -47,16 +65,12 @@ from CynanBotCommon.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
 from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
 from CynanBotCommon.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
 from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBotCommon.trivia.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
 from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
@@ -66,7 +80,8 @@ from CynanBotCommon.trivia.triviaExceptions import (
     AdditionalTriviaAnswerIsMalformedException,
     AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
     TooManyAdditionalTriviaAnswersException)
-from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
@@ -77,6 +92,8 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
+from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
@@ -657,6 +674,7 @@ class ClearCachesCommand(AbsCommand):
         bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
+        isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         locationsRepository: Optional[LocationsRepository],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
@@ -688,6 +706,7 @@ class ClearCachesCommand(AbsCommand):
         self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepositoryInterface
         self.__funtoonTokensRepository: Optional[FuntoonTokensRepository] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
@@ -716,6 +735,9 @@ class ClearCachesCommand(AbsCommand):
             await self.__funtoonTokensRepository.clearCaches()
 
         await self.__generalSettingsRepository.clearCaches()
+
+        if self.__isLiveOnTwitchRepository is not None:
+            await self.__isLiveOnTwitchRepository.clearCaches()
 
         if self.__locationsRepository is not None:
             await self.__locationsRepository.clearCaches()
@@ -2159,6 +2181,176 @@ class RaceCommand(AbsCommand):
         self.__timber.log('RaceCommand', f'Handled !race command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class RecurringActionCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        recurringActionsRepository: RecurringActionsRepositoryInterface,
+        timber: TimberInterface,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepository
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
+            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepository):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
+        self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def __disableRecurringAction(self, user: User, actionType: RecurringActionType):
+        if not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(actionType, RecurringActionType):
+            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+
+        if actionType is RecurringActionType.SUPER_TRIVIA:
+            await self.__disableSuperTriviaRecurringAction(user)
+        elif actionType is RecurringActionType.WEATHER:
+            await self.__disableWeatherRecurringAction(user)
+        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+            await self.__disableWordOfTheDayRecurringAction(user)
+        else:
+            raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
+
+    async def __disableSuperTriviaRecurringAction(self, user: User):
+        await self.__recurringActionsRepository.setRecurringAction(ImmutableSuperTriviaRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        ))
+
+    async def __disableWeatherRecurringAction(self, user: User):
+        await self.__recurringActionsRepository.setRecurringAction(ImmutableWeatherRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        ))
+
+    async def __disableWordOfTheDayRecurringAction(self, user: User):
+        await self.__recurringActionsRepository.setRecurringAction(ImmutableWordOfTheDayRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        ))
+
+    async def __enableRecurringAction(self, user: User, actionType: RecurringActionType, minutesBetween: int) -> RecurringAction:
+        if not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(actionType, RecurringActionType):
+            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+
+        if actionType is RecurringActionType.SUPER_TRIVIA:
+            return await self.__enableSuperTriviaRecurringAction(user)
+        elif actionType is RecurringActionType.WEATHER:
+            return await self.__enableWeatherRecurringAction(user)
+        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+            return await self.__enableWordOfTheDayRecurringAction(user)
+        else:
+            raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
+
+    async def __enableSuperTriviaRecurringAction(self, user: User, minutesBetween: int) -> SuperTriviaRecurringAction:
+        recurringAction = ImmutableSuperTriviaRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = True,
+            minutesBetween = minutesBetween
+        )
+
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        return recurringAction
+
+    async def __enableWeatherRecurringAction(self, user: User, minutesBetween: int) -> WeatherRecurringAction:
+        recurringAction = ImmutableWeatherRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = True,
+            minutesBetween = minutesBetween
+        )
+
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        return recurringAction
+
+    async def __enableWordOfTheDayRecurringAction(self, user: User, minutesBetween: int) -> WordOfTheDayRecurringAction:
+        recurringAction = ImmutableWordOfTheDayRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = True,
+            minutesBetween = minutesBetween
+        )
+
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        return recurringAction
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():
+            self.__timber.log('RecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('RecurringActionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as no arguments were given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
+            return
+
+        recurringActionTypeStr: Optional[str] = splits[1]
+        recurringActionType: Optional[RecurringActionType] = None
+
+        try:
+            recurringActionType = RecurringActionType.fromStr(recurringActionTypeStr)
+        except:
+            pass
+
+        if recurringActionType is None:
+            self.__timber.log('RecurringActionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid RecurringActionType argument was given: \"{recurringActionTypeStr}\"')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as an invalid recurring action type was given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
+
+        minutesBetweenStr: Optional[str] = None
+        isDisabling = False
+
+        minutesBetween = recurringActionType.getDefaultRecurringActionTimingMinutes()
+
+        if len(splits) >= 3 and utils.isValidStr(splits[2]):
+            minutesBetweenStr = splits[2]
+
+            if minutesBetweenStr in ('disable', 'off', '0'):
+                isDisabling = True
+            else:
+                try:
+                    minutesBetween = int(minutesBetweenStr)
+                except:
+                    pass
+
+        if isDisabling:
+            await self.__disableRecurringAction(
+                user = user,
+                actionType = recurringActionType
+            )
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled {recurringActionType.toStr()} recurring action')
+            return
+
+        if not utils.isValidInt(minutesBetween) or minutesBetween < recurringActionType.getMinimumRecurringActionTimingMinutes() or minutesBetween > utils.getIntMaxSafeSize():
+            minutesBetween = recurringActionType.getDefaultRecurringActionTimingMinutes()
+
+        recurringAction = await self.__enableRecurringAction(
+            user = user,
+            actionType = recurringActionType,
+            minutesBetween = minutesBetween
+        )
+
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Enabled {recurringActionType.toStr()} recurring action every {recurringAction.getMinutesBetween()} minutes')
+
+    def __randomRecurringActionType(self) -> RecurringActionType:
+        recurringActions: List[RecurringActionType] = list(RecurringActionType)
+        return random.choice(recurringActions)
+
 class RemoveBannedTriviaControllerCommand(AbsCommand):
 
     def __init__(
@@ -2624,6 +2816,7 @@ class SuperTriviaCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
+        triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachine,
         triviaSettingsRepository: TriviaSettingsRepository,
         triviaUtils: TriviaUtils,
@@ -2634,6 +2827,8 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepository):
@@ -2647,6 +2842,7 @@ class SuperTriviaCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
         self.__triviaSettingsRepository: TriviaSettingsRepository = triviaSettingsRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
@@ -2691,56 +2887,15 @@ class SuperTriviaCommand(AbsCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ The given count is an unexpected number, please try again. Example: !supertrivia 2')
                 return
 
-        perUserAttempts = generalSettings.getSuperTriviaGamePerUserAttempts()
-        if user.hasSuperTriviaPerUserAttempts():
-            perUserAttempts = user.getSuperTriviaPerUserAttempts()
-
-        points = generalSettings.getSuperTriviaGamePoints()
-        if user.hasSuperTriviaGamePoints():
-            points = user.getSuperTriviaGamePoints()
-
-        regularTriviaPointsForWinning = generalSettings.getTriviaGamePoints()
-        if user.hasTriviaGamePoints():
-            regularTriviaPointsForWinning = user.getTriviaGamePoints()
-
-        secondsToLive = generalSettings.getWaitForSuperTriviaAnswerDelay()
-        if user.hasWaitForSuperTriviaAnswerDelay():
-            secondsToLive = user.getWaitForSuperTriviaAnswerDelay()
-
-        shinyMultiplier = generalSettings.getSuperTriviaGameShinyMultiplier()
-        if user.hasSuperTriviaGameShinyMultiplier():
-            shinyMultiplier = user.getSuperTriviaGameShinyMultiplier()
-
-        toxicMultiplier = generalSettings.getSuperTriviaGameToxicMultiplier()
-        if user.hasSuperTriviaGameToxicMultiplier():
-            toxicMultiplier = user.getSuperTriviaGameToxicMultiplier()
-
-        toxicTriviaPunishmentMultiplier = generalSettings.getSuperTriviaGameToxicPunishmentMultiplier()
-        if user.hasSuperTriviaGameToxicPunishmentMultiplier():
-            toxicTriviaPunishmentMultiplier = user.getSuperTriviaGameToxicPunishmentMultiplier()
-
-        triviaFetchOptions = TriviaFetchOptions(
+        startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
-            isJokeTriviaRepositoryEnabled = False,
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+            numberOfGames = numberOfGames
         )
 
-        self.__triviaGameMachine.submitAction(StartNewSuperTriviaGameAction(
-            isQueueActionConsumed = False,
-            isShinyTriviaEnabled = user.isShinyTriviaEnabled(),
-            isToxicTriviaEnabled = user.isToxicTriviaEnabled(),
-            numberOfGames = numberOfGames,
-            perUserAttempts = perUserAttempts,
-            pointsForWinning = points,
-            regularTriviaPointsForWinning = regularTriviaPointsForWinning,
-            secondsToLive = secondsToLive,
-            shinyMultiplier = shinyMultiplier,
-            toxicMultiplier = toxicMultiplier,
-            toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
-            twitchChannel = user.getHandle(),
-            triviaFetchOptions = triviaFetchOptions
-        ))
+        if startNewSuperTriviaGameAction is None:
+            return
 
+        self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
         self.__timber.log('SuperTriviaCommand', f'Handled !supertrivia command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
