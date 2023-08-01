@@ -2186,6 +2186,7 @@ class RecurringActionCommand(AbsCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        languagesRepository: LanguagesRepository,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -2193,6 +2194,8 @@ class RecurringActionCommand(AbsCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(languagesRepository, LanguagesRepository):
+            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -2203,60 +2206,115 @@ class RecurringActionCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__languagesRepository: LanguagesRepository = languagesRepository
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepository = usersRepository
 
-    async def __disableRecurringAction(self, user: User, actionType: RecurringActionType):
-        if not isinstance(user, User):
+    async def __disableRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User,
+        actionType: RecurringActionType
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(actionType, RecurringActionType):
             raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
 
         if actionType is RecurringActionType.SUPER_TRIVIA:
-            await self.__disableSuperTriviaRecurringAction(user)
+            await self.__disableSuperTriviaRecurringAction(
+                ctx = ctx,
+                user = user
+            )
         elif actionType is RecurringActionType.WEATHER:
-            await self.__disableWeatherRecurringAction(user)
+            await self.__disableWeatherRecurringAction(
+                ctx = ctx,
+                user = user
+            )
         elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-            await self.__disableWordOfTheDayRecurringAction(user)
+            await self.__disableWordOfTheDayRecurringAction(
+                ctx = ctx,
+                user = user
+            )
         else:
             raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
 
-    async def __disableSuperTriviaRecurringAction(self, user: User):
-        await self.__recurringActionsRepository.setRecurringAction(ImmutableSuperTriviaRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
-        ))
-
-    async def __disableWeatherRecurringAction(self, user: User):
-        await self.__recurringActionsRepository.setRecurringAction(ImmutableWeatherRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
-        ))
-
-    async def __disableWordOfTheDayRecurringAction(self, user: User):
-        await self.__recurringActionsRepository.setRecurringAction(ImmutableWordOfTheDayRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
-        ))
-
-    async def __enableRecurringAction(self, user: User, actionType: RecurringActionType, minutesBetween: int) -> RecurringAction:
-        if not isinstance(user, User):
+    async def __disableSuperTriviaRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(actionType, RecurringActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
 
-        if actionType is RecurringActionType.SUPER_TRIVIA:
-            return await self.__enableSuperTriviaRecurringAction(user)
-        elif actionType is RecurringActionType.WEATHER:
-            return await self.__enableWeatherRecurringAction(user)
-        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-            return await self.__enableWordOfTheDayRecurringAction(user)
-        else:
-            raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
+        recurringAction = ImmutableSuperTriviaRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        )
 
-    async def __enableSuperTriviaRecurringAction(self, user: User, minutesBetween: int) -> SuperTriviaRecurringAction:
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Super Trivia action')
+
+    async def __disableWeatherRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        recurringAction = ImmutableWeatherRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        )
+
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Weather action')
+
+    async def __disableWordOfTheDayRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        recurringAction = ImmutableWordOfTheDayRecurringAction(
+            twitchChannel = user.getHandle(),
+            enabled = False
+        )
+
+        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Word Of The Day action')
+
+    async def __enableSuperTriviaRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User,
+        splits: List[str]
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+
+        minutesBetween = await self.__parseMinutesBetween(
+            actionType = RecurringActionType.SUPER_TRIVIA,
+            splits = splits
+        )
+
         recurringAction = ImmutableSuperTriviaRecurringAction(
             twitchChannel = user.getHandle(),
             enabled = True,
@@ -2264,9 +2322,26 @@ class RecurringActionCommand(AbsCommand):
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        return recurringAction
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Enabled recurring Super Trivia action every {minutesBetween} minutes')
 
-    async def __enableWeatherRecurringAction(self, user: User, minutesBetween: int) -> WeatherRecurringAction:
+    async def __enableWeatherRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User,
+        splits: List[str]
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+
+        minutesBetween = await self.__parseMinutesBetween(
+            actionType = RecurringActionType.WEATHER,
+            splits = splits
+        )
+
         recurringAction = ImmutableWeatherRecurringAction(
             twitchChannel = user.getHandle(),
             enabled = True,
@@ -2274,9 +2349,39 @@ class RecurringActionCommand(AbsCommand):
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        return recurringAction
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Enabled recurring Weather action every {minutesBetween} minutes')
 
-    async def __enableWordOfTheDayRecurringAction(self, user: User, minutesBetween: int) -> WordOfTheDayRecurringAction:
+    async def __enableWordOfTheDayRecurringAction(
+        self,
+        ctx: TwitchContext,
+        user: User,
+        splits: List[str]
+    ):
+        if not isinstance(ctx, TwitchContext):
+            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+        elif not isinstance(user, User):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+
+        minutesBetween = await self.__parseMinutesBetween(
+            actionType = RecurringActionType.WORD_OF_THE_DAY,
+            splits = splits
+        )
+
+        languageEntry: Optional[LanguageEntry] = None
+
+        if len(splits) >= 4:
+            try:
+                languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(splits[3])
+            except:
+                pass
+
+        if languageEntry is None:
+            allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring Word Of The Day action as an invalid language was specified (available languages: {allWotdApiCodes})')
+            return
+
         recurringAction = ImmutableWordOfTheDayRecurringAction(
             twitchChannel = user.getHandle(),
             enabled = True,
@@ -2284,7 +2389,7 @@ class RecurringActionCommand(AbsCommand):
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        return recurringAction
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Enabled recurring Word Of The Day action every {minutesBetween} minutes for {languageEntry.getName()}')
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -2300,52 +2405,78 @@ class RecurringActionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as no arguments were given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
             return
 
-        recurringActionTypeStr: Optional[str] = splits[1]
-        recurringActionType: Optional[RecurringActionType] = None
+        actionTypeStr: Optional[str] = splits[1]
+        actionType: Optional[RecurringActionType] = None
 
         try:
-            recurringActionType = RecurringActionType.fromStr(recurringActionTypeStr)
+            actionType = RecurringActionType.fromStr(actionTypeStr)
         except:
             pass
 
-        if recurringActionType is None:
-            self.__timber.log('RecurringActionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid RecurringActionType argument was given: \"{recurringActionTypeStr}\"')
+        if actionType is None:
+            self.__timber.log('RecurringActionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid RecurringActionType argument was given: \"{actionTypeStr}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as an invalid recurring action type was given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
 
-        minutesBetweenStr: Optional[str] = None
-        isDisabling = False
-
-        minutesBetween = recurringActionType.getDefaultRecurringActionTimingMinutes()
-
-        if len(splits) >= 3 and utils.isValidStr(splits[2]):
-            minutesBetweenStr = splits[2]
-
-            if minutesBetweenStr in ('disable', 'off', '0'):
-                isDisabling = True
-            else:
-                try:
-                    minutesBetween = int(minutesBetweenStr)
-                except:
-                    pass
-
-        if isDisabling:
+        if await self.__parseIsDisabling(splits):
             await self.__disableRecurringAction(
+                ctx = ctx,
                 user = user,
-                actionType = recurringActionType
+                actionType = actionType
             )
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled {recurringActionType.toStr()} recurring action')
             return
 
-        if not utils.isValidInt(minutesBetween) or minutesBetween < recurringActionType.getMinimumRecurringActionTimingMinutes() or minutesBetween > utils.getIntMaxSafeSize():
-            minutesBetween = recurringActionType.getDefaultRecurringActionTimingMinutes()
+        if actionType is RecurringActionType.SUPER_TRIVIA:
+            await self.__enableSuperTriviaRecurringAction(
+                ctx = ctx,
+                user = user,
+                splits = splits
+            )
+        elif actionType is RecurringActionType.WEATHER:
+            await self.__enableWeatherRecurringAction(
+                ctx = ctx,
+                user = user,
+                splits = splits
+            )
+        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+            await self.__enableWordOfTheDayRecurringAction(
+                ctx = ctx,
+                user = user,
+                splits = splits
+            )
+        else:
+            raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
 
-        recurringAction = await self.__enableRecurringAction(
-            user = user,
-            actionType = recurringActionType,
-            minutesBetween = minutesBetween
-        )
+    async def __parseIsDisabling(self, splits: List[str]) -> bool:
+        if not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Enabled {recurringActionType.toStr()} recurring action every {recurringAction.getMinutesBetween()} minutes')
+        if len(splits) >= 3 and utils.isValidStr(splits[2]):
+            thirdArgument = splits[2]
+            return thirdArgument in ('disable', 'off', '0')
+
+        return False
+
+    async def __parseMinutesBetween(self, actionType: RecurringActionType, splits: List[str]) -> int:
+        if not isinstance(actionType, RecurringActionType):
+            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+        elif not utils.hasItems(splits):
+            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+
+        if len(splits) < 3:
+            return actionType.getDefaultRecurringActionTimingMinutes()
+
+        minutesBetweenStr: Optional[str] = splits[2]
+        minutesBetween: Optional[int] = None
+
+        try:
+            minutesBetween = int(minutesBetweenStr)
+        except:
+            pass
+
+        if not utils.isValidInt(minutesBetween) or minutesBetween < actionType.getMinimumRecurringActionTimingMinutes() or minutesBetween > utils.getIntMaxSafeSize():
+            minutesBetween = actionType.getDefaultRecurringActionTimingMinutes()
+
+        return minutesBetween
 
     def __randomRecurringActionType(self) -> RecurringActionType:
         recurringActions: List[RecurringActionType] = list(RecurringActionType)

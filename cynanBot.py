@@ -280,7 +280,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
-        self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProviderInterface, recurringActionsRepository, timber, twitchUtils, usersRepository)
+        self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProviderInterface, languagesRepository, recurringActionsRepository, timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProviderInterface, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
