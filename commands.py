@@ -2385,7 +2385,8 @@ class RecurringActionCommand(AbsCommand):
         recurringAction = ImmutableWordOfTheDayRecurringAction(
             twitchChannel = user.getHandle(),
             enabled = True,
-            minutesBetween = minutesBetween
+            minutesBetween = minutesBetween,
+            languageEntry = languageEntry
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
