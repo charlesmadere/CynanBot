@@ -2416,6 +2416,7 @@ class RecurringActionCommand(AbsCommand):
         if actionType is None:
             self.__timber.log('RecurringActionCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid RecurringActionType argument was given: \"{actionTypeStr}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as an invalid recurring action type was given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
+            return
 
         if await self.__parseIsDisabling(splits):
             await self.__disableRecurringAction(
