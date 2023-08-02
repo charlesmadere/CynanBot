@@ -205,7 +205,7 @@ twitchApiService = TwitchApiService(
     timber = timber,
     twitchCredentialsProviderInterface = authRepository
 )
-twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
@@ -216,9 +216,9 @@ userIdsRepository = UserIdsRepository(
     timber = timber,
     twitchApiService = twitchApiService
 )
-administratorProviderInterface: AdministratorProviderInterface = AdministratorProvider(
+administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
@@ -241,9 +241,9 @@ funtoonRepository = FuntoonRepository(
     timber = timber
 )
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
-    administratorProviderInterface = administratorProviderInterface,
+    administratorProvider = administratorProvider,
     twitchApiService = twitchApiService,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+    twitchTokensRepository = twitchTokensRepository
 )
 languagesRepository = LanguagesRepository()
 locationsRepository = LocationsRepository(
@@ -344,23 +344,23 @@ triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     usersRepository = usersRepository
 )
 bannedTriviaGameControllersRepository = BannedTriviaGameControllersRepository(
-    administratorProviderInterface = administratorProviderInterface,
+    administratorProviderInterface = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
-    administratorProviderInterface = administratorProviderInterface,
+    administratorProviderInterface = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaHistoryRepository = TriviaHistoryRepository(
@@ -372,12 +372,12 @@ triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
 triviaUtils = TriviaUtils(
-    administratorProviderInterface = administratorProviderInterface,
+    administratorProviderInterface = administratorProvider,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
@@ -514,7 +514,7 @@ triviaGameMachine = TriviaGameMachine(
     triviaGameStore = TriviaGameStore(),
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepositoryInterface,
+    twitchTokensRepositoryInterface = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 
@@ -556,7 +556,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-    administratorProviderInterface = administratorProviderInterface,
+    administratorProviderInterface = administratorProvider,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
@@ -604,7 +604,7 @@ cynanBot = CynanBot(
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
     twitchConfiguration = twitchConfiguration,
-    twitchTokensRepository = twitchTokensRepositoryInterface,
+    twitchTokensRepository = twitchTokensRepository,
     twitchUtils = TwitchUtils(
         backgroundTaskHelper = backgroundTaskHelper,
         sentMessageLogger = SentMessageLogger(
