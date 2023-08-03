@@ -2811,6 +2811,7 @@ class SetFuntoonTokenCommand(AbsCommand):
         )
 
         self.__timber.log('SetFuntoonTokenCommand', f'Handled !setfuntoontoken command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Funtoon token has been updated')
 
     def __getRandomTokenStr(self) -> str:
         randomUuid = str(uuid.uuid4())
@@ -2875,6 +2876,7 @@ class SetTwitchCodeCommand(AbsCommand):
         )
 
         self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Twitch code has been updated')
 
     def __getRandomCodeStr(self) -> str:
         randomUuid = str(uuid.uuid4())
