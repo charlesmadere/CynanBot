@@ -26,7 +26,6 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.recurringActions.recurringAction import RecurringAction
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from CynanBotCommon.recurringActions.recurringActionType import \

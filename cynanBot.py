@@ -457,10 +457,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pkmnEvolvePointRedemption: AbsPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if cutenessRepository is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+        if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
-            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(generalSettingsRepository, timber, triviaGameMachine)
+            self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
 
         generalSettings = self.__generalSettingsRepository.getAll()
 

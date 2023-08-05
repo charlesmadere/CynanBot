@@ -8,11 +8,8 @@ from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
-    QuestionAnswerTriviaConditions
-from CynanBotCommon.trivia.startNewTriviaGameAction import \
-    StartNewTriviaGameAction
-from CynanBotCommon.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
@@ -383,19 +380,19 @@ class TriviaGameRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
+        triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachine,
     ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachine):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
+        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
 
     async def handlePointRedemption(
@@ -403,42 +400,16 @@ class TriviaGameRedemption(AbsPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
-
-        if not generalSettings.isTriviaGameEnabled():
-            return False
-        elif not twitchUser.isTriviaGameEnabled():
-            return False
-
-        points = generalSettings.getTriviaGamePoints()
-        if twitchUser.hasTriviaGamePoints():
-            points = twitchUser.getTriviaGamePoints()
-
-        secondsToLive = generalSettings.getWaitForTriviaAnswerDelay()
-        if twitchUser.hasWaitForTriviaAnswerDelay():
-            secondsToLive = twitchUser.getWaitForTriviaAnswerDelay()
-
-        shinyMultiplier = generalSettings.getTriviaGameShinyMultiplier()
-        if twitchUser.hasTriviaGameShinyMultiplier():
-            shinyMultiplier = twitchUser.getTriviaGameShinyMultiplier()
-
-        triviaFetchOptions = TriviaFetchOptions(
-            twitchChannel = twitchUser.getHandle(),
-            isJokeTriviaRepositoryEnabled = twitchUser.isJokeTriviaRepositoryEnabled(),
-            questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
+        startNewTriviaGameAction = await self.__triviaGameBuilder.createNewTriviaGame(
+            twitchChannel = twitchChannel.getTwitchChannelName(),
+            userId = twitchChannelPointsMessage.getUserId(),
+            userName = twitchChannelPointsMessage.getUserName()
         )
 
-        self.__triviaGameMachine.submitAction(StartNewTriviaGameAction(
-            isShinyTriviaEnabled = twitchUser.isShinyTriviaEnabled(),
-            pointsForWinning = points,
-            secondsToLive = secondsToLive,
-            shinyMultiplier = shinyMultiplier,
-            twitchChannel = twitchUser.getHandle(),
-            userId = twitchChannelPointsMessage.getUserId(),
-            userName = twitchChannelPointsMessage.getUserName(),
-            triviaFetchOptions = triviaFetchOptions
-        ))
+        if startNewTriviaGameAction is None:
+            return
 
-        self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
+        self.__triviaGameMachine.submitAction(startNewTriviaGameAction)
+
+        self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchChannel.getTwitchChannelName()}')
         return True
