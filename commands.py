@@ -26,12 +26,6 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.recurringActions.immutableSuperTriviaRecurringAction import \
-    ImmutableSuperTriviaRecurringAction
-from CynanBotCommon.recurringActions.immutableWeatherRecurringAction import \
-    ImmutableWeatherRecurringAction
-from CynanBotCommon.recurringActions.immutableWordOfTheDayRecurringAction import \
-    ImmutableWordOfTheDayRecurringAction
 from CynanBotCommon.recurringActions.recurringAction import RecurringAction
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
@@ -2253,9 +2247,9 @@ class RecurringActionCommand(AbsCommand):
         elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        recurringAction = ImmutableSuperTriviaRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
+        recurringAction = SuperTriviaRecurringAction(
+            enabled = False,
+            twitchChannel = user.getHandle()
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
@@ -2271,9 +2265,9 @@ class RecurringActionCommand(AbsCommand):
         elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        recurringAction = ImmutableWeatherRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
+        recurringAction = WeatherRecurringAction(
+            enabled = False,
+            twitchChannel = user.getHandle()
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
@@ -2289,9 +2283,9 @@ class RecurringActionCommand(AbsCommand):
         elif not isinstance(user, User):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        recurringAction = ImmutableWordOfTheDayRecurringAction(
-            twitchChannel = user.getHandle(),
-            enabled = False
+        recurringAction = WordOfTheDayRecurringAction(
+            enabled = False,
+            twitchChannel = user.getHandle()
         )
 
         await self.__recurringActionsRepository.setRecurringAction(recurringAction)
@@ -2315,9 +2309,9 @@ class RecurringActionCommand(AbsCommand):
             splits = splits
         )
 
-        recurringAction = ImmutableSuperTriviaRecurringAction(
-            twitchChannel = user.getHandle(),
+        recurringAction = SuperTriviaRecurringAction(
             enabled = True,
+            twitchChannel = user.getHandle(),
             minutesBetween = minutesBetween
         )
 

@@ -59,12 +59,21 @@ from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import 
     RecurringActionsRepositoryInterface
 from CynanBotCommon.recurringActions.recurringActionType import \
     RecurringActionType
+from CynanBotCommon.recurringActions.recurringEvent import RecurringEvent
+from CynanBotCommon.recurringActions.recurringEventType import \
+    RecurringEventType
 from CynanBotCommon.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
+from CynanBotCommon.recurringActions.superTriviaRecurringEvent import \
+    SuperTriviaRecurringEvent
 from CynanBotCommon.recurringActions.weatherRecurringAction import \
     WeatherRecurringAction
+from CynanBotCommon.recurringActions.weatherRecurringEvent import \
+    WeatherRecurringEvent
 from CynanBotCommon.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
+from CynanBotCommon.recurringActions.wordOfTheDayRecurringEvent import \
+    WordOfTheDayRecurringEvent
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
@@ -775,48 +784,46 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pubSubUtils.startPubSub()
 
         if self.__recurringActionsMachine is not None:
-            self.__recurringActionsMachine.setRecurringActionListener(self)
-            self.__recurringActionsMachine.startRecurringActions()
+            self.__recurringActionsMachine.setEventListener(self)
+            self.__recurringActionsMachine.startMachine()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')
         await self.join_channels(event.getChannels())
 
-    async def onNewRecurringActionEvent(self, event: RecurringAction):
-        actionType = event.getActionType()
-        self.__timber.log('CynanBot', f'Received new recurring action event: \"{actionType}\"')
+    async def onNewRecurringActionEvent(self, event: RecurringEvent):
+        eventType = event.getEventType()
+        self.__timber.log('CynanBot', f'Received new recurring action event: \"{eventType}\"')
 
         await self.wait_for_ready()
 
-        if actionType is RecurringActionType.SUPER_TRIVIA:
-            await self.__handleSuperTriviaRecurringAction(event)
-        elif actionType is RecurringActionType.WEATHER:
-            await self.__handleWeatherRecurringAction(event)
-        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-            await self.__handleWordOfTheDayRecurringAction(event)
+        if eventType is RecurringActionType.SUPER_TRIVIA:
+            await self.__handleSuperTriviaRecurringActionEvent(event)
+        elif eventType is RecurringActionType.WEATHER:
+            await self.__handleWeatherRecurringActionEvent(event)
+        elif eventType is RecurringActionType.WORD_OF_THE_DAY:
+            await self.__handleWordOfTheDayRecurringActionEvent(event)
 
-    async def __handleSuperTriviaRecurringAction(self, action: SuperTriviaRecurringAction):
-        if not isinstance(action, SuperTriviaRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+    async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
+        if not isinstance(event, SuperTriviaRecurringEvent):
+            raise ValueError(f'event argument is malformed: \"{event}\"')
 
-        twitchChannel = await self.__getChannel(action.getTwitchChannel())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, 'Super trivia starting soon!')
 
-    async def __handleWeatherRecurringAction(self, action: WeatherRecurringAction):
-        if not isinstance(action, WeatherRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+    async def __handleWeatherRecurringActionEvent(self, event: WeatherRecurringEvent):
+        if not isinstance(event, WeatherRecurringEvent):
+            raise ValueError(f'event argument is malformed: \"{event}\"')
 
-        twitchChannel = await self.__getChannel(action.getTwitchChannel())
-        weatherReport = action.requireWeatherReport()
-        await self.__twitchUtils.safeSend(twitchChannel, weatherReport.toStr())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        await self.__twitchUtils.safeSend(twitchChannel, event.getWeatherReport().toStr())
 
-    async def __handleWordOfTheDayRecurringAction(self, action: WordOfTheDayRecurringAction):
-        if not isinstance(action, WordOfTheDayRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+    async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
+        if not isinstance(event, WordOfTheDayRecurringEvent):
+            raise ValueError(f'event argument is malformed: \"{event}\"')
 
-        twitchChannel = await self.__getChannel(action.getTwitchChannel())
-        wordOfTheDay = action.requireWordOfTheDayResponse()
-        await self.__twitchUtils.safeSend(twitchChannel, wordOfTheDay.toStr())
+        twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        await self.__twitchUtils.safeSend(twitchChannel, event.getWordOfTheDayResponse().toStr())
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
         eventType = event.getTriviaEventType()
