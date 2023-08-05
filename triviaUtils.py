@@ -30,7 +30,8 @@ from CynanBotCommon.trivia.triviaType import TriviaType
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.exceptions import NoSuchUserException
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
@@ -46,7 +47,7 @@ class TriviaUtils():
         triviaGameControllersRepository: TriviaGameControllersRepository,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
@@ -61,7 +62,7 @@ class TriviaUtils():
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -72,7 +73,7 @@ class TriviaUtils():
         self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
@@ -648,7 +649,7 @@ class TriviaUtils():
             twitchAccessToken = twitchAccessToken
         )
 
-        if userId == twitchUserId:
+        if utils.isValidStr(twitchUserId) and userId == twitchUserId:
             return True
 
         gameControllers = await self.__triviaGameControllersRepository.getControllers(twitchUser.getHandle())

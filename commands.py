@@ -90,6 +90,8 @@ from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
@@ -441,7 +443,7 @@ class AddUserCommand(AbsCommand):
         timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
@@ -454,7 +456,7 @@ class AddUserCommand(AbsCommand):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -464,7 +466,7 @@ class AddUserCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -493,25 +495,13 @@ class AddUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add \"{userName}\" as this user already exists!')
             return
 
-        userId: Optional[str] = None
-
-        try:
-            userId = await self.__userIdsRepository.fetchUserId(
-                userName = userName,
-                twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to a generic network exception: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to a generic network error!')
-            return
-        except RuntimeError as e:
-            self.__timber.log('AddUserCommand', f'Unable to fetch userId for \"{userName}\" due to an internal error: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\" due to an internal error!')
-            return
+        userId = await self.__userIdsRepository.fetchUserId(
+            userName = userName,
+            twitchAccessToken = await self.__twitchTokensRepositoryInterface.getAccessToken(ctx.getTwitchChannelName())
+        )
 
         if not utils.isValidStr(userId):
-            self.__timber.log('AddUserCommand', f'Failed to fetch userId for \"{userName}\" due to an unknown internal error')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to fetch user ID for \"{userName}\" due to an unknown internal error')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
             return
 
         await self.__modifyUserDataHelper.setUserData(
@@ -1050,7 +1040,7 @@ class CutenessCommand(AbsCommand):
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 3)
@@ -1063,7 +1053,7 @@ class CutenessCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1076,7 +1066,7 @@ class CutenessCommand(AbsCommand):
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1133,10 +1123,9 @@ class CutenessCommand(AbsCommand):
 
         # this means that a user is querying for another user's cuteness
         if userName.lower() != ctx.getAuthorName().lower():
-            try:
-                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-            except (RuntimeError, ValueError) as e:
-                self.__timber.log('CutenessCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e, traceback.format_exc())
+            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+
+            if not utils.isValidStr(userId):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
 
@@ -1718,7 +1707,7 @@ class GiveCutenessCommand(AbsCommand):
         timber: TimberInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository
     ):
         if not isinstance(cutenessRepository, CutenessRepository):
@@ -1729,7 +1718,7 @@ class GiveCutenessCommand(AbsCommand):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1738,7 +1727,7 @@ class GiveCutenessCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -1778,12 +1767,10 @@ class GiveCutenessCommand(AbsCommand):
             return
 
         userName = utils.removePreceedingAt(userName)
+        userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
-        try:
-            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-        except ValueError:
-            self.__timber.log('GiveCutenessCommand', f'Unable to give {incrementAmount} cuteness from {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} to \"{userName}\", they don\'t current exist in the database')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to give cuteness to \"{userName}\", they don\'t currently exist in the database')
+        if not utils.isValidStr(userId):
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to fetch user ID for \"{userName}\"!')
             return
 
         try:
@@ -2687,7 +2674,7 @@ class RemoveUserCommand(AbsCommand):
         timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository
     ):
         if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
@@ -2700,7 +2687,7 @@ class RemoveUserCommand(AbsCommand):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -2710,7 +2697,7 @@ class RemoveUserCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -2739,7 +2726,7 @@ class RemoveUserCommand(AbsCommand):
             return
 
         await self.__twitchTokensRepositoryInterface.removeUser(userName)
-        userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+        userId = await self.__userIdsRepository.requireUserId(userName = userName)
 
         await self.__modifyUserDataHelper.setUserData(
             actionType = ModifyUserActionType.REMOVE,

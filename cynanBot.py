@@ -492,13 +492,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
 
     async def event_channel_join_failure(self, channel: str):
-        userId: Optional[str] = None
+        userId = await self.__userIdsRepository.fetchUserId(channel)
         user: Optional[User] = None
-
-        try:
-            userId = await self.__userIdsRepository.fetchUserId(channel)
-        except:
-            pass
 
         try:
             user = await self.__usersRepository.getUserAsync(channel)
