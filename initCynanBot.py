@@ -600,6 +600,7 @@ cynanBot = CynanBot(
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaGameMachine = triviaGameMachine,
     triviaHistoryRepository = triviaHistoryRepository,
+    triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,

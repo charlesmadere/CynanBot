@@ -123,6 +123,7 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
+from CynanBotCommon.trivia.triviaRepository import TriviaRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
@@ -204,6 +205,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachine],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
+        triviaRepository: Optional[TriviaRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         triviaUtils: TriviaUtils,
@@ -267,7 +269,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: RecurringActionsMachineInterface = recurringActionsMachine
         self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaGameMachine: Optional[TriviaGameMachine] = triviaGameMachine
+        self.__triviaRepository: Optional[TriviaRepository] = triviaRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -774,8 +777,12 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
+        if self.__triviaRepository is not None:
+            self.__triviaRepository.startSpooler()
+
         if self.__triviaGameMachine is not None:
             self.__triviaGameMachine.setEventListener(self)
+            self.__triviaGameMachine.startMachine()
 
         if self.__eventSubUtils is not None:
             self.__eventSubUtils.startEventSub()
