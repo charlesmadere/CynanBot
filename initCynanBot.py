@@ -563,6 +563,7 @@ cynanBot = CynanBot(
     bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
     channelJoinHelper = ChannelJoinHelper(
         backgroundTaskHelper = backgroundTaskHelper,
+        verified = True,
         timber = timber,
         usersRepository = usersRepository
     ),
