@@ -2335,9 +2335,9 @@ class RecurringActionCommand(AbsCommand):
             splits = splits
         )
 
-        recurringAction = ImmutableWeatherRecurringAction(
-            twitchChannel = user.getHandle(),
+        recurringAction = WeatherRecurringAction(
             enabled = True,
+            twitchChannel = user.getHandle(),
             minutesBetween = minutesBetween
         )
 
@@ -2375,9 +2375,9 @@ class RecurringActionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring Word Of The Day action as an invalid language was specified (available languages: {allWotdApiCodes})')
             return
 
-        recurringAction = ImmutableWordOfTheDayRecurringAction(
-            twitchChannel = user.getHandle(),
+        recurringAction = WordOfTheDayRecurringAction(
             enabled = True,
+            twitchChannel = user.getHandle(),
             minutesBetween = minutesBetween,
             languageEntry = languageEntry
         )
