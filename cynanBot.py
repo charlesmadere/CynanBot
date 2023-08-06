@@ -50,28 +50,19 @@ from CynanBotCommon.language.wordOfTheDayRepository import \
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.lruCache import LruCache
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.recurringActions.recurringAction import RecurringAction
 from CynanBotCommon.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from CynanBotCommon.recurringActions.recurringActionType import \
-    RecurringActionType
 from CynanBotCommon.recurringActions.recurringEvent import RecurringEvent
 from CynanBotCommon.recurringActions.recurringEventType import \
     RecurringEventType
-from CynanBotCommon.recurringActions.superTriviaRecurringAction import \
-    SuperTriviaRecurringAction
 from CynanBotCommon.recurringActions.superTriviaRecurringEvent import \
     SuperTriviaRecurringEvent
-from CynanBotCommon.recurringActions.weatherRecurringAction import \
-    WeatherRecurringAction
 from CynanBotCommon.recurringActions.weatherRecurringEvent import \
     WeatherRecurringEvent
-from CynanBotCommon.recurringActions.wordOfTheDayRecurringAction import \
-    WordOfTheDayRecurringAction
 from CynanBotCommon.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBotCommon.starWars.starWarsQuotesRepository import \
@@ -800,11 +791,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         await self.wait_for_ready()
 
-        if eventType is RecurringActionType.SUPER_TRIVIA:
+        if eventType is RecurringEventType.SUPER_TRIVIA:
             await self.__handleSuperTriviaRecurringActionEvent(event)
-        elif eventType is RecurringActionType.WEATHER:
+        elif eventType is RecurringEventType.WEATHER:
             await self.__handleWeatherRecurringActionEvent(event)
-        elif eventType is RecurringActionType.WORD_OF_THE_DAY:
+        elif eventType is RecurringEventType.WORD_OF_THE_DAY:
             await self.__handleWordOfTheDayRecurringActionEvent(event)
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
