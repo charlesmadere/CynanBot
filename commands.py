@@ -24,7 +24,6 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
-from CynanBotCommon.network.exceptions import GenericNetworkException
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
@@ -89,7 +88,6 @@ from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
@@ -652,9 +650,9 @@ class ClearCachesCommand(AbsCommand):
 
     def __init__(
         self,
-        administratorProviderInterface: AdministratorProviderInterface,
+        administratorProvider: AdministratorProviderInterface,
         authRepository: AuthRepository,
-        bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface],
+        bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonRepository],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
@@ -663,14 +661,14 @@ class ClearCachesCommand(AbsCommand):
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         timber: TimberInterface,
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
-        twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface],
+        twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepository],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
-        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -684,9 +682,9 @@ class ClearCachesCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
-        self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepositoryInterface
+        self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepository
         self.__funtoonTokensRepository: Optional[FuntoonTokensRepository] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
@@ -695,7 +693,7 @@ class ClearCachesCommand(AbsCommand):
         self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
-        self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepositoryInterface
+        self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
@@ -1209,7 +1207,7 @@ class CutenessHistoryCommand(AbsCommand):
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' — ',
@@ -1223,7 +1221,7 @@ class CutenessHistoryCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1238,7 +1236,7 @@ class CutenessHistoryCommand(AbsCommand):
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__entryDelimiter: str = entryDelimiter
         self.__leaderboardDelimiter: str = leaderboardDelimiter
@@ -1253,9 +1251,9 @@ class CutenessHistoryCommand(AbsCommand):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
+        userName: Optional[str] = None
 
-        userName: str = None
-        if len(splits) >= 2:
+        if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             userName = utils.removePreceedingAt(splits[1])
         else:
             userName = ctx.getAuthorName()
@@ -1264,11 +1262,7 @@ class CutenessHistoryCommand(AbsCommand):
 
         # this means that a user is querying for another user's cuteness history
         if userName.lower() != ctx.getAuthorName().lower():
-            try:
-                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-            except (RuntimeError, ValueError):
-                # this exception can be safely ignored
-                pass
+            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 
             if not utils.isValidStr(userId):
                 self.__timber.log('CutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
@@ -1896,7 +1890,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 3)
@@ -1909,7 +1903,7 @@ class MyCutenessHistoryCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -1922,7 +1916,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__delimiter: str = delimiter
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
@@ -1936,20 +1930,20 @@ class MyCutenessHistoryCommand(AbsCommand):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
+        userName: Optional[str] = None
 
-        userName: str = None
-        if len(splits) >= 2:
+        if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             userName = utils.removePreceedingAt(splits[1])
         else:
             userName = ctx.getAuthorName()
 
-        userId: str = None
+        userId: Optional[str] = None
 
         # this means that a user is querying for another user's cuteness history
         if userName.lower() != ctx.getAuthorName().lower():
-            try:
-                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-            except (RuntimeError, ValueError):
+            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+
+            if not utils.isValidStr(userId):
                 self.__timber.log('MyCutenessHistoryCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database!')
                 return
@@ -3305,7 +3299,7 @@ class TriviaScoreCommand(AbsCommand):
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
         cooldown: timedelta = timedelta(seconds = 3)
     ):
@@ -3323,7 +3317,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -3337,7 +3331,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -3353,21 +3347,21 @@ class TriviaScoreCommand(AbsCommand):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
+        userName: Optional[str] = None
 
-        userName: str = None
-        if len(splits) >= 2:
+        if len(splits) >= 2 and utils.strContainsAlphanumericCharacters(splits[1]):
             userName = utils.removePreceedingAt(splits[1])
         else:
             userName = ctx.getAuthorName()
 
-        userId: str = None
+        userId: Optional[str] = None
 
         # this means that a user is querying for another user's trivia score
         if userName.lower() != ctx.getAuthorName().lower():
-            try:
-                userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-            except (RuntimeError, ValueError) as e:
-                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database: {e}', e, traceback.format_exc())
+            userId = await self.__userIdsRepository.fetchUserId(userName = userName)
+
+            if not utils.isValidStr(userId):
+                self.__timber.log('TriviaScoreCommand', f'Unable to find user ID for \"{userName}\" in the database')
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to find user info for \"{userName}\" in the database')
                 return
         else:

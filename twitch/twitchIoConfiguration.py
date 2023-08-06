@@ -3,7 +3,8 @@ from twitchio.channel import Channel
 from twitchio.ext.commands import Context
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from twitch.twitchChannel import TwitchChannel
 from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from twitch.twitchConfiguration import TwitchConfiguration
@@ -21,13 +22,15 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
     def __init__(
         self,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository
     ):
-        if not isinstance(usersRepository, UsersRepository):
+        if not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepository = usersRepository
 
     def getChannel(self, channel: Channel) -> TwitchChannel:
@@ -41,7 +44,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
             raise ValueError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
 
         userId = str(channelPointsMessage.channel_id)
-        userName = await self.__userIdsRepository.fetchUserName(userId)
+        userName = await self.__userIdsRepository.requireUserName(userId = userId)
         user = await self.__usersRepository.getUserAsync(userName)
 
         return TwitchIoChannelPointsMessage(

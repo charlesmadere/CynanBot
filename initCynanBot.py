@@ -139,6 +139,8 @@ from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
@@ -211,14 +213,14 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     twitchApiService = twitchApiService,
     seedFileReader = JsonFileReader('CynanBotCommon/twitch/twitchTokensRepositorySeedFile.json')
 )
-userIdsRepository = UserIdsRepository(
+userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService
 )
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
@@ -344,10 +346,10 @@ triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     usersRepository = usersRepository
 )
 bannedTriviaGameControllersRepository = BannedTriviaGameControllersRepository(
-    administratorProviderInterface = administratorProvider,
+    administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaGameControllersRepository = TriviaGameControllersRepository(
@@ -514,7 +516,7 @@ triviaGameMachine = TriviaGameMachine(
     triviaGameStore = TriviaGameStore(),
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 
@@ -556,11 +558,11 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
-    administratorProviderInterface = administratorProvider,
+    administratorProvider = administratorProvider,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
-    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
+    bannedWordsRepository = bannedWordsRepositoryInterface,
     channelJoinHelper = ChannelJoinHelper(
         backgroundTaskHelper = backgroundTaskHelper,
         verified = True,

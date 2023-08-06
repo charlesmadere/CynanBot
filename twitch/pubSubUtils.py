@@ -25,7 +25,8 @@ from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBotCommon.twitch.twitchTokensRepositoryListener import \
     TwitchTokensRepositoryListener
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
@@ -44,7 +45,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
-        userIdsRepository: UserIdsRepository,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepositoryInterface: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 5,
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
@@ -63,7 +64,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepository):
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepositoryInterface, UsersRepositoryInterface):
             raise ValueError(f'usersRepositoryInterface argument is malformed: \"{usersRepositoryInterface}\"')
@@ -91,9 +92,9 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
-        self.__userIdsRepository: UserIdsRepository = userIdsRepository
-        self.__usersRepositoryInterface: UsersRepositoryInterface = usersRepositoryInterface
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepositoryInterface
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__pubSubReconnectCooldown: timedelta = pubSubReconnectCooldown
@@ -138,13 +139,13 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         twitchHandles: Optional[List[str]] = None
 
         if not forceFullRefresh:
-            twitchHandles = await self.__twitchTokensRepositoryInterface.getExpiringTwitchChannels()
+            twitchHandles = await self.__twitchTokensRepository.getExpiringTwitchChannels()
 
         users: Optional[List[UserInterface]] = None
 
         if twitchHandles is None:
             # if twitchHandles is None, then we must do a full validate and refresh
-            users = await self.__usersRepositoryInterface.getUsersAsync()
+            users = await self.__usersRepository.getUsersAsync()
         elif len(twitchHandles) == 0:
             # if twitchHandles is empty, then there is no need to do a validate or refresh of anyone
             return None
@@ -153,12 +154,12 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
             users = list()
 
             for twitchHandle in twitchHandles:
-                users.append(await self.__usersRepositoryInterface.getUserAsync(twitchHandle))
+                users.append(await self.__usersRepository.getUserAsync(twitchHandle))
 
         usersWithTwitchTokens: List[UserInterface] = list()
 
         for user in users:
-            if user.isEnabled() and await self.__twitchTokensRepositoryInterface.hasAccessToken(user.getHandle()):
+            if user.isEnabled() and await self.__twitchTokensRepository.hasAccessToken(user.getHandle()):
                 usersWithTwitchTokens.append(user)
 
         if not utils.hasItems(usersWithTwitchTokens):
@@ -168,8 +169,8 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
 
         for user in usersWithTwitchTokens:
             try:
-                await self.__twitchTokensRepositoryInterface.validateAndRefreshAccessToken(user.getHandle())
-                usersAndTwitchTokens[user] = await self.__twitchTokensRepositoryInterface.getAccessToken(user.getHandle())
+                await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getHandle())
+                usersAndTwitchTokens[user] = await self.__twitchTokensRepository.requireAccessToken(user.getHandle())
             except GenericNetworkException as e:
                 self.__timber.log('PubSubUtils', f'Failed to validate and refresh Twitch tokens for \"{user.getHandle()}\" due to generic network error: {e}', e, traceback.format_exc())
             except (TwitchAccessTokenMissingException, TwitchErrorException, TwitchJsonException, TwitchPasswordChangedException, TwitchRefreshTokenMissingException) as e:
@@ -179,7 +180,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         pubSubEntries: List[PubSubEntry] = list()
 
         for user, twitchAccessToken in usersAndTwitchTokens.items():
-            userId = await self.__userIdsRepository.fetchUserIdAsInt(
+            userId = await self.__userIdsRepository.requireUserIdAsInt(
                 userName = user.getHandle(),
                 twitchAccessToken = twitchAccessToken
             )
@@ -299,7 +300,7 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         self.__isStarted = True
         self.__timber.log('PubSubUtils', 'Starting PubSub...')
 
-        self.__twitchTokensRepositoryInterface.setListener(self)
+        self.__twitchTokensRepository.setListener(self)
         self.__backgroundTaskHelper.createTask(self.__startPubSubUpdateLoop())
 
     async def __startPubSubUpdateLoop(self):
