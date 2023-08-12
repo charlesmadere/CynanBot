@@ -291,7 +291,7 @@ class TriviaUtils():
             numberPunished = len(punishmentAmountToUserNames[punishmentAmount])
             punishmentAmountString = locale.format_string("%d", abs(punishmentAmount), grouping = True)
 
-            if len(numberPunished) == 1:
+            if numberPunished == 1:
                 buckets.append(f'1 person lost {punishmentAmountString} cuteness'.strip())
             else:
                 buckets.append(f'{numberPunished} people lost {punishmentAmountString} cuteness'.strip())
