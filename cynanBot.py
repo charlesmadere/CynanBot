@@ -25,6 +25,7 @@ from commands import (AbsCommand, AddBannedTriviaControllerCommand,
                       GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
                       MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
                       PkMoveCommand, RaceCommand, RecurringActionCommand,
+                      RecurringActionsCommand,
                       RemoveBannedTriviaControllerCommand,
                       RemoveGlobalTriviaControllerCommand,
                       RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
@@ -285,6 +286,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProvider, languagesRepository, recurringActionsRepository, timber, twitchUtils, usersRepository)
+        self.__recurringActionsCommand: AbsCommand = RecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
@@ -1132,6 +1134,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_recurringaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__recurringActionCommand.handleCommand(context)
+
+    @commands.command(name = 'recurringactions')
+    async def command_recurringactions(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__recurringActionsCommand.handleCommand(context)
 
     @commands.command(name = 'removebannedtriviacontroller')
     async def command_removebannedtriviacontroller(self, ctx: Context):
