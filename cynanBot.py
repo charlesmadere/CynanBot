@@ -980,11 +980,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if utils.isValidStr(launchpadPrompt):
             await self.__twitchUtils.safeSend(twitchChannel, launchpadPrompt)
 
-    @commands.command(name = 'a', aliases = [ 'A' ])
-    async def command_a(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__answerCommand.handleCommand(context)
-
     @commands.command(name = 'addbannedtriviacontroller')
     async def command_addbannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1010,7 +1005,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleCommand(context)
 
-    @commands.command(name = 'answer', aliases = [ 'ANSWER' ])
+    @commands.command(name = 'answer', aliases = [ 'ANSWER', 'a', 'A' ])
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleCommand(context)
@@ -1155,16 +1150,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerCommand.handleCommand(context)
 
-    @commands.command(name = 'sa', aliases =  [ 'SA' ])
-    async def command_sa(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superAnswerCommand.handleCommand(context)
-
-    @commands.command(name = 'sanswer')
-    async def command_sanswer(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superAnswerCommand.handleCommand(context)
-
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1175,7 +1160,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setTwitchCodeCommand.handleCommand(context)
 
-    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER' ])
+    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'sa', 'SA', 'sanswer', 'SANSWER' ])
     async def command_superanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleCommand(context)
