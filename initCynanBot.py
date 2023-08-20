@@ -607,6 +607,7 @@ cynanBot = CynanBot(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
+    twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = TwitchUtils(
