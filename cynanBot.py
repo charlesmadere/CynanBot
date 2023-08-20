@@ -32,8 +32,8 @@ from commands import (AbsCommand, AddBannedTriviaControllerCommand,
                       SetTwitchCodeCommand, StubCommand, SuperAnswerCommand,
                       SuperTriviaCommand, SwQuoteCommand, TimeCommand,
                       TranslateCommand, TriviaInfoCommand, TriviaScoreCommand,
-                      TwitterCommand, UnbanTriviaQuestionCommand,
-                      WeatherCommand, WordCommand)
+                      TwitchInfoCommand, TwitterCommand,
+                      UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -121,6 +121,7 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -202,6 +203,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepository],
         triviaUtils: TriviaUtils,
+        twitchApiService: TwitchApiService,
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
@@ -245,6 +247,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif not isinstance(twitchApiService, TwitchApiService):
+            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
@@ -289,6 +293,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__recurringActionsCommand: AbsCommand = RecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
         self.__timeCommand: AbsCommand = TimeCommand(timber, twitchUtils, usersRepository)
+        self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
@@ -1194,6 +1199,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_triviascore(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaScoreCommand.handleCommand(context)
+
+    @commands.command(name = 'twitchinfo')
+    async def command_twitchinfo(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__twitchInfoCommand.handleCommand(context)
 
     @commands.command(name = 'twitter')
     async def command_twitter(self, ctx: Context):

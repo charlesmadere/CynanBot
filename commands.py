@@ -86,8 +86,12 @@ from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBotCommon.twitch.twitchApiService import TwitchApiService
+from CynanBotCommon.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBotCommon.twitch.twitchUserDetails import TwitchUserDetails
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
@@ -3449,6 +3453,100 @@ class TriviaScoreCommand(AbsCommand):
         ))
 
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
+class TwitchInfoCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        timber: TimberInterface,
+        twitchApiService: TwitchApiService,
+        twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepositoryInterface
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiService):
+            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__timber: TimberInterface = timber
+        self.__twitchApiService: TwitchApiService = twitchApiService
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepository = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if ctx.getAuthorId() != administrator:
+            self.__timber.log('TwitchInfoCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+
+        if not utils.isValidStr(twitchAccessToken):
+            twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
+
+            if not utils.isValidStr(twitchAccessToken):
+                self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but was unable to retrieve a valid Twitch access token')
+                await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve a valid Twitch access token to use with this command!')
+                return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
+            return
+
+        userName: Optional[str] = splits[1]
+        if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no arguments were supplied')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info as no username argument was given. Example: !twitchinfo {user.getHandle()}')
+            return
+
+        userInfo: Optional[TwitchUserDetails] = None
+        try:
+            userInfo = await self.__twitchApiService.fetchUserDetails(
+                twitchAccessToken = twitchAccessToken,
+                userName = userName
+            )
+        except:
+            pass
+
+        if userInfo is None:
+            self.__timber.log('TwitchInfoCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the TwitchApiService call failed')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to retrieve Twitch info for \"{userName}\" as the Twitch API service call failed')
+            return
+
+        userInfoStr = await self.__toStr(userInfo)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Twich info for — \"{userName}\"  {userInfoStr}')
+        self.__timber.log('TwitchInfoCommand', f'Handled !twitchinfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+    async def __toStr(self, userInfo: TwitchUserDetails) -> str:
+        if not isinstance(userInfo, TwitchUserDetails):
+            raise ValueError(f'userInfo argument is malformed: \"{userInfo}\"')
+
+        broadcasterType = userInfo.getBroadcasterType()
+        userId = userInfo.getUserId()
+        userType = userInfo.getUserType()
+        return f'broadcasterType:\"{broadcasterType}\", userId:\"{userId}\", userType:\"{userType}\"'
 
 
 class TwitterCommand(AbsCommand):
