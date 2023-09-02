@@ -70,8 +70,8 @@ from CynanBotCommon.starWars.starWarsQuotesRepository import \
     StarWarsQuotesRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
-    AdditionalTriviaAnswersRepository
+from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
@@ -165,7 +165,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        additionalTriviaAnswersRepository: Optional[AdditionalTriviaAnswersRepository],
+        additionalTriviaAnswersRepository: Optional[AdditionalTriviaAnswersRepositoryInterface],
         administratorProvider: AdministratorProviderInterface,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,

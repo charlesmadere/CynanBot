@@ -41,8 +41,8 @@ from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timedDict import TimedDict
 from CynanBotCommon.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
-from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
-    AdditionalTriviaAnswersRepository
+from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
 from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
@@ -250,7 +250,7 @@ class AddTriviaAnswerCommand(AbsCommand):
 
     def __init__(
         self,
-        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
@@ -260,7 +260,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface,
         answerDelimiter: str = ', '
     ):
-        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -279,7 +279,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         elif not isinstance(answerDelimiter, str):
             raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
@@ -1334,7 +1334,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
 
     def __init__(
         self,
-        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
@@ -1344,7 +1344,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         usersRepository: UsersRepository,
         answerDelimiter: str = ', '
     ):
-        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -1363,7 +1363,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         elif not isinstance(answerDelimiter, str):
             raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
@@ -1553,7 +1553,7 @@ class GetTriviaAnswersCommand(AbsCommand):
 
     def __init__(
         self,
-        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
@@ -1563,7 +1563,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         usersRepository: UsersRepository,
         answerDelimiter: str = ', '
     ):
-        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -1582,7 +1582,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         elif not isinstance(answerDelimiter, str):
             raise ValueError(f'answerDelimiter argument is malformed: \"{answerDelimiter}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator
@@ -3264,7 +3264,7 @@ class TriviaInfoCommand(AbsCommand):
 
     def __init__(
         self,
-        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository,
+        additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGenerator,
@@ -3273,7 +3273,7 @@ class TriviaInfoCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepository
     ):
-        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepository):
+        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
             raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -3290,7 +3290,7 @@ class TriviaInfoCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepository = additionalTriviaAnswersRepository
+        self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGenerator = triviaEmoteGenerator

@@ -60,6 +60,8 @@ from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
+from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
@@ -307,7 +309,7 @@ triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
 )
-additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
+additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
