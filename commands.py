@@ -644,6 +644,7 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         await self.__triviaBanHelper.ban(
             triviaId = reference.getTriviaId(),
+            userId = ctx.getAuthorId(),
             triviaSource = reference.getTriviaSource()
         )
 
