@@ -29,12 +29,8 @@ from CynanBotCommon.network.requestsClientProvider import \
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
-from CynanBotCommon.recurringActions.mostRecentRecurringActionRepositoryInterface import \
-    MostRecentRecurringActionRepositoryInterface
 from CynanBotCommon.recurringActions.recurringActionsJsonParser import \
     RecurringActionsJsonParser
-from CynanBotCommon.recurringActions.recurringActionsJsonParserInterface import \
-    RecurringActionsJsonParserInterface
 from CynanBotCommon.recurringActions.recurringActionsMachine import \
     RecurringActionsMachine
 from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
@@ -66,6 +62,8 @@ from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
+from CynanBotCommon.trivia.bannedTriviaIdsRepositoryInterface import \
+    BannedTriviaIdsRepositoryInterface
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
     BannedWordsRepository
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
@@ -314,7 +312,7 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
-bannedTriviaIdsRepository = BannedTriviaIdsRepository(
+bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
