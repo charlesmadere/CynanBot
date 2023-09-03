@@ -337,6 +337,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
                 additionalAnswer = additionalAnswer,
                 triviaId = reference.getTriviaId(),
+                userId = ctx.getAuthorId(),
                 triviaSource = reference.getTriviaSource(),
                 triviaType = reference.getTriviaType()
             )

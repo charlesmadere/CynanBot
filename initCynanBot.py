@@ -310,12 +310,14 @@ triviaSettingsRepository = TriviaSettingsRepository(
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettingsRepository = triviaSettingsRepository,
+    userIdsRepository = userIdsRepository
 )
 bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettingsRepository = triviaSettingsRepository,
+    userIdsRepository = userIdsRepository
 )
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
