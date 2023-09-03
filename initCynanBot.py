@@ -311,6 +311,8 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(

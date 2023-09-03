@@ -1641,7 +1641,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         if result is None:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
-            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

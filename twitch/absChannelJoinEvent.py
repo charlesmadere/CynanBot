@@ -1,7 +1,9 @@
+from abc import ABC
+
 from twitch.channelJoinEventType import ChannelJoinEventType
 
 
-class AbsChannelJoinEvent():
+class AbsChannelJoinEvent(ABC):
 
     def __init__(self, eventType: ChannelJoinEventType):
         if not isinstance(eventType, ChannelJoinEventType):
