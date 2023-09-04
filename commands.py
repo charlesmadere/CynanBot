@@ -3546,9 +3546,10 @@ class TwitchInfoCommand(AbsCommand):
             raise ValueError(f'userInfo argument is malformed: \"{userInfo}\"')
 
         broadcasterType = userInfo.getBroadcasterType()
+        displayName = userInfo.getDisplayName()
         userId = userInfo.getUserId()
         userType = userInfo.getUserType()
-        return f'broadcasterType:\"{broadcasterType}\", userId:\"{userId}\", userType:\"{userType}\"'
+        return f'broadcasterType:\"{broadcasterType}\", displayName:\"{displayName}\", userId:\"{userId}\", userType:\"{userType}\"'
 
 
 class TwitterCommand(AbsCommand):
