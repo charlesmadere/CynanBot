@@ -376,6 +376,43 @@ class StubPointRedemption(AbsPointRedemption):
         return False
 
 
+class SuperTriviaGameRedemption(AbsPointRedemption):
+
+    def __init__(
+        self,
+        timber: TimberInterface,
+        triviaGameBuilder: TriviaGameBuilderInterface,
+        triviaGameMachine: TriviaGameMachine,
+    ):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+
+        self.__timber: TimberInterface = timber
+        self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
+        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+
+    async def handlePointRedemption(
+        self,
+        twitchChannel: TwitchChannel,
+        twitchChannelPointsMessage: TwitchChannelPointsMessage
+    ) -> bool:
+        startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+            twitchChannel = twitchChannel.getTwitchChannelName()
+        )
+
+        if startNewSuperTriviaGameAction is None:
+            return
+
+        self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
+
+        self.__timber.log('TriviaGameRedemption', f'Redeemed super trivia game for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchChannel.getTwitchChannelName()}')
+        return True
+
+
 class TriviaGameRedemption(AbsPointRedemption):
 
     def __init__(

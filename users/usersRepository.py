@@ -157,6 +157,7 @@ class UsersRepository(UsersRepositoryInterface):
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
         superTriviaGamePoints: Optional[int] = None
+        superTriviaGameRewardId: Optional[str] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaGameToxicMultiplier: Optional[int] = None
         superTriviaGameToxicPunishmentMultiplier: Optional[int] = None
@@ -171,6 +172,7 @@ class UsersRepository(UsersRepositoryInterface):
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
+            superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
@@ -229,6 +231,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             superTriviaGamePoints = superTriviaGamePoints,
+            superTriviaGameRewardId = superTriviaGameRewardId,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,

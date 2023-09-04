@@ -318,8 +318,7 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
 bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository,
-    userIdsRepository = userIdsRepository
+    triviaSettingsRepository = triviaSettingsRepository
 )
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
@@ -363,10 +362,10 @@ triviaGameControllersRepository = TriviaGameControllersRepository(
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
-    administratorProviderInterface = administratorProvider,
+    administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaHistoryRepository = TriviaHistoryRepository(

@@ -3347,7 +3347,7 @@ class TriviaInfoCommand(AbsCommand):
 
         additionalAnswersLen = 0
         if additionalAnswers is not None:
-            additionalAnswersLen = additionalAnswers.getAdditionalAnswersLen()
+            additionalAnswersLen = len(additionalAnswers.getAdditionalAnswers())
 
         await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} triviaType:{reference.getTriviaType().toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -139,7 +139,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
                               PotdPointRedemption, StubPointRedemption,
-                              TriviaGameRedemption)
+                              SuperTriviaGameRedemption, TriviaGameRedemption)
 from triviaUtils import TriviaUtils
 from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from twitch.channelJoinEventType import ChannelJoinEventType
@@ -457,8 +457,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pkmnShinyPointRedemption: AbsPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
+            self.__superTriviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
             self.__triviaGamePointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
+            self.__superTriviaGamePointRedemption: AbsPointRedemption = SuperTriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
             self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
 
         generalSettings = self.__generalSettingsRepository.getAll()
@@ -646,6 +648,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if twitchUser.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == twitchUser.getTriviaGameRewardId():
             if await self.__triviaGamePointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if twitchUser.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == twitchUser.getSuperTriviaGameRewardId():
+            if await self.__superTriviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

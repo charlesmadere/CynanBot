@@ -51,6 +51,7 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         superTriviaGamePoints: Optional[int],
+        superTriviaGameRewardId: Optional[str],
         superTriviaGameShinyMultiplier: Optional[int],
         superTriviaGameToxicMultiplier: Optional[int],
         superTriviaGameToxicPunishmentMultiplier: Optional[int],
@@ -147,6 +148,8 @@ class User(UserInterface):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
+        elif superTriviaGameRewardId is not None and not utils.isValidStr(superTriviaGameRewardId):
+            raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
         elif superTriviaGameToxicPunishmentMultiplier is not None and not utils.isValidInt(superTriviaGameToxicPunishmentMultiplier):
@@ -287,6 +290,9 @@ class User(UserInterface):
 
     def getSuperTriviaGamePoints(self) -> Optional[int]:
         return self.__superTriviaGamePoints
+
+    def getSuperTriviaGameRewardId(self) -> Optional[str]:
+        return self.__superTriviaGameRewardId
 
     def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
         return self.__superTriviaGameShinyMultiplier
