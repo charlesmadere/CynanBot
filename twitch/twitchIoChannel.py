@@ -21,3 +21,6 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
 
     async def send(self, message: str):
         await self.__channel.send(message)
+
+    def __str__(self) -> str:
+        return self.getTwitchChannelName()
