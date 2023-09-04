@@ -3538,7 +3538,7 @@ class TwitchInfoCommand(AbsCommand):
             return
 
         userInfoStr = await self.__toStr(userInfo)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Twich info for {userName} — {userInfoStr}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Twitch info for {userName} — {userInfoStr}')
         self.__timber.log('TwitchInfoCommand', f'Handled !twitchinfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     async def __toStr(self, userInfo: TwitchUserDetails) -> str:
