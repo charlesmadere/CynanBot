@@ -78,7 +78,8 @@ from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -342,7 +343,7 @@ class AddTriviaAnswerCommand(AbsCommand):
                 triviaType = reference.getTriviaType()
             )
 
-            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
             self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
@@ -524,22 +525,22 @@ class AnswerCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameMachine: TriviaGameMachine,
-        usersRepository: UsersRepository
+        triviaGameMachine: TriviaGameMachineInterface,
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -759,26 +760,26 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameMachine: TriviaGameMachine,
+        triviaGameMachine: TriviaGameMachineInterface,
         triviaUtils: TriviaUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__triviaUtils: TriviaUtils = triviaUtils
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -1422,7 +1423,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         if result is None:
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
         else:
-            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswers())
+            additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
             await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
         self.__timber.log('DeleteTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2942,22 +2943,22 @@ class SuperAnswerCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameMachine: TriviaGameMachine,
-        usersRepository: UsersRepository
+        triviaGameMachine: TriviaGameMachineInterface,
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -2991,11 +2992,11 @@ class SuperTriviaCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
-        triviaGameMachine: TriviaGameMachine,
+        triviaGameMachine: TriviaGameMachineInterface,
         triviaSettingsRepository: TriviaSettingsRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
-        usersRepository: UsersRepository
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -3003,7 +3004,7 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepository):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
@@ -3011,17 +3012,17 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__triviaSettingsRepository: TriviaSettingsRepository = triviaSettingsRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__usersRepository: UsersRepository = usersRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

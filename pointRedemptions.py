@@ -10,7 +10,8 @@ from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from generalSettingsRepository import GeneralSettingsRepository
 from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from pkmn.pkmnCatchType import PkmnCatchType
@@ -382,18 +383,18 @@ class SuperTriviaGameRedemption(AbsPointRedemption):
         self,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
-        triviaGameMachine: TriviaGameMachine,
+        triviaGameMachine: TriviaGameMachineInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
 
     async def handlePointRedemption(
         self,
@@ -419,18 +420,18 @@ class TriviaGameRedemption(AbsPointRedemption):
         self,
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
-        triviaGameMachine: TriviaGameMachine,
+        triviaGameMachine: TriviaGameMachineInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachine):
+        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
 
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
-        self.__triviaGameMachine: TriviaGameMachine = triviaGameMachine
+        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
 
     async def handlePointRedemption(
         self,
