@@ -211,6 +211,7 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
+        self.__superTriviaGameRewardId: Optional[str] = superTriviaGameRewardId
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
         self.__superTriviaGameToxicMultiplier: Optional[int] = superTriviaGameToxicMultiplier
         self.__superTriviaGameToxicPunishmentMultiplier: Optional[int] = superTriviaGameToxicPunishmentMultiplier
