@@ -112,7 +112,8 @@ from CynanBotCommon.trivia.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
@@ -197,7 +198,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
-        triviaGameMachine: Optional[TriviaGameMachine],
+        triviaGameMachine: Optional[TriviaGameMachineInterface],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
         triviaRepository: Optional[TriviaRepository],
         triviaScoreRepository: Optional[TriviaScoreRepository],
@@ -266,7 +267,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: RecurringActionsMachineInterface = recurringActionsMachine
         self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: Optional[TriviaGameMachine] = triviaGameMachine
+        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepository] = triviaRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration

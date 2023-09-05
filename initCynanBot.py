@@ -112,6 +112,8 @@ from CynanBotCommon.trivia.triviaGameControllersRepository import \
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
@@ -497,7 +499,7 @@ triviaRepository = TriviaRepository(
     )
 )
 
-triviaGameMachine = TriviaGameMachine(
+triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
