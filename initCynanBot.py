@@ -101,6 +101,8 @@ from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
+from CynanBotCommon.trivia.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
@@ -117,6 +119,8 @@ from CynanBotCommon.trivia.triviaGameMachineInterface import \
 from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
+from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
+    TriviaHistoryRepositoryInterface
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
@@ -337,7 +341,7 @@ triviaBanHelper = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
     funtoonRepository = funtoonRepository
 )
-triviaContentScanner = TriviaContentScanner(
+triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
@@ -370,7 +374,7 @@ triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-triviaHistoryRepository = TriviaHistoryRepository(
+triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
