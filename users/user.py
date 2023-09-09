@@ -148,7 +148,7 @@ class User(UserInterface):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
-        elif superTriviaGameRewardId is not None and not utils.isValidStr(superTriviaGameRewardId):
+        elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
             raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
             raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
@@ -180,7 +180,7 @@ class User(UserInterface):
             raise ValueError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
         elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
             raise ValueError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
-        elif speedrunProfile is not None and not utils.isValidStr(speedrunProfile):
+        elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
             raise ValueError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise ValueError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
