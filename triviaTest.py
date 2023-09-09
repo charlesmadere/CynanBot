@@ -96,7 +96,7 @@ networkClientProvider: NetworkClientProvider = RequestsClientProvider(
 twitchApiService = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    twitchCredentialsProviderInterface = authRepository
+    twitchCredentialsProvider = authRepository
 )
 userIdsRepository = UserIdsRepository(
     backingDatabase = backingDatabase,
@@ -142,7 +142,7 @@ bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaContentScanner = TriviaContentScanner(
-    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
+    bannedWordsRepository = bannedWordsRepositoryInterface,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )

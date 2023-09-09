@@ -211,7 +211,7 @@ authRepository = AuthRepository(
 twitchApiService = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
-    twitchCredentialsProviderInterface = authRepository
+    twitchCredentialsProvider = authRepository
 )
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
     backingDatabase = backingDatabase,
@@ -295,7 +295,7 @@ if authSnapshot.hasOneWeatherApiKey():
 ## Trivia initialization section ##
 ###################################
 
-bannedWordsRepositoryInterface: BannedWordsRepositoryInterface = BannedWordsRepository(
+bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
     timber = timber
 )
@@ -342,7 +342,7 @@ triviaBanHelper = TriviaBanHelper(
     funtoonRepository = funtoonRepository
 )
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
-    bannedWordsRepositoryInterface = bannedWordsRepositoryInterface,
+    bannedWordsRepository = bannedWordsRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -571,7 +571,7 @@ cynanBot = CynanBot(
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
-    bannedWordsRepository = bannedWordsRepositoryInterface,
+    bannedWordsRepository = bannedWordsRepository,
     channelJoinHelper = ChannelJoinHelper(
         backgroundTaskHelper = backgroundTaskHelper,
         verified = True,

@@ -69,7 +69,7 @@ class User(UserInterface):
         pkmnBattleRewardId: str,
         pkmnEvolveRewardId: str,
         pkmnShinyRewardId: str,
-        speedrunProfile: str,
+        speedrunProfile: Optional[str],
         triviaGameRewardId: Optional[str],
         twitter: str,
         cutenessBoosterPacks: Optional[List[CutenessBoosterPack]],
@@ -170,6 +170,8 @@ class User(UserInterface):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
+        elif speedrunProfile is not None and not utils.isValidStr(speedrunProfile):
+            raise ValueError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise ValueError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitter is not None and not isinstance(twitter, str):
@@ -229,7 +231,7 @@ class User(UserInterface):
         self.__pkmnBattleRewardId: str = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: str = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str = pkmnShinyRewardId
-        self.__speedrunProfile: str = speedrunProfile
+        self.__speedrunProfile: Optional[str] = speedrunProfile
         self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
         self.__twitter: Optional[str] = twitter
         self.__cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = cutenessBoosterPacks
@@ -286,7 +288,7 @@ class User(UserInterface):
     def getPkmnShinyRewardId(self) -> str:
         return self.__pkmnShinyRewardId
 
-    def getSpeedrunProfile(self) -> str:
+    def getSpeedrunProfile(self) -> Optional[str]:
         return self.__speedrunProfile
 
     def getSuperTriviaGamePoints(self) -> Optional[int]:
