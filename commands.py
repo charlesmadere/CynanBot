@@ -98,7 +98,7 @@ from CynanBotCommon.users.userIdsRepositoryInterface import \
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
-from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from CynanBotCommon.weather.weatherRepositoryInterface import WeatherRepositoryInterface
 from generalSettingsRepository import GeneralSettingsRepository
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 from triviaUtils import TriviaUtils
@@ -670,7 +670,7 @@ class ClearCachesCommand(AbsCommand):
         twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
-        weatherRepository: Optional[WeatherRepository],
+        weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -702,7 +702,7 @@ class ClearCachesCommand(AbsCommand):
         self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: Optional[WeatherRepository] = weatherRepository
+        self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
         self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
 
     async def handleCommand(self, ctx: TwitchContext):

@@ -128,7 +128,8 @@ from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
-from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from CynanBotCommon.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                     SubGiftThankingEvent)
 from generalSettingsRepository import GeneralSettingsRepository
@@ -210,7 +211,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
-        weatherRepository: Optional[WeatherRepository],
+        weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         super().__init__(

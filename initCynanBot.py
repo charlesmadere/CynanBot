@@ -148,6 +148,8 @@ from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
+from CynanBotCommon.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 from generalSettingsRepository import GeneralSettingsRepository
 from triviaUtils import TriviaUtils
 from twitch.channelJoinHelper import ChannelJoinHelper
@@ -282,7 +284,7 @@ if authSnapshot.hasDeepLAuthKey():
         timber = timber
     )
 
-weatherRepository: Optional[WeatherRepository] = None
+weatherRepository: Optional[WeatherRepositoryInterface] = None
 if authSnapshot.hasOneWeatherApiKey():
     weatherRepository = WeatherRepository(
         networkClientProvider = networkClientProvider,
