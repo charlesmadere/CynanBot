@@ -176,7 +176,7 @@ class User(UserInterface):
             raise ValueError(f'picOfTheDayRewardId argument is malformed: \"{picOfTheDayRewardId}\"')
         elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
             raise ValueError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
-        elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str)):
+        elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str):
             raise ValueError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
         elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
             raise ValueError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
