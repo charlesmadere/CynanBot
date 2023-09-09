@@ -3667,7 +3667,7 @@ class WeatherCommand(AbsCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
-        weatherRepository: WeatherRepository,
+        weatherRepository: WeatherRepositoryInterface,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -3680,7 +3680,7 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(weatherRepository, WeatherRepository):
+        elif not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
@@ -3690,7 +3690,7 @@ class WeatherCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: WeatherRepository = weatherRepository
+        self.__weatherRepository: WeatherRepositoryInterface = weatherRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: TwitchContext):
