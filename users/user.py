@@ -63,12 +63,12 @@ class User(UserInterface):
         discord: Optional[str],
         handle: str,
         instagram: Optional[str],
-        locationId: str,
-        picOfTheDayFile: str,
-        picOfTheDayRewardId: str,
-        pkmnBattleRewardId: str,
-        pkmnEvolveRewardId: str,
-        pkmnShinyRewardId: str,
+        locationId: Optional[str],
+        picOfTheDayFile: Optional[str],
+        picOfTheDayRewardId: Optional[str],
+        pkmnBattleRewardId: Optional[str],
+        pkmnEvolveRewardId: Optional[str],
+        pkmnShinyRewardId: Optional[str],
         speedrunProfile: Optional[str],
         triviaGameRewardId: Optional[str],
         twitter: str,
@@ -168,8 +168,18 @@ class User(UserInterface):
             raise ValueError(f'discord argument is malformed: \"{discord}\"')
         elif not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif isPicOfTheDayEnabled and not utils.isValidStr(picOfTheDayFile):
+        elif locationId is not None and not isinstance(locationId, str):
+            raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
+        elif picOfTheDayFile is not None and not isinstance(picOfTheDayFile, str):
             raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
+        elif picOfTheDayRewardId is not None and not isinstance(picOfTheDayRewardId, str):
+            raise ValueError(f'picOfTheDayRewardId argument is malformed: \"{picOfTheDayRewardId}\"')
+        elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
+            raise ValueError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
+        elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str)):
+            raise ValueError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
+        elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
+            raise ValueError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif speedrunProfile is not None and not utils.isValidStr(speedrunProfile):
             raise ValueError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
@@ -225,12 +235,12 @@ class User(UserInterface):
         self.__discord: Optional[str] = discord
         self.__handle: str = handle
         self.__instagram: Optional[str] = instagram
-        self.__locationId: str = locationId
-        self.__picOfTheDayFile: str = picOfTheDayFile
-        self.__picOfTheDayRewardId: str = picOfTheDayRewardId
-        self.__pkmnBattleRewardId: str = pkmnBattleRewardId
-        self.__pkmnEvolveRewardId: str = pkmnEvolveRewardId
-        self.__pkmnShinyRewardId: str = pkmnShinyRewardId
+        self.__locationId: Optional[str] = locationId
+        self.__picOfTheDayFile: Optional[str] = picOfTheDayFile
+        self.__picOfTheDayRewardId: Optional[str] = picOfTheDayRewardId
+        self.__pkmnBattleRewardId: Optional[str] = pkmnBattleRewardId
+        self.__pkmnEvolveRewardId: Optional[str] = pkmnEvolveRewardId
+        self.__pkmnShinyRewardId: Optional[str] = pkmnShinyRewardId
         self.__speedrunProfile: Optional[str] = speedrunProfile
         self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
         self.__twitter: Optional[str] = twitter
@@ -276,16 +286,16 @@ class User(UserInterface):
     def getPicOfTheDayRewardId(self) -> str:
         return self.__picOfTheDayRewardId
 
-    def getPkmnBattleRewardId(self) -> str:
+    def getPkmnBattleRewardId(self) -> Optional[str]:
         return self.__pkmnBattleRewardId
 
     def getPkmnCatchBoosterPacks(self) -> Optional[List[PkmnCatchBoosterPack]]:
         return self.__pkmnCatchBoosterPacks
 
-    def getPkmnEvolveRewardId(self) -> str:
+    def getPkmnEvolveRewardId(self) -> Optional[str]:
         return self.__pkmnEvolveRewardId
 
-    def getPkmnShinyRewardId(self) -> str:
+    def getPkmnShinyRewardId(self) -> Optional[str]:
         return self.__pkmnShinyRewardId
 
     def getSpeedrunProfile(self) -> Optional[str]:
