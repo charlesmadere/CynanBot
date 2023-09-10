@@ -72,8 +72,8 @@ from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
-    BannedTriviaGameControllersRepository
+from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
+    BannedTriviaGameControllersRepositoryInterface
 from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
@@ -171,7 +171,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         administratorProvider: AdministratorProviderInterface,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
-        bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepository],
+        bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepositoryInterface],
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         chatLogger: Optional[ChatLogger],

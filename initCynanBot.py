@@ -60,6 +60,8 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
+from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
+    BannedTriviaGameControllersRepositoryInterface
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepositoryInterface import \
@@ -356,7 +358,7 @@ triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
     usersRepository = usersRepository
 )
-bannedTriviaGameControllersRepository = BannedTriviaGameControllersRepository(
+bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(
     administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,
@@ -385,12 +387,12 @@ triviaScoreRepository = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
 triviaUtils = TriviaUtils(
-    administratorProviderInterface = administratorProvider,
+    administratorProvider = administratorProvider,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
