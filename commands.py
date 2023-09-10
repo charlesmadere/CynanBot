@@ -14,9 +14,8 @@ from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
-from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.funtoon.funtoonTokensRepository import \
-    FuntoonTokensRepository
+from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
+    FuntoonTokensRepositoryInterface
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
@@ -660,7 +659,7 @@ class ClearCachesCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
-        funtoonTokensRepository: Optional[FuntoonRepository],
+        funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         locationsRepository: Optional[LocationsRepository],
@@ -692,7 +691,7 @@ class ClearCachesCommand(AbsCommand):
         self.__administratorProviderInterface: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
         self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepository
-        self.__funtoonTokensRepository: Optional[FuntoonTokensRepository] = funtoonTokensRepository
+        self.__funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
         self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
@@ -2789,15 +2788,15 @@ class SetFuntoonTokenCommand(AbsCommand):
 
     def __init__(
         self,
-        administratorProviderInterface: AdministratorProviderInterface,
-        funtoonTokensRepository: FuntoonTokensRepository,
+        administratorProvider: AdministratorProviderInterface,
+        funtoonTokensRepository: FuntoonTokensRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
-        elif not isinstance(funtoonTokensRepository, FuntoonTokensRepository):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -2806,15 +2805,15 @@ class SetFuntoonTokenCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
-        self.__funtoonTokensRepository: FuntoonTokensRepository = funtoonTokensRepository
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+        administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorName().lower() != user.getHandle().lower() and ctx.getAuthorId() != administrator:
             self.__timber.log('SetFuntoonTokenCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')

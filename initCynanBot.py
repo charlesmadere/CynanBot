@@ -15,6 +15,8 @@ from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.funtoon.funtoonTokensRepository import \
     FuntoonTokensRepository
+from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
+    FuntoonTokensRepositoryInterface
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
@@ -242,7 +244,7 @@ cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
-funtoonTokensRepository = FuntoonTokensRepository(
+funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     seedFileReader = JsonFileReader('CynanBotCommon/funtoon/funtoonTokensRepositorySeedFile.json')
