@@ -674,11 +674,17 @@ class ClearCachesCommand(AbsCommand):
         wordOfTheDayRepository: Optional[WordOfTheDayRepository]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
+        elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
+            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+            raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepository):
+            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
@@ -688,9 +694,9 @@ class ClearCachesCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProvider
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
-        self.__bannedWordsRepositoryInterface: Optional[BannedWordsRepositoryInterface] = bannedWordsRepository
+        self.__bannedWordsRepository: Optional[BannedWordsRepositoryInterface] = bannedWordsRepository
         self.__funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface] = funtoonTokensRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
@@ -699,7 +705,7 @@ class ClearCachesCommand(AbsCommand):
         self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
-        self.__twitchTokensRepositoryInterface: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepository
+        self.__twitchTokensRepository: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
@@ -707,7 +713,7 @@ class ClearCachesCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+        administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if administrator != ctx.getAuthorId():
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -715,8 +721,8 @@ class ClearCachesCommand(AbsCommand):
 
         await self.__authRepository.clearCaches()
 
-        if self.__bannedWordsRepositoryInterface is not None:
-            await self.__bannedWordsRepositoryInterface.clearCaches()
+        if self.__bannedWordsRepository is not None:
+            await self.__bannedWordsRepository.clearCaches()
 
         if self.__funtoonTokensRepository is not None:
             await self.__funtoonTokensRepository.clearCaches()
@@ -737,8 +743,8 @@ class ClearCachesCommand(AbsCommand):
         if self.__triviaSettingsRepository is not None:
             await self.__triviaSettingsRepository.clearCaches()
 
-        if self.__twitchTokensRepositoryInterface is not None:
-            await self.__twitchTokensRepositoryInterface.clearCaches()
+        if self.__twitchTokensRepository is not None:
+            await self.__twitchTokensRepository.clearCaches()
 
         await self.__usersRepository.clearCaches()
 
@@ -2853,32 +2859,32 @@ class SetTwitchCodeCommand(AbsCommand):
 
     def __init__(
         self,
-        administratorProviderInterface: AdministratorProviderInterface,
+        administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
-        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministratorUserId()
+        administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if ctx.getAuthorName().lower() != user.getHandle().lower() and ctx.getAuthorId() != administrator:
             self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
@@ -2896,7 +2902,7 @@ class SetTwitchCodeCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
-        await self.__twitchTokensRepositoryInterface.addUser(
+        await self.__twitchTokensRepository.addUser(
             code = code,
             twitchChannel = user.getHandle(),
         )
