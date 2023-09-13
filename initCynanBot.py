@@ -104,12 +104,16 @@ from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
 from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
+from CynanBotCommon.trivia.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBotCommon.trivia.triviaGameBuilder import TriviaGameBuilder
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -329,8 +333,7 @@ additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = 
 )
 bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = BannedTriviaIdsRepository(
     backingDatabase = backingDatabase,
-    timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    timber = timber
 )
 shinyTriviaHelper = ShinyTriviaHelper(
     cutenessRepository = cutenessRepository,
@@ -343,16 +346,17 @@ toxicTriviaHelper = ToxicTriviaHelper(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaBanHelper = TriviaBanHelper(
+triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     bannedTriviaIdsRepository = bannedTriviaIdsRepository,
-    funtoonRepository = funtoonRepository
+    funtoonRepository = funtoonRepository,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaEmoteGenerator = TriviaEmoteGenerator(
+triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
     backingDatabase = backingDatabase,
     timber = timber
 )
@@ -489,8 +493,8 @@ triviaRepository = TriviaRepository(
     ),
     triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
-        bannedTriviaIdsRepository = bannedTriviaIdsRepository,
         timber = timber,
+        triviaBanHelper = triviaBanHelper,
         triviaContentScanner = triviaContentScanner,
         triviaHistoryRepository = triviaHistoryRepository
     ),
