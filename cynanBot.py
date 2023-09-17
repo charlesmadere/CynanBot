@@ -102,8 +102,10 @@ from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
-from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
-from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBotCommon.trivia.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
+from CynanBotCommon.trivia.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
@@ -194,8 +196,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         timber: TimberInterface,
         toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepository],
         translationHelper: Optional[TranslationHelper],
-        triviaBanHelper: Optional[TriviaBanHelper],
-        triviaEmoteGenerator: Optional[TriviaEmoteGenerator],
+        triviaBanHelper: Optional[TriviaBanHelperInterface],
+        triviaEmoteGenerator: Optional[TriviaEmoteGeneratorInterface],
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
