@@ -3047,7 +3047,7 @@ class SuperTriviaCommand(AbsCommand):
                 await self.__twitchUtils.safeSend(ctx, f'⚠ Error converting the given count into an int. Example: !supertrivia 2')
                 return
 
-            maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperGameQueueSize()
+            maxNumberOfGames = await self.__triviaSettingsRepository.getMaxSuperTriviaGameQueueSize()
 
             if numberOfGames < 1 or numberOfGames > maxNumberOfGames:
                 self.__timber.log('SuperTriviaCommand', f'The numberOfGames argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds ({numberOfGames}) (converted from \"{numberOfGamesStr}\")')
