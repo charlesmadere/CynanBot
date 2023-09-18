@@ -500,7 +500,7 @@ triviaRepository = TriviaRepository(
         triviaContentScanner = triviaContentScanner,
         triviaHistoryRepository = triviaHistoryRepository
     ),
-    twitchHandleProviderInterface = authRepository,
+    twitchHandleProvider = authRepository,
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,
