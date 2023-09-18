@@ -40,7 +40,8 @@ from CynanBotCommon.administratorProviderInterface import \
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+    FuntoonRepositoryInterface
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBotCommon.language.jishoHelper import JishoHelper
@@ -179,7 +180,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         chatLogger: Optional[ChatLogger],
         cutenessRepository: Optional[CutenessRepository],
         cutenessUtils: Optional[CutenessUtils],
-        funtoonRepository: Optional[FuntoonRepository],
+        funtoonRepository: Optional[FuntoonRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],

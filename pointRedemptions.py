@@ -6,7 +6,8 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
-from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+    FuntoonRepositoryInterface
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -92,12 +93,12 @@ class PkmnBattleRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        funtoonRepository: FuntoonRepository,
+        funtoonRepository: FuntoonRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(funtoonRepository, FuntoonRepository):
+        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -106,7 +107,7 @@ class PkmnBattleRedemption(AbsPointRedemption):
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__funtoonRepository: FuntoonRepository = funtoonRepository
+        self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -150,12 +151,12 @@ class PkmnCatchRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        funtoonRepository: FuntoonRepository,
+        funtoonRepository: FuntoonRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(funtoonRepository, FuntoonRepository):
+        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -164,7 +165,7 @@ class PkmnCatchRedemption(AbsPointRedemption):
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__funtoonRepository: FuntoonRepository = funtoonRepository
+        self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -230,12 +231,12 @@ class PkmnEvolveRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        funtoonRepository: FuntoonRepository,
+        funtoonRepository: FuntoonRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(funtoonRepository, FuntoonRepository):
+        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -244,7 +245,7 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__funtoonRepository: FuntoonRepository = funtoonRepository
+        self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -280,12 +281,12 @@ class PkmnShinyRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        funtoonRepository: FuntoonRepository,
+        funtoonRepository: FuntoonRepositoryInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(funtoonRepository, FuntoonRepository):
+        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -294,7 +295,7 @@ class PkmnShinyRedemption(AbsPointRedemption):
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__funtoonRepository: FuntoonRepository = funtoonRepository
+        self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils

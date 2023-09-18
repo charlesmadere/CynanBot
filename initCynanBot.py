@@ -13,6 +13,8 @@ from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
+from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+    FuntoonRepositoryInterface
 from CynanBotCommon.funtoon.funtoonTokensRepository import \
     FuntoonTokensRepository
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
@@ -253,7 +255,7 @@ funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensReposit
     timber = timber,
     seedFileReader = JsonFileReader('CynanBotCommon/funtoon/funtoonTokensRepositorySeedFile.json')
 )
-funtoonRepository = FuntoonRepository(
+funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
     networkClientProvider = networkClientProvider,
     timber = timber
