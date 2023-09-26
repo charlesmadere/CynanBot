@@ -7,8 +7,8 @@ from typing import List, Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
-    SentMessageLogger
+from CynanBotCommon.sentMessageLogger.sentMessageLoggerInterface import \
+    SentMessageLoggerInterface
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from twitch.outboundMessage import OutboundMessage
 from twitch.twitchMessageable import TwitchMessageable
@@ -19,7 +19,7 @@ class TwitchUtils():
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
-        sentMessageLogger: SentMessageLogger,
+        sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
@@ -29,7 +29,7 @@ class TwitchUtils():
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(sentMessageLogger, SentMessageLogger):
+        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -52,7 +52,7 @@ class TwitchUtils():
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__sentMessageLogger: SentMessageLogger = sentMessageLogger
+        self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
