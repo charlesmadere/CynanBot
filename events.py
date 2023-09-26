@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
 import CynanBotCommon.utils as utils
-from CynanBotCommon.chatLogger.chatLogger import ChatLogger
+from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
@@ -29,15 +29,15 @@ class RaidLogEvent(AbsEvent):
 
     def __init__(
         self,
-        chatLogger: ChatLogger,
+        chatLogger: ChatLoggerInterface,
         timber: TimberInterface
     ):
-        if not isinstance(chatLogger, ChatLogger):
+        if not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__chatLogger: ChatLogger = chatLogger
+        self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__timber: TimberInterface = timber
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:

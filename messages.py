@@ -2,8 +2,9 @@ from abc import ABC, abstractmethod
 from datetime import timedelta
 
 import CynanBotCommon.utils as utils
-from CynanBotCommon.chatBand.chatBandManager import ChatBandManager
-from CynanBotCommon.chatLogger.chatLogger import ChatLogger
+from CynanBotCommon.chatBand.chatBandManagerInterface import \
+    ChatBandManagerInterface
+from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timedDict import TimedDict
 from generalSettingsRepository import GeneralSettingsRepository
@@ -68,18 +69,18 @@ class ChatBandMessage(AbsMessage):
 
     def __init__(
         self,
-        chatBandManager: ChatBandManager,
+        chatBandManager: ChatBandManagerInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface
     ):
-        if not isinstance(chatBandManager, ChatBandManager):
+        if not isinstance(chatBandManager, ChatBandManagerInterface):
             raise ValueError(f'chatBandManager argument is malformed: \"{chatBandManager}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
-        self.__chatBandManager: ChatBandManager = chatBandManager
+        self.__chatBandManager: ChatBandManagerInterface = chatBandManager
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
 
@@ -106,12 +107,12 @@ class ChatLogMessage(AbsMessage):
 
     def __init__(
         self,
-        chatLogger: ChatLogger
+        chatLogger: ChatLoggerInterface
     ):
-        if not isinstance(chatLogger, ChatLogger):
+        if not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
 
-        self.__chatLogger: ChatLogger = chatLogger
+        self.__chatLogger: ChatLoggerInterface = chatLogger
 
     async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
         if not twitchUser.isChatLoggingEnabled():
