@@ -2723,22 +2723,22 @@ class RemoveUserCommand(AbsCommand):
 
     def __init__(
         self,
-        administratorProviderInterface: AdministratorProviderInterface,
+        administratorProvider: AdministratorProviderInterface,
         modifyUserDataHelper: ModifyUserDataHelper,
         timber: TimberInterface,
-        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProviderInterface, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProviderInterface}\"')
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -2746,17 +2746,17 @@ class RemoveUserCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__administratorProviderInterface: AdministratorProviderInterface = administratorProviderInterface
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__timber: TimberInterface = timber
-        self.__twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProviderInterface.getAdministratorUserName()
+        administrator = await self.__administratorProvider.getAdministratorUserName()
 
         if ctx.getAuthorName().lower() != administrator.lower():
             self.__timber.log('RemoveUserCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
@@ -2779,7 +2779,7 @@ class RemoveUserCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove \"{userName}\" as this user does not already exist!')
             return
 
-        await self.__twitchTokensRepositoryInterface.removeUser(userName)
+        await self.__twitchTokensRepository.removeUser(userName)
         userId = await self.__userIdsRepository.requireUserId(userName = userName)
 
         await self.__modifyUserDataHelper.setUserData(

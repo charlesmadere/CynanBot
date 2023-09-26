@@ -1,12 +1,13 @@
 from typing import Any, Dict, Optional
 
+from CynanBotCommon.clearable import Clearable
 from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBotCommon.trivia.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
 from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
-class GeneralSettingsRepository(TriviaGameBuilderSettingsInterface):
+class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):

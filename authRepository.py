@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBotCommon.clearable import Clearable
 from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
@@ -8,7 +9,7 @@ from CynanBotCommon.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 
 
-class AuthRepository(TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
+class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
         if not isinstance(authJsonReader, JsonReaderInterface):
