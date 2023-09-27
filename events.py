@@ -128,21 +128,21 @@ class SubGiftThankingEvent(AbsEvent):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchHandleProviderInterface: TwitchHandleProviderInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
         twitchUtils: TwitchUtils
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchHandleProviderInterface, TwitchHandleProviderInterface):
-            raise ValueError(f'twitchHandleProviderInterface argument is malformed: \"{twitchHandleProviderInterface}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__twitchHandleProviderInterface: TwitchHandleProviderInterface = twitchHandleProviderInterface
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchUtils: TwitchUtils = twitchUtils
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
@@ -165,7 +165,7 @@ class SubGiftThankingEvent(AbsEvent):
             self.__timber.log('SubGiftThankingEvent', f'A subscription was gifted, but the tags dictionary seems to have strange values: {tags}')
             return False
 
-        twitchHandle = await self.__twitchHandleProviderInterface.getTwitchHandle()
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
 
         if giftedToName.lower() != twitchHandle.lower():
             return False
