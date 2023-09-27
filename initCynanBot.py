@@ -12,6 +12,8 @@ from CynanBotCommon.administratorProviderInterface import \
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
@@ -246,7 +248,7 @@ usersRepository = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
-cutenessRepository = CutenessRepository(
+cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )

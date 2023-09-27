@@ -4,7 +4,8 @@ from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
 from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
@@ -36,18 +37,18 @@ class CutenessRedemption(AbsPointRedemption):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
 

@@ -12,7 +12,8 @@ from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
-from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
@@ -1048,7 +1049,7 @@ class CutenessCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -1057,7 +1058,7 @@ class CutenessCommand(AbsCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 3)
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
@@ -1074,7 +1075,7 @@ class CutenessCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1162,7 +1163,7 @@ class CutenessChampionsCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -1170,7 +1171,7 @@ class CutenessChampionsCommand(AbsCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
@@ -1185,7 +1186,7 @@ class CutenessChampionsCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1213,7 +1214,7 @@ class CutenessHistoryCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -1223,7 +1224,7 @@ class CutenessHistoryCommand(AbsCommand):
         leaderboardDelimiter: str = ' — ',
         cooldown: timedelta = timedelta(seconds = 5)
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
@@ -1242,7 +1243,7 @@ class CutenessHistoryCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1703,14 +1704,14 @@ class GiveCutenessCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         timber: TimberInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1723,7 +1724,7 @@ class GiveCutenessCommand(AbsCommand):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__timber: TimberInterface = timber
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1892,7 +1893,7 @@ class MyCutenessHistoryCommand(AbsCommand):
 
     def __init__(
         self,
-        cutenessRepository: CutenessRepository,
+        cutenessRepository: CutenessRepositoryInterface,
         cutenessUtils: CutenessUtils,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -1901,7 +1902,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         delimiter: str = ', ',
         cooldown: timedelta = timedelta(seconds = 3)
     ):
-        if not isinstance(cutenessRepository, CutenessRepository):
+        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(cutenessUtils, CutenessUtils):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
@@ -1918,7 +1919,7 @@ class MyCutenessHistoryCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__cutenessRepository: CutenessRepository = cutenessRepository
+        self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__cutenessUtils: CutenessUtils = cutenessUtils
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils

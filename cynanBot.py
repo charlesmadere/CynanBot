@@ -39,7 +39,8 @@ from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
+from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
 from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
@@ -178,7 +179,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         chatLogger: Optional[ChatLoggerInterface],
-        cutenessRepository: Optional[CutenessRepository],
+        cutenessRepository: Optional[CutenessRepositoryInterface],
         cutenessUtils: Optional[CutenessUtils],
         funtoonRepository: Optional[FuntoonRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
