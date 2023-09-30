@@ -48,9 +48,10 @@ from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
 from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
-from CynanBotCommon.language.wordOfTheDayRepository import \
-    WordOfTheDayRepository
-from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
+    WordOfTheDayRepositoryInterface
+from CynanBotCommon.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
 from CynanBotCommon.lruCache import LruCache
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.recurringActions.recurringActionEventListener import \
@@ -120,10 +121,11 @@ from CynanBotCommon.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaHistoryRepository import \
     TriviaHistoryRepository
-from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaRepositoryInterface import \
+    TriviaRepositoryInterface
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBotCommon.trivia.triviaSettingsRepository import \
-    TriviaSettingsRepository
+from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
@@ -187,7 +189,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         jishoHelper: Optional[JishoHelper],
         languagesRepository: LanguagesRepository,
-        locationsRepository: Optional[LocationsRepository],
+        locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         pokepediaRepository: Optional[PokepediaRepository],
@@ -205,9 +207,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         triviaHistoryRepository: Optional[TriviaHistoryRepository],
-        triviaRepository: Optional[TriviaRepository],
+        triviaRepository: Optional[TriviaRepositoryInterface],
         triviaScoreRepository: Optional[TriviaScoreRepository],
-        triviaSettingsRepository: Optional[TriviaSettingsRepository],
+        triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         triviaUtils: TriviaUtils,
         twitchApiService: TwitchApiService,
         twitchConfiguration: TwitchConfiguration,
@@ -216,7 +218,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepository,
         weatherRepository: Optional[WeatherRepositoryInterface],
-        wordOfTheDayRepository: Optional[WordOfTheDayRepository]
+        wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
     ):
         super().__init__(
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
@@ -273,7 +275,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__recurringActionsMachine: RecurringActionsMachineInterface = recurringActionsMachine
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
-        self.__triviaRepository: Optional[TriviaRepository] = triviaRepository
+        self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils

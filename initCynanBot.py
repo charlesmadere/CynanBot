@@ -27,6 +27,8 @@ from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
 from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
 from CynanBotCommon.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.network.networkClientType import NetworkClientType
@@ -138,9 +140,13 @@ from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import 
     TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaRepositoryInterface import \
+    TriviaRepositoryInterface
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
+from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
 from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
@@ -268,7 +274,7 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
     twitchTokensRepository = twitchTokensRepository
 )
 languagesRepository = LanguagesRepository()
-locationsRepository = LocationsRepository(
+locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
     timeZoneRepository = timeZoneRepository
 )
@@ -324,7 +330,7 @@ triviaAnswerCompiler = TriviaAnswerCompiler(
 )
 triviaIdGenerator = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
-triviaSettingsRepository = TriviaSettingsRepository(
+triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
 )
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
@@ -426,7 +432,7 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
-triviaRepository = TriviaRepository(
+triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,

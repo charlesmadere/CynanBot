@@ -10,6 +10,7 @@ from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBotCommon.clearable import Clearable
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
@@ -21,8 +22,8 @@ from CynanBotCommon.language.jishoHelper import JishoHelper
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
-from CynanBotCommon.language.wordOfTheDayRepository import \
-    WordOfTheDayRepository
+from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
+    WordOfTheDayRepositoryInterface
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
@@ -85,8 +86,8 @@ from CynanBotCommon.trivia.triviaGameMachineInterface import \
 from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBotCommon.trivia.triviaSettingsRepository import \
-    TriviaSettingsRepository
+from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
@@ -669,12 +670,12 @@ class ClearCachesCommand(AbsCommand):
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         timber: TimberInterface,
-        triviaSettingsRepository: Optional[TriviaSettingsRepository],
+        triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
-        wordOfTheDayRepository: Optional[WordOfTheDayRepository]
+        wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -682,6 +683,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
+            raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
@@ -690,29 +693,42 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
+            raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
+            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+        elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
+            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__authRepository: AuthRepository = authRepository
-        self.__bannedWordsRepository: Optional[BannedWordsRepositoryInterface] = bannedWordsRepository
-        self.__funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface] = funtoonTokensRepository
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface] = isLiveOnTwitchRepository
-        self.__locationsRepository: Optional[LocationsRepository] = locationsRepository
-        self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository] = openTriviaDatabaseTriviaQuestionRepository
         self.__timber: TimberInterface = timber
-        self.__triviaSettingsRepository: Optional[TriviaSettingsRepository] = triviaSettingsRepository
-        self.__twitchTokensRepository: Optional[TwitchTokensRepositoryInterface] = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
-        self.__wordOfTheDayRepository: Optional[WordOfTheDayRepository] = wordOfTheDayRepository
+
+        self.__clearables: List[Optional[Clearable]] = list()
+        self.__clearables.append(authRepository)
+        self.__clearables.append(bannedWordsRepository)
+        self.__clearables.append(funtoonTokensRepository)
+        self.__clearables.append(generalSettingsRepository)
+        self.__clearables.append(isLiveOnTwitchRepository)
+        self.__clearables.append(locationsRepository)
+        self.__clearables.append(modifyUserDataHelper)
+        self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
+        self.__clearables.append(triviaSettingsRepository)
+        self.__clearables.append(twitchTokensRepository)
+        self.__clearables.append(usersRepository)
+        self.__clearables.append(weatherRepository)
+        self.__clearables.append(wordOfTheDayRepository)
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -722,40 +738,9 @@ class ClearCachesCommand(AbsCommand):
             self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
             return
 
-        await self.__authRepository.clearCaches()
-
-        if self.__bannedWordsRepository is not None:
-            await self.__bannedWordsRepository.clearCaches()
-
-        if self.__funtoonTokensRepository is not None:
-            await self.__funtoonTokensRepository.clearCaches()
-
-        await self.__generalSettingsRepository.clearCaches()
-
-        if self.__isLiveOnTwitchRepository is not None:
-            await self.__isLiveOnTwitchRepository.clearCaches()
-
-        if self.__locationsRepository is not None:
-            await self.__locationsRepository.clearCaches()
-
-        await self.__modifyUserDataHelper.clearCaches()
-
-        if self.__openTriviaDatabaseTriviaQuestionRepository is not None:
-            await self.__openTriviaDatabaseTriviaQuestionRepository.clearCaches()
-
-        if self.__triviaSettingsRepository is not None:
-            await self.__triviaSettingsRepository.clearCaches()
-
-        if self.__twitchTokensRepository is not None:
-            await self.__twitchTokensRepository.clearCaches()
-
-        await self.__usersRepository.clearCaches()
-
-        if self.__weatherRepository is not None:
-            await self.__weatherRepository.clearCaches()
-
-        if self.__wordOfTheDayRepository is not None:
-            await self.__wordOfTheDayRepository.clearCaches()
+        for clearable in self.__clearables:
+            if clearable is not None:
+                await clearable.clearCaches()
 
         await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2988,7 +2973,7 @@ class SuperTriviaCommand(AbsCommand):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
-        triviaSettingsRepository: TriviaSettingsRepository,
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
@@ -3001,7 +2986,7 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepository):
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
@@ -3014,7 +2999,7 @@ class SuperTriviaCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__triviaSettingsRepository: TriviaSettingsRepository = triviaSettingsRepository
+        self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -3736,7 +3721,7 @@ class WordCommand(AbsCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
-        wordOfTheDayRepository: WordOfTheDayRepository,
+        wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -3749,7 +3734,7 @@ class WordCommand(AbsCommand):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepository):
+        elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
@@ -3759,7 +3744,7 @@ class WordCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__wordOfTheDayRepository: WordOfTheDayRepository = wordOfTheDayRepository
+        self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleCommand(self, ctx: TwitchContext):
