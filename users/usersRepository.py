@@ -39,7 +39,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__usersFile: str = usersFile
 
         self.__jsonCache: Optional[Dict[str, Any]] = None
-        self.__userCache: Dict[str, User] = dict()
+        self.__userCache: Dict[str, Optional[User]] = dict()
 
     async def addUser(self, handle: str):
         if not utils.isValidStr(handle):
