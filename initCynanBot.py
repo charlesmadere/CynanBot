@@ -203,7 +203,9 @@ backingDatabase: BackingDatabase = None
 if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
-        psqlCredentialsProvider = PsqlCredentialsProvider()
+        psqlCredentialsProvider = PsqlCredentialsProvider(
+            credentialsJsonReader = JsonFileReader('CynanBotCommon/storage/psqlCredentials.json')
+        )
     )
 elif generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.SQLITE:
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
