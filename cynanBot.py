@@ -233,26 +233,78 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
+            raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif bannedTriviaGameControllersRepository is not None and not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
+            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+        elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
+            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(channelJoinHelper, ChannelJoinHelper):
             raise ValueError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
+        elif chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
+            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
+            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtils):
+            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+        elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
+            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+            raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+        elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
+            raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
+            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
+            raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+        elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepository):
+            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(recurringActionsMachine, RecurringActionsMachineInterface):
             raise ValueError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+        elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
+            raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
+        elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepository):
+            raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepository):
+            raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
+        elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
+            raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')
+        elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
+            raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
+        elif triviaEmoteGenerator is not None and not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
+            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
+        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
+            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
+            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+        elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepository):
+            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+        elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchApiService, TwitchApiService):
@@ -267,6 +319,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepository):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
+            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+        elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
+            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
