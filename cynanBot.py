@@ -45,7 +45,7 @@ from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from CynanBotCommon.language.jishoHelper import JishoHelper
+from CynanBotCommon.language.jishoHelperInterface import JishoHelperInterface
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
@@ -187,7 +187,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
-        jishoHelper: Optional[JishoHelper],
+        jishoHelper: Optional[JishoHelperInterface],
         languagesRepository: LanguagesRepository,
         locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,

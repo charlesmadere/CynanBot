@@ -18,7 +18,7 @@ from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
 from CynanBotCommon.cuteness.cutenessResult import CutenessResult
 from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from CynanBotCommon.language.jishoHelper import JishoHelper
+from CynanBotCommon.language.jishoHelperInterface import JishoHelperInterface
 from CynanBotCommon.language.languageEntry import LanguageEntry
 from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
@@ -1780,7 +1780,7 @@ class JishoCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        jishoHelper: JishoHelper,
+        jishoHelper: JishoHelperInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
@@ -1788,7 +1788,7 @@ class JishoCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(jishoHelper, JishoHelper):
+        elif not isinstance(jishoHelper, JishoHelperInterface):
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -1800,7 +1800,7 @@ class JishoCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__jishoHelper: JishoHelper = jishoHelper
+        self.__jishoHelper: JishoHelperInterface = jishoHelper
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
