@@ -128,7 +128,8 @@ from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBotCommon.twitch.twitchApiService import TwitchApiService
+from CynanBotCommon.twitch.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -211,7 +212,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         triviaUtils: TriviaUtils,
-        twitchApiService: TwitchApiService,
+        twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
@@ -307,7 +308,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(twitchApiService, TwitchApiService):
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')

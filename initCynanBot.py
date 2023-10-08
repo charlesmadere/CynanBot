@@ -159,6 +159,8 @@ from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
+from CynanBotCommon.twitch.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -230,7 +232,7 @@ else:
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
-twitchApiService = TwitchApiService(
+twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     twitchCredentialsProvider = authRepository

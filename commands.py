@@ -90,7 +90,8 @@ from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBotCommon.twitch.twitchApiService import TwitchApiService
+from CynanBotCommon.twitch.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBotCommon.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
@@ -3442,7 +3443,7 @@ class TwitchInfoCommand(AbsCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        twitchApiService: TwitchApiService,
+        twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
@@ -3452,7 +3453,7 @@ class TwitchInfoCommand(AbsCommand):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchApiService, TwitchApiService):
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
@@ -3465,7 +3466,7 @@ class TwitchInfoCommand(AbsCommand):
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
-        self.__twitchApiService: TwitchApiService = twitchApiService
+        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
