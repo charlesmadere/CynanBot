@@ -327,6 +327,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
+        self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: RecurringActionsMachineInterface = recurringActionsMachine
@@ -845,6 +846,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
+        if self.__chatLogger is not None:
+            self.__chatLogger.start()
+
         if self.__triviaRepository is not None:
             self.__triviaRepository.startSpooler()
 
@@ -852,15 +856,15 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__triviaGameMachine.setEventListener(self)
             self.__triviaGameMachine.startMachine()
 
+        if self.__recurringActionsMachine is not None:
+            self.__recurringActionsMachine.setEventListener(self)
+            self.__recurringActionsMachine.startMachine()
+
         if self.__eventSubUtils is not None:
             self.__eventSubUtils.startEventSub()
 
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
-
-        if self.__recurringActionsMachine is not None:
-            self.__recurringActionsMachine.setEventListener(self)
-            self.__recurringActionsMachine.startMachine()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')

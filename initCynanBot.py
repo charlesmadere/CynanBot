@@ -603,7 +603,8 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatLogger = ChatLogger(
-        backgroundTaskHelper = backgroundTaskHelper
+        backgroundTaskHelper = backgroundTaskHelper,
+        timber = timber
     ),
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
