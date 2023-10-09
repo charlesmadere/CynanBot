@@ -35,6 +35,7 @@ class ModifyUserDataHelper(Clearable):
     async def clearCaches(self):
         self.__modifyUserData = None
         self.__setTime = None
+        self.__timber.log('ModifyUserDataHelper', 'Caches cleared')
 
     async def getUserData(self) -> Optional[ModifyUserData]:
         now = datetime.now(self.__timeZone)

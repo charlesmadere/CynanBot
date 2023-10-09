@@ -67,6 +67,7 @@ class UsersRepository(UsersRepositoryInterface):
     async def clearCaches(self):
         self.__jsonCache = None
         self.__userCache.clear()
+        self.__timber.log('UsersRepository', 'Caches cleared')
 
     def containsUser(self, handle: str) -> bool:
         if not utils.isValidStr(handle):
