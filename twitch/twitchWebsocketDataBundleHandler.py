@@ -6,18 +6,23 @@ from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
 from twitch.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
+from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 
 
 class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
-        channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler
+        channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler,
+        subscriptionHandler: TwitchSubscriptionHandler
     ):
         if not isinstance(channelPointRedemptionHandler, TwitchChannelPointRedemptionHandler):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
+        elif not isinstance(subscriptionHandler, TwitchSubscriptionHandler):
+            raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
 
         self.__channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler = channelPointRedemptionHandler
+        self.__subscriptionHandler: TwitchSubscriptionHandler = subscriptionHandler
 
     async def onNewWebsocketDataBundle(self, dataBundle: WebsocketDataBundle):
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
