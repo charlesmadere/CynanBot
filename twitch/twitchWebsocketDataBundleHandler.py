@@ -24,11 +24,21 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler = channelPointRedemptionHandler
         self.__subscriptionHandler: TwitchSubscriptionHandler = subscriptionHandler
 
+    async def __isSubscriptionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+        return subscriptionType is WebsocketSubscriptionType.SUBSCRIBE \
+            or subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_GIFT \
+            or subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+
     async def onNewWebsocketDataBundle(self, dataBundle: WebsocketDataBundle):
+        if not isinstance(dataBundle, WebsocketDataBundle):
+            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
 
         if subscriptionType is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
             await self.__channelPointRedemptionHandler.onNewChannelPointRedemption(dataBundle)
+        elif await self.__isSubscriptionType(subscriptionType):
+            await self.__subscriptionHandler.onNewSubscription(dataBundle)
 
         # TODO
         pass
