@@ -164,6 +164,10 @@ from CynanBotCommon.twitch.twitchApiServiceInterface import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapper import \
+    TwitchWebsocketJsonMapper
+from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
+    TwitchWebsocketJsonMapperInterface
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -232,9 +236,13 @@ else:
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
+twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
+    timber = timber
+)
 twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
+    twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
     twitchCredentialsProvider = authRepository
 )
 twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
