@@ -159,6 +159,7 @@ from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchChannel import TwitchChannel
+from twitch.twitchChannelProvider import TwitchChannelProvider
 from twitch.twitchConfiguration import TwitchConfiguration
 from twitch.twitchUtils import TwitchUtils
 from users.modifyUserActionType import ModifyUserActionType
@@ -169,7 +170,8 @@ from users.user import User
 from users.usersRepository import UsersRepository
 
 
-class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, TriviaEventListener):
+class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, \
+    TriviaEventListener, TwitchChannelProvider):
 
     def __init__(
         self,
@@ -815,6 +817,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         except KeyError as e:
             self.__timber.log('CynanBot', f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
             raise RuntimeError(f'Encountered KeyError when trying to get twitchChannel \"{twitchChannel}\": {e}', e, traceback.format_exc())
+
+    async def getTwitchChannel(self, twitchChannel: str) -> TwitchChannel:
+        return await self.__getChannel(twitchChannel)
 
     async def onModifyUserEvent(self, event: ModifyUserData):
         self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')

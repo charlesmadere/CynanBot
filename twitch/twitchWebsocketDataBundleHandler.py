@@ -1,5 +1,3 @@
-from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
@@ -9,7 +7,7 @@ from twitch.twitchChannelPointRedemptionHandler import \
 from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 
 
-class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
+class TwitchWebsocketDataBundleHandler():
 
     def __init__(
         self,
