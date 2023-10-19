@@ -5,6 +5,7 @@ from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
+from CynanBotCommon.users.userInterface import UserInterface
 from twitch.twitchChannelProvider import TwitchChannelProvider
 
 
@@ -23,8 +24,14 @@ class TwitchSubscriptionHandler(TwitchWebsocketDataBundleListener):
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
-    async def onNewSubscription(self, dataBundle: WebsocketDataBundle):
-        if not isinstance(dataBundle, WebsocketDataBundle):
+    async def onNewSubscription(
+        self,
+        user: UserInterface,
+        dataBundle: WebsocketDataBundle
+    ):
+        if not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         # TODO
