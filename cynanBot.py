@@ -87,6 +87,10 @@ from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
     CorrectSuperAnswerTriviaEvent
 from CynanBotCommon.trivia.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
+from twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
+from twitch.twitchCheerHandler import TwitchCheerHandler
+from twitch.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
+from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
@@ -870,6 +874,30 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if self.__pubSubUtils is not None:
             self.__pubSubUtils.startPubSub()
+
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+
+        if generalSettings.isEventSubEnabled():
+            # TODO
+            TwitchWebsocketDataBundleHandler(
+                timber = self.__timber,
+                channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
+                    cutenessRedemption = self.__cutenessPointRedemption,
+                    pkmnBattleRedemption = self.__pkmnBattlePointRedemption,
+                    pkmnCatchRedemption = self.__pkmnCatchPointRedemption,
+                    pkmnEvolveRedemption = self.__pkmnEvolvePointRedemption,
+                    pkmnShinyRedemption = self.__pkmnShinyPointRedemption,
+                    superTriviaGameRedemption = self.__superTriviaGamePointRedemption,
+                    triviaGameRedemption = self.__triviaGamePointRedemption,
+                    timber = self.__timber,
+                    twitchChannelProvider = self,
+                    userIdsRepository = self.__userIdsRepository
+                ),
+                cheerHandler = None,
+                subscriptionHandler = None,
+                userIdsRepository = self.__userIdsRepository,
+                usersRepository = self.__usersRepository
+            )
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')

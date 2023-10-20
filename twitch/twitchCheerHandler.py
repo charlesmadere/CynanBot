@@ -8,7 +8,7 @@ from CynanBotCommon.users.userInterface import UserInterface
 from twitch.twitchChannelProvider import TwitchChannelProvider
 
 
-class TwitchSubscriptionHandler():
+class TwitchCheerHandler():
 
     def __init__(
         self,
@@ -23,7 +23,7 @@ class TwitchSubscriptionHandler():
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
-    async def onNewSubscription(
+    async def onNewCheer(
         self,
         userId: str,
         user: UserInterface,

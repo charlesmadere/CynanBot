@@ -1,17 +1,11 @@
-from typing import Optional
-
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
-from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from pointRedemptions import AbsPointRedemption, CutenessRedemption
+from pointRedemptions import AbsPointRedemption, CutenessRedemption, PkmnBattleRedemption, PkmnCatchRedemption, PkmnEvolveRedemption, PkmnShinyRedemption, SuperTriviaGameRedemption, TriviaGameRedemption, StubPointRedemption
 from twitch.twitchChannelPointsMessage import (TwitchChannelPointsMessage,
                                                TwitchChannelPointsMessageStub)
 from twitch.twitchChannelProvider import TwitchChannelProvider
@@ -21,28 +15,48 @@ class TwitchChannelPointRedemptionHandler():
 
     def __init__(
         self,
-        cutenessRedemption: CutenessRedemption,
+        cutenessRedemption: AbsPointRedemption,
+        pkmnBattleRedemption: AbsPointRedemption,
+        pkmnCatchRedemption: AbsPointRedemption,
+        pkmnEvolveRedemption: AbsPointRedemption,
+        pkmnShinyRedemption: AbsPointRedemption,
+        superTriviaGameRedemption: AbsPointRedemption,
+        triviaGameRedemption: AbsPointRedemption,
         timber: TimberInterface,
         twitchChannelProvider: TwitchChannelProvider,
-        userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(cutenessRedemption, CutenessRedemption):
+        if not isinstance(cutenessRedemption, CutenessRedemption) and not isinstance(cutenessRedemption, StubPointRedemption):
             raise ValueError(f'cutenessRedemption argument is malformed: \"{cutenessRedemption}\"')
+        elif not isinstance(pkmnBattleRedemption, PkmnBattleRedemption) and not isinstance(pkmnBattleRedemption, StubPointRedemption):
+            raise ValueError(f'pkmnBattleRedemption argument is malformed: \"{pkmnBattleRedemption}\"')
+        elif not isinstance(pkmnCatchRedemption, PkmnCatchRedemption) and not isinstance(pkmnCatchRedemption, StubPointRedemption):
+            raise ValueError(f'pkmnCatchRedemption argument is malformed: \"{pkmnCatchRedemption}\"')
+        elif not isinstance(pkmnEvolveRedemption, PkmnEvolveRedemption) and not isinstance(pkmnEvolveRedemption, StubPointRedemption):
+            raise ValueError(f'pkmnEvolveRedemption argument is malformed: \"{pkmnEvolveRedemption}\"')
+        elif not isinstance(pkmnShinyRedemption, PkmnShinyRedemption) and not isinstance(pkmnShinyRedemption, StubPointRedemption):
+            raise ValueError(f'pkmnShinyRedemption argument is malformed: \"{pkmnShinyRedemption}\"')
+        elif not isinstance(superTriviaGameRedemption, SuperTriviaGameRedemption) and not isinstance(superTriviaGameRedemption, StubPointRedemption):
+            raise ValueError(f'superTriviaGameRedemption argument is malformed: \"{superTriviaGameRedemption}\"')
+        elif not isinstance(triviaGameRedemption, TriviaGameRedemption) and not isinstance(triviaGameRedemption, StubPointRedemption):
+            raise ValueError(f'triviaGameRedemption argument is malformed: \"{triviaGameRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__cutenessRedemption: AbsPointRedemption = cutenessRedemption
+        self.__pkmnBattleRedemption: AbsPointRedemption = pkmnBattleRedemption
+        self.__pkmnCatchRedemption: AbsPointRedemption = pkmnCatchRedemption
+        self.__pkmnEvolveRedemption: AbsPointRedemption = pkmnEvolveRedemption
+        self.__pkmnShinyRedemption: AbsPointRedemption = pkmnShinyRedemption
+        self.__superTriviaGameRedemption: AbsPointRedemption = superTriviaGameRedemption
+        self.__triviaGameRedemption: AbsPointRedemption = triviaGameRedemption
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def onNewChannelPointRedemption(
         self,
@@ -69,17 +83,8 @@ class TwitchChannelPointRedemptionHandler():
         redemptionUserInput = event.getUserInput()
         redemptionUserLogin = event.getUserLogin()
 
-        if not utils.isValidStr(eventId):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no eventId: \"{eventId}\"')
-            return
-        elif not utils.isValidStr(rewardId):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no rewardId: \"{rewardId}\"')
-            return
-        elif not utils.isValidStr(redemptionUserId):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no userId: \"{redemptionUserId}\"')
-            return
-        elif not utils.isValidStr(redemptionUserLogin):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no userLogin: \"{redemptionUserLogin}\"')
+        if not utils.isValidStr(eventId) or not utils.isValidStr(rewardId) or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (rewardId=\"{rewardId}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
             return
 
         await self.__userIdsRepository.setUser(
@@ -89,7 +94,7 @@ class TwitchChannelPointRedemptionHandler():
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
 
-        twitchChannelPointsMessage: TwitchChannelPointsMessage = TwitchChannelPointsMessageStub(
+        channelPointsMessage: TwitchChannelPointsMessage = TwitchChannelPointsMessageStub(
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
             rewardId = rewardId,
@@ -99,9 +104,51 @@ class TwitchChannelPointRedemptionHandler():
         )
 
         if user.isCutenessEnabled() and user.hasCutenessBoosterPacks():
-            await self.__cutenessRedemption.handlePointRedemption(
+            if await self.__cutenessRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = twitchChannelPointsMessage
-            )
-        # TODO
-        pass
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isPkmnEnabled():
+            if channelPointsMessage.getRewardId() == user.getPkmnBattleRewardId():
+                if await self.__pkmnBattleRedemption.handlePointRedemption(
+                    twitchChannel = twitchChannel,
+                    TwitchChannelPointsMessage = channelPointsMessage
+                ):
+                    return
+
+            if user.hasPkmnCatchBoosterPacks():
+                if await self.__pkmnCatchRedemption.handlePointRedemption(
+                    twitchChannel = twitchChannel,
+                    twitchChannelPointsMessage = channelPointsMessage
+                ):
+                    return
+
+            if channelPointsMessage.getRewardId() == user.getPkmnEvolveRewardId():
+                if await self.__pkmnEvolveRedemption.handlePointRedemption(
+                    twitchChannel = twitchChannel,
+                    twitchChannelPointsMessage = channelPointsMessage
+                ):
+                    return
+
+            if channelPointsMessage.getRewardId() == user.getPkmnShinyRewardId():
+                if await self.__pkmnShinyRedemption.handlePointRedemption(
+                    twitchChannel = twitchChannel,
+                    twitchChannelPointsMessage = channelPointsMessage
+                ):
+                    return
+
+        if user.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getTriviaGameRewardId():
+            if await self.__triviaGameRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getSuperTriviaGameRewardId():
+            if await self.__superTriviaGameRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return

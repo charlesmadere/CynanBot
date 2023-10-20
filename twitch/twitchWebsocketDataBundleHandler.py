@@ -1,6 +1,7 @@
 from typing import Optional
 
 import CynanBotCommon.utils as utils
+from twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
@@ -21,16 +22,19 @@ class TwitchWebsocketDataBundleHandler():
     def __init__(
         self,
         timber: TimberInterface,
-        channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler,
-        subscriptionHandler: TwitchSubscriptionHandler,
+        channelPointRedemptionHandler: Optional[TwitchChannelPointRedemptionHandler],
+        cheerHandler: Optional[TwitchCheerHandler],
+        subscriptionHandler: Optional[TwitchSubscriptionHandler],
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(channelPointRedemptionHandler, TwitchChannelPointRedemptionHandler):
+        elif channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, TwitchChannelPointRedemptionHandler):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
-        elif not isinstance(subscriptionHandler, TwitchSubscriptionHandler):
+        elif cheerHandler is not None and not isinstance(cheerHandler, TwitchCheerHandler):
+            raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+        elif subscriptionHandler is not None and not isinstance(subscriptionHandler, TwitchSubscriptionHandler):
             raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -38,8 +42,9 @@ class TwitchWebsocketDataBundleHandler():
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__channelPointRedemptionHandler: TwitchChannelPointRedemptionHandler = channelPointRedemptionHandler
-        self.__subscriptionHandler: TwitchSubscriptionHandler = subscriptionHandler
+        self.__channelPointRedemptionHandler: Optional[TwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
+        self.__cheerHandler: Optional[TwitchCheerHandler] = cheerHandler
+        self.__subscriptionHandler: Optional[TwitchSubscriptionHandler] = subscriptionHandler
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -100,17 +105,31 @@ class TwitchWebsocketDataBundleHandler():
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
-            await self.__channelPointRedemptionHandler.onNewChannelPointRedemption(
-                userId = userId,
-                dataBundle = dataBundle,
-                user = user
-            )
+            channelPointRedemptionHandler = self.__channelPointRedemptionHandler
+
+            if channelPointRedemptionHandler is not None:
+                await channelPointRedemptionHandler.onNewChannelPointRedemption(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
         elif await self.__isCheerType(subscriptionType):
-            pass
+            cheerHandler = self.__cheerHandler
+
+            if cheerHandler is not None:
+                await cheerHandler.onNewCheer(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
         elif await self.__isSubscriptionType(subscriptionType):
-            await self.__subscriptionHandler.onNewSubscription(
-                dataBundle = dataBundle,
-                user = user
-            )
+            subscriptionHandler = self.__subscriptionHandler
+
+            if subscriptionHandler is not None:
+                await subscriptionHandler.onNewSubscription(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
