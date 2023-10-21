@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+import CynanBotCommon.utils as utils
 from CynanBotCommon.users.userInterface import UserInterface
 from twitch.twitchConfigurationType import TwitchConfigurationType
 
@@ -47,6 +48,19 @@ class TwitchChannelPointsMessageStub(TwitchChannelPointsMessage):
         userId: str,
         userName: str
     ):
+        if not utils.isValidStr(eventId):
+            raise ValueError(f'eventId argument is malformed: \"{eventId}\"')
+        elif redemptionMessage is not None and not isinstance(redemptionMessage, str):
+            raise ValueError(f'redemptionMessage argument is malformed: \"{redemptionMessage}\"')
+        elif not utils.isValidStr(rewardId):
+            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+
         self.__eventId: str = eventId
         self.__redemptionMessage: Optional[str] = redemptionMessage
         self.__rewardId: str = rewardId
@@ -66,7 +80,7 @@ class TwitchChannelPointsMessageStub(TwitchChannelPointsMessage):
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.STUB
 
-    def getTwitchUser(self) -> User:
+    def getTwitchUser(self) -> UserInterface:
         return self.__twitchUser
 
     def getUserId(self) -> str:
