@@ -82,13 +82,13 @@ class TwitchChannelPointRedemptionHandler():
             return
 
         eventId = dataBundle.getMetadata().getMessageId()
-        rewardId = event.getEventId()
+        reward = event.getReward()
         redemptionUserId = event.getUserId()
         redemptionUserInput = event.getUserInput()
         redemptionUserLogin = event.getUserLogin()
 
-        if not utils.isValidStr(rewardId) or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
+        if reward is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (reward=\"{reward}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
             return
 
         await self.__userIdsRepository.setUser(
@@ -101,7 +101,7 @@ class TwitchChannelPointRedemptionHandler():
         channelPointsMessage: TwitchChannelPointsMessage = TwitchChannelPointsMessageStub(
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
-            rewardId = rewardId,
+            rewardId = reward.getRewardId(),
             twitchUser = user,
             userId = redemptionUserId,
             userName = redemptionUserLogin
