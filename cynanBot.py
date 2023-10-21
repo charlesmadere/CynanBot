@@ -133,8 +133,6 @@ from CynanBotCommon.twitch.twitchApiServiceInterface import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
     TwitchWebsocketClientInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
@@ -177,7 +175,7 @@ from users.modifyUserEventListener import ModifyUserEventListener
 
 
 class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, \
-    TriviaEventListener, TwitchChannelProvider, TwitchWebsocketDataBundleListener):
+    TriviaEventListener, TwitchChannelProvider):
 
     def __init__(
         self,
