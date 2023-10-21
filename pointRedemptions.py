@@ -20,6 +20,7 @@ from pkmn.pkmnCatchType import PkmnCatchType
 from twitch.twitchChannel import TwitchChannel
 from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from twitch.twitchUtils import TwitchUtils
+from users.user import User
 
 
 class AbsPointRedemption(ABC):
@@ -178,10 +179,16 @@ class PkmnCatchRedemption(AbsPointRedemption):
     ) -> bool:
         twitchUser = twitchChannelPointsMessage.getTwitchUser()
 
-        if not twitchUser.isPkmnEnabled() or not twitchUser.hasPkmnCatchBoosterPacks():
+        if not isinstance(twitchUser, User):
+            # dumb hack, idk what to do about this for now. regardless this should never ever
+            # happen under the current codebase
+            self.__timber.log('PkmnCatchRedemption', f'Received a UserInterface instance that was not a User instance: \"{twitchUser}\"')
+            return False
+        elif not twitchUser.isPkmnEnabled() or not twitchUser.hasPkmnCatchBoosterPacks():
             return False
 
         pkmnCatchBoosterPack: Optional[PkmnCatchBoosterPack] = None
+
         for pkbp in twitchUser.getPkmnCatchBoosterPacks():
             if twitchChannelPointsMessage.getRewardId() == pkbp.getRewardId():
                 pkmnCatchBoosterPack = pkbp

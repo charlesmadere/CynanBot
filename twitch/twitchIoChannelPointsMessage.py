@@ -2,9 +2,9 @@ from typing import Optional
 
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
+from CynanBotCommon.users.userInterface import UserInterface
 from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
 from twitch.twitchConfigurationType import TwitchConfigurationType
-from users.user import User
 
 
 class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):
@@ -12,15 +12,15 @@ class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):
     def __init__(
         self,
         channelPointsMessage: PubSubChannelPointsMessage,
-        user: User
+        user: UserInterface
     ):
         if not isinstance(channelPointsMessage, PubSubChannelPointsMessage):
             raise ValueError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
-        elif not isinstance(user, User):
+        elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
         self.__channelPointsMessage: PubSubChannelPointsMessage = channelPointsMessage
-        self.__user: User = user
+        self.__user: UserInterface = user
 
     def getEventId(self) -> str:
         return self.__channelPointsMessage.id
@@ -34,7 +34,7 @@ class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO
 
-    def getTwitchUser(self) -> User:
+    def getTwitchUser(self) -> UserInterface:
         return self.__user
 
     def getUserId(self) -> str:

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from CynanBotCommon.users.userInterface import UserInterface
 from twitch.twitchConfigurationType import TwitchConfigurationType
-from users.user import User
 
 
 class TwitchChannelPointsMessage(ABC):
@@ -24,7 +24,7 @@ class TwitchChannelPointsMessage(ABC):
         pass
 
     @abstractmethod
-    def getTwitchUser(self) -> User:
+    def getTwitchUser(self) -> UserInterface:
         pass
 
     @abstractmethod
@@ -43,14 +43,14 @@ class TwitchChannelPointsMessageStub(TwitchChannelPointsMessage):
         eventId: str,
         redemptionMessage: Optional[str],
         rewardId: str,
-        twitchUser: User,
+        twitchUser: UserInterface,
         userId: str,
         userName: str
     ):
         self.__eventId: str = eventId
         self.__redemptionMessage: Optional[str] = redemptionMessage
         self.__rewardId: str = rewardId
-        self.__twitchUser: User = twitchUser
+        self.__twitchUser: UserInterface = twitchUser
         self.__userId: str = userId
         self.__userName: str = userName
 
