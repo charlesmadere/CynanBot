@@ -5,7 +5,11 @@ from CynanBotCommon.twitch.websocket.websocketDataBundle import \
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
-from pointRedemptions import AbsPointRedemption, CutenessRedemption, PkmnBattleRedemption, PkmnCatchRedemption, PkmnEvolveRedemption, PkmnShinyRedemption, SuperTriviaGameRedemption, TriviaGameRedemption, StubPointRedemption
+from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
+                              PkmnBattleRedemption, PkmnCatchRedemption,
+                              PkmnEvolveRedemption, PkmnShinyRedemption,
+                              StubPointRedemption, SuperTriviaGameRedemption,
+                              TriviaGameRedemption)
 from twitch.twitchChannelPointsMessage import (TwitchChannelPointsMessage,
                                                TwitchChannelPointsMessageStub)
 from twitch.twitchChannelProvider import TwitchChannelProvider

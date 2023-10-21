@@ -1,7 +1,6 @@
 from typing import Optional
 
 import CynanBotCommon.utils as utils
-from twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
@@ -14,6 +13,7 @@ from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from twitch.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
+from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 
 
