@@ -81,14 +81,14 @@ class TwitchChannelPointRedemptionHandler():
             self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
             return
 
-        eventId = event.getEventId()
-        rewardId = event.getRewardId()
+        eventId = dataBundle.getMetadata().getMessageId()
+        rewardId = event.getEventId()
         redemptionUserId = event.getUserId()
         redemptionUserInput = event.getUserInput()
         redemptionUserLogin = event.getUserLogin()
 
-        if not utils.isValidStr(eventId) or not utils.isValidStr(rewardId) or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (rewardId=\"{rewardId}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
+        if not utils.isValidStr(rewardId) or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin):
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
             return
 
         await self.__userIdsRepository.setUser(
