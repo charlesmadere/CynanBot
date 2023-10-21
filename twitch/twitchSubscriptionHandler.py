@@ -36,5 +36,23 @@ class TwitchSubscriptionHandler():
         elif not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
+        event = dataBundle.getPayload().getEvent()
+
+        if event is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            return
+
+        isGift = event.isGift()
+        tier = event.getTier()
+        redemptionUserId = event.getUserId()
+        redemptionUserLogin = event.getUserLogin()
+        redemptionUserName = event.getUserName()
+
+        if not utils.isValidBool(isGift) or tier is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName):
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (tier={tier}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\")')
+            return
+
+        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
+
         # TODO
         pass

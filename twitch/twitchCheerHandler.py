@@ -36,5 +36,23 @@ class TwitchCheerHandler():
         elif not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
+        event = dataBundle.getPayload().getEvent()
+
+        if event is None:
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            return
+
+        bits = event.getBits()
+        message = event.getMessage()
+        redemptionUserId = event.getUserId()
+        redemptionUserLogin = event.getUserLogin()
+        redemptionUserName = event.getUserName()
+
+        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName):
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (bits={bits}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\")')
+            return
+
+        twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
+
         # TODO
         pass

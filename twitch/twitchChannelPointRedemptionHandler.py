@@ -78,7 +78,7 @@ class TwitchChannelPointRedemptionHandler():
         event = dataBundle.getPayload().getEvent()
 
         if event is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', 'Received a data bundle that has no event')
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
             return
 
         eventId = event.getEventId()
