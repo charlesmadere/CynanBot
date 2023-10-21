@@ -102,7 +102,7 @@ class TwitchChannelPointRedemptionHandler():
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
             rewardId = rewardId,
-            user = user,
+            twitchUser = user,
             userId = redemptionUserId,
             userName = redemptionUserLogin
         )
