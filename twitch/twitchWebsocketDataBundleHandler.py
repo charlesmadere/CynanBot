@@ -2,6 +2,8 @@ from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
+    TwitchWebsocketDataBundleListener
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
@@ -17,7 +19,7 @@ from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 
 
-class TwitchWebsocketDataBundleHandler():
+class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
@@ -74,7 +76,7 @@ class TwitchWebsocketDataBundleHandler():
             userId = event.getToBroadcasterUserId()
 
             if not utils.isValidStr(userId):
-                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find user ID for data bundle: \"{dataBundle}\"')
+                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user ID (\"{userId}\") for data bundle: \"{dataBundle}\"')
                 return
 
         userLogin = event.getBroadcasterUserLogin()
@@ -83,7 +85,7 @@ class TwitchWebsocketDataBundleHandler():
             userLogin = event.getToBroadcasterUserLogin()
 
             if not utils.isValidStr(userLogin):
-                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find user login for data bundle: \"{dataBundle}\"')
+                self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login (\"{userLogin}\") for data bundle: \"{dataBundle}\"')
                 return
 
         user: Optional[UserInterface] = None
@@ -94,7 +96,7 @@ class TwitchWebsocketDataBundleHandler():
             pass
 
         if user is None:
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to retrieve user \"{userLogin}\" in users repository (userId=\"{userId}\")')
+            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to retrieve broadcast user in users repository (userId=\"{userId}\") (userLogin=\"{userLogin}\")')
             return
 
         await self.__userIdsRepository.setUser(

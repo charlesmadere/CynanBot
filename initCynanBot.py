@@ -164,6 +164,12 @@ from CynanBotCommon.twitch.twitchApiServiceInterface import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBotCommon.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
+    TwitchWebsocketAllowedUsersRepository
+from CynanBotCommon.twitch.websocket.twitchWebsocketClient import \
+    TwitchWebsocketClient
+from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
+    TwitchWebsocketClientInterface
 from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
 from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
@@ -312,6 +318,21 @@ if authSnapshot.hasDeepLAuthKey():
         networkClientProvider = networkClientProvider,
         deepLAuthKey = authSnapshot.requireDeepLAuthKey(),
         timber = timber
+    )
+
+twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
+if generalSettingsRepository.getAll().isEventSubEnabled():
+    twitchWebsocketClient = TwitchWebsocketClient(
+        backgroundTaskHelper = backgroundTaskHelper,
+        timber = timber,
+        twitchApiService = twitchApiService,
+        twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
+            timber = timber,
+            twitchTokensRepository = twitchTokensRepository,
+            userIdsRepository = userIdsRepository,
+            usersRepository = usersRepository
+        ),
+        twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
     )
 
 weatherRepository: Optional[WeatherRepositoryInterface] = None

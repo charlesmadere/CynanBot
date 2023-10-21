@@ -131,6 +131,10 @@ from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
 from CynanBotCommon.twitch.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
+    TwitchWebsocketClientInterface
+from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
+    TwitchWebsocketDataBundleListener
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
@@ -155,7 +159,6 @@ from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from twitch.channelJoinEventType import ChannelJoinEventType
 from twitch.channelJoinHelper import ChannelJoinHelper
 from twitch.channelJoinListener import ChannelJoinListener
-from twitch.eventSubUtils import EventSubUtils
 from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
 from twitch.pubSubUtils import PubSubUtils
@@ -163,9 +166,7 @@ from twitch.twitchChannel import TwitchChannel
 from twitch.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
-from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchConfiguration import TwitchConfiguration
-from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from twitch.twitchUtils import TwitchUtils
 from twitch.twitchWebsocketDataBundleHandler import \
     TwitchWebsocketDataBundleHandler
@@ -173,11 +174,10 @@ from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserData import ModifyUserData
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.modifyUserEventListener import ModifyUserEventListener
-from users.usersRepository import UsersRepository
 
 
 class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, \
-    TriviaEventListener, TwitchChannelProvider):
+    TriviaEventListener, TwitchChannelProvider, TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
@@ -224,8 +224,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepository,
         twitchUtils: TwitchUtils,
+        twitchWebsocketClient: Optional[TwitchWebsocketClientInterface],
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepository,
+        usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
     ):
@@ -324,9 +325,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
+            raise ValueError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepository):
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
@@ -345,6 +348,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -536,15 +540,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
 
         generalSettings = self.__generalSettingsRepository.getAll()
-
-        ########################################
-        ## Initialization of EventSub objects ##
-        ########################################
-
-        self.__eventSubUtils: Optional[EventSubUtils] = None
-        if generalSettings.isEventSubEnabled():
-            # TODO
-            pass
 
         ######################################
         ## Initialization of PubSub objects ##
@@ -862,17 +857,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__recurringActionsMachine.setEventListener(self)
             self.__recurringActionsMachine.startMachine()
 
-        if self.__eventSubUtils is not None:
-            self.__eventSubUtils.startEventSub()
-
-        if self.__pubSubUtils is not None:
-            self.__pubSubUtils.startPubSub()
-
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if generalSettings.isEventSubEnabled():
-            # TODO
-            TwitchWebsocketDataBundleHandler(
+        if generalSettings.isPubSubEnabled() and self.__pubSubUtils is not None:
+            self.__pubSubUtils.startPubSub()
+
+        if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
+            self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 timber = self.__timber,
                 channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
                     cutenessRedemption = self.__cutenessPointRedemption,
@@ -890,7 +881,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 subscriptionHandler = None,
                 userIdsRepository = self.__userIdsRepository,
                 usersRepository = self.__usersRepository
-            )
+            ))
+
+            self.__twitchWebsocketClient.start()
 
     async def __handleJoinChannelsEvent(self, event: JoinChannelsEvent):
         self.__timber.log('CynanBot', f'Joining channels: {event.getChannels()}')
