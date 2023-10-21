@@ -23,7 +23,7 @@ class GeneralSettingsRepositorySnapshot():
         refreshPubSubTokensSeconds = utils.getIntFromDict(self.__jsonContents, 'refreshPubSubTokensSeconds', 120)
 
         if refreshPubSubTokensSeconds < 30:
-            raise ValueError(f'\"refreshPubSubTokensSeconds\" value in General Settings file (\"{self.__generalSettingsFile}\") is too aggressive: {refreshPubSubTokensSeconds}')
+            raise ValueError(f'\"refreshPubSubTokensSeconds\" value in General Settings file is too aggressive: {refreshPubSubTokensSeconds}')
 
         return refreshPubSubTokensSeconds
 
