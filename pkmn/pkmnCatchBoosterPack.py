@@ -18,10 +18,12 @@ class PkmnCatchBoosterPack():
         pkmnCatchType: Optional[PkmnCatchType],
         rewardId: str
     ):
-        if not utils.isValidStr(rewardId):
+        if pkmnCatchType is not None and not isinstance(pkmnCatchType, PkmnCatchType):
+            raise ValueError(f'pkmnCatchType argument is malformed: \"{pkmnCatchType}\"')
+        elif not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
 
-        self.__pkmnCatchType: PkmnCatchType = pkmnCatchType
+        self.__pkmnCatchType: Optional[PkmnCatchType] = pkmnCatchType
         self.__rewardId: str = rewardId
 
     def getCatchType(self) -> Optional[PkmnCatchType]:
