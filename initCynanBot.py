@@ -323,11 +323,9 @@ if authSnapshot.hasDeepLAuthKey():
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsRepository.getAll().isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
-        administratorProvider = administratorProvider,
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,
         twitchApiService = twitchApiService,
-        twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
             timber = timber,
             twitchTokensRepository = twitchTokensRepository,
