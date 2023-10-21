@@ -680,6 +680,7 @@ cynanBot = CynanBot(
         ),
         timber = timber
     ),
+    twitchWebsocketClient = twitchWebsocketClient,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,
