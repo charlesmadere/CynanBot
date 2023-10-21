@@ -87,10 +87,6 @@ from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
     CorrectSuperAnswerTriviaEvent
 from CynanBotCommon.trivia.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
-from twitch.twitchWebsocketDataBundleHandler import TwitchWebsocketDataBundleHandler
-from twitch.twitchCheerHandler import TwitchCheerHandler
-from twitch.twitchChannelPointRedemptionHandler import TwitchChannelPointRedemptionHandler
-from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
 from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
@@ -123,8 +119,8 @@ from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBotCommon.trivia.triviaHistoryRepository import \
-    TriviaHistoryRepository
+from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
+    TriviaHistoryRepositoryInterface
 from CynanBotCommon.trivia.triviaRepositoryInterface import \
     TriviaRepositoryInterface
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -137,6 +133,7 @@ from CynanBotCommon.twitch.twitchApiServiceInterface import \
 from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
+from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from CynanBotCommon.weather.weatherRepositoryInterface import \
@@ -163,14 +160,19 @@ from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
 from twitch.joinChannelsEvent import JoinChannelsEvent
 from twitch.pubSubUtils import PubSubUtils
 from twitch.twitchChannel import TwitchChannel
+from twitch.twitchChannelPointRedemptionHandler import \
+    TwitchChannelPointRedemptionHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
+from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchConfiguration import TwitchConfiguration
+from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from twitch.twitchUtils import TwitchUtils
+from twitch.twitchWebsocketDataBundleHandler import \
+    TwitchWebsocketDataBundleHandler
 from users.modifyUserActionType import ModifyUserActionType
 from users.modifyUserData import ModifyUserData
 from users.modifyUserDataHelper import ModifyUserDataHelper
 from users.modifyUserEventListener import ModifyUserEventListener
-from users.user import User
 from users.usersRepository import UsersRepository
 
 
@@ -213,7 +215,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
-        triviaHistoryRepository: Optional[TriviaHistoryRepository],
+        triviaHistoryRepository: Optional[TriviaHistoryRepositoryInterface],
         triviaRepository: Optional[TriviaRepositoryInterface],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
@@ -304,7 +306,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepository):
+        elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
@@ -566,7 +568,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def event_channel_join_failure(self, channel: str):
         userId = await self.__userIdsRepository.fetchUserId(channel)
-        user: Optional[User] = None
+        user: Optional[UserInterface] = None
 
         try:
             user = await self.__usersRepository.getUserAsync(channel)
