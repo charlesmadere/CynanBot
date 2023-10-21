@@ -92,7 +92,7 @@ class UsersRepository(UsersRepositoryInterface):
     def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif userJson is None:
+        elif not isinstance(userJson, Dict):
             raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
 
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
@@ -174,10 +174,10 @@ class UsersRepository(UsersRepositoryInterface):
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
-        pkmnBattleRewardId: str = None
-        pkmnEvolveRewardId: str = None
-        pkmnShinyRewardId: str = None
-        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = None
+        pkmnBattleRewardId: Optional[str] = None
+        pkmnEvolveRewardId: Optional[str] = None
+        pkmnShinyRewardId: Optional[str] = None
+        pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]] = None
         if isPkmnEnabled:
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
