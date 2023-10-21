@@ -335,44 +335,6 @@ class PkmnShinyRedemption(AbsPointRedemption):
         return actionCompleted
 
 
-class PotdPointRedemption(AbsPointRedemption):
-
-    def __init__(
-        self,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtils
-    ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-
-    async def handlePointRedemption(
-        self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
-    ) -> bool:
-        twitchUser = twitchChannelPointsMessage.getTwitchUser()
-        self.__timber.log('PotdPointRedemption', f'Fetching Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}...')
-
-        try:
-            picOfTheDay = await twitchUser.fetchPicOfTheDay()
-            await self.__twitchUtils.safeSend(twitchChannel, f'@{twitchChannelPointsMessage.getUserName()} here\'s the POTD: {picOfTheDay}')
-            self.__timber.log('PotdPointRedemption', f'Redeemed Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
-            return True
-        except FileNotFoundError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD file is missing: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day file for {twitchUser.getHandle()} is missing')
-        except ValueError as e:
-            self.__timber.log('PotdPointRedemption', f'Tried to redeem Pic Of The Day for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}, but the POTD content is malformed: {e}', e, traceback.format_exc())
-            await self.__twitchUtils.safeSend(twitchChannel, f'⚠ Pic Of The Day content for {twitchUser.getHandle()} is malformed')
-
-        return False
-
-
 class StubPointRedemption(AbsPointRedemption):
 
     def __init__(self):

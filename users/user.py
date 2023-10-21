@@ -31,7 +31,6 @@ class User(UserInterface):
         isJishoEnabled: bool,
         isJokeTriviaRepositoryEnabled: bool,
         isLoremIpsumEnabled: bool,
-        isPicOfTheDayEnabled: bool,
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
         isRaceEnabled: bool,
@@ -64,8 +63,6 @@ class User(UserInterface):
         handle: str,
         instagram: Optional[str],
         locationId: Optional[str],
-        picOfTheDayFile: Optional[str],
-        picOfTheDayRewardId: Optional[str],
         pkmnBattleRewardId: Optional[str],
         pkmnEvolveRewardId: Optional[str],
         pkmnShinyRewardId: Optional[str],
@@ -108,8 +105,6 @@ class User(UserInterface):
             raise ValueError(f'isJokeTriviaRepositoryEnabled argument is malformed: \"{isJokeTriviaRepositoryEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise ValueError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
-        elif not utils.isValidBool(isPicOfTheDayEnabled):
-            raise ValueError(f'isPicOfTheDayEnabled argument is malformed: \"{isPicOfTheDayEnabled}\"')
         elif not utils.isValidBool(isPkmnEnabled):
             raise ValueError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
         elif not utils.isValidBool(isPokepediaEnabled):
@@ -170,10 +165,6 @@ class User(UserInterface):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif locationId is not None and not isinstance(locationId, str):
             raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
-        elif picOfTheDayFile is not None and not isinstance(picOfTheDayFile, str):
-            raise ValueError(f'picOfTheDayFile argument is malformed: \"{picOfTheDayFile}\"')
-        elif picOfTheDayRewardId is not None and not isinstance(picOfTheDayRewardId, str):
-            raise ValueError(f'picOfTheDayRewardId argument is malformed: \"{picOfTheDayRewardId}\"')
         elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
             raise ValueError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
         elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str):
@@ -203,7 +194,6 @@ class User(UserInterface):
         self.__isJishoEnabled: bool = isJishoEnabled
         self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
-        self.__isPicOfTheDayEnabled: bool = isPicOfTheDayEnabled
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
         self.__isRaceEnabled: bool = isRaceEnabled
@@ -236,8 +226,6 @@ class User(UserInterface):
         self.__handle: str = handle
         self.__instagram: Optional[str] = instagram
         self.__locationId: Optional[str] = locationId
-        self.__picOfTheDayFile: Optional[str] = picOfTheDayFile
-        self.__picOfTheDayRewardId: Optional[str] = picOfTheDayRewardId
         self.__pkmnBattleRewardId: Optional[str] = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: Optional[str] = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: Optional[str] = pkmnShinyRewardId
@@ -250,23 +238,6 @@ class User(UserInterface):
 
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
-
-    async def fetchPicOfTheDay(self) -> str:
-        if not self.__isPicOfTheDayEnabled:
-            raise RuntimeError(f'POTD is disabled for {self.__handle}!')
-
-        if not await aiofiles.ospath.exists(self.__picOfTheDayFile):
-            raise FileNotFoundError(f'POTD file for {self.__handle} not found: \"{self.__picOfTheDayFile}\"!')
-
-        async with aiofiles.open(self.__picOfTheDayFile, 'r') as file:
-            data = await file.read()
-            potdText = utils.cleanStr(data)
-
-        if not utils.isValidUrl(potdText):
-            raise ValueError(f'POTD text for {self.__handle} is malformed: \"{potdText}\"!')
-
-        potdParsed = urlparse(potdText)
-        return potdParsed.geturl()
 
     def getCutenessBoosterPacks(self) -> Optional[List[CutenessBoosterPack]]:
         return self.__cutenessBoosterPacks
@@ -282,9 +253,6 @@ class User(UserInterface):
 
     def getLocationId(self) -> str:
         return self.__locationId
-
-    def getPicOfTheDayRewardId(self) -> str:
-        return self.__picOfTheDayRewardId
 
     def getPkmnBattleRewardId(self) -> Optional[str]:
         return self.__pkmnBattleRewardId
@@ -438,9 +406,6 @@ class User(UserInterface):
 
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled
-
-    def isPicOfTheDayEnabled(self) -> bool:
-        return self.__isPicOfTheDayEnabled
 
     def isPkmnEnabled(self) -> bool:
         return self.__isPkmnEnabled

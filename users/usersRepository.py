@@ -111,7 +111,6 @@ class UsersRepository(UsersRepositoryInterface):
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
         isJokeTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'jokeTriviaRepositoryEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
-        isPicOfTheDayEnabled = utils.getBoolFromDict(userJson, 'picOfTheDayEnabled', False)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
         isRaceEnabled = utils.getBoolFromDict(userJson, 'raceEnabled', False)
@@ -144,15 +143,6 @@ class UsersRepository(UsersRepositoryInterface):
         if isCutenessEnabled:
             cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
-
-        picOfTheDayFile: Optional[str] = None
-        picOfTheDayRewardId: Optional[str] = None
-        if isPicOfTheDayEnabled:
-            picOfTheDayFile = userJson.get('picOfTheDayFile')
-            picOfTheDayRewardId = userJson.get('picOfTheDayRewardId')
-
-            if not utils.isValidStr(picOfTheDayFile):
-                raise ValueError(f'POTD is enabled for {handle} but picOfTheDayFile is malformed: \"{picOfTheDayFile}\"')
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
@@ -212,7 +202,6 @@ class UsersRepository(UsersRepositoryInterface):
             isJishoEnabled = isJishoEnabled,
             isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
-            isPicOfTheDayEnabled = isPicOfTheDayEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,
             isRaceEnabled = isRaceEnabled,
@@ -245,8 +234,6 @@ class UsersRepository(UsersRepositoryInterface):
             handle = handle,
             instagram = instagram,
             locationId = locationId,
-            picOfTheDayFile = picOfTheDayFile,
-            picOfTheDayRewardId = picOfTheDayRewardId,
             pkmnBattleRewardId = pkmnBattleRewardId,
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,

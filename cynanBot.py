@@ -148,8 +148,8 @@ from messages import (AbsMessage, CatJamMessage, ChatLogMessage,
 from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnBattleRedemption, PkmnCatchRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
-                              PotdPointRedemption, StubPointRedemption,
-                              SuperTriviaGameRedemption, TriviaGameRedemption)
+                              StubPointRedemption, SuperTriviaGameRedemption,
+                              TriviaGameRedemption)
 from triviaUtils import TriviaUtils
 from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from twitch.channelJoinEventType import ChannelJoinEventType
@@ -512,8 +512,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         ## Initialization of point redemption handler objects ##
         ########################################################
 
-        self.__potdPointRedemption: AbsPointRedemption = PotdPointRedemption(timber, twitchUtils)
-
         if cutenessRepository is None:
             self.__cutenessPointRedemption: AbsPointRedemption = StubPointRedemption()
         else:
@@ -679,13 +677,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
             if await self.__cutenessPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
-
-        if twitchUser.isPicOfTheDayEnabled() and channelPointsMessage.getRewardId() == twitchUser.getPicOfTheDayRewardId():
-            if await self.__potdPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
