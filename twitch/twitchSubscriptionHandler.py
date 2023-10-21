@@ -54,5 +54,7 @@ class TwitchSubscriptionHandler():
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
 
+        self.__timber.log('TwitchCheerHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isGift={isGift}) (tier=\"{tier}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
+
         # TODO
         pass

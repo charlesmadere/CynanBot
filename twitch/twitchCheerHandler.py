@@ -54,5 +54,7 @@ class TwitchCheerHandler():
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
 
+        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (bits={bits}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
+
         # TODO
         pass
