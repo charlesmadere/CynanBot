@@ -118,7 +118,7 @@ class TwitchChannelPointRedemptionHandler():
             if channelPointsMessage.getRewardId() == user.getPkmnBattleRewardId():
                 if await self.__pkmnBattleRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
-                    TwitchChannelPointsMessage = channelPointsMessage
+                    twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
