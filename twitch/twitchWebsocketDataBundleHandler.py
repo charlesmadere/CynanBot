@@ -65,7 +65,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.getPayload().getEvent()
+        payload = dataBundle.getPayload()
+
+        if payload is None:
+            return
+
+        event = payload.getEvent()
 
         if event is None:
             return
