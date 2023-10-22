@@ -91,6 +91,8 @@ class TwitchChannelPointRedemptionHandler():
             self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that is missing crucial data: (eventId=\"{eventId}\") (reward=\"{reward}\") (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\")')
             return
 
+        self.__timber.log('TwitchChannelPointRedemptionHandler', f'Channel point reward ({reward}) redeemed by {redemptionUserLogin}:{redemptionUserId}')
+
         await self.__userIdsRepository.setUser(
             userId = redemptionUserId,
             userName = redemptionUserLogin
