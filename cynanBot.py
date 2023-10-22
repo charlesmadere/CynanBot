@@ -550,9 +550,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 client = self,
                 generalSettingsRepository = generalSettingsRepository,
                 timber = timber,
-                twitchTokensRepositoryInterface = twitchTokensRepository,
+                twitchTokensRepository = twitchTokensRepository,
                 userIdsRepository = userIdsRepository,
-                usersRepositoryInterface = usersRepository
+                usersRepository = usersRepository
             )
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')

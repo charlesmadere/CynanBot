@@ -44,9 +44,9 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         client: Client,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchTokensRepositoryInterface: TwitchTokensRepositoryInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepositoryInterface: UsersRepositoryInterface,
+        usersRepository: UsersRepositoryInterface,
         maxConnectionsPerTwitchChannel: int = 5,
         maxPubSubConnectionTopics: int = utils.getIntMaxSafeSize(),
         maxPubSubPoolSize: int = utils.getIntMaxSafeSize(),
@@ -62,12 +62,12 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchTokensRepositoryInterface, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepositoryInterface}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepositoryInterface, UsersRepositoryInterface):
-            raise ValueError(f'usersRepositoryInterface argument is malformed: \"{usersRepositoryInterface}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidInt(maxConnectionsPerTwitchChannel):
             raise ValueError(f'maxConnectionsPerTwitchChannel argument is malformed: \"{maxConnectionsPerTwitchChannel}\"')
         elif maxConnectionsPerTwitchChannel < 4 or maxConnectionsPerTwitchChannel > utils.getIntMaxSafeSize():
@@ -92,9 +92,9 @@ class PubSubUtils(PubSubReconnectListener, TwitchTokensRepositoryListener):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepositoryInterface
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__usersRepository: UsersRepositoryInterface = usersRepositoryInterface
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__maxConnectionsPerTwitchChannel: int = maxConnectionsPerTwitchChannel
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__pubSubReconnectCooldown: timedelta = pubSubReconnectCooldown
