@@ -326,6 +326,7 @@ if generalSettingsRepository.getAll().isEventSubEnabled():
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,
         twitchApiService = twitchApiService,
+        twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
             timber = timber,
             twitchTokensRepository = twitchTokensRepository,
