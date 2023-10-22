@@ -107,8 +107,6 @@ class TwitchChannelPointRedemptionHandler():
             userName = redemptionUserLogin
         )
 
-        self.__timber.log('TwitchChannelPointRedemptionHandler', f'REDEMPTION!!!!')
-
         if user.isCutenessEnabled() and user.hasCutenessBoosterPacks():
             if await self.__cutenessRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
@@ -146,16 +144,11 @@ class TwitchChannelPointRedemptionHandler():
                     return
 
         if user.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getTriviaGameRewardId():
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'TRIVIA GAME REDEMPTION!!!!')
-
             if await self.__triviaGameRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
-                self.__timber.log('TwitchChannelPointRedemptionHandler', f'TRIVIA GAME REDEMPTION finished!!!!')
                 return
-            else:
-                self.__timber.log('TwitchChannelPointRedemptionHandler', f'TRIVIA GAME REDEMPTION didnt finish??????')
 
         if user.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getSuperTriviaGameRewardId():
             if await self.__superTriviaGameRedemption.handlePointRedemption(
