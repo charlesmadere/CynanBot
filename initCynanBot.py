@@ -26,6 +26,8 @@ from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepository import \
     WordOfTheDayRepository
+from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
+    WordOfTheDayRepositoryInterface
 from CynanBotCommon.location.locationsRepository import LocationsRepository
 from CynanBotCommon.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
@@ -136,6 +138,8 @@ from CynanBotCommon.trivia.triviaHistoryRepository import \
 from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBotCommon.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
@@ -177,6 +181,8 @@ from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
+from CynanBotCommon.users.usersRepositoryInterface import \
+    UsersRepositoryInterface
 from CynanBotCommon.weather.weatherRepository import WeatherRepository
 from CynanBotCommon.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
@@ -268,7 +274,7 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository = TimeZoneRepository()
-usersRepository = UsersRepository(
+usersRepository: UsersRepositoryInterface = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
@@ -304,7 +310,7 @@ twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
-wordOfTheDayRepository = WordOfTheDayRepository(
+wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
@@ -362,7 +368,7 @@ toxicTriviaOccurencesRepository = ToxicTriviaOccurencesRepository(
 triviaAnswerCompiler = TriviaAnswerCompiler(
     timber = timber
 )
-triviaIdGenerator = TriviaIdGenerator()
+triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
