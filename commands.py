@@ -3437,6 +3437,30 @@ class TriviaScoreCommand(AbsCommand):
         self.__timber.log('TriviaScoreCommand', f'Handled !triviascore command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
+class TtsCommand(AbsCommand):
+
+    def __init__(
+        self,
+        timber: TimberInterface,
+        twitchUtils: TwitchUtils,
+        usersRepository: UsersRepositoryInterface
+    ):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        pass
+
+
 class TwitchInfoCommand(AbsCommand):
 
     def __init__(
