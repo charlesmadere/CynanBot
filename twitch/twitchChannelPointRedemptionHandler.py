@@ -10,12 +10,14 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               PkmnEvolveRedemption, PkmnShinyRedemption,
                               StubPointRedemption, SuperTriviaGameRedemption,
                               TriviaGameRedemption)
+from twitch.absTwitchChannelPointRedemptionHandler import \
+    AbsTwitchChannelPointRedemptionHandler
 from twitch.twitchChannelPointsMessage import (TwitchChannelPointsMessage,
                                                TwitchChannelPointsMessageStub)
 from twitch.twitchChannelProvider import TwitchChannelProvider
 
 
-class TwitchChannelPointRedemptionHandler():
+class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler):
 
     def __init__(
         self,

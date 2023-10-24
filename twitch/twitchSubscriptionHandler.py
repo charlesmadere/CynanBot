@@ -5,10 +5,11 @@ from CynanBotCommon.twitch.websocket.websocketDataBundle import \
 from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
 from CynanBotCommon.users.userInterface import UserInterface
+from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
 
 
-class TwitchSubscriptionHandler():
+class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,

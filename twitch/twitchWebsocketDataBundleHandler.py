@@ -13,10 +13,10 @@ from CynanBotCommon.users.userIdsRepositoryInterface import \
 from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
-from twitch.twitchChannelPointRedemptionHandler import \
-    TwitchChannelPointRedemptionHandler
-from twitch.twitchCheerHandler import TwitchCheerHandler
-from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
+from twitch.absTwitchChannelPointRedemptionHandler import \
+    AbsTwitchChannelPointRedemptionHandler
+from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 
 
 class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
@@ -24,19 +24,19 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
     def __init__(
         self,
         timber: TimberInterface,
-        channelPointRedemptionHandler: Optional[TwitchChannelPointRedemptionHandler],
-        cheerHandler: Optional[TwitchCheerHandler],
-        subscriptionHandler: Optional[TwitchSubscriptionHandler],
+        channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
+        cheerHandler: Optional[AbsTwitchCheerHandler],
+        subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, TwitchChannelPointRedemptionHandler):
+        elif channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
-        elif cheerHandler is not None and not isinstance(cheerHandler, TwitchCheerHandler):
+        elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
-        elif subscriptionHandler is not None and not isinstance(subscriptionHandler, TwitchSubscriptionHandler):
+        elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
             raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -44,9 +44,9 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__channelPointRedemptionHandler: Optional[TwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
-        self.__cheerHandler: Optional[TwitchCheerHandler] = cheerHandler
-        self.__subscriptionHandler: Optional[TwitchSubscriptionHandler] = subscriptionHandler
+        self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
+        self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
+        self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
