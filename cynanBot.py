@@ -130,7 +130,8 @@ from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
     TwitchWebsocketClientInterface
 from CynanBotCommon.users.userIdsRepositoryInterface import \
@@ -220,7 +221,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaUtils: TriviaUtils,
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
-        twitchTokensRepository: TwitchTokensRepository,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
         twitchWebsocketClient: Optional[TwitchWebsocketClientInterface],
         userIdsRepository: UserIdsRepositoryInterface,
@@ -319,7 +320,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepository):
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
