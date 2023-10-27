@@ -124,11 +124,13 @@ class UsersRepository(UsersRepositoryInterface):
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaEnabled = utils.getBoolFromDict(userJson, 'triviaEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
+        isTtsEnabled = utils.getBoolFromDict(userJson, 'ttsEnabled', False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
         discord = utils.getStrFromDict(userJson, 'discord', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
+        mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
@@ -211,13 +213,14 @@ class UsersRepository(UsersRepositoryInterface):
             isRoachMessageEnabled = isRoachMessageEnabled,
             isSchubertWalkMessageEnabled = isSchubertWalkMessageEnabled,
             isShinyTriviaEnabled = isShinyTriviaEnabled,
-            isToxicTriviaEnabled = isToxicTriviaEnabled,
             isStarWarsQuotesEnabled = isStarWarsQuotesEnabled,
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
+            isToxicTriviaEnabled = isToxicTriviaEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
             isTriviaGameEnabled = isTriviaGameEnabled,
+            isTtsEnabled = isTtsEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             superTriviaGamePoints = superTriviaGamePoints,
@@ -234,6 +237,7 @@ class UsersRepository(UsersRepositoryInterface):
             handle = handle,
             instagram = instagram,
             locationId = locationId,
+            mastodonUrl = mastodonUrl,
             pkmnBattleRewardId = pkmnBattleRewardId,
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,

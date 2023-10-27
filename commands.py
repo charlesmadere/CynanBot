@@ -88,6 +88,7 @@ from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiServiceInterface import \
@@ -3441,24 +3442,57 @@ class TtsCommand(AbsCommand):
 
     def __init__(
         self,
+        administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
+        ttsManager: TtsManagerInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsManager, TtsManagerInterface):
+            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
+        self.__ttsManager: TtsManagerInterface = ttsManager
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        pass
+
+        if not user.isTtsEnabled():
+            return
+
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if user.getHandle().lower() != ctx.getAuthorName() and administrator != ctx.getAuthorId():
+            self.__timber.log('TtsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
+            return
+
+        message = ' '.join(splits[1:])
+        if not utils.isValidStr(message):
+            await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
+            return
+
+        await self.__ttsManager.executeTts(
+            user = user,
+            message = message
+        )
+
+        self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class TwitchInfoCommand(AbsCommand):

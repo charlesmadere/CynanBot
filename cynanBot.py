@@ -32,7 +32,7 @@ from commands import (AbsCommand, AddBannedTriviaControllerCommand,
                       SetTwitchCodeCommand, StubCommand, SuperAnswerCommand,
                       SuperTriviaCommand, SwQuoteCommand, TimeCommand,
                       TranslateCommand, TriviaInfoCommand, TriviaScoreCommand,
-                      TwitchInfoCommand, TwitterCommand,
+                      TtsCommand, TwitchInfoCommand, TwitterCommand,
                       UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
@@ -126,6 +126,7 @@ from CynanBotCommon.trivia.triviaRepositoryInterface import \
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiServiceInterface import \
@@ -219,6 +220,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         triviaUtils: TriviaUtils,
+        ttsManager: Optional[TtsManagerInterface],
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -316,6 +318,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
+            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
@@ -470,6 +474,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+
+        if ttsManager is None:
+            self.__ttsCommand: AbsCommand = StubCommand()
+        else:
+            self.__ttsCommand: AbsCommand = TtsCommand(administratorProvider, timber, ttsManager, twitchUtils, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
@@ -1295,6 +1304,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_triviascore(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaScoreCommand.handleCommand(context)
+
+    @commands.command(name = 'tts')
+    async def command_tts(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__ttsCommand.handleCommand(context)
 
     @commands.command(name = 'twitchinfo')
     async def command_twitchinfo(self, ctx: Context):

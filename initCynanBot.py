@@ -61,6 +61,8 @@ from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.storage.linesFileReader import LinesFileReader
 from CynanBotCommon.storage.psqlCredentialsProvider import \
     PsqlCredentialsProvider
+from CynanBotCommon.systemCommandHelper.systemCommandHelper import \
+    SystemCommandHelper
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
@@ -158,6 +160,9 @@ from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
+from CynanBotCommon.tts.ttsManager import TtsManager
+from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
     IsLiveOnTwitchRepository
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
@@ -620,6 +625,18 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 )
 
 
+################################
+## TTS initialization section ##
+################################
+
+ttsManager: TtsManagerInterface = TtsManager(
+    systemCommandHelper = SystemCommandHelper(),
+    timber = timber,
+    ttsSettingsRepository = TtsSettingsRepository(
+        settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+    )
+)
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -677,6 +694,7 @@ cynanBot = CynanBot(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
+    ttsManager = ttsManager,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
     twitchTokensRepository = twitchTokensRepository,

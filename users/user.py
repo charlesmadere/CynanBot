@@ -40,13 +40,14 @@ class User(UserInterface):
         isRoachMessageEnabled: bool,
         isSchubertWalkMessageEnabled: bool,
         isShinyTriviaEnabled: bool,
-        isToxicTriviaEnabled: bool,
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
+        isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
+        isTtsEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
         superTriviaGamePoints: Optional[int],
@@ -63,6 +64,7 @@ class User(UserInterface):
         handle: str,
         instagram: Optional[str],
         locationId: Optional[str],
+        mastodonUrl: Optional[str],
         pkmnBattleRewardId: Optional[str],
         pkmnEvolveRewardId: Optional[str],
         pkmnShinyRewardId: Optional[str],
@@ -123,20 +125,22 @@ class User(UserInterface):
             raise ValueError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
-        elif not utils.isValidBool(isToxicTriviaEnabled):
-            raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
             raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
             raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
             raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isToxicTriviaEnabled):
+            raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
             raise ValueError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
         elif not utils.isValidBool(isTriviaEnabled):
             raise ValueError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
         elif not utils.isValidBool(isTriviaGameEnabled):
             raise ValueError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isTtsEnabled):
+            raise ValueError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
@@ -165,6 +169,8 @@ class User(UserInterface):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
         elif locationId is not None and not isinstance(locationId, str):
             raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
+        elif mastodonUrl is not None and not isinstance(mastodonUrl, str):
+            raise ValueError(f'mastodonUrl argument is malformed: \"{mastodonUrl}\"')
         elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
             raise ValueError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
         elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str):
@@ -203,13 +209,14 @@ class User(UserInterface):
         self.__isRoachMessageEnabled: bool = isRoachMessageEnabled
         self.__isSchubertWalkMessageEnabled: bool = isSchubertWalkMessageEnabled
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
-        self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
+        self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
+        self.__isTtsEnabled: bool = isTtsEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
@@ -226,6 +233,7 @@ class User(UserInterface):
         self.__handle: str = handle
         self.__instagram: Optional[str] = instagram
         self.__locationId: Optional[str] = locationId
+        self.__mastodonUrl: Optional[str] = mastodonUrl
         self.__pkmnBattleRewardId: Optional[str] = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: Optional[str] = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: Optional[str] = pkmnShinyRewardId
@@ -253,6 +261,9 @@ class User(UserInterface):
 
     def getLocationId(self) -> str:
         return self.__locationId
+
+    def getMastodonUrl(self) -> Optional[str]:
+        return self.__mastodonUrl
 
     def getPkmnBattleRewardId(self) -> Optional[str]:
         return self.__pkmnBattleRewardId
@@ -322,6 +333,9 @@ class User(UserInterface):
 
     def hasLocationId(self) -> bool:
         return utils.isValidStr(self.__locationId)
+
+    def hasMastodonUrl(self) -> bool:
+        return utils.isValidUrl(self.__mastodonUrl)
 
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
@@ -454,6 +468,9 @@ class User(UserInterface):
 
     def isTriviaGameEnabled(self) -> bool:
         return self.__isTriviaGameEnabled
+
+    def isTtsEnabled(self) -> bool:
+        return self.__isTtsEnabled
 
     def isWeatherEnabled(self) -> bool:
         return self.__isWeatherEnabled
