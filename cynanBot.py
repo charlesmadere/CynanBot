@@ -875,6 +875,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__recurringActionsMachine.setEventListener(self)
             self.__recurringActionsMachine.startMachine()
 
+        if self.__ttsManager is not None:
+            self.__ttsManager.start()
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isPubSubEnabled() and self.__pubSubUtils is not None:

@@ -1,10 +1,9 @@
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
-from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
 from CynanBotCommon.users.userInterface import UserInterface
 from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
@@ -61,7 +60,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (bits={bits}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
 
         if user.isTtsEnabled():
-            await self.__ttsManager.executeTts(
-                user = user,
-                message = message
-            )
+            self.__ttsManager.submitTtsEvent(TtsEvent(
+                message = message,
+                twitchChannel = user.getHandle(),
+                userId = redemptionUserId,
+                userName = redemptionUserName
+            ))
