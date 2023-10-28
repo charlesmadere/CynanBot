@@ -353,6 +353,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
@@ -878,14 +879,16 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             cheerHandler: Optional[AbsTwitchCheerHandler] = None
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
 
-            if generalSettings.isTtsEnabled():
+            if generalSettings.isTtsEnabled() and self.__ttsManager is not None:
                 cheerHandler = TwitchCheerHandler(
                     timber = self.__timber,
+                    ttsManager = self.__ttsManager,
                     twitchChannelProvider = self
                 )
 
                 subscriptionHandler = TwitchSubscriptionHandler(
                     timber = self.__timber,
+                    ttsManager = self.__ttsManager,
                     twitchChannelProvider = self
                 )
 
