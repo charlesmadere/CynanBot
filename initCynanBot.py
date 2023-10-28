@@ -260,7 +260,7 @@ authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/contentScanner/bannedWords.txt'),
     timber = timber
 )
 contentScanner: ContentScannerInterface = ContentScanner(
