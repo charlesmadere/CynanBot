@@ -15,6 +15,9 @@ from CynanBotCommon.contentScanner.bannedWordsRepository import \
     BannedWordsRepository
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
+from CynanBotCommon.contentScanner.contentScanner import ContentScanner
+from CynanBotCommon.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
@@ -367,6 +370,10 @@ bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
     timber = timber
 )
+contentScanner: ContentScannerInterface = ContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
+    timber = timber
+)
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
@@ -411,6 +418,7 @@ triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
 )
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
+    contentScanner = contentScanner,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
