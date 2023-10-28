@@ -56,6 +56,8 @@ from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.tts.ttsManager import TtsManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
+from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
     IsLiveOnTwitchRepository
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
@@ -235,14 +237,16 @@ if generalSettingsSnapshot.isEventSubEnabled():
 ################################
 
 ttsManager: Optional[TtsManagerInterface] = None
+ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+    settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+)
+
 if generalSettingsSnapshot.isTtsEnabled():
-    ttsManager: TtsManagerInterface = TtsManager(
+    ttsManager = TtsManager(
         contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
-        ttsSettingsRepository = TtsSettingsRepository(
-            settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
-        )
+        ttsSettingsRepository = ttsSettingsRepository
     )
 
 
@@ -303,6 +307,8 @@ cynanBot = CynanBot(
     triviaScoreRepository = None,
     triviaSettingsRepository = None,
     triviaUtils = None,
+    ttsManager = ttsManager,
+    ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
     twitchTokensRepository = twitchTokensRepository,
