@@ -15,6 +15,9 @@ from CynanBotCommon.contentScanner.bannedWordsRepository import \
     BannedWordsRepository
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
+from CynanBotCommon.contentScanner.contentScanner import ContentScanner
+from CynanBotCommon.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
@@ -145,6 +148,10 @@ bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     bannedWordsLinesReader = LinesFileReader('CynanBotCommon/contentScanner/bannedWords.txt'),
     timber = timber
 )
+contentScanner: ContentScannerInterface = ContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
+    timber = timber
+)
 twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
     timber = timber
 )
@@ -230,6 +237,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
 ttsManager: Optional[TtsManagerInterface] = None
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager: TtsManagerInterface = TtsManager(
+        contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
         ttsSettingsRepository = TtsSettingsRepository(

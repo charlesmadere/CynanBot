@@ -259,6 +259,14 @@ else:
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
+bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
+    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
+    timber = timber
+)
+contentScanner: ContentScannerInterface = ContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
+    timber = timber
+)
 twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
     timber = timber
 )
@@ -366,14 +374,6 @@ if authSnapshot.hasOneWeatherApiKey():
 ## Trivia initialization section ##
 ###################################
 
-bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/trivia/bannedWords/bannedWords.txt'),
-    timber = timber
-)
-contentScanner: ContentScannerInterface = ContentScanner(
-    bannedWordsRepository = bannedWordsRepository,
-    timber = timber
-)
 shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
@@ -643,6 +643,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 ttsManager: Optional[TtsManagerInterface] = None
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager: TtsManagerInterface = TtsManager(
+        contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
         ttsSettingsRepository = TtsSettingsRepository(
