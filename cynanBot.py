@@ -156,6 +156,8 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                               TriviaGameRedemption)
 from triviaUtils import TriviaUtils
 from twitch.absChannelJoinEvent import AbsChannelJoinEvent
+from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from twitch.channelJoinEventType import ChannelJoinEventType
 from twitch.channelJoinHelper import ChannelJoinHelper
 from twitch.channelJoinListener import ChannelJoinListener
@@ -166,7 +168,9 @@ from twitch.twitchChannel import TwitchChannel
 from twitch.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
+from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchConfiguration import TwitchConfiguration
+from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from twitch.twitchUtils import TwitchUtils
 from twitch.twitchWebsocketDataBundleHandler import \
     TwitchWebsocketDataBundleHandler
@@ -871,6 +875,20 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pubSubUtils.startPubSub()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
+            cheerHandler: Optional[AbsTwitchCheerHandler] = None
+            subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
+
+            if generalSettings.isTtsEnabled():
+                cheerHandler = TwitchCheerHandler(
+                    timber = self.__timber,
+                    twitchChannelProvider = self
+                )
+
+                subscriptionHandler = TwitchSubscriptionHandler(
+                    timber = self.__timber,
+                    twitchChannelProvider = self
+                )
+
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 timber = self.__timber,
                 channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
@@ -885,8 +903,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     twitchChannelProvider = self,
                     userIdsRepository = self.__userIdsRepository
                 ),
-                cheerHandler = None,
-                subscriptionHandler = None,
+                cheerHandler = cheerHandler,
+                subscriptionHandler = subscriptionHandler,
                 userIdsRepository = self.__userIdsRepository,
                 usersRepository = self.__usersRepository
             ))
