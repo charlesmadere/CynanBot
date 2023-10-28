@@ -75,8 +75,6 @@ from CynanBotCommon.trivia.triviaExceptions import (
     TooManyAdditionalTriviaAnswersException)
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachineInterface import \
@@ -85,6 +83,8 @@ from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface

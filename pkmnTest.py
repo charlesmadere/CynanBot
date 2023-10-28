@@ -11,9 +11,9 @@ from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.storage.jsonFileReader import JsonFileReader
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
-    PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBotCommon.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+    PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
 

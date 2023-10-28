@@ -96,8 +96,6 @@ from CynanBotCommon.trivia.invalidAnswerInputTriviaEvent import \
 from CynanBotCommon.trivia.newSuperTriviaGameEvent import \
     NewSuperTriviaGameEvent
 from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
-from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
@@ -113,15 +111,17 @@ from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
 from CynanBotCommon.trivia.triviaEventType import TriviaEventType
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from CynanBotCommon.trivia.triviaRepositoryInterface import \
+from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \

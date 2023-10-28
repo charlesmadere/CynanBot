@@ -85,11 +85,7 @@ from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
-    PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
-from CynanBotCommon.trivia.quizApiTriviaQuestionRepository import \
-    QuizApiTriviaQuestionRepository
 from CynanBotCommon.trivia.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
@@ -106,16 +102,12 @@ from CynanBotCommon.trivia.triviaBanHelperInterface import \
 from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBotCommon.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
-from CynanBotCommon.trivia.triviaDatabaseTriviaQuestionRepository import \
-    TriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBotCommon.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBotCommon.trivia.triviaGameBuilder import TriviaGameBuilder
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
@@ -129,8 +121,6 @@ from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
 from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBotCommon.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
-    TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBotCommon.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
@@ -148,6 +138,16 @@ from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRe
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+    PkmnTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
+    QuizApiTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
+    TriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
+    TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.triviaRepository import \
     TriviaRepository
 from CynanBotCommon.trivia.triviaRepositories.triviaRepositoryInterface import \
