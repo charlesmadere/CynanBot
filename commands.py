@@ -89,6 +89,8 @@ from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBotCommon.twitch.twitchApiServiceInterface import \
@@ -673,6 +675,7 @@ class ClearCachesCommand(AbsCommand):
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         timber: TimberInterface,
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
+        ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
@@ -701,6 +704,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
+            raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
@@ -727,6 +732,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(modifyUserDataHelper)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
         self.__clearables.append(triviaSettingsRepository)
+        self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchTokensRepository)
         self.__clearables.append(usersRepository)
         self.__clearables.append(weatherRepository)
@@ -3443,6 +3449,7 @@ class TtsCommand(AbsCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         ttsManager: TtsManagerInterface,
         twitchUtils: TwitchUtils,
@@ -3450,6 +3457,8 @@ class TtsCommand(AbsCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsManager, TtsManagerInterface):
@@ -3460,6 +3469,7 @@ class TtsCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsManager: TtsManagerInterface = ttsManager
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -3467,8 +3477,9 @@ class TtsCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not user.isTtsEnabled():
+        if not generalSettings.isTtsEnabled() or not user.isTtsEnabled():
             return
 
         administrator = await self.__administratorProvider.getAdministratorUserId()
