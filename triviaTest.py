@@ -3,6 +3,10 @@ from datetime import timedelta
 
 from authRepository import AuthRepository
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBotCommon.contentScanner.bannedWordsRepository import \
+    BannedWordsRepository
+from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
 from CynanBotCommon.network.requestsClientProvider import \
@@ -19,24 +23,6 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
-    BannedWordsRepository
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
-from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
-    BongoTriviaQuestionRepository
-from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
-    FuntoonTriviaQuestionRepository
-from CynanBotCommon.trivia.jServiceTriviaQuestionRepository import \
-    JServiceTriviaQuestionRepository
-from CynanBotCommon.trivia.lotrTriviaQuestionsRepository import \
-    LotrTriviaQuestionRepository
-from CynanBotCommon.trivia.millionaireTriviaQuestionRepository import \
-    MillionaireTriviaQuestionRepository
-from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
-    OpenTriviaQaTriviaQuestionRepository
 from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.questionAnswerTriviaConditions import \
@@ -70,7 +56,26 @@ from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from CynanBotCommon.trivia.triviaRepository import TriviaRepository
+from CynanBotCommon.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
+    BongoTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
+    FuntoonTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
+    JServiceTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
+    LotrTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
+    MillionaireTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
+    OpenTriviaQaTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaRepository import \
+    TriviaRepository
+from CynanBotCommon.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
+    WillFryTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
+    WwtbamTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
@@ -78,10 +83,6 @@ from CynanBotCommon.trivia.triviaSource import TriviaSource
 from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
-from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
-    WillFryTriviaQuestionRepository
-from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
-    WwtbamTriviaQuestionRepository
 from CynanBotCommon.twitch.twitchApiService import TwitchApiService
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 

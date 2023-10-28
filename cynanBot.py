@@ -39,6 +39,8 @@ from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
@@ -77,8 +79,6 @@ from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
 from CynanBotCommon.trivia.correctAnswerTriviaEvent import \

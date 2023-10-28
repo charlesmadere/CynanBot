@@ -11,6 +11,8 @@ from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.clearable import Clearable
+from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
@@ -48,16 +50,12 @@ from CynanBotCommon.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
 from CynanBotCommon.trivia.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
 from CynanBotCommon.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
 from CynanBotCommon.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
-from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBotCommon.trivia.removeTriviaGameControllerResult import \
@@ -85,6 +83,8 @@ from CynanBotCommon.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
+from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface

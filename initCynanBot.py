@@ -11,6 +11,10 @@ from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLogger import ChatLogger
+from CynanBotCommon.contentScanner.bannedWordsRepository import \
+    BannedWordsRepository
+from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
 from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
@@ -78,26 +82,6 @@ from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
 from CynanBotCommon.trivia.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepository import \
-    BannedWordsRepository
-from CynanBotCommon.trivia.bannedWords.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
-from CynanBotCommon.trivia.bongoTriviaQuestionRepository import \
-    BongoTriviaQuestionRepository
-from CynanBotCommon.trivia.funtoonTriviaQuestionRepository import \
-    FuntoonTriviaQuestionRepository
-from CynanBotCommon.trivia.jokeTriviaQuestionRepository import \
-    JokeTriviaQuestionRepository
-from CynanBotCommon.trivia.jServiceTriviaQuestionRepository import \
-    JServiceTriviaQuestionRepository
-from CynanBotCommon.trivia.lotrTriviaQuestionsRepository import \
-    LotrTriviaQuestionRepository
-from CynanBotCommon.trivia.millionaireTriviaQuestionRepository import \
-    MillionaireTriviaQuestionRepository
-from CynanBotCommon.trivia.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.openTriviaQaTriviaQuestionRepository import \
-    OpenTriviaQaTriviaQuestionRepository
 from CynanBotCommon.trivia.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
 from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
@@ -145,9 +129,30 @@ from CynanBotCommon.trivia.triviaIdGeneratorInterface import \
 from CynanBotCommon.trivia.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from CynanBotCommon.trivia.triviaRepository import TriviaRepository
-from CynanBotCommon.trivia.triviaRepositoryInterface import \
+from CynanBotCommon.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
+    BongoTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
+    FuntoonTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
+    JokeTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
+    JServiceTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
+    LotrTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
+    MillionaireTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
+    OpenTriviaQaTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaRepository import \
+    TriviaRepository
+from CynanBotCommon.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
+from CynanBotCommon.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
+    WillFryTriviaQuestionRepository
+from CynanBotCommon.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
+    WwtbamTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepository import \
     TriviaSettingsRepository
@@ -156,10 +161,6 @@ from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
 from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
-from CynanBotCommon.trivia.willFryTriviaQuestionRepository import \
-    WillFryTriviaQuestionRepository
-from CynanBotCommon.trivia.wwtbamTriviaQuestionRepository import \
-    WwtbamTriviaQuestionRepository
 from CynanBotCommon.tts.ttsManager import TtsManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -222,33 +223,35 @@ generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
 )
 
+generalSettingsSnapshot = generalSettingsRepository.getAll()
+
 backingDatabase: BackingDatabase = None
-if generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.POSTGRESQL:
+if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider(
             credentialsJsonReader = JsonFileReader('CynanBotCommon/storage/psqlCredentials.json')
         )
     )
-elif generalSettingsRepository.getAll().requireDatabaseType() is DatabaseType.SQLITE:
+elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
         eventLoop = eventLoop
     )
 else:
-    raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsRepository.getAll().requireDatabaseType()}\"')
+    raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
 networkClientProvider: NetworkClientProvider = None
-if generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.AIOHTTP:
+if generalSettingsSnapshot.requireNetworkClientType() is NetworkClientType.AIOHTTP:
     networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
         eventLoop = eventLoop,
         timber = timber
     )
-elif generalSettingsRepository.getAll().requireNetworkClientType() is NetworkClientType.REQUESTS:
+elif generalSettingsSnapshot.requireNetworkClientType() is NetworkClientType.REQUESTS:
     networkClientProvider: NetworkClientProvider = RequestsClientProvider(
         timber = timber
     )
 else:
-    raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsRepository.getAll().requireNetworkClientType()}\"')
+    raise RuntimeError(f'Unknown/misconfigured network client type: \"{generalSettingsSnapshot.requireNetworkClientType()}\"')
 
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
@@ -332,7 +335,7 @@ if authSnapshot.hasDeepLAuthKey():
     )
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
-if generalSettingsRepository.getAll().isEventSubEnabled():
+if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,
@@ -629,13 +632,16 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 ## TTS initialization section ##
 ################################
 
-ttsManager: TtsManagerInterface = TtsManager(
-    systemCommandHelper = SystemCommandHelper(),
-    timber = timber,
-    ttsSettingsRepository = TtsSettingsRepository(
-        settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+ttsManager: Optional[TtsManagerInterface] = None
+if generalSettingsSnapshot.isTtsEnabled():
+    ttsManager: TtsManagerInterface = TtsManager(
+        systemCommandHelper = SystemCommandHelper(),
+        timber = timber,
+        ttsSettingsRepository = TtsSettingsRepository(
+            settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+        )
     )
-)
+
 
 #####################################
 ## CynanBot initialization section ##
