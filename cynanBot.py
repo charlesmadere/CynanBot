@@ -1149,7 +1149,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleCommand(context)
 
-    @commands.command(name = 'bantriviaquestion')
+    @commands.command(name = 'bantriviaquestion', aliases = [ 'bantrivia' ])
     async def command_bantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__banTriviaQuestionCommand.handleCommand(context)
