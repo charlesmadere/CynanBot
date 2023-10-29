@@ -216,8 +216,6 @@ twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     usersRepository = usersRepository
 )
 
-authSnapshot = authRepository.getAll()
-
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
