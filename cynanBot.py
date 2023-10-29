@@ -425,7 +425,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
-        if cutenessRepository is None or cutenessUtils is None:
+        if cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__cutenessHistoryCommand: AbsCommand = StubCommand()
