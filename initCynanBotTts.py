@@ -53,6 +53,7 @@ from CynanBotCommon.systemCommandHelper.systemCommandHelper import \
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
+from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBotCommon.tts.ttsManager import TtsManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -246,6 +247,7 @@ if generalSettingsSnapshot.isTtsEnabled():
         contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
+        ttsCommandBuilder = DecTalkCommandBuilder(),
         ttsSettingsRepository = ttsSettingsRepository
     )
 

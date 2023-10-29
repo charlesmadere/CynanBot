@@ -164,6 +164,7 @@ from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
 from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
+from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBotCommon.tts.ttsManager import TtsManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -652,6 +653,7 @@ if generalSettingsSnapshot.isTtsEnabled():
         contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
+        ttsCommandBuilder = DecTalkCommandBuilder(),
         ttsSettingsRepository = ttsSettingsRepository
     )
 
