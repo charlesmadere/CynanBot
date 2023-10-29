@@ -118,7 +118,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         )
 
         self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = message,
+            message = userInput,
             twitchChannel = user.getHandle(),
             userId = redemptionUserId,
             userName = redemptionUserName,
