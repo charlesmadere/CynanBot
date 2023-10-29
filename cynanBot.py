@@ -225,7 +225,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaRepository: Optional[TriviaRepositoryInterface],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
-        triviaUtils: TriviaUtils,
+        triviaUtils: Optional[TriviaUtils],
         ttsManager: Optional[TtsManagerInterface],
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchApiService: TwitchApiServiceInterface,
@@ -323,7 +323,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
@@ -357,7 +357,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchUtils: TwitchUtils = twitchUtils
