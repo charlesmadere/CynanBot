@@ -6,6 +6,7 @@ from CynanBotCommon.tts.ttsDonation import TtsDonation
 from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from CynanBotCommon.twitch.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.users.userInterface import UserInterface
@@ -75,6 +76,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 redemptionUserLogin = redemptionUserLogin,
                 redemptionUserName = redemptionUserName,
                 userInput = userInput,
+                tier = tier,
                 user = user
             )
 
@@ -87,6 +89,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         redemptionUserLogin: str,
         redemptionUserName: str,
         userInput: Optional[str],
+        tier: TwitchSubscriberTier,
         user: UserInterface
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
@@ -103,8 +106,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'redemptionUserName argument is malformed: \"{redemptionUserName}\"')
         elif userInput is not None and not isinstance(userInput, str):
             raise ValueError(f'userInput argument is malformed: \"{userInput}\"')
+        elif not isinstance(tier, TwitchSubscriberTier):
+            raise ValueError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        actualMessage = message
+        if not utils.isValidStr(actualMessage):
+            actualMessage = userInput
 
         if isAnonymous is None:
             isAnonymous = False
@@ -114,12 +123,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         donation: TtsDonation = TtsSubscriptionDonation(
             isAnonymous = isAnonymous,
-            isGift = isGift
+            isGift = isGift,
+            tier = tier
         )
-
-        actualMessage = message
-        if not utils.isValidStr(actualMessage):
-            actualMessage = userInput
 
         self.__ttsManager.submitTtsEvent(TtsEvent(
             message = actualMessage,
