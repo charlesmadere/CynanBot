@@ -3499,7 +3499,7 @@ class TtsCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
             return
 
-        await self.__ttsManager.submitTtsEvent(TtsEvent(
+        self.__ttsManager.submitTtsEvent(TtsEvent(
             message = message,
             twitchChannel = user.getHandle(),
             userId = ctx.getAuthorId(),
