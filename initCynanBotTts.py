@@ -246,6 +246,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager = TtsManager(
+        backgroundTaskHelper = backgroundTaskHelper,
         contentScanner = contentScanner,
         systemCommandHelper = SystemCommandHelper(),
         timber = timber,
