@@ -5,12 +5,10 @@ from typing import Optional
 
 from administratorProvider import AdministratorProvider
 from authRepository import AuthRepository
-from cutenessUtils import CutenessUtils
 from cynanBot import CynanBot
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.chatLogger.chatLogger import ChatLogger
 from CynanBotCommon.contentScanner.bannedWordsRepository import \
     BannedWordsRepository
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
@@ -273,12 +271,9 @@ cynanBot = CynanBot(
         timber = timber,
         usersRepository = usersRepository
     ),
-    chatLogger = ChatLogger(
-        backgroundTaskHelper = backgroundTaskHelper,
-        timber = timber
-    ),
+    chatLogger = None,
     cutenessRepository = cutenessRepository,
-    cutenessUtils = CutenessUtils(),
+    cutenessUtils = None,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
