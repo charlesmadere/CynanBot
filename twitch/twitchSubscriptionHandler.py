@@ -117,8 +117,12 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             isGift = isGift
         )
 
+        actualMessage = message
+        if not utils.isValidStr(actualMessage):
+            actualMessage = userInput
+
         self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = userInput,
+            message = actualMessage,
             twitchChannel = user.getHandle(),
             userId = redemptionUserId,
             userName = redemptionUserName,
