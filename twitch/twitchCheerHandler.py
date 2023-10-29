@@ -1,5 +1,9 @@
+from typing import Optional
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.tts.ttsCheerDonation import TtsCheerDonation
+from CynanBotCommon.tts.ttsDonation import TtsDonation
 from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
@@ -60,9 +64,45 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (bits={bits}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
 
         if user.isTtsEnabled():
-            self.__ttsManager.submitTtsEvent(TtsEvent(
+            await self.__processTtsEvent(
+                bits = bits,
                 message = message,
-                twitchChannel = user.getHandle(),
-                userId = redemptionUserId,
-                userName = redemptionUserName
-            ))
+                redemptionUserId = redemptionUserId,
+                redemptionUserLogin = redemptionUserLogin,
+                redemptionUserName = redemptionUserName,
+                user = user
+            )
+
+    async def __processTtsEvent(
+        self,
+        bits: int,
+        message: Optional[str],
+        redemptionUserId: str,
+        redemptionUserLogin: str,
+        redemptionUserName: str,
+        user: UserInterface
+    ):
+        if not utils.isValidInt(bits):
+            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif message is not None and not isinstance(message, str):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(redemptionUserId):
+            raise ValueError(f'redemptionUserId argument is malformed: \"{redemptionUserId}\"')
+        elif not utils.isValidStr(redemptionUserLogin):
+            raise ValueError(f'redemptionUserLogin argument is malformed: \"{redemptionUserLogin}\"')
+        elif not utils.isValidStr(redemptionUserName):
+            raise ValueError(f'redemptionUserName argument is malformed: \"{redemptionUserName}\"')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        donation: TtsDonation = TtsCheerDonation(bits = bits)
+
+        self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = message,
+            twitchChannel = user.getHandle(),
+            userId = redemptionUserId,
+            userName = redemptionUserName,
+            donation = donation
+        ))

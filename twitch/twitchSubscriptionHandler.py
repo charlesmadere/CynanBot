@@ -1,7 +1,11 @@
+from typing import Optional
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.tts.ttsDonation import TtsDonation
 from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBotCommon.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.users.userInterface import UserInterface
@@ -47,23 +51,76 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
             return
 
+        isAnonymous = event.isAnonymous()
         isGift = event.isGift()
-        tier = event.getTier()
+        message = event.getMessage()
         redemptionUserId = event.getUserId()
-        redemptionUserInput = event.getUserInput()
         redemptionUserLogin = event.getUserLogin()
         redemptionUserName = event.getUserName()
+        userInput = event.getUserInput()
+        tier = event.getTier()
 
-        if not utils.isValidBool(isGift) or tier is None or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName):
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (tier={tier}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\")')
+        if not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or tier is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (isAnonymous={isAnonymous}) (isGift={isGift}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\") (tier={tier})')
             return
 
-        self.__timber.log('TwitchCheerHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isGift={isGift}) (tier=\"{tier}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserInput=\"{redemptionUserInput}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
+        self.__timber.log('TwitchCheerHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isAnonymous={isAnonymous}) (isGift={isGift}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\") (userInput=\"{userInput}\") (tier=\"{tier}\")')
 
         if user.isTtsEnabled():
-            self.__ttsManager.submitTtsEvent(TtsEvent(
-                message = redemptionUserInput,
-                twitchChannel = user.getHandle(),
-                userId = redemptionUserId,
-                userName = redemptionUserName
-            ))
+            await self.__processTtsEvent(
+                isAnonymous = isAnonymous,
+                isGift = isGift,
+                message = message,
+                redemptionUserId = redemptionUserId,
+                redemptionUserLogin = redemptionUserLogin,
+                redemptionUserName = redemptionUserName,
+                userInput = userInput,
+                user = user
+            )
+
+    async def __processTtsEvent(
+        self,
+        isAnonymous: Optional[bool],
+        isGift: Optional[bool],
+        message: Optional[str],
+        redemptionUserId: str,
+        redemptionUserLogin: str,
+        redemptionUserName: str,
+        userInput: Optional[str],
+        user: UserInterface
+    ):
+        if isAnonymous is not None and not utils.isValidBool(isAnonymous):
+            raise ValueError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
+        elif isGift is not None and not utils.isValidBool(isGift):
+            raise ValueError(f'isGift argument is malformed: \"{isGift}\"')
+        elif message is not None and not isinstance(message, str):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(redemptionUserId):
+            raise ValueError(f'redemptionUserId argument is malformed: \"{redemptionUserId}\"')
+        elif not utils.isValidStr(redemptionUserLogin):
+            raise ValueError(f'redemptionUserLogin argument is malformed: \"{redemptionUserLogin}\"')
+        elif not utils.isValidStr(redemptionUserName):
+            raise ValueError(f'redemptionUserName argument is malformed: \"{redemptionUserName}\"')
+        elif userInput is not None and not isinstance(userInput, str):
+            raise ValueError(f'userInput argument is malformed: \"{userInput}\"')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if isAnonymous is None:
+            isAnonymous = False
+
+        if isGift is None:
+            isGift = False
+
+        donation: TtsDonation = TtsSubscriptionDonation(
+            isAnonymous = isAnonymous,
+            isGift = isGift
+        )
+
+        self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = message,
+            twitchChannel = user.getHandle(),
+            userId = redemptionUserId,
+            userName = redemptionUserName,
+            donation = donation
+        ))
