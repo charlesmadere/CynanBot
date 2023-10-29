@@ -246,7 +246,9 @@ if generalSettingsSnapshot.isTtsEnabled():
     ttsManager = TtsManager(
         backgroundTaskHelper = backgroundTaskHelper,
         contentScanner = contentScanner,
-        systemCommandHelper = SystemCommandHelper(),
+        systemCommandHelper = SystemCommandHelper(
+            timber = timber
+        ),
         timber = timber,
         ttsCommandBuilder = DecTalkCommandBuilder(),
         ttsSettingsRepository = ttsSettingsRepository
