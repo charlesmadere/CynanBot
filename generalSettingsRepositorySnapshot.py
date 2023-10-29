@@ -142,10 +142,10 @@ class GeneralSettingsRepositorySnapshot():
         return utils.getBoolFromDict(self.__jsonContents, 'ttsEnabled', False)
 
     def isWeatherEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'weatherEnabled', True)
+        return utils.getBoolFromDict(self.__jsonContents, 'weatherEnabled', False)
 
     def isWordOfTheDayEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'wordOfTheDayEnabled', True)
+        return utils.getBoolFromDict(self.__jsonContents, 'wordOfTheDayEnabled', False)
 
     def requireAdministrator(self) -> str:
         administrator = self.__jsonContents.get('administrator')
