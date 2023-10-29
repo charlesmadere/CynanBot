@@ -88,6 +88,7 @@ from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository im
 from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
@@ -3498,10 +3499,13 @@ class TtsCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
             return
 
-        await self.__ttsManager.executeTts(
-            user = user,
-            message = message
-        )
+        await self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = message,
+            twitchChannel = user.getHandle(),
+            userId = ctx.getAuthorId(),
+            userName = ctx.getAuthorName(),
+            donation = None
+        ))
 
         self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
