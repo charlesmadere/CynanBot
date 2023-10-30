@@ -157,6 +157,7 @@ class UsersRepository(UsersRepositoryInterface):
         superTriviaGameToxicMultiplier: Optional[int] = None
         superTriviaGameToxicPunishmentMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
+        superTriviaSubscribeTriggerAmount: Optional[float] = None
         triviaGamePoints: Optional[int] = None
         triviaGameShinyMultiplier: Optional[int] = None
         triviaGameRewardId: Optional[str] = None
@@ -173,6 +174,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
+            superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount', 1)
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
@@ -234,6 +236,7 @@ class UsersRepository(UsersRepositoryInterface):
             superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
+            superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
