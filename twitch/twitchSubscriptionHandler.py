@@ -2,6 +2,10 @@ from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from CynanBotCommon.tts.ttsDonation import TtsDonation
 from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
@@ -19,18 +23,26 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     def __init__(
         self,
         timber: TimberInterface,
-        ttsManager: TtsManagerInterface,
+        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
+        triviaGameMachine: Optional[TriviaGameMachineInterface],
+        ttsManager: Optional[TtsManagerInterface],
         twitchChannelProvider: TwitchChannelProvider
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsManager, TtsManagerInterface):
+        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
         self.__timber: TimberInterface = timber
-        self.__ttsManager: TtsManagerInterface = ttsManager
+        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
+        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
     async def onNewSubscription(
@@ -54,6 +66,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         isAnonymous = event.isAnonymous()
         isGift = event.isGift()
+        communitySubTotal = event.getCommunitySubTotal()
+        total = event.getTotal()
         message = event.getMessage()
         redemptionUserId = event.getUserId()
         redemptionUserLogin = event.getUserLogin()
@@ -65,7 +79,15 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (isAnonymous={isAnonymous}) (isGift={isGift}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\") (tier={tier})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isAnonymous={isAnonymous}) (isGift={isGift}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\") (userInput=\"{userInput}\") (tier=\"{tier}\")')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isAnonymous={isAnonymous}) (isGift={isGift}) (communitySubTotal={communitySubTotal}) (total={total}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\") (userInput=\"{userInput}\") (tier=\"{tier}\")')
+
+        if user.isSuperTriviaGameEnabled():
+            await self.__processSuperTriviaEvent(
+                communitySubTotal = communitySubTotal,
+                total = total,
+                tier = tier,
+                user = user
+            )
 
         if user.isTtsEnabled():
             await self.__processTtsEvent(
@@ -79,6 +101,53 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 tier = tier,
                 user = user
             )
+
+    async def __processSuperTriviaEvent(
+        self,
+        communitySubTotal: Optional[int],
+        total: Optional[int],
+        tier: TwitchSubscriberTier,
+        user: UserInterface
+    ):
+        if communitySubTotal is not None and not utils.isValidInt(communitySubTotal):
+            raise ValueError(f'communitySubTotal argument is malformed: \"{communitySubTotal}\"')
+        elif total is not None and not utils.isValidInt(total):
+            raise ValueError(f'total argument is malformed: \"{total}\"')
+        elif total < 1 or total > utils.getIntMaxSafeSize():
+            raise ValueError(f'total argument is out of bounds: {total}')
+        elif not isinstance(tier, TwitchSubscriberTier):
+            raise ValueError(f'tier argument is malformed: \"{tier}\"')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
+            return
+        elif not user.isSuperTriviaGameEnabled():
+            return
+        elif not user.hasSuperTriviaGameShinyMultiplier() or user.getSuperTriviaSubscribeTriggerAmount() <= 0:
+            return
+        elif (communitySubTotal is None or communitySubTotal < 1) and (total is None or total < 1):
+            return
+
+        numberOfSubs = total
+        if communitySubTotal is not None:
+            numberOfSubs = communitySubTotal
+
+        if not utils.isValidInt(numberOfSubs) or numberOfSubs < 1:
+            return
+
+        numberOfGames = 1
+
+        if numberOfGames < 1:
+            return
+
+        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+            twitchChannel = user.getHandle(),
+            numberOfGames = numberOfGames
+        )
+
+        if action is not None:
+            self.__triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(
         self,
@@ -110,6 +179,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__ttsManager is None:
+            return
+        elif not user.isTtsEnabled():
+            return
 
         actualMessage = message
         if not utils.isValidStr(actualMessage):

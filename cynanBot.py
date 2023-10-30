@@ -355,6 +355,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
         self.__timber: TimberInterface = timber
+        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
@@ -895,12 +896,16 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             if generalSettings.isTtsEnabled() and self.__ttsManager is not None:
                 cheerHandler = TwitchCheerHandler(
                     timber = self.__timber,
+                    triviaGameBuilder = self.__triviaGameBuilder,
+                    triviaGameMachine = self.__triviaGameMachine,
                     ttsManager = self.__ttsManager,
                     twitchChannelProvider = self
                 )
 
                 subscriptionHandler = TwitchSubscriptionHandler(
                     timber = self.__timber,
+                    triviaGameBuilder = self.__triviaGameBuilder,
+                    triviaGameMachine = self.__triviaGameMachine,
                     ttsManager = self.__ttsManager,
                     twitchChannelProvider = self
                 )

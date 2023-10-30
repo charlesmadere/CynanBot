@@ -1,7 +1,12 @@
+import math
 from typing import Optional
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
+from CynanBotCommon.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
 from CynanBotCommon.tts.ttsCheerDonation import TtsCheerDonation
 from CynanBotCommon.tts.ttsDonation import TtsDonation
 from CynanBotCommon.tts.ttsEvent import TtsEvent
@@ -18,18 +23,26 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     def __init__(
         self,
         timber: TimberInterface,
-        ttsManager: TtsManagerInterface,
+        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
+        triviaGameMachine: Optional[TriviaGameMachineInterface],
+        ttsManager: Optional[TtsManagerInterface],
         twitchChannelProvider: TwitchChannelProvider
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsManager, TtsManagerInterface):
+        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameBuilderInterface):
+            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
         self.__timber: TimberInterface = timber
-        self.__ttsManager: TtsManagerInterface = ttsManager
+        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
+        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
+        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
     async def onNewCheer(
@@ -63,15 +76,48 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (bits={bits}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
 
+        if user.isSuperTriviaGameEnabled():
+            await self.__processSuperTriviaEvent(
+                bits = bits,
+                user = user
+            )
+
         if user.isTtsEnabled():
             await self.__processTtsEvent(
                 bits = bits,
                 message = message,
                 redemptionUserId = redemptionUserId,
                 redemptionUserLogin = redemptionUserLogin,
-                redemptionUserName = redemptionUserName,
                 user = user
             )
+
+    async def __processSuperTriviaEvent(self, bits: int, user: UserInterface):
+        if not utils.isValidInt(bits):
+            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
+            return
+        elif not user.isSuperTriviaGameEnabled():
+            return
+        elif not user.hasSuperTriviaCheerTriggerAmount() or bits < user.getSuperTriviaCheerTriggerAmount():
+            return
+
+        numberOfGames = math.floor(bits / user.getSuperTriviaCheerTriggerAmount())
+
+        if numberOfGames < 1:
+            return
+
+        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+            twitchChannel = user.getHandle(),
+            numberOfGames = numberOfGames
+        )
+
+        if action is not None:
+            self.__triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(
         self,
@@ -79,7 +125,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         message: Optional[str],
         redemptionUserId: str,
         redemptionUserLogin: str,
-        redemptionUserName: str,
         user: UserInterface
     ):
         if not utils.isValidInt(bits):
@@ -92,10 +137,15 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             raise ValueError(f'redemptionUserId argument is malformed: \"{redemptionUserId}\"')
         elif not utils.isValidStr(redemptionUserLogin):
             raise ValueError(f'redemptionUserLogin argument is malformed: \"{redemptionUserLogin}\"')
-        elif not utils.isValidStr(redemptionUserName):
-            raise ValueError(f'redemptionUserName argument is malformed: \"{redemptionUserName}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__ttsManager is None:
+            return
+        elif not user.isTtsEnabled():
+            return
+        elif not user.hasMinimumTtsCheerAmount() or bits < user.getMinimumTtsCheerAmount():
+            return
 
         donation: TtsDonation = TtsCheerDonation(bits = bits)
 
@@ -103,6 +153,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             message = message,
             twitchChannel = user.getHandle(),
             userId = redemptionUserId,
-            userName = redemptionUserName,
+            userName = redemptionUserLogin,
             donation = donation
         ))

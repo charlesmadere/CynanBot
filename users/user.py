@@ -1,9 +1,5 @@
 from datetime import tzinfo
 from typing import List, Optional
-from urllib.parse import urlparse
-
-import aiofiles
-import aiofiles.ospath
 
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
@@ -50,6 +46,9 @@ class User(UserInterface):
         isTtsEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        superTriviaSubscribeTriggerAmount: Optional[float],
+        minimumTtsCheerAmount: Optional[int],
+        superTriviaCheerTriggerAmount: Optional[int],
         superTriviaGamePoints: Optional[int],
         superTriviaGameRewardId: Optional[str],
         superTriviaGameShinyMultiplier: Optional[int],
@@ -145,8 +144,18 @@ class User(UserInterface):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
+            raise ValueError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
+        elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
+            raise ValueError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
+        elif minimumTtsCheerAmount < 0 or minimumTtsCheerAmount > utils.getIntMaxSafeSize():
+            raise ValueError(f'minimumTtsCheerAmount argument is out of bounds: {minimumTtsCheerAmount}')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
+        elif superTriviaCheerTriggerAmount is not None and not utils.isValidInt(superTriviaCheerTriggerAmount):
+            raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
+        elif superTriviaCheerTriggerAmount < 0 or superTriviaCheerTriggerAmount > utils.getIntMaxSafeSize():
+            raise ValueError(f'superTriviaCheerTriggerAmount argument is out of bounds: {superTriviaCheerTriggerAmount}')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
             raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
@@ -219,6 +228,9 @@ class User(UserInterface):
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
+        self.__superTriviaSubscribeTriggerAmount: Optional[float] = superTriviaSubscribeTriggerAmount
+        self.__minimumTtsCheerAmount: Optional[int] = minimumTtsCheerAmount
+        self.__superTriviaCheerTriggerAmount: Optional[int] = superTriviaCheerTriggerAmount
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
         self.__superTriviaGameRewardId: Optional[str] = superTriviaGameRewardId
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
@@ -265,6 +277,9 @@ class User(UserInterface):
     def getMastodonUrl(self) -> Optional[str]:
         return self.__mastodonUrl
 
+    def getMinimumTtsCheerAmount(self) -> Optional[int]:
+        return self.__minimumTtsCheerAmount
+
     def getPkmnBattleRewardId(self) -> Optional[str]:
         return self.__pkmnBattleRewardId
 
@@ -279,6 +294,9 @@ class User(UserInterface):
 
     def getSpeedrunProfile(self) -> Optional[str]:
         return self.__speedrunProfile
+
+    def getSuperTriviaCheerTriggerAmount(self) -> Optional[int]:
+        return self.__superTriviaCheerTriggerAmount
 
     def getSuperTriviaGamePoints(self) -> Optional[int]:
         return self.__superTriviaGamePoints
@@ -297,6 +315,9 @@ class User(UserInterface):
 
     def getSuperTriviaPerUserAttempts(self) -> Optional[int]:
         return self.__superTriviaPerUserAttempts
+
+    def getSuperTriviaSubscribeTriggerAmount(self) -> Optional[float]:
+        return self.__superTriviaSubscribeTriggerAmount
 
     def getTimeZones(self) -> Optional[List[tzinfo]]:
         return self.__timeZones
@@ -337,11 +358,17 @@ class User(UserInterface):
     def hasMastodonUrl(self) -> bool:
         return utils.isValidUrl(self.__mastodonUrl)
 
+    def hasMinimumTtsCheerAmount(self) -> bool:
+        return utils.isValidUrl(self.__minimumTtsCheerAmount) and self.__minimumTtsCheerAmount >= 1
+
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
+
+    def hasSuperTriviaCheerTriggerAmount(self) -> bool:
+        return utils.isValidInt(self.__superTriviaCheerTriggerAmount) and self.__superTriviaCheerTriggerAmount >= 1
 
     def hasSuperTriviaGamePoints(self) -> bool:
         return utils.isValidInt(self.__superTriviaGamePoints)
@@ -357,6 +384,9 @@ class User(UserInterface):
 
     def hasSuperTriviaPerUserAttempts(self) -> bool:
         return utils.isValidInt(self.__superTriviaPerUserAttempts)
+
+    def hasSuperTriviaSubscribeTriggerAmount(self) -> bool:
+        return utils.isValidNum(self.__superTriviaSubscribeTriggerAmount)
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)

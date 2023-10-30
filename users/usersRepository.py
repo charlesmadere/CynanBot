@@ -131,6 +131,7 @@ class UsersRepository(UsersRepositoryInterface):
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
+        minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount', 100)
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
@@ -149,6 +150,7 @@ class UsersRepository(UsersRepositoryInterface):
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
+        superTriviaCheerTriggerAmount: Optional[int] = None
         superTriviaGamePoints: Optional[int] = None
         superTriviaGameRewardId: Optional[str] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
@@ -164,6 +166,7 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
+            superTriviaCheerTriggerAmount = userJson.get('superTriviaCheerTriggerAmount')
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
@@ -223,6 +226,8 @@ class UsersRepository(UsersRepositoryInterface):
             isTtsEnabled = isTtsEnabled,
             isWeatherEnabled = isWeatherEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
+            minimumTtsCheerAmount = minimumTtsCheerAmount,
+            superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameRewardId = superTriviaGameRewardId,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
