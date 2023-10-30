@@ -148,14 +148,10 @@ class User(UserInterface):
             raise ValueError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
             raise ValueError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
-        elif minimumTtsCheerAmount < 0 or minimumTtsCheerAmount > utils.getIntMaxSafeSize():
-            raise ValueError(f'minimumTtsCheerAmount argument is out of bounds: {minimumTtsCheerAmount}')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
         elif superTriviaCheerTriggerAmount is not None and not utils.isValidInt(superTriviaCheerTriggerAmount):
             raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
-        elif superTriviaCheerTriggerAmount < 0 or superTriviaCheerTriggerAmount > utils.getIntMaxSafeSize():
-            raise ValueError(f'superTriviaCheerTriggerAmount argument is out of bounds: {superTriviaCheerTriggerAmount}')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
             raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
