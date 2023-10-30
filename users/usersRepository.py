@@ -166,7 +166,7 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            superTriviaCheerTriggerAmount = userJson.get('superTriviaCheerTriggerAmount')
+            superTriviaCheerTriggerAmount = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerAmount', 250)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
