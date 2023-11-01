@@ -355,7 +355,7 @@ class User(UserInterface):
         return utils.isValidUrl(self.__mastodonUrl)
 
     def hasMinimumTtsCheerAmount(self) -> bool:
-        return utils.isValidUrl(self.__minimumTtsCheerAmount) and self.__minimumTtsCheerAmount >= 1
+        return utils.isValidInt(self.__minimumTtsCheerAmount) and self.__minimumTtsCheerAmount >= 1
 
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
@@ -382,7 +382,7 @@ class User(UserInterface):
         return utils.isValidInt(self.__superTriviaPerUserAttempts)
 
     def hasSuperTriviaSubscribeTriggerAmount(self) -> bool:
-        return utils.isValidNum(self.__superTriviaSubscribeTriggerAmount)
+        return utils.isValidNum(self.__superTriviaSubscribeTriggerAmount) and self.__superTriviaCheerTriggerAmount > 0
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
