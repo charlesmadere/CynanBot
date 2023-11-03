@@ -2,10 +2,9 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
-    "editor.defaultFormatter": "vscode.python",
     "editor.wordWrapColumn": 120,
+    "files.autoSave": "afterDelay",
     "[python]": {
-        "editor.defaultFormatter": "ms-python.python"
-    },
-    "files.autoSave": "afterDelay"
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
