@@ -379,6 +379,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
         self.__loremIpsumCommand: AbsCommand = LoremIpsumCommand(timber, twitchUtils, usersRepository)
+        self.__mastodonCommand: AbsCommand = StubCommand()
         self.__pbsCommand: AbsCommand = PbsCommand(timber, twitchUtils, usersRepository)
         self.__raceCommand: AbsCommand = RaceCommand(timber, twitchUtils, usersRepository)
         self.__setTwitchCodeCommand: AbsCommand = SetTwitchCodeCommand(administratorProvider, timber, twitchTokensRepository, twitchUtils, usersRepository)
@@ -1248,6 +1249,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_lorem(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__loremIpsumCommand.handleCommand(context)
+
+    @commands.command(name = 'mastodon')
+    async def command_mastodon(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__mastodonCommand.handleCommand(context)
 
     @commands.command(name = 'mycutenesshistory')
     async def command_mycutenesshistory(self, ctx: Context):
