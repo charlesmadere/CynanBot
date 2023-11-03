@@ -51,14 +51,6 @@ class AuthRepositorySnapshot():
 
         return merriamWebsterApiKey
 
-    def requireNick(self) -> str:
-        nick = self.__jsonContents.get('nick')
-
-        if not utils.isValidStr(nick):
-            raise ValueError(f'\"nick\" in Auth Repository file is malformed: \"{nick}\"')
-
-        return nick
-
     def requireOneWeatherApiKey(self) -> str:
         oneWeatherApiKey = self.getOneWeatherApiKey()
 

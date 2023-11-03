@@ -242,7 +242,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
             initial_channels = list(),
             loop = eventLoop,
-            nick = authRepository.getAll().requireNick(),
+            nick = authRepository.getAll().requireTwitchHandle(),
             prefix = '!',
             retain_cache = True,
             token = authRepository.getAll().requireTwitchIrcAuthToken(),
@@ -581,7 +581,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 usersRepository = usersRepository
             )
 
-        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireNick()}')
+        self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
     async def event_channel_join_failure(self, channel: str):
         userId = await self.__userIdsRepository.fetchUserId(channel)
