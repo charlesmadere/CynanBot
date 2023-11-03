@@ -52,7 +52,7 @@ from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
 from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
-from CynanBotCommon.tts.ttsManager import TtsManager
+from CynanBotCommon.tts.decTalkManager import DecTalkManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
@@ -243,14 +243,17 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 )
 
 if generalSettingsSnapshot.isTtsEnabled():
-    ttsManager = TtsManager(
+    ttsManager = DecTalkManager(
         backgroundTaskHelper = backgroundTaskHelper,
-        contentScanner = contentScanner,
+        ttsCommandBuilder = DecTalkCommandBuilder(
+            contentScanner = contentScanner,
+            timber = timber,
+            ttsSettingsRepository = ttsSettingsRepository
+        ),
         systemCommandHelper = SystemCommandHelper(
             timber = timber
         ),
         timber = timber,
-        ttsCommandBuilder = DecTalkCommandBuilder(),
         ttsSettingsRepository = ttsSettingsRepository
     )
 
