@@ -26,7 +26,8 @@ from CynanBotCommon.language.languagesRepository import LanguagesRepository
 from CynanBotCommon.language.translationHelper import TranslationHelper
 from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
-from CynanBotCommon.location.locationsRepository import LocationsRepository
+from CynanBotCommon.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
 from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
@@ -671,7 +672,7 @@ class ClearCachesCommand(AbsCommand):
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
-        locationsRepository: Optional[LocationsRepository],
+        locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         timber: TimberInterface,
@@ -695,7 +696,7 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepository):
+        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')

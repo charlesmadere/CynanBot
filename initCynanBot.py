@@ -443,7 +443,7 @@ bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInte
 triviaGameControllersRepository = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    twitchTokensRepositoryInterface = twitchTokensRepository,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(

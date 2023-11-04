@@ -108,7 +108,7 @@ cutenessRepository = CutenessRepository(
     backingDatabase = backingDatabase,
     userIdsRepository = userIdsRepository
 )
-bannedWordsRepositoryInterface: BannedWordsRepositoryInterface = BannedWordsRepository(
+bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
     timber = timber
 )
 triviaAnswerCompiler = TriviaAnswerCompiler(
@@ -143,7 +143,7 @@ bannedTriviaIdsRepository = BannedTriviaIdsRepository(
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaContentScanner = TriviaContentScanner(
-    bannedWordsRepository = bannedWordsRepositoryInterface,
+    bannedWordsRepository = bannedWordsRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
