@@ -55,7 +55,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         jsonContents[handle] = dict()
 
-        async with aiofiles.open(self.__usersFile, mode = 'w') as file:
+        async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
             await file.write(jsonString)
 
@@ -379,7 +379,7 @@ class UsersRepository(UsersRepositoryInterface):
         if not await aiofiles.ospath.exists(self.__usersFile):
             raise FileNotFoundError(f'Users repository file not found: \"{self.__usersFile}\"')
 
-        async with aiofiles.open(self.__usersFile, mode = 'r') as file:
+        async with aiofiles.open(self.__usersFile, mode = 'r', encoding = 'utf-8') as file:
             data = await file.read()
             jsonContents = json.loads(data)
 
@@ -420,7 +420,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         jsonContents[preExistingHandle]['enabled'] = enabled
 
-        async with aiofiles.open(self.__usersFile, mode = 'w') as file:
+        async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
             await file.write(jsonString)
 
