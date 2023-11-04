@@ -16,9 +16,12 @@ from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBotCommon.contentScanner.contentScanner import ContentScanner
 from CynanBotCommon.contentScanner.contentScannerInterface import \
     ContentScannerInterface
-from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
-    CutenessRepositoryInterface
+from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
+from CynanBotCommon.emojiHelper.emojiHelperInterface import \
+    EmojiHelperInterface
+from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
+from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
+    EmojiRepositoryInterface
 from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
 from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
@@ -185,9 +188,12 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
-cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
-    backingDatabase = backingDatabase,
-    userIdsRepository = userIdsRepository
+emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+    emojiJsonReader = JsonFileReader('CynanBotCommon/emojiHelper/emojiRepository.json'),
+    timber = timber
+)
+emojiHelper: EmojiHelperInterface = EmojiHelper(
+    emojiRepository = emojiRepository
 )
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
@@ -247,6 +253,7 @@ if generalSettingsSnapshot.isTtsEnabled():
         backgroundTaskHelper = backgroundTaskHelper,
         ttsCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
+            emojiHelper = emojiHelper,
             timber = timber,
             ttsSettingsRepository = ttsSettingsRepository
         ),
@@ -277,7 +284,7 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatLogger = None,
-    cutenessRepository = cutenessRepository,
+    cutenessRepository = None,
     cutenessUtils = None,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
