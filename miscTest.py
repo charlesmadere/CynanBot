@@ -101,7 +101,7 @@ eventLoop = asyncio.get_event_loop()
 
 async def main():
     pass
-    result = await decTalkCommandBuilder.buildAndCleanMessage('shark 🦈 shark 😀 🤔')
+    result = await decTalkCommandBuilder.buildAndCleanMessage('hello 🦈😺 world')
     print(f'result=\"{result}\"')
     pass
 
