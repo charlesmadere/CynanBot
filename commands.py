@@ -3732,7 +3732,7 @@ class WeatherCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        locationsRepository: LocationsRepository,
+        locationsRepository: LocationsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
@@ -3741,7 +3741,7 @@ class WeatherCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(locationsRepository, LocationsRepository):
+        elif not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -3755,7 +3755,7 @@ class WeatherCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__locationsRepository: LocationsRepository = locationsRepository
+        self.__locationsRepository: LocationsRepositoryInterface = locationsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
