@@ -159,6 +159,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from triviaUtils import TriviaUtils
 from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from twitch.channelJoinEventType import ChannelJoinEventType
 from twitch.channelJoinHelper import ChannelJoinHelper
@@ -172,6 +173,7 @@ from twitch.twitchChannelPointRedemptionHandler import \
 from twitch.twitchChannelProvider import TwitchChannelProvider
 from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchConfiguration import TwitchConfiguration
+from twitch.twitchRaidHandler import TwitchRaidHandler
 from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from twitch.twitchUtils import TwitchUtils
 from twitch.twitchWebsocketDataBundleHandler import \
@@ -892,6 +894,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
             cheerHandler: Optional[AbsTwitchCheerHandler] = None
+            raidHandler: Optional[AbsTwitchRaidHandler] = None
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
 
             if generalSettings.isTtsEnabled() and self.__ttsManager is not None:
@@ -901,6 +904,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     triviaGameMachine = self.__triviaGameMachine,
                     ttsManager = self.__ttsManager,
                     twitchChannelProvider = self
+                )
+
+                raidHandler = TwitchRaidHandler(
+                    timber = self.__timber
                 )
 
                 subscriptionHandler = TwitchSubscriptionHandler(
@@ -926,6 +933,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     userIdsRepository = self.__userIdsRepository
                 ),
                 cheerHandler = cheerHandler,
+                raidHandler = raidHandler,
                 subscriptionHandler = subscriptionHandler,
                 userIdsRepository = self.__userIdsRepository,
                 usersRepository = self.__usersRepository

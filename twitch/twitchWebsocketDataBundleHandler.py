@@ -16,6 +16,7 @@ from CynanBotCommon.users.usersRepositoryInterface import \
 from twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
 from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 
 
@@ -26,6 +27,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         timber: TimberInterface,
         channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
         cheerHandler: Optional[AbsTwitchCheerHandler],
+        raidHandler: Optional[AbsTwitchRaidHandler],
         subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -36,6 +38,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+        elif raidHandler is not None and not isinstance(raidHandler, AbsTwitchRaidHandler):
+            raise ValueError(f'raidHandler argument is malformed: \"{raidHandler}\"')
         elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
             raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -46,6 +50,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__timber: TimberInterface = timber
         self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
         self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
+        self.__raidHandler: Optional[AbsTwitchRaidHandler] = raidHandler
         self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -55,6 +60,9 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isCheerType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHEER
+
+    async def __isRaidType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+        return subscriptionType is WebsocketSubscriptionType.RAID
 
     async def __isSubscriptionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
         return subscriptionType is WebsocketSubscriptionType.SUBSCRIBE \
@@ -125,6 +133,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
             if cheerHandler is not None:
                 await cheerHandler.onNewCheer(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
+        elif await self.__isRaidType(subscriptionType):
+            raidHandler = self.__raidHandler
+
+            if raidHandler is not None:
+                await raidHandler.onNewRaid(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
