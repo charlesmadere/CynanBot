@@ -907,7 +907,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 )
 
                 raidHandler = TwitchRaidHandler(
-                    timber = self.__timber
+                    timber = self.__timber,
+                    ttsManager = self.__ttsManager
                 )
 
                 subscriptionHandler = TwitchSubscriptionHandler(

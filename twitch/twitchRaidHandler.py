@@ -1,5 +1,9 @@
+from typing import Optional
+
 import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
+from CynanBotCommon.tts.ttsEvent import TtsEvent
+from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.users.userInterface import UserInterface
@@ -8,11 +12,18 @@ from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 
 class TwitchRaidHandler(AbsTwitchRaidHandler):
 
-    def __init__(self, timber: TimberInterface):
+    def __init__(
+        self,
+        timber: TimberInterface,
+        ttsManager: Optional[TtsManagerInterface]
+    ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
+            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
 
         self.__timber: TimberInterface = timber
+        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
 
     async def onNewRaid(
         self,
@@ -47,5 +58,12 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         self.__timber.log('TwitchRaidHandler', f'\"{toUserLogin}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
-        # TODO
+        if self.__ttsManager is not None:
+            await self.__ttsManager.submitTtsEvent(TtsEvent(
+                message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
+                twitchChannel = user.getHandle(),
+                userId = fromUserId,
+                userName = fromUserLogin
+            ))
+
         pass
