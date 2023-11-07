@@ -3505,7 +3505,8 @@ class TtsCommand(AbsCommand):
             twitchChannel = user.getHandle(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName(),
-            donation = None
+            donation = None,
+            raidInfo = None
         ))
 
         self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

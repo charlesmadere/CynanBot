@@ -206,5 +206,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             twitchChannel = user.getHandle(),
             userId = redemptionUserId,
             userName = redemptionUserName,
-            donation = donation
+            donation = donation,
+            raidInfo = None
         ))

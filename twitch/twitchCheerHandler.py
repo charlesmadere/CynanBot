@@ -154,5 +154,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             twitchChannel = user.getHandle(),
             userId = redemptionUserId,
             userName = redemptionUserLogin,
-            donation = donation
+            donation = donation,
+            raidInfo = None
         ))

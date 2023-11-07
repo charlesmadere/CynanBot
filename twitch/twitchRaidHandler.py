@@ -4,6 +4,7 @@ import CynanBotCommon.utils as utils
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBotCommon.tts.ttsRaidInfo import TtsRaidInfo
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
 from CynanBotCommon.users.userInterface import UserInterface
@@ -58,12 +59,43 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         self.__timber.log('TwitchRaidHandler', f'\"{toUserLogin}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
-        if self.__ttsManager is not None:
-            await self.__ttsManager.submitTtsEvent(TtsEvent(
-                message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
-                twitchChannel = user.getHandle(),
-                userId = fromUserId,
-                userName = fromUserLogin
-            ))
+        await self.__processTtsEvent(
+            viewers = viewers,
+            userId = fromUserId,
+            fromUserName = fromUserName,
+            user = user
+        )
 
-        pass
+    async def __processTtsEvent(
+        self,
+        viewers: int,
+        userId: str,
+        fromUserName: str,
+        user: UserInterface
+    ):
+        if not utils.isValidInt(viewers):
+            raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+        elif not utils.isValidStr(fromUserName):
+            raise ValueError(f'fromUserName argument is malformed: \"{fromUserName}\"')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__ttsManager is None:
+            return
+        elif not user.isTtsEnabled():
+            return
+        elif viewers < 1:
+            return
+
+        raidInfo = TtsRaidInfo(viewers = viewers)
+
+        self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
+            twitchChannel = user.getHandle(),
+            userId = userId,
+            userName = fromUserName,
+            donation = None,
+            raidInfo = raidInfo
+        ))
