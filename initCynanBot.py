@@ -671,7 +671,6 @@ if generalSettingsSnapshot.isTtsEnabled():
             ttsSettingsRepository = ttsSettingsRepository
         ),
         systemCommandHelper = SystemCommandHelper(
-            backgroundTaskHelper = backgroundTaskHelper,
             timber = timber
         ),
         timber = timber,
