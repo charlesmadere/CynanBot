@@ -4,6 +4,7 @@ import logging
 from typing import Optional
 
 from administratorProvider import AdministratorProvider
+from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from authRepository import AuthRepository
 from cynanBot import CynanBot
 from CynanBotCommon.administratorProviderInterface import \
@@ -54,8 +55,9 @@ from CynanBotCommon.systemCommandHelper.systemCommandHelper import \
 from CynanBotCommon.timber.timber import Timber
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
-from CynanBotCommon.tts.decTalkManager import DecTalkManager
+from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
+    DecTalkCommandBuilder
+from CynanBotCommon.tts.decTalk.decTalkManager import DecTalkManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
@@ -251,6 +253,10 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager = DecTalkManager(
         backgroundTaskHelper = backgroundTaskHelper,
+        decTalkFileManager = DecTalkFileManager(
+            backgroundTaskHelper = backgroundTaskHelper,
+            timber = timber
+        ),
         ttsCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
             emojiHelper = emojiHelper,

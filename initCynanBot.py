@@ -134,6 +134,7 @@ from CynanBotCommon.trivia.triviaRepositories.funtoonTriviaQuestionRepository im
     FuntoonTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
+from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBotCommon.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -170,8 +171,9 @@ from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
 from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
-from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
-from CynanBotCommon.tts.decTalkManager import DecTalkManager
+from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
+    DecTalkCommandBuilder
+from CynanBotCommon.tts.decTalk.decTalkManager import DecTalkManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
@@ -664,6 +666,10 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager = DecTalkManager(
         backgroundTaskHelper = backgroundTaskHelper,
+        decTalkFileManager = DecTalkFileManager(
+            backgroundTaskHelper = backgroundTaskHelper,
+            timber = timber
+        ),
         ttsCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
             emojiHelper = emojiHelper,
