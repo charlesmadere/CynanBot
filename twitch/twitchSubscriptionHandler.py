@@ -1,6 +1,8 @@
 from typing import Optional
 
 import CynanBotCommon.utils as utils
+from CynanBotCommon.administratorProviderInterface import \
+    AdministratorProviderInterface
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -11,8 +13,12 @@ from CynanBotCommon.tts.ttsEvent import TtsEvent
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from CynanBotCommon.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
+from CynanBotCommon.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBotCommon.users.userInterface import UserInterface
 from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from twitch.twitchChannelProvider import TwitchChannelProvider
@@ -22,13 +28,18 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
+        administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         ttsManager: Optional[TtsManagerInterface],
-        twitchChannelProvider: TwitchChannelProvider
+        twitchChannelProvider: TwitchChannelProvider,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
@@ -38,12 +49,31 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+
+    async def __getTwitchAccessToken(self, user: UserInterface) -> Optional[str]:
+        if not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if await self.__twitchTokensRepository.hasAccessToken(user.getHandle()):
+            await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getHandle())
+            return await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        else:
+            administratorUserName = await self.__administratorProvider.getAdministratorUserName()
+            await self.__twitchTokensRepository.validateAndRefreshAccessToken(administratorUserName)
+            return await self.__twitchTokensRepository.getAccessToken(administratorUserName)
 
     async def onNewSubscription(
         self,
@@ -69,17 +99,17 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubTotal = event.getCommunitySubTotal()
         total = event.getTotal()
         message = event.getMessage()
-        redemptionUserId = event.getUserId()
-        redemptionUserLogin = event.getUserLogin()
-        redemptionUserName = event.getUserName()
+        userId = event.getUserId()
         userInput = event.getUserInput()
+        userLogin = event.getUserLogin()
+        userName = event.getUserName()
         tier = event.getTier()
 
-        if not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName) or tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (isAnonymous={isAnonymous}) (isGift={isGift}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\") (tier={tier})')
+        if tier is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (isAnonymous={isAnonymous}) (isGift={isGift}) (communitySubTotal={communitySubTotal}) (total={total}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\") (userInput=\"{userInput}\") (tier=\"{tier}\")')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: ({event=}) (channel=\"{user.getHandle()}\") ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -94,9 +124,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isAnonymous = isAnonymous,
                 isGift = isGift,
                 message = message,
-                redemptionUserId = redemptionUserId,
-                redemptionUserLogin = redemptionUserLogin,
-                redemptionUserName = redemptionUserName,
+                userId = userId,
+                userLogin = userLogin,
+                userName = userName,
                 userInput = userInput,
                 tier = tier,
                 user = user
@@ -154,10 +184,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         isAnonymous: Optional[bool],
         isGift: Optional[bool],
         message: Optional[str],
-        redemptionUserId: str,
-        redemptionUserLogin: str,
-        redemptionUserName: str,
+        userId: Optional[str],
         userInput: Optional[str],
+        userLogin: Optional[str],
+        userName: Optional[str],
         tier: TwitchSubscriberTier,
         user: UserInterface
     ):
@@ -167,14 +197,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'isGift argument is malformed: \"{isGift}\"')
         elif message is not None and not isinstance(message, str):
             raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(redemptionUserId):
-            raise ValueError(f'redemptionUserId argument is malformed: \"{redemptionUserId}\"')
-        elif not utils.isValidStr(redemptionUserLogin):
-            raise ValueError(f'redemptionUserLogin argument is malformed: \"{redemptionUserLogin}\"')
-        elif not utils.isValidStr(redemptionUserName):
-            raise ValueError(f'redemptionUserName argument is malformed: \"{redemptionUserName}\"')
+        elif userId is not None and not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif userInput is not None and not isinstance(userInput, str):
             raise ValueError(f'userInput argument is malformed: \"{userInput}\"')
+        elif userLogin is not None and not utils.isValidStr(userLogin):
+            raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
+        elif userName is not None and not utils.isValidStr(userName):
+            raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
@@ -195,6 +225,18 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if isGift is None:
             isGift = False
 
+        actualUserId = userId
+        actualUserName = userName
+        if not utils.isValidStr(actualUserId) or not utils.isValidStr(userName):
+            if isAnonymous:
+                actualUserId = await self.__userIdsRepository.fetchAnonymousUserId()
+                actualUserName = await self.__userIdsRepository.fetchAnonymousUserName(
+                    twitchAccessToken = await self.__getTwitchAccessToken(user)
+                )
+            else:
+                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({userId=}) ({userName=})')
+                return
+
         donation: TtsDonation = TtsSubscriptionDonation(
             isAnonymous = isAnonymous,
             isGift = isGift,
@@ -204,8 +246,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__ttsManager.submitTtsEvent(TtsEvent(
             message = actualMessage,
             twitchChannel = user.getHandle(),
-            userId = redemptionUserId,
-            userName = redemptionUserName,
+            userId = actualUserId,
+            userName = actualUserName,
             donation = donation,
             raidInfo = None
         ))

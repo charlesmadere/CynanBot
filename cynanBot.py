@@ -350,6 +350,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
@@ -363,6 +364,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -912,11 +914,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 )
 
                 subscriptionHandler = TwitchSubscriptionHandler(
+                    administratorProvider = self.__administratorProvider,
                     timber = self.__timber,
                     triviaGameBuilder = self.__triviaGameBuilder,
                     triviaGameMachine = self.__triviaGameMachine,
                     ttsManager = self.__ttsManager,
-                    twitchChannelProvider = self
+                    twitchChannelProvider = self,
+                    twitchTokensRepository = self.__twitchTokensRepository,
+                    userIdsRepository = self.__userIdsRepository
                 )
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
