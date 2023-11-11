@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiofiles = "*"
+aiohttp = "*"
+aiosqlite = "*"
+asyncpg = "*"
+emoji = "*"
+flake8 = "*"
+google-cloud-translate = "*"
+lxml = "*"
+mock = "*"
+num2words = "*"
+psutil = "*"
+polyleven = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytz = "*"
+requests = "*"
+roman = "*"
+twitchio = "*"
+websockets = "*"
+xmltodict = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
