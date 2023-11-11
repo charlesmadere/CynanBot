@@ -19,7 +19,8 @@ from CynanBotCommon.storage.jsonStaticReader import JsonStaticReader
 from CynanBotCommon.storage.linesStaticReader import LinesStaticReader
 from CynanBotCommon.timber.timberInterface import TimberInterface
 from CynanBotCommon.timber.timberStub import TimberStub
-from CynanBotCommon.tts.decTalkCommandBuilder import DecTalkCommandBuilder
+from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
+    DecTalkCommandBuilder
 from CynanBotCommon.tts.ttsCommandBuilderInterface import \
     TtsCommandBuilderInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
