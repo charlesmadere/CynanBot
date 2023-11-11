@@ -134,7 +134,6 @@ from CynanBotCommon.trivia.triviaRepositories.funtoonTriviaQuestionRepository im
     FuntoonTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
-from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBotCommon.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBotCommon.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -173,6 +172,7 @@ from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
 from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
 from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
     DecTalkCommandBuilder
+from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBotCommon.tts.decTalk.decTalkManager import DecTalkManager
 from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
