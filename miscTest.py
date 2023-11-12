@@ -1,109 +1,120 @@
 import asyncio
 from typing import Any, Optional
 
-from CynanBotCommon.contentScanner.bannedWordsRepository import \
-    BannedWordsRepository
-from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
-from CynanBotCommon.contentScanner.contentScanner import ContentScanner
-from CynanBotCommon.contentScanner.contentScannerInterface import \
-    ContentScannerInterface
-from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
-from CynanBotCommon.emojiHelper.emojiHelperInterface import \
-    EmojiHelperInterface
-from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
-from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
-    EmojiRepositoryInterface
-from CynanBotCommon.storage.jsonFileReader import JsonFileReader
-from CynanBotCommon.storage.jsonStaticReader import JsonStaticReader
-from CynanBotCommon.storage.linesStaticReader import LinesStaticReader
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.timber.timberStub import TimberStub
-from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
-    DecTalkCommandBuilder
-from CynanBotCommon.tts.ttsCommandBuilderInterface import \
-    TtsCommandBuilderInterface
-from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
-from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
-    TtsSettingsRepositoryInterface
+import CynanBotCommon.utils as utils
 
-timber: TimberInterface = TimberStub()
+# from CynanBotCommon.contentScanner.bannedWordsRepository import \
+#     BannedWordsRepository
+# from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+#     BannedWordsRepositoryInterface
+# from CynanBotCommon.contentScanner.contentScanner import ContentScanner
+# from CynanBotCommon.contentScanner.contentScannerInterface import \
+#     ContentScannerInterface
+# from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
+# from CynanBotCommon.emojiHelper.emojiHelperInterface import \
+#     EmojiHelperInterface
+# from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
+# from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
+#     EmojiRepositoryInterface
+# from CynanBotCommon.storage.jsonFileReader import JsonFileReader
+# from CynanBotCommon.storage.jsonStaticReader import JsonStaticReader
+# from CynanBotCommon.storage.linesStaticReader import LinesStaticReader
+# from CynanBotCommon.timber.timberInterface import TimberInterface
+# from CynanBotCommon.timber.timberStub import TimberStub
+# from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
+#     DecTalkCommandBuilder
+# from CynanBotCommon.tts.ttsCommandBuilderInterface import \
+#     TtsCommandBuilderInterface
+# from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
+# from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+#     TtsSettingsRepositoryInterface
 
-bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesStaticReader(
-        lines = [ 'hydroxychloroquine' ]
-    ),
-    timber = timber
-)
+# timber: TimberInterface = TimberStub()
 
-contentScanner: ContentScannerInterface = ContentScanner(
-    bannedWordsRepository = bannedWordsRepository,
-    timber = timber
-)
+# bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
+#     bannedWordsLinesReader = LinesStaticReader(
+#         lines = [ 'hydroxychloroquine' ]
+#     ),
+#     timber = timber
+# )
 
-emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonStaticReader(
-        jsonContents = {
-            'emojis': [
-                {
-                    'code': [
-                        "1F600"
-                    ],
-                    'emoji': '😀',
-                    'name': 'grinning face',
-                    'category': 'Smileys & Emotion',
-                    'subcategory': 'face-smiling',
-                    'support': {
-                        'apple': True,
-                        'google': True,
-                        'windows': True
-                    }
-                },
-                {
-                    'code': [
-                        "1F988"
-                    ],
-                    'emoji': '🦈',
-                    'name': 'shark',
-                    'category': 'Animals & Nature',
-                    'subcategory': 'animal-marine',
-                    'support': {
-                        'apple': True,
-                        'google': True,
-                        'windows': True
-                    }
-                }
-            ]
-        }
-    ),
-    timber = timber
-)
+# contentScanner: ContentScannerInterface = ContentScanner(
+#     bannedWordsRepository = bannedWordsRepository,
+#     timber = timber
+# )
 
-emojiHelper: EmojiHelperInterface = EmojiHelper(
-    emojiRepository = emojiRepository
-)
+# emojiRepository: EmojiRepositoryInterface = EmojiRepository(
+#     emojiJsonReader = JsonStaticReader(
+#         jsonContents = {
+#             'emojis': [
+#                 {
+#                     'code': [
+#                         "1F600"
+#                     ],
+#                     'emoji': '😀',
+#                     'name': 'grinning face',
+#                     'category': 'Smileys & Emotion',
+#                     'subcategory': 'face-smiling',
+#                     'support': {
+#                         'apple': True,
+#                         'google': True,
+#                         'windows': True
+#                     }
+#                 },
+#                 {
+#                     'code': [
+#                         "1F988"
+#                     ],
+#                     'emoji': '🦈',
+#                     'name': 'shark',
+#                     'category': 'Animals & Nature',
+#                     'subcategory': 'animal-marine',
+#                     'support': {
+#                         'apple': True,
+#                         'google': True,
+#                         'windows': True
+#                     }
+#                 }
+#             ]
+#         }
+#     ),
+#     timber = timber
+# )
 
-ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    settingsJsonReader = JsonStaticReader(
-        jsonContents = {
-            'isEnabled': True
-        }
-    )
-)
+# emojiHelper: EmojiHelperInterface = EmojiHelper(
+#     emojiRepository = emojiRepository
+# )
 
-decTalkCommandBuilder: TtsCommandBuilderInterface = DecTalkCommandBuilder(
-    contentScanner = contentScanner,
-    emojiHelper = emojiHelper,
-    timber = timber,
-    ttsSettingsRepository = ttsSettingsRepository
-)
+# ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+#     settingsJsonReader = JsonStaticReader(
+#         jsonContents = {
+#             'isEnabled': True
+#         }
+#     )
+# )
 
-eventLoop = asyncio.get_event_loop()
+# decTalkCommandBuilder: TtsCommandBuilderInterface = DecTalkCommandBuilder(
+#     contentScanner = contentScanner,
+#     emojiHelper = emojiHelper,
+#     timber = timber,
+#     ttsSettingsRepository = ttsSettingsRepository
+# )
 
-async def main():
-    pass
-    result = await decTalkCommandBuilder.buildAndCleanMessage('hello 🦈😺 world')
-    print(f'result=\"{result}\"')
-    pass
+# eventLoop = asyncio.get_event_loop()
 
-eventLoop.run_until_complete(main())
+# async def main():
+#     pass
+#     result = await decTalkCommandBuilder.buildAndCleanMessage('hello 🦈😺 world')
+#     print(f'result=\"{result}\"')
+#     pass
+
+# eventLoop.run_until_complete(main())
+
+x = utils.getDateTimeFromStr('2023-11-11T17:13:41Z+00:00')
+print(x)
+
+y = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z')
+print(y)
+
+z = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z+00:00')
+print(z)
