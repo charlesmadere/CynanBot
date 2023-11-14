@@ -43,7 +43,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameBuilderInterface):
+        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
