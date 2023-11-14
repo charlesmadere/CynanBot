@@ -899,30 +899,29 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raidHandler: Optional[AbsTwitchRaidHandler] = None
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
 
-            if generalSettings.isTtsEnabled() and self.__ttsManager is not None:
-                cheerHandler = TwitchCheerHandler(
-                    timber = self.__timber,
-                    triviaGameBuilder = self.__triviaGameBuilder,
-                    triviaGameMachine = self.__triviaGameMachine,
-                    ttsManager = self.__ttsManager,
-                    twitchChannelProvider = self
-                )
+            cheerHandler = TwitchCheerHandler(
+                timber = self.__timber,
+                triviaGameBuilder = self.__triviaGameBuilder,
+                triviaGameMachine = self.__triviaGameMachine,
+                ttsManager = self.__ttsManager,
+                twitchChannelProvider = self
+            )
 
-                raidHandler = TwitchRaidHandler(
-                    timber = self.__timber,
-                    ttsManager = self.__ttsManager
-                )
+            raidHandler = TwitchRaidHandler(
+                timber = self.__timber,
+                ttsManager = self.__ttsManager
+            )
 
-                subscriptionHandler = TwitchSubscriptionHandler(
-                    administratorProvider = self.__administratorProvider,
-                    timber = self.__timber,
-                    triviaGameBuilder = self.__triviaGameBuilder,
-                    triviaGameMachine = self.__triviaGameMachine,
-                    ttsManager = self.__ttsManager,
-                    twitchChannelProvider = self,
-                    twitchTokensRepository = self.__twitchTokensRepository,
-                    userIdsRepository = self.__userIdsRepository
-                )
+            subscriptionHandler = TwitchSubscriptionHandler(
+                administratorProvider = self.__administratorProvider,
+                timber = self.__timber,
+                triviaGameBuilder = self.__triviaGameBuilder,
+                triviaGameMachine = self.__triviaGameMachine,
+                ttsManager = self.__ttsManager,
+                twitchChannelProvider = self,
+                twitchTokensRepository = self.__twitchTokensRepository,
+                userIdsRepository = self.__userIdsRepository
+            )
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 timber = self.__timber,
