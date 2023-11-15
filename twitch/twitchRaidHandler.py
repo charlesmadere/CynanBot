@@ -42,22 +42,22 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         event = dataBundle.getPayload().getEvent()
 
         if event is None:
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         fromUserId = event.getFromBroadcasterUserId()
-        fromUserLogin = event.getBroadcasterUserLogin()
-        fromUserName = event.getBroadcasterUserName()
+        fromUserLogin = event.getFromBroadcasterUserLogin()
+        fromUserName = event.getFromBroadcasterUserName()
         toUserId = event.getToBroadcasterUserId()
-        toUserLogin = event.getBroadcasterUserLogin()
+        toUserLogin = event.getToBroadcasterUserLogin()
         toUserName = event.getToBroadcasterUserName()
         viewers = event.getViewers()
 
         if not utils.isValidStr(fromUserId) or not utils.isValidStr(fromUserLogin) or not utils.isValidStr(fromUserName) or not utils.isValidStr(toUserId) or not utils.isValidStr(toUserLogin) or not utils.isValidStr(toUserName) or not utils.isValidInt(viewers):
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({fromUserId=}) ({fromUserLogin=}) ({fromUserName=}) ({toUserId=}) ({toUserLogin=}) ({toUserName=}) ({viewers=})')
             return
 
-        self.__timber.log('TwitchRaidHandler', f'\"{toUserLogin}\" received raid of {viewers} from \"{fromUserLogin}\"')
+        self.__timber.log('TwitchRaidHandler', f'\"{user.getHandle()}\" received raid of {viewers} from \"{fromUserLogin}\"')
 
         await self.__processTtsEvent(
             viewers = viewers,
@@ -75,6 +75,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     ):
         if not utils.isValidInt(viewers):
             raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
+        elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
+            raise ValueError(f'viewers argument is out of bounds: {viewers}')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(fromUserName):

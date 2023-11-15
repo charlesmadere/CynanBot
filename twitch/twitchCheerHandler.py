@@ -61,7 +61,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         event = dataBundle.getPayload().getEvent()
 
         if event is None:
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         bits = event.getBits()
@@ -71,10 +71,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         redemptionUserName = event.getUserName()
 
         if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName):
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (bits={bits}) (userId=\"{redemptionUserId}\") (userLogin=\"{redemptionUserLogin}\") (userName=\"{redemptionUserName}\")')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=})')
             return
 
-        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (event=\"{event}\") (channel=\"{user.getHandle()}\") (bits={bits}) (message=\"{message}\") (redemptionUserId=\"{redemptionUserId}\") (redemptionUserLogin=\"{redemptionUserLogin}\") (redemptionUserName=\"{redemptionUserName}\")')
+        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -91,7 +91,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-    async def __processSuperTriviaEvent(self, bits: int, user: UserInterface):
+    async def __processSuperTriviaEvent(
+        self,
+        bits: int,
+        user: UserInterface
+    ):
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():

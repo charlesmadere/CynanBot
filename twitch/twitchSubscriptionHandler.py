@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 import CynanBotCommon.utils as utils
@@ -91,7 +92,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         event = dataBundle.getPayload().getEvent()
 
         if event is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         isAnonymous = event.isAnonymous()
@@ -106,10 +107,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         tier = event.getTier()
 
         if tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: ({event=}) (channel=\"{user.getHandle()}\") ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -141,9 +142,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if communitySubTotal is not None and not utils.isValidInt(communitySubTotal):
             raise ValueError(f'communitySubTotal argument is malformed: \"{communitySubTotal}\"')
+        elif communitySubTotal is not None and (communitySubTotal < 0 or communitySubTotal > utils.getIntMaxSafeSize()):
+            raise ValueError(f'communitySubTotal argument is out of bounds: {communitySubTotal}')
         elif total is not None and not utils.isValidInt(total):
             raise ValueError(f'total argument is malformed: \"{total}\"')
-        elif total < 1 or total > utils.getIntMaxSafeSize():
+        elif total is not None and (total < 1 or total > utils.getIntMaxSafeSize()):
             raise ValueError(f'total argument is out of bounds: {total}')
         elif not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
@@ -166,7 +169,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if not utils.isValidInt(numberOfSubs) or numberOfSubs < 1:
             return
 
-        numberOfGames = 1
+        numberOfGames = math.floor(numberOfSubs / user.getSuperTriviaSubscribeTriggerAmount())
 
         if numberOfGames < 1:
             return
