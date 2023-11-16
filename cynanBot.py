@@ -900,6 +900,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
 
             cheerHandler = TwitchCheerHandler(
+                cheerActionHelper = None,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,

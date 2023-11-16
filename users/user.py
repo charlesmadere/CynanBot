@@ -11,6 +11,7 @@ class User(UserInterface):
 
     def __init__(
         self,
+        areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
         isCatJamMessageEnabled: bool,
         isChatBandEnabled: bool,
@@ -74,7 +75,9 @@ class User(UserInterface):
         pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]],
         timeZones: Optional[List[tzinfo]]
     ):
-        if not utils.isValidBool(areRecurringActionsEnabled):
+        if not utils.isValidBool(areCheerActionsEnabled):
+            raise ValueError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
+        elif not utils.isValidBool(areRecurringActionsEnabled):
             raise ValueError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(isCatJamMessageEnabled):
             raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
@@ -189,6 +192,7 @@ class User(UserInterface):
         elif twitter is not None and not isinstance(twitter, str):
             raise ValueError(f'twitter argument is malformed: \"{twitter}\"')
 
+        self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
@@ -251,6 +255,9 @@ class User(UserInterface):
         self.__cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]] = pkmnCatchBoosterPacks
         self.__timeZones: Optional[List[tzinfo]] = timeZones
+
+    def areCheerActionsEnabled(self) -> bool:
+        return self.__areCheerActionsEnabled
 
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled

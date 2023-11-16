@@ -95,6 +95,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, Dict):
             raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
 
+        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
@@ -193,6 +194,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
         user = User(
+            areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isChatBandEnabled = isChatBandEnabled,
