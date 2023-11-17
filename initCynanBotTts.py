@@ -290,6 +290,8 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatLogger = None,
+    cheerActionHelper = None,
+    cheerActionsRepository = None,
     cutenessRepository = None,
     cutenessUtils = None,
     funtoonRepository = funtoonRepository,

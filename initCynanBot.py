@@ -706,6 +706,8 @@ cynanBot = CynanBot(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
     ),
+    cheerActionHelper = None,
+    cheerActionsRepository = None,
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
     funtoonRepository = funtoonRepository,
