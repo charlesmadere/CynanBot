@@ -10,6 +10,9 @@ from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBotCommon.cheerActions.cheerAction import CheerAction
+from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+    CheerActionHelperInterface
 from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBotCommon.clearable import Clearable
@@ -1555,6 +1558,77 @@ class GetBannedTriviaControllersCommand(AbsCommand):
         controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
         await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameBannedControllers(controllers))
         self.__timber.log('GetBannedTriviaControllersCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
+class GetCheerActionsCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        cheerActionHelper: CheerActionHelperInterface,
+        cheerActionsRepository: CheerActionsRepositoryInterface,
+        timber: TimberInterface,
+        twitchUtils: TwitchUtils,
+        userIdsRepository: UserIdsRepositoryInterface,
+        usersRepository: UsersRepositoryInterface,
+        delimiter: str = '; '
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(cheerActionHelper, CheerActionHelperInterface):
+            raise ValueError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__cheerActionHelper: CheerActionHelperInterface = cheerActionHelper
+        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__delimiter: str = delimiter
+
+    async def __actionsToStr(self, actions: List[CheerAction]) -> str:
+        if not isinstance(actions, List):
+            raise ValueError(f'actions argument is malformed: \"{actions}\"')
+
+        if len(actions) == 0:
+            return f'ⓘ You have no cheer actions'
+
+        cheerActionStrings: List[str] = list()
+
+        for action in actions:
+            if action.getDurationSeconds() is None:
+                cheerActionStrings.append(f'bits={action.getAmount()}, duration={self.__cheerActionHelper.getDefaultTimeoutDurationSeconds()}')
+            else:
+                cheerActionStrings.append(f'bits={action.getAmount()}, duration={action.getDurationSeconds()}')
+
+        cheerActionsString = self.__delimiter.join(cheerActionStrings)
+        return f'ⓘ Your cheer actions — {cheerActionsString}'
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+            self.__timber.log('GetCheerActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        actions = await self.__cheerActionsRepository.getActions(userId)
+        await self.__twitchUtils.safeSend(ctx, await self.__actionsToStr(actions))
+        self.__timber.log('GetCheerActionsCommand', f'Handled !getcheeractions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class GetGlobalTriviaControllersCommand(AbsCommand):
