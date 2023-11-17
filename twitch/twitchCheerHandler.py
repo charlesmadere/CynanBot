@@ -72,19 +72,20 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         bits = event.getBits()
         message = event.getMessage()
-        redemptionUserId = event.getUserId()
-        redemptionUserLogin = event.getUserLogin()
-        redemptionUserName = event.getUserName()
+        cheerUserId = event.getUserId()
+        cheerUserLogin = event.getUserLogin()
+        cheerUserName = event.getUserName()
 
-        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(redemptionUserId) or not utils.isValidStr(redemptionUserLogin) or not utils.isValidStr(redemptionUserName):
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=})')
+        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
             return
 
-        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({redemptionUserId=}) ({redemptionUserLogin=}) ({redemptionUserName=})')
+        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
 
         if user.areCheerActionsEnabled():
             await self.__processCheerAction(
                 bits = bits,
+                cheerUserId = cheerUserId,
                 message = message,
                 user = user
             )
@@ -99,14 +100,15 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             await self.__processTtsEvent(
                 bits = bits,
                 message = message,
-                redemptionUserId = redemptionUserId,
-                redemptionUserLogin = redemptionUserLogin,
+                cheerUserId = cheerUserId,
+                cheerUserLogin = cheerUserLogin,
                 user = user
             )
 
     async def __processCheerAction(
         self,
         bits: int,
+        cheerUserId: str,
         message: Optional[str],
         user: UserInterface
     ):
@@ -114,6 +116,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(cheerUserId):
+            raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif message is not None and not isinstance(message, str):
             raise ValueError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(user, UserInterface):
@@ -124,6 +128,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         await self.__cheerActionHelper.handleCheerAction(
             bits = bits,
+            cheerUserId = cheerUserId,
             message = message,
             user =  user
         )
@@ -163,21 +168,21 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     async def __processTtsEvent(
         self,
         bits: int,
+        cheerUserId: str,
+        cheerUserLogin: str,
         message: Optional[str],
-        redemptionUserId: str,
-        redemptionUserLogin: str,
         user: UserInterface
     ):
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(cheerUserId):
+            raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserLogin):
+            raise ValueError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
         elif message is not None and not isinstance(message, str):
             raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(redemptionUserId):
-            raise ValueError(f'redemptionUserId argument is malformed: \"{redemptionUserId}\"')
-        elif not utils.isValidStr(redemptionUserLogin):
-            raise ValueError(f'redemptionUserLogin argument is malformed: \"{redemptionUserLogin}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
@@ -193,8 +198,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         self.__ttsManager.submitTtsEvent(TtsEvent(
             message = message,
             twitchChannel = user.getHandle(),
-            userId = redemptionUserId,
-            userName = redemptionUserLogin,
+            userId = cheerUserId,
+            userName = cheerUserLogin,
             donation = donation,
             raidInfo = None
         ))

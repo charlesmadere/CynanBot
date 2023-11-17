@@ -39,6 +39,10 @@ from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+    CheerActionHelperInterface
+from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+    CheerActionsRepositoryInterface
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
@@ -198,6 +202,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         chatLogger: Optional[ChatLoggerInterface],
+        cheerActionHelper: Optional[CheerActionHelperInterface],
+        cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         cutenessRepository: Optional[CutenessRepositoryInterface],
         cutenessUtils: Optional[CutenessUtils],
         funtoonRepository: Optional[FuntoonRepositoryInterface],
@@ -269,6 +275,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
         elif chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+        elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
+            raise ValueError(f'cheerActionsHelper argument is malformed: \"{cheerActionHelper}\"')
+        elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtils):
@@ -353,6 +363,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
+        self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
@@ -377,7 +388,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -895,12 +906,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pubSubUtils.startPubSub()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
-            cheerHandler: Optional[AbsTwitchCheerHandler] = None
-            raidHandler: Optional[AbsTwitchRaidHandler] = None
-            subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = None
-
-            cheerHandler = TwitchCheerHandler(
-                cheerActionHelper = None,
+            cheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+                cheerActionHelper = self.__cheerActionHelper,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
@@ -908,12 +915,12 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 twitchChannelProvider = self
             )
 
-            raidHandler = TwitchRaidHandler(
+            raidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
                 timber = self.__timber,
                 ttsManager = self.__ttsManager
             )
 
-            subscriptionHandler = TwitchSubscriptionHandler(
+            subscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
                 administratorProvider = self.__administratorProvider,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
@@ -1148,6 +1155,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_addbannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addBannedTriviaControllerCommand.handleCommand(context)
+
+    @commands.command(name = 'addcheeraction')
+    async def command_addcheeraction(self, ctx: Context):
+        # TODO
+        pass
 
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):

@@ -10,6 +10,8 @@ from authRepository import AuthRepository
 from cutenessUtils import CutenessUtils
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+    CheerActionsRepositoryInterface
 from CynanBotCommon.clearable import Clearable
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
@@ -190,6 +192,50 @@ class AddBannedTriviaControllerCommand(AbsCommand):
         self.__timber.log('AddBannedTriviaControllerCommand', f'Handled !addbannedtriviacontroller command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {ctx.getTwitchChannelName()}')
 
 
+class AddCheerActionCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        cheerActionsRepository: CheerActionsRepositoryInterface,
+        timber: TimberInterface,
+        twitchUtils: TwitchUtils,
+        userIdsRepository: UserIdsRepositoryInterface,
+        usersRepository: UsersRepositoryInterface
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+            self.__timber.log('AddCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        # TODO
+        pass
+
+
 class AddGlobalTriviaControllerCommand(AbsCommand):
 
     def __init__(
@@ -221,7 +267,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if ctx.getAuthorId() != administrator:
+        if administrator != ctx.getAuthorId():
             self.__timber.log('AddGlobalTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -669,6 +715,7 @@ class ClearCachesCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         authRepository: AuthRepository,
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
+        cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
@@ -680,6 +727,7 @@ class ClearCachesCommand(AbsCommand):
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtils,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
@@ -690,6 +738,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
             raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -712,6 +762,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
@@ -725,8 +777,10 @@ class ClearCachesCommand(AbsCommand):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
         self.__clearables: List[Optional[Clearable]] = list()
+        self.__clearables.append(administratorProvider)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
+        self.__clearables.append(cheerActionsRepository)
         self.__clearables.append(funtoonTokensRepository)
         self.__clearables.append(generalSettingsRepository)
         self.__clearables.append(isLiveOnTwitchRepository)
@@ -736,6 +790,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchTokensRepository)
+        self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
         self.__clearables.append(weatherRepository)
         self.__clearables.append(wordOfTheDayRepository)
