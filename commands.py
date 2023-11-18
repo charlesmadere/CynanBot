@@ -13,6 +13,8 @@ from CynanBotCommon.administratorProviderInterface import \
 from CynanBotCommon.cheerActions.cheerAction import CheerAction
 from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
+from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
+    CheerActionIdGeneratorInterface
 from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBotCommon.clearable import Clearable
@@ -1383,6 +1385,80 @@ class CynanSourceCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+
+
+class DeleteCheerActionCommand(AbsCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        cheerActionIdGenerator: CheerActionIdGeneratorInterface,
+        cheerActionsRepository: CheerActionsRepositoryInterface,
+        timber: TimberInterface,
+        twitchUtils: TwitchUtils,
+        userIdsRepository: UserIdsRepositoryInterface,
+        usersRepository: UsersRepositoryInterface
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
+            raise ValueError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtils):
+            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__cheerActionIdGenerator: CheerActionIdGeneratorInterface = cheerActionIdGenerator
+        self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__timber: TimberInterface = timber
+        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def __actionToStr(self, action: CheerAction) -> str:
+        if not isinstance(action, CheerAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+
+        return f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}'
+
+    async def handleCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
+            self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        splits = utils.getCleanedSplits(ctx.getMessageContent())
+        if len(splits) < 2:
+            self.__timber.log('DeleteCheerActionCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            actionId = await self.__cheerActionIdGenerator.generateActionId()
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Action ID is necessary for the !deletecheeraction command. Example: !deletecheeraction {actionId}')
+            return
+
+        actionId = splits[1]
+
+        action = await self.__cheerActionsRepository.deleteAction(
+            actionId = splits[1],
+            userId = userId
+        )
+
+        if action is None:
+            self.__timber.log('DeleteCheerActionCommand', f'Cheer action ID {actionId} was attempted to be deleted by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but no corresponding cheer action was found')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Could not find any corresponding cheer action with ID \"{actionId}\"')
+            return
+
+        actionString = await self.__actionToStr(action)
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Deleted cheer action — {actionString}')
+        self.__timber.log('DeleteCheerActionCommand', f'Handled !deletecheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class DeleteTriviaAnswersCommand(AbsCommand):
