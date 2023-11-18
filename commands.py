@@ -1565,7 +1565,6 @@ class GetCheerActionsCommand(AbsCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        cheerActionHelper: CheerActionHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -1575,8 +1574,6 @@ class GetCheerActionsCommand(AbsCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise ValueError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -1591,7 +1588,6 @@ class GetCheerActionsCommand(AbsCommand):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__cheerActionHelper: CheerActionHelperInterface = cheerActionHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -1609,10 +1605,7 @@ class GetCheerActionsCommand(AbsCommand):
         cheerActionStrings: List[str] = list()
 
         for action in actions:
-            if action.getDurationSeconds() is None:
-                cheerActionStrings.append(f'bits={action.getAmount()}, duration={self.__cheerActionHelper.getDefaultTimeoutDurationSeconds()}')
-            else:
-                cheerActionStrings.append(f'bits={action.getAmount()}, duration={action.getDurationSeconds()}')
+            cheerActionStrings.append(f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}')
 
         cheerActionsString = self.__delimiter.join(cheerActionStrings)
         return f'ⓘ Your cheer actions — {cheerActionsString}'
