@@ -247,6 +247,8 @@ class AddCheerActionCommand(AbsCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
+        elif not user.areCheerActionsEnabled():
+            return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
@@ -1505,6 +1507,8 @@ class DeleteCheerActionCommand(AbsCommand):
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('DeleteCheerActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
+        elif not user.areCheerActionsEnabled():
+            return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
@@ -1762,6 +1766,8 @@ class GetCheerActionsCommand(AbsCommand):
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('GetCheerActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+        elif not user.areCheerActionsEnabled():
             return
 
         actions = await self.__cheerActionsRepository.getActions(userId)
