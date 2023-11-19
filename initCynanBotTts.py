@@ -82,8 +82,6 @@ from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
 from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
-from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
 from CynanBotCommon.users.userIdsRepository import UserIdsRepository
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -235,9 +233,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
             userIdsRepository = userIdsRepository,
             usersRepository = usersRepository
         ),
-        twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
-        subscriptionTypes = { WebsocketSubscriptionType.CHEER, WebsocketSubscriptionType.SUBSCRIBE, \
-            WebsocketSubscriptionType.SUBSCRIPTION_GIFT, WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE }
+        twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
     )
 
 
