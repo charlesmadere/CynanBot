@@ -250,7 +250,7 @@ class AddCheerActionCommand(AbsCommand):
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 3:
-            self.__timber.log('AddCheerActionCommand', f'Less than 3 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('AddCheerActionCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Two arguments are necessary (first bits, then timeout duration in seconds) for the !addcheeraction command. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
             return
 
