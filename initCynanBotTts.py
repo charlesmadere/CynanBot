@@ -9,6 +9,17 @@ from cynanBot import CynanBot
 from CynanBotCommon.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBotCommon.cheerActions.cheerActionHelper import CheerActionHelper
+from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+    CheerActionHelperInterface
+from CynanBotCommon.cheerActions.cheerActionIdGenerator import \
+    CheerActionIdGenerator
+from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
+    CheerActionIdGeneratorInterface
+from CynanBotCommon.cheerActions.cheerActionsRepository import \
+    CheerActionsRepository
+from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+    CheerActionsRepositoryInterface
 from CynanBotCommon.contentScanner.bannedWordsRepository import \
     BannedWordsRepository
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
@@ -268,6 +279,30 @@ if generalSettingsSnapshot.isTtsEnabled():
     )
 
 
+##########################################
+## Cheer Actions initialization section ##
+##########################################
+
+cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()
+
+cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
+    backingDatabase = backingDatabase,
+    cheerActionIdGenerator = cheerActionIdGenerator,
+    timber = timber
+)
+
+cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    administratorProvider = administratorProvider,
+    cheerActionsRepository = cheerActionsRepository,
+    timber = timber,
+    ttsManager = ttsManager,
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -287,9 +322,9 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatLogger = None,
-    cheerActionHelper = None,
-    cheerActionIdGenerator = None,
-    cheerActionsRepository = None,
+    cheerActionHelper = cheerActionHelper,
+    cheerActionIdGenerator = cheerActionIdGenerator,
+    cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = None,
     cutenessUtils = None,
     funtoonRepository = funtoonRepository,
