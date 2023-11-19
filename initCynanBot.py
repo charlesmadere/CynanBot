@@ -707,6 +707,7 @@ cynanBot = CynanBot(
         timber = timber
     ),
     cheerActionHelper = None,
+    cheerActionIdGenerator = None,
     cheerActionsRepository = None,
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
