@@ -246,6 +246,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
 ################################
 
 ttsManager: Optional[TtsManagerInterface] = None
+
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
 )
