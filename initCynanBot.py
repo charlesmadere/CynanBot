@@ -715,7 +715,8 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     ttsManager = ttsManager,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
 )
 
 
