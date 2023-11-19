@@ -82,14 +82,6 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
 
-        if user.areCheerActionsEnabled():
-            await self.__processCheerAction(
-                bits = bits,
-                cheerUserId = cheerUserId,
-                message = message,
-                user = user
-            )
-
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
                 bits = bits,
@@ -105,10 +97,20 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
+        if user.areCheerActionsEnabled():
+            await self.__processCheerAction(
+                bits = bits,
+                cheerUserId = cheerUserId,
+                cheerUserLogin = cheerUserLogin,
+                message = message,
+                user = user
+            )
+
     async def __processCheerAction(
         self,
         bits: int,
         cheerUserId: str,
+        cheerUserLogin: str,
         message: Optional[str],
         user: UserInterface
     ):
@@ -118,6 +120,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(cheerUserId):
             raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+        elif not utils.isValidStr(cheerUserLogin):
+            raise ValueError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
         elif message is not None and not isinstance(message, str):
             raise ValueError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(user, UserInterface):
@@ -129,6 +133,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         await self.__cheerActionHelper.handleCheerAction(
             bits = bits,
             cheerUserId = cheerUserId,
+            cheerUserName = cheerUserLogin,
             message = message,
             user =  user
         )
