@@ -1512,8 +1512,8 @@ class DeleteCheerActionCommand(AbsCommand):
             return
 
         splits = utils.getCleanedSplits(ctx.getMessageContent())
-        if len(splits) < 2:
-            self.__timber.log('DeleteCheerActionCommand', f'Less than 2 arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        if len(splits) < 2 or not utils.strContainsAlphanumericCharacters(splits[1]):
+            self.__timber.log('DeleteCheerActionCommand', f'Incorrect arguments given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
             actionId = await self.__cheerActionIdGenerator.generateActionId()
             await self.__twitchUtils.safeSend(ctx, f'⚠ Action ID is necessary for the !deletecheeraction command. Example: !deletecheeraction {actionId}')
             return
