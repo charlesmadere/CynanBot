@@ -210,8 +210,7 @@ class AddCheerActionCommand(AbsCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = '; '
+        usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
@@ -225,8 +224,6 @@ class AddCheerActionCommand(AbsCommand):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
@@ -234,22 +231,13 @@ class AddCheerActionCommand(AbsCommand):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
 
-    async def __actionsToStr(self, actions: List[CheerAction]) -> str:
-        if not isinstance(actions, List):
-            raise ValueError(f'actions argument is malformed: \"{actions}\"')
+    async def __actionToStr(self, action: CheerAction) -> str:
+        if not isinstance(action, CheerAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        if len(actions) == 0:
-            return f'ⓘ You have no cheer actions'
-
-        cheerActionStrings: List[str] = list()
-
-        for action in actions:
-            cheerActionStrings.append(f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}')
-
-        cheerActionsString = self.__delimiter.join(cheerActionStrings)
-        return f'ⓘ Your cheer actions — {cheerActionsString}'
+        cheerActionString = f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}'
+        return f'ⓘ Your new cheer action — {cheerActionString}'
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -286,7 +274,7 @@ class AddCheerActionCommand(AbsCommand):
             return
 
         try:
-            await self.__cheerActionsRepository.addAction(
+            action = await self.__cheerActionsRepository.addAction(
                 actionRequirement = CheerActionRequirement.EXACT,
                 actionType = CheerActionType.TIMEOUT,
                 amount = bits,
@@ -310,8 +298,7 @@ class AddCheerActionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to add new cheer action. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
             return
 
-        actions = await self.__cheerActionsRepository.getActions(userId)
-        await self.__twitchUtils.safeSend(ctx, await self.__actionsToStr(actions))
+        await self.__twitchUtils.safeSend(ctx, await self.__actionToStr(action))
         self.__timber.log('AddCheerActionCommand', f'Handled !addcheeraction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
