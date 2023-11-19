@@ -269,7 +269,15 @@ class AddCheerActionCommand(AbsCommand):
             self.__timber.log('AddCheerActionCommand', f'Failed to parse durationSecondsString (\"{durationSecondsString}\") into durationSeconds int: {e}', e, traceback.format_exc())
 
         if not utils.isValidInt(bits) or not utils.isValidInt(durationSeconds):
-            self.__timber.log('AddCheerActionCommand', f'One of either bitsString (\"{bitsString}\") or (\"{durationSecondsString}\") failed to parse into an int')
+            self.__timber.log('AddCheerActionCommand', f'The bitsString value (\"{bitsString}\") or durationSeconds value (\"{durationSeconds}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} failed to parse into an int')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addcheeraction command. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
+            return
+        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+            self.__timber.log('AddCheerActionCommand', f'The bitsString value (\"{bitsString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds: {bitsString}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addcheeraction command. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
+            return
+        elif durationSeconds < 1 or durationSeconds > 1209600:
+            self.__timber.log('AddCheerActionCommand', f'The durationString value (\"{durationSecondsString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is out of bounds: {durationSeconds}')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addcheeraction command. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
             return
 
