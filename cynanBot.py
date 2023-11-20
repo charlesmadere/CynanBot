@@ -908,7 +908,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__chatLogger.start()
 
         if self.__cheerActionRemodHelper is not None:
-            self.__cheerActionRemodHelperInterface.start()
+            self.__cheerActionRemodHelper.start()
 
         if self.__triviaRepository is not None:
             self.__triviaRepository.startSpooler()
