@@ -16,6 +16,14 @@ from CynanBotCommon.cheerActions.cheerActionIdGenerator import \
     CheerActionIdGenerator
 from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
+from CynanBotCommon.cheerActions.cheerActionRemodHelper import \
+    CheerActionRemodHelper
+from CynanBotCommon.cheerActions.cheerActionRemodHelperInterface import \
+    CheerActionRemodHelperInterface
+from CynanBotCommon.cheerActions.cheerActionRemodRepository import \
+    CheerActionRemodRepository
+from CynanBotCommon.cheerActions.cheerActionRemodRepositoryInterface import \
+    CheerActionRemodRepositoryInterface
 from CynanBotCommon.cheerActions.cheerActionsRepository import \
     CheerActionsRepository
 from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
@@ -283,6 +291,20 @@ if generalSettingsSnapshot.isTtsEnabled():
 ## Cheer Actions initialization section ##
 ##########################################
 
+cheerActionRemodRepository: CheerActionRemodRepositoryInterface = CheerActionRemodRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+cheerActionRemodHelper: CheerActionRemodHelperInterface = CheerActionRemodHelper(
+    administratorProvider = administratorProvider,
+    backgroundTaskHelper = backgroundTaskHelper,
+    cheerActionRemodRepository = cheerActionRemodRepository,
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository
+)
+
 cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
@@ -293,6 +315,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     administratorProvider = administratorProvider,
+    cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     timber = timber,
     ttsManager = ttsManager,
