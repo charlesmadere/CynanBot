@@ -767,6 +767,7 @@ cynanBot = CynanBot(
     ),
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
+    cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),

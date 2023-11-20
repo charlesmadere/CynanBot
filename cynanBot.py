@@ -44,6 +44,8 @@ from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
+from CynanBotCommon.cheerActions.cheerActionRemodHelperInterface import \
+    CheerActionRemodHelperInterface
 from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
@@ -207,6 +209,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         chatLogger: Optional[ChatLoggerInterface],
         cheerActionHelper: Optional[CheerActionHelperInterface],
         cheerActionIdGenerator: Optional[CheerActionIdGeneratorInterface],
+        cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface],
         cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         cutenessRepository: Optional[CutenessRepositoryInterface],
         cutenessUtils: Optional[CutenessUtils],
@@ -283,6 +286,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'cheerActionsHelper argument is malformed: \"{cheerActionHelper}\"')
         elif cheerActionIdGenerator is not None and not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
             raise ValueError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
+        elif cheerActionRemodHelper is not None and not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
+            raise ValueError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
@@ -370,6 +375,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
+        self.__cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface] = cheerActionRemodHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
@@ -900,6 +906,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if self.__chatLogger is not None:
             self.__chatLogger.start()
+
+        if self.__cheerActionRemodHelper is not None:
+            self.__cheerActionRemodHelperInterface.start()
 
         if self.__triviaRepository is not None:
             self.__triviaRepository.startSpooler()

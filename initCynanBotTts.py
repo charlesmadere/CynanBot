@@ -347,6 +347,7 @@ cynanBot = CynanBot(
     chatLogger = None,
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
+    cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = None,
     cutenessUtils = None,
