@@ -112,11 +112,6 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login (\"{userLogin}\") for data bundle: \"{dataBundle}\"')
                 return
 
-        await self.__userIdsRepository.setUser(
-            userId = userId,
-            userName = userLogin
-        )
-
         await self.__setOtherUserInfo(event)
         user = await self.__usersRepository.getUserAsync(userLogin)
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
@@ -172,6 +167,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
     async def __setOtherUserInfo(self, event: WebsocketEvent):
         if not isinstance(event, WebsocketEvent):
             raise ValueError(f'event argument is malformed: \"{event}\"')
+
+        if utils.isValidStr(event.getBroadcasterUserId()) and utils.isValidStr(event.getBroadcasterUserLogin()):
+            await self.__userIdsRepository.setUser(
+                userId = event.getBroadcasterUserId(),
+                userName = event.getBroadcasterUserLogin()
+            )
 
         if utils.isValidStr(event.getFromBroadcasterUserId()) and utils.isValidStr(event.getFromBroadcasterUserLogin()):
             await self.__userIdsRepository.setUser(
