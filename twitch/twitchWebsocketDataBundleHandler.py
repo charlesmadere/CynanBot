@@ -185,7 +185,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 userName = event.getToBroadcasterUserLogin()
             )
 
-        if utils.isValidStr(event.getUserId()) and utils.isValidStr(event.getUserName()):
+        if utils.isValidStr(event.getUserId()) and utils.isValidStr(event.getUserLogin()):
             await self.__userIdsRepository.setUser(
                 userId = event.getUserId(),
                 userName = event.getUserLogin()
