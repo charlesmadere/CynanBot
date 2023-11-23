@@ -197,3 +197,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 userId = event.getSubGift().getRecipientUserId(),
                 userName = event.getSubGift().getRecipientUserLogin()
             )
+
+        if utils.hasItems(event.getOutcomes()):
+            for outcome in event.getOutcomes():
+                if utils.hasItems(outcome.getTopPredictors()):
+                    for topPredictor in outcome.getTopPredictors():
+                        await self.__userIdsRepository.setUser(
+                            userId = topPredictor.getUserId(),
+                            userName = topPredictor.getUserLogin()
+                        )
