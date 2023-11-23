@@ -226,6 +226,7 @@ funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
 )
 isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepository(
     administratorProvider = administratorProvider,
+    timber = timber,
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
