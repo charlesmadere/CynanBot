@@ -173,4 +173,26 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if not isinstance(event, WebsocketEvent):
             raise ValueError(f'event argument is malformed: \"{event}\"')
 
-        pass
+        if utils.isValidStr(event.getFromBroadcasterUserId()) and utils.isValidStr(event.getFromBroadcasterUserLogin()):
+            await self.__userIdsRepository.setUser(
+                userId = event.getFromBroadcasterUserId(),
+                userName = event.getFromBroadcasterUserLogin()
+            )
+
+        if utils.isValidStr(event.getToBroadcasterUserId()) and utils.isValidStr(event.getToBroadcasterUserLogin()):
+            await self.__userIdsRepository.setUser(
+                userId = event.getToBroadcasterUserId(),
+                userName = event.getToBroadcasterUserLogin()
+            )
+
+        if utils.isValidStr(event.getUserId()) and utils.isValidStr(event.getUserName()):
+            await self.__userIdsRepository.setUser(
+                userId = event.getUserId(),
+                userName = event.getUserLogin()
+            )
+
+        if event.getSubGift() is not None:
+            await self.__userIdsRepository.setUser(
+                userId = event.getSubGift().getRecipientUserId(),
+                userName = event.getSubGift().getRecipientUserLogin()
+            )
