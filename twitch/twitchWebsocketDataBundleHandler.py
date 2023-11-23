@@ -6,16 +6,17 @@ from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
     TwitchWebsocketDataBundleListener
 from CynanBotCommon.twitch.websocket.websocketDataBundle import \
     WebsocketDataBundle
+from CynanBotCommon.twitch.websocket.websocketEvent import WebsocketEvent
 from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
 from CynanBotCommon.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBotCommon.users.userInterface import UserInterface
 from CynanBotCommon.users.usersRepositoryInterface import \
     UsersRepositoryInterface
 from twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
 from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 
@@ -27,6 +28,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         timber: TimberInterface,
         channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
         cheerHandler: Optional[AbsTwitchCheerHandler],
+        predictionHandler: Optional[AbsTwitchPredictionHandler],
         raidHandler: Optional[AbsTwitchRaidHandler],
         subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
         userIdsRepository: UserIdsRepositoryInterface,
@@ -38,6 +40,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+        elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
+            raise ValueError(f'predictionHandler argument is malformed: \"{predictionHandler}\"')
         elif raidHandler is not None and not isinstance(raidHandler, AbsTwitchRaidHandler):
             raise ValueError(f'raidHandler argument is malformed: \"{raidHandler}\"')
         elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
@@ -50,6 +54,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__timber: TimberInterface = timber
         self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
         self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
+        self.__predictionHandler: Optional[AbsTwitchPredictionHandler] = predictionHandler
         self.__raidHandler: Optional[AbsTwitchRaidHandler] = raidHandler
         self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -60,6 +65,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isCheerType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHEER
+
+    async def __isPredictionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+        return subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN \
+            or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_END \
+            or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK \
+            or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
 
     async def __isRaidType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
         return subscriptionType is WebsocketSubscriptionType.RAID
@@ -101,22 +112,13 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login (\"{userLogin}\") for data bundle: \"{dataBundle}\"')
                 return
 
-        user: Optional[UserInterface] = None
-
-        try:
-            user = await self.__usersRepository.getUserAsync(userLogin)
-        except:
-            pass
-
-        if user is None:
-            self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to retrieve broadcast user in users repository (userId=\"{userId}\") (userLogin=\"{userLogin}\")')
-            return
-
         await self.__userIdsRepository.setUser(
             userId = userId,
             userName = userLogin
         )
 
+        await self.__setOtherUserInfo(event)
+        user = await self.__usersRepository.getUserAsync(userLogin)
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
@@ -133,6 +135,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
             if cheerHandler is not None:
                 await cheerHandler.onNewCheer(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
+        elif await self.__isPredictionType(subscriptionType):
+            predictionHandler = self.__predictionHandler
+
+            if predictionHandler is not None:
+                await predictionHandler.onNewPrediction(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
@@ -157,3 +168,9 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 )
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
+
+    async def __setOtherUserInfo(self, event: WebsocketEvent):
+        if not isinstance(event, WebsocketEvent):
+            raise ValueError(f'event argument is malformed: \"{event}\"')
+
+        pass

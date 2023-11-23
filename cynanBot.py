@@ -168,6 +168,7 @@ from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from triviaUtils import TriviaUtils
 from twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
 from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
 from twitch.channelJoinEventType import ChannelJoinEventType
@@ -930,7 +931,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pubSubUtils.startPubSub()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
-            cheerHandler: AbsTwitchCheerHandler = TwitchCheerHandler(
+            cheerHandler: Optional[AbsTwitchCheerHandler] = TwitchCheerHandler(
                 cheerActionHelper = self.__cheerActionHelper,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
@@ -939,12 +940,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 twitchChannelProvider = self
             )
 
-            raidHandler: AbsTwitchRaidHandler = TwitchRaidHandler(
+            predictionHandler: Optional[AbsTwitchPredictionHandler] = None
+
+            raidHandler: Optional[AbsTwitchRaidHandler] = TwitchRaidHandler(
                 timber = self.__timber,
                 ttsManager = self.__ttsManager
             )
 
-            subscriptionHandler: AbsTwitchSubscriptionHandler = TwitchSubscriptionHandler(
+            subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
                 administratorProvider = self.__administratorProvider,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
@@ -970,6 +973,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     userIdsRepository = self.__userIdsRepository
                 ),
                 cheerHandler = cheerHandler,
+                predictionHandler = predictionHandler,
                 raidHandler = raidHandler,
                 subscriptionHandler = subscriptionHandler,
                 userIdsRepository = self.__userIdsRepository,
