@@ -183,6 +183,7 @@ from twitch.twitchChannelPointRedemptionHandler import \
 from twitch.twitchChannelProvider import TwitchChannelProvider
 from twitch.twitchCheerHandler import TwitchCheerHandler
 from twitch.twitchConfiguration import TwitchConfiguration
+from twitch.twitchPredictionHandler import TwitchPredictionHandler
 from twitch.twitchRaidHandler import TwitchRaidHandler
 from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from twitch.twitchUtils import TwitchUtils
@@ -940,7 +941,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 twitchChannelProvider = self
             )
 
-            predictionHandler: Optional[AbsTwitchPredictionHandler] = None
+            predictionHandler: Optional[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
+                timber = self.__timber,
+                ttsManager = self.__ttsManager
+            )
 
             raidHandler: Optional[AbsTwitchRaidHandler] = TwitchRaidHandler(
                 timber = self.__timber,
@@ -959,7 +963,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             )
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
-                timber = self.__timber,
                 channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
                     cutenessRedemption = self.__cutenessPointRedemption,
                     pkmnBattleRedemption = self.__pkmnBattlePointRedemption,
@@ -976,6 +979,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 predictionHandler = predictionHandler,
                 raidHandler = raidHandler,
                 subscriptionHandler = subscriptionHandler,
+                timber = self.__timber,
                 userIdsRepository = self.__userIdsRepository,
                 usersRepository = self.__usersRepository
             ))

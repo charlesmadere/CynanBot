@@ -25,18 +25,16 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
-        timber: TimberInterface,
         channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
         cheerHandler: Optional[AbsTwitchCheerHandler],
         predictionHandler: Optional[AbsTwitchPredictionHandler],
         raidHandler: Optional[AbsTwitchRaidHandler],
         subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
+        timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
+        if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
             raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
@@ -46,17 +44,19 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise ValueError(f'raidHandler argument is malformed: \"{raidHandler}\"')
         elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
             raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__timber: TimberInterface = timber
         self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
         self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
         self.__predictionHandler: Optional[AbsTwitchPredictionHandler] = predictionHandler
         self.__raidHandler: Optional[AbsTwitchRaidHandler] = raidHandler
         self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
+        self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
