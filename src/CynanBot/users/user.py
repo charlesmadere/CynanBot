@@ -4,7 +4,7 @@ from typing import List, Optional
 import CynanBotCommon.utils as utils
 from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBotCommon.users.userInterface import UserInterface
-from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from ..pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 
 
 class User(UserInterface):

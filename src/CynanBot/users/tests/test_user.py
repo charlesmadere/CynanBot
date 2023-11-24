@@ -4,9 +4,9 @@ from typing import List
 try:
     from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
     from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-    from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-    from pkmn.pkmnCatchType import PkmnCatchType
-    from users.user import User
+    from CynanBot.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+    from CynanBot.pkmn.pkmnCatchType import PkmnCatchType
+    from CynanBot.users.user import User
 except:
     from ...CynanBotCommon.cuteness.cutenessBoosterPack import \
         CutenessBoosterPack

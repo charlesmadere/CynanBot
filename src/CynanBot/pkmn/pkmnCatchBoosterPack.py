@@ -1,7 +1,7 @@
 from typing import Optional
 
 try:
-    from pkmn.pkmnCatchType import PkmnCatchType
+    from .pkmnCatchType import PkmnCatchType
 except:
     from .pkmn.pkmnCatchType import PkmnCatchType
 
