@@ -639,6 +639,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     triviaGameStore = TriviaGameStore(),
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
+    triviaSettingsRepository = triviaSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
