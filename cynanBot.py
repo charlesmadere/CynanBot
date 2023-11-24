@@ -1323,7 +1323,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__mastodonCommand.handleCommand(context)
 
-    @commands.command(name = 'mycutenesshistory')
+    @commands.command(name = 'mycutenesshistory', aliases = [ 'mycuteness' ])
     async def command_mycutenesshistory(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__myCutenessHistoryCommand.handleCommand(context)
