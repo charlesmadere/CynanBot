@@ -16,7 +16,7 @@ from CynanBot.cheerActions.cheerActionRequirement import CheerActionRequirement
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface

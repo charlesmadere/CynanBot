@@ -1,4 +1,4 @@
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
 from CynanBot.twitch.websocket.websocketConnectionStatus import \
     WebsocketConnectionStatus

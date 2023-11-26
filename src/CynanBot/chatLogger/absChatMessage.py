@@ -2,7 +2,7 @@ from abc import ABC
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatLogger.chatEventType import ChatEventType
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
 class AbsChatMessage(ABC):

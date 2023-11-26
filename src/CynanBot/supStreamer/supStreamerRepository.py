@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType

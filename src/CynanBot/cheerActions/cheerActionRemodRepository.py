@@ -5,7 +5,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
 from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
     CheerActionRemodRepositoryInterface
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType

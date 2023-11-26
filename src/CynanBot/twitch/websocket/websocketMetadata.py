@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.twitch.websocket.websocketMessageType import WebsocketMessageType
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType

@@ -1,7 +1,7 @@
 from typing import Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
 class TimberEntry():

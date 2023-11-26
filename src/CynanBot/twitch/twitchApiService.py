@@ -3,11 +3,11 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkHandle import NetworkHandle
 from CynanBot.network.networkResponse import NetworkResponse
-from CynanBot.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchErrorException,
