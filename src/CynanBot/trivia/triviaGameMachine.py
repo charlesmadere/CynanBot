@@ -61,7 +61,8 @@ from CynanBot.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
 from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.triviaActionType import TriviaActionType
-from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
+from CynanBot.trivia.triviaAnswerCheckerInterface import \
+    TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
@@ -98,7 +99,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface,
         timber: TimberInterface,
         toxicTriviaHelper: ToxicTriviaHelper,
-        triviaAnswerChecker: TriviaAnswerChecker,
+        triviaAnswerChecker: TriviaAnswerCheckerInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaGameStore: TriviaGameStoreInterface,
         triviaRepository: TriviaRepositoryInterface,
@@ -124,7 +125,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(toxicTriviaHelper, ToxicTriviaHelper):
             raise ValueError(f'toxicTriviaHelper argument is malformed: \"{toxicTriviaHelper}\"')
-        elif not isinstance(triviaAnswerChecker, TriviaAnswerChecker):
+        elif not isinstance(triviaAnswerChecker, TriviaAnswerCheckerInterface):
             raise ValueError(f'triviaAnswerChecker argument is malformed: \"{triviaAnswerChecker}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
@@ -158,7 +159,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface = superTriviaCooldownHelper
         self.__timber: TimberInterface = timber
         self.__toxicTriviaHelper: ToxicTriviaHelper = toxicTriviaHelper
-        self.__triviaAnswerChecker: TriviaAnswerChecker = triviaAnswerChecker
+        self.__triviaAnswerChecker: TriviaAnswerCheckerInterface = triviaAnswerChecker
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaGameStore: TriviaGameStoreInterface = triviaGameStore
         self.__triviaRepository: TriviaRepositoryInterface = triviaRepository
