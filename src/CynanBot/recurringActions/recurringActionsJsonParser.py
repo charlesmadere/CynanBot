@@ -1,16 +1,17 @@
 import json
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from language.languagesRepository import LanguagesRepository
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionsJsonParserInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionsJsonParserInterface import \
     RecurringActionsJsonParserInterface
-from recurringActions.recurringActionType import RecurringActionType
-from recurringActions.superTriviaRecurringAction import \
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
-from recurringActions.weatherRecurringAction import WeatherRecurringAction
-from recurringActions.wordOfTheDayRecurringAction import \
+from CynanBot.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
 
 

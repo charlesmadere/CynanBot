@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
-from tts.ttsDonationType import TtsDonationType
+from CynanBot.tts.ttsDonationType import TtsDonationType
 
 
 class TtsDonation(ABC):

@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
-import misc.utils as utils
-from tts.ttsDonation import TtsDonation
-from tts.ttsDonationType import TtsDonationType
-from twitch.twitchSubscriberTier import TwitchSubscriberTier
+import CynanBot.misc.utils as utils
+from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsDonationType import TtsDonationType
+from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TtsSubscriptionDonation(TtsDonation):

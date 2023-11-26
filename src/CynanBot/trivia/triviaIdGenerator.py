@@ -3,8 +3,9 @@ import re
 import uuid
 from typing import Optional, Pattern
 
-import misc.utils as utils
-from trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 
 
 class TriviaIdGenerator(TriviaIdGeneratorInterface):

@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from tts.ttsDonation import TtsDonation
-from tts.ttsRaidInfo import TtsRaidInfo
+import CynanBot.misc.utils as utils
+from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
 
 
 class TtsEvent():

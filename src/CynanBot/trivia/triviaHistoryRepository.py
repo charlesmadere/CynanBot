@@ -1,20 +1,20 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaHistoryRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from trivia.triviaQuestionReference import TriviaQuestionReference
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaQuestionReference import TriviaQuestionReference
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):

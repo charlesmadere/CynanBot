@@ -7,10 +7,12 @@ from typing import Optional, Pattern
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from timber.timberInterface import TimberInterface
-from tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
+    DecTalkFileManagerInterface
 
 
 class DecTalkFileManager(DecTalkFileManagerInterface):

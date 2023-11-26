@@ -1,13 +1,14 @@
 import pytest
-from contentScanner.bannedPhrase import BannedPhrase
-from contentScanner.bannedWord import BannedWord
-from contentScanner.bannedWordsRepository import BannedWordsRepository
-from contentScanner.bannedWordsRepositoryInterface import \
+
+from CynanBot.contentScanner.bannedPhrase import BannedPhrase
+from CynanBot.contentScanner.bannedWord import BannedWord
+from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from storage.linesReaderInterface import LinesReaderInterface
-from storage.linesStaticReader import LinesStaticReader
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
+from CynanBot.storage.linesReaderInterface import LinesReaderInterface
+from CynanBot.storage.linesStaticReader import LinesStaticReader
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
 
 
 class TestBannedWordsRepository():

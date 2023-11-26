@@ -1,5 +1,4 @@
-import misc.utils as utils
-
+import CynanBot.misc.utils as utils
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
 from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \

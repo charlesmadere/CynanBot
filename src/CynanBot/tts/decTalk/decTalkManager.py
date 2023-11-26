@@ -4,17 +4,19 @@ import traceback
 from queue import SimpleQueue
 from typing import Optional
 
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from systemCommandHelper.systemCommandHelperInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
-from timber.timberInterface import TimberInterface
-from tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
-from tts.decTalk.decTalkFileManagerInterface import DecTalkFileManagerInterface
-from tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from tts.ttsEvent import TtsEvent
-from tts.ttsManagerInterface import TtsManagerInterface
-from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
+from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
+    DecTalkFileManagerInterface
+from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 
 
 class DecTalkManager(TtsManagerInterface):

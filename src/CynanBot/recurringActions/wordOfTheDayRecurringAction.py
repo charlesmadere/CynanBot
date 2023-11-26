@@ -1,8 +1,8 @@
 from typing import Optional
 
-from language.languageEntry import LanguageEntry
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionType import RecurringActionType
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
 
 class WordOfTheDayRecurringAction(RecurringAction):

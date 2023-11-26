@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Set
 
-from contentScanner.absBannedWord import AbsBannedWord
-from misc.clearable import Clearable
+from CynanBot.contentScanner.absBannedWord import AbsBannedWord
+from CynanBot.misc.clearable import Clearable
 
 
 class BannedWordsRepositoryInterface(Clearable):

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, Set
 
-from contentScanner.contentCode import ContentCode
+from CynanBot.contentScanner.contentCode import ContentCode
 
 
 class ContentScannerInterface(ABC):

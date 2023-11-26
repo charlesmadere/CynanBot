@@ -1,5 +1,5 @@
-from contentScanner.bannedPhrase import BannedPhrase
-from contentScanner.bannedWordType import BannedWordType
+from CynanBot.contentScanner.bannedPhrase import BannedPhrase
+from CynanBot.contentScanner.bannedWordType import BannedWordType
 
 
 class TestBannedPhrase():

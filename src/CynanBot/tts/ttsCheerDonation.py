@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-import misc.utils as utils
-from tts.ttsDonation import TtsDonation
-from tts.ttsDonationType import TtsDonationType
+import CynanBot.misc.utils as utils
+from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsDonationType import TtsDonationType
 
 
 class TtsCheerDonation(TtsDonation):

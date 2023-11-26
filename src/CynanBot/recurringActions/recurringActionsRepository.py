@@ -1,21 +1,22 @@
 from typing import Any, List, Optional
 
-import misc.utils as utils
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionsJsonParserInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionsJsonParserInterface import \
     RecurringActionsJsonParserInterface
-from recurringActions.recurringActionsRepositoryInterface import \
+from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from recurringActions.recurringActionType import RecurringActionType
-from recurringActions.superTriviaRecurringAction import \
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
-from recurringActions.weatherRecurringAction import WeatherRecurringAction
-from recurringActions.wordOfTheDayRecurringAction import \
+from CynanBot.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class RecurringActionsRepository(RecurringActionsRepositoryInterface):

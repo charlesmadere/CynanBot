@@ -1,8 +1,8 @@
 from typing import Optional
 
-import misc.utils as utils
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionType import RecurringActionType
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
 
 class WeatherRecurringAction(RecurringAction):

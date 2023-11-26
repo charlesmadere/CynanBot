@@ -1,8 +1,9 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from storage.jsonReaderInterface import JsonReaderInterface
-from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+import CynanBot.misc.utils as utils
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 
 
 class TtsSettingsRepository(TtsSettingsRepositoryInterface):

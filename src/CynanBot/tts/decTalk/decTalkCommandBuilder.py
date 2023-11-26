@@ -1,18 +1,20 @@
 import re
 from typing import List, Optional, Pattern
 
-import misc.utils as utils
-from contentScanner.contentCode import ContentCode
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from emojiHelper.emojiHelperInterface import EmojiHelperInterface
-from timber.timberInterface import TimberInterface
-from tts.ttsCheerDonation import TtsCheerDonation
-from tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from tts.ttsDonation import TtsDonation
-from tts.ttsDonationType import TtsDonationType
-from tts.ttsEvent import TtsEvent
-from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
-from tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+import CynanBot.misc.utils as utils
+from CynanBot.contentScanner.contentCode import ContentCode
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
+from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.ttsCheerDonation import TtsCheerDonation
+from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsDonationType import TtsDonationType
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
+from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 
 
 class DecTalkCommandBuilder(TtsCommandBuilderInterface):

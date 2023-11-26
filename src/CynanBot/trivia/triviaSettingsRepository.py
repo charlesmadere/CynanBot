@@ -1,10 +1,10 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from storage.jsonReaderInterface import JsonReaderInterface
-from trivia.triviaSettingsRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):

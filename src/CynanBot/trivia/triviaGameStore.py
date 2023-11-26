@@ -1,12 +1,12 @@
 from typing import List, Optional, Set
 
-import misc.utils as utils
-from trivia.absTriviaGameState import AbsTriviaGameState
-from trivia.superTriviaGameState import SuperTriviaGameState
-from trivia.triviaExceptions import UnknownTriviaGameTypeException
-from trivia.triviaGameState import TriviaGameState
-from trivia.triviaGameStoreInterface import TriviaGameStoreInterface
-from trivia.triviaGameType import TriviaGameType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
+from CynanBot.trivia.superTriviaGameState import SuperTriviaGameState
+from CynanBot.trivia.triviaExceptions import UnknownTriviaGameTypeException
+from CynanBot.trivia.triviaGameState import TriviaGameState
+from CynanBot.trivia.triviaGameStoreInterface import TriviaGameStoreInterface
+from CynanBot.trivia.triviaGameType import TriviaGameType
 
 
 class TriviaGameStore(TriviaGameStoreInterface):

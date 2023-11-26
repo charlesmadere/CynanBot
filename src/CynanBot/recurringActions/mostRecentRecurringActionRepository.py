@@ -1,18 +1,18 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-import misc.utils as utils
-from recurringActions.mostRecentRecurringAction import \
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.mostRecentRecurringAction import \
     MostRecentRecurringAction
-from recurringActions.mostRecentRecurringActionRepositoryInterface import \
+from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionType import RecurringActionType
-from simpleDateTime import SimpleDateTime
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInterface):

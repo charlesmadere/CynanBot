@@ -1,15 +1,16 @@
 import re
 from typing import Optional, Pattern, Set
 
-import misc.utils as utils
-from contentScanner.bannedPhrase import BannedPhrase
-from contentScanner.bannedWord import BannedWord
-from contentScanner.bannedWordsRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.contentScanner.bannedPhrase import BannedPhrase
+from CynanBot.contentScanner.bannedWord import BannedWord
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from contentScanner.bannedWordType import BannedWordType
-from contentScanner.contentCode import ContentCode
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from timber.timberInterface import TimberInterface
+from CynanBot.contentScanner.bannedWordType import BannedWordType
+from CynanBot.contentScanner.contentCode import ContentCode
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class ContentScanner(ContentScannerInterface):

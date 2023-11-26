@@ -2,7 +2,7 @@ import html
 import re
 from typing import List, Optional, Pattern, Set
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class TriviaQuestionCompiler():

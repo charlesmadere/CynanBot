@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from misc.clearable import Clearable
+from CynanBot.misc.clearable import Clearable
 
 
 class TtsSettingsRepositoryInterface(Clearable):

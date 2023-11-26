@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-import misc.utils as utils
-from recurringActions.recurringEventType import RecurringEventType
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringEventType import RecurringEventType
 
 
 class RecurringEvent(ABC):

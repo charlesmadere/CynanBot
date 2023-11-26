@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from recurringActions.mostRecentRecurringAction import \
+from CynanBot.recurringActions.mostRecentRecurringAction import \
     MostRecentRecurringAction
-from recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringAction import RecurringAction
 
 
 class MostRecentRecurringActionRepositoryInterface(ABC):

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-import misc.utils as utils
-from recurringActions.recurringActionType import RecurringActionType
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
 
 class RecurringAction(ABC):

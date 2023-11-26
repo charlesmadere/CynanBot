@@ -1,19 +1,21 @@
 from typing import Optional, Set
 
-import misc.utils as utils
-from contentScanner.bannedPhrase import BannedPhrase
-from contentScanner.bannedWord import BannedWord
-from contentScanner.bannedWordsRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.contentScanner.bannedPhrase import BannedPhrase
+from CynanBot.contentScanner.bannedWord import BannedWord
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from contentScanner.bannedWordType import BannedWordType
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaContentScannerInterface import TriviaContentScannerInterface
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.contentScanner.bannedWordType import BannedWordType
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaContentScanner(TriviaContentScannerInterface):

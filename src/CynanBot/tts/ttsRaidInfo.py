@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class TtsRaidInfo():

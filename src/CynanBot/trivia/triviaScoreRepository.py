@@ -1,8 +1,8 @@
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from trivia.triviaScoreResult import TriviaScoreResult
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
 
 
 class TriviaScoreRepository():

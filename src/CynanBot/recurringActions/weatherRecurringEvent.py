@@ -1,7 +1,7 @@
-import misc.utils as utils
-from recurringActions.recurringEvent import RecurringEvent
-from recurringActions.recurringEventType import RecurringEventType
-from weather.weatherReport import WeatherReport
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.recurringEventType import RecurringEventType
+from CynanBot.weather.weatherReport import WeatherReport
 
 
 class WeatherRecurringEvent(RecurringEvent):

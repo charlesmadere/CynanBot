@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsEvent import TtsEvent
 
 
 class TtsCommandBuilderInterface(ABC):

@@ -1,7 +1,7 @@
 from typing import Optional
 
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
 
 class SuperTriviaRecurringAction(RecurringAction):

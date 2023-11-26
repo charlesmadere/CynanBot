@@ -1,8 +1,8 @@
 from typing import Any
 
-import misc.utils as utils
-from contentScanner.absBannedWord import AbsBannedWord
-from contentScanner.bannedWordType import BannedWordType
+import CynanBot.misc.utils as utils
+from CynanBot.contentScanner.absBannedWord import AbsBannedWord
+from CynanBot.contentScanner.bannedWordType import BannedWordType
 
 
 class BannedWord(AbsBannedWord):

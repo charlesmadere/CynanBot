@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.superTriviaRecurringAction import \
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
-from recurringActions.weatherRecurringAction import WeatherRecurringAction
-from recurringActions.wordOfTheDayRecurringAction import \
+from CynanBot.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
 
 

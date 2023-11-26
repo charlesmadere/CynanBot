@@ -6,42 +6,48 @@ from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import Dict, List, Optional
 
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from language.wordOfTheDayRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
-from language.wordOfTheDayResponse import WordOfTheDayResponse
-from location.locationsRepositoryInterface import LocationsRepositoryInterface
-from recurringActions.mostRecentRecurringActionRepositoryInterface import \
+from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
+from CynanBot.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
+from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
-from recurringActions.recurringAction import RecurringAction
-from recurringActions.recurringActionEventListener import \
+from CynanBot.recurringActions.recurringAction import RecurringAction
+from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
-from recurringActions.recurringActionsMachineInterface import \
+from CynanBot.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
-from recurringActions.recurringActionsRepositoryInterface import \
+from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from recurringActions.recurringActionType import RecurringActionType
-from recurringActions.recurringEvent import RecurringEvent
-from recurringActions.superTriviaRecurringAction import \
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
-from recurringActions.superTriviaRecurringEvent import \
+from CynanBot.recurringActions.superTriviaRecurringEvent import \
     SuperTriviaRecurringEvent
-from recurringActions.weatherRecurringAction import WeatherRecurringAction
-from recurringActions.weatherRecurringEvent import WeatherRecurringEvent
-from recurringActions.wordOfTheDayRecurringAction import \
+from CynanBot.recurringActions.weatherRecurringAction import \
+    WeatherRecurringAction
+from CynanBot.recurringActions.weatherRecurringEvent import \
+    WeatherRecurringEvent
+from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
-from recurringActions.wordOfTheDayRecurringEvent import \
+from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
-from timber.timberInterface import TimberInterface
-from trivia.triviaGameBuilderInterface import TriviaGameBuilderInterface
-from trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from twitch.isLiveOnTwitchRepositoryInterface import \
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
+from CynanBot.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from users.userInterface import UserInterface
-from users.usersRepositoryInterface import UsersRepositoryInterface
-from weather.weatherReport import WeatherReport
-from weather.weatherRepositoryInterface import WeatherRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.weatherReport import WeatherReport
+from CynanBot.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 
 
 class RecurringActionsMachine(RecurringActionsMachineInterface):

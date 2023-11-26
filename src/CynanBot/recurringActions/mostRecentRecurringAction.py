@@ -1,6 +1,6 @@
-import misc.utils as utils
-from recurringActions.recurringActionType import RecurringActionType
-from simpleDateTime import SimpleDateTime
+import CynanBot.misc.utils as utils
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.simpleDateTime import SimpleDateTime
 
 
 class MostRecentRecurringAction():

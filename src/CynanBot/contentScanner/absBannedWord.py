@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from contentScanner.bannedWordType import BannedWordType
+from CynanBot.contentScanner.bannedWordType import BannedWordType
 
 
 class AbsBannedWord(ABC):

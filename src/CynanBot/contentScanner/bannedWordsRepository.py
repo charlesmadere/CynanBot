@@ -2,14 +2,14 @@ import re
 import traceback
 from typing import List, Optional, Pattern, Set
 
-import misc.utils as utils
-from contentScanner.absBannedWord import AbsBannedWord
-from contentScanner.bannedPhrase import BannedPhrase
-from contentScanner.bannedWord import BannedWord
-from contentScanner.bannedWordsRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.contentScanner.absBannedWord import AbsBannedWord
+from CynanBot.contentScanner.bannedPhrase import BannedPhrase
+from CynanBot.contentScanner.bannedWord import BannedWord
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from storage.linesReaderInterface import LinesReaderInterface
-from timber.timberInterface import TimberInterface
+from CynanBot.storage.linesReaderInterface import LinesReaderInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class BannedWordsRepository(BannedWordsRepositoryInterface):
