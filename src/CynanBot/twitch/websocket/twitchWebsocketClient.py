@@ -10,7 +10,7 @@ import websockets
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.incrementalJsonBuilder import IncrementalJsonBuilder
+from CynanBot.misc.incrementalJsonBuilder import IncrementalJsonBuilder
 from CynanBot.misc.lruCache import LruCache
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
