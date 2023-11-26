@@ -90,6 +90,7 @@ class TriviaUtils():
         newCuteness: CutenessResult,
         emote: str,
         userNameThatRedeemed: str,
+        twitchUser: UserInterface,
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
@@ -101,6 +102,8 @@ class TriviaUtils():
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -113,7 +116,10 @@ class TriviaUtils():
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Congratulations @{userNameThatRedeemed}, that\'s correct!'
-        infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
+
+        infix = ''
+        if twitchUser.isCutenessEnabled():
+            infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 
@@ -305,6 +311,7 @@ class TriviaUtils():
         points: int,
         emote: str,
         userName: str,
+        twitchUser: UserInterface,
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
@@ -318,6 +325,8 @@ class TriviaUtils():
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -331,7 +340,10 @@ class TriviaUtils():
 
         pointsStr = locale.format_string("%d", points, grouping = True)
         prefix = f'{emotePrompt} CONGRATULATIONS @{userName}, that\'s correct!'
-        infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.getCutenessStr()}.'
+
+        infix = ''
+        if twitchUser.isCutenessEnabled():
+            infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.getCutenessStr()}.'
 
         correctAnswers = question.getCorrectAnswers()
 

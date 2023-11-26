@@ -961,12 +961,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleCorrectAnswerTriviaEvent(self, event: CorrectAnswerTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
             newCuteness = event.getCutenessResult(),
             emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
@@ -1033,6 +1035,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleSuperGameCorrectAnswerTriviaEvent(self, event: CorrectSuperAnswerTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaCorrectAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -1040,6 +1043,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
             userName = event.getUserName(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
