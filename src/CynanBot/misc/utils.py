@@ -5,7 +5,8 @@ import random
 import re
 from datetime import datetime
 from numbers import Number
-from typing import Any, Dict, Generator, List, Optional, Pattern
+from typing import Any, Dict, Generator, List, Optional, Pattern, Sized, TypeVar
+from typing_extensions import TypeGuard
 from urllib.parse import urlparse
 
 
@@ -24,7 +25,7 @@ def areAllStrsInts(l: List[str]) -> bool:
 
     return True
 
-def areValidBools(l: Optional[List[Optional[bool]]]) -> bool:
+def areValidBools(l: Optional[List[Optional[bool]]]) -> TypeGuard[List[bool]]:
     if not hasItems(l):
         return False
 
@@ -34,7 +35,7 @@ def areValidBools(l: Optional[List[Optional[bool]]]) -> bool:
 
     return True
 
-def areValidStrs(l: Optional[List[Optional[str]]]) -> bool:
+def areValidStrs(l: Optional[List[Optional[str]]]) -> TypeGuard[List[str]]:
     if not hasItems(l):
         return False
 
@@ -85,7 +86,7 @@ def cleanStr(s: str, replacement: str = ' ', htmlUnescape: bool = False, removeC
 
     return s
 
-def containsUrl(s: Optional[str]) -> bool:
+def containsUrl(s: Optional[str]) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
@@ -331,22 +332,24 @@ def getStrFromDict(
 
     return value
 
-def hasItems(l: Optional[Any]) -> bool:
+T_Container = TypeVar("T_Container", bound=Sized)
+
+def hasItems(l: Optional[T_Container]) -> TypeGuard[T_Container]:
     return l is not None and len(l) >= 1
 
-def isValidBool(b: Optional[bool]) -> bool:
+def isValidBool(b: Optional[bool]) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
-def isValidInt(i: Optional[Number]) -> bool:
+def isValidInt(i: Optional[Number]) -> TypeGuard[int]:
     return isValidNum(i) and isinstance(i, int)
 
-def isValidNum(n: Optional[Number]) -> bool:
+def isValidNum(n: Optional[Number]) -> TypeGuard[float]:
     return n is not None and isinstance(n, Number) and math.isfinite(n)
 
-def isValidStr(s: Optional[str]) -> bool:
+def isValidStr(s: Optional[str]) -> TypeGuard[str]:
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
 
-def isValidUrl(s: Optional[str]) -> bool:
+def isValidUrl(s: Optional[str]) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
@@ -438,7 +441,7 @@ def splitLongStringIntoMessages(
 
 alphanumericRegEx: Pattern = re.compile(r'.*[a-z0-9]+.*', re.IGNORECASE)
 
-def strContainsAlphanumericCharacters(s: Optional[str]) -> bool:
+def strContainsAlphanumericCharacters(s: Optional[str]) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 

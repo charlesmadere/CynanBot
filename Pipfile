@@ -22,6 +22,7 @@ pytz = "*"
 requests = "*"
 roman = "*"
 twitchio = "*"
+typing_extensions = "*"
 websockets = "*"
 xmltodict = "*"
 
