@@ -1,6 +1,6 @@
 from typing import Optional
 
-from recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
 
 class TestRecurringActionType():

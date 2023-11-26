@@ -1,6 +1,6 @@
 from typing import Optional
 
-from storage.databaseType import DatabaseType
+from CynanBot.storage.databaseType import DatabaseType
 
 
 class TestDatabaseType():
