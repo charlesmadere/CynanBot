@@ -8,11 +8,12 @@ import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBot.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from CynanBot.pkmn.pkmnCatchType import PkmnCatchType
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timeZoneRepository import TimeZoneRepository
 from CynanBot.users.exceptions import NoSuchUserException, NoUsersException
+from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from CynanBot.users.pkmnCatchType import PkmnCatchType
 from CynanBot.users.user import User
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -22,18 +23,18 @@ class UsersRepository(UsersRepositoryInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        timeZoneRepository: TimeZoneRepository,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         usersFile: str = 'users/usersRepository.json'
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepository):
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
             raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__timber: TimberInterface = timber
-        self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__usersFile: str = usersFile
 
         self.__jsonCache: Optional[Dict[str, Any]] = None

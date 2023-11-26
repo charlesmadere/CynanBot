@@ -4,11 +4,13 @@ from typing import Dict, List
 import pytz
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 
 
 # A listing of pytz timezones can be found here:
 # https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones
-class TimeZoneRepository():
+class TimeZoneRepository(TimeZoneRepositoryInterface):
 
     def __init__(self):
         self.__timeZones: Dict[str, tzinfo] = dict()

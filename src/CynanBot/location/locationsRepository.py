@@ -4,8 +4,9 @@ import CynanBot.misc.utils as utils
 from CynanBot.location.location import Location
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
-from CynanBot.timeZoneRepository import TimeZoneRepository
 
 
 class LocationsRepository(LocationsRepositoryInterface):
@@ -13,15 +14,15 @@ class LocationsRepository(LocationsRepositoryInterface):
     def __init__(
         self,
         locationsJsonReader: JsonReaderInterface,
-        timeZoneRepository: TimeZoneRepository
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(locationsJsonReader, JsonReaderInterface):
             raise ValueError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepository):
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__locationsJsonReader: JsonReaderInterface = locationsJsonReader
-        self.__timeZoneRepository: TimeZoneRepository = timeZoneRepository
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__cache: Dict[str, Optional[Location]] = dict()
 

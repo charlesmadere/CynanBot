@@ -48,6 +48,9 @@ from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.location.locationsRepository import LocationsRepository
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
+from CynanBot.location.timeZoneRepository import TimeZoneRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
@@ -64,7 +67,6 @@ from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.timeZoneRepository import TimeZoneRepository
 from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
@@ -189,7 +191,7 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-timeZoneRepository = TimeZoneRepository()
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
