@@ -7,6 +7,8 @@ import aiosqlite
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import UnsupportedTriviaTypeException
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
