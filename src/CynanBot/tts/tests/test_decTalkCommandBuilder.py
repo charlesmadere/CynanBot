@@ -1,21 +1,25 @@
 import pytest
-from contentScanner.bannedWordsRepository import BannedWordsRepository
-from contentScanner.bannedWordsRepositoryInterface import \
+
+from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from contentScanner.contentScanner import ContentScanner
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from emojiHelper.emojiHelper import EmojiHelper
-from emojiHelper.emojiHelperInterface import EmojiHelperInterface
-from emojiHelper.emojiRepository import EmojiRepository
-from emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
-from storage.jsonStaticReader import JsonStaticReader
-from storage.linesStaticReader import LinesStaticReader
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
-from tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from tts.ttsSettingsRepository import TtsSettingsRepository
-from tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from CynanBot.contentScanner.contentScanner import ContentScanner
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
+from CynanBot.emojiHelper.emojiHelper import EmojiHelper
+from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
+from CynanBot.emojiHelper.emojiRepository import EmojiRepository
+from CynanBot.emojiHelper.emojiRepositoryInterface import \
+    EmojiRepositoryInterface
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
+from CynanBot.storage.linesStaticReader import LinesStaticReader
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
+from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 
 
 class TestDecTalkCommandBuilder():
