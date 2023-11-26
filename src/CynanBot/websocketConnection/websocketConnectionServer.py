@@ -6,12 +6,11 @@ from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import Any, Dict, Optional
 
-import aiofiles
-import aiofiles.ospath
 import websockets
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
@@ -23,16 +22,19 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
+        settingsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
         sleepTimeSeconds: float = 5,
         port: int = 8765,
         host: str = '0.0.0.0',
-        websocketSettingsFile: str = 'CynanBotCommon/websocketConnection/websocketSettings.json',
+        websocketSettingsFile: str = 'websocketSettings.json',
         eventTimeToLive: timedelta = timedelta(seconds = 30),
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
@@ -53,6 +55,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
         self.__port: int = port
         self.__sleepTimeSeconds: int = sleepTimeSeconds
@@ -77,17 +80,15 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         if self.__cache is not None:
             return self.__cache
 
-        if not await aiofiles.ospath.exists(self.__websocketSettingsFile):
-            raise FileNotFoundError(f'Websocket settings file not found: \"{self.__websocketSettingsFile}\"')
+        jsonContents: Optional[Dict[str, Any]] = None
 
-        async with aiofiles.open(self.__websocketSettingsFile, mode = 'r', encoding = 'utf-8') as file:
-            data = await file.read()
-            jsonContents = json.loads(data)
+        if await self.__settingsJsonReader.fileExistsAsync():
+            jsonContents = await self.__settingsJsonReader.readJsonAsync()
+        else:
+            jsonContents = dict()
 
         if jsonContents is None:
             raise IOError(f'Error reading from Websocket settings file: \"{self.__websocketSettingsFile}\"')
-        elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of Websocket settings file \"{self.__websocketSettingsFile}\" is empty')
 
         self.__cache = jsonContents
         return jsonContents
