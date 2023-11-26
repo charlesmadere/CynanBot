@@ -1,4 +1,4 @@
-from twitch.websocket.websocketMessageType import WebsocketMessageType
+from CynanBot.twitch.websocket.websocketMessageType import WebsocketMessageType
 
 
 class TestTwitchWebsocketMessageType():

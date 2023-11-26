@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import Optional
 
-from misc.clearable import Clearable
-from supStreamer.supStreamerAction import SupStreamerAction
+from CynanBot.misc.clearable import Clearable
+from CynanBot.supStreamer.supStreamerAction import SupStreamerAction
 
 
 class SupStreamerRepositoryInterface(Clearable):

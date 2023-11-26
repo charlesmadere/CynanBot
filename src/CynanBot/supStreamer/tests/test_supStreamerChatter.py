@@ -1,4 +1,4 @@
-from supStreamer.supStreamerChatter import SupStreamerChatter
+from CynanBot.supStreamer.supStreamerChatter import SupStreamerChatter
 
 
 class TestSupStreamerChatter():

@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from simpleDateTime import SimpleDateTime
+import CynanBot.misc.utils as utils
+from CynanBot.simpleDateTime import SimpleDateTime
 
 
 class SupStreamerChatter():

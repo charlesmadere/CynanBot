@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
 
 
 class BackingDatabase(ABC):

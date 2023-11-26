@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
 class JsonStaticReader(JsonReaderInterface):

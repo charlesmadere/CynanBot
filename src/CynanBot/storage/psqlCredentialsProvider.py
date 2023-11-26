@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from misc.clearable import Clearable
-from storage.jsonReaderInterface import JsonReaderInterface
+import CynanBot.misc.utils as utils
+from CynanBot.misc.clearable import Clearable
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
 class PsqlCredentialsProvider(Clearable):

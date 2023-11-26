@@ -1,6 +1,6 @@
 from typing import Optional
 
-from timber.timberInterface import TimberInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class TimberStub(TimberInterface):

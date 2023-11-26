@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from supStreamer.supStreamerChatter import SupStreamerChatter
+import CynanBot.misc.utils as utils
+from CynanBot.supStreamer.supStreamerChatter import SupStreamerChatter
 
 
 class SupStreamerAction():

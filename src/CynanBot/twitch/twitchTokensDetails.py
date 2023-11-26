@@ -1,6 +1,6 @@
 from datetime import datetime
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class TwitchTokensDetails():

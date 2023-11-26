@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from storage.linesReaderInterface import LinesReaderInterface
+from CynanBot.storage.linesReaderInterface import LinesReaderInterface
 
 
 class LinesStaticReader(LinesReaderInterface):

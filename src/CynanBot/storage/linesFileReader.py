@@ -3,8 +3,9 @@ from typing import List, Optional
 
 import aiofiles
 import aiofiles.ospath
-import misc.utils as utils
-from storage.linesReaderInterface import LinesReaderInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.storage.linesReaderInterface import LinesReaderInterface
 
 
 class LinesFileReader(LinesReaderInterface):

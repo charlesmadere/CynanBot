@@ -1,11 +1,12 @@
 from asyncio import AbstractEventLoop
 
 import aiosqlite
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from storage.sqliteDatabaseConnection import SqliteDatabaseConnection
+
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.sqliteDatabaseConnection import SqliteDatabaseConnection
 
 
 class BackingSqliteDatabase(BackingDatabase):

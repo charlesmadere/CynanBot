@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Optional
 
-from storage.databaseType import DatabaseType
+from CynanBot.storage.databaseType import DatabaseType
 
 
 class DatabaseConnection(ABC):

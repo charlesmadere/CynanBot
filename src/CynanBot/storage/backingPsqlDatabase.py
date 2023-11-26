@@ -2,11 +2,12 @@ from asyncio import AbstractEventLoop
 from typing import Optional
 
 import asyncpg
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from storage.psqlCredentialsProvider import PsqlCredentialsProvider
-from storage.psqlDatabaseConnection import PsqlDatabaseConnection
+
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from CynanBot.storage.psqlDatabaseConnection import PsqlDatabaseConnection
 
 
 class BackingPsqlDatabase(BackingDatabase):

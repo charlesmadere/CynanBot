@@ -5,7 +5,8 @@ from typing import Any, Dict, List
 
 import aiofiles
 import aiofiles.ospath
-import misc.utils as utils
+
+import CynanBot.misc.utils as utils
 
 
 class StarWarsQuotesRepository():

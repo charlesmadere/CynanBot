@@ -1,15 +1,15 @@
 from typing import Dict, Optional
 
-import misc.utils as utils
-from simpleDateTime import SimpleDateTime
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from supStreamer.supStreamerAction import SupStreamerAction
-from supStreamer.supStreamerChatter import SupStreamerChatter
-from supStreamer.supStreamerRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.supStreamer.supStreamerAction import SupStreamerAction
+from CynanBot.supStreamer.supStreamerChatter import SupStreamerChatter
+from CynanBot.supStreamer.supStreamerRepositoryInterface import \
     SupStreamerRepositoryInterface
-from timber.timberInterface import TimberInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class SupStreamerRepository(SupStreamerRepositoryInterface):

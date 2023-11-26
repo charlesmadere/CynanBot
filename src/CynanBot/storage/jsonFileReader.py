@@ -4,8 +4,9 @@ from typing import Any, Dict, Optional
 
 import aiofiles
 import aiofiles.ospath
-import misc.utils as utils
-from storage.jsonReaderInterface import JsonReaderInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
 class JsonFileReader(JsonReaderInterface):

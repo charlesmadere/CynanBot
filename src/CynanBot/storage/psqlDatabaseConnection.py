@@ -1,10 +1,11 @@
 from typing import Any, List, Optional
 
 import asyncpg
-import misc.utils as utils
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from storage.exceptions import DatabaseConnectionIsClosedException
+
+import CynanBot.misc.utils as utils
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.exceptions import DatabaseConnectionIsClosedException
 
 
 class PsqlDatabaseConnection(DatabaseConnection):
