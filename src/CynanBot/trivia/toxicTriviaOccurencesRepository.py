@@ -1,11 +1,11 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from trivia.toxicTriviaResult import ToxicTriviaResult
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
 
 
 class ToxicTriviaOccurencesRepository():

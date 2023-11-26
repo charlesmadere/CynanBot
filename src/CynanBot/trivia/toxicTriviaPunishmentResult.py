@@ -1,8 +1,8 @@
 import locale
 from typing import List
 
-import misc.utils as utils
-from trivia.toxicTriviaPunishment import ToxicTriviaPunishment
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
 
 
 class ToxicTriviaPunishmentResult():

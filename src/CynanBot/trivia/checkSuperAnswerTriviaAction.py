@@ -1,8 +1,8 @@
 from typing import Optional
 
-import misc.utils as utils
-from trivia.absTriviaAction import AbsTriviaAction
-from trivia.triviaActionType import TriviaActionType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaAction import AbsTriviaAction
+from CynanBot.trivia.triviaActionType import TriviaActionType
 
 
 class CheckSuperAnswerTriviaAction(AbsTriviaAction):

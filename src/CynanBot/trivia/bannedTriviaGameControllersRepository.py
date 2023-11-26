@@ -1,21 +1,24 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from administratorProviderInterface import AdministratorProviderInterface
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.addBannedTriviaGameControllerResult import \
+import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
+    AdministratorProviderInterface
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
-from trivia.bannedTriviaGameController import BannedTriviaGameController
-from trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.bannedTriviaGameController import \
+    BannedTriviaGameController
+from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from trivia.removeBannedTriviaGameControllerResult import \
+from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
-from twitch.twitchTokensRepositoryInterface import \
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositoryInterface):

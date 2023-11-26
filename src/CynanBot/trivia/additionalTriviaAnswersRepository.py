@@ -1,27 +1,29 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
-from trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
-from trivia.additionalTriviaAnswersRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
+from CynanBot.trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
+from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from trivia.triviaExceptions import (
+from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,
     AdditionalTriviaAnswerIsMalformedException,
     AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
     TooManyAdditionalTriviaAnswersException)
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
-from twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from twitch.twitchTokensRepositoryInterface import \
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterface):

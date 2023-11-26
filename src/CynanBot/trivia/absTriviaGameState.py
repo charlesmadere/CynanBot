@@ -4,10 +4,10 @@ from abc import ABC
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import misc.utils as utils
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.specialTriviaStatus import SpecialTriviaStatus
-from trivia.triviaGameType import TriviaGameType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.triviaGameType import TriviaGameType
 
 
 class AbsTriviaGameState(ABC):

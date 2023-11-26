@@ -2,10 +2,10 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Set
 
-import misc.utils as utils
-from trivia.superTriviaCooldownHelperInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.superTriviaCooldownHelperInterface import \
     SuperTriviaCooldownHelperInterface
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 

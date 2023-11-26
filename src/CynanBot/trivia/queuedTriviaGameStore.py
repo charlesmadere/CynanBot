@@ -3,14 +3,15 @@ from collections import defaultdict
 from queue import SimpleQueue
 from typing import Dict, List, Set
 
-import misc.utils as utils
-from timber.timberInterface import TimberInterface
-from trivia.addQueuedGamesResult import AddQueuedGamesResult
-from trivia.clearQueuedGamesResult import ClearQueuedGamesResult
-from trivia.queuedTriviaGameStoreInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.addQueuedGamesResult import AddQueuedGamesResult
+from CynanBot.trivia.clearQueuedGamesResult import ClearQueuedGamesResult
+from CynanBot.trivia.queuedTriviaGameStoreInterface import \
     QueuedTriviaGameStoreInterface
-from trivia.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 

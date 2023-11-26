@@ -1,16 +1,17 @@
 from typing import Optional
 
-import misc.utils as utils
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaBanHelperInterface import TriviaBanHelperInterface
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaContentScannerInterface import TriviaContentScannerInterface
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaHistoryRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from trivia.triviaType import TriviaType
-from trivia.triviaVerifierInterface import TriviaVerifierInterface
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 
 
 class TriviaVerifier(TriviaVerifierInterface):

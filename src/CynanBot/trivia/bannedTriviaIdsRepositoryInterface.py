@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from trivia.bannedTriviaQuestion import BannedTriviaQuestion
-from trivia.banTriviaQuestionResult import BanTriviaQuestionResult
-from trivia.triviaSource import TriviaSource
+from CynanBot.trivia.bannedTriviaQuestion import BannedTriviaQuestion
+from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class BannedTriviaIdsRepositoryInterface(ABC):

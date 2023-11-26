@@ -1,5 +1,5 @@
-import misc.utils as utils
-from trivia.questionAnswerTriviaConditions import \
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 
 

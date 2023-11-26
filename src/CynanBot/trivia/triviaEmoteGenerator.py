@@ -1,12 +1,13 @@
 import random
 from typing import Dict, List, Optional, Set
 
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 
 
 class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):

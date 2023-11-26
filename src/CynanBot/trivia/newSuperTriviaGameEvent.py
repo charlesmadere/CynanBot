@@ -1,11 +1,11 @@
 import locale
 from typing import Optional
 
-import misc.utils as utils
-from trivia.absTriviaEvent import AbsTriviaEvent
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.specialTriviaStatus import SpecialTriviaStatus
-from trivia.triviaEventType import TriviaEventType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.triviaEventType import TriviaEventType
 
 
 class NewSuperTriviaGameEvent(AbsTriviaEvent):

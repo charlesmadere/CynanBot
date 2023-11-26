@@ -2,7 +2,7 @@ import random
 import string
 from abc import ABC
 
-from trivia.triviaActionType import TriviaActionType
+from CynanBot.trivia.triviaActionType import TriviaActionType
 
 
 class AbsTriviaAction(ABC):

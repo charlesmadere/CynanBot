@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from trivia.absTriviaGameState import AbsTriviaGameState
-from trivia.superTriviaGameState import SuperTriviaGameState
-from trivia.triviaGameState import TriviaGameState
+from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
+from CynanBot.trivia.superTriviaGameState import SuperTriviaGameState
+from CynanBot.trivia.triviaGameState import TriviaGameState
 
 
 class TriviaGameStoreInterface(ABC):

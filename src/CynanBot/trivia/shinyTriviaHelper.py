@@ -2,12 +2,13 @@ import random
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
-import misc.utils as utils
-from cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from timber.timberInterface import TimberInterface
-from trivia.shinyTriviaOccurencesRepository import \
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 

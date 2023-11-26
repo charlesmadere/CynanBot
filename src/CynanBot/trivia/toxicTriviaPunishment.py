@@ -1,7 +1,7 @@
 import locale
 
-import misc.utils as utils
-from cuteness.cutenessResult import CutenessResult
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessResult import CutenessResult
 
 
 class ToxicTriviaPunishment():

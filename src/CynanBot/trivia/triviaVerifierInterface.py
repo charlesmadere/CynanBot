@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 
 
 class TriviaVerifierInterface(ABC):

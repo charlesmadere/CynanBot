@@ -1,15 +1,15 @@
 from typing import Optional
 
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.bannedTriviaIdsRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from trivia.bannedTriviaQuestion import BannedTriviaQuestion
-from trivia.banTriviaQuestionResult import BanTriviaQuestionResult
-from trivia.triviaSource import TriviaSource
+from CynanBot.trivia.bannedTriviaQuestion import BannedTriviaQuestion
+from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):

@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Set
 
-from trivia.addQueuedGamesResult import AddQueuedGamesResult
-from trivia.clearQueuedGamesResult import ClearQueuedGamesResult
-from trivia.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
+from CynanBot.trivia.addQueuedGamesResult import AddQueuedGamesResult
+from CynanBot.trivia.clearQueuedGamesResult import ClearQueuedGamesResult
+from CynanBot.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
 
 
 class QueuedTriviaGameStoreInterface(ABC):

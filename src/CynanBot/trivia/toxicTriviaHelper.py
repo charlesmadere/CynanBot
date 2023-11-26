@@ -1,10 +1,10 @@
 import random
 
-import misc.utils as utils
-from timber.timberInterface import TimberInterface
-from trivia.toxicTriviaOccurencesRepository import \
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 

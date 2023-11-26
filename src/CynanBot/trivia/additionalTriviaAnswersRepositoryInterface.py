@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class AdditionalTriviaAnswersRepositoryInterface(ABC):

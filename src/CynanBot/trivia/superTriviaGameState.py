@@ -1,11 +1,11 @@
 from collections import defaultdict
 from typing import Dict, Optional
 
-import misc.utils as utils
-from trivia.absTriviaGameState import AbsTriviaGameState
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.specialTriviaStatus import SpecialTriviaStatus
-from trivia.triviaGameType import TriviaGameType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.triviaGameType import TriviaGameType
 
 
 class SuperTriviaGameState(AbsTriviaGameState):

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from trivia.absTriviaAction import AbsTriviaAction
-from trivia.triviaEventListener import TriviaEventListener
+from CynanBot.trivia.absTriviaAction import AbsTriviaAction
+from CynanBot.trivia.triviaEventListener import TriviaEventListener
 
 
 class TriviaGameMachineInterface(ABC):

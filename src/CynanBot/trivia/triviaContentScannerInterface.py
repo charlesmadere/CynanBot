@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
 
 
 class TriviaContentScannerInterface(ABC):

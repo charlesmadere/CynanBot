@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from trivia.addBannedTriviaGameControllerResult import \
+from CynanBot.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
-from trivia.bannedTriviaGameController import BannedTriviaGameController
-from trivia.removeBannedTriviaGameControllerResult import \
+from CynanBot.trivia.bannedTriviaGameController import \
+    BannedTriviaGameController
+from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 
 

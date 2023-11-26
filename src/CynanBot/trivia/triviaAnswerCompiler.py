@@ -2,12 +2,13 @@ import re
 import traceback
 from typing import List, Optional, Pattern, Set
 
-import misc.utils as utils
 import roman
 from num2words import num2words
 from roman import RomanError
-from timber.timberInterface import TimberInterface
-from trivia.triviaExceptions import BadTriviaAnswerException
+
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaExceptions import BadTriviaAnswerException
 
 
 class TriviaAnswerCompiler():

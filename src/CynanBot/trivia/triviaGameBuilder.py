@@ -1,15 +1,17 @@
 from typing import Optional
 
-import misc.utils as utils
-from trivia.questionAnswerTriviaConditions import \
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from trivia.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
-from trivia.startNewTriviaGameAction import StartNewTriviaGameAction
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaGameBuilderInterface import TriviaGameBuilderInterface
-from trivia.triviaGameBuilderSettingsInterface import \
+from CynanBot.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBot.trivia.startNewTriviaGameAction import StartNewTriviaGameAction
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
+from CynanBot.trivia.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
-from users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class TriviaGameBuilder(TriviaGameBuilderInterface):

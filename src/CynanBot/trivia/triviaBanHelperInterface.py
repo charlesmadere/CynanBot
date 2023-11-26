@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from trivia.banTriviaQuestionResult import BanTriviaQuestionResult
-from trivia.triviaSource import TriviaSource
+from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaBanHelperInterface(ABC):

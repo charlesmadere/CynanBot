@@ -1,8 +1,8 @@
 import locale
 
-import misc.utils as utils
-from trivia.absTriviaEvent import AbsTriviaEvent
-from trivia.triviaEventType import TriviaEventType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.triviaEventType import TriviaEventType
 
 
 class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):

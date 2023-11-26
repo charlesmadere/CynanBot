@@ -1,7 +1,7 @@
 from typing import Optional
 
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class AdditionalTriviaAnswerAlreadyExistsException(Exception):

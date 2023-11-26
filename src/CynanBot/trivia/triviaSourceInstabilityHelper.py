@@ -2,8 +2,8 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
-from timber.timberInterface import TimberInterface
-from trivia.triviaSource import TriviaSource
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaSourceInstabilityHelper():

@@ -1,9 +1,9 @@
 from typing import List
 
-import misc.utils as utils
-from trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class AdditionalTriviaAnswers():

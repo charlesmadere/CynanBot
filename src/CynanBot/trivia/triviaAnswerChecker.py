@@ -3,21 +3,25 @@ import re
 import traceback
 from typing import Any, Dict, Generator, List, Optional, Pattern, Set
 
-import misc.utils as utils
 import polyleven
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from trivia.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from trivia.triviaAnswerCompiler import TriviaAnswerCompiler
-from trivia.triviaExceptions import (BadTriviaAnswerException,
-                                     UnsupportedTriviaTypeException)
-from trivia.triviaSettingsRepositoryInterface import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from CynanBot.trivia.triviaAnswerCheckerInterface import \
+    TriviaAnswerCheckerInterface
+from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
+from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.triviaExceptions import (BadTriviaAnswerException,
+                                              UnsupportedTriviaTypeException)
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaType import TriviaType
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class TriviaAnswerChecker(TriviaAnswerCheckerInterface):

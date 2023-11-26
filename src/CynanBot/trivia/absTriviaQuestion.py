@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-import misc.utils as utils
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaExceptions import (BadTriviaDifficultyException,
-                                     BadTriviaIdException,
-                                     BadTriviaSourceException,
-                                     BadTriviaTypeException,
-                                     NoTriviaQuestionException)
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import (BadTriviaDifficultyException,
+                                              BadTriviaIdException,
+                                              BadTriviaSourceException,
+                                              BadTriviaTypeException,
+                                              NoTriviaQuestionException)
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class AbsTriviaQuestion(ABC):

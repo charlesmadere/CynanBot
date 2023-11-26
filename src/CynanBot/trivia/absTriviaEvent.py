@@ -2,8 +2,8 @@ import random
 import string
 from abc import ABC
 
-import misc.utils as utils
-from trivia.triviaEventType import TriviaEventType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.triviaEventType import TriviaEventType
 
 
 class AbsTriviaEvent(ABC):

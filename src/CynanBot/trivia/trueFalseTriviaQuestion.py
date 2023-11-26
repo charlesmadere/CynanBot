@@ -1,11 +1,11 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaExceptions import NoTriviaCorrectAnswersException
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import NoTriviaCorrectAnswersException
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class TrueFalseTriviaQuestion(AbsTriviaQuestion):

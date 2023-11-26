@@ -5,75 +5,86 @@ from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import Any, Dict, List, Optional, Set
 
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaAction import AbsTriviaAction
-from trivia.absTriviaEvent import AbsTriviaEvent
-from trivia.absTriviaGameState import AbsTriviaGameState
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
-from trivia.checkSuperAnswerTriviaAction import CheckSuperAnswerTriviaAction
-from trivia.clearedSuperTriviaQueueTriviaEvent import \
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaAction import AbsTriviaAction
+from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
+from CynanBot.trivia.checkSuperAnswerTriviaAction import \
+    CheckSuperAnswerTriviaAction
+from CynanBot.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
-from trivia.clearSuperTriviaQueueTriviaAction import \
+from CynanBot.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
-from trivia.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
-from trivia.correctSuperAnswerTriviaEvent import CorrectSuperAnswerTriviaEvent
-from trivia.failedToFetchQuestionSuperTriviaEvent import \
+from CynanBot.trivia.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
+from CynanBot.trivia.correctSuperAnswerTriviaEvent import \
+    CorrectSuperAnswerTriviaEvent
+from CynanBot.trivia.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
-from trivia.failedToFetchQuestionTriviaEvent import \
+from CynanBot.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
-from trivia.gameAlreadyInProgressTriviaEvent import \
+from CynanBot.trivia.gameAlreadyInProgressTriviaEvent import \
     GameAlreadyInProgressTriviaEvent
-from trivia.gameNotReadyCheckAnswerTriviaEvent import \
+from CynanBot.trivia.gameNotReadyCheckAnswerTriviaEvent import \
     GameNotReadyCheckAnswerTriviaEvent
-from trivia.incorrectAnswerTriviaEvent import IncorrectAnswerTriviaEvent
-from trivia.incorrectSuperAnswerTriviaEvent import \
+from CynanBot.trivia.incorrectAnswerTriviaEvent import \
+    IncorrectAnswerTriviaEvent
+from CynanBot.trivia.incorrectSuperAnswerTriviaEvent import \
     IncorrectSuperAnswerTriviaEvent
-from trivia.invalidAnswerInputTriviaEvent import InvalidAnswerInputTriviaEvent
-from trivia.newQueuedSuperTriviaGameEvent import NewQueuedSuperTriviaGameEvent
-from trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
-from trivia.newTriviaGameEvent import NewTriviaGameEvent
-from trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
-from trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from trivia.queuedTriviaGameStoreInterface import \
+from CynanBot.trivia.invalidAnswerInputTriviaEvent import \
+    InvalidAnswerInputTriviaEvent
+from CynanBot.trivia.newQueuedSuperTriviaGameEvent import \
+    NewQueuedSuperTriviaGameEvent
+from CynanBot.trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
+from CynanBot.trivia.newTriviaGameEvent import NewTriviaGameEvent
+from CynanBot.trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
+from CynanBot.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBot.trivia.queuedTriviaGameStoreInterface import \
     QueuedTriviaGameStoreInterface
-from trivia.shinyTriviaHelper import ShinyTriviaHelper
-from trivia.specialTriviaStatus import SpecialTriviaStatus
-from trivia.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
-from trivia.startNewTriviaGameAction import StartNewTriviaGameAction
-from trivia.superGameNotReadyCheckAnswerTriviaEvent import \
+from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBot.trivia.startNewTriviaGameAction import StartNewTriviaGameAction
+from CynanBot.trivia.superGameNotReadyCheckAnswerTriviaEvent import \
     SuperGameNotReadyCheckAnswerTriviaEvent
-from trivia.superTriviaCooldownHelperInterface import \
+from CynanBot.trivia.superTriviaCooldownHelperInterface import \
     SuperTriviaCooldownHelperInterface
-from trivia.superTriviaGameState import SuperTriviaGameState
-from trivia.toxicTriviaHelper import ToxicTriviaHelper
-from trivia.toxicTriviaPunishment import ToxicTriviaPunishment
-from trivia.toxicTriviaPunishmentResult import ToxicTriviaPunishmentResult
-from trivia.triviaActionType import TriviaActionType
-from trivia.triviaAnswerChecker import TriviaAnswerChecker
-from trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from trivia.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
-from trivia.triviaEventListener import TriviaEventListener
-from trivia.triviaExceptions import (TooManyTriviaFetchAttemptsException,
-                                     UnknownTriviaActionTypeException,
-                                     UnknownTriviaGameTypeException)
-from trivia.triviaGameMachineInterface import TriviaGameMachineInterface
-from trivia.triviaGameState import TriviaGameState
-from trivia.triviaGameStoreInterface import TriviaGameStoreInterface
-from trivia.triviaGameType import TriviaGameType
-from trivia.triviaRepositories.triviaRepositoryInterface import \
+from CynanBot.trivia.superTriviaGameState import SuperTriviaGameState
+from CynanBot.trivia.toxicTriviaHelper import ToxicTriviaHelper
+from CynanBot.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBot.trivia.toxicTriviaPunishmentResult import \
+    ToxicTriviaPunishmentResult
+from CynanBot.trivia.triviaActionType import TriviaActionType
+from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
+from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
+from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
+from CynanBot.trivia.triviaEventListener import TriviaEventListener
+from CynanBot.trivia.triviaExceptions import (
+    TooManyTriviaFetchAttemptsException, UnknownTriviaActionTypeException,
+    UnknownTriviaGameTypeException)
+from CynanBot.trivia.triviaGameMachineInterface import \
+    TriviaGameMachineInterface
+from CynanBot.trivia.triviaGameState import TriviaGameState
+from CynanBot.trivia.triviaGameStoreInterface import TriviaGameStoreInterface
+from CynanBot.trivia.triviaGameType import TriviaGameType
+from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from trivia.triviaScoreRepository import TriviaScoreRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.wrongUserCheckAnswerTriviaEvent import \
+from CynanBot.trivia.wrongUserCheckAnswerTriviaEvent import \
     WrongUserCheckAnswerTriviaEvent
-from twitch.twitchTokensRepositoryInterface import \
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TriviaGameMachine(TriviaGameMachineInterface):

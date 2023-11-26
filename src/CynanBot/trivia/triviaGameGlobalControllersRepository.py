@@ -1,18 +1,22 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from administratorProviderInterface import AdministratorProviderInterface
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
-from trivia.addTriviaGameControllerResult import AddTriviaGameControllerResult
-from trivia.removeTriviaGameControllerResult import \
+import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
+    AdministratorProviderInterface
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.addTriviaGameControllerResult import \
+    AddTriviaGameControllerResult
+from CynanBot.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
-from trivia.triviaGameGlobalController import TriviaGameGlobalController
-from twitch.twitchTokensRepositoryInterface import \
+from CynanBot.trivia.triviaGameGlobalController import \
+    TriviaGameGlobalController
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TriviaGameGlobalControllersRepository():

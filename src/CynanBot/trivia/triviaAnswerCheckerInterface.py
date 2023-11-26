@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
 
 
 class TriviaAnswerCheckerInterface(ABC):
