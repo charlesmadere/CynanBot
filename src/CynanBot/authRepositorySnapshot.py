@@ -12,16 +12,16 @@ class AuthRepositorySnapshot():
         self.__jsonContents: Dict[str, Any] = jsonContents
 
     def getDeepLAuthKey(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', '')
+        return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', fallback = '')
 
     def getMerriamWebsterApiKey(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'merriamWebsterApiKey', '')
+        return utils.getStrFromDict(self.__jsonContents, 'merriamWebsterApiKey', fallback = '')
 
     def getOneWeatherApiKey(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'oneWeatherApiKey', '')
+        return utils.getStrFromDict(self.__jsonContents, 'oneWeatherApiKey', fallback = '')
 
     def getQuizApiKey(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'quizApiKey', '')
+        return utils.getStrFromDict(self.__jsonContents, 'quizApiKey', fallback = '')
 
     def hasDeepLAuthKey(self) -> bool:
         return utils.isValidStr(self.getDeepLAuthKey())

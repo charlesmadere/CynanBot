@@ -1,1 +1,0 @@
-CynanBotCommon @ git+https://github.com/beauxq/CynanBotCommon@9dd30c0d06b3720219adb470d42efe09f07e694e

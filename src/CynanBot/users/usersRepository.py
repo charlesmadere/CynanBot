@@ -24,7 +24,7 @@ class UsersRepository(UsersRepositoryInterface):
         self,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
-        usersFile: str = 'users/usersRepository.json'
+        usersFile: str = 'usersRepository.json'
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')

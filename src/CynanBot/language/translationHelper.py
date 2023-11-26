@@ -34,7 +34,7 @@ class TranslationHelper(TranslationHelperInterface):
         networkClientProvider: NetworkClientProvider,
         deepLAuthKey: str,
         timber: TimberInterface,
-        googleServiceAccountFile: str = 'CynanBotCommon/language/googleServiceAccount.json'
+        googleServiceAccountFile: str = 'googleServiceAccount.json'
     ):
         if not isinstance(languagesRepository, LanguagesRepository):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')

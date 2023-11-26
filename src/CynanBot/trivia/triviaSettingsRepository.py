@@ -15,7 +15,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__settingsCache: Optional[Dict[str, Any]] = None
+        self.__cache: Optional[Dict[str, Any]] = None
 
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -30,7 +30,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         return utils.getBoolFromDict(jsonContents, 'toxic_trivias_enabled', True)
 
     async def clearCaches(self):
-        self.__settingsCache = None
+        self.__cache = None
 
     async def getAvailableTriviaSourcesAndWeights(self) -> Dict[TriviaSource, int]:
         jsonContents = await self.__readJson()
@@ -170,8 +170,8 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         return utils.getBoolFromDict(jsonContents, 'debug_logging_enabled', True)
 
     async def __readJson(self) -> Dict[str, Any]:
-        if self.__settingsCache is not None:
-            return self.__settingsCache
+        if self.__cache is not None:
+            return self.__cache
 
         jsonContents: Optional[Dict[str, Any]] = None
 
@@ -183,5 +183,5 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         if jsonContents is None:
             raise IOError(f'Error reading from trivia settings file: {self.__settingsJsonReader}')
 
-        self.__settingsCache = jsonContents
+        self.__cache = jsonContents
         return jsonContents

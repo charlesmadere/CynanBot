@@ -1,27 +1,28 @@
-import json
 import random
 import re
-from typing import Any, Dict, List
-
-import aiofiles
-import aiofiles.ospath
+from typing import Any, Dict, List, Optional, Pattern
 
 import CynanBot.misc.utils as utils
+from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
+    StarWarsQuotesRepositoryInterface
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
-class StarWarsQuotesRepository():
+class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
 
-    def __init__(
-        self,
-        quotesFile: str = 'CynanBotCommon/starWars/starWarsQuotesRepository.json'
-    ):
-        if not utils.isValidStr(quotesFile):
-            raise ValueError(f'quotesFile argument is malformed: \"{quotesFile}\"')
+    def __init__(self, quotesJsonReader: JsonReaderInterface):
+        if not isinstance(quotesJsonReader, JsonReaderInterface):
+            raise ValueError(f'quotesJsonReader argument is malformed: \"{quotesJsonReader}\"')
 
-        self.__quotesFile: str = quotesFile
-        self.__quoteInputRegEx = re.compile('\$\((.*)\)')
+        self.__quotesJsonReader: JsonReaderInterface = quotesJsonReader
 
-    async def fetchRandomQuote(self, trilogy: str = None) -> str:
+        self.__cache: Optional[Dict[str, Any]] = None
+        self.__quoteInputRegEx: Pattern = re.compile(r'\$\((.*)\)', re.IGNORECASE)
+
+    async def clearCaches(self):
+        self.__cache.clear()
+
+    async def fetchRandomQuote(self, trilogy: Optional[str] = None) -> str:
         jsonContents = await self.__getQuotes(trilogy)
         quote = random.choice(jsonContents)
         return self.__processQuote(quote)
@@ -29,10 +30,10 @@ class StarWarsQuotesRepository():
     async def __getQuotes(self, trilogy: str = None) -> List[str]:
         trilogy = utils.cleanStr(trilogy)
         jsonContents = await self.__readJson()
+        quotes: Optional[Dict[str, List[str]]] = jsonContents.get('quotes')
 
-        quotes = jsonContents.get('quotes')
         if not utils.hasItems(quotes):
-            raise ValueError(f'JSON contents of quotes file \"{self.__quotesFile}\" is missing \"quotes\" key')
+            raise RuntimeError(f'No quotes are available: \"{jsonContents}\"')
 
         if utils.isValidStr(trilogy) and trilogy in quotes.keys():
             result = quotes[trilogy]
@@ -53,21 +54,23 @@ class StarWarsQuotesRepository():
         return quote.replace(result.group(0), value)
 
     async def __readJson(self) -> Dict[str, Any]:
-        if not await aiofiles.ospath.exists(self.__quotesFile):
-            raise FileNotFoundError(f'quotes file not found: \"{self.__quotesFile}\"')
+        if self.__cache is not None:
+            return self.__cache
 
-        async with aiofiles.open(self.__quotesFile, mode = 'r') as file:
-            data = await file.read()
-            jsonContents = json.loads(data)
+        jsonContents: Optional[Dict[str, Any]] = None
+
+        if await self.__quotesJsonReader.fileExistsAsync():
+            jsonContents = await self.__quotesJsonReader.readJsonAsync()
+        else:
+            jsonContents = dict()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from quotes file: \"{self.__quotesFile}\"')
-        elif len(jsonContents) == 0:
-            raise ValueError(f'JSON contents of quotes file \"{self.__quotesFile}\" is empty')
+            raise IOError(f'Error reading from trivia settings file: {self.__quotesJsonReader}')
 
+        self.__cache = jsonContents
         return jsonContents
 
-    async def searchQuote(self, query: str, input: str = None) -> str:
+    async def searchQuote(self, query: str, input: Optional[str] = None) -> str:
         if not utils.isValidStr(query):
             raise ValueError(f'query argument is malformed: \"{query}\"')
 

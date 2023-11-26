@@ -81,7 +81,8 @@ from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
 from CynanBot.twitch.twitchApiService import TwitchApiService
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
-from CynanBot.twitch.twitchIoConfiguration import TwitchIoConfiguration
+from CynanBot.twitch.twitchIo.twitchIoConfiguration import \
+    TwitchIoConfiguration
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -132,7 +133,7 @@ if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('CynanBotCommon/storage/psqlCredentials.json')
+            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
         )
     )
 elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
@@ -159,7 +160,7 @@ authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/contentScanner/bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
     timber = timber
 )
 contentScanner: ContentScannerInterface = ContentScanner(
@@ -179,7 +180,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
-    seedFileReader = JsonFileReader('CynanBotCommon/twitch/twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
 )
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
@@ -197,7 +198,7 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timeZoneRepository = timeZoneRepository
 )
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('CynanBotCommon/emojiHelper/emojiRepository.json'),
+    emojiJsonReader = JsonFileReader('emojiRepository.json'),
     timber = timber
 )
 emojiHelper: EmojiHelperInterface = EmojiHelper(
@@ -206,7 +207,7 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    seedFileReader = JsonFileReader('CynanBotCommon/funtoon/funtoonTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('funtoonTokensRepositorySeedFile.json')
 )
 funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
@@ -221,7 +222,7 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
 )
 languagesRepository = LanguagesRepository()
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
-    locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
+    locationsJsonReader = JsonFileReader('locationsRepository.json'),
     timeZoneRepository = timeZoneRepository
 )
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
@@ -253,7 +254,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
 ttsManager: Optional[TtsManagerInterface] = None
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
 if generalSettingsSnapshot.isTtsEnabled():

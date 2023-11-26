@@ -1,11 +1,9 @@
-import json
 import random
 from typing import Any, Dict, List, Optional, Set
 
-import aiofiles
-import aiofiles.ospath
-
 import CynanBot.misc.utils as utils
+from CynanBot.misc.clearable import Clearable
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.multipleChoiceTriviaQuestion import \
@@ -22,25 +20,30 @@ from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
-class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository):
+class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
 
     def __init__(
         self,
+        jokeTriviaJsonReader: JsonReaderInterface,
         timber: TimberInterface,
-        triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        jokeTriviaQuestionFile: str = 'CynanBotCommon/trivia/questionSources/jokeTriviaQuestionRepository.json'
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         super().__init__(triviaSettingsRepository)
 
+        if not isinstance(jokeTriviaJsonReader, JsonReaderInterface):
+            raise ValueError(f'jokeTriviaJsonReader argument is malformed: \"{jokeTriviaJsonReader}\"')
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidStr(jokeTriviaQuestionFile):
-            raise ValueError(f'jokeTriviaQuestionFile argument is malformed: \"{jokeTriviaQuestionFile}\"')
 
+        self.__jokeTriviaJsonReader: JsonReaderInterface = jokeTriviaJsonReader
         self.__timber: TimberInterface = timber
-        self.__triviaDatabaseFile: str = jokeTriviaQuestionFile
 
+        self.__cache: Optional[Dict[str, Any]] = None
         self.__hasQuestionSetAvailable: Optional[bool] = None
+
+    async def clearCaches(self):
+        self.__cache = None
+        self.__timber.log('JokeTriviaQuestionRepository', 'Caches cleared')
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -128,20 +131,24 @@ class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if self.__hasQuestionSetAvailable is not None:
             return self.__hasQuestionSetAvailable
 
-        hasQuestionSetAvailable = await aiofiles.ospath.exists(self.__triviaDatabaseFile)
+        hasQuestionSetAvailable = await self.__jokeTriviaJsonReader.fileExistsAsync()
         self.__hasQuestionSetAvailable = hasQuestionSetAvailable
 
         return hasQuestionSetAvailable
 
     async def __readAllJson(self) -> Dict[str, Any]:
-        if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
-            raise FileNotFoundError(f'Joke trivia database file not found: \"{self.__triviaDatabaseFile}\"')
+        if self.__cache is not None:
+            return self.__cache
 
-        async with aiofiles.open(self.__triviaDatabaseFile, mode = 'r', encoding = 'utf-8') as file:
-            data = await file.read()
-            jsonContents = json.loads(data)
+        jsonContents: Optional[Dict[str, Any]] = None
+
+        if await self.__jokeTriviaJsonReader.fileExistsAsync():
+            jsonContents = await self.__jokeTriviaJsonReader.readJsonAsync()
+        else:
+            jsonContents = dict()
 
         if jsonContents is None:
-            raise IOError(f'Error reading from joke trivia file: \"{self.__triviaDatabaseFile}\"')
+            raise IOError(f'Error reading from joke trivia file: \"{self.__jokeTriviaJsonReader}\"')
 
+        self.__cache = jsonContents
         return jsonContents

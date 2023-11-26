@@ -191,7 +191,8 @@ from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
 from CynanBot.twitch.twitchApiService import TwitchApiService
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
-from CynanBot.twitch.twitchIoConfiguration import TwitchIoConfiguration
+from CynanBot.twitch.twitchIo.twitchIoConfiguration import \
+    TwitchIoConfiguration
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -245,7 +246,7 @@ if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider(
-            credentialsJsonReader = JsonFileReader('CynanBotCommon/storage/psqlCredentials.json')
+            credentialsJsonReader = JsonFileReader('psqlCredentials.json')
         )
     )
 elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
@@ -272,7 +273,7 @@ authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('CynanBotCommon/contentScanner/bannedWords.txt'),
+    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
     timber = timber
 )
 contentScanner: ContentScannerInterface = ContentScanner(
@@ -292,7 +293,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
-    seedFileReader = JsonFileReader('CynanBotCommon/twitch/twitchTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
 )
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
@@ -314,7 +315,7 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('CynanBotCommon/emojiHelper/emojiRepository.json'),
+    emojiJsonReader = JsonFileReader('emojiRepository.json'),
     timber = timber
 )
 emojiHelper: EmojiHelperInterface = EmojiHelper(
@@ -323,7 +324,7 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
-    seedFileReader = JsonFileReader('CynanBotCommon/funtoon/funtoonTokensRepositorySeedFile.json')
+    seedFileReader = JsonFileReader('funtoonTokensRepositorySeedFile.json')
 )
 funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
     funtoonTokensRepository = funtoonTokensRepository,
@@ -338,7 +339,7 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
 )
 languagesRepository = LanguagesRepository()
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
-    locationsJsonReader = JsonFileReader('CynanBotCommon/location/locationsRepository.json'),
+    locationsJsonReader = JsonFileReader('locationsRepository.json'),
     timeZoneRepository = timeZoneRepository
 )
 pokepediaRepository = PokepediaRepository(
@@ -406,7 +407,7 @@ triviaAnswerCompiler = TriviaAnswerCompiler(
 triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
 triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
@@ -526,6 +527,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
+        jokeTriviaJsonReader = 'jokeTriviaQuestionRepository.json',
         timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
@@ -664,7 +666,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 ttsManager: Optional[TtsManagerInterface] = None
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
-    settingsJsonReader = JsonFileReader('CynanBotCommon/tts/ttsSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
 if generalSettingsSnapshot.isTtsEnabled():
@@ -773,7 +775,9 @@ cynanBot = CynanBot(
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
-    starWarsQuotesRepository = StarWarsQuotesRepository(),
+    starWarsQuotesRepository = StarWarsQuotesRepository(
+        quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
+    ),
     timber = timber,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
