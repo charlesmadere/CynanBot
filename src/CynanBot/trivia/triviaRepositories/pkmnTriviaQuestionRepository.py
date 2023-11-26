@@ -2,34 +2,36 @@ import random
 import traceback
 from typing import Any, Dict, List, Optional, Set
 
-import misc.utils as utils
-from network.exceptions import GenericNetworkException
-from pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
-from pkmn.pokepediaContestType import PokepediaContestType
-from pkmn.pokepediaDamageClass import PokepediaDamageClass
-from pkmn.pokepediaElementType import PokepediaElementType
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaMachineType import PokepediaMachineType
-from pkmn.pokepediaMove import PokepediaMove
-from pkmn.pokepediaNature import PokepediaNature
-from pkmn.pokepediaRepository import PokepediaRepository
-from pkmn.pokepediaStat import PokepediaStat
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     UnsupportedTriviaTypeException)
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from trivia.triviaRepositories.absTriviaQuestionRepository import \
+import CynanBot.misc.utils as utils
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
+from CynanBot.pkmn.pokepediaContestType import PokepediaContestType
+from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaMachineType import PokepediaMachineType
+from CynanBot.pkmn.pokepediaMove import PokepediaMove
+from CynanBot.pkmn.pokepediaNature import PokepediaNature
+from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaStat import PokepediaStat
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
+                                              MalformedTriviaJsonException,
+                                              UnsupportedTriviaTypeException)
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
+from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):

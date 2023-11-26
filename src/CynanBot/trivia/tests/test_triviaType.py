@@ -1,6 +1,6 @@
 from typing import List
 
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class TestTriviaType():

@@ -1,4 +1,4 @@
-from trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 
 
 class TestTriviaDifficulty():

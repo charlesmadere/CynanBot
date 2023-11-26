@@ -5,60 +5,61 @@ import traceback
 from queue import SimpleQueue
 from typing import Dict, List, Optional, Set
 
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.questionAnswerTriviaConditions import \
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from trivia.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     NoTriviaCorrectAnswersException,
-                                     NoTriviaMultipleChoiceResponsesException,
-                                     NoTriviaQuestionException,
-                                     TooManyTriviaFetchAttemptsException)
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaRepositories.bongoTriviaQuestionRepository import \
+from CynanBot.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaExceptions import (
+    GenericTriviaNetworkException, MalformedTriviaJsonException,
+    NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException,
+    NoTriviaQuestionException, TooManyTriviaFetchAttemptsException)
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
-from trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
-from trivia.triviaRepositories.jokeTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
-from trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
-from trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
+from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
     LotrTriviaQuestionRepository
-from trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
     MillionaireTriviaQuestionRepository
-from trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
-from trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
-from trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
-from trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
-from trivia.triviaRepositories.triviaQuestionRepositoryInterface import \
+from CynanBot.trivia.triviaRepositories.triviaQuestionRepositoryInterface import \
     TriviaQuestionRepositoryInterface
-from trivia.triviaRepositories.triviaRepositoryInterface import \
+from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from trivia.triviaRepositories.willFryTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
-from trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaSourceInstabilityHelper import TriviaSourceInstabilityHelper
-from trivia.triviaType import TriviaType
-from trivia.triviaVerifierInterface import TriviaVerifierInterface
-from twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaSourceInstabilityHelper import \
+    TriviaSourceInstabilityHelper
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 
 
 class TriviaRepository(TriviaRepositoryInterface):

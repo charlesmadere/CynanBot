@@ -1,7 +1,8 @@
 from typing import List
 
 import pytest
-from trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+
+from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 
 
 class TestTriviaQuestionCompiler():

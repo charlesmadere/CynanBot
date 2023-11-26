@@ -3,22 +3,24 @@ from typing import Any, Dict, List, Optional, Set
 import aiofiles
 import aiofiles.ospath
 import aiosqlite
-import misc.utils as utils
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.additionalTriviaAnswersRepositoryInterface import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from trivia.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from trivia.triviaAnswerCompiler import TriviaAnswerCompiler
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from trivia.triviaRepositories.absTriviaQuestionRepository import \
+from CynanBot.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):

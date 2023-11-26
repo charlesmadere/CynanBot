@@ -4,19 +4,20 @@ from typing import Any, Dict, List, Optional, Set
 
 import aiofiles
 import aiofiles.ospath
-import misc.utils as utils
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaExceptions import UnsupportedTriviaTypeException
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaRepositories.absTriviaQuestionRepository import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import UnsupportedTriviaTypeException
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository):

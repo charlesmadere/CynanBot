@@ -1,4 +1,4 @@
-from trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TestTriviaSource():

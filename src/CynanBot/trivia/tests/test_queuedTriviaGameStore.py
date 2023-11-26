@@ -1,16 +1,18 @@
 import pytest
-from storage.jsonStaticReader import JsonStaticReader
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from trivia.questionAnswerTriviaConditions import \
+
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from trivia.queuedTriviaGameStore import QueuedTriviaGameStore
-from trivia.queuedTriviaGameStoreInterface import \
+from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.queuedTriviaGameStoreInterface import \
     QueuedTriviaGameStoreInterface
-from trivia.startNewSuperTriviaGameAction import StartNewSuperTriviaGameAction
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaSettingsRepository import TriviaSettingsRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 

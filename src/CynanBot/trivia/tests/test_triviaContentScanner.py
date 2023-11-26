@@ -1,28 +1,33 @@
 from typing import List
 
 import pytest
-from contentScanner.bannedWordsRepository import BannedWordsRepository
-from contentScanner.bannedWordsRepositoryInterface import \
+
+from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from contentScanner.contentScanner import ContentScanner
-from contentScanner.contentScannerInterface import ContentScannerInterface
-from storage.jsonStaticReader import JsonStaticReader
-from storage.linesReaderInterface import LinesReaderInterface
-from storage.linesStaticReader import LinesStaticReader
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from trivia.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from trivia.triviaContentCode import TriviaContentCode
-from trivia.triviaContentScanner import TriviaContentScanner
-from trivia.triviaContentScannerInterface import TriviaContentScannerInterface
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaSettingsRepository import TriviaSettingsRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.contentScanner.contentScanner import ContentScanner
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
+from CynanBot.storage.linesReaderInterface import LinesReaderInterface
+from CynanBot.storage.linesStaticReader import LinesStaticReader
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class TestTriviaContentScanner():

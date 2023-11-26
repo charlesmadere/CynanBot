@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 
 
 class TriviaRepositoryInterface(ABC):

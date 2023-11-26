@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Set
 
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaQuestionRepositoryInterface(ABC):

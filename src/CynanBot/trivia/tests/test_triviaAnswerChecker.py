@@ -1,22 +1,25 @@
 from typing import Set
 
 import pytest
-from storage.jsonStaticReader import JsonStaticReader
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from trivia.questionAnswerTriviaQuestion import QuestionAnswerTriviaQuestion
-from trivia.triviaAnswerChecker import TriviaAnswerChecker
-from trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from trivia.triviaAnswerCompiler import TriviaAnswerCompiler
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from trivia.triviaSettingsRepository import TriviaSettingsRepository
-from trivia.triviaSettingsRepositoryInterface import \
+
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questionAnswerTriviaQuestion import \
+    QuestionAnswerTriviaQuestion
+from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
+from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
+from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class TestTriviaAnswerChecker():

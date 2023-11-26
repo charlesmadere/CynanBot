@@ -1,26 +1,28 @@
 import traceback
 from typing import Any, Dict, List, Optional, Set
 
-import misc.utils as utils
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
-from trivia.absTriviaQuestion import AbsTriviaQuestion
-from trivia.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from trivia.triviaDifficulty import TriviaDifficulty
-from trivia.triviaExceptions import (GenericTriviaNetworkException,
-                                     MalformedTriviaJsonException,
-                                     UnsupportedTriviaTypeException)
-from trivia.triviaFetchOptions import TriviaFetchOptions
-from trivia.triviaIdGeneratorInterface import TriviaIdGeneratorInterface
-from trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from trivia.triviaRepositories.absTriviaQuestionRepository import \
+import CynanBot.misc.utils as utils
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
+                                              MalformedTriviaJsonException,
+                                              UnsupportedTriviaTypeException)
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
+from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from trivia.triviaSource import TriviaSource
-from trivia.triviaType import TriviaType
-from trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):

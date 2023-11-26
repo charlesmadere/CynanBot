@@ -2,13 +2,15 @@ import asyncio
 from asyncio import AbstractEventLoop
 
 import pytest
-from backgroundTaskHelper import BackgroundTaskHelper
-from storage.backingDatabase import BackingDatabase
-from storage.backingSqliteDatabase import BackingSqliteDatabase
-from timber.timberInterface import TimberInterface
-from timber.timberStub import TimberStub
-from trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from trivia.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 
 
 class TestTriviaEmoteGenerator():

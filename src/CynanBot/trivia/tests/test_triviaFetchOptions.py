@@ -1,6 +1,6 @@
-from trivia.questionAnswerTriviaConditions import \
+from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 
 
 class TestTriviaFetchOptions():

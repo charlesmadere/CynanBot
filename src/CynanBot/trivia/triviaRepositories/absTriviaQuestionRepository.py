@@ -1,11 +1,11 @@
 from typing import List
 
-import misc.utils as utils
-from trivia.triviaExceptions import (NoTriviaCorrectAnswersException,
-                                     NoTriviaMultipleChoiceResponsesException)
-from trivia.triviaRepositories.triviaQuestionRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.trivia.triviaExceptions import (
+    NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException)
+from CynanBot.trivia.triviaRepositories.triviaQuestionRepositoryInterface import \
     TriviaQuestionRepositoryInterface
-from trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
 
