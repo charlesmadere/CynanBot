@@ -8,191 +8,197 @@ from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
-import CynanBotCommon.utils as utils
-from authRepository import AuthRepository
-from commands import (AbsCommand, AddBannedTriviaControllerCommand,
-                      AddCheerActionCommand, AddGlobalTriviaControllerCommand,
-                      AddTriviaAnswerCommand, AddTriviaControllerCommand,
-                      AddUserCommand, AnswerCommand, BanTriviaQuestionCommand,
-                      ClearCachesCommand, ClearSuperTriviaQueueCommand,
-                      CommandsCommand, ConfirmCommand,
-                      CutenessChampionsCommand, CutenessCommand,
-                      CutenessHistoryCommand, CynanSourceCommand,
-                      DeleteCheerActionCommand, DeleteTriviaAnswersCommand,
-                      DiscordCommand, GetBannedTriviaControllersCommand,
-                      GetCheerActionsCommand,
-                      GetGlobalTriviaControllersCommand,
-                      GetTriviaAnswersCommand, GetTriviaControllersCommand,
-                      GiveCutenessCommand, JishoCommand, LoremIpsumCommand,
-                      MyCutenessHistoryCommand, PbsCommand, PkMonCommand,
-                      PkMoveCommand, RaceCommand, RecurringActionCommand,
-                      RecurringActionsCommand,
-                      RemoveBannedTriviaControllerCommand,
-                      RemoveGlobalTriviaControllerCommand,
-                      RemoveTriviaControllerCommand, SetFuntoonTokenCommand,
-                      SetTwitchCodeCommand, StubCommand, SuperAnswerCommand,
-                      SuperTriviaCommand, SwQuoteCommand, TimeCommand,
-                      TranslateCommand, TriviaInfoCommand, TriviaScoreCommand,
-                      TtsCommand, TwitchInfoCommand, TwitterCommand,
-                      UnbanTriviaQuestionCommand, WeatherCommand, WordCommand)
-from cutenessUtils import CutenessUtils
-from CynanBotCommon.administratorProviderInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+from CynanBot.authRepository import AuthRepository
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
-from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
+from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBotCommon.cheerActions.cheerActionRemodHelperInterface import \
+from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
-from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+from CynanBot.commands import (AbsCommand, AddBannedTriviaControllerCommand,
+                               AddCheerActionCommand,
+                               AddGlobalTriviaControllerCommand,
+                               AddTriviaAnswerCommand,
+                               AddTriviaControllerCommand, AddUserCommand,
+                               AnswerCommand, BanTriviaQuestionCommand,
+                               ClearCachesCommand,
+                               ClearSuperTriviaQueueCommand, CommandsCommand,
+                               ConfirmCommand, CutenessChampionsCommand,
+                               CutenessCommand, CutenessHistoryCommand,
+                               CynanSourceCommand, DeleteCheerActionCommand,
+                               DeleteTriviaAnswersCommand, DiscordCommand,
+                               GetBannedTriviaControllersCommand,
+                               GetCheerActionsCommand,
+                               GetGlobalTriviaControllersCommand,
+                               GetTriviaAnswersCommand,
+                               GetTriviaControllersCommand,
+                               GiveCutenessCommand, JishoCommand,
+                               LoremIpsumCommand, MyCutenessHistoryCommand,
+                               PbsCommand, PkMonCommand, PkMoveCommand,
+                               RaceCommand, RecurringActionCommand,
+                               RecurringActionsCommand,
+                               RemoveBannedTriviaControllerCommand,
+                               RemoveGlobalTriviaControllerCommand,
+                               RemoveTriviaControllerCommand,
+                               SetFuntoonTokenCommand, SetTwitchCodeCommand,
+                               StubCommand, SuperAnswerCommand,
+                               SuperTriviaCommand, SwQuoteCommand, TimeCommand,
+                               TranslateCommand, TriviaInfoCommand,
+                               TriviaScoreCommand, TtsCommand,
+                               TwitchInfoCommand, TwitterCommand,
+                               UnbanTriviaQuestionCommand, WeatherCommand,
+                               WordCommand)
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
-from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+from CynanBot.cutenessUtils import CutenessUtils
+from CynanBot.events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
+                             SubGiftThankingEvent)
+from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
-from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
+from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from CynanBotCommon.language.jishoHelperInterface import JishoHelperInterface
-from CynanBotCommon.language.languagesRepository import LanguagesRepository
-from CynanBotCommon.language.translationHelper import TranslationHelper
-from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.language.jishoHelperInterface import JishoHelperInterface
+from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.translationHelper import TranslationHelper
+from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
-from CynanBotCommon.location.locationsRepositoryInterface import \
+from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBotCommon.lruCache import LruCache
-from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.recurringActions.recurringActionEventListener import \
+from CynanBot.messages import (AbsMessage, CatJamMessage, ChatLogMessage,
+                               DeerForceMessage, EyesMessage, ImytSlurpMessage,
+                               JamCatMessage, RatJamMessage, RoachMessage,
+                               SchubertWalkMessage, StubMessage)
+from CynanBot.misc.lruCache import LruCache
+from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
+                                       PkmnBattleRedemption,
+                                       PkmnCatchRedemption,
+                                       PkmnEvolveRedemption,
+                                       PkmnShinyRedemption,
+                                       StubPointRedemption,
+                                       SuperTriviaGameRedemption,
+                                       TriviaGameRedemption)
+from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
-from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
+from CynanBot.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
-from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
+from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from CynanBotCommon.recurringActions.recurringEvent import RecurringEvent
-from CynanBotCommon.recurringActions.recurringEventType import \
-    RecurringEventType
-from CynanBotCommon.recurringActions.superTriviaRecurringEvent import \
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.recurringEventType import RecurringEventType
+from CynanBot.recurringActions.superTriviaRecurringEvent import \
     SuperTriviaRecurringEvent
-from CynanBotCommon.recurringActions.weatherRecurringEvent import \
+from CynanBot.recurringActions.weatherRecurringEvent import \
     WeatherRecurringEvent
-from CynanBotCommon.recurringActions.wordOfTheDayRecurringEvent import \
+from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
-from CynanBotCommon.starWars.starWarsQuotesRepository import \
-    StarWarsQuotesRepository
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
+from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBotCommon.trivia.clearedSuperTriviaQueueTriviaEvent import \
+from CynanBot.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
-from CynanBotCommon.trivia.correctAnswerTriviaEvent import \
-    CorrectAnswerTriviaEvent
-from CynanBotCommon.trivia.correctSuperAnswerTriviaEvent import \
+from CynanBot.trivia.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
+from CynanBot.trivia.correctSuperAnswerTriviaEvent import \
     CorrectSuperAnswerTriviaEvent
-from CynanBotCommon.trivia.failedToFetchQuestionSuperTriviaEvent import \
+from CynanBot.trivia.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
-from CynanBotCommon.trivia.failedToFetchQuestionTriviaEvent import \
+from CynanBot.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
-from CynanBotCommon.trivia.incorrectAnswerTriviaEvent import \
+from CynanBot.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
-from CynanBotCommon.trivia.invalidAnswerInputTriviaEvent import \
+from CynanBot.trivia.invalidAnswerInputTriviaEvent import \
     InvalidAnswerInputTriviaEvent
-from CynanBotCommon.trivia.newSuperTriviaGameEvent import \
-    NewSuperTriviaGameEvent
-from CynanBotCommon.trivia.newTriviaGameEvent import NewTriviaGameEvent
-from CynanBotCommon.trivia.outOfTimeSuperTriviaEvent import \
-    OutOfTimeSuperTriviaEvent
-from CynanBotCommon.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+from CynanBot.trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
+from CynanBot.trivia.newTriviaGameEvent import NewTriviaGameEvent
+from CynanBot.trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
+from CynanBot.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
+from CynanBot.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
-from CynanBotCommon.trivia.triviaBanHelperInterface import \
-    TriviaBanHelperInterface
-from CynanBotCommon.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
+from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
-from CynanBotCommon.trivia.triviaEventListener import TriviaEventListener
-from CynanBotCommon.trivia.triviaEventType import TriviaEventType
-from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+from CynanBot.trivia.triviaEventListener import TriviaEventListener
+from CynanBot.trivia.triviaEventType import TriviaEventType
+from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBotCommon.trivia.triviaGameMachineInterface import \
+from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
+from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
     TriviaGameControllersRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaRepositoryInterface import \
+from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+from CynanBot.triviaUtils import TriviaUtils
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
-from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+from CynanBot.twitch.absChannelJoinEvent import AbsChannelJoinEvent
+from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchPredictionHandler import \
+    AbsTwitchPredictionHandler
+from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from CynanBot.twitch.absTwitchSubscriptionHandler import \
+    AbsTwitchSubscriptionHandler
+from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
+from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.channelJoinListener import ChannelJoinListener
+from CynanBot.twitch.finishedJoiningChannelsEvent import \
+    FinishedJoiningChannelsEvent
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBotCommon.twitch.twitchApiServiceInterface import \
-    TwitchApiServiceInterface
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
-    TwitchWebsocketClientInterface
-from CynanBotCommon.users.userIdsRepositoryInterface import \
-    UserIdsRepositoryInterface
-from CynanBotCommon.users.userInterface import UserInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from CynanBotCommon.weather.weatherRepositoryInterface import \
-    WeatherRepositoryInterface
-from events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
-                    SubGiftThankingEvent)
-from generalSettingsRepository import GeneralSettingsRepository
-from messages import (AbsMessage, CatJamMessage, ChatLogMessage,
-                      DeerForceMessage, EyesMessage, ImytSlurpMessage,
-                      JamCatMessage, RatJamMessage, RoachMessage,
-                      SchubertWalkMessage, StubMessage)
-from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
-                              PkmnBattleRedemption, PkmnCatchRedemption,
-                              PkmnEvolveRedemption, PkmnShinyRedemption,
-                              StubPointRedemption, SuperTriviaGameRedemption,
-                              TriviaGameRedemption)
-from triviaUtils import TriviaUtils
-from twitch.absChannelJoinEvent import AbsChannelJoinEvent
-from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
-from twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
-from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
-from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
-from twitch.channelJoinEventType import ChannelJoinEventType
-from twitch.channelJoinHelper import ChannelJoinHelper
-from twitch.channelJoinListener import ChannelJoinListener
-from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
-from twitch.joinChannelsEvent import JoinChannelsEvent
-from twitch.pubSubUtils import PubSubUtils
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchChannelPointRedemptionHandler import \
+from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
+from CynanBot.twitch.pubSubUtils import PubSubUtils
+from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
-from twitch.twitchChannelProvider import TwitchChannelProvider
-from twitch.twitchCheerHandler import TwitchCheerHandler
-from twitch.twitchConfiguration import TwitchConfiguration
-from twitch.twitchPredictionHandler import TwitchPredictionHandler
-from twitch.twitchRaidHandler import TwitchRaidHandler
-from twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
-from twitch.twitchUtils import TwitchUtils
-from twitch.twitchWebsocketDataBundleHandler import \
+from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
+from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
+from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
+from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
+from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchWebsocketDataBundleHandler import \
     TwitchWebsocketDataBundleHandler
-from users.modifyUserActionType import ModifyUserActionType
-from users.modifyUserData import ModifyUserData
-from users.modifyUserDataHelper import ModifyUserDataHelper
-from users.modifyUserEventListener import ModifyUserEventListener
+from CynanBot.twitch.websocket.twitchWebsocketClientInterface import \
+    TwitchWebsocketClientInterface
+from CynanBot.users.modifyUserActionType import ModifyUserActionType
+from CynanBot.users.modifyUserData import ModifyUserData
+from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
+from CynanBot.users.modifyUserEventListener import ModifyUserEventListener
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 
 
 class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, \

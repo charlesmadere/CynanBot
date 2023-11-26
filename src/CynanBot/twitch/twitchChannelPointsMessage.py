@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.users.userInterface import UserInterface
-from twitch.twitchConfigurationType import TwitchConfigurationType
+import CynanBot.misc.utils as utils
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchChannelPointsMessage(ABC):

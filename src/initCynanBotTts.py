@@ -3,116 +3,103 @@ import locale
 import logging
 from typing import Optional
 
-from administratorProvider import AdministratorProvider
-from authRepository import AuthRepository
-from cynanBot import CynanBot
-from CynanBotCommon.administratorProviderInterface import \
+from CynanBot.administratorProvider import AdministratorProvider
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.cheerActions.cheerActionHelper import CheerActionHelper
-from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+from CynanBot.authRepository import AuthRepository
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
+from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
-from CynanBotCommon.cheerActions.cheerActionIdGenerator import \
-    CheerActionIdGenerator
-from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
+from CynanBot.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
+from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBotCommon.cheerActions.cheerActionRemodHelper import \
-    CheerActionRemodHelper
-from CynanBotCommon.cheerActions.cheerActionRemodHelperInterface import \
+from CynanBot.cheerActions.cheerActionRemodHelper import CheerActionRemodHelper
+from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
-from CynanBotCommon.cheerActions.cheerActionRemodRepository import \
+from CynanBot.cheerActions.cheerActionRemodRepository import \
     CheerActionRemodRepository
-from CynanBotCommon.cheerActions.cheerActionRemodRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
     CheerActionRemodRepositoryInterface
-from CynanBotCommon.cheerActions.cheerActionsRepository import \
-    CheerActionsRepository
-from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBotCommon.contentScanner.bannedWordsRepository import \
-    BannedWordsRepository
-from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBotCommon.contentScanner.contentScanner import ContentScanner
-from CynanBotCommon.contentScanner.contentScannerInterface import \
+from CynanBot.contentScanner.contentScanner import ContentScanner
+from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
-from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
-from CynanBotCommon.emojiHelper.emojiHelperInterface import \
-    EmojiHelperInterface
-from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
-from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
+from CynanBot.cynanBot import CynanBot
+from CynanBot.emojiHelper.emojiHelper import EmojiHelper
+from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
+from CynanBot.emojiHelper.emojiRepository import EmojiRepository
+from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
-from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+from CynanBot.funtoon.funtoonRepository import FuntoonRepository
+from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
-from CynanBotCommon.funtoon.funtoonTokensRepository import \
-    FuntoonTokensRepository
-from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
+from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
+from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from CynanBotCommon.language.jishoHelper import JishoHelper
-from CynanBotCommon.language.languagesRepository import LanguagesRepository
-from CynanBotCommon.location.locationsRepository import LocationsRepository
-from CynanBotCommon.location.locationsRepositoryInterface import \
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.language.jishoHelper import JishoHelper
+from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.location.locationsRepository import LocationsRepository
+from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBotCommon.network.aioHttpClientProvider import AioHttpClientProvider
-from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
-from CynanBotCommon.network.networkClientType import NetworkClientType
-from CynanBotCommon.network.requestsClientProvider import \
-    RequestsClientProvider
-from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
-    SentMessageLogger
-from CynanBotCommon.storage.backingDatabase import BackingDatabase
-from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
-from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
-from CynanBotCommon.storage.databaseType import DatabaseType
-from CynanBotCommon.storage.jsonFileReader import JsonFileReader
-from CynanBotCommon.storage.linesFileReader import LinesFileReader
-from CynanBotCommon.storage.psqlCredentialsProvider import \
-    PsqlCredentialsProvider
-from CynanBotCommon.systemCommandHelper.systemCommandHelper import \
+from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.requestsClientProvider import RequestsClientProvider
+from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
+from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.jsonFileReader import JsonFileReader
+from CynanBot.storage.linesFileReader import LinesFileReader
+from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
-from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
-    DecTalkCommandBuilder
-from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
-from CynanBotCommon.tts.decTalk.decTalkManager import DecTalkManager
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
-from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+from CynanBot.timber.timber import Timber
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timeZoneRepository import TimeZoneRepository
+from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
+from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
+from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
-from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
-    IsLiveOnTwitchRepository
-from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBotCommon.twitch.twitchApiService import TwitchApiService
-from CynanBotCommon.twitch.twitchApiServiceInterface import \
-    TwitchApiServiceInterface
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+from CynanBot.twitch.twitchApiService import TwitchApiService
+from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
+from CynanBot.twitch.twitchIoConfiguration import TwitchIoConfiguration
+from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
-from CynanBotCommon.twitch.websocket.twitchWebsocketClient import \
+from CynanBot.twitch.websocket.twitchWebsocketClient import \
     TwitchWebsocketClient
-from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
+from CynanBot.twitch.websocket.twitchWebsocketClientInterface import \
     TwitchWebsocketClientInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapper import \
+from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
-from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
+from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
+from CynanBot.users.userIdsRepository import UserIdsRepository
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from generalSettingsRepository import GeneralSettingsRepository
-from twitch.channelJoinHelper import ChannelJoinHelper
-from twitch.twitchConfiguration import TwitchConfiguration
-from twitch.twitchIoConfiguration import TwitchIoConfiguration
-from twitch.twitchUtils import TwitchUtils
-from users.modifyUserDataHelper import ModifyUserDataHelper
-from users.usersRepository import UsersRepository
+from CynanBot.users.usersRepository import UsersRepository
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(

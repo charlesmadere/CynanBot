@@ -1,11 +1,11 @@
 from typing import Any, Dict, Optional
 
-from authRepositorySnapshot import AuthRepositorySnapshot
-from CynanBotCommon.clearable import Clearable
-from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
-from CynanBotCommon.twitch.twitchCredentialsProviderInterface import \
+from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBot.misc.clearable import Clearable
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
-from CynanBotCommon.twitch.twitchHandleProviderInterface import \
+from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 
 

@@ -2,14 +2,14 @@ import asyncio
 import random
 from typing import List, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from twitch.channelJoinListener import ChannelJoinListener
-from twitch.finishedJoiningChannelsEvent import FinishedJoiningChannelsEvent
-from twitch.joinChannelsEvent import JoinChannelsEvent
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.channelJoinListener import ChannelJoinListener
+from CynanBot.twitch.finishedJoiningChannelsEvent import \
+    FinishedJoiningChannelsEvent
+from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class ChannelJoinHelper():

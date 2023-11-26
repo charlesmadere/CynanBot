@@ -2,11 +2,11 @@ from typing import Optional
 
 from twitchio.ext.commands import Context
 
-from twitch.twitchAuthor import TwitchAuthor
-from twitch.twitchConfigurationType import TwitchConfigurationType
-from twitch.twitchContext import TwitchContext
-from twitch.twitchIoAuthor import TwitchIoAuthor
-from twitch.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.twitchAuthor import TwitchAuthor
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchContext import TwitchContext
+from CynanBot.twitch.twitchIoAuthor import TwitchIoAuthor
+from CynanBot.twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchIoContext(TwitchContext, TwitchMessageable):

@@ -2,9 +2,10 @@ from typing import Optional
 
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
-from CynanBotCommon.users.userInterface import UserInterface
-from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchChannelPointsMessage import \
+    TwitchChannelPointsMessage
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchIoChannelPointsMessage(TwitchChannelPointsMessage):

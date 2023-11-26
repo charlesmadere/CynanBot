@@ -1,10 +1,10 @@
 from datetime import tzinfo
 from typing import List, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBotCommon.users.userInterface import UserInterface
-from ..pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from CynanBot.users.userInterface import UserInterface
 
 
 class User(UserInterface):

@@ -2,8 +2,8 @@ from typing import Union
 
 from twitchio import Chatter, PartialChatter
 
-from twitch.twitchAuthor import TwitchAuthor
-from twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchAuthor import TwitchAuthor
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
 
 
 class TwitchIoAuthor(TwitchAuthor):

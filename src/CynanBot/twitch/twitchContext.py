@@ -1,9 +1,9 @@
 from abc import abstractmethod
 from typing import Optional
 
-from twitch.twitchAuthor import TwitchAuthor
-from twitch.twitchConfigurationType import TwitchConfigurationType
-from twitch.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.twitchAuthor import TwitchAuthor
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchContext(TwitchMessageable):

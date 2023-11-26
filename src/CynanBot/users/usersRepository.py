@@ -6,17 +6,15 @@ from typing import Any, Dict, List, Optional
 import aiofiles
 import aiofiles.ospath
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.users.exceptions import (NoSuchUserException,
-                                             NoUsersException)
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from pkmn.pkmnCatchType import PkmnCatchType
-from users.user import User
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBot.pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from CynanBot.pkmn.pkmnCatchType import PkmnCatchType
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timeZoneRepository import TimeZoneRepository
+from CynanBot.users.exceptions import NoSuchUserException, NoUsersException
+from CynanBot.users.user import User
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class UsersRepository(UsersRepositoryInterface):

@@ -1,0 +1,8 @@
+{
+    "debugLoggingEnabled": false,
+    "twitchChannels": {
+        "channelName": {
+            "token": "funtoonToken"
+        }
+    }
+}

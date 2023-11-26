@@ -1,10 +1,11 @@
 from typing import Any, Dict, Optional
 
-from CynanBotCommon.clearable import Clearable
-from CynanBotCommon.storage.jsonReaderInterface import JsonReaderInterface
-from CynanBotCommon.trivia.triviaGameBuilderSettingsInterface import \
+from CynanBot.generalSettingsRepositorySnapshot import \
+    GeneralSettingsRepositorySnapshot
+from CynanBot.misc.clearable import Clearable
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.trivia.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
-from generalSettingsRepositorySnapshot import GeneralSettingsRepositorySnapshot
 
 
 class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):

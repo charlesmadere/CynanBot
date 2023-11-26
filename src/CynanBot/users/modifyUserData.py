@@ -1,4 +1,4 @@
-import CynanBotCommon.utils as utils
+import misc.utils as utils
 from users.modifyUserActionType import ModifyUserActionType
 
 

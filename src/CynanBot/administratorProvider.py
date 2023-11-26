@@ -1,12 +1,12 @@
 from typing import Optional
 
-from CynanBotCommon.administratorProviderInterface import \
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.twitch.twitchTokensRepository import \
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.twitch.twitchTokensRepository import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from generalSettingsRepository import GeneralSettingsRepository
 
 
 class AdministratorProvider(AdministratorProviderInterface):

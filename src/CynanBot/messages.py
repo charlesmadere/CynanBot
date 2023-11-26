@@ -1,16 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.chatBand.chatBandManagerInterface import \
-    ChatBandManagerInterface
-from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.timedDict import TimedDict
-from generalSettingsRepository import GeneralSettingsRepository
-from twitch.twitchMessage import TwitchMessage
-from twitch.twitchUtils import TwitchUtils
-from users.user import User
+import CynanBot.misc.utils as utils
+from CynanBot.chatBand.chatBandManagerInterface import ChatBandManagerInterface
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.misc.timedDict import TimedDict
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.twitchMessage import TwitchMessage
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.users.user import User
 
 
 class AbsMessage(ABC):

@@ -1,14 +1,12 @@
 from typing import List
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.cuteness.cutenessChampionsResult import \
-    CutenessChampionsResult
-from CynanBotCommon.cuteness.cutenessHistoryResult import CutenessHistoryResult
-from CynanBotCommon.cuteness.cutenessLeaderboardEntry import \
-    CutenessLeaderboardEntry
-from CynanBotCommon.cuteness.cutenessLeaderboardHistoryResult import \
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
+from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
+from CynanBot.cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from CynanBot.cuteness.cutenessLeaderboardHistoryResult import \
     CutenessLeaderboardHistoryResult
-from CynanBotCommon.cuteness.cutenessResult import CutenessResult
+from CynanBot.cuteness.cutenessResult import CutenessResult
 
 
 class CutenessUtils():

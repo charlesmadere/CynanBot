@@ -1,28 +1,28 @@
 import math
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.administratorProviderInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameMachineInterface import \
+from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBotCommon.tts.ttsDonation import TtsDonation
-from CynanBotCommon.tts.ttsEvent import TtsEvent
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
-from CynanBotCommon.twitch.twitchSubscriberTier import TwitchSubscriberTier
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from CynanBot.twitch.absTwitchSubscriptionHandler import \
+    AbsTwitchSubscriptionHandler
+from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBotCommon.users.userInterface import UserInterface
-from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
-from twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):

@@ -1,8 +1,8 @@
 from twitchio.channel import Channel
 
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchConfigurationType import TwitchConfigurationType
-from twitch.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchIoChannel(TwitchChannel, TwitchMessageable):

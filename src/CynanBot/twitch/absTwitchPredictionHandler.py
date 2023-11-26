@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.users.userInterface import UserInterface
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.users.userInterface import UserInterface
 
 
 class AbsTwitchPredictionHandler(ABC):

@@ -3,38 +3,37 @@ import traceback
 from collections import defaultdict
 from typing import Dict, List, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.administratorProviderInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.cuteness.cutenessResult import CutenessResult
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.absTriviaQuestion import AbsTriviaQuestion
-from CynanBotCommon.trivia.bannedTriviaGameController import \
+from CynanBot.cuteness.cutenessResult import CutenessResult
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.bannedTriviaGameController import \
     BannedTriviaGameController
-from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBotCommon.trivia.shinyTriviaResult import ShinyTriviaResult
-from CynanBotCommon.trivia.specialTriviaStatus import SpecialTriviaStatus
-from CynanBotCommon.trivia.toxicTriviaPunishmentResult import \
+from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
+from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
-from CynanBotCommon.trivia.toxicTriviaResult import ToxicTriviaResult
-from CynanBotCommon.trivia.triviaGameController import TriviaGameController
-from CynanBotCommon.trivia.triviaGameGlobalController import \
+from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
+from CynanBot.trivia.triviaGameController import TriviaGameController
+from CynanBot.trivia.triviaGameGlobalController import \
     TriviaGameGlobalController
-from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
     TriviaGameControllersRepository
-from CynanBotCommon.trivia.triviaScoreResult import TriviaScoreResult
-from CynanBotCommon.trivia.triviaType import TriviaType
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.users.exceptions import NoSuchUserException
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.users.exceptions import NoSuchUserException
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBotCommon.users.userInterface import UserInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class TriviaUtils():

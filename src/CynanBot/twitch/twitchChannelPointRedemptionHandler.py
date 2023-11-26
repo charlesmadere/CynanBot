@@ -1,20 +1,22 @@
-import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.users.userIdsRepositoryInterface import \
-    UserIdsRepositoryInterface
-from CynanBotCommon.users.userInterface import UserInterface
-from pointRedemptions import (AbsPointRedemption, CutenessRedemption,
-                              PkmnBattleRedemption, PkmnCatchRedemption,
-                              PkmnEvolveRedemption, PkmnShinyRedemption,
-                              StubPointRedemption, SuperTriviaGameRedemption,
-                              TriviaGameRedemption)
-from twitch.absTwitchChannelPointRedemptionHandler import \
+import CynanBot.misc.utils as utils
+from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
+                                       PkmnBattleRedemption,
+                                       PkmnCatchRedemption,
+                                       PkmnEvolveRedemption,
+                                       PkmnShinyRedemption,
+                                       StubPointRedemption,
+                                       SuperTriviaGameRedemption,
+                                       TriviaGameRedemption)
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
-from twitch.twitchChannelPointsMessage import (TwitchChannelPointsMessage,
-                                               TwitchChannelPointsMessageStub)
-from twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.twitchChannelPointsMessage import (
+    TwitchChannelPointsMessage, TwitchChannelPointsMessageStub)
+from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler):

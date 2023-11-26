@@ -1,32 +1,32 @@
 import asyncio
 from typing import Any, Optional
 
-import CynanBotCommon.utils as utils
+import CynanBot.misc.utils as utils
 
-# from CynanBotCommon.contentScanner.bannedWordsRepository import \
+# from CynanBot.contentScanner.bannedWordsRepository import \
 #     BannedWordsRepository
-# from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+# from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 #     BannedWordsRepositoryInterface
-# from CynanBotCommon.contentScanner.contentScanner import ContentScanner
-# from CynanBotCommon.contentScanner.contentScannerInterface import \
+# from CynanBot.contentScanner.contentScanner import ContentScanner
+# from CynanBot.contentScanner.contentScannerInterface import \
 #     ContentScannerInterface
-# from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
-# from CynanBotCommon.emojiHelper.emojiHelperInterface import \
+# from CynanBot.emojiHelper.emojiHelper import EmojiHelper
+# from CynanBot.emojiHelper.emojiHelperInterface import \
 #     EmojiHelperInterface
-# from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
-# from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
+# from CynanBot.emojiHelper.emojiRepository import EmojiRepository
+# from CynanBot.emojiHelper.emojiRepositoryInterface import \
 #     EmojiRepositoryInterface
-# from CynanBotCommon.storage.jsonFileReader import JsonFileReader
-# from CynanBotCommon.storage.jsonStaticReader import JsonStaticReader
-# from CynanBotCommon.storage.linesStaticReader import LinesStaticReader
-# from CynanBotCommon.timber.timberInterface import TimberInterface
-# from CynanBotCommon.timber.timberStub import TimberStub
-# from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
+# from CynanBot.storage.jsonFileReader import JsonFileReader
+# from CynanBot.storage.jsonStaticReader import JsonStaticReader
+# from CynanBot.storage.linesStaticReader import LinesStaticReader
+# from CynanBot.timber.timberInterface import TimberInterface
+# from CynanBot.timber.timberStub import TimberStub
+# from CynanBot.tts.decTalk.decTalkCommandBuilder import \
 #     DecTalkCommandBuilder
-# from CynanBotCommon.tts.ttsCommandBuilderInterface import \
+# from CynanBot.tts.ttsCommandBuilderInterface import \
 #     TtsCommandBuilderInterface
-# from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
-# from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+# from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
+# from CynanBot.tts.ttsSettingsRepositoryInterface import \
 #     TtsSettingsRepositoryInterface
 
 # timber: TimberInterface = TimberStub()

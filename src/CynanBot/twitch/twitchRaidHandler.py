@@ -1,14 +1,13 @@
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.tts.ttsEvent import TtsEvent
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.tts.ttsRaidInfo import TtsRaidInfo
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.users.userInterface import UserInterface
-from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
+from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchRaidHandler(AbsTwitchRaidHandler):

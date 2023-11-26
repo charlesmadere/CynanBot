@@ -1,8 +1,8 @@
 from typing import List
 
-import CynanBotCommon.utils as utils
-from twitch.absChannelJoinEvent import AbsChannelJoinEvent
-from twitch.channelJoinEventType import ChannelJoinEventType
+import CynanBot.misc.utils as utils
+from CynanBot.twitch.absChannelJoinEvent import AbsChannelJoinEvent
+from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
 
 
 class JoinChannelsEvent(AbsChannelJoinEvent):

@@ -1,15 +1,15 @@
 from typing import List, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.tts.ttsEvent import TtsEvent
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.twitch.absTwitchPredictionHandler import \
+    AbsTwitchPredictionHandler
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
-from CynanBotCommon.users.userInterface import UserInterface
-from twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
+from CynanBot.users.userInterface import UserInterface
 
 
 class TwitchPredictionHandler(AbsTwitchPredictionHandler):

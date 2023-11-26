@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.network.networkClientType import NetworkClientType
-from CynanBotCommon.storage.databaseType import DatabaseType
+import CynanBot.misc.utils as utils
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.storage.databaseType import DatabaseType
 
 
 class GeneralSettingsRepositorySnapshot():

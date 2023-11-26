@@ -1,24 +1,24 @@
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
-from CynanBotCommon.twitch.websocket.websocketDataBundle import \
-    WebsocketDataBundle
-from CynanBotCommon.twitch.websocket.websocketEvent import WebsocketEvent
-from CynanBotCommon.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
-from CynanBotCommon.users.userIdsRepositoryInterface import \
-    UserIdsRepositoryInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from twitch.absTwitchChannelPointRedemptionHandler import \
+import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
-from twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
-from twitch.absTwitchPredictionHandler import AbsTwitchPredictionHandler
-from twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
-from twitch.absTwitchSubscriptionHandler import AbsTwitchSubscriptionHandler
+from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchPredictionHandler import \
+    AbsTwitchPredictionHandler
+from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
+from CynanBot.twitch.absTwitchSubscriptionHandler import \
+    AbsTwitchSubscriptionHandler
+from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
+    TwitchWebsocketDataBundleListener
+from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
+from CynanBot.twitch.websocket.websocketSubscriptionType import \
+    WebsocketSubscriptionType
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
 class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):

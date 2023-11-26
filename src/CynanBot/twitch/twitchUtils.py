@@ -5,13 +5,13 @@ from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
 from typing import List, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.sentMessageLogger.sentMessageLoggerInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from twitch.outboundMessage import OutboundMessage
-from twitch.twitchMessageable import TwitchMessageable
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.outboundMessage import OutboundMessage
+from CynanBot.twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchUtils():

@@ -1,21 +1,19 @@
 import asyncio
 
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
-from CynanBotCommon.network.requestsClientProvider import \
-    RequestsClientProvider
-from CynanBotCommon.pkmn.pokepediaDamageClass import PokepediaDamageClass
-from CynanBotCommon.pkmn.pokepediaElementType import PokepediaElementType
-from CynanBotCommon.pkmn.pokepediaGeneration import PokepediaGeneration
-from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.storage.jsonFileReader import JsonFileReader
-from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
-from CynanBotCommon.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.network.requestsClientProvider import RequestsClientProvider
+from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.storage.jsonFileReader import JsonFileReader
+from CynanBot.timber.timber import Timber
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaSettingsRepository import \
-    TriviaSettingsRepository
+from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 
 eventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)

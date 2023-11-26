@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from twitch.twitchConfigurationType import TwitchConfigurationType
-from twitch.twitchContext import TwitchContext
-from twitch.twitchMessage import TwitchMessage
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchChannelPointsMessage import \
+    TwitchChannelPointsMessage
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchContext import TwitchContext
+from CynanBot.twitch.twitchMessage import TwitchMessage
 
 
 class TwitchConfiguration(ABC):

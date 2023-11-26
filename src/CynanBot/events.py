@@ -2,15 +2,15 @@ import locale
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.chatLogger.chatLoggerInterface import ChatLoggerInterface
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.twitch.twitchHandleProviderInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from generalSettingsRepository import GeneralSettingsRepository
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchUtils import TwitchUtils
-from users.user import User
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.users.user import User
 
 
 class AbsEvent(ABC):

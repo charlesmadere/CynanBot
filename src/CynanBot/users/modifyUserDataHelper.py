@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.clearable import Clearable
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from users.modifyUserActionType import ModifyUserActionType
-from users.modifyUserData import ModifyUserData
-from users.modifyUserEventListener import ModifyUserEventListener
+import CynanBot.misc.utils as utils
+from CynanBot.misc.clearable import Clearable
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.users.modifyUserActionType import ModifyUserActionType
+from CynanBot.users.modifyUserData import ModifyUserData
+from CynanBot.users.modifyUserEventListener import ModifyUserEventListener
 
 
 class ModifyUserDataHelper(Clearable):

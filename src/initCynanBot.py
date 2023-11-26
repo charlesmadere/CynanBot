@@ -3,236 +3,216 @@ import locale
 import logging
 from typing import Optional
 
-from administratorProvider import AdministratorProvider
-from authRepository import AuthRepository
-from cutenessUtils import CutenessUtils
-from cynanBot import CynanBot
-from CynanBotCommon.administratorProviderInterface import \
+from CynanBot.administratorProvider import AdministratorProvider
+from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBotCommon.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBotCommon.chatLogger.chatLogger import ChatLogger
-from CynanBotCommon.cheerActions.cheerActionHelper import CheerActionHelper
-from CynanBotCommon.cheerActions.cheerActionHelperInterface import \
+from CynanBot.authRepository import AuthRepository
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatLogger.chatLogger import ChatLogger
+from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
+from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
-from CynanBotCommon.cheerActions.cheerActionIdGenerator import \
-    CheerActionIdGenerator
-from CynanBotCommon.cheerActions.cheerActionIdGeneratorInterface import \
+from CynanBot.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
+from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBotCommon.cheerActions.cheerActionRemodHelper import \
-    CheerActionRemodHelper
-from CynanBotCommon.cheerActions.cheerActionRemodHelperInterface import \
+from CynanBot.cheerActions.cheerActionRemodHelper import CheerActionRemodHelper
+from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
-from CynanBotCommon.cheerActions.cheerActionRemodRepository import \
+from CynanBot.cheerActions.cheerActionRemodRepository import \
     CheerActionRemodRepository
-from CynanBotCommon.cheerActions.cheerActionRemodRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
     CheerActionRemodRepositoryInterface
-from CynanBotCommon.cheerActions.cheerActionsRepository import \
-    CheerActionsRepository
-from CynanBotCommon.cheerActions.cheerActionsRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBotCommon.contentScanner.bannedWordsRepository import \
-    BannedWordsRepository
-from CynanBotCommon.contentScanner.bannedWordsRepositoryInterface import \
+from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBotCommon.contentScanner.contentScanner import ContentScanner
-from CynanBotCommon.contentScanner.contentScannerInterface import \
+from CynanBot.contentScanner.contentScanner import ContentScanner
+from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
-from CynanBotCommon.cuteness.cutenessRepository import CutenessRepository
-from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+from CynanBot.cuteness.cutenessRepository import CutenessRepository
+from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
-from CynanBotCommon.emojiHelper.emojiHelper import EmojiHelper
-from CynanBotCommon.emojiHelper.emojiHelperInterface import \
-    EmojiHelperInterface
-from CynanBotCommon.emojiHelper.emojiRepository import EmojiRepository
-from CynanBotCommon.emojiHelper.emojiRepositoryInterface import \
+from CynanBot.cutenessUtils import CutenessUtils
+from CynanBot.cynanBot import CynanBot
+from CynanBot.emojiHelper.emojiHelper import EmojiHelper
+from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
+from CynanBot.emojiHelper.emojiRepository import EmojiRepository
+from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
-from CynanBotCommon.funtoon.funtoonRepository import FuntoonRepository
-from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+from CynanBot.funtoon.funtoonRepository import FuntoonRepository
+from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
-from CynanBotCommon.funtoon.funtoonTokensRepository import \
-    FuntoonTokensRepository
-from CynanBotCommon.funtoon.funtoonTokensRepositoryInterface import \
+from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
+from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
-from CynanBotCommon.language.jishoHelper import JishoHelper
-from CynanBotCommon.language.languagesRepository import LanguagesRepository
-from CynanBotCommon.language.translationHelper import TranslationHelper
-from CynanBotCommon.language.wordOfTheDayRepository import \
-    WordOfTheDayRepository
-from CynanBotCommon.language.wordOfTheDayRepositoryInterface import \
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.language.jishoHelper import JishoHelper
+from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.translationHelper import TranslationHelper
+from CynanBot.language.wordOfTheDayRepository import WordOfTheDayRepository
+from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
-from CynanBotCommon.location.locationsRepository import LocationsRepository
-from CynanBotCommon.location.locationsRepositoryInterface import \
+from CynanBot.location.locationsRepository import LocationsRepository
+from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBotCommon.network.aioHttpClientProvider import AioHttpClientProvider
-from CynanBotCommon.network.networkClientProvider import NetworkClientProvider
-from CynanBotCommon.network.networkClientType import NetworkClientType
-from CynanBotCommon.network.requestsClientProvider import \
-    RequestsClientProvider
-from CynanBotCommon.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBotCommon.recurringActions.mostRecentRecurringActionRepository import \
+from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.requestsClientProvider import RequestsClientProvider
+from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
-from CynanBotCommon.recurringActions.recurringActionsJsonParser import \
+from CynanBot.recurringActions.recurringActionsJsonParser import \
     RecurringActionsJsonParser
-from CynanBotCommon.recurringActions.recurringActionsMachine import \
+from CynanBot.recurringActions.recurringActionsMachine import \
     RecurringActionsMachine
-from CynanBotCommon.recurringActions.recurringActionsMachineInterface import \
+from CynanBot.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
-from CynanBotCommon.recurringActions.recurringActionsRepository import \
+from CynanBot.recurringActions.recurringActionsRepository import \
     RecurringActionsRepository
-from CynanBotCommon.recurringActions.recurringActionsRepositoryInterface import \
+from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from CynanBotCommon.sentMessageLogger.sentMessageLogger import \
-    SentMessageLogger
-from CynanBotCommon.starWars.starWarsQuotesRepository import \
-    StarWarsQuotesRepository
-from CynanBotCommon.storage.backingDatabase import BackingDatabase
-from CynanBotCommon.storage.backingPsqlDatabase import BackingPsqlDatabase
-from CynanBotCommon.storage.backingSqliteDatabase import BackingSqliteDatabase
-from CynanBotCommon.storage.databaseType import DatabaseType
-from CynanBotCommon.storage.jsonFileReader import JsonFileReader
-from CynanBotCommon.storage.linesFileReader import LinesFileReader
-from CynanBotCommon.storage.psqlCredentialsProvider import \
-    PsqlCredentialsProvider
-from CynanBotCommon.systemCommandHelper.systemCommandHelper import \
+from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
+from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.jsonFileReader import JsonFileReader
+from CynanBot.storage.linesFileReader import LinesFileReader
+from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
-from CynanBotCommon.timber.timber import Timber
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.timeZoneRepository import TimeZoneRepository
-from CynanBotCommon.trivia.additionalTriviaAnswersRepository import \
+from CynanBot.timber.timber import Timber
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timeZoneRepository import TimeZoneRepository
+from CynanBot.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
-from CynanBotCommon.trivia.additionalTriviaAnswersRepositoryInterface import \
+from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from CynanBotCommon.trivia.bannedTriviaGameControllersRepository import \
+from CynanBot.trivia.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBotCommon.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBotCommon.trivia.bannedTriviaIdsRepository import \
-    BannedTriviaIdsRepository
-from CynanBotCommon.trivia.bannedTriviaIdsRepositoryInterface import \
+from CynanBot.trivia.bannedTriviaIdsRepository import BannedTriviaIdsRepository
+from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from CynanBotCommon.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
-from CynanBotCommon.trivia.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBotCommon.trivia.shinyTriviaOccurencesRepository import \
+from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBotCommon.trivia.superTriviaCooldownHelper import \
-    SuperTriviaCooldownHelper
-from CynanBotCommon.trivia.toxicTriviaHelper import ToxicTriviaHelper
-from CynanBotCommon.trivia.toxicTriviaOccurencesRepository import \
+from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
+from CynanBot.trivia.toxicTriviaHelper import ToxicTriviaHelper
+from CynanBot.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
-from CynanBotCommon.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBotCommon.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
-from CynanBotCommon.trivia.triviaBanHelper import TriviaBanHelper
-from CynanBotCommon.trivia.triviaBanHelperInterface import \
-    TriviaBanHelperInterface
-from CynanBotCommon.trivia.triviaContentScanner import TriviaContentScanner
-from CynanBotCommon.trivia.triviaContentScannerInterface import \
+from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
+from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.triviaBanHelper import TriviaBanHelper
+from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
+from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
-from CynanBotCommon.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBotCommon.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
-from CynanBotCommon.trivia.triviaGameBuilder import TriviaGameBuilder
-from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+from CynanBot.trivia.triviaGameBuilder import TriviaGameBuilder
+from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameGlobalControllersRepository import \
+from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBotCommon.trivia.triviaGameMachine import TriviaGameMachine
-from CynanBotCommon.trivia.triviaGameMachineInterface import \
+from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
+from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBotCommon.trivia.triviaGameStore import TriviaGameStore
-from CynanBotCommon.trivia.triviaHistoryRepository import \
-    TriviaHistoryRepository
-from CynanBotCommon.trivia.triviaHistoryRepositoryInterface import \
+from CynanBot.trivia.triviaGameStore import TriviaGameStore
+from CynanBot.trivia.triviaHistoryRepository import TriviaHistoryRepository
+from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from CynanBotCommon.trivia.triviaIdGenerator import TriviaIdGenerator
-from CynanBotCommon.trivia.triviaIdGeneratorInterface import \
+from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBotCommon.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
-from CynanBotCommon.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
+from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
     JokeTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
+from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
     LotrTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.millionaireTriviaQuestionRepository import \
     MillionaireTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.openTriviaQaTriviaQuestionRepository import \
     OpenTriviaQaTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.pkmnTriviaQuestionRepository import \
     PkmnTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaGameControllersRepository import \
+from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
     TriviaGameControllersRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaRepository import \
+from CynanBot.trivia.triviaRepositories.triviaRepository import \
     TriviaRepository
-from CynanBotCommon.trivia.triviaRepositories.triviaRepositoryInterface import \
+from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBotCommon.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
+from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBotCommon.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBotCommon.trivia.triviaSettingsRepository import \
-    TriviaSettingsRepository
-from CynanBotCommon.trivia.triviaSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBotCommon.trivia.triviaSourceInstabilityHelper import \
+from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
-from CynanBotCommon.trivia.triviaVerifier import TriviaVerifier
-from CynanBotCommon.tts.decTalk.decTalkCommandBuilder import \
-    DecTalkCommandBuilder
-from CynanBotCommon.tts.decTalk.decTalkFileManager import DecTalkFileManager
-from CynanBotCommon.tts.decTalk.decTalkManager import DecTalkManager
-from CynanBotCommon.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBotCommon.tts.ttsSettingsRepository import TtsSettingsRepository
-from CynanBotCommon.tts.ttsSettingsRepositoryInterface import \
+from CynanBot.trivia.triviaVerifier import TriviaVerifier
+from CynanBot.triviaUtils import TriviaUtils
+from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
+from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
+from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
-from CynanBotCommon.twitch.isLiveOnTwitchRepository import \
-    IsLiveOnTwitchRepository
-from CynanBotCommon.twitch.isLiveOnTwitchRepositoryInterface import \
+from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBotCommon.twitch.twitchApiService import TwitchApiService
-from CynanBotCommon.twitch.twitchApiServiceInterface import \
-    TwitchApiServiceInterface
-from CynanBotCommon.twitch.twitchTokensRepository import TwitchTokensRepository
-from CynanBotCommon.twitch.twitchTokensRepositoryInterface import \
+from CynanBot.twitch.twitchApiService import TwitchApiService
+from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
+from CynanBot.twitch.twitchIoConfiguration import TwitchIoConfiguration
+from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
-from CynanBotCommon.twitch.websocket.twitchWebsocketClient import \
+from CynanBot.twitch.websocket.twitchWebsocketClient import \
     TwitchWebsocketClient
-from CynanBotCommon.twitch.websocket.twitchWebsocketClientInterface import \
+from CynanBot.twitch.websocket.twitchWebsocketClientInterface import \
     TwitchWebsocketClientInterface
-from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapper import \
+from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
-from CynanBotCommon.twitch.websocket.twitchWebsocketJsonMapperInterface import \
+from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
-from CynanBotCommon.users.userIdsRepository import UserIdsRepository
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
+from CynanBot.users.userIdsRepository import UserIdsRepository
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBotCommon.users.usersRepositoryInterface import \
-    UsersRepositoryInterface
-from CynanBotCommon.weather.weatherRepository import WeatherRepository
-from CynanBotCommon.weather.weatherRepositoryInterface import \
+from CynanBot.users.usersRepository import UsersRepository
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.weatherRepository import WeatherRepository
+from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
-from generalSettingsRepository import GeneralSettingsRepository
-from triviaUtils import TriviaUtils
-from twitch.channelJoinHelper import ChannelJoinHelper
-from twitch.twitchConfiguration import TwitchConfiguration
-from twitch.twitchIoConfiguration import TwitchIoConfiguration
-from twitch.twitchUtils import TwitchUtils
-from users.modifyUserDataHelper import ModifyUserDataHelper
-from users.usersRepository import UsersRepository
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(

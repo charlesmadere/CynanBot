@@ -2,25 +2,26 @@ import traceback
 from abc import ABC, abstractmethod
 from typing import Optional
 
-import CynanBotCommon.utils as utils
-from CynanBotCommon.cuteness.cutenessBoosterPack import CutenessBoosterPack
-from CynanBotCommon.cuteness.cutenessRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
-from CynanBotCommon.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
-from CynanBotCommon.funtoon.funtoonRepositoryInterface import \
+from CynanBot.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
+from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
-from CynanBotCommon.timber.timberInterface import TimberInterface
-from CynanBotCommon.trivia.triviaGameBuilderInterface import \
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBotCommon.trivia.triviaGameMachineInterface import \
+from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from generalSettingsRepository import GeneralSettingsRepository
-from pkmn.pkmnCatchBoosterPack import PkmnCatchBoosterPack
-from pkmn.pkmnCatchType import PkmnCatchType
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from twitch.twitchUtils import TwitchUtils
-from users.user import User
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchChannelPointsMessage import \
+    TwitchChannelPointsMessage
+from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from CynanBot.users.pkmnCatchType import PkmnCatchType
+from CynanBot.users.user import User
 
 
 class AbsPointRedemption(ABC):

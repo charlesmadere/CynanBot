@@ -3,19 +3,21 @@ from twitchio.channel import Channel
 from twitchio.ext.commands import Context
 from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
-from CynanBotCommon.users.userIdsRepositoryInterface import \
+from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.twitchChannelPointsMessage import \
+    TwitchChannelPointsMessage
+from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
+from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.twitchContext import TwitchContext
+from CynanBot.twitch.twitchIoChannel import TwitchIoChannel
+from CynanBot.twitch.twitchIoChannelPointsMessage import \
+    TwitchIoChannelPointsMessage
+from CynanBot.twitch.twitchIoContext import TwitchIoContext
+from CynanBot.twitch.twitchIoMessage import TwitchIoMessage
+from CynanBot.twitch.twitchMessage import TwitchMessage
+from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from twitch.twitchChannel import TwitchChannel
-from twitch.twitchChannelPointsMessage import TwitchChannelPointsMessage
-from twitch.twitchConfiguration import TwitchConfiguration
-from twitch.twitchConfigurationType import TwitchConfigurationType
-from twitch.twitchContext import TwitchContext
-from twitch.twitchIoChannel import TwitchIoChannel
-from twitch.twitchIoChannelPointsMessage import TwitchIoChannelPointsMessage
-from twitch.twitchIoContext import TwitchIoContext
-from twitch.twitchIoMessage import TwitchIoMessage
-from twitch.twitchMessage import TwitchMessage
-from users.usersRepository import UsersRepository
+from CynanBot.users.usersRepository import UsersRepository
 
 
 class TwitchIoConfiguration(TwitchConfiguration):

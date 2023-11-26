@@ -1,0 +1,68 @@
+{
+    "levenshtein_threshold": 0.20,
+    "max_answer_length": 80,
+    "max_multiple_choice_responses": 5,
+    "max_question_length": 350,
+    "max_phrase_answer_length": 32,
+    "max_retry_count": 8,
+    "min_days_before_repeat_question": 10,
+    "min_multiple_choice_responses": 2,
+    "trivia_sources": {
+        "bongo": {
+            "is_enabled": true,
+            "weight": 600
+        },
+        "funtoon": {
+            "is_enabled": true,
+            "weight": 1000
+        },
+        "joke_trivia_repository": {
+            "is_enabled": false,
+            "weight": 10
+        },
+        "j_service": {
+            "is_enabled": true,
+            "weight": 100
+        },
+        "lord_of_the_rings": {
+            "is_enabled": true,
+            "weight": 2
+        },
+        "millionaire": {
+            "is_enabled": true,
+            "weight": 600
+        },
+        "open_trivia": {
+            "is_enabled": true,
+            "weight": 1000
+        },
+        "open_trivia_qa": {
+            "is_enabled": true,
+            "weight": 500
+        },
+        "poke_api": {
+            "is_enabled": true,
+            "weight": 50
+        },
+        "quiz_api": {
+            "is_enabled": true,
+            "weight": 5
+        },
+        "the_question_co": {
+            "is_enabled": true,
+            "weight": 400
+        },
+        "trivia_database": {
+            "is_enabled": true,
+            "weight": 700
+        },
+        "will_fry_trivia": {
+            "is_enabled": true,
+            "weight": 800
+        },
+        "wwtbam": {
+            "is_enabled": true,
+            "weight": 250
+        }
+    }
+}
