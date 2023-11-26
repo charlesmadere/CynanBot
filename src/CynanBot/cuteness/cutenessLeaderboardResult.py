@@ -1,9 +1,9 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from cuteness.cutenessDate import CutenessDate
-from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
-from cuteness.cutenessResult import CutenessResult
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessDate import CutenessDate
+from CynanBot.cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from CynanBot.cuteness.cutenessResult import CutenessResult
 
 
 class CutenessLeaderboardResult():

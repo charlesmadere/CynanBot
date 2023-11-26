@@ -1,6 +1,6 @@
 from typing import Optional
 
-from cheerActions.cheerActionType import CheerActionType
+from CynanBot.cheerActions.cheerActionType import CheerActionType
 
 
 class TestCheerActionType():

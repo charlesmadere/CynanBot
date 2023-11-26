@@ -2,8 +2,9 @@ import re
 from typing import Pattern
 
 import pytest
-from cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
-from cheerActions.cheerActionIdGeneratorInterface import \
+
+from CynanBot.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
+from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
 
 

@@ -1,7 +1,7 @@
 import locale
 
-import misc.utils as utils
-from cuteness.cutenessEntry import CutenessEntry
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessEntry import CutenessEntry
 
 
 class CutenessLeaderboardEntry(CutenessEntry):

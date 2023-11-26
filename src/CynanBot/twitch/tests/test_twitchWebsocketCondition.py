@@ -1,6 +1,6 @@
 from typing import Optional
 
-from twitch.websocket.websocketCondition import WebsocketCondition
+from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
 
 
 class TestTwitchWebsocketCondition():

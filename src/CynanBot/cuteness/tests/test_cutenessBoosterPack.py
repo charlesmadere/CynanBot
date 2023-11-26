@@ -1,4 +1,4 @@
-from cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 
 
 class TestCutenessBoosterPack():

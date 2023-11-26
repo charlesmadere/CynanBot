@@ -3,21 +3,21 @@ import re
 import traceback
 from typing import Any, Dict, List, Optional, Pattern
 
-import misc.utils as utils
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from pkmn.pokepediaContestType import PokepediaContestType
-from pkmn.pokepediaDamageClass import PokepediaDamageClass
-from pkmn.pokepediaElementType import PokepediaElementType
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaMachine import PokepediaMachine
-from pkmn.pokepediaMachineType import PokepediaMachineType
-from pkmn.pokepediaMove import PokepediaMove
-from pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
-from pkmn.pokepediaNature import PokepediaNature
-from pkmn.pokepediaPokemon import PokepediaPokemon
-from pkmn.pokepediaStat import PokepediaStat
-from timber.timberInterface import TimberInterface
+import CynanBot.misc.utils as utils
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.pkmn.pokepediaContestType import PokepediaContestType
+from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaMachine import PokepediaMachine
+from CynanBot.pkmn.pokepediaMachineType import PokepediaMachineType
+from CynanBot.pkmn.pokepediaMove import PokepediaMove
+from CynanBot.pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
+from CynanBot.pkmn.pokepediaNature import PokepediaNature
+from CynanBot.pkmn.pokepediaPokemon import PokepediaPokemon
+from CynanBot.pkmn.pokepediaStat import PokepediaStat
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class PokepediaRepository():

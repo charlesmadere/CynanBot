@@ -1,8 +1,7 @@
 import traceback
 from typing import Any, Optional
 
-import misc.utils as utils
-
+import CynanBot.misc.utils as utils
 from CynanBot.funtoon.exceptions import NoFuntoonTokenException
 from CynanBot.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 from CynanBot.funtoon.funtoonRepositoryInterface import \

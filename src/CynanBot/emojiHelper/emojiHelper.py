@@ -1,9 +1,11 @@
 from typing import Optional
 
 import emoji
-import misc.utils as utils
-from emojiHelper.emojiHelperInterface import EmojiHelperInterface
-from emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
+from CynanBot.emojiHelper.emojiRepositoryInterface import \
+    EmojiRepositoryInterface
 
 
 class EmojiHelper(EmojiHelperInterface):

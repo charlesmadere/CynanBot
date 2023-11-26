@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from language.jishoResult import JishoResult
+from CynanBot.language.jishoResult import JishoResult
 
 
 class JishoHelperInterface(ABC):

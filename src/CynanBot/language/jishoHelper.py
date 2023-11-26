@@ -2,13 +2,13 @@ import traceback
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 
-import misc.utils as utils
-from language.jishoHelperInterface import JishoHelperInterface
-from language.jishoResult import JishoResult
-from language.jishoVariant import JishoVariant
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
+import CynanBot.misc.utils as utils
+from CynanBot.language.jishoHelperInterface import JishoHelperInterface
+from CynanBot.language.jishoResult import JishoResult
+from CynanBot.language.jishoVariant import JishoVariant
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class JishoHelper(JishoHelperInterface):

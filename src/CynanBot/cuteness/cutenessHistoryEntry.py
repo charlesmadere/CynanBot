@@ -1,5 +1,5 @@
-from cuteness.cutenessDate import CutenessDate
-from cuteness.cutenessEntry import CutenessEntry
+from CynanBot.cuteness.cutenessDate import CutenessDate
+from CynanBot.cuteness.cutenessEntry import CutenessEntry
 
 
 class CutenessHistoryEntry(CutenessEntry):

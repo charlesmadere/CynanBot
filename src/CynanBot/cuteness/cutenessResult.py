@@ -1,8 +1,8 @@
 import locale
 from typing import Optional
 
-import misc.utils as utils
-from cuteness.cutenessDate import CutenessDate
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessDate import CutenessDate
 
 
 class CutenessResult():

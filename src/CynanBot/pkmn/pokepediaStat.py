@@ -1,8 +1,8 @@
 from enum import Enum, auto
 from typing import Optional, Set
 
-import misc.utils as utils
-from pkmn.pokepediaNature import PokepediaNature
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaNature import PokepediaNature
 
 
 class PokepediaStat(Enum):

@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from cuteness.cutenessChampionsResult import CutenessChampionsResult
-from cuteness.cutenessHistoryResult import CutenessHistoryResult
-from cuteness.cutenessLeaderboardHistoryResult import \
+from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
+from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
+from CynanBot.cuteness.cutenessLeaderboardHistoryResult import \
     CutenessLeaderboardHistoryResult
-from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
-from cuteness.cutenessResult import CutenessResult
+from CynanBot.cuteness.cutenessLeaderboardResult import \
+    CutenessLeaderboardResult
+from CynanBot.cuteness.cutenessResult import CutenessResult
 
 
 class CutenessRepositoryInterface(ABC):

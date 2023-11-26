@@ -1,11 +1,11 @@
 from typing import Dict, List, Optional
 
-import misc.utils as utils
-from pkmn.pokepediaContestType import PokepediaContestType
-from pkmn.pokepediaDamageClass import PokepediaDamageClass
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaMachine import PokepediaMachine
-from pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaContestType import PokepediaContestType
+from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaMachine import PokepediaMachine
+from CynanBot.pkmn.pokepediaMoveGeneration import PokepediaMoveGeneration
 
 
 class PokepediaMove():

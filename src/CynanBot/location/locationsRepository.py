@@ -1,10 +1,11 @@
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from location.location import Location
-from location.locationsRepositoryInterface import LocationsRepositoryInterface
-from storage.jsonReaderInterface import JsonReaderInterface
-from timeZoneRepository import TimeZoneRepository
+import CynanBot.misc.utils as utils
+from CynanBot.location.location import Location
+from CynanBot.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.timeZoneRepository import TimeZoneRepository
 
 
 class LocationsRepository(LocationsRepositoryInterface):

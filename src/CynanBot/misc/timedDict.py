@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class TimedDict():

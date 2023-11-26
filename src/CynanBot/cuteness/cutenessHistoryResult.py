@@ -1,8 +1,8 @@
 import locale
 from typing import List, Optional
 
-import misc.utils as utils
-from cuteness.cutenessHistoryEntry import CutenessHistoryEntry
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessHistoryEntry import CutenessHistoryEntry
 
 
 class CutenessHistoryResult():

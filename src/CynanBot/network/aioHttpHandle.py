@@ -1,12 +1,13 @@
 from typing import Any, Dict, Optional
 
 import aiohttp
-from network.aioHttpResponse import AioHttpResponse
-from network.exceptions import GenericNetworkException
-from network.networkClientType import NetworkClientType
-from network.networkHandle import NetworkHandle
-from network.networkResponse import NetworkResponse
-from timber.timberInterface import TimberInterface
+
+from CynanBot.network.aioHttpResponse import AioHttpResponse
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkHandle import NetworkHandle
+from CynanBot.network.networkResponse import NetworkResponse
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class AioHttpHandle(NetworkHandle):

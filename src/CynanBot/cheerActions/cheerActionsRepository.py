@@ -1,20 +1,20 @@
 from typing import Dict, List, Optional
 
-import misc.utils as utils
-from cheerActions.cheerAction import CheerAction
-from cheerActions.cheerActionIdGeneratorInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.cheerActions.cheerAction import CheerAction
+from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from cheerActions.cheerActionRequirement import CheerActionRequirement
-from cheerActions.cheerActionsRepositoryInterface import \
+from CynanBot.cheerActions.cheerActionRequirement import CheerActionRequirement
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from cheerActions.cheerActionType import CheerActionType
-from cheerActions.exceptions import (CheerActionAlreadyExistsException,
-                                     TimeoutDurationSecondsTooLongException,
-                                     TooManyCheerActionsException)
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
+from CynanBot.cheerActions.cheerActionType import CheerActionType
+from CynanBot.cheerActions.exceptions import (
+    CheerActionAlreadyExistsException, TimeoutDurationSecondsTooLongException,
+    TooManyCheerActionsException)
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class CheerActionsRepository(CheerActionsRepositoryInterface):

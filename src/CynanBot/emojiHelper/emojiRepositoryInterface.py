@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from emojiHelper.emojiInfo import EmojiInfo
+from CynanBot.emojiHelper.emojiInfo import EmojiInfo
 
 
 class EmojiRepositoryInterface(ABC):

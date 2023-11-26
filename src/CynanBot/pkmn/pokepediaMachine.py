@@ -1,6 +1,6 @@
-import misc.utils as utils
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaMachineType import PokepediaMachineType
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaMachineType import PokepediaMachineType
 
 
 class PokepediaMachine():

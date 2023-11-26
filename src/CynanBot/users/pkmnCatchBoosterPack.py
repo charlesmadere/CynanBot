@@ -1,7 +1,7 @@
 from typing import Optional
 
-import misc.utils as utils
-from users.pkmnCatchType import PkmnCatchType
+import CynanBot.misc.utils as utils
+from CynanBot.users.pkmnCatchType import PkmnCatchType
 
 
 class PkmnCatchBoosterPack():

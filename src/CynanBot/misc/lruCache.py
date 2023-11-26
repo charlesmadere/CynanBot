@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 # This class was taken from online:

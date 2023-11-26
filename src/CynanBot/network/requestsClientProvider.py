@@ -1,9 +1,9 @@
-import misc.utils as utils
-from network.networkClientProvider import NetworkClientProvider
-from network.networkClientType import NetworkClientType
-from network.networkHandle import NetworkHandle
-from network.requestsHandle import RequestsHandle
-from timber.timberInterface import TimberInterface
+import CynanBot.misc.utils as utils
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkHandle import NetworkHandle
+from CynanBot.network.requestsHandle import RequestsHandle
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class RequestsClientProvider(NetworkClientProvider):

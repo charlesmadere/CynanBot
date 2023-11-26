@@ -1,8 +1,8 @@
 from enum import Enum, auto
 from typing import Optional
 
-import misc.utils as utils
-from pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaBerryFlavor import PokepediaBerryFlavor
 
 
 class PokepediaNature(Enum):

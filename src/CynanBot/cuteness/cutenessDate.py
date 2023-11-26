@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from simpleDateTime import SimpleDateTime
+from CynanBot.simpleDateTime import SimpleDateTime
 
 
 class CutenessDate():

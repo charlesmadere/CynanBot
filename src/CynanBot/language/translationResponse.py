@@ -1,6 +1,6 @@
-import misc.utils as utils
-from language.languageEntry import LanguageEntry
-from language.translationApiSource import TranslationApiSource
+import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.translationApiSource import TranslationApiSource
 
 
 class TranslationResponse():

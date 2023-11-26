@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Optional
 
-from misc.clearable import Clearable
+from CynanBot.misc.clearable import Clearable
 
 
 class FuntoonTokensRepositoryInterface(Clearable):

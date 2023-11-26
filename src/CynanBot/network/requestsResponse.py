@@ -1,12 +1,13 @@
 from json import JSONDecodeError
 from typing import Any, Dict, Optional
 
-import misc.utils as utils
-from network.exceptions import NetworkResponseIsClosedException
-from network.networkClientType import NetworkClientType
-from network.networkResponse import NetworkResponse
 from requests.models import Response
-from timber.timberInterface import TimberInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.network.exceptions import NetworkResponseIsClosedException
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkResponse import NetworkResponse
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class RequestsResponse(NetworkResponse):

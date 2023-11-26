@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
-from network.networkClientType import NetworkClientType
-from network.networkResponse import NetworkResponse
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkResponse import NetworkResponse
 
 
 class NetworkHandle(ABC):

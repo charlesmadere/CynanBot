@@ -1,4 +1,4 @@
-from twitch.websocket.websocketNoticeType import WebsocketNoticeType
+from CynanBot.twitch.websocket.websocketNoticeType import WebsocketNoticeType
 
 
 class TestTwitchWebsocketNoticeType():

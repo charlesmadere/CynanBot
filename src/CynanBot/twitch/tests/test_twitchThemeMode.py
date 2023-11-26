@@ -1,6 +1,6 @@
 from typing import Optional
 
-from twitch.twitchThemeMode import TwitchThemeMode
+from CynanBot.twitch.twitchThemeMode import TwitchThemeMode
 
 
 class TestTwitchThemeMode():

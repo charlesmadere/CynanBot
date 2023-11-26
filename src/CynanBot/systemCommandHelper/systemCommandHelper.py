@@ -4,11 +4,12 @@ from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from typing import ByteString, Optional, Tuple
 
-import misc.utils as utils
 import psutil
-from systemCommandHelper.systemCommandHelperInterface import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
-from timber.timberInterface import TimberInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class SystemCommandHelper(SystemCommandHelperInterface):

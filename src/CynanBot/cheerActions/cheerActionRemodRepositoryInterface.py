@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from cheerActions.cheerActionRemodData import CheerActionRemodData
+from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
 
 
 class CheerActionRemodRepositoryInterface(ABC):

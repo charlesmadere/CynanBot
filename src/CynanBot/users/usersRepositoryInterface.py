@@ -1,8 +1,8 @@
 from abc import abstractmethod
 from typing import List
 
-from misc.clearable import Clearable
-from users.userInterface import UserInterface
+from CynanBot.misc.clearable import Clearable
+from CynanBot.users.userInterface import UserInterface
 
 
 class UsersRepositoryInterface(Clearable):

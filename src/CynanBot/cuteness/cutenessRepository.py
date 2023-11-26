@@ -1,20 +1,23 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from cuteness.cutenessChampionsResult import CutenessChampionsResult
-from cuteness.cutenessDate import CutenessDate
-from cuteness.cutenessHistoryEntry import CutenessHistoryEntry
-from cuteness.cutenessHistoryResult import CutenessHistoryResult
-from cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
-from cuteness.cutenessLeaderboardHistoryResult import \
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
+from CynanBot.cuteness.cutenessDate import CutenessDate
+from CynanBot.cuteness.cutenessHistoryEntry import CutenessHistoryEntry
+from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
+from CynanBot.cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
+from CynanBot.cuteness.cutenessLeaderboardHistoryResult import \
     CutenessLeaderboardHistoryResult
-from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
-from cuteness.cutenessRepositoryInterface import CutenessRepositoryInterface
-from cuteness.cutenessResult import CutenessResult
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.cuteness.cutenessLeaderboardResult import \
+    CutenessLeaderboardResult
+from CynanBot.cuteness.cutenessRepositoryInterface import \
+    CutenessRepositoryInterface
+from CynanBot.cuteness.cutenessResult import CutenessResult
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class CutenessRepository(CutenessRepositoryInterface):

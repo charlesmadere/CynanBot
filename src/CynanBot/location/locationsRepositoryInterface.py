@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from location.location import Location
-from misc.clearable import Clearable
+from CynanBot.location.location import Location
+from CynanBot.misc.clearable import Clearable
 
 
 class LocationsRepositoryInterface(Clearable):

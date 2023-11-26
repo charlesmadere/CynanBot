@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from network.networkClientType import NetworkClientType
-from network.networkHandle import NetworkHandle
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkHandle import NetworkHandle
 
 
 class NetworkClientProvider(ABC):

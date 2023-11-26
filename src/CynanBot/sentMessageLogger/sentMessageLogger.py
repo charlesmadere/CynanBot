@@ -7,10 +7,11 @@ from typing import Dict, List, Optional
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from sentMessageLogger.sentMessage import SentMessage
-from sentMessageLogger.sentMessageLoggerInterface import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.sentMessageLogger.sentMessage import SentMessage
+from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 
 

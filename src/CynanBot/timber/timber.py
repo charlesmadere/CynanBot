@@ -7,10 +7,11 @@ from typing import Dict, List, Optional
 import aiofiles
 import aiofiles.os
 import aiofiles.ospath
-import misc.utils as utils
-from backgroundTaskHelper import BackgroundTaskHelper
-from timber.timberEntry import TimberEntry
-from timber.timberInterface import TimberInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.timber.timberEntry import TimberEntry
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class Timber(TimberInterface):

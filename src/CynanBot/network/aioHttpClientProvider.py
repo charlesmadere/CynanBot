@@ -2,12 +2,13 @@ from asyncio import AbstractEventLoop
 from typing import Optional
 
 import aiohttp
-import misc.utils as utils
-from network.aioHttpHandle import AioHttpHandle
-from network.networkClientProvider import NetworkClientProvider
-from network.networkClientType import NetworkClientType
-from network.networkHandle import NetworkHandle
-from timber.timberInterface import TimberInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.network.aioHttpHandle import AioHttpHandle
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.network.networkClientType import NetworkClientType
+from CynanBot.network.networkHandle import NetworkHandle
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class AioHttpClientProvider(NetworkClientProvider):

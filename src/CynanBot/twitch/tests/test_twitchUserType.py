@@ -1,4 +1,4 @@
-from twitch.twitchUserType import TwitchUserType
+from CynanBot.twitch.twitchUserType import TwitchUserType
 
 
 class TestTwitchUserType():

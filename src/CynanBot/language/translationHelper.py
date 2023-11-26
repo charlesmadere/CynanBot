@@ -14,15 +14,16 @@ try:
 except:
     isGoogleMissing = True
 
-import misc.utils as utils
-from language.languageEntry import LanguageEntry
-from language.languagesRepository import LanguagesRepository
-from language.translationApiSource import TranslationApiSource
-from language.translationHelperInterface import TranslationHelperInterface
-from language.translationResponse import TranslationResponse
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
+import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.translationApiSource import TranslationApiSource
+from CynanBot.language.translationHelperInterface import \
+    TranslationHelperInterface
+from CynanBot.language.translationResponse import TranslationResponse
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class TranslationHelper(TranslationHelperInterface):

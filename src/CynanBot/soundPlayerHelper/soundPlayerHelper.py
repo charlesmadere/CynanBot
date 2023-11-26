@@ -1,7 +1,7 @@
-from soundPlayerHelper.soundAlert import SoundAlert
-from soundPlayerHelper.soundPlayerHelperInterface import \
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
-from systemCommandHelper.systemCommandHelperInterface import \
+from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
 
 

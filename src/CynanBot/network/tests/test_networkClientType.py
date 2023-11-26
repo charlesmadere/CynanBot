@@ -1,4 +1,4 @@
-from network.networkClientType import NetworkClientType
+from CynanBot.network.networkClientType import NetworkClientType
 
 
 class TestNetworkClientType():

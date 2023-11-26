@@ -1,8 +1,8 @@
 from abc import abstractmethod
 
-from language.languageEntry import LanguageEntry
-from language.wordOfTheDayResponse import WordOfTheDayResponse
-from misc.clearable import Clearable
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
+from CynanBot.misc.clearable import Clearable
 
 
 class WordOfTheDayRepositoryInterface(Clearable):

@@ -1,11 +1,11 @@
 import locale
 from typing import Dict, List, Optional
 
-import misc.utils as utils
-from pkmn.pokepediaDamageMultiplier import PokepediaDamageMultiplier
-from pkmn.pokepediaElementType import PokepediaElementType
-from pkmn.pokepediaGeneration import PokepediaGeneration
-from pkmn.pokepediaTypeChart import PokepediaTypeChart
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaDamageMultiplier import PokepediaDamageMultiplier
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
+from CynanBot.pkmn.pokepediaTypeChart import PokepediaTypeChart
 
 
 class PokepediaPokemon():

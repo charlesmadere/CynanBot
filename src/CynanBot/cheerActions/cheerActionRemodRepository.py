@@ -1,15 +1,15 @@
 from datetime import timedelta
 from typing import List
 
-import misc.utils as utils
-from cheerActions.cheerActionRemodData import CheerActionRemodData
-from cheerActions.cheerActionRemodRepositoryInterface import \
+import CynanBot.misc.utils as utils
+from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
+from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
     CheerActionRemodRepositoryInterface
-from simpleDateTime import SimpleDateTime
-from storage.backingDatabase import BackingDatabase
-from storage.databaseConnection import DatabaseConnection
-from storage.databaseType import DatabaseType
-from timber.timberInterface import TimberInterface
+from CynanBot.simpleDateTime import SimpleDateTime
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):

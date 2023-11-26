@@ -1,5 +1,5 @@
-import misc.utils as utils
-from users.modifyUserActionType import ModifyUserActionType
+import CynanBot.misc.utils as utils
+from CynanBot.users.modifyUserActionType import ModifyUserActionType
 
 
 class ModifyUserData():

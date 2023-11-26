@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from typing import Any
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class PokepediaGeneration(Enum):

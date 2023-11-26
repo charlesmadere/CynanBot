@@ -1,6 +1,6 @@
 from typing import Set
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class EmojiInfo():

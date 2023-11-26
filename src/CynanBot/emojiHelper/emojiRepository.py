@@ -1,11 +1,12 @@
 import traceback
 from typing import Any, Dict, List, Optional, Set
 
-import misc.utils as utils
-from emojiHelper.emojiInfo import EmojiInfo
-from emojiHelper.emojiRepositoryInterface import EmojiRepositoryInterface
-from storage.jsonReaderInterface import JsonReaderInterface
-from timber.timberInterface import TimberInterface
+import CynanBot.misc.utils as utils
+from CynanBot.emojiHelper.emojiInfo import EmojiInfo
+from CynanBot.emojiHelper.emojiRepositoryInterface import \
+    EmojiRepositoryInterface
+from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class EmojiRepository(EmojiRepositoryInterface):

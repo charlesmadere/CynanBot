@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class PokepediaMachineType(Enum):

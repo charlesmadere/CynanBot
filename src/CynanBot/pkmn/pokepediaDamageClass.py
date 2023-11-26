@@ -1,8 +1,8 @@
 from enum import Enum, auto
 from typing import Set
 
-import misc.utils as utils
-from pkmn.pokepediaElementType import PokepediaElementType
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
 
 
 class PokepediaDamageClass(Enum):

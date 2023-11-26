@@ -1,6 +1,6 @@
 from datetime import tzinfo
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class Location():

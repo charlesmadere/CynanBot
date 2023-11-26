@@ -2,16 +2,17 @@ import traceback
 from datetime import timedelta
 from typing import Any, Dict
 
-import misc.utils as utils
 import xmltodict
-from language.languageEntry import LanguageEntry
-from language.wordOfTheDayRepositoryInterface import \
+
+import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
-from language.wordOfTheDayResponse import WordOfTheDayResponse
-from misc.timedDict import TimedDict
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
+from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
+from CynanBot.misc.timedDict import TimedDict
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):

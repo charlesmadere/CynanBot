@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-import misc.utils as utils
-from cuteness.cutenessLeaderboardResult import CutenessLeaderboardResult
+import CynanBot.misc.utils as utils
+from CynanBot.cuteness.cutenessLeaderboardResult import \
+    CutenessLeaderboardResult
 
 
 class CutenessLeaderboardHistoryResult():

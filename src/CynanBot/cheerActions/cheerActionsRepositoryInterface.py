@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from typing import List, Optional
 
-from cheerActions.cheerAction import CheerAction
-from cheerActions.cheerActionRequirement import CheerActionRequirement
-from cheerActions.cheerActionType import CheerActionType
-from misc.clearable import Clearable
+from CynanBot.cheerActions.cheerAction import CheerAction
+from CynanBot.cheerActions.cheerActionRequirement import CheerActionRequirement
+from CynanBot.cheerActions.cheerActionType import CheerActionType
+from CynanBot.misc.clearable import Clearable
 
 
 class CheerActionsRepositoryInterface(Clearable):

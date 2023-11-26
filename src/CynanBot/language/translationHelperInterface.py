@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from language.languageEntry import LanguageEntry
-from language.translationResponse import TranslationResponse
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.translationResponse import TranslationResponse
 
 
 class TranslationHelperInterface(ABC):

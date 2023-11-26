@@ -1,7 +1,7 @@
 from typing import List
 
-import misc.utils as utils
-from language.jishoVariant import JishoVariant
+import CynanBot.misc.utils as utils
+from CynanBot.language.jishoVariant import JishoVariant
 
 
 class JishoResult():

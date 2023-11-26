@@ -3,9 +3,10 @@ from typing import Any, Dict, List, Optional
 
 import aiofiles
 import aiofiles.ospath
-import misc.utils as utils
-from storage.backingDatabase import BackingDatabase
-from timber.timberInterface import TimberInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class MigrationHelper():

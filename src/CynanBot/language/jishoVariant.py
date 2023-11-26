@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-import misc.utils as utils
+import CynanBot.misc.utils as utils
 
 
 class JishoVariant():

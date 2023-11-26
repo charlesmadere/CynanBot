@@ -1,8 +1,8 @@
 import random
 from typing import List, Optional, Set
 
-import misc.utils as utils
-from language.languageEntry import LanguageEntry
+import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
 
 
 class LanguagesRepository():

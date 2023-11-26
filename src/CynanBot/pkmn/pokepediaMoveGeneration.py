@@ -1,10 +1,10 @@
 import locale
 from typing import Optional
 
-import misc.utils as utils
-from pkmn.pokepediaDamageClass import PokepediaDamageClass
-from pkmn.pokepediaElementType import PokepediaElementType
-from pkmn.pokepediaGeneration import PokepediaGeneration
+import CynanBot.misc.utils as utils
+from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
+from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
+from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
 
 
 class PokepediaMoveGeneration():

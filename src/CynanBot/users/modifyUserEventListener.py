@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from users.modifyUserData import ModifyUserData
+from CynanBot.users.modifyUserData import ModifyUserData
 
 
 class ModifyUserEventListener(ABC):

@@ -2,16 +2,17 @@ import traceback
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
-import misc.utils as utils
-from location.location import Location
-from misc.timedDict import TimedDict
-from network.exceptions import GenericNetworkException
-from network.networkClientProvider import NetworkClientProvider
-from timber.timberInterface import TimberInterface
-from weather.airQualityIndex import AirQualityIndex
-from weather.uvIndex import UvIndex
-from weather.weatherReport import WeatherReport
-from weather.weatherRepositoryInterface import WeatherRepositoryInterface
+import CynanBot.misc.utils as utils
+from CynanBot.location.location import Location
+from CynanBot.misc.timedDict import TimedDict
+from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.weather.airQualityIndex import AirQualityIndex
+from CynanBot.weather.uvIndex import UvIndex
+from CynanBot.weather.weatherReport import WeatherReport
+from CynanBot.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 
 
 class WeatherRepository(WeatherRepositoryInterface):
