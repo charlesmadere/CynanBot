@@ -10,8 +10,8 @@ from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
-from CynanBot.twitch.twitchChannelPointsMessage import (
-    TwitchChannelPointsMessage, TwitchChannelPointsMessageStub)
+from CynanBot.twitch.twitchChannelPointsMessage import \
+    TwitchChannelPointsMessage
 from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userIdsRepositoryInterface import \
@@ -104,7 +104,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
 
-        channelPointsMessage: TwitchChannelPointsMessage = TwitchChannelPointsMessageStub(
+        channelPointsMessage = TwitchChannelPointsMessage(
             eventId = eventId,
             redemptionMessage = redemptionUserInput,
             rewardId = reward.getRewardId(),

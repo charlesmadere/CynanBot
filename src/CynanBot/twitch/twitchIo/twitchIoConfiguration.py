@@ -1,17 +1,12 @@
 from twitchio import Message
 from twitchio.channel import Channel
 from twitchio.ext.commands import Context
-from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
 from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
 from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
 from CynanBot.twitch.twitchContext import TwitchContext
 from CynanBot.twitch.twitchIo.twitchIoChannel import TwitchIoChannel
-from CynanBot.twitch.twitchIo.twitchIoChannelPointsMessage import \
-    TwitchIoChannelPointsMessage
 from CynanBot.twitch.twitchIo.twitchIoContext import TwitchIoContext
 from CynanBot.twitch.twitchIo.twitchIoMessage import TwitchIoMessage
 from CynanBot.twitch.twitchMessage import TwitchMessage
@@ -40,19 +35,6 @@ class TwitchIoConfiguration(TwitchConfiguration):
             raise ValueError(f'channel argument is malformed: \"{channel}\"')
 
         return TwitchIoChannel(channel = channel)
-
-    async def getChannelPointsMessage(self, channelPointsMessage: PubSubChannelPointsMessage) -> TwitchChannelPointsMessage:
-        if not isinstance(channelPointsMessage, PubSubChannelPointsMessage):
-            raise ValueError(f'channelPointsMessage argument is malformed: \"{channelPointsMessage}\"')
-
-        userId = str(channelPointsMessage.channel_id)
-        userName = await self.__userIdsRepository.requireUserName(userId = userId)
-        user = await self.__usersRepository.getUserAsync(userName)
-
-        return TwitchIoChannelPointsMessage(
-            channelPointsMessage = channelPointsMessage,
-            user = user
-        )
 
     def getContext(self, context: Context) -> TwitchContext:
         if not isinstance(context, Context):

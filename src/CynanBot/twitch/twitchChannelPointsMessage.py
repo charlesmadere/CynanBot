@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from typing import Optional
 
 import CynanBot.misc.utils as utils
@@ -6,38 +5,7 @@ from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
 from CynanBot.users.userInterface import UserInterface
 
 
-class TwitchChannelPointsMessage(ABC):
-
-    @abstractmethod
-    def getEventId(self) -> str:
-        pass
-
-    @abstractmethod
-    def getRedemptionMessage(self) -> Optional[str]:
-        pass
-
-    @abstractmethod
-    def getRewardId(self) -> str:
-        pass
-
-    @abstractmethod
-    def getTwitchConfigurationType(self) -> TwitchConfigurationType:
-        pass
-
-    @abstractmethod
-    def getTwitchUser(self) -> UserInterface:
-        pass
-
-    @abstractmethod
-    def getUserId(self) -> str:
-        pass
-
-    @abstractmethod
-    def getUserName(self) -> str:
-        pass
-
-
-class TwitchChannelPointsMessageStub(TwitchChannelPointsMessage):
+class TwitchChannelPointsMessage():
 
     def __init__(
         self,

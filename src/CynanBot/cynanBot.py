@@ -6,7 +6,6 @@ from twitchio import Channel, Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
-from twitchio.ext.pubsub import PubSubChannelPointsMessage
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -171,7 +170,6 @@ from CynanBot.twitch.finishedJoiningChannelsEvent import \
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
-from CynanBot.twitch.pubSubUtils import PubSubUtils
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchChannel import TwitchChannel
 from CynanBot.twitch.twitchChannelPointRedemptionHandler import \
@@ -610,22 +608,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         generalSettings = self.__generalSettingsRepository.getAll()
 
-        ######################################
-        ## Initialization of PubSub objects ##
-        ######################################
-
-        self.__pubSubUtils: Optional[PubSubUtils] = None
-        if generalSettings.isPubSubEnabled():
-            self.__pubSubUtils = PubSubUtils(
-                backgroundTaskHelper = backgroundTaskHelper,
-                client = self,
-                generalSettingsRepository = generalSettingsRepository,
-                timber = timber,
-                twitchTokensRepository = twitchTokensRepository,
-                userIdsRepository = userIdsRepository,
-                usersRepository = usersRepository
-            )
-
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
     async def event_channel_join_failure(self, channel: str):
@@ -724,89 +706,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         await self.handle_commands(message)
 
-    async def event_pubsub_channel_points(self, event: PubSubChannelPointsMessage):
-        twitchUserIdStr = str(event.channel_id)
-        lruCacheId = f'{twitchUserIdStr}:{event.id}'.lower()
-
-        if self.__channelPointsLruCache.contains(lruCacheId):
-            return
-
-        self.__channelPointsLruCache.put(lruCacheId)
-        channelPointsMessage = await self.__twitchConfiguration.getChannelPointsMessage(event)
-        twitchUser = channelPointsMessage.getTwitchUser()
-
-        self.__timber.log('CynanBot', f'Reward \"{channelPointsMessage.getRewardId()}\" redeemed by {channelPointsMessage.getUserName()}:{channelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
-
-        twitchChannel = await self.__getChannel(twitchUser.getHandle())
-
-        if twitchUser.isCutenessEnabled() and twitchUser.hasCutenessBoosterPacks():
-            if await self.__cutenessPointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
-
-        if twitchUser.isPkmnEnabled():
-            if channelPointsMessage.getRewardId() == twitchUser.getPkmnBattleRewardId():
-                if await self.__pkmnBattlePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
-                ):
-                    return
-
-            if twitchUser.hasPkmnCatchBoosterPacks():
-                if await self.__pkmnCatchPointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
-                ):
-                    return
-
-            if channelPointsMessage.getRewardId() == twitchUser.getPkmnEvolveRewardId():
-                if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
-                ):
-                    return
-
-            if channelPointsMessage.getRewardId() == twitchUser.getPkmnShinyRewardId():
-                if await self.__pkmnShinyPointRedemption.handlePointRedemption(
-                    twitchChannel = twitchChannel,
-                    twitchChannelPointsMessage = channelPointsMessage
-                ):
-                    return
-
-        if twitchUser.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == twitchUser.getTriviaGameRewardId():
-            if await self.__triviaGamePointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
-
-        if twitchUser.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == twitchUser.getSuperTriviaGameRewardId():
-            if await self.__superTriviaGamePointRedemption.handlePointRedemption(
-                twitchChannel = twitchChannel,
-                twitchChannelPointsMessage = channelPointsMessage
-            ):
-                return
-
-    async def event_pubsub_error(self, tags: Dict):
-        self.__timber.log('CynanBot', f'Received PubSub error: {tags}')
-
-    async def event_pubsub_nonce(self, tags: Dict):
-        self.__timber.log('CynanBot', f'Received PubSub nonce: {tags}')
-
-    async def event_pubsub_pong(self):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if generalSettings.isPubSubPongLoggingEnabled():
-            self.__timber.log('CynanBot', f'Received PubSub pong')
-
-    async def event_raw_data(self, data: str):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if generalSettings.isRawEventDataLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_data(): (data=\"{data}\")')
-
     async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
         twitchChannel = self.__twitchConfiguration.getChannel(channel)
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -852,11 +751,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def event_reconnect(self):
         self.__timber.log('CynanBot', f'Received new reconnect event')
-
         await self.wait_for_ready()
-
-        if self.__pubSubUtils is not None:
-            await self.__pubSubUtils.forceFullRefresh()
+        self.__timber.log('CynanBot', f'Finished reconnecting')
 
     async def event_usernotice_subscription(self, metadata):
         self.__timber.log('CynanBot', f'event_usernotice_subscription(): (metadata=\"{metadata}\")')
@@ -933,9 +829,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__ttsManager.start()
 
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if generalSettings.isPubSubEnabled() and self.__pubSubUtils is not None:
-            self.__pubSubUtils.startPubSub()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
             cheerHandler: Optional[AbsTwitchCheerHandler] = TwitchCheerHandler(
