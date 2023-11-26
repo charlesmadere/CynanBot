@@ -9,11 +9,11 @@ from CynanBot.twitch.twitchChannelPointsMessage import \
 from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
 from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
 from CynanBot.twitch.twitchContext import TwitchContext
-from CynanBot.twitch.twitchIoChannel import TwitchIoChannel
-from CynanBot.twitch.twitchIoChannelPointsMessage import \
+from CynanBot.twitch.twitchIo.twitchIoChannel import TwitchIoChannel
+from CynanBot.twitch.twitchIo.twitchIoChannelPointsMessage import \
     TwitchIoChannelPointsMessage
-from CynanBot.twitch.twitchIoContext import TwitchIoContext
-from CynanBot.twitch.twitchIoMessage import TwitchIoMessage
+from CynanBot.twitch.twitchIo.twitchIoContext import TwitchIoContext
+from CynanBot.twitch.twitchIo.twitchIoMessage import TwitchIoMessage
 from CynanBot.twitch.twitchMessage import TwitchMessage
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
