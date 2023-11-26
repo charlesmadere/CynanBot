@@ -1,7 +1,6 @@
 from datetime import timedelta
 
-import utils
-
+import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
