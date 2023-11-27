@@ -14,7 +14,8 @@ from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
-from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userInterface import UserInterface
 

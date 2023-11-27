@@ -77,7 +77,6 @@ from CynanBot.messages import (AbsMessage, CatJamMessage, ChatLogMessage,
                                DeerForceMessage, EyesMessage, ImytSlurpMessage,
                                JamCatMessage, RatJamMessage, RoachMessage,
                                SchubertWalkMessage, StubMessage)
-from CynanBot.misc.lruCache import LruCache
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                                        PkmnBattleRedemption,
@@ -165,18 +164,20 @@ from CynanBot.twitch.absTwitchSubscriptionHandler import \
 from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
 from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.channelJoinListener import ChannelJoinListener
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchChannelPointRedemptionHandler import \
+    TwitchChannelPointRedemptionHandler
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchConfiguration import \
+    TwitchConfiguration
 from CynanBot.twitch.finishedJoiningChannelsEvent import \
     FinishedJoiningChannelsEvent
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
-from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchChannelPointRedemptionHandler import \
-    TwitchChannelPointRedemptionHandler
-from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
-from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
@@ -398,8 +399,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-        self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################
         ## Initialization of command objects ##

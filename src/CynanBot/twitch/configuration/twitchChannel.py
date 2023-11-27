@@ -1,7 +1,8 @@
 from abc import abstractmethod
 
-from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
-from CynanBot.twitch.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.configuration.twitchConfigurationType import \
+    TwitchConfigurationType
+from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 
 
 class TwitchChannel(TwitchMessageable):

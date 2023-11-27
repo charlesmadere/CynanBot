@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from CynanBot.twitch.twitchAuthor import TwitchAuthor
-from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
+from CynanBot.twitch.configuration.twitchAuthor import TwitchAuthor
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchConfigurationType import \
+    TwitchConfigurationType
 
 
 class TwitchMessage(ABC):

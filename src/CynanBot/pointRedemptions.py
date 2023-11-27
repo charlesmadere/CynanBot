@@ -15,8 +15,8 @@ from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchChannelPointsMessage import \
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack

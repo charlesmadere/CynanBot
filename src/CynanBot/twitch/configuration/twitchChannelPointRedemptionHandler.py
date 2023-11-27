@@ -10,9 +10,10 @@ from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
-from CynanBot.twitch.twitchChannelPointsMessage import \
+from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
-from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface

@@ -7,7 +7,7 @@ from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.misc.timedDict import TimedDict
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.twitchMessage import TwitchMessage
+from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.users.user import User
 
