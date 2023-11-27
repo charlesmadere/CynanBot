@@ -248,6 +248,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isTriviaScoreEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isTtsEnabled(self) -> bool:
         pass
 

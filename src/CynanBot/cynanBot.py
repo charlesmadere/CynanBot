@@ -77,7 +77,6 @@ from CynanBot.messages import (AbsMessage, CatJamMessage, ChatLogMessage,
                                DeerForceMessage, EyesMessage, ImytSlurpMessage,
                                JamCatMessage, RatJamMessage, RoachMessage,
                                SchubertWalkMessage, StubMessage)
-from CynanBot.misc.lruCache import LruCache
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
                                        PkmnBattleRedemption,
@@ -165,18 +164,20 @@ from CynanBot.twitch.absTwitchSubscriptionHandler import \
 from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
 from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.channelJoinListener import ChannelJoinListener
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchChannelPointRedemptionHandler import \
+    TwitchChannelPointRedemptionHandler
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchConfiguration import \
+    TwitchConfiguration
 from CynanBot.twitch.finishedJoiningChannelsEvent import \
     FinishedJoiningChannelsEvent
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
-from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchChannelPointRedemptionHandler import \
-    TwitchChannelPointRedemptionHandler
-from CynanBot.twitch.twitchChannelProvider import TwitchChannelProvider
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
-from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
@@ -398,8 +399,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-        self.__channelPointsLruCache: LruCache = LruCache(64)
 
         #######################################
         ## Initialization of command objects ##
@@ -1012,6 +1011,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
@@ -1019,17 +1019,20 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
@@ -1049,7 +1052,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            twitchUser = twitchUser
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):
@@ -1064,6 +1068,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -1073,7 +1078,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            twitchUser = twitchUser
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):

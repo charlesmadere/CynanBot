@@ -2,12 +2,15 @@ from typing import Optional
 
 from twitchio import Message
 
-from CynanBot.twitch.twitchAuthor import TwitchAuthor
-from CynanBot.twitch.twitchChannel import TwitchChannel
-from CynanBot.twitch.twitchConfigurationType import TwitchConfigurationType
-from CynanBot.twitch.twitchIoAuthor import TwitchIoAuthor
-from CynanBot.twitch.twitchIoChannel import TwitchIoChannel
-from CynanBot.twitch.twitchMessage import TwitchMessage
+from CynanBot.twitch.configuration.twitchAuthor import TwitchAuthor
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchConfigurationType import \
+    TwitchConfigurationType
+from CynanBot.twitch.configuration.twitchIo.twitchIoAuthor import \
+    TwitchIoAuthor
+from CynanBot.twitch.configuration.twitchIo.twitchIoChannel import \
+    TwitchIoChannel
+from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 
 
 class TwitchIoMessage(TwitchMessage):

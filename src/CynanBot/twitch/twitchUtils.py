@@ -10,8 +10,8 @@ from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.outboundMessage import OutboundMessage
-from CynanBot.twitch.twitchMessageable import TwitchMessageable
 
 
 class TwitchUtils():

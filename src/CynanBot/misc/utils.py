@@ -4,7 +4,6 @@ import os
 import random
 import re
 from datetime import datetime
-from numbers import Number
 from typing import Any, Dict, Generator, List, Optional, Pattern, Sized, TypeVar
 from typing_extensions import TypeGuard
 from urllib.parse import urlparse
@@ -153,7 +152,7 @@ def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bo
         raise KeyError(f'there is no fallback and key \"{key}\" doesn\'t exist in d: \"{d}\"')
 
     if not isValidBool(value):
-        if isinstance(value, Number):
+        if isinstance(value, (float, int)):
             value = numToBool(value)
         elif isinstance(value, str):
             value = strToBool(value)
@@ -340,11 +339,11 @@ def hasItems(l: Optional[T_Container]) -> TypeGuard[T_Container]:
 def isValidBool(b: Optional[bool]) -> TypeGuard[bool]:
     return b is not None and isinstance(b, bool)
 
-def isValidInt(i: Optional[Number]) -> TypeGuard[int]:
+def isValidInt(i: Optional[float]) -> TypeGuard[int]:
     return isValidNum(i) and isinstance(i, int)
 
-def isValidNum(n: Optional[Number]) -> TypeGuard[float]:
-    return n is not None and isinstance(n, Number) and math.isfinite(n)
+def isValidNum(n: Optional[float]) -> TypeGuard[float]:
+    return n is not None and isinstance(n, (float, int)) and math.isfinite(n)
 
 def isValidStr(s: Optional[str]) -> TypeGuard[str]:
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
@@ -361,7 +360,7 @@ def isValidUrl(s: Optional[str]) -> TypeGuard[str]:
 
     return False
 
-def numToBool(n: Optional[Number]) -> bool:
+def numToBool(n: Optional[float]) -> bool:
     if not isValidNum(n):
         raise ValueError(f'n argument is malformed: \"{n}\"')
 

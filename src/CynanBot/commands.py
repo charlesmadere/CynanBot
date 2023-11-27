@@ -103,10 +103,10 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
+from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
-from CynanBot.twitch.twitchContext import TwitchContext
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -1176,7 +1176,7 @@ class CutenessCommand(AbsCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 3)
+        cooldown: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1289,7 +1289,7 @@ class CutenessChampionsCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
         delimiter: str = ', ',
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 15)
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -1342,7 +1342,7 @@ class CutenessHistoryCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface,
         entryDelimiter: str = ', ',
         leaderboardDelimiter: str = ' — ',
-        cooldown: timedelta = timedelta(seconds = 5)
+        cooldown: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -3622,7 +3622,7 @@ class TriviaScoreCommand(AbsCommand):
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        cooldown: timedelta = timedelta(seconds = 3)
+        cooldown: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -3663,6 +3663,8 @@ class TriviaScoreCommand(AbsCommand):
         if not generalSettings.isTriviaGameEnabled() and not generalSettings.isSuperTriviaGameEnabled():
             return
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
+            return
+        elif not user.isTriviaScoreEnabled():
             return
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return

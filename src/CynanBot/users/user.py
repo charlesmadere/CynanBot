@@ -44,6 +44,7 @@ class User(UserInterface):
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
         isTriviaGameEnabled: bool,
+        isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
         isWeatherEnabled: bool,
         isWordOfTheDayEnabled: bool,
@@ -141,6 +142,8 @@ class User(UserInterface):
             raise ValueError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
         elif not utils.isValidBool(isTriviaGameEnabled):
             raise ValueError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isTriviaScoreEnabled):
+            raise ValueError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
             raise ValueError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
@@ -225,6 +228,7 @@ class User(UserInterface):
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
         self.__isTriviaGameEnabled: bool = isTriviaGameEnabled
+        self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
@@ -501,6 +505,9 @@ class User(UserInterface):
 
     def isTriviaGameEnabled(self) -> bool:
         return self.__isTriviaGameEnabled
+
+    def isTriviaScoreEnabled(self) -> bool:
+        return self.__isTriviaScoreEnabled
 
     def isTtsEnabled(self) -> bool:
         return self.__isTtsEnabled

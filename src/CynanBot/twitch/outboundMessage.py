@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 
 
 class OutboundMessage():
