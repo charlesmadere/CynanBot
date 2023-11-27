@@ -1011,6 +1011,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleNewTriviaGameEvent(self, event: NewTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
@@ -1018,17 +1019,20 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
             userNameThatRedeemed = event.getUserName(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
     async def __handleNewSuperTriviaGameEvent(self, event: NewSuperTriviaGameEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaGameQuestionPrompt(
             triviaQuestion = event.getTriviaQuestion(),
             delaySeconds = event.getSecondsToLive(),
             points = event.getPointsForWinning(),
             emote = event.getEmote(),
+            twitchUser = twitchUser,
             specialTriviaStatus = event.getSpecialTriviaStatus()
         ))
 
@@ -1048,7 +1052,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            twitchUser = twitchUser
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):
@@ -1063,6 +1068,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleSuperGameOutOfTimeTriviaEvent(self, event: OutOfTimeSuperTriviaEvent):
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
+        twitchUser = await self.__usersRepository.getUserAsync(event.getTwitchChannel())
 
         await self.__twitchUtils.safeSend(twitchChannel, await self.__triviaUtils.getSuperTriviaOutOfTimeAnswerReveal(
             question = event.getTriviaQuestion(),
@@ -1072,7 +1078,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         toxicTriviaPunishmentPrompt = await self.__triviaUtils.getToxicTriviaPunishmentMessage(
             toxicTriviaPunishmentResult = event.getToxicTriviaPunishmentResult(),
-            emote = event.getEmote()
+            emote = event.getEmote(),
+            twitchUser = twitchUser
         )
 
         if utils.isValidStr(toxicTriviaPunishmentPrompt):

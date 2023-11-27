@@ -402,6 +402,7 @@ class TriviaUtils():
         delaySeconds: int,
         points: int,
         emote: str,
+        twitchUser: UserInterface,
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
@@ -417,6 +418,8 @@ class TriviaUtils():
             raise ValueError(f'points argument is out of bounds: {points}')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -429,7 +432,11 @@ class TriviaUtils():
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
-        pointsStr = locale.format_string("%d", points, grouping = True)
+
+        cutenessPrompt = ''
+        if twitchUser.isCutenessEnabled():
+            pointsStr = locale.format_string("%d", points, grouping = True)
+            cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
@@ -437,12 +444,13 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
+        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s {cutenessPrompt}{questionPrompt}'
 
     async def getToxicTriviaPunishmentMessage(
         self,
         toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult],
         emote: str,
+        twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> Optional[str]:
@@ -450,12 +458,14 @@ class TriviaUtils():
             raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not isinstance(bucketDelimiter, str):
             raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if toxicTriviaPunishmentResult is None:
+        if not twitchUser.isCutenessEnabled() or toxicTriviaPunishmentResult is None:
             return None
 
         emotePrompt = f'☠️☠️{emote}☠️☠️'
@@ -535,6 +545,7 @@ class TriviaUtils():
         points: int,
         emote: str,
         userNameThatRedeemed: str,
+        twitchUser: UserInterface,
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
@@ -552,6 +563,8 @@ class TriviaUtils():
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
+        elif not isinstance(twitchUser, UserInterface):
+            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not isinstance(delimiter, str):
@@ -564,7 +577,11 @@ class TriviaUtils():
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         delaySecondsStr = locale.format_string("%d", delaySeconds, grouping = True)
-        pointsStr = locale.format_string("%d", points, grouping = True)
+
+        cutenessPrompt = ''
+        if twitchUser.isCutenessEnabled():
+            pointsStr = locale.format_string("%d", points, grouping = True)
+            cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
         if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
@@ -572,7 +589,7 @@ class TriviaUtils():
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 
-        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s for {pointsStr} cuteness {questionPrompt}'
+        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s {cutenessPrompt}{questionPrompt}'
 
     async def getTriviaScoreMessage(
         self,
