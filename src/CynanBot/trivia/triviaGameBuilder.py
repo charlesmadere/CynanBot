@@ -69,7 +69,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         )
 
         return StartNewTriviaGameAction(
-            isShinyTriviaEnabled = user.isShinyTriviaEnabled(),
+            isShinyTriviaEnabled = user.isShinyTriviaEnabled() and user.isCutenessEnabled(),
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
@@ -135,8 +135,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         return StartNewSuperTriviaGameAction(
             isQueueActionConsumed = False,
-            isShinyTriviaEnabled = user.isShinyTriviaEnabled(),
-            isToxicTriviaEnabled = user.isToxicTriviaEnabled(),
+            isShinyTriviaEnabled = user.isShinyTriviaEnabled() and user.isCutenessEnabled(),
+            isToxicTriviaEnabled = user.isToxicTriviaEnabled() and user.isCutenessEnabled(),
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
             pointsForWinning = points,
