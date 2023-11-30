@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsEvent import TtsEvent
 
 
 class TtsManagerInterface(ABC):
