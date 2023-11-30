@@ -525,7 +525,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
-        jokeTriviaJsonReader = 'jokeTriviaQuestionRepository.json',
+        jokeTriviaJsonReader = JsonFileReader('jokeTriviaQuestionRepository.json'),
         timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
