@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from recurringActions.recurringActionEventListener import \
+from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 
 

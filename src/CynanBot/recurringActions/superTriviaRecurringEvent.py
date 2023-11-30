@@ -1,5 +1,5 @@
-from recurringActions.recurringEvent import RecurringEvent
-from recurringActions.recurringEventType import RecurringEventType
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.recurringEventType import RecurringEventType
 
 
 class SuperTriviaRecurringEvent(RecurringEvent):

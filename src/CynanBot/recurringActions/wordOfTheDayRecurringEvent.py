@@ -1,7 +1,7 @@
-from language.languageEntry import LanguageEntry
-from language.wordOfTheDayResponse import WordOfTheDayResponse
-from recurringActions.recurringEvent import RecurringEvent
-from recurringActions.recurringEventType import RecurringEventType
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.recurringEventType import RecurringEventType
 
 
 class WordOfTheDayRecurringEvent(RecurringEvent):
