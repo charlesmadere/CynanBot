@@ -6,7 +6,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
