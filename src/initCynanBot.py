@@ -185,14 +185,15 @@ from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.configuration.twitchConfiguration import \
+    TwitchConfiguration
+from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
+    TwitchIoConfiguration
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchApiService import TwitchApiService
 from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
-from CynanBot.twitch.twitchConfiguration import TwitchConfiguration
-from CynanBot.twitch.twitchIo.twitchIoConfiguration import \
-    TwitchIoConfiguration
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -346,10 +347,7 @@ pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
-twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
-    userIdsRepository = userIdsRepository,
-    usersRepository = usersRepository
-)
+twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration()
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,
     timber = timber

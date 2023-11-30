@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
-from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
-    TwitchChannelPointsMessage
 from CynanBot.twitch.configuration.twitchConfigurationType import \
     TwitchConfigurationType
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
@@ -14,10 +12,6 @@ class TwitchConfiguration(ABC):
 
     @abstractmethod
     def getChannel(self, channel: Any) -> TwitchChannel:
-        pass
-
-    @abstractmethod
-    async def getChannelPointsMessage(self, channelPointsMessage: Any) -> TwitchChannelPointsMessage:
         pass
 
     @abstractmethod
