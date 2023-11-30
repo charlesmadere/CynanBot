@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from recurringActions.recurringEvent import RecurringEvent
+from CynanBot.recurringActions.recurringEvent import RecurringEvent
 
 
 class RecurringActionEventListener(ABC):
