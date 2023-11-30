@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 aiofiles pytest pytest-asyncio aiohttp requests
+          pip install flake8 typing-extensions aiofiles pytest pytest-asyncio aiohttp requests
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint network with flake8
         run: |

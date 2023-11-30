@@ -4,9 +4,11 @@ import os
 import random
 import re
 from datetime import datetime
-from typing import Any, Dict, Generator, List, Optional, Pattern, Sized, TypeVar
-from typing_extensions import TypeGuard
+from typing import (Any, Dict, Generator, List, Optional, Pattern, Sized,
+                    TypeVar)
 from urllib.parse import urlparse
+
+from typing_extensions import TypeGuard
 
 
 def areAllStrsInts(l: List[str]) -> bool:

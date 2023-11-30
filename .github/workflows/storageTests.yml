@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 aiofiles pytest pytest-asyncio asyncpg aiosqlite
+          pip install flake8 typing-extensions pytest pytest-asyncio aiofiles aiosqlite asyncpg
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint storage with flake8
         run: |
