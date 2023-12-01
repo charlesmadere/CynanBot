@@ -5,7 +5,7 @@ import random
 import re
 from datetime import datetime
 from typing import (Any, Dict, Generator, List, Optional, Pattern, Sized,
-                    TypeVar)
+                    TypeVar, overload)
 from urllib.parse import urlparse
 
 from typing_extensions import TypeGuard
@@ -388,13 +388,19 @@ def permuteSubArrays(array: List[Any], pos: int = 0) -> Generator[List[Any], Non
 def randomBool() -> bool:
     return bool(random.getrandbits(1))
 
+@overload
+def removePreceedingAt(s: None) -> None:
+    ...
+@overload
+def removePreceedingAt(s: str) -> str:
+    ...
+
 def removePreceedingAt(s: Optional[str]) -> Optional[str]:
-    if not isValidStr(s):
+    if s is None:
         return s
-    elif s[0] != '@':
-        return s
-    else:
-        return s[1:len(s)]
+    if s.startswith("@"):
+        return s[1:]
+    return s
 
 def splitLongStringIntoMessages(
     maxMessages: int,
