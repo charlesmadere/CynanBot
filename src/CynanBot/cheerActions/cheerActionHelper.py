@@ -80,7 +80,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__timeZone: timezone = timeZone
 
-        self.__userNameRegEx: Pattern = re.compile(r'^(\w+\d+\s+)?@?(\w+)(\s+\w+\d+)?$', re.IGNORECASE)
+        self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 
     async def __getTwitchAccessToken(self, userName: str) -> str:
         if not utils.isValidStr(userName):
