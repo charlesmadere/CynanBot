@@ -21,7 +21,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = 'sentMessageLogger'
+        logRootDirectory: str = 'logs/sentMessageLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

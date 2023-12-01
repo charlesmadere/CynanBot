@@ -20,7 +20,7 @@ class Timber(TimberInterface):
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
         sleepTimeSeconds: float = 15,
-        timberRootDirectory: str = 'timber'
+        timberRootDirectory: str = 'logs/timber'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

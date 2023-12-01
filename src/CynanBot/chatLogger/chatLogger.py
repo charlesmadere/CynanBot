@@ -25,7 +25,7 @@ class ChatLogger(ChatLoggerInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         timber: TimberInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = 'chatLogger'
+        logRootDirectory: str = 'logs/chatLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
