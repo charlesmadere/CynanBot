@@ -113,7 +113,7 @@ triviaEmoteGenerator = TriviaEmoteGenerator(
     timber = timber
 )
 triviaSettingsRepository = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
 additionalTriviaAnswersRepository = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,

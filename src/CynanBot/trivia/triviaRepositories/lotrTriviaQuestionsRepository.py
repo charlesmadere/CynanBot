@@ -32,7 +32,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         triviaAnswerCompiler: TriviaAnswerCompiler,
         triviaQuestionCompiler: TriviaQuestionCompiler,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'CynanBotCommon/trivia/questionSources/lotrTriviaQuestionsDatabase.sqlite'
+        triviaDatabaseFile: str = 'lotrTriviaQuestionsDatabase.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 

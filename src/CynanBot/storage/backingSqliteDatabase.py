@@ -14,7 +14,7 @@ class BackingSqliteDatabase(BackingDatabase):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        backingDatabaseFile: str = 'CynanBotCommon/storage/database.sqlite'
+        backingDatabaseFile: str = 'database.sqlite'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')

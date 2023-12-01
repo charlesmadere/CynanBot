@@ -25,7 +25,7 @@ class ChatLogger(ChatLoggerInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         timber: TimberInterface,
         sleepTimeSeconds: float = 15,
-        logRootDirectory: str = 'CynanBotCommon/chatLogger'
+        logRootDirectory: str = 'chatLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')

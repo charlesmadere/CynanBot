@@ -5,7 +5,6 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.pkmn.pokepediaDamageClass import PokepediaDamageClass
 from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
-from CynanBot.pkmn.pokepediaGeneration import PokepediaGeneration
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
@@ -27,7 +26,7 @@ pokepediaRepository = PokepediaRepository(
 
 triviaIdGenerator = TriviaIdGenerator()
 triviaSettingsRepository = TriviaSettingsRepository(
-    settingsJsonReader = JsonFileReader('CynanBotCommon/trivia/triviaSettingsRepository.json')
+    settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
 
 pkmnTriviaQuestionRepository = PkmnTriviaQuestionRepository(

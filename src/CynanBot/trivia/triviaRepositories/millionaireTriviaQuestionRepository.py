@@ -27,7 +27,7 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompiler,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'CynanBotCommon/trivia/questionSources/millionaireTriviaQuestionsDatabase.sqlite'
+        triviaDatabaseFile: str = 'millionaireTriviaQuestionsDatabase.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 

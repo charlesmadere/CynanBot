@@ -29,7 +29,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         timber: TimberInterface,
         triviaQuestionCompiler: TriviaQuestionCompiler,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaDatabaseFile: str = 'CynanBotCommon/trivia/questionSources/triviaDatabaseTriviaQuestionRepository.sqlite'
+        triviaDatabaseFile: str = 'triviaDatabaseTriviaQuestionRepository.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
 
