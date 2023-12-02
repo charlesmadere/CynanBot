@@ -10,7 +10,7 @@ class CutenessBoosterPack():
         amount: int,
         rewardId: str
     ):
-        if not utils.isValidNum(amount):
+        if not utils.isValidInt(amount):
             raise ValueError(f'amount argument is malformed: \"{amount}\"')
         elif not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
