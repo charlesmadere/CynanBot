@@ -136,14 +136,14 @@ class UsersRepository(UsersRepositoryInterface):
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
-        timeZones: List[tzinfo] = None
+        timeZones: Optional[List[tzinfo]] = None
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
             timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
-        cutenessBoosterPacks: List[CutenessBoosterPack] = None
+        cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = None
         if isCutenessEnabled:
             cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
@@ -315,7 +315,7 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 
-    def __parseCutenessBoosterPacksFromJson(self, jsonList: List[Dict]) -> List[CutenessBoosterPack]:
+    def __parseCutenessBoosterPacksFromJson(self, jsonList: List[Dict]) -> Optional[List[CutenessBoosterPack]]:
         if not utils.hasItems(jsonList):
             return None
 

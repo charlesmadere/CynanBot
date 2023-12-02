@@ -15,15 +15,15 @@ class TimeZoneRepository(TimeZoneRepositoryInterface):
     def __init__(self):
         self.__timeZones: Dict[str, tzinfo] = dict()
 
-    def getTimeZone(self, timeZone: str) -> tzinfo:
-        if not utils.isValidStr(timeZone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+    def getTimeZone(self, timeZoneStr: str) -> tzinfo:
+        if not utils.isValidStr(timeZoneStr):
+            raise ValueError(f'timeZoneStr argument is malformed: \"{timeZoneStr}\"')
 
-        if timeZone in self.__timeZones:
-            return self.__timeZones[timeZone]
+        if timeZoneStr in self.__timeZones:
+            return self.__timeZones[timeZoneStr]
 
-        newTimeZone: tzinfo = pytz.timezone(timeZone)
-        self.__timeZones[timeZone] = newTimeZone
+        newTimeZone: tzinfo = pytz.timezone(timeZoneStr)
+        self.__timeZones[timeZoneStr] = newTimeZone
         return newTimeZone
 
     def getTimeZones(self, timeZoneStrs: List[str]) -> List[tzinfo]:
