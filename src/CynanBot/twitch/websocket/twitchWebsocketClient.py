@@ -63,7 +63,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         },
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
-        maxMessageAge: timedelta = timedelta(minutes = 10),
+        maxMessageAge: timedelta = timedelta(minutes = 5),
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
