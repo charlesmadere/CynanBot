@@ -101,17 +101,17 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubTotal = event.getCommunitySubTotal()
         total = event.getTotal()
         message = event.getMessage()
-        userId = event.getUserId()
-        userInput = event.getUserInput()
-        userLogin = event.getUserLogin()
-        userName = event.getUserName()
+        eventUserId = event.getUserId()
+        eventUserInput = event.getUserInput()
+        eventUserLogin = event.getUserLogin()
+        eventUserName = event.getUserName()
         tier = event.getTier()
 
         if tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({userId=}) ({userInput=}) ({userLogin=}) ({userName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
@@ -126,10 +126,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isAnonymous = isAnonymous,
                 isGift = isGift,
                 message = message,
-                userId = userId,
-                userLogin = userLogin,
-                userName = userName,
-                userInput = userInput,
+                userId = eventUserId,
+                userLogin = eventUserLogin,
+                userName = eventUserName,
+                userInput = eventUserInput,
                 tier = tier,
                 user = user
             )
@@ -231,11 +231,17 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         actualUserId = userId
         actualUserName = userName
+
         if not utils.isValidStr(actualUserId) or not utils.isValidStr(userName):
             if isAnonymous:
-                actualUserId = await self.__userIdsRepository.fetchAnonymousUserId()
-                actualUserName = await self.__userIdsRepository.fetchAnonymousUserName(
-                    twitchAccessToken = await self.__getTwitchAccessToken(user)
+                twitchAccessToken = await self.__getTwitchAccessToken(user)
+
+                actualUserId = await self.__userIdsRepository.requireAnonymousUserId(
+                    twitchAccessToken = twitchAccessToken
+                )
+
+                actualUserName = await self.__userIdsRepository.requireAnonymousUserName(
+                    twitchAccessToken = twitchAccessToken
                 )
             else:
                 self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({userId=}) ({userName=})')

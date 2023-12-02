@@ -83,16 +83,16 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
 
         if utils.hasItems(records):
             for record in records:
-                remodDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[0]))
+                remodDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[1]))
 
                 if remodDateTime >= (now + self.__remodTimeBuffer):
                     break
 
                 data.append(CheerActionRemodData(
                     remodDateTime = remodDateTime,
-                    broadcasterUserId = record[1],
-                    userId = record[2],
-                    userName = record[3]
+                    broadcasterUserId = record[0],
+                    broadcasterUserName = record[2],
+                    userId = record[1]
                 ))
 
         return data
