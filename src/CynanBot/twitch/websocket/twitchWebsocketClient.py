@@ -46,9 +46,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         queueSleepTimeSeconds: float = 1,
+        queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.25,
         websocketSleepTimeSeconds: float = 3,
-        queueTimeoutSeconds: int = 3,
         subscriptionTypes: Set[WebsocketSubscriptionType] = {
             WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
@@ -82,6 +82,10 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
+        elif not utils.isValidNum(queueTimeoutSeconds):
+            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(websocketCreationDelayTimeSeconds):
             raise ValueError(f'websocketCreationDelayTimeSeconds argument is malformed: \"{websocketCreationDelayTimeSeconds}\"')
         elif websocketCreationDelayTimeSeconds < 0.1 or websocketCreationDelayTimeSeconds > 8:
@@ -90,10 +94,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise ValueError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
         elif websocketSleepTimeSeconds < 3 or websocketSleepTimeSeconds > 15:
             raise ValueError(f'websocketSleepTimeSeconds argument is out of bounds: {websocketSleepTimeSeconds}')
-        elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
-            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not isinstance(subscriptionTypes, Set):
             raise ValueError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
         elif not utils.isValidUrl(twitchWebsocketUrl):
@@ -110,9 +110,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
+        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__subscriptionTypes: Set[WebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
         self.__timeZone: timezone = timeZone
