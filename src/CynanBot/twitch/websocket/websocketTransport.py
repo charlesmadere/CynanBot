@@ -66,6 +66,6 @@ class WebsocketTransport():
             'disconnectedAt': self.__disconnectedAt,
             'method': self.__method,
             'secret': self.__secret,
-            'sesssionId': self.__sessionId
+            'sessionId': self.__sessionId
         }
     
