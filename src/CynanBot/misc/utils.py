@@ -63,7 +63,12 @@ def cleanPath(path: str) -> str:
 
 carrotRemovalRegEx: Pattern = re.compile(r'<\/?\w+>', re.IGNORECASE)
 
-def cleanStr(s: str, replacement: str = ' ', htmlUnescape: bool = False, removeCarrots: bool = False) -> str:
+def cleanStr(
+    s: Optional[str],
+    replacement: str = ' ',
+    htmlUnescape: bool = False,
+    removeCarrots: bool = False
+) -> str:
     if replacement is None:
         raise ValueError(f'replacement argument is malformed: \"{replacement}\"')
     elif not isValidBool(htmlUnescape):

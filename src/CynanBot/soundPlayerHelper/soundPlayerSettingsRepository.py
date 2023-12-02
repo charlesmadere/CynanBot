@@ -7,7 +7,7 @@ from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
-class SoundPlayerHelperSettingsRepository(SoundPlayerSettingsRepositoryInterface):
+class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
@@ -44,8 +44,8 @@ class SoundPlayerHelperSettingsRepository(SoundPlayerSettingsRepositoryInterface
                 key = 'subscribePath',
                 fallback = ''
             )
-
-        raise RuntimeError(f'Sound path for SoundAlert \"{soundAlert}\" is undefined!')
+        else:
+            raise RuntimeError(f'Sound path for SoundAlert \"{soundAlert}\" is undefined!')
 
     async def __readJson(self) -> Dict[str, Any]:
         if self.__settingsCache is not None:

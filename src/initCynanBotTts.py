@@ -56,6 +56,10 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
+    SoundPlayerSettingsRepository
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -249,6 +253,10 @@ if generalSettingsSnapshot.isEventSubEnabled():
 ## TTS initialization section ##
 ################################
 
+soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
+)
+
 ttsManager: Optional[TtsManagerInterface] = None
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
@@ -262,7 +270,7 @@ if generalSettingsSnapshot.isTtsEnabled():
             backgroundTaskHelper = backgroundTaskHelper,
             timber = timber
         ),
-        ttsCommandBuilder = DecTalkCommandBuilder(
+        decTalkCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
             emojiHelper = emojiHelper,
             timber = timber,
@@ -358,6 +366,7 @@ cynanBot = CynanBot(
     recurringActionsMachine = None,
     recurringActionsRepository = None,
     shinyTriviaOccurencesRepository = None,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
     timber = timber,
     toxicTriviaOccurencesRepository = None,

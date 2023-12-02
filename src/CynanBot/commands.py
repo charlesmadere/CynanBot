@@ -52,7 +52,10 @@ from CynanBot.recurringActions.weatherRecurringAction import \
     WeatherRecurringAction
 from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
-from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
+from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
+    StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
@@ -792,6 +795,7 @@ class ClearCachesCommand(AbsCommand):
         locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
+        soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
         timber: TimberInterface,
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
@@ -822,6 +826,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
         elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
             raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+        elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+            raise ValueError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
@@ -857,6 +863,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(locationsRepository)
         self.__clearables.append(modifyUserDataHelper)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
+        self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchTokensRepository)
@@ -3335,13 +3342,13 @@ class SwQuoteCommand(AbsCommand):
 
     def __init__(
         self,
-        starWarsQuotesRepository: StarWarsQuotesRepository,
+        starWarsQuotesRepository: StarWarsQuotesRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if not isinstance(starWarsQuotesRepository, StarWarsQuotesRepository):
+        if not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -3352,7 +3359,7 @@ class SwQuoteCommand(AbsCommand):
         elif not isinstance(cooldown, timedelta):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__starWarsQuotesRepository: StarWarsQuotesRepository = starWarsQuotesRepository
+        self.__starWarsQuotesRepository: StarWarsQuotesRepositoryInterface = starWarsQuotesRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository

@@ -24,7 +24,7 @@ class DecTalkManager(TtsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
-        ttsCommandBuilder: DecTalkCommandBuilder,
+        decTalkCommandBuilder: DecTalkCommandBuilder,
         decTalkFileManager: DecTalkFileManagerInterface,
         systemCommandHelper: SystemCommandHelperInterface,
         timber: TimberInterface,
@@ -34,8 +34,8 @@ class DecTalkManager(TtsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(ttsCommandBuilder, DecTalkCommandBuilder):
-            raise ValueError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
+        elif not isinstance(decTalkCommandBuilder, DecTalkCommandBuilder):
+            raise ValueError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
         elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise ValueError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
         elif not isinstance(systemCommandHelper, SystemCommandHelperInterface):
@@ -57,7 +57,7 @@ class DecTalkManager(TtsManagerInterface):
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
         self.__systemCommandHelper: SystemCommandHelperInterface = systemCommandHelper
         self.__timber: TimberInterface = timber
-        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
+        self.__decTalkCommandBuilder: TtsCommandBuilderInterface = decTalkCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
@@ -72,7 +72,7 @@ class DecTalkManager(TtsManagerInterface):
         if not await self.__ttsSettingsRepository.isTtsEnabled():
             return
 
-        command = await self.__ttsCommandBuilder.buildAndCleanEvent(event)
+        command = await self.__decTalkCommandBuilder.buildAndCleanEvent(event)
 
         if not utils.isValidStr(command):
             self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a valid command: \"{event}\"')

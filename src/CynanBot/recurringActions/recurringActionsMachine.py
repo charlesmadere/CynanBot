@@ -63,7 +63,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         usersRepository: UsersRepositoryInterface,
-        weatherRepository: WeatherRepositoryInterface,
+        weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
         refreshSleepTimeSeconds: float = 90,
@@ -90,7 +90,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(weatherRepository, WeatherRepositoryInterface):
+        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
@@ -124,7 +124,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: WeatherRepositoryInterface = weatherRepository
+        self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__refreshSleepTimeSeconds: float = refreshSleepTimeSeconds
@@ -135,7 +135,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         self.__isStarted: bool = False
         self.__eventListener: Optional[RecurringActionEventListener] = None
-        self.__eventQueue: SimpleQueue[RecurringAction] = SimpleQueue()
+        self.__eventQueue: SimpleQueue[RecurringEvent] = SimpleQueue()
 
     async def __fetchViableUsers(self) -> List[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
@@ -258,7 +258,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(action, WeatherRecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        if not user.hasLocationId():
+        if not user.hasLocationId() or self.__weatherRepository is None:
             return False
 
         location = await self.__locationsRepository.getLocation(user.getLocationId())

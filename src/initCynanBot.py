@@ -78,6 +78,10 @@ from CynanBot.recurringActions.recurringActionsRepository import \
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
+    SoundPlayerSettingsRepository
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
@@ -661,6 +665,10 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 ## TTS initialization section ##
 ################################
 
+soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
+)
+
 ttsManager: Optional[TtsManagerInterface] = None
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
@@ -674,7 +682,7 @@ if generalSettingsSnapshot.isTtsEnabled():
             backgroundTaskHelper = backgroundTaskHelper,
             timber = timber
         ),
-        ttsCommandBuilder = DecTalkCommandBuilder(
+        decTalkCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
             emojiHelper = emojiHelper,
             timber = timber,
@@ -773,6 +781,7 @@ cynanBot = CynanBot(
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(
         quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
     ),

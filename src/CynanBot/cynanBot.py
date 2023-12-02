@@ -100,7 +100,10 @@ from CynanBot.recurringActions.weatherRecurringEvent import \
     WeatherRecurringEvent
 from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
-from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
+from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
+    StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
@@ -233,7 +236,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
-        starWarsQuotesRepository: Optional[StarWarsQuotesRepository],
+        soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
+        starWarsQuotesRepository: Optional[StarWarsQuotesRepositoryInterface],
         timber: TimberInterface,
         toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepository],
         translationHelper: Optional[TranslationHelper],
@@ -325,7 +329,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
-        elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepository):
+        elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+            raise ValueError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
+        elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -383,7 +389,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface] = cheerActionRemodHelper
-        self.__chatLogger: ChatLoggerInterface = chatLogger
+        self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
@@ -405,7 +411,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -419,7 +425,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__twitchInfoCommand: AbsCommand = TwitchInfoCommand(administratorProvider, timber, twitchApiService, authRepository, twitchTokensRepository, twitchUtils, usersRepository)
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
-        if cheerActionHelper is None or cheerActionsRepository is None:
+        if cheerActionHelper is None or cheerActionIdGenerator is None or cheerActionsRepository is None:
             self.__addCheerActionCommand: AbsCommand = StubCommand()
             self.__deleteCheerActionCommand: AbsCommand = StubCommand()
             self.__getCheerActionsCommand: AbsCommand = StubCommand()
@@ -453,7 +459,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
@@ -604,8 +610,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         else:
             self.__superTriviaGamePointRedemption: AbsPointRedemption = SuperTriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
             self.__triviaGamePointRedemption: AbsPointRedemption = TriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
-
-        generalSettings = self.__generalSettingsRepository.getAll()
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
