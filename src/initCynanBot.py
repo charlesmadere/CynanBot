@@ -201,6 +201,9 @@ from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBot.twitch.twitchTokensUtils import TwitchTokensUtils
+from CynanBot.twitch.twitchTokensUtilsInterface import \
+    TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
@@ -309,6 +312,10 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
+)
+twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
+    administratorProvider = administratorProvider,
+    twitchTokensRepository = twitchTokensRepository
 )
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -707,7 +714,6 @@ cheerActionRemodRepository: CheerActionRemodRepositoryInterface = CheerActionRem
 )
 
 cheerActionRemodHelper: CheerActionRemodHelperInterface = CheerActionRemodHelper(
-    administratorProvider = administratorProvider,
     backgroundTaskHelper = backgroundTaskHelper,
     cheerActionRemodRepository = cheerActionRemodRepository,
     timber = timber,

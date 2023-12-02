@@ -1,8 +1,7 @@
 import asyncio
+from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.administratorProviderInterface import \
-    AdministratorProviderInterface
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
 from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
@@ -19,7 +18,6 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
     def __init__(
         self,
-        administratorProvider: AdministratorProviderInterface,
         backgroundTaskHelper: BackgroundTaskHelper,
         cheerActionRemodRepository: CheerActionRemodRepositoryInterface,
         timber: TimberInterface,
@@ -27,8 +25,6 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         queueSleepTimeSeconds: float = 3
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(cheerActionRemodRepository, CheerActionRemodRepositoryInterface):
@@ -44,7 +40,6 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__cheerActionRemodRepository: CheerActionRemodRepositoryInterface = cheerActionRemodRepository
         self.__timber: TimberInterface = timber
@@ -54,26 +49,27 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
         self.__isStarted: bool = False
 
-    async def __getTwitchAccessToken(self, userName: str) -> str:
-        if not isinstance(userName, str):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
-
-        if await self.__twitchTokensRepository.hasAccessToken(userName):
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(userName)
-            return await self.__twitchTokensRepository.requireAccessToken(userName)
-        else:
-            administratorUserName = await self.__administratorProvider.getAdministratorUserName()
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(administratorUserName)
-            return await self.__twitchTokensRepository.requireAccessToken(administratorUserName)
-
     async def __refresh(self):
-        data = await self.__cheerActionRemodRepository.getAll()
-
-        if not utils.hasItems(data):
+        remodActions = await self.__cheerActionRemodRepository.getAll()
+        if not utils.hasItems(remodActions):
             return
 
-        for remodAction in data:
-            twitchAccessToken = await self.__getTwitchAccessToken(remodAction.getBroadcasterUserName())
+        self.__timber.log('CheerActionRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
+        twitchAccessTokens: Dict[str, Optional[str]] = dict()
+
+        for remodAction in remodActions:
+            twitchAccessToken = twitchAccessTokens.get(remodAction.getBroadcasterUserId(), None)
+
+            if not utils.isValidStr(twitchAccessToken):
+                await self.__twitchTokensRepository.validateAndRefreshAccessToken(
+                    twitchChannel = remodAction.getBroadcasterUserName()
+                )
+
+                twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
+                    twitchChannel = remodAction.getBroadcasterUserName()
+                )
+
+                twitchAccessTokens[remodAction.getBroadcasterUserId()] = twitchAccessToken
 
             if await self.__twitchApiService.addModerator(
                 broadcasterId = remodAction.getBroadcasterUserId(),
@@ -86,6 +82,8 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
                 )
             else:
                 self.__timber.log('CheerActionRemodHelper', f'Failed to re-mod user ({remodAction})')
+
+        self.__timber.log('CheerActionRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
 
     def start(self):
         if self.__isStarted:
