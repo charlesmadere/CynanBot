@@ -14,7 +14,7 @@ class WebsocketMetadata():
         messageTimestamp: SimpleDateTime,
         messageId: str,
         subscriptionVersion: Optional[str],
-        messageType: WebsocketMessageType,
+        messageType: Optional[WebsocketMessageType],
         subscriptionType: Optional[WebsocketSubscriptionType]
     ):
         if not isinstance(messageTimestamp, SimpleDateTime):
@@ -23,7 +23,7 @@ class WebsocketMetadata():
             raise ValueError(f'messageId argument is malformed: \"{messageId}\"')
         elif subscriptionVersion is not None and not utils.isValidStr(subscriptionVersion):
             raise ValueError(f'subscriptionVersion argument is malformed: \"{subscriptionVersion}\"')
-        elif not isinstance(messageType, WebsocketMessageType):
+        elif messageType is not None and not isinstance(messageType, WebsocketMessageType):
             raise ValueError(f'messageType argument is malformed: \"{messageType}\"')
         elif subscriptionType is not None and not isinstance(subscriptionType, WebsocketSubscriptionType):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
@@ -31,7 +31,7 @@ class WebsocketMetadata():
         self.__messageTimestamp: SimpleDateTime = messageTimestamp
         self.__messageId: str = messageId
         self.__subscriptionVersion: Optional[str] = subscriptionVersion
-        self.__messageType: WebsocketMessageType = messageType
+        self.__messageType: Optional[WebsocketMessageType] = messageType
         self.__subscriptionType: Optional[WebsocketSubscriptionType] = subscriptionType
 
     def getMessageId(self) -> str:
@@ -40,7 +40,7 @@ class WebsocketMetadata():
     def getMessageTimestamp(self) -> SimpleDateTime:
         return self.__messageTimestamp
 
-    def getMessageType(self) -> WebsocketMessageType:
+    def getMessageType(self) -> Optional[WebsocketMessageType]:
         return self.__messageType
 
     def getSubscriptionType(self) -> Optional[WebsocketSubscriptionType]:

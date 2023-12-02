@@ -859,7 +859,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             )
 
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
-                administratorProvider = self.__administratorProvider,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,

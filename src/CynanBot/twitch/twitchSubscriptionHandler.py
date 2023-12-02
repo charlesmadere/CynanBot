@@ -2,8 +2,6 @@ import math
 from typing import Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.administratorProviderInterface import \
-    AdministratorProviderInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -18,10 +16,10 @@ from CynanBot.twitch.absTwitchSubscriptionHandler import \
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
 from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
-from CynanBot.twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
+from CynanBot.twitch.websocket.websocketCommunitySubGift import \
+    WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -32,7 +30,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
-        administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
@@ -41,9 +38,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
@@ -58,7 +53,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
@@ -88,8 +82,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         isAnonymous = event.isAnonymous()
         isGift = event.isGift()
-        communitySubTotal = event.getCommunitySubTotal()
-        total = event.getTotal()
+        communitySubGift = event.getCommunitySubGift()
         message = event.getMessage()
         eventUserId = event.getUserId()
         eventUserInput = event.getUserInput()
@@ -98,15 +91,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         tier = event.getTier()
 
         if tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubTotal=}) ({total=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
-                communitySubTotal = communitySubTotal,
-                total = total,
+                communitySubGift = communitySubGift,
                 tier = tier,
                 user = user
             )
@@ -126,19 +118,12 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     async def __processSuperTriviaEvent(
         self,
-        communitySubTotal: Optional[int],
-        total: Optional[int],
+        communitySubGift: Optional[WebsocketCommunitySubGift],
         tier: TwitchSubscriberTier,
         user: UserInterface
     ):
-        if communitySubTotal is not None and not utils.isValidInt(communitySubTotal):
-            raise ValueError(f'communitySubTotal argument is malformed: \"{communitySubTotal}\"')
-        elif communitySubTotal is not None and (communitySubTotal < 0 or communitySubTotal > utils.getIntMaxSafeSize()):
-            raise ValueError(f'communitySubTotal argument is out of bounds: {communitySubTotal}')
-        elif total is not None and not utils.isValidInt(total):
-            raise ValueError(f'total argument is malformed: \"{total}\"')
-        elif total is not None and (total < 1 or total > utils.getIntMaxSafeSize()):
-            raise ValueError(f'total argument is out of bounds: {total}')
+        if communitySubGift is not None and not isinstance(communitySubGift, WebsocketCommunitySubGift):
+            raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
@@ -148,20 +133,16 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
         elif not user.isSuperTriviaGameEnabled():
             return
-        elif not user.hasSuperTriviaGameShinyMultiplier() or user.getSuperTriviaSubscribeTriggerAmount() <= 0:
-            return
-        elif (communitySubTotal is None or communitySubTotal < 1) and (total is None or total < 1):
-            return
 
-        numberOfSubs = total
-        if communitySubTotal is not None:
-            numberOfSubs = communitySubTotal
-
-        if not utils.isValidInt(numberOfSubs) or numberOfSubs < 1:
+        superTriviaSubscribeTriggerAmount = user.getSuperTriviaSubscribeTriggerAmount()
+        if not utils.isValidNum(superTriviaSubscribeTriggerAmount):
             return
 
-        numberOfGames = math.floor(numberOfSubs / user.getSuperTriviaSubscribeTriggerAmount())
+        numberOfSubs = 1
+        if communitySubGift is not None:
+            numberOfSubs += communitySubGift.getTotal()
 
+        numberOfGames = math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount)
         if numberOfGames < 1:
             return
 
@@ -236,7 +217,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     twitchAccessToken = twitchAccessToken
                 )
             else:
-                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({userId=}) ({userName=})')
+                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=})')
                 return
 
         donation: TtsDonation = TtsSubscriptionDonation(
