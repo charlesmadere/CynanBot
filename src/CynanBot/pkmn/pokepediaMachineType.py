@@ -1,29 +1,15 @@
-from enum import Enum, auto
+from enum import auto
 
-import CynanBot.misc.utils as utils
+from typing_extensions import override
+
+from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 
 
-class PokepediaMachineType(Enum):
+class PokepediaMachineType(EnumWithToFromStr):
 
     HM = auto()
     TM = auto()
     TR = auto()
-
-    @classmethod
-    def fromStr(cls, text: str):
-        if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
-
-        text = text.lower()
-
-        if text.startswith('hm'):
-            return PokepediaMachineType.HM
-        elif text.startswith('tm'):
-            return PokepediaMachineType.TM
-        elif text.startswith('tr'):
-            return PokepediaMachineType.TR
-        else:
-            raise ValueError(f'unknown PokepediaMachineType: \"{text}\"')
 
     def getMaxMachineNumber(self) -> int:
         if self is PokepediaMachineType.HM:
@@ -35,12 +21,6 @@ class PokepediaMachineType(Enum):
         else:
             raise RuntimeError(f'unknown PokepediaMachineType: \"{self}\"')
 
+    @override
     def toStr(self) -> str:
-        if self is PokepediaMachineType.HM:
-            return 'HM'
-        elif self is PokepediaMachineType.TM:
-            return 'TM'
-        elif self is PokepediaMachineType.TR:
-            return 'TR'
-        else:
-            raise RuntimeError(f'unknown PokepediaMachineType: \"{self}\"')
+        return super().toStr().upper()

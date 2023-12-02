@@ -1,31 +1,17 @@
-from enum import Enum, auto
+from __future__ import annotations
+from enum import auto
 from typing import Set
+from typing_extensions import override
 
-import CynanBot.misc.utils as utils
+from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 from CynanBot.pkmn.pokepediaElementType import PokepediaElementType
 
 
-class PokepediaDamageClass(Enum):
+class PokepediaDamageClass(EnumWithToFromStr):
 
     PHYSICAL = auto()
     SPECIAL = auto()
     STATUS = auto()
-
-    @classmethod
-    def fromStr(cls, text: str):
-        if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
-
-        text = text.lower()
-
-        if text == 'physical':
-            return PokepediaDamageClass.PHYSICAL
-        elif text == 'special':
-            return PokepediaDamageClass.SPECIAL
-        elif text == 'status':
-            return PokepediaDamageClass.STATUS
-        else:
-            raise ValueError(f'unknown PokepediaDamageClass: \"{text}\"')
 
     # gen 1-3 have damage classes based off element type
     @classmethod
@@ -52,12 +38,6 @@ class PokepediaDamageClass(Enum):
         else:
             raise ValueError(f'unknown PokepediaElementType: \"{elementType}\"')
 
+    @override
     def toStr(self) -> str:
-        if self is PokepediaDamageClass.PHYSICAL:
-            return 'Physical'
-        elif self is PokepediaDamageClass.SPECIAL:
-            return 'Special'
-        elif self is PokepediaDamageClass.STATUS:
-            return 'Status'
-        else:
-            raise RuntimeError(f'unknown PokepediaDamageClass: \"{self}\"')
+        return super().toStr().title()

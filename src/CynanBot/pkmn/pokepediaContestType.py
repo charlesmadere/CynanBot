@@ -1,3 +1,4 @@
+from __future__ import annotations
 from enum import Enum, auto
 from typing import Optional
 
@@ -13,7 +14,7 @@ class PokepediaContestType(Enum):
     TOUGH = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: Optional[str]) -> Optional[PokepediaContestType]:
         if not utils.isValidStr(text):
             return None
 
