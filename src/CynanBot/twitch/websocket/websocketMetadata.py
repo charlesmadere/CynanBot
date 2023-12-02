@@ -21,7 +21,7 @@ class WebsocketMetadata():
             raise ValueError(f'messageTimestamp argument is malformed: \"{messageTimestamp}\"')
         elif not utils.isValidStr(messageId):
             raise ValueError(f'messageId argument is malformed: \"{messageId}\"')
-        elif subscriptionVersion is not None and not utils.isValidStr(subscriptionVersion):
+        elif subscriptionVersion is not None and not isinstance(subscriptionVersion, str):
             raise ValueError(f'subscriptionVersion argument is malformed: \"{subscriptionVersion}\"')
         elif messageType is not None and not isinstance(messageType, WebsocketMessageType):
             raise ValueError(f'messageType argument is malformed: \"{messageType}\"')
