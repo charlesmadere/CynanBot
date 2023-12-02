@@ -394,6 +394,7 @@ cynanBot = CynanBot(
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
     twitchTokensRepository = twitchTokensRepository,
+    twitchTokensUtils = twitchTokensUtils,
     twitchUtils = TwitchUtils(
         backgroundTaskHelper = backgroundTaskHelper,
         sentMessageLogger = SentMessageLogger(

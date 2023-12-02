@@ -25,25 +25,25 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
 
-    async def getAccessTokenOrFallback(self, userName: str) -> Optional[str]:
-        if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+    async def getAccessTokenOrFallback(self, twitchChannel: str) -> Optional[str]:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        if await self.__twitchTokensRepository.hasAccessToken(userName):
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(userName)
-            return await self.__twitchTokensRepository.getAccessToken(userName)
+        if await self.__twitchTokensRepository.hasAccessToken(twitchChannel):
+            await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
+            return await self.__twitchTokensRepository.getAccessToken(twitchChannel)
         else:
             administratorUserName = await self.__administratorProvider.getAdministratorUserName()
             await self.__twitchTokensRepository.validateAndRefreshAccessToken(administratorUserName)
             return await self.__twitchTokensRepository.getAccessToken(administratorUserName)
 
-    async def requireAccessTokenOrFallback(self, userName: str) -> str:
-        if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+    async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
+        if not utils.isValidStr(twitchChannel):
+            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        accessToken = await self.getAccessTokenOrFallback(userName)
+        accessToken = await self.getAccessTokenOrFallback(twitchChannel)
 
         if not utils.isValidStr(accessToken):
-            raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{userName}\"')
+            raise TwitchAccessTokenMissingException(f'Unable to find Twitch access token for \"{twitchChannel}\"')
 
         return accessToken

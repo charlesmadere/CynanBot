@@ -20,6 +20,8 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
 from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBot.twitch.twitchTokensUtilsInterface import \
+    TwitchTokensUtilsInterface
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -36,7 +38,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         ttsManager: Optional[TtsManagerInterface],
         twitchChannelProvider: TwitchChannelProvider,
-        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -51,8 +53,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise ValueError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
@@ -62,20 +64,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-
-    async def __getTwitchAccessToken(self, user: UserInterface) -> Optional[str]:
-        if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        if await self.__twitchTokensRepository.hasAccessToken(user.getHandle()):
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getHandle())
-            return await self.__twitchTokensRepository.getAccessToken(user.getHandle())
-        else:
-            administratorUserName = await self.__administratorProvider.getAdministratorUserName()
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(administratorUserName)
-            return await self.__twitchTokensRepository.getAccessToken(administratorUserName)
 
     async def onNewSubscription(
         self,
@@ -234,7 +224,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         if not utils.isValidStr(actualUserId) or not utils.isValidStr(userName):
             if isAnonymous:
-                twitchAccessToken = await self.__getTwitchAccessToken(user)
+                twitchAccessToken = await self.__twitchTokensUtils.requireAccessTokenOrFallback(
+                    twitchChannel = user.getHandle()
+                )
 
                 actualUserId = await self.__userIdsRepository.requireAnonymousUserId(
                     twitchAccessToken = twitchAccessToken

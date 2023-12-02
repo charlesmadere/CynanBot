@@ -186,6 +186,8 @@ from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBot.twitch.twitchTokensUtilsInterface import \
+    TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.twitch.twitchWebsocketDataBundleHandler import \
     TwitchWebsocketDataBundleHandler
@@ -257,6 +259,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtils,
         twitchWebsocketClient: Optional[TwitchWebsocketClientInterface],
         userIdsRepository: UserIdsRepositoryInterface,
@@ -371,6 +374,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
+            raise ValueError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
@@ -400,7 +405,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
-        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -860,7 +865,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 triviaGameMachine = self.__triviaGameMachine,
                 ttsManager = self.__ttsManager,
                 twitchChannelProvider = self,
-                twitchTokensRepository = self.__twitchTokensRepository,
+                twitchTokensUtils = self.__twitchTokensUtils,
                 userIdsRepository = self.__userIdsRepository
             )
 
