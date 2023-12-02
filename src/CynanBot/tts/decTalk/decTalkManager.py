@@ -6,6 +6,8 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+    SoundPlayerHelperInterface
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -26,6 +28,7 @@ class DecTalkManager(TtsManagerInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         decTalkCommandBuilder: DecTalkCommandBuilder,
         decTalkFileManager: DecTalkFileManagerInterface,
+        soundPlayerHelper: Optional[SoundPlayerHelperInterface],
         systemCommandHelper: SystemCommandHelperInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
@@ -38,23 +41,26 @@ class DecTalkManager(TtsManagerInterface):
             raise ValueError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
         elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise ValueError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
+        elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
+            raise ValueError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
         elif not isinstance(systemCommandHelper, SystemCommandHelperInterface):
             raise ValueError(f'systemCommandHelper argument is malformed: \"{systemCommandHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not utils.isValidInt(queueSleepTimeSeconds):
+        elif not utils.isValidNum(queueSleepTimeSeconds):
             raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
-        elif not utils.isValidInt(queueTimeoutSeconds):
+        elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 3:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
+        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = soundPlayerHelper
         self.__systemCommandHelper: SystemCommandHelperInterface = systemCommandHelper
         self.__timber: TimberInterface = timber
         self.__decTalkCommandBuilder: TtsCommandBuilderInterface = decTalkCommandBuilder

@@ -678,16 +678,17 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 if generalSettingsSnapshot.isTtsEnabled():
     ttsManager = DecTalkManager(
         backgroundTaskHelper = backgroundTaskHelper,
-        decTalkFileManager = DecTalkFileManager(
-            backgroundTaskHelper = backgroundTaskHelper,
-            timber = timber
-        ),
         decTalkCommandBuilder = DecTalkCommandBuilder(
             contentScanner = contentScanner,
             emojiHelper = emojiHelper,
             timber = timber,
             ttsSettingsRepository = ttsSettingsRepository
         ),
+        decTalkFileManager = DecTalkFileManager(
+            backgroundTaskHelper = backgroundTaskHelper,
+            timber = timber
+        ),
+        soundPlayerHelper = None,
         systemCommandHelper = SystemCommandHelper(
             timber = timber
         ),
