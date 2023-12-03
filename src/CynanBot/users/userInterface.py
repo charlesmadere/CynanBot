@@ -20,6 +20,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getDiscordUrl(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
     def getHandle(self) -> str:
         pass
 

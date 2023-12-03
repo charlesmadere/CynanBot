@@ -278,7 +278,7 @@ class User(UserInterface):
     def getInstagramUrl(self) -> Optional[str]:
         return self.__instagram
 
-    def getLocationId(self) -> str:
+    def getLocationId(self) -> Optional[str]:
         return self.__locationId
 
     def getMastodonUrl(self) -> Optional[str]:
