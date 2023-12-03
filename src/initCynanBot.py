@@ -109,10 +109,14 @@ from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
+from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.toxicTriviaHelper import ToxicTriviaHelper
 from CynanBot.trivia.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
+from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+    ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaBanHelper import TriviaBanHelper
@@ -404,10 +408,10 @@ if authSnapshot.hasOneWeatherApiKey():
 ## Trivia initialization section ##
 ###################################
 
-shinyTriviaOccurencesRepository = ShinyTriviaOccurencesRepository(
+shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = ShinyTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
-toxicTriviaOccurencesRepository = ToxicTriviaOccurencesRepository(
+toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
 triviaAnswerCompiler = TriviaAnswerCompiler(

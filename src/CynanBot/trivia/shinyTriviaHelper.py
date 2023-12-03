@@ -6,8 +6,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.shinyTriviaOccurencesRepository import \
-    ShinyTriviaOccurencesRepository
+from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
@@ -17,7 +17,7 @@ class ShinyTriviaHelper():
     def __init__(
         self,
         cutenessRepository: CutenessRepositoryInterface,
-        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository,
+        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 3),
@@ -25,7 +25,7 @@ class ShinyTriviaHelper():
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
+        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -37,7 +37,7 @@ class ShinyTriviaHelper():
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
-        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository
+        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__cooldown: timedelta = cooldown
@@ -74,12 +74,13 @@ class ShinyTriviaHelper():
             twitchChannel = twitchChannel
         )
 
-        if not cutenessLeaderboard.hasEntries():
+        entries = cutenessLeaderboard.getEntries()
+        if not utils.hasItems(entries):
             return None
 
         userId = userId.lower()
 
-        for entry in cutenessLeaderboard.getEntries():
+        for entry in entries:
             if entry.getUserId().lower() == userId:
                 return entry.getRank()
 

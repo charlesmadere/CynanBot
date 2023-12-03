@@ -127,10 +127,10 @@ from CynanBot.trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
 from CynanBot.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBot.trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
 from CynanBot.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from CynanBot.trivia.shinyTriviaOccurencesRepository import \
-    ShinyTriviaOccurencesRepository
-from CynanBot.trivia.toxicTriviaOccurencesRepository import \
-    ToxicTriviaOccurencesRepository
+from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
+from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+    ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
@@ -237,11 +237,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         pokepediaRepository: Optional[PokepediaRepository],
         recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
-        shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepository],
+        shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepositoryInterface],
         soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepositoryInterface],
         timber: TimberInterface,
-        toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepository],
+        toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepositoryInterface],
         translationHelper: Optional[TranslationHelper],
         triviaBanHelper: Optional[TriviaBanHelperInterface],
         triviaEmoteGenerator: Optional[TriviaEmoteGeneratorInterface],
@@ -330,7 +330,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
         elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
-        elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
+        elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise ValueError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
@@ -338,7 +338,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepository):
+        elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
             raise ValueError(f'translationHelper argument is malformed: \"{translationHelper}\"')

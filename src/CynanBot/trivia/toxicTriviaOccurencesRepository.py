@@ -5,10 +5,12 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+    ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
 
 
-class ToxicTriviaOccurencesRepository():
+class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
 
     def __init__(
         self,

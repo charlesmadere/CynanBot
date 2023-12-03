@@ -5,10 +5,12 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
 
 
-class ShinyTriviaOccurencesRepository():
+class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
 
     def __init__(
         self,

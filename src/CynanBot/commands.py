@@ -74,10 +74,10 @@ from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBot.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
-from CynanBot.trivia.shinyTriviaOccurencesRepository import \
-    ShinyTriviaOccurencesRepository
-from CynanBot.trivia.toxicTriviaOccurencesRepository import \
-    ToxicTriviaOccurencesRepository
+from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+    ShinyTriviaOccurencesRepositoryInterface
+from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+    ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
@@ -3621,9 +3621,9 @@ class TriviaScoreCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository,
+        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
-        toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository,
+        toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepository,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
@@ -3633,11 +3633,11 @@ class TriviaScoreCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepository):
+        elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepository):
+        elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
@@ -3653,9 +3653,9 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository
+        self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
-        self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository
+        self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
         self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
