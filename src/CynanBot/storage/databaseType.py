@@ -1,13 +1,18 @@
-from enum import Enum, auto
+from enum import auto
+
+from typing_extensions import override
+
+from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 
 import CynanBot.misc.utils as utils
 
 
-class DatabaseType(Enum):
+class DatabaseType(EnumWithToFromStr):
 
     POSTGRESQL = auto()
     SQLITE = auto()
 
+    @override
     @classmethod
     def fromStr(cls, text: str):
         if not utils.isValidStr(text):
@@ -15,9 +20,6 @@ class DatabaseType(Enum):
 
         text = text.lower()
 
-        if text in ('postgres', 'postgresql'):
+        if text == 'postgres':
             return DatabaseType.POSTGRESQL
-        elif text == 'sqlite':
-            return DatabaseType.SQLITE
-        else:
-            raise ValueError(f'unknown DatabaseType: \"{text}\"')
+        return super().fromStr(text)
