@@ -602,6 +602,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.getTriviaActionType()}\"')
 
         now = datetime.now(self.__timeZone)
+        superTriviaFirstQuestionDelay = timedelta(
+            seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds()
+        )
+
+        if action.getCreationTime() + superTriviaFirstQuestionDelay >= now:
+            # Let's re-add this action back into the queue to try processing again later, as this action
+            # was created too recently. We don't want super trivia questions to start instantaneously, as
+            # it could mean that some people in chat are not ready to answer at first. So this minor delay
+            # helps prevent such a situation.
+            self.submitAction(action)
+            return
+
         state = await self.__triviaGameStore.getSuperGame(action.getTwitchChannel())
         isSuperTriviaGameCurrentlyInProgress = state is not None and state.getEndTime() >= now
 
@@ -629,18 +641,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             # channel is on cooldown. This situation occurs if this Twitch channel just finished answering
             # a super trivia question, and prevents us from just immediately jumping into the next super
             # trivia question.
-            self.submitAction(action)
-            return
-
-        superTriviaFirstQuestionDelay = timedelta(
-            seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds()
-        )
-
-        if action.getCreationTime() + superTriviaFirstQuestionDelay >= now:
-            # Let's re-add this action back into the queue to try processing again later, as this action
-            # was created too recently. We don't want super trivia questions to start instantaneously, as
-            # it could mean that some people in chat are not ready to answer at first. So this minor delay
-            # helps prevent such a situation.
             self.submitAction(action)
             return
 
