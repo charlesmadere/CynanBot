@@ -30,8 +30,8 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         process: Optional[Process] = None
-        outputTuple: Optional[Tuple[ByteString]] = None
-        exception: Optional[Exception] = None
+        outputTuple: Optional[Tuple[ByteString, ByteString]] = None
+        exception: Optional[BaseException] = None
 
         try:
             process = await asyncio.create_subprocess_shell(
@@ -67,7 +67,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
 
         parent = psutil.Process(process.pid)
 
-        for child in parent.children(recursive = True): 
+        for child in parent.children(recursive = True):
             child.terminate()
 
         parent.terminate()
