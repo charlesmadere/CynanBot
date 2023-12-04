@@ -18,16 +18,12 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withEmptyString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileBoolAnswer('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withF(self):
@@ -41,42 +37,30 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withNewLineString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileBoolAnswer('\n')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withNone(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileBoolAnswer(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withWhitespaceString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileBoolAnswer(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileBoolAnswer_withT(self):
@@ -123,44 +107,30 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withBracedDigit(self):
         result: Optional[int] = None
-        exception: Optional[Exception] = None
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[1]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[0]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withBracedWord(self):
         result: Optional[int] = None
-        exception: Optional[Exception] = None
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[hello]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[world]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withC(self):
@@ -180,16 +150,12 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withDigit(self):
-        result: int = None
-        exception: Exception = None
+        result: Optional[int] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('0')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withE(self):
@@ -202,23 +168,16 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withEmptyBraces(self):
         result: Optional[int] = None
-        exception: Optional[Exception] = None
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
-        try:
+        with pytest.raises(Exception):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('[]')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withF(self):
@@ -230,55 +189,39 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withEmptyString(self):
-        result: int = None
-        exception: Exception = None
+        result: Optional[int] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withNone(self):
-        result: int = None
-        exception: Exception = None
+        result: Optional[int] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withSymbol(self):
-        result: int = None
-        exception: Exception = None
+        result: Optional[int] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal('=')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withWhitespaceString(self):
-        result: int = None
-        exception: Exception = None
+        result: Optional[int] = None
 
-        try:
+        with pytest.raises(BadTriviaAnswerException):
             result = await self.triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, BadTriviaAnswerException)
 
     @pytest.mark.asyncio
     async def test_compileMultipleChoiceAnswer_withZ(self):
