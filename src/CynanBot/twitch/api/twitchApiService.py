@@ -9,6 +9,8 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkHandle import NetworkHandle
 from CynanBot.network.networkResponse import NetworkResponse
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchErrorException,
                                         TwitchJsonException,
@@ -16,7 +18,6 @@ from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchRefreshTokenMissingException,
                                         TwitchStatusCodeException,
                                         TwitchTokenIsExpiredException)
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchBannedUser import TwitchBannedUser
 from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.twitchBannedUsersPageResponse import \

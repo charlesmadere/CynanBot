@@ -9,9 +9,10 @@ from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.exceptions import (NoTwitchTokenDetailsException,
                                         TwitchPasswordChangedException)
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

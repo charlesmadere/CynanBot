@@ -20,7 +20,8 @@ from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.twitchHandleProviderInterface import \

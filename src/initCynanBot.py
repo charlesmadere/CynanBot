@@ -192,6 +192,9 @@ from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
+from CynanBot.twitch.api.twitchApiService import TwitchApiService
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
@@ -200,8 +203,6 @@ from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchApiService import TwitchApiService
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

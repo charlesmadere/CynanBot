@@ -77,7 +77,9 @@ from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
-from CynanBot.twitch.twitchApiService import TwitchApiService
+from CynanBot.twitch.api.twitchApiService import TwitchApiService
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.users.userIdsRepository import UserIdsRepository
 
 eventLoop = asyncio.get_event_loop()
@@ -88,7 +90,7 @@ backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
 networkClientProvider: NetworkClientProvider = RequestsClientProvider(
     timber = timber
 )
-twitchApiService = TwitchApiService(
+twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     twitchCredentialsProvider = authRepository

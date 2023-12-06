@@ -9,7 +9,8 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
 from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
     CheerActionRemodRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 

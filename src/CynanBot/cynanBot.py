@@ -164,6 +164,8 @@ from CynanBot.twitch.absTwitchPredictionHandler import \
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
 from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.channelJoinListener import ChannelJoinListener
@@ -179,7 +181,6 @@ from CynanBot.twitch.finishedJoiningChannelsEvent import \
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler

@@ -6,9 +6,10 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.misc.timedDict import TimedDict
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.twitchStreamType import TwitchStreamType
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
