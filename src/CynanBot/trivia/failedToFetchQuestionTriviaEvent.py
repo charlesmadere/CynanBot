@@ -8,13 +8,14 @@ class FailedToFetchQuestionTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         actionId: str,
+        eventId: str,
         twitchChannel: str,
         userId: str,
         userName: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION
+            eventId = eventId
         )
 
         if not utils.isValidStr(twitchChannel):
@@ -27,6 +28,9 @@ class FailedToFetchQuestionTriviaEvent(AbsTriviaEvent):
         self.__twitchChannel: str = twitchChannel
         self.__userId: str = userId
         self.__userName: str = userName
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

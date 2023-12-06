@@ -25,6 +25,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         actionId: str,
         answer: str,
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str,
         userId: str,
@@ -33,7 +34,7 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.SUPER_GAME_CORRECT_ANSWER
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -110,6 +111,9 @@ class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
     def getToxicTriviaPunishmentResult(self) -> Optional[ToxicTriviaPunishmentResult]:
         return self.__toxicTriviaPunishmentResult
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_CORRECT_ANSWER
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

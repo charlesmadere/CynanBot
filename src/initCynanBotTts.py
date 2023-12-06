@@ -386,6 +386,7 @@ cynanBot = CynanBot(
     triviaGameGlobalControllersRepository = None,
     triviaGameMachine = None,
     triviaHistoryRepository = None,
+    triviaIdGenerator = None,
     triviaRepository = None,
     triviaScoreRepository = None,
     triviaSettingsRepository = None,

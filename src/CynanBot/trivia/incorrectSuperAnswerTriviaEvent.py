@@ -16,6 +16,7 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
         actionId: str,
         answer: Optional[str],
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str,
         userId: str,
@@ -23,13 +24,15 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.INCORRECT_SUPER_ANSWER
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
             raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+        elif answer is not None and not isinstance(answer, str):
+            raise ValueError(f'answer argument is malformed: \"{answer}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
@@ -61,6 +64,9 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
 
     def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
         return self.__specialTriviaStatus
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.INCORRECT_SUPER_ANSWER
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

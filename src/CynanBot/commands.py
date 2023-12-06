@@ -88,16 +88,18 @@ from CynanBot.trivia.triviaExceptions import (
     TooManyAdditionalTriviaAnswersException)
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
+from CynanBot.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
@@ -654,6 +656,7 @@ class AnswerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameMachine: TriviaGameMachineInterface,
+        triviaIdGenerator: TriviaIdGeneratorInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -662,12 +665,15 @@ class AnswerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -683,9 +689,11 @@ class AnswerCommand(AbsCommand):
         if len(splits) < 2:
             return
 
+        actionId = await self.__triviaIdGenerator.generateActionId()
         answer = ' '.join(splits[1:])
 
         self.__triviaGameMachine.submitAction(CheckAnswerTriviaAction(
+            actionId = actionId,
             answer = answer,
             twitchChannel = user.getHandle(),
             userId = ctx.getAuthorId(),
@@ -896,6 +904,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameMachine: TriviaGameMachineInterface,
+        triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaUtils: TriviaUtils,
         usersRepository: UsersRepositoryInterface
     ):
@@ -905,6 +914,8 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
@@ -913,6 +924,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -930,7 +942,10 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         ):
             return
 
+        actionId = await self.__triviaIdGenerator.generateActionId()
+
         self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
+            actionId = actionId,
             twitchChannel = user.getHandle()
         ))
 

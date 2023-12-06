@@ -138,16 +138,18 @@ from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaEventType import TriviaEventType
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
+from CynanBot.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
 from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
@@ -251,6 +253,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         triviaHistoryRepository: Optional[TriviaHistoryRepositoryInterface],
+        triviaIdGenerator: Optional[TriviaIdGeneratorInterface],
         triviaRepository: Optional[TriviaRepositoryInterface],
         triviaScoreRepository: Optional[TriviaScoreRepository],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
@@ -357,6 +360,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        elif triviaIdGenerator is not None and not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepository):
@@ -465,7 +470,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
+        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsCommand = StubCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
@@ -474,7 +479,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
+            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, usersRepository)
@@ -529,10 +534,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
 
-        if triviaGameMachine is None or triviaUtils is None:
+        if triviaGameMachine is None or triviaIdGenerator is None or triviaUtils is None:
             self.__clearSuperTriviaQueueCommand: AbsCommand = StubCommand()
         else:
-            self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaUtils, usersRepository)
+            self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()

@@ -12,11 +12,12 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         numberOfGamesRemoved: int,
         previousQueueSize: int,
         actionId: str,
+        eventId: str,
         twitchChannel: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE
+            eventId = eventId
         )
 
         if not utils.isValidInt(numberOfGamesRemoved):
@@ -45,6 +46,9 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
 
     def getPreviousQueueSizeStr(self) -> str:
         return locale.format_string("%d", self.__previousQueueSize, grouping = True)
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

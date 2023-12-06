@@ -14,6 +14,7 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
         actionId: str,
         answer: Optional[str],
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str,
         userId: str,
@@ -21,11 +22,13 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.WRONG_USER
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        elif answer is not None and not isinstance(answer, str):
+            raise ValueError(f'answer argument is malformed: \"{answer}\"')
         elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
@@ -53,6 +56,9 @@ class WrongUserCheckAnswerTriviaEvent(AbsTriviaEvent):
 
     def getGameId(self) -> str:
         return self.__gameId
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.WRONG_USER
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

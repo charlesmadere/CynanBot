@@ -14,12 +14,13 @@ class StartNewTriviaGameAction(AbsTriviaAction):
         pointsForWinning: int,
         secondsToLive: int,
         shinyMultiplier: int,
+        actionId: str,
         twitchChannel: str,
         userId: str,
         userName: str,
         triviaFetchOptions: TriviaFetchOptions
     ):
-        super().__init__(triviaActionType = TriviaActionType.START_NEW_GAME)
+        super().__init__(actionId = actionId)
 
         if not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
@@ -70,6 +71,9 @@ class StartNewTriviaGameAction(AbsTriviaAction):
 
     def getShinyMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__shinyMultiplier, grouping = True)
+
+    def getTriviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.START_NEW_GAME
 
     def getTriviaFetchOptions(self) -> TriviaFetchOptions:
         return self.__triviaFetchOptions

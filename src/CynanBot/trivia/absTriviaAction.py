@@ -1,25 +1,20 @@
-import random
-import string
-from abc import ABC
+from abc import ABC, abstractmethod
 
+import CynanBot.misc.utils as utils
 from CynanBot.trivia.triviaActionType import TriviaActionType
 
 
 class AbsTriviaAction(ABC):
 
-    def __init__(
-        self,
-        triviaActionType: TriviaActionType
-    ):
-        if not isinstance(triviaActionType, TriviaActionType):
-            raise ValueError(f'triviaActionType argument is malformed: \"{triviaActionType}\"')
+    def __init__(self, actionId: str):
+        if not utils.isValidStr(actionId):
+            raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
 
-        self.__triviaActionType: TriviaActionType = triviaActionType
-
-        self.__actionId: str = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
+        self.__actionId: str = actionId
 
     def getActionId(self) -> str:
         return self.__actionId
 
+    @abstractmethod
     def getTriviaActionType(self) -> TriviaActionType:
-        return self.__triviaActionType
+        pass

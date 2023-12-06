@@ -11,6 +11,8 @@ from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -19,14 +21,18 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
     def __init__(
         self,
         triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface,
+        triviaIdGenerator: TriviaIdGeneratorInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
             raise ValueError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
-        if not isinstance(usersRepository, UsersRepositoryInterface):
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface = triviaGameBuilderSettings
+        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def createNewTriviaGame(
@@ -62,6 +68,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         if user.hasTriviaGameShinyMultiplier():
             shinyMultiplier = user.getTriviaGameShinyMultiplier()
 
+        actionId = await self.__triviaIdGenerator.generateActionId()
+
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
             isJokeTriviaRepositoryEnabled = user.isJokeTriviaRepositoryEnabled(),
@@ -73,6 +81,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             pointsForWinning = points,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
+            actionId = actionId,
             twitchChannel = user.getHandle(),
             userId = userId,
             userName = userName,
@@ -103,9 +112,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         if user.hasSuperTriviaPerUserAttempts():
             perUserAttempts = user.getSuperTriviaPerUserAttempts()
 
-        points = await self.__triviaGameBuilderSettings.getSuperTriviaGamePoints()
+        pointsForWinning = await self.__triviaGameBuilderSettings.getSuperTriviaGamePoints()
         if user.hasSuperTriviaGamePoints():
-            points = user.getSuperTriviaGamePoints()
+            pointsForWinning = user.getSuperTriviaGamePoints()
 
         regularTriviaPointsForWinning = await self.__triviaGameBuilderSettings.getTriviaGamePoints()
         if user.hasTriviaGamePoints():
@@ -127,6 +136,8 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         if user.hasSuperTriviaGameToxicPunishmentMultiplier():
             toxicTriviaPunishmentMultiplier = user.getSuperTriviaGameToxicPunishmentMultiplier()
 
+        actionId = await self.__triviaIdGenerator.generateActionId()
+
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
             isJokeTriviaRepositoryEnabled = False,
@@ -139,12 +150,13 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             isToxicTriviaEnabled = user.isToxicTriviaEnabled() and user.isCutenessEnabled(),
             numberOfGames = numberOfGames,
             perUserAttempts = perUserAttempts,
-            pointsForWinning = points,
+            pointsForWinning = pointsForWinning,
             regularTriviaPointsForWinning = regularTriviaPointsForWinning,
             secondsToLive = secondsToLive,
             shinyMultiplier = shinyMultiplier,
             toxicMultiplier = toxicMultiplier,
             toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
+            actionId = actionId,
             twitchChannel = user.getHandle(),
             triviaFetchOptions = triviaFetchOptions
         )

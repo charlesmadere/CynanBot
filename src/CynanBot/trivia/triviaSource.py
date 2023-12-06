@@ -2,8 +2,8 @@ from enum import auto
 
 from typing_extensions import override
 
-from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 import CynanBot.misc.utils as utils
+from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 
 
 class TriviaSource(EnumWithToFromStr):

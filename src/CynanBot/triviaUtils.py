@@ -19,12 +19,12 @@ from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
 from CynanBot.trivia.triviaGameController import TriviaGameController
+from CynanBot.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBot.trivia.triviaGameGlobalController import \
     TriviaGameGlobalController
 from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
-from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.twitch.twitchTokensRepositoryInterface import \

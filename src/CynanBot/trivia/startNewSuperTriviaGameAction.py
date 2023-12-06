@@ -22,10 +22,11 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         shinyMultiplier: int,
         toxicMultiplier: int,
         toxicTriviaPunishmentMultiplier: int,
+        actionId: str,
         twitchChannel: str,
         triviaFetchOptions: TriviaFetchOptions
     ):
-        super().__init__(triviaActionType = TriviaActionType.START_NEW_SUPER_GAME)
+        super().__init__(actionId = actionId)
 
         if not utils.isValidBool(isQueueActionConsumed):
             raise ValueError(f'isQueueActionConsumed argument is malformed: \"{isQueueActionConsumed}\"')
@@ -134,8 +135,11 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
     def getToxicTriviaPunishmentMultiplier(self) -> int:
         return self.__toxicTriviaPunishmentMultiplier
 
-    def getToxicTriviaPunishmentMultiplierStr(self) -> int:
+    def getToxicTriviaPunishmentMultiplierStr(self) -> str:
         return locale.format_string("%d", self.__toxicTriviaPunishmentMultiplier, grouping = True)
+
+    def getTriviaActionType(self) -> TriviaActionType:
+        return TriviaActionType.START_NEW_SUPER_GAME
 
     def getTriviaFetchOptions(self) -> TriviaFetchOptions:
         return self.__triviaFetchOptions

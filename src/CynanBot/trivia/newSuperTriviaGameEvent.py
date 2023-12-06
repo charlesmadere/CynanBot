@@ -18,12 +18,13 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
         specialTriviaStatus: Optional[SpecialTriviaStatus],
         actionId: str,
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.NEW_SUPER_GAME
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -73,6 +74,9 @@ class NewSuperTriviaGameEvent(AbsTriviaEvent):
 
     def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
         return self.__specialTriviaStatus
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.NEW_SUPER_GAME
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

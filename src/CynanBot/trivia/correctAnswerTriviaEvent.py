@@ -21,6 +21,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
         actionId: str,
         answer: str,
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str,
         userId: str,
@@ -29,7 +30,7 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.CORRECT_ANSWER
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -89,6 +90,9 @@ class CorrectAnswerTriviaEvent(AbsTriviaEvent):
 
     def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
         return self.__specialTriviaStatus
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.CORRECT_ANSWER
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

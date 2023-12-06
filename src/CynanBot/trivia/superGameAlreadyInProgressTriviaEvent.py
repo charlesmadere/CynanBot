@@ -8,12 +8,13 @@ class SuperGameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         actionId: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.SUPER_GAME_ALREADY_IN_PROGRESS
+            eventId = eventId
         )
 
         if not utils.isValidStr(gameId):
@@ -26,6 +27,9 @@ class SuperGameAlreadyInProgressTriviaEvent(AbsTriviaEvent):
 
     def getGameId(self) -> str:
         return self.__gameId
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_ALREADY_IN_PROGRESS
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

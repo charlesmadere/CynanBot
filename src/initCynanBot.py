@@ -130,6 +130,8 @@ from CynanBot.trivia.triviaEmoteGeneratorInterface import \
 from CynanBot.trivia.triviaGameBuilder import TriviaGameBuilder
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
+from CynanBot.trivia.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
 from CynanBot.trivia.triviaGameGlobalControllersRepository import \
     TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
@@ -165,8 +167,6 @@ from CynanBot.trivia.triviaRepositories.quizApiTriviaQuestionRepository import \
     QuizApiTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.triviaDatabaseTriviaQuestionRepository import \
     TriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
 from CynanBot.trivia.triviaRepositories.triviaQuestionCompanyTriviaQuestionRepository import \
     TriviaQuestionCompanyTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.triviaRepository import \
@@ -463,6 +463,7 @@ triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
 )
 triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,
+    triviaIdGenerator = triviaIdGenerator,
     usersRepository = usersRepository
 )
 bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = BannedTriviaGameControllersRepository(
@@ -635,6 +636,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     ),
     triviaEmoteGenerator = triviaEmoteGenerator,
     triviaGameStore = TriviaGameStore(),
+    triviaIdGenerator = triviaIdGenerator,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
@@ -807,6 +809,7 @@ cynanBot = CynanBot(
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
     triviaGameMachine = triviaGameMachine,
     triviaHistoryRepository = triviaHistoryRepository,
+    triviaIdGenerator = triviaIdGenerator,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,

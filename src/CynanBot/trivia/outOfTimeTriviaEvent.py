@@ -18,6 +18,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         specialTriviaStatus: Optional[SpecialTriviaStatus],
         actionId: str,
         emote: str,
+        eventId: str,
         gameId: str,
         twitchChannel: str,
         userId: str,
@@ -26,7 +27,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.GAME_OUT_OF_TIME
+            eventId = eventId
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -74,6 +75,9 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
 
     def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
         return self.__specialTriviaStatus
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.GAME_OUT_OF_TIME
 
     def getTriviaQuestion(self) -> AbsTriviaQuestion:
         return self.__triviaQuestion

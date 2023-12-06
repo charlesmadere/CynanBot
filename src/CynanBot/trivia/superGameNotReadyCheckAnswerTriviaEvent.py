@@ -11,16 +11,19 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
         self,
         actionId: str,
         answer: Optional[str],
+        eventId: str,
         twitchChannel: str,
         userId: str,
         userName: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.SUPER_GAME_NOT_READY
+            eventId = eventId
         )
 
-        if not utils.isValidStr(twitchChannel):
+        if answer is not None and not isinstance(answer, str):
+            raise ValueError(f'answer argument is malformed: \"{answer}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
@@ -34,6 +37,9 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
 
     def getAnswer(self) -> Optional[str]:
         return self.__answer
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.SUPER_GAME_OUT_OF_TIME
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

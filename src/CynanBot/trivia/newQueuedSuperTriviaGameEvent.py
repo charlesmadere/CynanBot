@@ -12,11 +12,12 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         secondsToLive: int,
         shinyMultiplier: int,
         actionId: str,
+        eventId: str,
         twitchChannel: str
     ):
         super().__init__(
             actionId = actionId,
-            triviaEventType = TriviaEventType.NEW_QUEUED_SUPER_GAME
+            eventId = eventId
         )
 
         if not utils.isValidInt(numberOfGames):
@@ -55,6 +56,9 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
 
     def getShinyMultiplier(self) -> int:
         return self.__shinyMultiplier
+
+    def getTriviaEventType(self) -> TriviaEventType:
+        return TriviaEventType.NEW_QUEUED_SUPER_GAME
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel

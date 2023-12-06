@@ -41,6 +41,7 @@ class TestQueuedTriviaGameStore1():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action1',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -61,6 +62,7 @@ class TestQueuedTriviaGameStore1():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action2',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -81,6 +83,7 @@ class TestQueuedTriviaGameStore1():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action3',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -101,6 +104,7 @@ class TestQueuedTriviaGameStore1():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action4',
         twitchChannel = 'stashiocat',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -235,6 +239,7 @@ class TestQueuedTriviaGameStore4():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action5',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -287,6 +292,7 @@ class TestQueuedTriviaGameStore5():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action6',
         twitchChannel = 'stashiocat',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -339,6 +345,7 @@ class TestQueuedTriviaGameStore6():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action7',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
@@ -412,6 +419,7 @@ class TestQueuedTriviaGameStore7():
         shinyMultiplier = 8,
         toxicMultiplier = 16,
         toxicTriviaPunishmentMultiplier = 0,
+        actionId = 'action8',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
             isJokeTriviaRepositoryEnabled = False,
