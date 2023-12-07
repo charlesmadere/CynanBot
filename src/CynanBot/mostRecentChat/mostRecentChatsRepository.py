@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections import defaultdict
 from typing import Dict, Optional
 
@@ -33,7 +34,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__caches: Dict[str, LRU] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: Dict[str, LRU[str, Optional[MostRecentChat]]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
         self.__caches.clear()
