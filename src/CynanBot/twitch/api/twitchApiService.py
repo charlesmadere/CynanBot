@@ -891,7 +891,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         try:
             response = await clientSession.delete(
                 url = f'https://id.twitch.tv/helix/moderation/bans?broadcaster_id={unbanRequest.getBroadcasterUserId()}&moderator_id={unbanRequest.getModeratorUserId()}&user_id={unbanRequest.getUserIdToBan()}',
-                json = {
+                headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId
                 }
@@ -924,6 +924,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         self.__timber.log('TwitchApiService', f'Validating tokens... ({twitchAccessToken=})')
 
         clientSession = await self.__networkClientProvider.get()
+        response: Optional[NetworkResponse] = None
 
         try:
             response = await clientSession.get(
