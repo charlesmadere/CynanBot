@@ -621,6 +621,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
     cutenessRepository = cutenessRepository,
     queuedTriviaGameStore = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     shinyTriviaHelper = shinyTriviaHelper,
