@@ -11,6 +11,8 @@ from CynanBot.trivia.queuedTriviaGameStoreInterface import \
     QueuedTriviaGameStoreInterface
 from CynanBot.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
@@ -20,11 +22,14 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
     def __init__(
         self,
         timber: TimberInterface,
+        triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        queueTimeoutSeconds: int = 3
+        queueTimeoutSeconds: float = 3
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
@@ -33,8 +38,9 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__timber: TimberInterface = timber
+        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
+        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
         self.__queuedSuperGames: Dict[str, SimpleQueue[StartNewSuperTriviaGameAction]] = defaultdict(lambda: SimpleQueue())
 
@@ -80,7 +86,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                     oldQueueSize = oldQueueSize
                 )
 
-        amountAdded: int = 0
+        amountAdded = 0
 
         for _ in range(numberOfGames):
             if queuedSuperGames.qsize() < maxSuperTriviaGameQueueSize:
@@ -96,11 +102,12 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                     shinyMultiplier = action.getShinyMultiplier(),
                     toxicMultiplier = action.getToxicMultiplier(),
                     toxicTriviaPunishmentMultiplier = action.getToxicTriviaPunishmentMultiplier(),
+                    actionId = await self.__triviaIdGenerator.generateActionId(),
                     twitchChannel = action.getTwitchChannel(),
                     triviaFetchOptions = action.getTriviaFetchOptions()
                 ))
 
-                amountAdded = amountAdded + 1
+                amountAdded += 1
             else:
                 break
 
@@ -116,7 +123,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
 
         queuedSuperGames = self.__queuedSuperGames[twitchChannel.lower()]
         oldQueueSize = queuedSuperGames.qsize()
-        amountRemoved: int = 0
+        amountRemoved = 0
 
         try:
             while not queuedSuperGames.empty():

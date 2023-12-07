@@ -11,6 +11,9 @@ from CynanBot.trivia.queuedTriviaGameStoreInterface import \
 from CynanBot.trivia.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
+from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
+from CynanBot.trivia.triviaIdGeneratorInterface import \
+    TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
@@ -20,12 +23,15 @@ class TestQueuedTriviaGameStore1():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -171,12 +177,15 @@ class TestQueuedTriviaGameStore2():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -194,12 +203,15 @@ class TestQueuedTriviaGameStore3():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -218,12 +230,15 @@ class TestQueuedTriviaGameStore4():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -271,12 +286,15 @@ class TestQueuedTriviaGameStore5():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -324,12 +342,15 @@ class TestQueuedTriviaGameStore6():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
@@ -398,12 +419,15 @@ class TestQueuedTriviaGameStore7():
 
     timber: TimberInterface = TimberStub()
 
+    triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
 
     queuedTriviaGameStore: QueuedTriviaGameStoreInterface = QueuedTriviaGameStore(
         timber = timber,
+        triviaIdGenerator = triviaIdGenerator,
         triviaSettingsRepository = triviaSettingsRepository
     )
 
