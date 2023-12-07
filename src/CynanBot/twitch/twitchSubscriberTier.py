@@ -12,7 +12,7 @@ class TwitchSubscriberTier(Enum):
     TIER_THREE = auto()
 
     @classmethod
-    def fromStr(ctls, text: Optional[str]):
+    def fromStr(cls, text: Optional[str]):
         if not utils.isValidStr(text):
             raise ValueError(f'text argument is malformed: \"{text}\"')
 
