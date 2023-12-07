@@ -47,6 +47,7 @@ class User(UserInterface):
         isTriviaScoreEnabled: bool,
         isTtsEnabled: bool,
         isWeatherEnabled: bool,
+        isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
         superTriviaSubscribeTriggerAmount: Optional[float],
         minimumTtsCheerAmount: Optional[int],
@@ -148,6 +149,8 @@ class User(UserInterface):
             raise ValueError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
             raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
+        elif not utils.isValidBool(isWelcomeTtsEnabled):
+            raise ValueError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
@@ -231,6 +234,7 @@ class User(UserInterface):
         self.__isTriviaScoreEnabled: bool = isTriviaScoreEnabled
         self.__isTtsEnabled: bool = isTtsEnabled
         self.__isWeatherEnabled: bool = isWeatherEnabled
+        self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaSubscribeTriggerAmount: Optional[float] = superTriviaSubscribeTriggerAmount
         self.__minimumTtsCheerAmount: Optional[int] = minimumTtsCheerAmount
@@ -356,7 +360,7 @@ class User(UserInterface):
     def hasDiscord(self) -> bool:
         return utils.isValidUrl(self.__discord)
 
-    def hasInstagram(self) -> str:
+    def hasInstagram(self) -> bool:
         return utils.isValidUrl(self.__instagram)
 
     def hasLocationId(self) -> bool:
@@ -514,6 +518,9 @@ class User(UserInterface):
 
     def isWeatherEnabled(self) -> bool:
         return self.__isWeatherEnabled
+
+    def isWelcomeTtsEnabled(self) -> bool:
+        return self.__isWelcomeTtsEnabled
 
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled

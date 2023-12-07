@@ -7,6 +7,10 @@ from CynanBot.twitch.configuration.twitchConfigurationType import \
 class TwitchMessageable(ABC):
 
     @abstractmethod
+    async def getTwitchChannelId(self) -> str:
+        pass
+
+    @abstractmethod
     def getTwitchChannelName(self) -> str:
         pass
 

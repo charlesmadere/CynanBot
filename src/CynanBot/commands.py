@@ -42,6 +42,8 @@ from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
 from CynanBot.misc.clearable import Clearable
 from CynanBot.misc.timedDict import TimedDict
+from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
+    MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
@@ -803,6 +805,7 @@ class ClearCachesCommand(AbsCommand):
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,
+        mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
         timber: TimberInterface,
@@ -833,6 +836,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
+            raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
             raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -871,6 +876,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
         self.__clearables.append(modifyUserDataHelper)
+        self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
@@ -3224,6 +3230,7 @@ class SuperAnswerCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameMachine: TriviaGameMachineInterface,
+        triviaIdGenerator: TriviaIdGeneratorInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -3232,12 +3239,15 @@ class SuperAnswerCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
+        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -3256,6 +3266,7 @@ class SuperAnswerCommand(AbsCommand):
         answer = ' '.join(splits[1:])
 
         self.__triviaGameMachine.submitAction(CheckSuperAnswerTriviaAction(
+            actionId = await self.__triviaIdGenerator.generateActionId(),
             answer = answer,
             twitchChannel = user.getHandle(),
             userId = ctx.getAuthorId(),

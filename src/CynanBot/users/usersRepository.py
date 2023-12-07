@@ -127,6 +127,7 @@ class UsersRepository(UsersRepositoryInterface):
         isTriviaScoreEnabled = utils.getBoolFromDict(userJson, 'triviaScoreEnabled', isTriviaGameEnabled)
         isTtsEnabled = utils.getBoolFromDict(userJson, 'ttsEnabled', False)
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
+        isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
         discord = utils.getStrFromDict(userJson, 'discord', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
@@ -230,6 +231,7 @@ class UsersRepository(UsersRepositoryInterface):
             isTriviaScoreEnabled = isTriviaScoreEnabled,
             isTtsEnabled = isTtsEnabled,
             isWeatherEnabled = isWeatherEnabled,
+            isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,

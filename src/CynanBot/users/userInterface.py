@@ -264,5 +264,9 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isWelcomeTtsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isWordOfTheDayEnabled(self) -> bool:
         pass

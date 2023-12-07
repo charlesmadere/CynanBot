@@ -11,17 +11,28 @@ from CynanBot.twitch.configuration.twitchIo.twitchIoAuthor import \
 from CynanBot.twitch.configuration.twitchIo.twitchIoChannel import \
     TwitchIoChannel
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TwitchIoMessage(TwitchMessage):
 
-    def __init__(self, message: Message):
+    def __init__(
+        self,
+        message: Message,
+        userIdsRepository: UserIdsRepositoryInterface
+    ):
         if not isinstance(message, Message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__message: Message = message
         self.__author: TwitchAuthor = TwitchIoAuthor(message.author)
-        self.__channel: TwitchChannel = TwitchIoChannel(message.channel)
+        self.__channel: TwitchChannel = TwitchIoChannel(
+            channel = message.channel,
+            userIdsRepository = userIdsRepository
+        )
 
     def getAuthor(self) -> TwitchAuthor:
         return self.__author
@@ -37,6 +48,9 @@ class TwitchIoMessage(TwitchMessage):
 
     def getContent(self) -> Optional[str]:
         return self.__message.content
+
+    async def getTwitchChannelId(self) -> str:
+        return await self.__channel.getTwitchChannelId()
 
     def getTwitchChannelName(self) -> str:
         return self.__channel.getTwitchChannelName()

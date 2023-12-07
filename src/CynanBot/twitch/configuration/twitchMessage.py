@@ -30,6 +30,10 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
+    async def getTwitchChannelId(self) -> str:
+        pass
+
+    @abstractmethod
     def getTwitchChannelName(self) -> str:
         pass
 

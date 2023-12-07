@@ -60,6 +60,10 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.mostRecentChat.mostRecentChatsRepository import \
+    MostRecentChatsRepository
+from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
+    MostRecentChatsRepositoryInterface
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
@@ -359,11 +363,17 @@ locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader('locationsRepository.json'),
     timeZoneRepository = timeZoneRepository
 )
+mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
 )
-twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration()
+twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
+    userIdsRepository = userIdsRepository
+)
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -791,6 +801,7 @@ cynanBot = CynanBot(
     modifyUserDataHelper = ModifyUserDataHelper(
         timber = timber
     ),
+    mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,
     recurringActionsMachine = recurringActionsMachine,
