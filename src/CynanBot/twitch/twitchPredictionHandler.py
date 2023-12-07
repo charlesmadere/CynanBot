@@ -40,7 +40,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.getPayload()
+        payload = dataBundle.requirePayload()
         event = payload.getEvent()
 
         if event is None:

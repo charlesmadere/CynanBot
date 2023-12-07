@@ -11,7 +11,7 @@ class TwitchBroadcasterType(Enum):
     PARTNER = auto()
 
     @classmethod
-    def fromStr(ctls, text: Optional[str]):
+    def fromStr(cls, text: Optional[str]):
         if not utils.isValidStr(text):
             return TwitchBroadcasterType.NORMAL
 

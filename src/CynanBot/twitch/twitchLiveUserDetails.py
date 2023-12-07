@@ -107,7 +107,7 @@ class TwitchLiveUserDetails():
     def hasLanguage(self) -> bool:
         return utils.isValidStr(self.__language)
 
-    def hasThumbnailUrl(self) -> str:
+    def hasThumbnailUrl(self) -> bool:
         return utils.isValidUrl(self.__thumbnailUrl)
 
     def hasTitle(self) -> bool:

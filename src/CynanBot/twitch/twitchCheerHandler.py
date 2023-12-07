@@ -64,7 +64,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(dataBundle, WebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.getPayload().getEvent()
+        event = dataBundle.requirePayload().getEvent()
 
         if event is None:
             self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')

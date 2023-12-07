@@ -29,6 +29,14 @@ class WebsocketDataBundle():
         dictionary = self.toDictionary()
         return str(dictionary)
 
+    def requirePayload(self) -> WebsocketPayload:
+        payload = self.__payload
+
+        if payload is None:
+            raise RuntimeError(f'this WebsocketDataBundle has no payload (metadata=\"{self.__metadata}\")')
+
+        return payload
+
     def toDictionary(self) -> Dict[str, Any]:
         dictionary: Dict[str, Any] = {
             'metadata': self.__metadata.toDictionary()
