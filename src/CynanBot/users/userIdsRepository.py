@@ -41,7 +41,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         # TODO
         self.__timber.log('UserIdsRepository', 'Caches cleared')
 
-    async def fetchAnonymousUserId(self, twitchAccessToken: str) -> Optional[str]:
+    async def fetchAnonymousUserId(self, twitchAccessToken: str) -> str:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
@@ -52,7 +52,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        anonymousUserId = await self.fetchAnonymousUserId()
+        anonymousUserId = await self.fetchAnonymousUserId(twitchAccessToken)
 
         return await self.fetchUserName(
             userId = anonymousUserId,
