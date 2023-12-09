@@ -3333,7 +3333,7 @@ class SuperTriviaCommand(AbsCommand):
         ):
             return
 
-        numberOfGames: int = 1
+        numberOfGames = 1
         splits = utils.getCleanedSplits(ctx.getMessageContent())
 
         if len(splits) >= 2:
