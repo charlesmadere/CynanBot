@@ -8,6 +8,9 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatActions.chatActionsManager import ChatActionsManager
+from CynanBot.chatActions.chatActionsManagerInterface import \
+    ChatActionsManagerInterface
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -374,6 +377,13 @@ pokepediaRepository = PokepediaRepository(
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository
 )
+twitchUtils = TwitchUtils(
+    backgroundTaskHelper = backgroundTaskHelper,
+    sentMessageLogger = SentMessageLogger(
+        backgroundTaskHelper = backgroundTaskHelper
+    ),
+    timber = timber
+)
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,
     timber = timber
@@ -722,6 +732,19 @@ if generalSettingsSnapshot.isTtsEnabled():
     )
 
 
+#########################################
+## Chat Actions initialization section ##
+#########################################
+
+chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    mostRecentChatsRepository = mostRecentChatsRepository,
+    timber = timber,
+    ttsManager = ttsManager,
+    twitchUtils = twitchUtils,
+    usersRepository = usersRepository
+)
+
+
 ##########################################
 ## Cheer Actions initialization section ##
 ##########################################
@@ -778,6 +801,7 @@ cynanBot = CynanBot(
         timber = timber,
         usersRepository = usersRepository
     ),
+    chatActionsManager = chatActionsManager,
     chatLogger = ChatLogger(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
@@ -832,13 +856,7 @@ cynanBot = CynanBot(
     twitchConfiguration = twitchConfiguration,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = TwitchUtils(
-        backgroundTaskHelper = backgroundTaskHelper,
-        sentMessageLogger = SentMessageLogger(
-            backgroundTaskHelper = backgroundTaskHelper
-        ),
-        timber = timber
-    ),
+    twitchUtils = twitchUtils,
     twitchWebsocketClient = twitchWebsocketClient,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,

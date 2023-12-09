@@ -8,6 +8,9 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatActions.chatActionsManager import ChatActionsManager
+from CynanBot.chatActions.chatActionsManagerInterface import \
+    ChatActionsManagerInterface
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -249,6 +252,13 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository
 )
+twitchUtils = TwitchUtils(
+    backgroundTaskHelper = backgroundTaskHelper,
+    sentMessageLogger = SentMessageLogger(
+        backgroundTaskHelper = backgroundTaskHelper
+    ),
+    timber = timber
+)
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
@@ -301,6 +311,19 @@ if generalSettingsSnapshot.isTtsEnabled():
         timber = timber,
         ttsSettingsRepository = ttsSettingsRepository
     )
+
+
+#########################################
+## Chat Actions initialization section ##
+#########################################
+
+chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    mostRecentChatsRepository = mostRecentChatsRepository,
+    timber = timber,
+    ttsManager = ttsManager,
+    twitchUtils = twitchUtils,
+    usersRepository = usersRepository
+)
 
 
 ##########################################
@@ -359,6 +382,7 @@ cynanBot = CynanBot(
         timber = timber,
         usersRepository = usersRepository
     ),
+    chatActionsManager = chatActionsManager,
     chatLogger = None,
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,

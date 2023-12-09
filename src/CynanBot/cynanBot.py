@@ -12,6 +12,8 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatActions.chatActionsManagerInterface import \
+    ChatActionsManagerInterface
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -223,6 +225,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepositoryInterface],
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
+        chatActionsManager: Optional[ChatActionsManagerInterface],
         chatLogger: Optional[ChatLoggerInterface],
         cheerActionHelper: Optional[CheerActionHelperInterface],
         cheerActionIdGenerator: Optional[CheerActionIdGeneratorInterface],
@@ -301,6 +304,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(channelJoinHelper, ChannelJoinHelper):
             raise ValueError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
+        elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
+            raise ValueError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
@@ -403,6 +408,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
+        self.__chatActionsManager: Optional[ChatActionsManagerInterface] = chatActionsManager
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface] = cheerActionRemodHelper
         self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
@@ -729,6 +735,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     chatterUserId = twitchMessage.getAuthorId(),
                     twitchChannelId = await twitchMessage.getTwitchChannelId()
                 )
+
+        if self.__chatActionsManager is not None:
+            await self.__chatActionsManager.handleMessage(twitchMessage)
 
         await self.handle_commands(message)
 
