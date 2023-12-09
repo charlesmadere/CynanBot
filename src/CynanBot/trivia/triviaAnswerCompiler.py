@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import List, Optional, Pattern, Set
+from typing import Collection, List, Optional, Pattern, Set
 
 import roman
 from num2words import num2words
@@ -117,7 +117,7 @@ class TriviaAnswerCompiler():
 
     async def compileTextAnswersList(
         self,
-        answers: Optional[List[Optional[str]]],
+        answers: Optional[Collection[Optional[str]]],
         expandParentheses: bool = True
     ) -> List[str]:
         if not utils.isValidBool(expandParentheses):
