@@ -10,7 +10,7 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.twitchUserDetails import TwitchUserDetails
+from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.users.exceptions import NoSuchUserException
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
