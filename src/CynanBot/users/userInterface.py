@@ -236,6 +236,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isStarWarsQuotesEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isSuperTriviaGameEnabled(self) -> bool:
         pass
 
