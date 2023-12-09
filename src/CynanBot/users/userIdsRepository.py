@@ -1,8 +1,11 @@
+from __future__ import annotations
+
 import traceback
 from typing import Optional
 
+from lru import LRU
+
 import CynanBot.misc.utils as utils
-from CynanBot.misc.lruCache import LruCache
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
@@ -22,7 +25,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        twitchApiService: TwitchApiServiceInterface
+        twitchApiService: TwitchApiServiceInterface,
+        cacheSize: int = 100
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -36,9 +40,10 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
         self.__isDatabaseReady: bool = False
+        self.__cache: LRU[str, Optional[str]] = LRU(cacheSize)
 
     async def clearCaches(self):
-        # TODO
+        self.__cache.clear()
         self.__timber.log('UserIdsRepository', 'Caches cleared')
 
     async def fetchAnonymousUserId(self, twitchAccessToken: str) -> str:
@@ -139,6 +144,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
+        cachedUserName = self.__cache[userId]
+
+        if utils.isValidStr(cachedUserName):
+            return cachedUserName
+
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
@@ -156,6 +166,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         await connection.close()
 
         if utils.isValidStr(userName):
+            self.__cache[userId] = userName
             return userName
         elif not utils.isValidStr(twitchAccessToken):
             self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch username for \"{userId}\" as no twitchAccessToken was specified')
@@ -178,6 +189,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         userName = userDetails.getLogin()
+        self.__cache[userId] = userName
         await self.setUser(userId = userId, userName = userName)
 
         return userName
