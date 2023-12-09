@@ -39,7 +39,7 @@ class SuperGameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
         return self.__answer
 
     def getTriviaEventType(self) -> TriviaEventType:
-        return TriviaEventType.SUPER_GAME_OUT_OF_TIME
+        return TriviaEventType.SUPER_GAME_NOT_READY
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
