@@ -95,7 +95,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         userDetails: Optional[TwitchUserDetails] = None
 
         try:
-            userDetails = await self.__twitchApiService.fetchUserDetails(
+            userDetails = await self.__twitchApiService.fetchUserDetailsWithUserName(
                 twitchAccessToken = twitchAccessToken,
                 userName = userName
             )
@@ -165,9 +165,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         userDetails: Optional[TwitchUserDetails] = None
 
         try:
-            userDetails = await self.__twitchApiService.fetchUserDetails(
+            userDetails = await self.__twitchApiService.fetchUserDetailsWithUserId(
                 twitchAccessToken = twitchAccessToken,
-                userName = userName
+                userId = userId
             )
         except GenericNetworkException as e:
             self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch username for user ID \"{userId}\": {e}', e, traceback.format_exc())

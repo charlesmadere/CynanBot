@@ -83,7 +83,15 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def fetchUserDetails(
+    async def fetchUserDetailsWithUserId(
+        self,
+        twitchAccessToken: str,
+        userId: str
+    ) -> Optional[TwitchUserDetails]:
+        pass
+
+    @abstractmethod
+    async def fetchUserDetailsWithUserName(
         self,
         twitchAccessToken: str,
         userName: str

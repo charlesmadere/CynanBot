@@ -3883,7 +3883,7 @@ class TwitchInfoCommand(AbsCommand):
 
         userInfo: Optional[TwitchUserDetails] = None
         try:
-            userInfo = await self.__twitchApiService.fetchUserDetails(
+            userInfo = await self.__twitchApiService.fetchUserDetailsWithUserName(
                 twitchAccessToken = twitchAccessToken,
                 userName = userName
             )

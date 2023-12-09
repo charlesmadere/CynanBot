@@ -676,7 +676,73 @@ class TwitchApiService(TwitchApiServiceInterface):
             refreshToken = refreshToken
         )
 
-    async def fetchUserDetails(
+    async def fetchUserDetailsWithUserId(
+        self,
+        twitchAccessToken: str,
+        userId: str
+    ) -> Optional[TwitchUserDetails]:
+        if not utils.isValidStr(twitchAccessToken):
+            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(userId):
+            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+
+        self.__timber.log('TwitchApiService', f'Fetching user details... ({userId=})')
+
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.get(
+                url = f'https://api.twitch.tv/helix/users?id={userId}',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when fetching user details ({userId=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({userId=}): {e}')
+
+        if response.getStatusCode() != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
+
+        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        await response.close()
+
+        if not utils.hasItems(jsonResponse):
+            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
+        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+            self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
+            raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
+
+        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+
+        if not utils.hasItems(data):
+            self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details ({userId=}): {jsonResponse}')
+            return None
+
+        entry: Optional[Dict[str, Any]] = None
+
+        for dataEntry in data:
+            if utils.getStrFromDict(dataEntry, 'id').lower() == userId:
+                entry = dataEntry
+                break
+
+        if entry is None:
+            self.__timber.log('TwitchApiService', f'Couldn\'t find entry with matching \"id\" field in JSON response when fetching user details ({userId=}): {jsonResponse}')
+            return None
+
+        return TwitchUserDetails(
+            displayName = utils.getStrFromDict(entry, 'display_name'),
+            login = utils.getStrFromDict(entry, 'login'),
+            userId = utils.getStrFromDict(entry, 'id'),
+            broadcasterType = TwitchBroadcasterType.fromStr(utils.getStrFromDict(entry, 'broadcaster_type')),
+            userType = TwitchUserType.fromStr(utils.getStrFromDict(entry, 'type'))
+        )
+
+    async def fetchUserDetailsWithUserName(
         self,
         twitchAccessToken: str,
         userName: str
@@ -687,7 +753,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         userName = userName.lower()
-        self.__timber.log('TwitchApiService', f'Fetching user details... (userName=\"{userName}\")')
+        self.__timber.log('TwitchApiService', f'Fetching user details... ({userName=})')
 
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
