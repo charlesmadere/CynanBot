@@ -338,9 +338,9 @@ def getStrFromDict(
 
     return value
 
-T_Container = TypeVar("T_Container", bound=Sized)
+T_Sized = TypeVar("T_Sized", bound=Sized)
 
-def hasItems(l: Optional[T_Container]) -> TypeGuard[T_Container]:
+def hasItems(l: Optional[T_Sized]) -> TypeGuard[T_Sized]:
     return l is not None and len(l) >= 1
 
 def isValidBool(b: Optional[bool]) -> TypeGuard[bool]:
