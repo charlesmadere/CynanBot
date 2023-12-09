@@ -11,6 +11,7 @@ from CynanBot.network.networkResponse import NetworkResponse
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchErrorException,
                                         TwitchJsonException,
@@ -41,7 +42,6 @@ from CynanBot.twitch.twitchStreamType import TwitchStreamType
 from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.twitchUnbanRequest import TwitchUnbanRequest
-from CynanBot.twitch.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 from CynanBot.twitch.twitchUserType import TwitchUserType

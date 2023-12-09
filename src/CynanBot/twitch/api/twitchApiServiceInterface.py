@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
 
+from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.twitchBannedUsersResponse import TwitchBannedUsersResponse
 from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
@@ -13,7 +14,6 @@ from CynanBot.twitch.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.twitchModUser import TwitchModUser
 from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.twitchUnbanRequest import TwitchUnbanRequest
-from CynanBot.twitch.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 
