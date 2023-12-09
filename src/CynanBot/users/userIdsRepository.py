@@ -144,10 +144,13 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        cachedUserName = self.__cache[userId]
+        userName: Optional[str] = None
 
-        if utils.isValidStr(cachedUserName):
-            return cachedUserName
+        if userId in self.__cache:
+            userName = self.__cache[userId]
+
+            if utils.isValidStr(userName):
+                return userName
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -159,7 +162,6 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             userId
         )
 
-        userName: Optional[str] = None
         if utils.hasItems(record):
             userName = record[0]
 
