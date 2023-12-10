@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from collections import defaultdict
 from typing import Dict, Optional
 
@@ -54,7 +55,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT datetime, twitchchannelid, userid FROM mostrecentchats
+                SELECT datetime, twitchchannelid, chatteruserid FROM mostrecentchats
                 WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
