@@ -12,6 +12,7 @@ from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatLogger.chatLogger import ChatLogger
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -333,6 +334,10 @@ timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
+)
+chatLogger: ChatLoggerInterface = ChatLogger(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
 )
 cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     backingDatabase = backingDatabase,
@@ -737,10 +742,13 @@ if generalSettingsSnapshot.isTtsEnabled():
 #########################################
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    chatLogger = chatLogger,
+    generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
     timber = timber,
     ttsManager = ttsManager,
     twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
 
@@ -802,10 +810,7 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatActionsManager = chatActionsManager,
-    chatLogger = ChatLogger(
-        backgroundTaskHelper = backgroundTaskHelper,
-        timber = timber
-    ),
+    chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionRemodHelper = cheerActionRemodHelper,

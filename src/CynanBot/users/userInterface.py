@@ -244,6 +244,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isSupStreamerEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isToxicTriviaEnabled(self) -> bool:
         pass
 

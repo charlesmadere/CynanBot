@@ -414,7 +414,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
-        self.__mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface] = mostRecentChatsRepository
         self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
@@ -602,11 +601,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__roachMessage: AbsMessage = RoachMessage(generalSettingsRepository, timber, twitchUtils)
         self.__schubertWalkMessage: AbsMessage = SchubertWalkMessage(generalSettingsRepository, timber, twitchUtils)
 
-        if chatLogger is None:
-            self.__chatLogMessage: AbsMessage = StubMessage()
-        else:
-            self.__chatLogMessage: AbsMessage = ChatLogMessage(chatLogger)
-
         ########################################################
         ## Initialization of point redemption handler objects ##
         ########################################################
@@ -667,20 +661,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         twitchMessage = self.__twitchConfiguration.getMessage(message)
 
         if utils.isValidStr(twitchMessage.getContent()):
-            generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-            if generalSettings.isPersistAllUsersEnabled():
-                await self.__userIdsRepository.setUser(
-                    userId = twitchMessage.getAuthorId(),
-                    userName = twitchMessage.getAuthorName()
-                )
-
             twitchUser = await self.__usersRepository.getUserAsync(twitchMessage.getTwitchChannelName())
-
-            await self.__chatLogMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            )
 
             if await self.__deerForceMessage.handleMessage(
                 twitchUser = twitchUser,
@@ -729,12 +710,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 message = twitchMessage
             ):
                 return
-
-            if self.__mostRecentChatsRepository is not None:
-                await self.__mostRecentChatsRepository.set(
-                    chatterUserId = twitchMessage.getAuthorId(),
-                    twitchChannelId = await twitchMessage.getTwitchChannelId()
-                )
 
         if self.__chatActionsManager is not None:
             await self.__chatActionsManager.handleMessage(twitchMessage)

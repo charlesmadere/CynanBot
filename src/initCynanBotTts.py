@@ -318,10 +318,13 @@ if generalSettingsSnapshot.isTtsEnabled():
 #########################################
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    chatLogger = None,
+    generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
     timber = timber,
     ttsManager = ttsManager,
     twitchUtils = twitchUtils,
+    userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
 )
 

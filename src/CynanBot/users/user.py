@@ -40,6 +40,7 @@ class User(UserInterface):
         isStarWarsQuotesEnabled: bool,
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
+        isSupStreamerEnabled: bool,
         isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
@@ -135,6 +136,8 @@ class User(UserInterface):
             raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
             raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
+        elif not utils.isValidBool(isSupStreamerEnabled):
+            raise ValueError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
         elif not utils.isValidBool(isToxicTriviaEnabled):
             raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -227,6 +230,7 @@ class User(UserInterface):
         self.__isStarWarsQuotesEnabled: bool = isStarWarsQuotesEnabled
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
+        self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
         self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
@@ -497,6 +501,9 @@ class User(UserInterface):
 
     def isSuperTriviaGameEnabled(self) -> bool:
         return self.__isSuperTriviaGameEnabled
+
+    def isSupStreamerEnabled(self) -> bool:
+        return self.__isSupStreamerEnabled
 
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled
