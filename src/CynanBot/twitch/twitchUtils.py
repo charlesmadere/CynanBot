@@ -21,10 +21,10 @@ class TwitchUtils():
         backgroundTaskHelper: BackgroundTaskHelper,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
+        queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
-        queueTimeoutSeconds: int = 3,
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -33,6 +33,10 @@ class TwitchUtils():
             raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(queueTimeoutSeconds):
+            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(sleepBeforeRetryTimeSeconds):
             raise ValueError(f'sleepBeforeRetryTimeSeconds argument is malformed: \"{sleepBeforeRetryTimeSeconds}\"')
         elif sleepBeforeRetryTimeSeconds < 0.25 or sleepBeforeRetryTimeSeconds > 3:
@@ -45,19 +49,15 @@ class TwitchUtils():
             raise ValueError(f'maxRetries argument is malformed: \"{maxRetries}\"')
         elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
-        elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
-            raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
+        self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries
-        self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__timeZone: timezone = timeZone
 
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
@@ -118,8 +118,8 @@ class TwitchUtils():
         elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        successfullySent: bool = False
-        numberOfRetries: int = 0
+        successfullySent = False
+        numberOfRetries = 0
         exceptions: Optional[List[Exception]] = None
 
         while not successfullySent and numberOfRetries < self.__maxRetries:
