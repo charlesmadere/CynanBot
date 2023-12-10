@@ -88,6 +88,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getSupStreamerMessage(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
     def getTimeZones(self) -> Optional[List[tzinfo]]:
         pass
 

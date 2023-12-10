@@ -72,6 +72,7 @@ class User(UserInterface):
         pkmnEvolveRewardId: Optional[str],
         pkmnShinyRewardId: Optional[str],
         speedrunProfile: Optional[str],
+        supStreamerMessage: Optional[str],
         triviaGameRewardId: Optional[str],
         twitter: str,
         cutenessBoosterPacks: Optional[List[CutenessBoosterPack]],
@@ -196,6 +197,8 @@ class User(UserInterface):
             raise ValueError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
             raise ValueError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
+        elif supStreamerMessage is not None and not isinstance(supStreamerMessage, str):
+            raise ValueError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise ValueError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitter is not None and not isinstance(twitter, str):
@@ -262,6 +265,7 @@ class User(UserInterface):
         self.__pkmnEvolveRewardId: Optional[str] = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: Optional[str] = pkmnShinyRewardId
         self.__speedrunProfile: Optional[str] = speedrunProfile
+        self.__supStreamerMessage: Optional[str] = supStreamerMessage
         self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
         self.__twitter: Optional[str] = twitter
         self.__cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = cutenessBoosterPacks
@@ -333,6 +337,9 @@ class User(UserInterface):
 
     def getSuperTriviaSubscribeTriggerAmount(self) -> Optional[float]:
         return self.__superTriviaSubscribeTriggerAmount
+
+    def getSupStreamerMessage(self) -> Optional[str]:
+        return self.__supStreamerMessage
 
     def getTimeZones(self) -> Optional[List[tzinfo]]:
         return self.__timeZones

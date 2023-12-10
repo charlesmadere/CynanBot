@@ -1,5 +1,6 @@
 from typing import Optional
 
+import CynanBot.misc.utils as utils
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -8,6 +9,7 @@ from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtils import TwitchUtils
@@ -109,7 +111,21 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        if not user.isSupStreamerEnabled() and not user.isTtsEnabled():
+        if self.__ttsManager is None:
+            return
+        elif not user.isSupStreamerEnabled() and not user.isTtsEnabled():
             return
 
-        pass
+        supStreamerMessage = user.getSupStreamerMessage()
+
+        if not utils.isValidStr(supStreamerMessage) or message.getContent() != supStreamerMessage:
+            return
+
+        self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = f'{message.getAuthorName()} sup',
+            twitchChannel = user.getHandle(),
+            userId = message.getAuthorId(),
+            userName = message.getAuthorName(),
+            donation = None,
+            raidInfo = None
+        ))

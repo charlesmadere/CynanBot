@@ -136,6 +136,7 @@ class UsersRepository(UsersRepositoryInterface):
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
         minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount', 100)
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
+        supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
         timeZones: Optional[List[tzinfo]] = None
@@ -257,6 +258,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             speedrunProfile = speedrunProfile,
+            supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             twitter = twitter,
             cutenessBoosterPacks = cutenessBoosterPacks,
