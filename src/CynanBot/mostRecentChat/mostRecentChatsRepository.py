@@ -56,7 +56,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT datetime, twitchchannelid, chatteruserid FROM mostrecentchats
-                WHERE twitchchannelid = $1 AND userid = $2
+                WHERE twitchchannelid = $1 AND chatteruserid = $2
                 LIMIT 1
             ''',
             chatterUserId, twitchChannelId
