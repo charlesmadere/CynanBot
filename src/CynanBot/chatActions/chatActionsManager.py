@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import CynanBot.misc.utils as utils
@@ -30,7 +31,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
         ttsManager: Optional[TtsManagerInterface],
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface
+        usersRepository: UsersRepositoryInterface,
+        supStreamerCooldown: timedelta = timedelta(hours = 16),
+        timeZone: timezone = timezone.utc
     ):
         if chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
@@ -48,6 +51,10 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(supStreamerCooldown, timedelta):
+            raise ValueError(f'supStreamerCooldown argument is malformed: \"{supStreamerCooldown}\"')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -57,6 +64,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__supStreamerCooldown: timedelta = supStreamerCooldown
+        self.__timeZone: timezone = timeZone
 
     async def handleMessage(self, message: TwitchMessage):
         if not isinstance(message, TwitchMessage):
@@ -114,6 +123,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         if self.__ttsManager is None:
             return
         elif not user.isSupStreamerEnabled() and not user.isTtsEnabled():
+            return
+
+        now = datetime.now(self.__timeZone)
+
+        if mostRecentChat is not None and (mostRecentChat.getMostRecentChat() + self.__supStreamerCooldown) > now:
             return
 
         supStreamerMessage = user.getSupStreamerMessage()
