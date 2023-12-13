@@ -745,6 +745,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    supStreamerChatAction = None,
     timber = timber,
     ttsManager = ttsManager,
     twitchUtils = twitchUtils,

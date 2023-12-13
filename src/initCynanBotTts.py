@@ -8,9 +8,11 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -317,10 +319,19 @@ if generalSettingsSnapshot.isTtsEnabled():
 ## Chat Actions initialization section ##
 #########################################
 
+supStreamerChatAction: Optional[AbsChatAction] = None
+if ttsManager is not None:
+    supStreamerChatAction = SupStreamerChatAction(
+        mostRecentChatsRepository = mostRecentChatsRepository,
+        timber = timber,
+        ttsManager = ttsManager
+    )
+
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     chatLogger = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    supStreamerChatAction = supStreamerChatAction,
     timber = timber,
     ttsManager = ttsManager,
     twitchUtils = twitchUtils,

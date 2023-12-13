@@ -2,8 +2,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
@@ -27,6 +29,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         chatLogger: Optional[ChatLoggerInterface], 
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
+        supStreamerChatAction: Optional[SupStreamerChatAction],
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
         twitchUtils: TwitchUtils,
@@ -41,6 +44,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
+        elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
+            raise ValueError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
@@ -59,6 +64,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface] =  mostRecentChatsRepository
+        self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
         self.__timber: TimberInterface = timber
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchUtils: TwitchUtils = twitchUtils
