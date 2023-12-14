@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
+import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.users.userInterface import UserInterface
@@ -41,6 +43,34 @@ class SupStreamerChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ):
-        # TODO
+        if not user.isSupStreamerEnabled() and not user.isTtsEnabled():
+            return
 
-        pass
+        mostRecentChat = await self.__mostRecentChatsRepository.get(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
+
+        now = datetime.now(self.__timeZone)
+
+        if mostRecentChat is not None and (mostRecentChat.getMostRecentChat() + self.__cooldown) > now:
+            return
+
+        chatMessage = message.getContent()
+        supStreamerMessage = user.getSupStreamerMessage()
+
+        if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
+            return
+        elif chatMessage.lower() != supStreamerMessage.lower():
+            return
+
+        self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+
+        self.__ttsManager.submitTtsEvent(TtsEvent(
+            message = f'{message.getAuthorName()} sup',
+            twitchChannel = user.getHandle(),
+            userId = message.getAuthorId(),
+            userName = message.getAuthorName(),
+            donation = None,
+            raidInfo = None
+        ))

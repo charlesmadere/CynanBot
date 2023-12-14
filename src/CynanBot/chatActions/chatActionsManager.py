@@ -66,12 +66,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface] =  mostRecentChatsRepository
         self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__supStreamerCooldown: timedelta = supStreamerCooldown
-        self.__timeZone: timezone = timeZone
 
     async def handleMessage(self, message: TwitchMessage):
         if not isinstance(message, TwitchMessage):
@@ -86,66 +83,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
             )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
-        mostRecentChat = await self.__handleMostRecentChat(message)
 
-        await self.__handleSupMessage(
-            mostRecentChat = mostRecentChat,
-            message = message,
-            user = user,
-        )
-
-    async def __handleMostRecentChat(self, message: TwitchMessage):
-        if not isinstance(message, TwitchMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-
-        if self.__mostRecentChatsRepository is None:
-            return None
-
-        mostRecentChat = await self.__mostRecentChatsRepository.get(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
-        )
-
-        await self.__mostRecentChatsRepository.set(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
-        )
-
-        return mostRecentChat
-
-    async def __handleSupMessage(
-        self,
-        mostRecentChat: Optional[MostRecentChat],
-        message: TwitchMessage,
-        user: UserInterface
-    ):
-        if mostRecentChat is not None and not isinstance(mostRecentChat, MostRecentChat):
-            raise ValueError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
-        elif not isinstance(message, TwitchMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        if self.__ttsManager is None:
-            return
-        elif not user.isSupStreamerEnabled() and not user.isTtsEnabled():
-            return
-
-        now = datetime.now(self.__timeZone)
-
-        if mostRecentChat is not None and (mostRecentChat.getMostRecentChat() + self.__supStreamerCooldown) > now:
-            return
-
-        supStreamerMessage = user.getSupStreamerMessage()
-
-        if not utils.isValidStr(supStreamerMessage) or message.getContent() != supStreamerMessage:
-            return
-
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = f'{message.getAuthorName()} sup',
-            twitchChannel = user.getHandle(),
-            userId = message.getAuthorId(),
-            userName = message.getAuthorName(),
-            donation = None,
-            raidInfo = None
-        ))
+        if self.__supStreamerChatAction is not None:
+            await self.__supStreamerChatAction.handleChat(
+                message = message,
+                user = user
+            )
