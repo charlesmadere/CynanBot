@@ -154,14 +154,16 @@ class UsersRepository(UsersRepositoryInterface):
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        superTriviaCheerTriggerAmount: Optional[int] = None
+        superTriviaCheerTriggerAmount: Optional[float] = None
+        superTriviaSubscribeTriggerAmount: Optional[float] = None
+        superTriviaCheerTriggerMaximum: Optional[int] = None
         superTriviaGamePoints: Optional[int] = None
         superTriviaGameRewardId: Optional[str] = None
         superTriviaGameShinyMultiplier: Optional[int] = None
         superTriviaGameToxicMultiplier: Optional[int] = None
         superTriviaGameToxicPunishmentMultiplier: Optional[int] = None
         superTriviaPerUserAttempts: Optional[int] = None
-        superTriviaSubscribeTriggerAmount: Optional[float] = None
+        superTriviaSubscribeTriggerMaximum: Optional[int] = None
         triviaGamePoints: Optional[int] = None
         triviaGameShinyMultiplier: Optional[int] = None
         triviaGameRewardId: Optional[str] = None
@@ -171,14 +173,16 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            superTriviaCheerTriggerAmount = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerAmount', 250)
+            superTriviaCheerTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaCheerTriggerAmount', 250)
+            superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount', 1)
+            superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 5)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
-            superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount', 1)
+            superTriviaSubscribeTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaSubscribeTriggerMaximum', 2)
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
@@ -236,15 +240,17 @@ class UsersRepository(UsersRepositoryInterface):
             isWeatherEnabled = isWeatherEnabled,
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
-            minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
+            superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
+            minimumTtsCheerAmount = minimumTtsCheerAmount,
+            superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,
             superTriviaGamePoints = superTriviaGamePoints,
             superTriviaGameRewardId = superTriviaGameRewardId,
             superTriviaGameShinyMultiplier = superTriviaGameShinyMultiplier,
             superTriviaGameToxicMultiplier = superTriviaGameToxicMultiplier,
             superTriviaGameToxicPunishmentMultiplier = superTriviaGameToxicPunishmentMultiplier,
             superTriviaPerUserAttempts = superTriviaPerUserAttempts,
-            superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
+            superTriviaSubscribeTriggerMaximum = superTriviaSubscribeTriggerMaximum,
             triviaGamePoints = triviaGamePoints,
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
@@ -290,8 +296,10 @@ class UsersRepository(UsersRepositoryInterface):
         elif jsonContents is None:
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        if handle.lower() in self.__userCache:
-            return self.__userCache[handle.lower()]
+        user = self.__userCache.get(handle.lower(), None)
+
+        if user is not None:
+            return user
 
         for key, userJson in jsonContents.items():
             if handle.lower() == key.lower():

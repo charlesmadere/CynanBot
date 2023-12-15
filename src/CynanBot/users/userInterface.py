@@ -60,6 +60,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getSuperTriviaCheerTriggerMaximum(self) -> Optional[int]:
+        pass
+
+    @abstractmethod
     def getSuperTriviaGamePoints(self) -> Optional[int]:
         pass
 
@@ -85,6 +89,10 @@ class UserInterface(ABC):
 
     @abstractmethod
     def getSuperTriviaSubscribeTriggerAmount(self) -> Optional[float]:
+        pass
+
+    @abstractmethod
+    def getSuperTriviaSubscribeTriggerMaximum(self) -> Optional[float]:
         pass
 
     @abstractmethod

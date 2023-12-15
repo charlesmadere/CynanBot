@@ -50,15 +50,17 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        superTriviaCheerTriggerAmount: Optional[float],
         superTriviaSubscribeTriggerAmount: Optional[float],
         minimumTtsCheerAmount: Optional[int],
-        superTriviaCheerTriggerAmount: Optional[int],
+        superTriviaCheerTriggerMaximum: Optional[int],
         superTriviaGamePoints: Optional[int],
         superTriviaGameRewardId: Optional[str],
         superTriviaGameShinyMultiplier: Optional[int],
         superTriviaGameToxicMultiplier: Optional[int],
         superTriviaGameToxicPunishmentMultiplier: Optional[int],
         superTriviaPerUserAttempts: Optional[int],
+        superTriviaSubscribeTriggerMaximum: Optional[int],
         triviaGamePoints: Optional[int],
         triviaGameShinyMultiplier: Optional[int],
         waitForSuperTriviaAnswerDelay: Optional[int],
@@ -157,14 +159,16 @@ class User(UserInterface):
             raise ValueError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif superTriviaCheerTriggerAmount is not None and not utils.isValidNum(superTriviaCheerTriggerAmount):
+            raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
             raise ValueError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
             raise ValueError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
             raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
-        elif superTriviaCheerTriggerAmount is not None and not utils.isValidInt(superTriviaCheerTriggerAmount):
-            raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
+        elif superTriviaCheerTriggerMaximum is not None and not utils.isValidInt(superTriviaCheerTriggerMaximum):
+            raise ValueError(f'superTriviaCheerTriggerMaximum argument is malformed: \"{superTriviaCheerTriggerMaximum}\"')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
             raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
@@ -173,6 +177,8 @@ class User(UserInterface):
             raise ValueError(f'superTriviaGameToxicPunishmentMultiplier argument is malformed: \"{superTriviaGameToxicPunishmentMultiplier}\"')
         elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
             raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
+        elif superTriviaSubscribeTriggerMaximum is not None and not utils.isValidInt(superTriviaSubscribeTriggerMaximum):
+            raise ValueError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
             raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
@@ -243,15 +249,17 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
+        self.__superTriviaCheerTriggerAmount: Optional[float] = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: Optional[float] = superTriviaSubscribeTriggerAmount
         self.__minimumTtsCheerAmount: Optional[int] = minimumTtsCheerAmount
-        self.__superTriviaCheerTriggerAmount: Optional[int] = superTriviaCheerTriggerAmount
+        self.__superTriviaCheerTriggerMaximum: Optional[int] = superTriviaCheerTriggerMaximum
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
         self.__superTriviaGameRewardId: Optional[str] = superTriviaGameRewardId
         self.__superTriviaGameShinyMultiplier: Optional[int] = superTriviaGameShinyMultiplier
         self.__superTriviaGameToxicMultiplier: Optional[int] = superTriviaGameToxicMultiplier
         self.__superTriviaGameToxicPunishmentMultiplier: Optional[int] = superTriviaGameToxicPunishmentMultiplier
         self.__superTriviaPerUserAttempts: Optional[int] = superTriviaPerUserAttempts
+        self.__superTriviaSubscribeTriggerMaximum: Optional[int] = superTriviaSubscribeTriggerMaximum
         self.__triviaGamePoints: Optional[int] = triviaGamePoints
         self.__triviaGameShinyMultiplier: Optional[int] = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: Optional[int] = waitForTriviaAnswerDelay
@@ -314,8 +322,11 @@ class User(UserInterface):
     def getSpeedrunProfile(self) -> Optional[str]:
         return self.__speedrunProfile
 
-    def getSuperTriviaCheerTriggerAmount(self) -> Optional[int]:
+    def getSuperTriviaCheerTriggerAmount(self) -> Optional[float]:
         return self.__superTriviaCheerTriggerAmount
+
+    def getSuperTriviaCheerTriggerMaximum(self) -> Optional[int]:
+        return self.__superTriviaCheerTriggerMaximum
 
     def getSuperTriviaGamePoints(self) -> Optional[int]:
         return self.__superTriviaGamePoints
@@ -337,6 +348,9 @@ class User(UserInterface):
 
     def getSuperTriviaSubscribeTriggerAmount(self) -> Optional[float]:
         return self.__superTriviaSubscribeTriggerAmount
+
+    def getSuperTriviaSubscribeTriggerMaximum(self) -> Optional[int]:
+        return self.__superTriviaSubscribeTriggerMaximum
 
     def getSupStreamerMessage(self) -> Optional[str]:
         return self.__supStreamerMessage
@@ -408,7 +422,8 @@ class User(UserInterface):
         return utils.isValidInt(self.__superTriviaPerUserAttempts)
 
     def hasSuperTriviaSubscribeTriggerAmount(self) -> bool:
-        return utils.isValidNum(self.__superTriviaSubscribeTriggerAmount) and self.__superTriviaCheerTriggerAmount > 0
+        superTriviaSubscribeTriggerAmount = self.__superTriviaSubscribeTriggerAmount
+        return utils.isValidNum(superTriviaSubscribeTriggerAmount) and superTriviaSubscribeTriggerAmount > 0
 
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
