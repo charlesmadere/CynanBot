@@ -154,13 +154,19 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             return
         elif not user.isSuperTriviaGameEnabled():
             return
-        elif not user.hasSuperTriviaCheerTriggerAmount() or bits < user.getSuperTriviaCheerTriggerAmount():
+
+        superTriviaCheerTriggerAmount = user.getSuperTriviaCheerTriggerAmount()
+        superTriviaCheerTriggerMaximum = user.getSuperTriviaCheerTriggerMaximum()
+
+        if not utils.isValidNum(superTriviaCheerTriggerAmount) or bits < superTriviaCheerTriggerAmount:
             return
 
-        numberOfGames = math.floor(bits / user.getSuperTriviaCheerTriggerAmount())
+        numberOfGames = math.floor(bits / superTriviaCheerTriggerAmount)
 
         if numberOfGames < 1:
             return
+        elif utils.isValidInt(superTriviaCheerTriggerMaximum) and numberOfGames > superTriviaCheerTriggerMaximum:
+            numberOfGames = superTriviaCheerTriggerMaximum
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
