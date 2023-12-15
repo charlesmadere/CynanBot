@@ -1162,7 +1162,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__confirmCommand.handleCommand(context)
 
-    @commands.command(name = 'cuteness')
+    @commands.command(name = 'cuteness', aliases = [ 'CUTENESS' ])
     async def command_cuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__cutenessCommand.handleCommand(context)
@@ -1337,7 +1337,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__triviaScoreCommand.handleCommand(context)
 
-    @commands.command(name = 'tts')
+    @commands.command(name = 'tts', aliases = [ 'TTS' ])
     async def command_tts(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__ttsCommand.handleCommand(context)
