@@ -203,7 +203,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         actualUserId = userId
         actualUserName = userName
 
-        if not utils.isValidStr(actualUserId) or not utils.isValidStr(userName):
+        if not utils.isValidStr(actualUserId) or not utils.isValidStr(actualUserName):
             if isAnonymous:
                 twitchAccessToken = await self.__twitchTokensUtils.requireAccessTokenOrFallback(
                     twitchChannel = user.getHandle()
