@@ -204,6 +204,14 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isCatJamMessageEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
+    def isChatLoggingEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isCutenessEnabled(self) -> bool:
         pass
 

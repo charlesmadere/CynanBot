@@ -2,24 +2,22 @@ from datetime import timedelta, timezone
 from typing import Optional
 
 from CynanBot.chatActions.absChatAction import AbsChatAction
+from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
-from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
-from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -27,7 +25,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
     def __init__(
         self,
-        chatLogger: Optional[ChatLoggerInterface], 
+        catJamChatAction: Optional[CatJamChatAction],
+        chatLoggerChatAction: Optional[ChatLoggerChatAction],
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         persistAllUsersChatAction: Optional[PersistAllUsersChatAction],
@@ -40,9 +39,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         supStreamerCooldown: timedelta = timedelta(hours = 16),
         timeZone: timezone = timezone.utc
     ):
-        if chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
-            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+        if catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
+            raise ValueError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
+        elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
+            raise ValueError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
@@ -65,7 +66,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
+        self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
+        self.__chatLoggerChatAction: Optional[AbsChatAction] = chatLoggerChatAction
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
         self.__persistAllUsersChatAction: Optional[AbsChatAction] = persistAllUsersChatAction
         self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
@@ -88,6 +90,20 @@ class ChatActionsManager(ChatActionsManagerInterface):
         )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
+
+        if self.__catJamChatAction is not None:
+            await self.__catJamChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
+
+        if self.__chatLoggerChatAction is not None:
+            await self.__chatLoggerChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
 
         if self.__persistAllUsersChatAction is not None:
             await self.__persistAllUsersChatAction.handleChat(

@@ -329,7 +329,8 @@ if ttsManager is not None:
     )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
-    chatLogger = None,
+    catJamChatAction = None,
+    chatLoggerChatAction = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(

@@ -19,51 +19,6 @@ class AbsMessage(ABC):
         pass
 
 
-class CatJamMessage(AbsMessage):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtils,
-        catJamMessage: str = 'catJAM',
-        cooldown: timedelta = timedelta(minutes = 20)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not utils.isValidStr(catJamMessage):
-            raise ValueError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__catJamMessage: str = catJamMessage
-        self.__lastCatJamMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isCatJamMessageEnabled():
-            return False
-        elif not twitchUser.isCatJamMessageEnabled():
-            return False
-
-        splits = utils.getCleanedSplits(message.getContent())
-
-        if self.__catJamMessage in splits and self.__lastCatJamMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.getChannel(), self.__catJamMessage)
-            self.__timber.log('CatJamMessage', f'Handled catJAM message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
-            return True
-
-        return False
-
-
 class ChatBandMessage(AbsMessage):
 
     def __init__(
@@ -100,31 +55,6 @@ class ChatBandMessage(AbsMessage):
             return True
 
         return False
-
-
-class ChatLogMessage(AbsMessage):
-
-    def __init__(
-        self,
-        chatLogger: ChatLoggerInterface
-    ):
-        if not isinstance(chatLogger, ChatLoggerInterface):
-            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-
-        self.__chatLogger: ChatLoggerInterface = chatLogger
-
-    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
-        if not twitchUser.isChatLoggingEnabled():
-            return False
-
-        self.__chatLogger.logMessage(
-            twitchChannel = twitchUser.getHandle(),
-            userId = message.getAuthorId(),
-            userName = message.getAuthorName(),
-            msg = utils.cleanStr(message.getContent())
-        )
-
-        return True
 
 
 class DeerForceMessage(AbsMessage):

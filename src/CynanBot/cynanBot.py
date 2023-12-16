@@ -592,7 +592,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         ## Initialization of message handler objects ##
         ###############################################
 
-        self.__catJamMessage: AbsMessage = CatJamMessage(generalSettingsRepository, timber, twitchUtils)
         self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, timber, twitchUtils)
         self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository, timber, twitchUtils)
         self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber, twitchUtils)
@@ -664,12 +663,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             twitchUser = await self.__usersRepository.getUserAsync(twitchMessage.getTwitchChannelName())
 
             if await self.__deerForceMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__catJamMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = twitchMessage
             ):
