@@ -117,6 +117,14 @@ from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
 from CynanBot.trivia.bannedTriviaIdsRepository import BannedTriviaIdsRepository
 from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameControllersRepository import \
+    TriviaGameControllersRepository
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepository import \
+    TriviaGameGlobalControllersRepository
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.shinyTriviaOccurencesRepository import \
@@ -142,10 +150,6 @@ from CynanBot.trivia.triviaEmoteGeneratorInterface import \
 from CynanBot.trivia.triviaGameBuilder import TriviaGameBuilder
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBot.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
-from CynanBot.trivia.triviaGameGlobalControllersRepository import \
-    TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
@@ -502,13 +506,13 @@ bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInte
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-triviaGameControllersRepository = TriviaGameControllersRepository(
+triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = TriviaGameControllersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-triviaGameGlobalControllersRepository = TriviaGameGlobalControllersRepository(
+triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = TriviaGameGlobalControllersRepository(
     administratorProvider = administratorProvider,
     backingDatabase = backingDatabase,
     timber = timber,

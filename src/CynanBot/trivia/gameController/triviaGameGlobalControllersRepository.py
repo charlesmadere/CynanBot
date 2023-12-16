@@ -9,17 +9,19 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
+from CynanBot.trivia.gameController.triviaGameGlobalController import \
+    TriviaGameGlobalController
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
-from CynanBot.trivia.triviaGameGlobalController import \
-    TriviaGameGlobalController
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
 
-class TriviaGameGlobalControllersRepository():
+class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositoryInterface):
 
     def __init__(
         self,

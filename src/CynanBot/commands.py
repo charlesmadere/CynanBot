@@ -72,6 +72,10 @@ from CynanBot.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
 from CynanBot.trivia.clearSuperTriviaQueueTriviaAction import \
     ClearSuperTriviaQueueTriviaAction
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBot.trivia.removeTriviaGameControllerResult import \
@@ -90,10 +94,6 @@ from CynanBot.trivia.triviaExceptions import (
     TooManyAdditionalTriviaAnswersException)
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBot.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
-from CynanBot.trivia.triviaGameGlobalControllersRepository import \
-    TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
@@ -320,7 +320,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
@@ -328,7 +328,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -337,7 +337,7 @@ class AddGlobalTriviaControllerCommand(AbsCommand):
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -501,7 +501,7 @@ class AddTriviaControllerCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepository,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
@@ -511,7 +511,7 @@ class AddTriviaControllerCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -521,7 +521,7 @@ class AddTriviaControllerCommand(AbsCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -1804,7 +1804,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
@@ -1813,7 +1813,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
             raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1822,7 +1822,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -1945,7 +1945,7 @@ class GetTriviaControllersCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepository,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
@@ -1956,7 +1956,7 @@ class GetTriviaControllersCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1966,7 +1966,7 @@ class GetTriviaControllersCommand(AbsCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -2879,7 +2879,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
@@ -2887,7 +2887,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2896,7 +2896,7 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -2943,7 +2943,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepository,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface
     ):
@@ -2953,7 +2953,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2963,7 +2963,7 @@ class RemoveTriviaControllerCommand(AbsCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
+        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 

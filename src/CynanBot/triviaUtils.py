@@ -13,18 +13,19 @@ from CynanBot.trivia.bannedTriviaGameController import \
     BannedTriviaGameController
 from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameController import \
+    TriviaGameController
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameGlobalController import \
+    TriviaGameGlobalController
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
-from CynanBot.trivia.triviaGameController import TriviaGameController
-from CynanBot.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
-from CynanBot.trivia.triviaGameGlobalController import \
-    TriviaGameGlobalController
-from CynanBot.trivia.triviaGameGlobalControllersRepository import \
-    TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -43,8 +44,8 @@ class TriviaUtils():
         administratorProvider: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
         timber: TimberInterface,
-        triviaGameControllersRepository: TriviaGameControllersRepository,
-        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -55,9 +56,9 @@ class TriviaUtils():
             raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
@@ -69,8 +70,8 @@ class TriviaUtils():
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
         self.__timber: TimberInterface = timber
-        self.__triviaGameControllersRepository: TriviaGameControllersRepository = triviaGameControllersRepository
-        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository
+        self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
+        self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository

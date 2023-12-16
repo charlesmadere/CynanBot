@@ -122,6 +122,10 @@ from CynanBot.trivia.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
 from CynanBot.trivia.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.incorrectAnswerTriviaEvent import \
     IncorrectAnswerTriviaEvent
 from CynanBot.trivia.invalidAnswerInputTriviaEvent import \
@@ -141,10 +145,6 @@ from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaEventType import TriviaEventType
 from CynanBot.trivia.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBot.trivia.triviaGameControllersRepository import \
-    TriviaGameControllersRepository
-from CynanBot.trivia.triviaGameGlobalControllersRepository import \
-    TriviaGameGlobalControllersRepository
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
@@ -254,8 +254,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaBanHelper: Optional[TriviaBanHelperInterface],
         triviaEmoteGenerator: Optional[TriviaEmoteGeneratorInterface],
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
-        triviaGameControllersRepository: Optional[TriviaGameControllersRepository],
-        triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepository],
+        triviaGameControllersRepository: Optional[TriviaGameControllersRepositoryInterface],
+        triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepositoryInterface],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         triviaHistoryRepository: Optional[TriviaHistoryRepositoryInterface],
         triviaIdGenerator: Optional[TriviaIdGeneratorInterface],
@@ -361,9 +361,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepository):
+        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
             raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepository):
+        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
