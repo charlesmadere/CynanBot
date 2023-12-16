@@ -75,10 +75,9 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBot.messages import (AbsMessage, CatJamMessage, ChatLogMessage,
-                               DeerForceMessage, EyesMessage, ImytSlurpMessage,
-                               JamCatMessage, RatJamMessage, RoachMessage,
-                               SchubertWalkMessage, StubMessage)
+from CynanBot.messages import (AbsMessage, DeerForceMessage, EyesMessage,
+                               ImytSlurpMessage, JamCatMessage, RatJamMessage,
+                               RoachMessage, SchubertWalkMessage)
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
