@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
-from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
-    MostRecentChatsRepositoryInterface
+from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
@@ -15,15 +15,12 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         timber: TimberInterface,
         ttsManager: TtsManagerInterface,
         cooldown: timedelta = timedelta(hours = 8),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
-            raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
@@ -32,7 +29,6 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface = mostRecentChatsRepository
         self.__timber: TimberInterface = timber
         self.__ttsManager: TtsManagerInterface = ttsManager
         self.__cooldown: timedelta = cooldown
@@ -40,16 +36,12 @@ class SupStreamerChatAction(AbsChatAction):
 
     async def handleChat(
         self,
+        mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
     ):
         if not user.isSupStreamerEnabled() and not user.isTtsEnabled():
             return
-
-        mostRecentChat = await self.__mostRecentChatsRepository.get(
-            chatterUserId = message.getAuthorId(),
-            twitchChannelId = await message.getTwitchChannelId()
-        )
 
         now = datetime.now(self.__timeZone)
 

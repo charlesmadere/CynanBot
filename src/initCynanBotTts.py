@@ -12,6 +12,8 @@ from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.persistAllUsersChatAction import \
+    PersistAllUsersChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -322,7 +324,6 @@ if generalSettingsSnapshot.isTtsEnabled():
 supStreamerChatAction: Optional[AbsChatAction] = None
 if ttsManager is not None:
     supStreamerChatAction = SupStreamerChatAction(
-        mostRecentChatsRepository = mostRecentChatsRepository,
         timber = timber,
         ttsManager = ttsManager
     )
@@ -331,6 +332,10 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     chatLogger = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    persistAllUsersChatAction = PersistAllUsersChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        userIdsRepository = userIdsRepository
+    ),
     supStreamerChatAction = supStreamerChatAction,
     timber = timber,
     ttsManager = ttsManager,

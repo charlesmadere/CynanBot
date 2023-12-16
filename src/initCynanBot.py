@@ -11,6 +11,8 @@ from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.persistAllUsersChatAction import \
+    PersistAllUsersChatAction
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
@@ -742,9 +744,13 @@ if generalSettingsSnapshot.isTtsEnabled():
 #########################################
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
-    chatLogger = chatLogger,
+    chatLogger = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
+    persistAllUsersChatAction = PersistAllUsersChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        userIdsRepository = userIdsRepository
+    ),
     supStreamerChatAction = None,
     timber = timber,
     ttsManager = ttsManager,

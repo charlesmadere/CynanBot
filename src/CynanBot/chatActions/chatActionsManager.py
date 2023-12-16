@@ -1,10 +1,11 @@
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta, timezone
 from typing import Optional
 
-import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatActions.persistAllUsersChatAction import \
+    PersistAllUsersChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
@@ -28,7 +29,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self,
         chatLogger: Optional[ChatLoggerInterface], 
         generalSettingsRepository: GeneralSettingsRepository,
-        mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
+        mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
+        persistAllUsersChatAction: Optional[PersistAllUsersChatAction],
         supStreamerChatAction: Optional[SupStreamerChatAction],
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
@@ -42,8 +44,10 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
+        elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
+        elif persistAllUsersChatAction is not None and not isinstance(persistAllUsersChatAction, PersistAllUsersChatAction):
+            raise ValueError(f'persistAllUsersChatAction argument is malformed: \"{persistAllUsersChatAction}\"')
         elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
             raise ValueError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
         elif not isinstance(timber, TimberInterface):
@@ -62,30 +66,39 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface] =  mostRecentChatsRepository
+        self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
+        self.__persistAllUsersChatAction: Optional[AbsChatAction] = persistAllUsersChatAction
         self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleMessage(self, message: TwitchMessage):
         if not isinstance(message, TwitchMessage):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
+        mostRecentChat = await self.__mostRecentChatsRepository.get(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
 
-        if generalSettings.isPersistAllUsersEnabled():
-            await self.__userIdsRepository.setUser(
-                userId = message.getAuthorId(),
-                userName = message.getAuthorName()
-            )
+        await self.__mostRecentChatsRepository.set(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
 
+        if self.__persistAllUsersChatAction is not None:
+            await self.__persistAllUsersChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
+
         if self.__supStreamerChatAction is not None:
             await self.__supStreamerChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
                 message = message,
                 user = user
             )
