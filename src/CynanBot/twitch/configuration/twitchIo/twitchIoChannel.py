@@ -2,7 +2,6 @@ from typing import Optional
 
 from twitchio.channel import Channel
 
-import CynanBot.misc.utils as utils
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchConfigurationType import \
     TwitchConfigurationType
@@ -24,18 +23,18 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__channel: Channel = channel
-        self.__channelId: Optional[str] = None
+        self.__twitchChannelId: Optional[str] = None
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     async def getTwitchChannelId(self) -> str:
-        channelId = self.__channelId
+        twitchChannelId = self.__twitchChannelId
 
-        if channelId is None:
-            channelId = await self.__userIdsRepository.requireUserId(
+        if twitchChannelId is None:
+            twitchChannelId = await self.__userIdsRepository.requireUserId(
                 userName = self.getTwitchChannelName()
             )
 
-        return channelId
+        return twitchChannelId
 
     def getTwitchChannelName(self) -> str:
         return self.__channel.name
