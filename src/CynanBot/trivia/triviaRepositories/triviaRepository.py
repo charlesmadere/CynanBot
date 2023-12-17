@@ -8,10 +8,10 @@ from typing import Dict, List, Optional, Set
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from CynanBot.trivia.questionAnswerTriviaQuestion import \
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaExceptions import (

@@ -13,11 +13,13 @@ from CynanBot.storage.linesReaderInterface import LinesReaderInterface
 from CynanBot.storage.linesStaticReader import LinesStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
-from CynanBot.trivia.questionAnswerTriviaQuestion import \
+from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
+    TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaContentScannerInterface import \
@@ -27,7 +29,6 @@ from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class TestTriviaContentScanner():

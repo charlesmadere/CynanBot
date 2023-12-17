@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException)

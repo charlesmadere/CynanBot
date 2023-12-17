@@ -5,9 +5,11 @@ import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
+    TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
                                               MalformedTriviaJsonException,
@@ -22,7 +24,6 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaType import TriviaType
-from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):

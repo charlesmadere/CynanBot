@@ -9,9 +9,11 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.multipleChoiceTriviaQuestion import \
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
+    TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (BadTriviaSessionTokenException,
                                               GenericTriviaNetworkException,
@@ -27,7 +29,6 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaType import TriviaType
-from CynanBot.trivia.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
 
 
 class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):

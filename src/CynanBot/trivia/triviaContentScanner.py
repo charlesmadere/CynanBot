@@ -9,7 +9,7 @@ from CynanBot.contentScanner.bannedWordType import BannedWordType
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface

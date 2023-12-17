@@ -8,7 +8,6 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.cuteness.cutenessResult import CutenessResult
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.bannedTriviaGameController import \
     BannedTriviaGameController
 from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
@@ -21,6 +20,7 @@ from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.toxicTriviaPunishmentResult import \

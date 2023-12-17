@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.triviaGameType import TriviaGameType
 

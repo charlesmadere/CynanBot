@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessResult import CutenessResult
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult

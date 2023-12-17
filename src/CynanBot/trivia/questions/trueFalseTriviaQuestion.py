@@ -1,19 +1,18 @@
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import NoTriviaCorrectAnswersException
 from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaType import TriviaType
 
 
-class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
+class TrueFalseTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
-        correctAnswers: List[str],
-        cleanedCorrectAnswers: List[str],
+        correctAnswers: List[bool],
         category: Optional[str],
         categoryId: Optional[str],
         question: str,
@@ -28,28 +27,27 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             triviaSource = triviaSource,
-            triviaType = TriviaType.QUESTION_ANSWER
+            triviaType = TriviaType.TRUE_FALSE
         )
 
-        if not utils.areValidStrs(correctAnswers):
+        if not utils.areValidBools(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.areValidStrs(cleanedCorrectAnswers):
-            raise NoTriviaCorrectAnswersException(f'cleanedCorrectAnswers argument is malformed: \"{cleanedCorrectAnswers}\"')
 
-        self.__correctAnswers: List[str] = correctAnswers
-        self.__cleanedCorrectAnswers: List[str] = cleanedCorrectAnswers
+        self.__correctAnswers: List[bool] = correctAnswers
 
     def getCorrectAnswers(self) -> List[str]:
-        return utils.copyList(self.__correctAnswers)
+        correctAnswers: List[str] = list()
 
-    def getCleanedCorrectAnswers(self) -> List[str]:
-        return utils.copyList(self.__cleanedCorrectAnswers)
+        for correctAnswer in self.__correctAnswers:
+            correctAnswers.append(str(correctAnswer).lower())
+
+        return correctAnswers
+
+    def getCorrectAnswerBools(self) -> List[bool]:
+        return self.__correctAnswers
 
     def getPrompt(self, delimiter: str = ' ') -> str:
-        if self.hasCategory():
-            return f'(category is \"{self.getCategory()}\") {self.getQuestion()}'
-        else:
-            return self.getQuestion()
+        return f'True or false! {self.getQuestion()}'
 
     def getResponses(self) -> List[str]:
-        return list()
+        return [ str(True).lower(), str(False).lower() ]

@@ -16,13 +16,13 @@ from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBot.trivia.bannedTriviaIdsRepository import BannedTriviaIdsRepository
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from CynanBot.trivia.questionAnswerTriviaQuestion import \
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper

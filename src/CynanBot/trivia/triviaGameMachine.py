@@ -13,7 +13,6 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaAction import AbsTriviaAction
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.absTriviaGameState import AbsTriviaGameState
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
 from CynanBot.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
@@ -44,6 +43,7 @@ from CynanBot.trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
 from CynanBot.trivia.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBot.trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
 from CynanBot.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.queuedTriviaGameStoreInterface import \
     QueuedTriviaGameStoreInterface
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper

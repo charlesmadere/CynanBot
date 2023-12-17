@@ -2,7 +2,7 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.triviaEventType import TriviaEventType
 from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
