@@ -1,10 +1,12 @@
 import CynanBot.misc.utils as utils
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
-from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
-from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
+from CynanBot.trivia.banned.banTriviaQuestionResult import \
+    BanTriviaQuestionResult
+from CynanBot.trivia.banned.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaSource import TriviaSource

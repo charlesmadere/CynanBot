@@ -110,13 +110,17 @@ from CynanBot.trivia.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
-from CynanBot.trivia.bannedTriviaGameControllersRepository import \
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepository import \
     BannedTriviaGameControllersRepository
-from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBot.trivia.bannedTriviaIdsRepository import BannedTriviaIdsRepository
-from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
+    BannedTriviaIdsRepository
+from CynanBot.trivia.banned.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
+from CynanBot.trivia.banned.triviaBanHelper import TriviaBanHelper
+from CynanBot.trivia.banned.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBot.trivia.gameController.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
@@ -139,8 +143,6 @@ from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
-from CynanBot.trivia.triviaBanHelper import TriviaBanHelper
-from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface

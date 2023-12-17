@@ -65,8 +65,10 @@ from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
-from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
+from CynanBot.trivia.banned.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBot.trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
 from CynanBot.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
@@ -84,7 +86,6 @@ from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaExceptions import (

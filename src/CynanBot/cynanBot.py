@@ -111,6 +111,8 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
+from CynanBot.trivia.banned.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.clearedSuperTriviaQueueTriviaEvent import \
@@ -138,7 +140,6 @@ from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener

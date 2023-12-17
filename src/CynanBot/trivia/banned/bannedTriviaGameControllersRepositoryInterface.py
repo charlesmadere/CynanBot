@@ -3,7 +3,7 @@ from typing import List
 
 from CynanBot.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
-from CynanBot.trivia.bannedTriviaGameController import \
+from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
 from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult

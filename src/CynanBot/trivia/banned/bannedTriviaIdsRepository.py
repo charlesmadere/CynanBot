@@ -5,10 +5,11 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.bannedTriviaIdsRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaIdsRepositoryInterface import \
     BannedTriviaIdsRepositoryInterface
-from CynanBot.trivia.bannedTriviaQuestion import BannedTriviaQuestion
-from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
+from CynanBot.trivia.banned.bannedTriviaQuestion import BannedTriviaQuestion
+from CynanBot.trivia.banned.banTriviaQuestionResult import \
+    BanTriviaQuestionResult
 from CynanBot.trivia.triviaSource import TriviaSource
 
 

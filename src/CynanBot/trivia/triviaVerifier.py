@@ -2,8 +2,9 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.banned.triviaBanHelperInterface import \
+    TriviaBanHelperInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.triviaBanHelperInterface import TriviaBanHelperInterface
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface

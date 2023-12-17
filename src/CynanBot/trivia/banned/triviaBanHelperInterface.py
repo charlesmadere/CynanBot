@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
-from CynanBot.trivia.bannedTriviaQuestion import BannedTriviaQuestion
-from CynanBot.trivia.banTriviaQuestionResult import BanTriviaQuestionResult
+from CynanBot.trivia.banned.banTriviaQuestionResult import \
+    BanTriviaQuestionResult
 from CynanBot.trivia.triviaSource import TriviaSource
 
 
-class BannedTriviaIdsRepositoryInterface(ABC):
+class TriviaBanHelperInterface(ABC):
 
     @abstractmethod
     async def ban(
@@ -15,14 +14,6 @@ class BannedTriviaIdsRepositoryInterface(ABC):
         userId: str,
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
-        pass
-
-    @abstractmethod
-    async def getInfo(
-        self,
-        triviaId: str,
-        triviaSource: TriviaSource
-    ) -> Optional[BannedTriviaQuestion]:
         pass
 
     @abstractmethod

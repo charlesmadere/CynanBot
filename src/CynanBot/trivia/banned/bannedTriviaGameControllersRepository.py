@@ -9,9 +9,9 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
-from CynanBot.trivia.bannedTriviaGameController import \
+from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
-from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
