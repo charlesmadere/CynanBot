@@ -8,9 +8,9 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.cuteness.cutenessResult import CutenessResult
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.bannedTriviaGameController import \
+from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
-from CynanBot.trivia.bannedTriviaGameControllersRepositoryInterface import \
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameController import \
     TriviaGameController
