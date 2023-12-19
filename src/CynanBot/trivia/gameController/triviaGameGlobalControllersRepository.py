@@ -7,7 +7,7 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.addTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
