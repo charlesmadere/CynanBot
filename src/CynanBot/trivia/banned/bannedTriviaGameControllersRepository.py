@@ -7,7 +7,7 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.addBannedTriviaGameControllerResult import \
+from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
 from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController

@@ -59,12 +59,12 @@ from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.addBannedTriviaGameControllerResult import \
-    AddBannedTriviaGameControllerResult
 from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
+from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
+    AddBannedTriviaGameControllerResult
 from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \

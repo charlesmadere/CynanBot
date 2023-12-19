@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from CynanBot.trivia.addBannedTriviaGameControllerResult import \
+from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
 from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
