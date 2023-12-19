@@ -493,16 +493,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         # government organizations
         if word == 'cia':
             yield 'central intelligence agency'
-        if word == 'dem':
-            yield 'democrats'
+        if word in ('dem', 'democratic', 'democratic party', 'dnc', 'democratic national convention', 'liberal'):
+            yield 'democrat'
         if word == 'fbi':
             yield 'federal bureau of investigation'
         if word == 'fedex':
             yield 'federal express'
-        if word == 'gop':
-            yield 'conservatives'
-            yield 'grand old party'
-            yield 'republicans'
+        if word in ('conservative', 'gop', 'grand old party', 'republican party', 'rnc', 'republican national convention'):
+            yield 'republican'
         if word == 'irs':
             yield 'internal revenue service'
         if word == 'mi6':
