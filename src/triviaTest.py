@@ -16,9 +16,10 @@ from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.additionalTriviaAnswersRepository import \
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
-from CynanBot.trivia.bannedTriviaIdsRepository import BannedTriviaIdsRepository
+from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
+    BannedTriviaIdsRepository
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion

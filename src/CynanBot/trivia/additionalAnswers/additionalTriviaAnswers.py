@@ -1,7 +1,8 @@
 from typing import List
 
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswer import \
+    AdditionalTriviaAnswer
 from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaType import TriviaType
 
