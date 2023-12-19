@@ -6,6 +6,7 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
@@ -15,6 +16,7 @@ from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
     DecTalkFileManagerInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
+from CynanBot.tts.ttsDonationType import TtsDonationType
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
@@ -71,6 +73,30 @@ class DecTalkManager(TtsManagerInterface):
         self.__isStarted: bool = False
         self.__eventQueue: SimpleQueue[TtsEvent] = SimpleQueue()
 
+    async def __playSound(self, event: TtsEvent):
+        if not isinstance(event, TtsEvent):
+            raise ValueError(f'event argument is malformed: \"{event}\"')
+
+        if self.__soundPlayerHelper is None:
+            return
+
+        donation = event.getDonation()
+        raidInfo = event.getRaidInfo()
+
+        soundAlert: Optional[SoundAlert] = None
+
+        if donation is not None and donation.getType() is TtsDonationType.CHEER:
+            soundAlert = SoundAlert.CHEER
+        elif donation is not None and donation.getType() is TtsDonationType.SUBSCRIPTION:
+            soundAlert = SoundAlert.SUBSCRIBE
+        elif raidInfo is not None:
+            soundAlert = SoundAlert.RAID
+
+        if soundAlert is None:
+            return
+
+        await self.__soundPlayerHelper.play(soundAlert)
+
     async def __processTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise ValueError(f'event argument is malformed: \"{event}\"')
@@ -89,6 +115,8 @@ class DecTalkManager(TtsManagerInterface):
         if not utils.isValidStr(fileName):
             self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to temporary file ({command=})')
             return
+
+        await self.__playSound(event)
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
