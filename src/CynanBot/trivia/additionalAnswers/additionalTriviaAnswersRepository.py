@@ -5,9 +5,11 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.additionalTriviaAnswer import AdditionalTriviaAnswer
-from CynanBot.trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
-from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswer import \
+    AdditionalTriviaAnswer
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswers import \
+    AdditionalTriviaAnswers
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,

@@ -109,7 +109,7 @@ from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
-from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface

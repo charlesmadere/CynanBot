@@ -5,7 +5,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.additionalTriviaAnswersRepositoryInterface import \
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \

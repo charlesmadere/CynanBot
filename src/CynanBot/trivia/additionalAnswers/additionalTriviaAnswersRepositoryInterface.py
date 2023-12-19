@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from CynanBot.trivia.additionalTriviaAnswers import AdditionalTriviaAnswers
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswers import \
+    AdditionalTriviaAnswers
 from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaType import TriviaType
 
