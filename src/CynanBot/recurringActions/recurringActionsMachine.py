@@ -37,7 +37,7 @@ from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
 from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaGameBuilderInterface import \
+from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface

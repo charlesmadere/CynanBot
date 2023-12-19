@@ -69,6 +69,8 @@ from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface impor
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
+from CynanBot.trivia.builder.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBot.trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
 from CynanBot.trivia.checkSuperAnswerTriviaAction import \
     CheckSuperAnswerTriviaAction
@@ -93,8 +95,6 @@ from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerIsMalformedException,
     AdditionalTriviaAnswerIsUnsupportedTriviaTypeException,
     TooManyAdditionalTriviaAnswersException)
-from CynanBot.trivia.triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \

@@ -4,7 +4,7 @@ from CynanBot.generalSettingsRepositorySnapshot import \
     GeneralSettingsRepositorySnapshot
 from CynanBot.misc.clearable import Clearable
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
-from CynanBot.trivia.triviaGameBuilderSettingsInterface import \
+from CynanBot.trivia.builder.triviaGameBuilderSettingsInterface import \
     TriviaGameBuilderSettingsInterface
 
 

@@ -115,6 +115,8 @@ from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface impor
     BannedTriviaGameControllersRepositoryInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
+from CynanBot.trivia.builder.triviaGameBuilderInterface import \
+    TriviaGameBuilderInterface
 from CynanBot.trivia.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
 from CynanBot.trivia.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
@@ -144,8 +146,6 @@ from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaEventType import TriviaEventType
-from CynanBot.trivia.triviaGameBuilderInterface import \
-    TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \

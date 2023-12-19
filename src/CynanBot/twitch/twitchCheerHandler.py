@@ -5,7 +5,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaGameBuilderInterface import \
+from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
