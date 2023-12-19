@@ -151,7 +151,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getSuperTriviaFirstQuestionDelaySeconds(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'super_trivia_first_question_delay_seconds', 3)
+        return utils.getIntFromDict(jsonContents, 'super_trivia_first_question_delay_seconds', 4)
 
     async def getToxicProbability(self) -> float:
         jsonContents = await self.__readJson()
