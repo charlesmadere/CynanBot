@@ -6,5 +6,5 @@ from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 class TwitchChannelProvider(ABC):
 
     @abstractmethod
-    async def getTwitchChannel(twitchChannel: str) -> TwitchChannel:
+    async def getTwitchChannel(self, twitchChannel: str) -> TwitchChannel:
         pass
