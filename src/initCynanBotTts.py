@@ -329,6 +329,7 @@ if ttsManager is not None:
     )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    anivCheckChatAction = None,
     catJamChatAction = None,
     chatLoggerChatAction = None,
     generalSettingsRepository = generalSettingsRepository,

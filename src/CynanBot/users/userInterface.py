@@ -268,6 +268,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isTimeoutAnivForPostingLinksEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isToxicTriviaEnabled(self) -> bool:
         pass
 

@@ -1,7 +1,7 @@
-from datetime import timedelta, timezone
 from typing import Optional
 
 from CynanBot.chatActions.absChatAction import AbsChatAction
+from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
 from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
@@ -25,6 +25,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
     def __init__(
         self,
+        anivCheckChatAction: Optional[AnivCheckChatAction],
         catJamChatAction: Optional[CatJamChatAction],
         chatLoggerChatAction: Optional[ChatLoggerChatAction],
         generalSettingsRepository: GeneralSettingsRepository,
@@ -35,11 +36,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         ttsManager: Optional[TtsManagerInterface],
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
-        supStreamerCooldown: timedelta = timedelta(hours = 16),
-        timeZone: timezone = timezone.utc
+        usersRepository: UsersRepositoryInterface
     ):
-        if catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
+        if anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
+            raise ValueError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
+        elif catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
             raise ValueError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
         elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
             raise ValueError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
@@ -61,11 +62,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(supStreamerCooldown, timedelta):
-            raise ValueError(f'supStreamerCooldown argument is malformed: \"{supStreamerCooldown}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__anivCheckChatAction: Optional[AnivCheckChatAction] = anivCheckChatAction
         self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
         self.__chatLoggerChatAction: Optional[AbsChatAction] = chatLoggerChatAction
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
@@ -90,6 +88,13 @@ class ChatActionsManager(ChatActionsManagerInterface):
         )
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
+
+        if self.__anivCheckChatAction is not None:
+            await self.__anivCheckChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
 
         if self.__catJamChatAction is not None:
             await self.__catJamChatAction.handleChat(

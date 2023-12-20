@@ -8,6 +8,7 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
 from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
@@ -752,6 +753,7 @@ if generalSettingsSnapshot.isTtsEnabled():
 #########################################
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
+    anivCheckChatAction = None,
     catJamChatAction = CatJamChatAction(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,

@@ -41,6 +41,7 @@ class User(UserInterface):
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
         isSupStreamerEnabled: bool,
+        isTimeoutAnivForPostingLinksEnabled: bool,
         isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
@@ -141,6 +142,8 @@ class User(UserInterface):
             raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
             raise ValueError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
+        elif not utils.isValidBool(isTimeoutAnivForPostingLinksEnabled):
+            raise ValueError(f'isTimeoutAnivForPostingLinksEnabled argument is malformed: \"{isTimeoutAnivForPostingLinksEnabled}\"')
         elif not utils.isValidBool(isToxicTriviaEnabled):
             raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -240,6 +243,7 @@ class User(UserInterface):
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
+        self.__isTimeoutAnivForPostingLinksEnabled: bool = isTimeoutAnivForPostingLinksEnabled
         self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
@@ -526,6 +530,9 @@ class User(UserInterface):
 
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled
+
+    def isTimeoutAnivForPostingLinksEnabled(self) -> bool:
+        return self.__isTimeoutAnivForPostingLinksEnabled
 
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled

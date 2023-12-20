@@ -122,6 +122,7 @@ class UsersRepository(UsersRepositoryInterface):
         isStarWarsQuotesEnabled = utils.getBoolFromDict(userJson, 'starWarsQuotesEnabled', False)
         isSubGiftThankingEnabled = utils.getBoolFromDict(userJson, 'subGiftThankingEnabled', True)
         isSupStreamerEnabled = utils.getBoolFromDict(userJson, 'supStreamerEnabled', False)
+        isTimeoutAnivForPostingLinksEnabled = utils.getBoolFromDict(userJson, 'timeoutAnivForPostingLinksEnabled', False)
         isTranslateEnabled = utils.getBoolFromDict(userJson, 'translateEnabled', False)
         isTriviaEnabled = utils.getBoolFromDict(userJson, 'triviaEnabled', False)
         isTriviaGameEnabled = utils.getBoolFromDict(userJson, 'triviaGameEnabled', False)
@@ -231,6 +232,7 @@ class UsersRepository(UsersRepositoryInterface):
             isSubGiftThankingEnabled = isSubGiftThankingEnabled,
             isSuperTriviaGameEnabled = isSuperTriviaGameEnabled,
             isSupStreamerEnabled = isSupStreamerEnabled,
+            isTimeoutAnivForPostingLinksEnabled = isTimeoutAnivForPostingLinksEnabled,
             isToxicTriviaEnabled = isToxicTriviaEnabled,
             isTranslateEnabled = isTranslateEnabled,
             isTriviaEnabled = isTriviaEnabled,
