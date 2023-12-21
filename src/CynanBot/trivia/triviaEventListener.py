@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 
 
 class TriviaEventListener(ABC):

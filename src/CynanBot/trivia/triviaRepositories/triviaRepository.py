@@ -13,6 +13,8 @@ from CynanBot.trivia.questionAnswerTriviaConditions import \
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaExceptions import (
     GenericTriviaNetworkException, MalformedTriviaJsonException,
@@ -53,10 +55,8 @@ from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
-from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
@@ -287,7 +287,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if not triviaFetchOptions.areQuestionAnswerTriviaQuestionsEnabled():
             for triviaSource, triviaQuestionRepository in availableTriviaSourcesMap.items():
-                if TriviaType.QUESTION_ANSWER in triviaQuestionRepository.getSupportedTriviaTypes():
+                if TriviaQuestionType.QUESTION_ANSWER in triviaQuestionRepository.getSupportedTriviaTypes():
                     currentlyInvalidTriviaSources.add(triviaSource)
 
         if not triviaFetchOptions.isJokeTriviaRepositoryEnabled():
@@ -295,7 +295,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if triviaFetchOptions.requireQuestionAnswerTriviaQuestion():
             for triviaSource, triviaQuestionRepository in availableTriviaSourcesMap.items():
-                if TriviaType.QUESTION_ANSWER not in triviaQuestionRepository.getSupportedTriviaTypes():
+                if TriviaQuestionType.QUESTION_ANSWER not in triviaQuestionRepository.getSupportedTriviaTypes():
                     currentlyInvalidTriviaSources.add(triviaSource)
 
         if not await self.__isJokeTriviaQuestionRepositoryAvailable():
@@ -392,7 +392,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.getTriviaType() is not TriviaType.QUESTION_ANSWER or not isinstance(question, QuestionAnswerTriviaQuestion):
+        elif question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER or not isinstance(question, QuestionAnswerTriviaQuestion):
             self.__timber.log('TriviaRepository', f'Encountered unexpected super trivia question type ({question}) when spooling a super trivia question')
             return
 
@@ -437,7 +437,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.getTriviaType() is TriviaType.QUESTION_ANSWER or isinstance(question, QuestionAnswerTriviaQuestion):
+        elif question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER or isinstance(question, QuestionAnswerTriviaQuestion):
             self.__timber.log('TriviaRepository', f'Encountered unexpected trivia question type ({question}) when spooling a trivia question')
             return
 

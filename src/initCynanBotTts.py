@@ -338,6 +338,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         generalSettingsRepository = generalSettingsRepository,
         userIdsRepository = userIdsRepository
     ),
+    schubertWalkChatAction = None,
     supStreamerChatAction = supStreamerChatAction,
     timber = timber,
     ttsManager = ttsManager,

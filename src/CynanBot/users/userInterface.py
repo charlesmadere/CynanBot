@@ -204,6 +204,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isAnivContentScanningEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isCatJamMessageEnabled(self) -> bool:
         pass
 
@@ -252,6 +256,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isSchubertWalkMessageEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isShinyTriviaEnabled(self) -> bool:
         pass
 
@@ -265,10 +273,6 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isSupStreamerEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
-    def isTimeoutAnivForPostingLinksEnabled(self) -> bool:
         pass
 
     @abstractmethod

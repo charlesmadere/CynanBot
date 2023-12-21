@@ -12,6 +12,7 @@ from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
@@ -22,7 +23,6 @@ from CynanBot.trivia.triviaExceptions import (BadTriviaAnswerException,
                                               UnsupportedTriviaTypeException)
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
@@ -83,11 +83,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if not utils.isValidStr(answer):
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if triviaQuestion.getTriviaType() is TriviaType.MULTIPLE_CHOICE:
+        if triviaQuestion.getTriviaType() is TriviaQuestionType.MULTIPLE_CHOICE:
             return await self.__checkAnswerMultipleChoice(answer, triviaQuestion)
-        elif triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER:
+        elif triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
             return await self.__checkAnswerQuestionAnswer(answer, triviaQuestion, extras)
-        elif triviaQuestion.getTriviaType() is TriviaType.TRUE_FALSE:
+        elif triviaQuestion.getTriviaType() is TriviaQuestionType.TRUE_FALSE:
             return await self.__checkAnswerTrueFalse(answer, triviaQuestion)
         else:
             raise UnsupportedTriviaTypeException(f'Unsupported TriviaType: \"{triviaQuestion.getTriviaType()}\"')
@@ -99,8 +99,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaType.MULTIPLE_CHOICE:
-            raise RuntimeError(f'TriviaType is not {TriviaType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
+            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
 
         answerOrdinal: Optional[int] = None
         try:
@@ -136,8 +136,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaType.QUESTION_ANSWER:
-            raise RuntimeError(f'TriviaType is not {TriviaType.QUESTION_ANSWER}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
+            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.getTriviaType()}\"')
 
         # prevent potential for insane answer lengths
         maxPhraseGuessLength = await self.__triviaSettingsRepository.getMaxPhraseGuessLength()
@@ -184,8 +184,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaType.TRUE_FALSE:
-            raise RuntimeError(f'TriviaType is not {TriviaType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
+        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
+            raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
 
         answerBool: bool = None
         try:

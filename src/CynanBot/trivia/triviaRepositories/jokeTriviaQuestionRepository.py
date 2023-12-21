@@ -8,6 +8,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -17,8 +18,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
@@ -61,9 +61,9 @@ class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
         question = utils.getStrFromDict(triviaJson, 'question', clean = True)
         triviaDifficulty = TriviaDifficulty.fromStr(triviaJson.get('difficulty'))
         triviaId = utils.getStrFromDict(triviaJson, 'id')
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswers: List[str] = triviaJson['correctAnswers']
             multipleChoiceResponses: List[str] = triviaJson['responses']
             random.shuffle(multipleChoiceResponses)
@@ -78,7 +78,7 @@ class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
                 triviaDifficulty = triviaDifficulty,
                 triviaSource = TriviaSource.JOKE_TRIVIA_REPOSITORY
             )
-        elif triviaType is TriviaType.TRUE_FALSE:
+        elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswers: List[bool] = triviaJson['correctAnswers']
 
             return TrueFalseTriviaQuestion(
@@ -122,8 +122,8 @@ class JokeTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
         else:
             return None
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.JOKE_TRIVIA_REPOSITORY

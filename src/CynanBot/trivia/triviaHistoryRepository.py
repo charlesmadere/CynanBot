@@ -7,14 +7,14 @@ from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from CynanBot.trivia.triviaQuestionReference import TriviaQuestionReference
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
@@ -77,7 +77,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             triviaId = record[1],
             twitchChannel = twitchChannel,
             triviaSource = TriviaSource.fromStr(record[2]),
-            triviaType = TriviaType.fromStr(record[3])
+            triviaType = TriviaQuestionType.fromStr(record[3])
         )
 
     async def __initDatabaseTable(self):

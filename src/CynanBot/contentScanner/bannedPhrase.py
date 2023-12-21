@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 import CynanBot.misc.utils as utils
 from CynanBot.contentScanner.absBannedWord import AbsBannedWord
@@ -31,5 +31,12 @@ class BannedPhrase(AbsBannedWord):
     def __hash__(self) -> int:
         return hash((self.__phrase, self.getType()))
 
-    def __str__(self) -> str:
-        return f'phrase=\"{self.__phrase}\", type=\"{self.getType()}\"'
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'phrase': self.__phrase,
+            'type': self.getType()
+        }

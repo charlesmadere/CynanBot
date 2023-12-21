@@ -15,22 +15,24 @@ from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import \
     AdditionalTriviaAnswersRepository
 from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
+from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
-from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBot.trivia.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
@@ -40,7 +42,6 @@ from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
-from CynanBot.trivia.triviaGameStore import TriviaGameStore
 from CynanBot.trivia.triviaHistoryRepository import TriviaHistoryRepository
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
@@ -74,7 +75,6 @@ from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
-from CynanBot.trivia.triviaSource import TriviaSource
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
 from CynanBot.trivia.triviaVerifier import TriviaVerifier

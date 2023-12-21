@@ -8,6 +8,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -22,8 +23,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -86,7 +86,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise MalformedTriviaJsonException(f'Rejecting Bongo\'s JSON data due to null/empty contents: {jsonResponse}')
 
         triviaDifficulty = TriviaDifficulty.fromStr(utils.getStrFromDict(triviaJson, 'difficulty', fallback = ''))
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
 
         category = await self.__triviaQuestionCompiler.compileCategory(
             category = utils.getStrFromDict(triviaJson, 'category', fallback = ''),
@@ -106,7 +106,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 difficulty = triviaDifficulty.toStr()
             )
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
@@ -137,9 +137,9 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 )
             else:
                 self.__timber.log('BongoTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
-                triviaType = TriviaType.TRUE_FALSE
+                triviaType = TriviaQuestionType.TRUE_FALSE
 
-        if triviaType is TriviaType.TRUE_FALSE:
+        if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
             correctAnswers: List[bool] = list()
             correctAnswers.append(correctAnswer)
@@ -156,8 +156,8 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Bongo: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.BONGO

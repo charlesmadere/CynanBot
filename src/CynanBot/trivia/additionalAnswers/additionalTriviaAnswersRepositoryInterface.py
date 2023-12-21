@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswers import \
     AdditionalTriviaAnswers
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class AdditionalTriviaAnswersRepositoryInterface(ABC):
@@ -16,7 +16,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         triviaId: str,
         userId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> AdditionalTriviaAnswers:
         pass
 
@@ -26,7 +26,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         currentAnswers: List[str],
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> bool:
         pass
 
@@ -35,7 +35,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         self,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> Optional[AdditionalTriviaAnswers]:
         pass
 
@@ -44,6 +44,6 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         self,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> Optional[AdditionalTriviaAnswers]:
         pass

@@ -9,6 +9,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -19,8 +20,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -59,7 +59,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('OpenTriviaQaTriviaQuestionRepository', f'{triviaDict}')
 
         triviaId = utils.getStrFromDict(triviaDict, 'questionId')
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaDict, 'questionType'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaDict, 'questionType'))
 
         category = utils.getStrFromDict(triviaDict, 'category')
         category = await self.__triviaQuestionCompiler.compileCategory(category)
@@ -67,7 +67,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
         question = utils.getStrFromDict(triviaDict, 'question')
         question = await self.__triviaQuestionCompiler.compileQuestion(question)
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswer = utils.getStrFromDict(triviaDict, 'correctAnswer')
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(correctAnswer)
 
@@ -91,7 +91,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
                 triviaSource = TriviaSource.OPEN_TRIVIA_QA
             )
-        elif triviaType is TriviaType.TRUE_FALSE:
+        elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
             correctAnswers: List[bool] = list()
             correctAnswers.append(correctAnswer)
@@ -138,8 +138,8 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.OPEN_TRIVIA_QA

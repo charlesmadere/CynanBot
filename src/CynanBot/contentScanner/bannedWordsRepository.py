@@ -28,7 +28,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__exactWordRegEx: Pattern = re.compile(r'^\"(.+)\"$', re.IGNORECASE)
-        self.__cache: Optional[Set[BannedWord]] = None
+        self.__cache: Optional[Set[AbsBannedWord]] = None
 
     async def clearCaches(self):
         self.__cache = None

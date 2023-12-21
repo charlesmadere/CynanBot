@@ -16,6 +16,7 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
+from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
@@ -133,7 +134,8 @@ from CynanBot.trivia.gameController.triviaGameGlobalControllersRepository import
     TriviaGameGlobalControllersRepository
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
 from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
@@ -156,7 +158,6 @@ from CynanBot.trivia.triviaEmoteGeneratorInterface import \
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
-from CynanBot.trivia.triviaGameStore import TriviaGameStore
 from CynanBot.trivia.triviaHistoryRepository import TriviaHistoryRepository
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
@@ -753,7 +754,15 @@ if generalSettingsSnapshot.isTtsEnabled():
 #########################################
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
-    anivCheckChatAction = None,
+    anivCheckChatAction = AnivCheckChatAction(
+        contentScanner = contentScanner,
+        timber = timber,
+        twitchApiService = twitchApiService,
+        twitchHandleProvider = authRepository,
+        twitchTokensRepository = twitchTokensRepository,
+        twitchUtils = twitchUtils,
+        userIdsRepository = userIdsRepository
+    ),
     catJamChatAction = CatJamChatAction(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
@@ -767,6 +776,11 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     persistAllUsersChatAction = PersistAllUsersChatAction(
         generalSettingsRepository = generalSettingsRepository,
         userIdsRepository = userIdsRepository
+    ),
+    schubertWalkChatAction = SchubertWalkChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchUtils = twitchUtils
     ),
     supStreamerChatAction = None,
     timber = timber,

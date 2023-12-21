@@ -3,8 +3,8 @@ from typing import List
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswer import \
     AdditionalTriviaAnswer
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class AdditionalTriviaAnswers():
@@ -14,7 +14,7 @@ class AdditionalTriviaAnswers():
         additionalAnswers: List[AdditionalTriviaAnswer],
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ):
         if not utils.hasItems(additionalAnswers):
             raise ValueError(f'additionalAnswers argument is malformed: \"{additionalAnswers}\"')
@@ -22,13 +22,13 @@ class AdditionalTriviaAnswers():
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaType):
+        elif not isinstance(triviaType, TriviaQuestionType):
             raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         self.__additionalAnswers: List[AdditionalTriviaAnswer] = additionalAnswers
         self.__triviaId: str = triviaId
         self.__triviaSource: TriviaSource = triviaSource
-        self.__triviaType: TriviaType = triviaType
+        self.__triviaType: TriviaQuestionType = triviaType
 
     def getAdditionalAnswers(self) -> List[AdditionalTriviaAnswer]:
         return self.__additionalAnswers
@@ -47,5 +47,5 @@ class AdditionalTriviaAnswers():
     def getTriviaSource(self) -> TriviaSource:
         return self.__triviaSource
 
-    def getTriviaType(self) -> TriviaType:
+    def getTriviaType(self) -> TriviaQuestionType:
         return self.__triviaType

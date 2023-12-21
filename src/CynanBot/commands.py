@@ -59,6 +59,12 @@ from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.actions.checkAnswerTriviaAction import \
+    CheckAnswerTriviaAction
+from CynanBot.trivia.actions.checkSuperAnswerTriviaAction import \
+    CheckSuperAnswerTriviaAction
+from CynanBot.trivia.actions.clearSuperTriviaQueueTriviaAction import \
+    ClearSuperTriviaQueueTriviaAction
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
@@ -69,11 +75,6 @@ from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBot.trivia.checkAnswerTriviaAction import CheckAnswerTriviaAction
-from CynanBot.trivia.checkSuperAnswerTriviaAction import \
-    CheckSuperAnswerTriviaAction
-from CynanBot.trivia.clearSuperTriviaQueueTriviaAction import \
-    ClearSuperTriviaQueueTriviaAction
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \

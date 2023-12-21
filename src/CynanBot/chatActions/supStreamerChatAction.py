@@ -17,7 +17,7 @@ class SupStreamerChatAction(AbsChatAction):
         self,
         timber: TimberInterface,
         ttsManager: TtsManagerInterface,
-        cooldown: timedelta = timedelta(hours = 8),
+        cooldown: timedelta = timedelta(hours = 6),
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(timber, TimberInterface):

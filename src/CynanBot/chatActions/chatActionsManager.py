@@ -8,6 +8,7 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
+from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
@@ -31,6 +32,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         persistAllUsersChatAction: Optional[PersistAllUsersChatAction],
+        schubertWalkChatAction: Optional[SchubertWalkChatAction],
         supStreamerChatAction: Optional[SupStreamerChatAction],
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
@@ -50,6 +52,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif persistAllUsersChatAction is not None and not isinstance(persistAllUsersChatAction, PersistAllUsersChatAction):
             raise ValueError(f'persistAllUsersChatAction argument is malformed: \"{persistAllUsersChatAction}\"')
+        elif schubertWalkChatAction is not None and not isinstance(schubertWalkChatAction, SchubertWalkChatAction):
+            raise ValueError(f'schubertWalkChatAction argument is malformed: \"{schubertWalkChatAction}\"')
         elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
             raise ValueError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
         elif not isinstance(timber, TimberInterface):
@@ -63,11 +67,12 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__anivCheckChatAction: Optional[AnivCheckChatAction] = anivCheckChatAction
+        self.__anivCheckChatAction: Optional[AbsChatAction] = anivCheckChatAction
         self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
         self.__chatLoggerChatAction: Optional[AbsChatAction] = chatLoggerChatAction
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
         self.__persistAllUsersChatAction: Optional[AbsChatAction] = persistAllUsersChatAction
+        self.__schubertWalkChatAction: Optional[AbsChatAction] = schubertWalkChatAction
         self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -112,6 +117,13 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         if self.__persistAllUsersChatAction is not None:
             await self.__persistAllUsersChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
+
+        if self.__schubertWalkChatAction is not None:
+            await self.__schubertWalkChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user

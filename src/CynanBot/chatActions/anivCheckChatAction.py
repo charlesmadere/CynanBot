@@ -3,12 +3,13 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
+from CynanBot.contentScanner.contentCode import ContentCode
+from CynanBot.contentScanner.contentScannerInterface import \
+    ContentScannerInterface
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.configuration.twitchChannelProvider import \
-    TwitchChannelProvider
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.twitchHandleProviderInterface import \
@@ -25,9 +26,9 @@ class AnivCheckChatAction(AbsChatAction):
 
     def __init__(
         self,
+        contentScanner: ContentScannerInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchChannelProvider: TwitchChannelProvider,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtils,
@@ -35,12 +36,12 @@ class AnivCheckChatAction(AbsChatAction):
         timeoutDurationSeconds: int = 60,
         anivUserId: str = '749050409'
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(contentScanner, ContentScannerInterface):
+            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+        elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -56,9 +57,9 @@ class AnivCheckChatAction(AbsChatAction):
         elif not utils.isValidStr(anivUserId):
             raise ValueError(f'anivUserId argument is malformed: \"{anivUserId}\"')
 
+        self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -74,22 +75,23 @@ class AnivCheckChatAction(AbsChatAction):
     ):
         if message.getAuthorId() != self.__anivUserId:
             return
-        elif not user.isTimeoutAnivForPostingLinksEnabled():
+        elif not user.isAnivContentScanningEnabled():
             return
-        elif not utils.containsUrl(message.getContent()):
+
+        contentCode = await self.__contentScanner.scan(message.getContent())
+        if contentCode is ContentCode.OK:
             return
 
         moderatorUserName = await self.__twitchHandleProvider.getTwitchHandle()
-
         if not await self.__twitchTokensRepository.hasAccessToken(moderatorUserName):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting a link (\"{message.getContent()}\"), but the bot user ({moderatorUserName}) does not have an available Twitch token')
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but the bot user ({moderatorUserName}) does not have an available Twitch token')
             return
 
         await self.__twitchTokensRepository.validateAndRefreshAccessToken(moderatorUserName)
         twitchToken = await self.__twitchTokensRepository.getAccessToken(moderatorUserName)
 
         if not utils.isValidStr(twitchToken):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting a link (\"{message.getContent()}\"), but was unable to fetch a Twitch token: \"{twitchToken}\"')
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch token (\"{twitchToken}\") for the bot user ({moderatorUserName})')
             return
 
         moderatorUserId = await self.__userIdsRepository.fetchUserId(
@@ -98,14 +100,16 @@ class AnivCheckChatAction(AbsChatAction):
         )
 
         if not utils.isValidStr(moderatorUserId):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting a link (\"{message.getContent()}\"), but was unable to fetch user ID for the bot user ({moderatorUserName})')
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch user ID for the bot user ({moderatorUserName})')
             return
+
+        channel = message.getChannel()
 
         banRequest = TwitchBanRequest(
             duration = self.__timeoutDurationSeconds,
-            broadcasterUserId = await message.getTwitchChannelId(),
+            broadcasterUserId = await channel.getTwitchChannelId(),
             moderatorUserId = moderatorUserId,
-            reason = f'{message.getAuthorName()} posted a link',
+            reason = f'{message.getAuthorName()} posted bad content',
             userIdToBan = self.__anivUserId
         )
 
@@ -115,7 +119,7 @@ class AnivCheckChatAction(AbsChatAction):
                 banRequest = banRequest
             )
 
-            twitchChannel = await self.__twitchChannelProvider.getTwitchChannel(user.getHandle())
-            await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) due to posting a link.')
+            await self.__twitchUtils.safeSend(channel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s)')
+            self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()}:{self.__anivUserId} for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
         except Exception as e:
-            self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()}:{self.__anivUserId} for posting a link (\"{message.getContent()}\")', e, traceback.format_exc())
+            self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()}:{self.__anivUserId} for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())

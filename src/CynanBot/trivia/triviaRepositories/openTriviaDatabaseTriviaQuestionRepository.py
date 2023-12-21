@@ -12,6 +12,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -27,8 +28,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
@@ -150,7 +150,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON API data due to null/empty contents: {jsonResponse}')
 
         triviaDifficulty = TriviaDifficulty.fromStr(utils.getStrFromDict(triviaJson, 'difficulty', fallback = ''))
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
 
         category = await self.__triviaQuestionCompiler.compileQuestion(
             question = utils.getStrFromDict(triviaJson, 'category', fallback = ''),
@@ -168,7 +168,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             difficulty = triviaDifficulty.toStr()
         )
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
@@ -199,9 +199,9 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 )
             else:
                 self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
-                triviaType = TriviaType.TRUE_FALSE
+                triviaType = TriviaQuestionType.TRUE_FALSE
 
-        if triviaType is TriviaType.TRUE_FALSE:
+        if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
             correctAnswers: List[bool] = list()
             correctAnswers.append(correctAnswer)
@@ -241,8 +241,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         return sessionToken
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.OPEN_TRIVIA_DATABASE

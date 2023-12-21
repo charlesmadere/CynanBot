@@ -2,9 +2,9 @@ from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):

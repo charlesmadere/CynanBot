@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
 
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaSourceInstabilityHelper():

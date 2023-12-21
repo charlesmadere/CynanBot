@@ -18,6 +18,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -31,8 +32,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -78,7 +78,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': move.getContestType().toStr(),
             'incorrectAnswers': falseContestTypeStrs,
             'question': f'In Pokémon, what is the contest type of {move.getName()}?',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
@@ -93,7 +93,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': move.getDamageClass().toStr(),
             'incorrectAnswers': damageClassStrs,
             'question': f'In Pokémon, the move {move.getName()} has which damage class?',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createMoveIsAvailableAsMachineQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
@@ -111,7 +111,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         return {
             'correctAnswer': move.hasMachines() and randomGeneration in move.getGenerationMachines(),
             'question': f'In Pokémon {randomGeneration.toLongStr()}, {move.getName()} can be taught via {machinesStr}.',
-            'triviaType': TriviaType.TRUE_FALSE
+            'triviaType': TriviaQuestionType.TRUE_FALSE
         }
 
     async def __createMoveIsAvailableAsWhichMachineQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
@@ -139,7 +139,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': machine.getMachineName(),
             'incorrectAnswers': falseMachineNumbersStrs,
             'question': f'In Pokémon {randomGeneration.toLongStr()}, {move.getName()} can be taught via which {machinePrefix}?',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createMoveQuestion(self) -> Dict[str, Any]:
@@ -228,7 +228,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': correctAnswer,
             'incorrectAnswers': flavorsStrs,
             'question': f'Pokémon with the {nature.toStr()} nature {likeOrDislikeStr} ONE of the following flavors.',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createPhysicalOrSpecialDamageClassQuestion(self) -> Dict[str, Any]:
@@ -276,7 +276,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': actualElementType.toStr(),
             'incorrectAnswers': falseElementTypesStrs,
             'question': f'In Pokémon generations 1 through 3, which of the following types has a {actualDamageClass.toStr().lower()} damage class?',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createPokemonQuestion(self) -> Dict[str, Any]:
@@ -300,7 +300,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             'correctAnswer': correctType.toStr(),
             'incorrectAnswers': falseTypesStrs,
             'question': f'In Pokémon {randomGeneration.toLongStr()}, {pokemon.getName()} is which of the following types?',
-            'triviaType': TriviaType.MULTIPLE_CHOICE
+            'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
         }
 
     async def __createStatOrNatureQuestion(self) -> Dict[str, Any]:
@@ -344,7 +344,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         return {
             'correctAnswer': decreasingNatures is not None and randomNature in decreasingNatures,
             'question': f'In Pokémon, the {stat.toStr()} stat is negatively impacted by the {randomNature.toStr()} nature.',
-            'triviaType': TriviaType.TRUE_FALSE
+            'triviaType': TriviaQuestionType.TRUE_FALSE
         }
 
     async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
@@ -357,7 +357,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         return {
             'correctAnswer': increasingNatures is not None and randomNature in increasingNatures,
             'question': f'In Pokémon, the {stat.toStr()} stat is positively impacted by the {randomNature.toStr()} nature.',
-            'triviaType': TriviaType.TRUE_FALSE
+            'triviaType': TriviaQuestionType.TRUE_FALSE
         }
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
@@ -385,7 +385,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         category = 'Pokémon'
         triviaDifficulty = TriviaDifficulty.UNKNOWN
-        triviaType: TriviaType = triviaDict['triviaType']
+        triviaType: TriviaQuestionType = triviaDict['triviaType']
         question = utils.getStrFromDict(triviaDict, 'question')
 
         triviaId = await self.__triviaIdGenerator.generateQuestionId(
@@ -394,7 +394,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
             difficulty = triviaDifficulty.toStr()
         )
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswers: List[str] = list()
             correctAnswers.append(utils.getStrFromDict(triviaDict, 'correctAnswer'))
             incorrectAnswers: List[str] = triviaDict['incorrectAnswers']
@@ -414,7 +414,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaDifficulty = triviaDifficulty,
                 triviaSource = TriviaSource.POKE_API
             )
-        elif triviaType is TriviaType.TRUE_FALSE:
+        elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswers: List[bool] = list()
             correctAnswers.append(utils.getBoolFromDict(triviaDict, 'correctAnswer'))
 
@@ -430,8 +430,8 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Pkmn Trivia: {triviaDict}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.POKE_API

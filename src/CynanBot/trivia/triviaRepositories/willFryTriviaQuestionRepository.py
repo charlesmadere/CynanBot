@@ -8,6 +8,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -22,8 +23,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -85,7 +85,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('WillFryTriviaQuestionRepository', f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaJson, 'type'))
         category = await self.__triviaQuestionCompiler.compileCategory(utils.getStrFromDict(triviaJson, 'category', fallback = ''))
         question = await self.__triviaQuestionCompiler.compileQuestion(utils.getStrFromDict(triviaJson, 'question'))
 
@@ -96,7 +96,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 category = category
             )
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = utils.getStrFromDict(triviaJson, 'correctAnswer'),
                 htmlUnescape = True
@@ -127,9 +127,9 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 )
             else:
                 self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
-                triviaType = TriviaType.TRUE_FALSE
+                triviaType = TriviaQuestionType.TRUE_FALSE
 
-        if triviaType is TriviaType.TRUE_FALSE:
+        if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correctAnswer')
             correctAnswers: List[bool] = list()
             correctAnswers.append(correctAnswer)
@@ -146,8 +146,8 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Will Fry Trivia: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.WILL_FRY_TRIVIA

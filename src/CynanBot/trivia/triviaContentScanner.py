@@ -10,12 +10,12 @@ from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaType import TriviaType
 
 
 class TriviaContentScanner(TriviaContentScannerInterface):
@@ -120,7 +120,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
         maxPhraseAnswerLength = await self.__triviaSettingsRepository.getMaxPhraseAnswerLength()
 
-        if question.getTriviaType() is TriviaType.QUESTION_ANSWER:
+        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
             for correctAnswer in question.getCorrectAnswers():
                 if len(correctAnswer) >= maxPhraseAnswerLength:
                     self.__timber.log('TriviaContentScanner', f'Trivia answer is too long (max is {maxPhraseAnswerLength}): {question.getCorrectAnswers()}')
@@ -170,7 +170,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.getQuestion()}\"')
             return TriviaContentCode.CONTAINS_EMPTY_STR
 
-        if question.getTriviaType() is TriviaType.QUESTION_ANSWER and not question.hasCategory():
+        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and not question.hasCategory():
             # This means that we are requiring "question-answer" style trivia questions to have
             # a category, which I think is probably fine? (this is an opinion situation)
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty category: \"{question.getCategory()}\"')
@@ -206,7 +206,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if not isinstance(question, AbsTriviaQuestion):
             raise ValueError(f'question argument is malformed: \"{question}\"')
 
-        if question.getTriviaType() is not TriviaType.MULTIPLE_CHOICE:
+        if question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             return TriviaContentCode.OK
 
         responses = question.getResponses()

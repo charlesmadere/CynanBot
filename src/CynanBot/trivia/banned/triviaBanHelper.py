@@ -7,9 +7,9 @@ from CynanBot.trivia.banned.banTriviaQuestionResult import \
     BanTriviaQuestionResult
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaBanHelper(TriviaBanHelperInterface):

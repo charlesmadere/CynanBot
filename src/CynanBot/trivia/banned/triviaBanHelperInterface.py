@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from CynanBot.trivia.banned.banTriviaQuestionResult import \
     BanTriviaQuestionResult
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaBanHelperInterface(ABC):

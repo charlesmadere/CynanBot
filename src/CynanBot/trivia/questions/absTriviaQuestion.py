@@ -2,14 +2,14 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (BadTriviaDifficultyException,
                                               BadTriviaIdException,
                                               BadTriviaSourceException,
                                               BadTriviaTypeException,
                                               NoTriviaQuestionException)
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
 
 
 class AbsTriviaQuestion(ABC):
@@ -22,7 +22,7 @@ class AbsTriviaQuestion(ABC):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ):
         if not utils.isValidStr(question):
             raise NoTriviaQuestionException(f'question argument is malformed: \"{question}\"')
@@ -32,7 +32,7 @@ class AbsTriviaQuestion(ABC):
             raise BadTriviaDifficultyException(f'triviaDifficulty argument is malformed: \"{triviaDifficulty}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise BadTriviaSourceException(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaType):
+        elif not isinstance(triviaType, TriviaQuestionType):
             raise BadTriviaTypeException(f'triviaType argument is malformed: \"{triviaType}\"')
 
         self.__category: Optional[str] = category
@@ -41,7 +41,7 @@ class AbsTriviaQuestion(ABC):
         self.__triviaId: str = triviaId
         self.__triviaDifficulty: TriviaDifficulty = triviaDifficulty
         self.__triviaSource: TriviaSource = triviaSource
-        self.__triviaType: TriviaType = triviaType
+        self.__triviaType: TriviaQuestionType = triviaType
 
     def getCategory(self) -> Optional[str]:
         return self.__category
@@ -73,7 +73,7 @@ class AbsTriviaQuestion(ABC):
     def getTriviaSource(self) -> TriviaSource:
         return self.__triviaSource
 
-    def getTriviaType(self) -> TriviaType:
+    def getTriviaType(self) -> TriviaQuestionType:
         return self.__triviaType
 
     def hasCategory(self) -> bool:

@@ -28,7 +28,7 @@ from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TestTriviaContentScanner():

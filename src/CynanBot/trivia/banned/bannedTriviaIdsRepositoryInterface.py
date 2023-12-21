@@ -4,7 +4,7 @@ from typing import Optional
 from CynanBot.trivia.banned.bannedTriviaQuestion import BannedTriviaQuestion
 from CynanBot.trivia.banned.banTriviaQuestionResult import \
     BanTriviaQuestionResult
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class BannedTriviaIdsRepositoryInterface(ABC):

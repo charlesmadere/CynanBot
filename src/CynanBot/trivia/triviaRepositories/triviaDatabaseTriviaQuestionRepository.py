@@ -9,6 +9,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -19,8 +20,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -59,14 +59,14 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('TriviaDatabaseTriviaQuestionRepository', f'{triviaDict}')
 
         triviaId = utils.getStrFromDict(triviaDict, 'triviaId')
-        triviaType = TriviaType.fromStr(utils.getStrFromDict(triviaDict, 'type'))
+        triviaType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaDict, 'type'))
         triviaDifficultyInt = utils.getIntFromDict(triviaDict, 'difficulty', fallback = -1)
         triviaDifficulty = TriviaDifficulty.fromInt(triviaDifficultyInt)
 
         category = await self.__triviaQuestionCompiler.compileCategory(utils.getStrFromDict(triviaDict, 'category', fallback = ''))
         question = await self.__triviaQuestionCompiler.compileQuestion(utils.getStrFromDict(triviaDict, 'question'))
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = utils.getStrFromDict(triviaDict, 'correctAnswer')
             )
@@ -90,7 +90,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaDifficulty = triviaDifficulty,
                 triviaSource = TriviaSource.TRIVIA_DATABASE
             )
-        elif triviaType is TriviaType.TRUE_FALSE:
+        elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
             correctAnswers: List[bool] = list()
             correctAnswers.append(correctAnswer)
@@ -138,8 +138,8 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.TRIVIA_DATABASE

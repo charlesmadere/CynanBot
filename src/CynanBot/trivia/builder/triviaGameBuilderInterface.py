@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from CynanBot.trivia.startNewSuperTriviaGameAction import \
+from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
-from CynanBot.trivia.startNewTriviaGameAction import StartNewTriviaGameAction
+from CynanBot.trivia.actions.startNewTriviaGameAction import \
+    StartNewTriviaGameAction
 
 
 class TriviaGameBuilderInterface(ABC):

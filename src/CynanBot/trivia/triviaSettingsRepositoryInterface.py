@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Dict
 
 from CynanBot.misc.clearable import Clearable
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaSettingsRepositoryInterface(Clearable):

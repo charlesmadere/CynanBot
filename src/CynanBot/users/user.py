@@ -13,6 +13,7 @@ class User(UserInterface):
         self,
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
+        isAnivContentScanningEnabled: bool,
         isCatJamMessageEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
@@ -41,7 +42,6 @@ class User(UserInterface):
         isSubGiftThankingEnabled: bool,
         isSuperTriviaGameEnabled: bool,
         isSupStreamerEnabled: bool,
-        isTimeoutAnivForPostingLinksEnabled: bool,
         isToxicTriviaEnabled: bool,
         isTranslateEnabled: bool,
         isTriviaEnabled: bool,
@@ -86,6 +86,8 @@ class User(UserInterface):
             raise ValueError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise ValueError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
+        elif not utils.isValidBool(isAnivContentScanningEnabled):
+            raise ValueError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isCatJamMessageEnabled):
             raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
@@ -142,8 +144,6 @@ class User(UserInterface):
             raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
             raise ValueError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
-        elif not utils.isValidBool(isTimeoutAnivForPostingLinksEnabled):
-            raise ValueError(f'isTimeoutAnivForPostingLinksEnabled argument is malformed: \"{isTimeoutAnivForPostingLinksEnabled}\"')
         elif not utils.isValidBool(isToxicTriviaEnabled):
             raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
@@ -215,6 +215,7 @@ class User(UserInterface):
 
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
+        self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
@@ -243,7 +244,6 @@ class User(UserInterface):
         self.__isSubGiftThankingEnabled: bool = isSubGiftThankingEnabled
         self.__isSuperTriviaGameEnabled: bool = isSuperTriviaGameEnabled
         self.__isSupStreamerEnabled: bool = isSupStreamerEnabled
-        self.__isTimeoutAnivForPostingLinksEnabled: bool = isTimeoutAnivForPostingLinksEnabled
         self.__isToxicTriviaEnabled: bool = isToxicTriviaEnabled
         self.__isTranslateEnabled: bool = isTranslateEnabled
         self.__isTriviaEnabled: bool = isTriviaEnabled
@@ -447,6 +447,9 @@ class User(UserInterface):
     def hasWaitForTriviaAnswerDelay(self) -> bool:
         return utils.isValidInt(self.__waitForTriviaAnswerDelay)
 
+    def isAnivContentScanningEnabled(self) -> bool:
+        return self.__isAnivContentScanningEnabled
+
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled
 
@@ -530,9 +533,6 @@ class User(UserInterface):
 
     def isSupStreamerEnabled(self) -> bool:
         return self.__isSupStreamerEnabled
-
-    def isTimeoutAnivForPostingLinksEnabled(self) -> bool:
-        return self.__isTimeoutAnivForPostingLinksEnabled
 
     def isToxicTriviaEnabled(self) -> bool:
         return self.__isToxicTriviaEnabled

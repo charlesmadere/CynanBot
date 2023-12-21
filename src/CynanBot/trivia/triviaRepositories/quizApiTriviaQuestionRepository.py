@@ -8,6 +8,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -22,8 +23,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -95,7 +95,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         question = utils.getStrFromDict(triviaJson, 'question', clean = True)
 
         # this API seems to only ever give multiple choice, so for now, we're just hardcoding this
-        triviaType = TriviaType.MULTIPLE_CHOICE
+        triviaType = TriviaQuestionType.MULTIPLE_CHOICE
 
         triviaId = utils.getStrFromDict(triviaJson, 'id', fallback = '')
         if not utils.isValidStr(triviaId):
@@ -135,7 +135,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             multipleChoiceResponses = filteredAnswers
         )
 
-        if triviaType is TriviaType.MULTIPLE_CHOICE:
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswers, multipleChoiceResponses):
                 return MultipleChoiceTriviaQuestion(
                     correctAnswers = correctAnswers,
@@ -149,9 +149,9 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 )
             else:
                 self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
-                triviaType = TriviaType.TRUE_FALSE
+                triviaType = TriviaQuestionType.TRUE_FALSE
 
-        if triviaType is TriviaType.TRUE_FALSE:
+        if triviaType is TriviaQuestionType.TRUE_FALSE:
             return TrueFalseTriviaQuestion(
                 correctAnswers = utils.strsToBools(correctAnswers),
                 category = category,
@@ -164,8 +164,8 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE, TriviaType.TRUE_FALSE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.QUIZ_API

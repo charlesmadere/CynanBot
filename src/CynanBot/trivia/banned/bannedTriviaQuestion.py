@@ -1,5 +1,5 @@
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.triviaSource import TriviaSource
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class BannedTriviaQuestion():

@@ -1,18 +1,19 @@
 import pytest
 
+from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
+from CynanBot.trivia.games.triviaGameState import TriviaGameState
+from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
+from CynanBot.trivia.games.triviaGameStoreInterface import \
+    TriviaGameStoreInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
-from CynanBot.trivia.superTriviaGameState import SuperTriviaGameState
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.triviaGameState import TriviaGameState
-from CynanBot.trivia.triviaGameStore import TriviaGameStore
-from CynanBot.trivia.triviaGameStoreInterface import TriviaGameStoreInterface
-from CynanBot.trivia.triviaSource import TriviaSource
 
 
 class TriviaGameStoreTests():

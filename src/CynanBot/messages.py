@@ -3,7 +3,6 @@ from datetime import timedelta
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatBand.chatBandManagerInterface import ChatBandManagerInterface
-from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.misc.timedDict import TimedDict
 from CynanBot.timber.timberInterface import TimberInterface
@@ -318,49 +317,6 @@ class RoachMessage(AbsMessage):
         if self.__roachMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
             await self.__twitchUtils.safeSend(message.getChannel(), self.__roachMessage)
             self.__timber.log('RoachMessage', f'Handled {self.__roachMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
-            return True
-
-        return False
-
-
-class SchubertWalkMessage(AbsMessage):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtils,
-        schubertWalkMessage: str = 'SchubertWalk',
-        cooldown: timedelta = timedelta(minutes = 20)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidStr(schubertWalkMessage):
-            raise ValueError(f'schubertWalkMessage argument is malformed: \"{schubertWalkMessage}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__schubertWalkMessage: str = schubertWalkMessage
-        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isSchubertWalkMessageEnabled():
-            return False
-        elif not twitchUser.isSchubertWalkMessageEnabled():
-            return False
-
-        splits = utils.getCleanedSplits(message.getContent())
-
-        if self.__schubertWalkMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.getChannel(), self.__schubertWalkMessage)
-            self.__timber.log('SchubertWalkMessage', f'Handled {self.__schubertWalkMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
             return True
 
         return False

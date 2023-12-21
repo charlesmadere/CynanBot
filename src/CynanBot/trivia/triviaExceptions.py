@@ -1,7 +1,7 @@
 from typing import Optional
 
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class AdditionalTriviaAnswerAlreadyExistsException(Exception):
@@ -11,7 +11,7 @@ class AdditionalTriviaAnswerAlreadyExistsException(Exception):
         message: str,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ):
         super().__init__(message, triviaId, triviaSource, triviaType)
 
@@ -24,7 +24,7 @@ class AdditionalTriviaAnswerIsMalformedException(Exception):
 
 class AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(Exception):
 
-    def __init__(self, message: str, triviaType: TriviaType, triviaSource: TriviaSource):
+    def __init__(self, message: str, triviaType: TriviaQuestionType, triviaSource: TriviaSource):
         super().__init__(message, triviaType, triviaSource)
 
 
@@ -105,7 +105,7 @@ class TooManyAdditionalTriviaAnswersException(Exception):
         answerCount: int,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ):
         super().__init__(answerCount, triviaId, triviaSource, triviaType)
 

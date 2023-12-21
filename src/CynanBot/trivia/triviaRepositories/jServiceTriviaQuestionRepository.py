@@ -10,6 +10,7 @@ from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterfac
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
@@ -22,8 +23,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -115,7 +115,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = correctAnswers,
             triviaId = triviaId,
             triviaSource = self.getTriviaSource(),
-            triviaType = TriviaType.QUESTION_ANSWER
+            triviaType = TriviaQuestionType.QUESTION_ANSWER
         ):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Added additional answers to question (triviaId=\"{triviaId}\")')
 
@@ -128,7 +128,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             currentAnswers = cleanedCorrectAnswers,
             triviaId = triviaId,
             triviaSource = self.getTriviaSource(),
-            triviaType = TriviaType.QUESTION_ANSWER
+            triviaType = TriviaQuestionType.QUESTION_ANSWER
         )
 
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
@@ -148,8 +148,8 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = TriviaSource.J_SERVICE
         )
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.QUESTION_ANSWER }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.QUESTION_ANSWER }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.J_SERVICE

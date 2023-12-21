@@ -3,13 +3,13 @@ import pytest
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
+    StartNewSuperTriviaGameAction
+from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
+from CynanBot.trivia.games.queuedTriviaGameStoreInterface import \
+    QueuedTriviaGameStoreInterface
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
-from CynanBot.trivia.queuedTriviaGameStore import QueuedTriviaGameStore
-from CynanBot.trivia.queuedTriviaGameStoreInterface import \
-    QueuedTriviaGameStoreInterface
-from CynanBot.trivia.startNewSuperTriviaGameAction import \
-    StartNewSuperTriviaGameAction
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBot.trivia.triviaIdGeneratorInterface import \

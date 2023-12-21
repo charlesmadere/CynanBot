@@ -21,13 +21,13 @@ from CynanBot.trivia.gameController.triviaGameGlobalController import \
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
 from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
 from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
-from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.exceptions import NoSuchUserException
@@ -189,9 +189,9 @@ class TriviaUtils():
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s an invalid input. {utils.getRandomSadEmoji()}'
 
         suffix = ''
-        if question.getTriviaType() is TriviaType.MULTIPLE_CHOICE:
+        if question.getTriviaType() is TriviaQuestionType.MULTIPLE_CHOICE:
             suffix = 'Please answer using A, B, C, …'
-        elif question.getTriviaType() is TriviaType.TRUE_FALSE:
+        elif question.getTriviaType() is TriviaQuestionType.TRUE_FALSE:
             suffix = 'Please answer using either true or false.'
         else:
             suffix = 'Please check your answer and try again.'
@@ -440,7 +440,7 @@ class TriviaUtils():
             cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
+        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and triviaQuestion.hasCategory():
             questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
@@ -585,7 +585,7 @@ class TriviaUtils():
             cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaType.QUESTION_ANSWER and triviaQuestion.hasCategory():
+        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and triviaQuestion.hasCategory():
             questionPrompt = f'(category is \"{triviaQuestion.getCategory()}\") — {triviaQuestion.getQuestion()}'
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'

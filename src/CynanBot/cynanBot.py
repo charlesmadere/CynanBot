@@ -77,7 +77,7 @@ from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
 from CynanBot.messages import (AbsMessage, DeerForceMessage, EyesMessage,
                                ImytSlurpMessage, JamCatMessage, RatJamMessage,
-                               RoachMessage, SchubertWalkMessage)
+                               RoachMessage)
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
@@ -108,7 +108,6 @@ from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
@@ -117,27 +116,32 @@ from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
-from CynanBot.trivia.clearedSuperTriviaQueueTriviaEvent import \
+from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
+from CynanBot.trivia.events.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
-from CynanBot.trivia.correctAnswerTriviaEvent import CorrectAnswerTriviaEvent
-from CynanBot.trivia.correctSuperAnswerTriviaEvent import \
+from CynanBot.trivia.events.correctAnswerTriviaEvent import \
+    CorrectAnswerTriviaEvent
+from CynanBot.trivia.events.correctSuperAnswerTriviaEvent import \
     CorrectSuperAnswerTriviaEvent
-from CynanBot.trivia.failedToFetchQuestionSuperTriviaEvent import \
+from CynanBot.trivia.events.failedToFetchQuestionSuperTriviaEvent import \
     FailedToFetchQuestionSuperTriviaEvent
-from CynanBot.trivia.failedToFetchQuestionTriviaEvent import \
+from CynanBot.trivia.events.failedToFetchQuestionTriviaEvent import \
     FailedToFetchQuestionTriviaEvent
+from CynanBot.trivia.events.incorrectAnswerTriviaEvent import \
+    IncorrectAnswerTriviaEvent
+from CynanBot.trivia.events.invalidAnswerInputTriviaEvent import \
+    InvalidAnswerInputTriviaEvent
+from CynanBot.trivia.events.newSuperTriviaGameEvent import \
+    NewSuperTriviaGameEvent
+from CynanBot.trivia.events.newTriviaGameEvent import NewTriviaGameEvent
+from CynanBot.trivia.events.outOfTimeSuperTriviaEvent import \
+    OutOfTimeSuperTriviaEvent
+from CynanBot.trivia.events.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
+from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.incorrectAnswerTriviaEvent import \
-    IncorrectAnswerTriviaEvent
-from CynanBot.trivia.invalidAnswerInputTriviaEvent import \
-    InvalidAnswerInputTriviaEvent
-from CynanBot.trivia.newSuperTriviaGameEvent import NewSuperTriviaGameEvent
-from CynanBot.trivia.newTriviaGameEvent import NewTriviaGameEvent
-from CynanBot.trivia.outOfTimeSuperTriviaEvent import OutOfTimeSuperTriviaEvent
-from CynanBot.trivia.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
 from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
@@ -145,7 +149,6 @@ from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
-from CynanBot.trivia.triviaEventType import TriviaEventType
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
@@ -598,7 +601,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber, twitchUtils)
         self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber, twitchUtils)
         self.__roachMessage: AbsMessage = RoachMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__schubertWalkMessage: AbsMessage = SchubertWalkMessage(generalSettingsRepository, timber, twitchUtils)
 
         ########################################################
         ## Initialization of point redemption handler objects ##
@@ -693,12 +695,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 return
 
             if await self.__roachMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__schubertWalkMessage.handleMessage(
                 twitchUser = twitchUser,
                 message = twitchMessage
             ):

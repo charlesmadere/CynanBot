@@ -9,6 +9,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import UnsupportedTriviaTypeException
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
@@ -17,8 +18,7 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -58,12 +58,12 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
 
         difficulty = TriviaDifficulty.fromInt(utils.getIntFromDict(triviaDict, 'difficulty'))
         questionId = utils.getStrFromDict(triviaDict, 'questionId')
-        questionType = TriviaType.fromStr(utils.getStrFromDict(triviaDict, 'questionType'))
+        questionType = TriviaQuestionType.fromStr(utils.getStrFromDict(triviaDict, 'questionType'))
 
         category = await self.__triviaQuestionCompiler.compileCategory(utils.getStrFromDict(triviaDict, 'category'))
         question = await self.__triviaQuestionCompiler.compileQuestion(utils.getStrFromDict(triviaDict, 'question'))
 
-        if questionType is TriviaType.MULTIPLE_CHOICE:
+        if questionType is TriviaQuestionType.MULTIPLE_CHOICE:
             responses: List[str] = triviaDict['responses']
             correctAnswer: str = responses[utils.getIntFromDict(triviaDict, 'correctAnswerIndex')]
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(correctAnswer)
@@ -121,8 +121,8 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         await connection.close()
         return questionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaType]:
-        return { TriviaType.MULTIPLE_CHOICE }
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+        return { TriviaQuestionType.MULTIPLE_CHOICE }
 
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.THE_QUESTION_CO

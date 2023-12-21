@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
@@ -32,8 +34,16 @@ class TriviaFetchOptions():
     def isJokeTriviaRepositoryEnabled(self) -> bool:
         return self.__isJokeTriviaRepositoryEnabled
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def requireQuestionAnswerTriviaQuestion(self) -> bool:
         return self.__questionAnswerTriviaConditions is QuestionAnswerTriviaConditions.REQUIRED
 
-    def __str__(self) -> str:
-        return f'twitchChannel=\"{self.__twitchChannel}\", isJokeTriviaRepositoryEnabled=\"{self.__isJokeTriviaRepositoryEnabled}\", questionAnswerTriviaConditions=\"{self.__questionAnswerTriviaConditions}\"'
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'isJokeTriviaRepositoryEnabled': self.__isJokeTriviaRepositoryEnabled,
+            'questionAnswerTriviaConditions': self.__questionAnswerTriviaConditions,
+            'twitchChannel': self.__twitchChannel
+        }

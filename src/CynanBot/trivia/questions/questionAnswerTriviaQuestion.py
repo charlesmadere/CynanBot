@@ -2,10 +2,10 @@ from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import NoTriviaCorrectAnswersException
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
 
 
 class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
@@ -28,7 +28,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             triviaSource = triviaSource,
-            triviaType = TriviaType.QUESTION_ANSWER
+            triviaType = TriviaQuestionType.QUESTION_ANSWER
         )
 
         if not utils.areValidStrs(correctAnswers):

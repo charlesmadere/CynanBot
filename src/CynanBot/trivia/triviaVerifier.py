@@ -5,13 +5,13 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
-from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 
 
@@ -51,10 +51,10 @@ class TriviaVerifier(TriviaVerifierInterface):
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
-        if not triviaFetchOptions.areQuestionAnswerTriviaQuestionsEnabled() and question.getTriviaType() is TriviaType.QUESTION_ANSWER:
+        if not triviaFetchOptions.areQuestionAnswerTriviaQuestionsEnabled() and question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
             self.__timber.log('TriviaVerifier', f'The given TriviaType is illegal: {question.getTriviaType()} (triviaFetchOptions: {triviaFetchOptions})')
             return TriviaContentCode.ILLEGAL_TRIVIA_TYPE
-        elif triviaFetchOptions.requireQuestionAnswerTriviaQuestion() and question.getTriviaType() is not TriviaType.QUESTION_ANSWER:
+        elif triviaFetchOptions.requireQuestionAnswerTriviaQuestion() and question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             self.__timber.log('TriviaVerifier', f'The given TriviaType is illegal: {question.getTriviaType()} (triviaFetchOptions: {triviaFetchOptions})')
             return TriviaContentCode.ILLEGAL_TRIVIA_TYPE
 

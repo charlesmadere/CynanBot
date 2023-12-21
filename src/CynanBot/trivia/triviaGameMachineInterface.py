@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from CynanBot.trivia.absTriviaAction import AbsTriviaAction
+from CynanBot.trivia.actions.absTriviaAction import AbsTriviaAction
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 
 

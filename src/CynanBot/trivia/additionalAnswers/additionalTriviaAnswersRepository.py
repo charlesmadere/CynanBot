@@ -11,6 +11,8 @@ from CynanBot.trivia.additionalAnswers.additionalTriviaAnswers import \
     AdditionalTriviaAnswers
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
+from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,
     AdditionalTriviaAnswerIsMalformedException,
@@ -18,8 +20,6 @@ from CynanBot.trivia.triviaExceptions import (
     TooManyAdditionalTriviaAnswersException)
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.triviaSource import TriviaSource
-from CynanBot.trivia.triviaType import TriviaType
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -67,7 +67,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaId: str,
         userId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> AdditionalTriviaAnswers:
         if not utils.isValidStr(additionalAnswer):
             raise AdditionalTriviaAnswerIsMalformedException(f'additionalAnswer argument is malformed: \"{additionalAnswer}\"')
@@ -77,7 +77,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaType):
+        elif not isinstance(triviaType, TriviaQuestionType):
             raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         additionalAnswerLength = len(additionalAnswer)
@@ -86,7 +86,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         if additionalAnswerLength > maxAdditionalTriviaAnswerLength:
             raise AdditionalTriviaAnswerIsMalformedException(f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is too long (len is {additionalAnswerLength}, max len is {maxAdditionalTriviaAnswerLength})')
 
-        if triviaType is not TriviaType.QUESTION_ANSWER:
+        if triviaType is not TriviaQuestionType.QUESTION_ANSWER:
             raise AdditionalTriviaAnswerIsUnsupportedTriviaTypeException(
                 message = f'Attempted to add additional answer \"{additionalAnswer}\" for {triviaSource.toStr()}:{triviaId}, but it is an unsupported type ({triviaType.toStr})',
                 triviaSource = triviaSource,
@@ -158,7 +158,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         currentAnswers: List[str],
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> bool:
         if not isinstance(currentAnswers, List):
             raise ValueError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
@@ -166,7 +166,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaType):
+        elif not isinstance(triviaType, TriviaQuestionType):
             raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         reference = await self.getAdditionalTriviaAnswers(
@@ -185,7 +185,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> Optional[AdditionalTriviaAnswers]:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
@@ -220,13 +220,13 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         self,
         triviaId: str,
         triviaSource: TriviaSource,
-        triviaType: TriviaType
+        triviaType: TriviaQuestionType
     ) -> Optional[AdditionalTriviaAnswers]:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaType):
+        elif not isinstance(triviaType, TriviaQuestionType):
             raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         if not await self.__triviaSettingsRepository.areAdditionalTriviaAnswersEnabled():

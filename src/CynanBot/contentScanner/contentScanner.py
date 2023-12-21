@@ -90,7 +90,7 @@ class ContentScanner(ContentScannerInterface):
 
     async def updatePhrasesContent(
         self,
-        phrases: Set[str],
+        phrases: Set[Optional[str]],
         string: Optional[str]
     ):
         if not isinstance(phrases, Set):
