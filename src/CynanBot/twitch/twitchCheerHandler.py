@@ -201,7 +201,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             return
         elif not user.isTtsEnabled():
             return
-        elif not user.hasMinimumTtsCheerAmount() or bits < user.getMinimumTtsCheerAmount():
+
+        minimumTtsCheerAmount = user.getMinimumTtsCheerAmount()
+
+        if not utils.isValidInt(minimumTtsCheerAmount) or bits < minimumTtsCheerAmount:
             return
 
         donation: TtsDonation = TtsCheerDonation(bits = bits)
