@@ -3,9 +3,9 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
-from CynanBot.contentScanner.contentCode import ContentCode
-from CynanBot.contentScanner.contentScannerInterface import \
-    ContentScannerInterface
+from CynanBot.contentScanner.aniv.anivContentCode import AnivContentCode
+from CynanBot.contentScanner.aniv.anivContentScannerInterface import \
+    AnivContentScannerInterface
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
@@ -26,7 +26,7 @@ class AnivCheckChatAction(AbsChatAction):
 
     def __init__(
         self,
-        contentScanner: ContentScannerInterface,
+        anivContentScanner: AnivContentScannerInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -36,8 +36,8 @@ class AnivCheckChatAction(AbsChatAction):
         timeoutDurationSeconds: int = 60,
         anivUserId: str = '749050409'
     ):
-        if not isinstance(contentScanner, ContentScannerInterface):
-            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+        if not isinstance(anivContentScanner, AnivContentScannerInterface):
+            raise ValueError(f'anivContentScanner argument is malformed: \"{anivContentScanner}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
@@ -57,7 +57,7 @@ class AnivCheckChatAction(AbsChatAction):
         elif not utils.isValidStr(anivUserId):
             raise ValueError(f'anivUserId argument is malformed: \"{anivUserId}\"')
 
-        self.__contentScanner: ContentScannerInterface = contentScanner
+        self.__anivContentScanner: AnivContentScannerInterface = anivContentScanner
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -78,8 +78,8 @@ class AnivCheckChatAction(AbsChatAction):
         elif not user.isAnivContentScanningEnabled():
             return False
 
-        contentCode = await self.__contentScanner.scan(message.getContent())
-        if contentCode is ContentCode.OK:
+        contentCode = await self.__anivContentScanner.scan(message.getContent())
+        if contentCode is AnivContentCode.OK:
             return False
 
         moderatorUserName = await self.__twitchHandleProvider.getTwitchHandle()
@@ -118,10 +118,11 @@ class AnivCheckChatAction(AbsChatAction):
                 twitchAccessToken = twitchToken,
                 banRequest = banRequest
             )
-
-            await self.__twitchUtils.safeSend(channel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s)')
-            self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()}:{self.__anivUserId} for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
-            return True
         except Exception as e:
             self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()}:{self.__anivUserId} for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())
             return False
+
+        await self.__twitchUtils.safeSend(channel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s) — {contentCode}')
+        self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()}:{self.__anivUserId} for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
+
+        return True

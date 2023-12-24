@@ -36,6 +36,7 @@ from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.contentScanner.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
@@ -756,7 +757,10 @@ if generalSettingsSnapshot.isTtsEnabled():
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     anivCheckChatAction = AnivCheckChatAction(
-        contentScanner = contentScanner,
+        anivContentScanner = AnivContentScanner(
+            contentScanner = contentScanner,
+            timber = timber
+        ),
         timber = timber,
         twitchApiService = twitchApiService,
         twitchHandleProvider = authRepository,
