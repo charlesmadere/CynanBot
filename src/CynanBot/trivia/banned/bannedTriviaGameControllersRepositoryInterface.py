@@ -5,7 +5,7 @@ from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
 from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
-from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 
 

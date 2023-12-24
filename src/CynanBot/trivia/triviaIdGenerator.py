@@ -20,6 +20,9 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
     async def generateEventId(self) -> str:
         return await self.generateActionId()
 
+    async def generateGameId(self) -> str:
+        return await self.generateActionId()
+
     async def generateQuestionId(
         self,
         question: str,

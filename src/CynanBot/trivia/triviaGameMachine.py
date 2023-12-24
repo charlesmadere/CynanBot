@@ -64,13 +64,13 @@ from CynanBot.trivia.games.triviaGameStoreInterface import \
     TriviaGameStoreInterface
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.superTriviaCooldownHelperInterface import \
     SuperTriviaCooldownHelperInterface
-from CynanBot.trivia.toxicTriviaHelper import ToxicTriviaHelper
-from CynanBot.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
-from CynanBot.trivia.toxicTriviaPunishmentResult import \
+from CynanBot.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
+from CynanBot.trivia.specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
     TriviaAnswerCheckerInterface

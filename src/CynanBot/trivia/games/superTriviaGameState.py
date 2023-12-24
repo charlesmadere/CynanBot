@@ -5,7 +5,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.trivia.games.absTriviaGameState import AbsTriviaGameState
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
 
 
 class SuperTriviaGameState(AbsTriviaGameState):

@@ -13,7 +13,7 @@ from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.removeTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

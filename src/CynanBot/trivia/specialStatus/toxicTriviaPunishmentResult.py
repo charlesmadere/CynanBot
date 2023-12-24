@@ -2,7 +2,7 @@ import locale
 from typing import List
 
 import CynanBot.misc.utils as utils
-from CynanBot.trivia.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBot.trivia.specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
 
 
 class ToxicTriviaPunishmentResult():

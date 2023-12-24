@@ -6,7 +6,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
@@ -120,10 +120,12 @@ class ShinyTriviaHelper():
             userId = userId
         )
 
-        if details.getMostRecent() is not None:
+        mostRecent = details.getMostRecent()
+
+        if mostRecent is not None:
             now = datetime.now(self.__timeZone)
 
-            if now - details.getMostRecent() < self.__cooldown:
+            if now - mostRecent < self.__cooldown:
                 self.__timber.log('ShinyTriviaHelper', f'{userName}:{details.getUserId()} in {details.getTwitchChannel()} would have encountered a shiny, but it was rejected, as their most recent shiny ({details.getMostRecent()}) is within the cooldown time')
                 return False
 

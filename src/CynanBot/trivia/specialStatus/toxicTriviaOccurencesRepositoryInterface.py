@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
+from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
 
 
 class ToxicTriviaOccurencesRepositoryInterface(ABC):

@@ -13,7 +13,7 @@ from CynanBot.trivia.banned.bannedTriviaGameController import \
     BannedTriviaGameController
 from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
     BannedTriviaGameControllersRepositoryInterface
-from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

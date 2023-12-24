@@ -5,9 +5,9 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.toxicTriviaResult import ToxicTriviaResult
+from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
 
 
 class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):

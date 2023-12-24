@@ -136,16 +136,16 @@ from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterfa
     TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
-from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBot.trivia.shinyTriviaOccurencesRepository import \
+from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
-from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
-from CynanBot.trivia.toxicTriviaHelper import ToxicTriviaHelper
-from CynanBot.trivia.toxicTriviaOccurencesRepository import \
+from CynanBot.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
-from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler

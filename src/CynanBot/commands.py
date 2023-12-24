@@ -81,9 +81,9 @@ from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface imp
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.removeBannedTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
-from CynanBot.trivia.removeTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
 from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface

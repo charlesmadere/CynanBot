@@ -5,7 +5,7 @@ from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
 from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
-from CynanBot.trivia.removeTriviaGameControllerResult import \
+from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
 
 

@@ -13,6 +13,10 @@ class TriviaIdGeneratorInterface(ABC):
         pass
 
     @abstractmethod
+    async def generateGameId(self) -> str:
+        pass
+
+    @abstractmethod
     async def generateQuestionId(
         self,
         question: str,

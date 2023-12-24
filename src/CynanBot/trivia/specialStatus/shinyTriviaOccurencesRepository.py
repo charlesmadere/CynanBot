@@ -5,9 +5,9 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.shinyTriviaResult import ShinyTriviaResult
+from CynanBot.trivia.specialStatus.shinyTriviaResult import ShinyTriviaResult
 
 
 class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):

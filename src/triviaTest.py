@@ -30,8 +30,8 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaSource import TriviaSource
-from CynanBot.trivia.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBot.trivia.shinyTriviaOccurencesRepository import \
+from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker

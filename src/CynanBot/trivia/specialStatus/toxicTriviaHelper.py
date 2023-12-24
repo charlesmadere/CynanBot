@@ -2,7 +2,7 @@ import random
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
