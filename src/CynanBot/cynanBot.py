@@ -141,9 +141,9 @@ from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface imp
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
