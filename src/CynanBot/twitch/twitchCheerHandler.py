@@ -88,21 +88,21 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if user.isTtsEnabled():
+        if user.areCheerActionsEnabled() and await self.__processCheerAction(
+            bits = bits,
+            cheerUserId = cheerUserId,
+            cheerUserLogin = cheerUserLogin,
+            message = message,
+            user = user
+        ):
+            # do nothing
+            pass
+        elif user.isTtsEnabled():
             await self.__processTtsEvent(
                 bits = bits,
                 message = message,
                 cheerUserId = cheerUserId,
                 cheerUserLogin = cheerUserLogin,
-                user = user
-            )
-
-        if user.areCheerActionsEnabled():
-            await self.__processCheerAction(
-                bits = bits,
-                cheerUserId = cheerUserId,
-                cheerUserLogin = cheerUserLogin,
-                message = message,
                 user = user
             )
 
@@ -113,7 +113,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         cheerUserLogin: str,
         message: Optional[str],
         user: UserInterface
-    ):
+    ) -> bool:
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
@@ -127,10 +127,12 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        if not utils.isValidStr(message) or self.__cheerActionHelper is None:
-            return
+        if self.__cheerActionHelper is None:
+            return False
+        if not utils.isValidStr(message):
+            return False
 
-        await self.__cheerActionHelper.handleCheerAction(
+        return await self.__cheerActionHelper.handleCheerAction(
             bits = bits,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserLogin,

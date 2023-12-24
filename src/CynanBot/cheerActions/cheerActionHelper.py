@@ -97,7 +97,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         cheerUserName: str,
         message: str,
         user: UserInterface
-    ):
+    ) -> bool:
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
@@ -130,9 +130,9 @@ class CheerActionHelper(CheerActionHelperInterface):
         actions = await self.__cheerActionsRepository.getActions(broadcasterUserId)
 
         if not utils.hasItems(actions):
-            return
+            return False
 
-        await self.__processTimeoutActions(
+        return await self.__processTimeoutActions(
             bits = bits,
             actions = actions,
             broadcasterUserId = broadcasterUserId,
@@ -183,7 +183,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         moderatorUserId: str,
         userTwitchAccessToken: str,
         user: UserInterface
-    ):
+    ) -> bool:
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
@@ -214,7 +214,7 @@ class CheerActionHelper(CheerActionHelperInterface):
                 timeoutActions.append(action)
 
         if len(timeoutActions) == 0:
-            return
+            return False
 
         timeoutActions.sort(key = lambda action: action.getAmount(), reverse = True)
         timeoutAction: Optional[CheerAction] = None
@@ -231,12 +231,12 @@ class CheerActionHelper(CheerActionHelperInterface):
                     break
 
         if timeoutAction is None:
-            return
+            return False
 
         userNameToTimeoutMatch = self.__userNameRegEx.fullmatch(message)
         if userNameToTimeoutMatch is None or not utils.isValidStr(userNameToTimeoutMatch.group(2)):
             self.__timber.log('CheerActionHelper', f'Attempted to timeout from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user name: ({message=}) ({timeoutAction=})')
-            return
+            return False
 
         userNameToTimeout = userNameToTimeoutMatch.group(2)
 
@@ -247,12 +247,12 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         if not utils.isValidStr(userIdToTimeout):
             self.__timber.log('CheerActionHelper', f'Attempted to timeout \"{userNameToTimeout}\" from {cheerUserName}:{cheerUserId} in {user.getHandle()}, but was unable to find a user ID: ({message=}) ({timeoutAction=})')
-            return
+            return False
         elif userIdToTimeout.lower() == broadcasterUserId.lower():
             userIdToTimeout = cheerUserId
             self.__timber.log('CheerActionHelper', f'Attempt to timeout the broadcaster themself from {cheerUserName}:{cheerUserId} in {user.getHandle()}, so will instead time out the user: ({message=}) ({timeoutAction=})')
 
-        await self.__timeoutUser(
+        return await self.__timeoutUser(
             action = timeoutAction,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
@@ -275,7 +275,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         userIdToTimeout: str,
         userTwitchAccessToken: str,
         user: UserInterface
-    ):
+    ) -> bool:
         if not isinstance(action, CheerAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(broadcasterUserId):
@@ -300,7 +300,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             twitchAccessToken = userTwitchAccessToken,
             userIdToTimeout = userIdToTimeout
         ):
-            return
+            return False
 
         isMod = await self.__isMod(
             broadcasterUserId = broadcasterUserId,
@@ -321,7 +321,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             )
         except Exception as e:
             self.__timber.log('CheerActionHelper', f'Failed to timeout {userIdToTimeout=} in \"{user.getHandle()}\": {e}', e, traceback.format_exc())
-            return
+            return False
 
         userNameToTimeout = await self.__userIdsRepository.requireUserName(
             userId = userIdToTimeout,
@@ -351,6 +351,10 @@ class CheerActionHelper(CheerActionHelperInterface):
                 donation = None,
                 raidInfo = None
             ))
+
+            return True
+        else:
+            return False
 
     async def __verifyUserCanBeTimedOut(
         self,

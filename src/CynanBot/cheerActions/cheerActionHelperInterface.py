@@ -13,5 +13,5 @@ class CheerActionHelperInterface(ABC):
         cheerUserName: str,
         message: str,
         user: UserInterface
-    ):
+    ) -> bool:
         pass
