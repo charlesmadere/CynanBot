@@ -77,17 +77,17 @@ from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
-from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
-    TriviaGameControllersRepositoryInterface
-from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
-    TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.gameController.removeBannedTriviaGameControllerResult import \
     RemoveBannedTriviaGameControllerResult
 from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
-from CynanBot.trivia.shinyTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
+    TriviaGameControllersRepositoryInterface
+from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
+    TriviaGameGlobalControllersRepositoryInterface
+from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.toxicTriviaOccurencesRepositoryInterface import \
+from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
