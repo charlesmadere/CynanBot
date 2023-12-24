@@ -29,13 +29,15 @@ class PersistAllUsersChatAction(AbsChatAction):
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         settings = await self.__generalSettingsRepository.getAllAsync()
 
         if not settings.isPersistAllUsersEnabled():
-            return
+            return False
 
         await self.__userIdsRepository.setUser(
             userId = message.getAuthorId(),
             userName = message.getAuthorName()
         )
+
+        return True

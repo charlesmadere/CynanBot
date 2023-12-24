@@ -332,6 +332,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     anivCheckChatAction = None,
     catJamChatAction = None,
     chatLoggerChatAction = None,
+    deerForceChatAction = None,
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(

@@ -75,9 +75,8 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBot.messages import (AbsMessage, DeerForceMessage, EyesMessage,
-                               ImytSlurpMessage, JamCatMessage, RatJamMessage,
-                               RoachMessage)
+from CynanBot.messages import (AbsMessage, EyesMessage, ImytSlurpMessage,
+                               JamCatMessage, RatJamMessage, RoachMessage)
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
@@ -595,7 +594,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         ## Initialization of message handler objects ##
         ###############################################
 
-        self.__deerForceMessage: AbsMessage = DeerForceMessage(generalSettingsRepository, timber, twitchUtils)
         self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository, timber, twitchUtils)
         self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber, twitchUtils)
         self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber, twitchUtils)

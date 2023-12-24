@@ -24,7 +24,7 @@ class ChatLoggerChatAction(AbsChatAction):
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         if not user.isChatLoggingEnabled():
             return False
 
@@ -34,3 +34,5 @@ class ChatLoggerChatAction(AbsChatAction):
             userName = message.getAuthorName(),
             msg = utils.cleanStr(message.getContent())
         )
+
+        return True

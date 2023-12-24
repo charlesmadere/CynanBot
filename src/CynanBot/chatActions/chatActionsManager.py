@@ -6,11 +6,13 @@ from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
+from CynanBot.chatActions.deerForceChatAction import DeerForceChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -19,6 +21,7 @@ from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -29,6 +32,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         anivCheckChatAction: Optional[AnivCheckChatAction],
         catJamChatAction: Optional[CatJamChatAction],
         chatLoggerChatAction: Optional[ChatLoggerChatAction],
+        deerForceChatAction: Optional[DeerForceChatAction],
         generalSettingsRepository: GeneralSettingsRepository,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         persistAllUsersChatAction: Optional[PersistAllUsersChatAction],
@@ -46,6 +50,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
         elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
             raise ValueError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
+        elif deerForceChatAction is not None and not isinstance(deerForceChatAction, DeerForceChatAction):
+            raise ValueError(f'deerForceChatAction argument is malformed: \"{deerForceChatAction}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
@@ -70,6 +76,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__anivCheckChatAction: Optional[AbsChatAction] = anivCheckChatAction
         self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
         self.__chatLoggerChatAction: Optional[AbsChatAction] = chatLoggerChatAction
+        self.__deerForceChatAction: Optional[AbsChatAction] = deerForceChatAction
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
         self.__persistAllUsersChatAction: Optional[AbsChatAction] = persistAllUsersChatAction
         self.__schubertWalkChatAction: Optional[AbsChatAction] = schubertWalkChatAction
@@ -101,13 +108,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 user = user
             )
 
-        if self.__catJamChatAction is not None:
-            await self.__catJamChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user
-            )
-
         if self.__chatLoggerChatAction is not None:
             await self.__chatLoggerChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
@@ -122,16 +122,55 @@ class ChatActionsManager(ChatActionsManagerInterface):
                 user = user
             )
 
-        if self.__schubertWalkChatAction is not None:
-            await self.__schubertWalkChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user
-            )
-
         if self.__supStreamerChatAction is not None:
             await self.__supStreamerChatAction.handleChat(
                 mostRecentChat = mostRecentChat,
                 message = message,
                 user = user
             )
+
+        await self.__handleSimpleMessageChatActions(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        )
+
+        await self.__handleSimpleMessageChatActions(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        )
+
+    async def __handleSimpleMessageChatActions(
+        self,
+        mostRecentChat: Optional[MostRecentChat],
+        message: TwitchMessage,
+        user: UserInterface
+    ):
+        if mostRecentChat is not None and not isinstance(mostRecentChat, MostRecentChat):
+            raise ValueError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
+        elif not isinstance(message, TwitchMessage):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+
+        if self.__catJamChatAction is not None and await self.__catJamChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+        if self.__deerForceChatAction is not None and not await self.__deerForceChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return
+
+        if self.__schubertWalkChatAction is not None and await self.__schubertWalkChatAction.handleChat(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        ):
+            return

@@ -72,27 +72,27 @@ class AnivCheckChatAction(AbsChatAction):
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         if message.getAuthorId() != self.__anivUserId:
-            return
+            return False
         elif not user.isAnivContentScanningEnabled():
-            return
+            return False
 
         contentCode = await self.__contentScanner.scan(message.getContent())
         if contentCode is ContentCode.OK:
-            return
+            return False
 
         moderatorUserName = await self.__twitchHandleProvider.getTwitchHandle()
         if not await self.__twitchTokensRepository.hasAccessToken(moderatorUserName):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but the bot user ({moderatorUserName}) does not have an available Twitch token')
-            return
+            return False
 
         await self.__twitchTokensRepository.validateAndRefreshAccessToken(moderatorUserName)
         twitchToken = await self.__twitchTokensRepository.getAccessToken(moderatorUserName)
 
         if not utils.isValidStr(twitchToken):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch token (\"{twitchToken}\") for the bot user ({moderatorUserName})')
-            return
+            return False
 
         moderatorUserId = await self.__userIdsRepository.fetchUserId(
             userName = moderatorUserName,
@@ -101,7 +101,7 @@ class AnivCheckChatAction(AbsChatAction):
 
         if not utils.isValidStr(moderatorUserId):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{self.__anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch user ID for the bot user ({moderatorUserName})')
-            return
+            return False
 
         channel = message.getChannel()
 
@@ -121,5 +121,7 @@ class AnivCheckChatAction(AbsChatAction):
 
             await self.__twitchUtils.safeSend(channel, f'ⓘ Timed out {message.getAuthorName()} for {self.__timeoutDurationSeconds} second(s)')
             self.__timber.log('AnivCheckChatAction', f'Timed out {message.getAuthorName()}:{self.__anivUserId} for {self.__timeoutDurationSeconds} second(s) due to posting bad content (\"{message.getContent()}\") ({contentCode=})')
+            return True
         except Exception as e:
             self.__timber.log('AnivCheckChatAction', f'Failed to timeout {message.getAuthorName()}:{self.__anivUserId} for posting bad content (\"{message.getContent()}\") ({contentCode=})', e, traceback.format_exc())
+            return False

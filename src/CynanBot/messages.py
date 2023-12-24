@@ -56,51 +56,6 @@ class ChatBandMessage(AbsMessage):
         return False
 
 
-class DeerForceMessage(AbsMessage):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtils,
-        deerForceMessage: str = 'D e e R F o r C e',
-        cooldown: timedelta = timedelta(minutes = 30)
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not utils.isValidStr(deerForceMessage):
-            raise ValueError(f'deerForceMessage argument is malformed: \"{deerForceMessage}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
-        self.__deerForceMessage: str = deerForceMessage
-        self.__lastDeerForceMessageTimes: TimedDict = TimedDict(cooldown)
-
-    async def handleMessage(self, twitchUser: User, message: TwitchMessage) -> bool:
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if not generalSettings.isDeerForceMessageEnabled():
-            return False
-        elif not twitchUser.isDeerForceMessageEnabled():
-            return False
-
-        text = utils.cleanStr(message.getContent())
-
-        if text.lower() == self.__deerForceMessage.lower() and self.__lastDeerForceMessageTimes.isReadyAndUpdate(twitchUser.getHandle()):
-            await self.__twitchUtils.safeSend(message.getChannel(), self.__deerForceMessage)
-            self.__timber.log('DeerForceMessage', f'Handled Deer Force message for {message.getAuthorName()}:{message.getAuthorId()} in {twitchUser.getHandle()}')
-            return True
-
-        return False
-
-
 class EyesMessage(AbsMessage):
 
     def __init__(

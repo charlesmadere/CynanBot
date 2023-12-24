@@ -39,22 +39,22 @@ class SupStreamerChatAction(AbsChatAction):
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         if not user.isSupStreamerEnabled() and not user.isTtsEnabled():
-            return
+            return False
 
         now = datetime.now(self.__timeZone)
 
         if mostRecentChat is not None and (mostRecentChat.getMostRecentChat() + self.__cooldown) > now:
-            return
+            return False
 
         chatMessage = message.getContent()
         supStreamerMessage = user.getSupStreamerMessage()
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
-            return
+            return False
         elif chatMessage.lower() != supStreamerMessage.lower():
-            return
+            return False
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
 
@@ -66,3 +66,5 @@ class SupStreamerChatAction(AbsChatAction):
             donation = None,
             raidInfo = None
         ))
+
+        return True

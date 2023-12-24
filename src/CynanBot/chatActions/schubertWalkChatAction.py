@@ -28,19 +28,23 @@ class SchubertWalkChatAction(AbsChatAction):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtils):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not utils.isValidStr(schubertWalkMessage):
+            raise ValueError(f'schubertWalkMessage argument is malformed: \"{schubertWalkMessage}\"')
+        elif not isinstance(cooldown, timedelta):
+            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__schubertWalkMessage: str = schubertWalkMessage
-        self.__lastSchubertWalkMessageTimes: TimedDict = TimedDict(cooldown)
+        self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def handleChat(
         self,
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if not generalSettings.isSchubertWalkMessageEnabled():
@@ -50,6 +54,9 @@ class SchubertWalkChatAction(AbsChatAction):
 
         splits = utils.getCleanedSplits(message.getContent())
 
-        if self.__schubertWalkMessage in splits and self.__lastSchubertWalkMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if self.__schubertWalkMessage in splits and self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             await self.__twitchUtils.safeSend(message.getChannel(), self.__schubertWalkMessage)
-            self.__timber.log('SchubertWalkChatAction', f'Handled SchubertWalk message for {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+            self.__timber.log('SchubertWalkChatAction', f'Handled {self.__schubertWalkMessage} message for {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
+            return True
+        else:
+            return False

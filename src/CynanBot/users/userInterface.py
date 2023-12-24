@@ -224,6 +224,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isDeerForceMessageEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isEnabled(self) -> bool:
         pass
 

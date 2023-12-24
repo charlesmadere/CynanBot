@@ -14,6 +14,7 @@ from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
+from CynanBot.chatActions.deerForceChatAction import DeerForceChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
@@ -141,12 +142,12 @@ from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
 from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepository import \
     ToxicTriviaOccurencesRepository
 from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
+from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
@@ -770,6 +771,11 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ),
     chatLoggerChatAction = ChatLoggerChatAction(
         chatLogger = chatLogger
+    ),
+    deerForceChatAction = DeerForceChatAction(
+        generalSettingsRepository = generalSettingsRepository,
+        timber = timber,
+        twitchUtils = twitchUtils
     ),
     generalSettingsRepository = generalSettingsRepository,
     mostRecentChatsRepository = mostRecentChatsRepository,

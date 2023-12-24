@@ -14,5 +14,5 @@ class AbsChatAction(ABC):
         mostRecentChat: Optional[MostRecentChat],
         message: TwitchMessage,
         user: UserInterface
-    ):
+    ) -> bool:
         pass
