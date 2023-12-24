@@ -75,8 +75,6 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBot.messages import (AbsMessage, EyesMessage, ImytSlurpMessage,
-                               JamCatMessage, RatJamMessage, RoachMessage)
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
@@ -590,16 +588,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__raidThankEvent: AbsEvent = RaidThankEvent(generalSettingsRepository, timber, twitchUtils)
         self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(generalSettingsRepository, timber, authRepository, twitchUtils)
 
-        ###############################################
-        ## Initialization of message handler objects ##
-        ###############################################
-
-        self.__eyesMessage: AbsMessage = EyesMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__imytSlurpMessage: AbsMessage = ImytSlurpMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__jamCatMessage: AbsMessage = JamCatMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__ratJamMessage: AbsMessage = RatJamMessage(generalSettingsRepository, timber, twitchUtils)
-        self.__roachMessage: AbsMessage = RoachMessage(generalSettingsRepository, timber, twitchUtils)
-
         ########################################################
         ## Initialization of point redemption handler objects ##
         ########################################################
@@ -658,45 +646,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             return
 
         twitchMessage = self.__twitchConfiguration.getMessage(message)
-
-        if utils.isValidStr(twitchMessage.getContent()):
-            twitchUser = await self.__usersRepository.getUserAsync(twitchMessage.getTwitchChannelName())
-
-            if await self.__deerForceMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__eyesMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__imytSlurpMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__jamCatMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__ratJamMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
-
-            if await self.__roachMessage.handleMessage(
-                twitchUser = twitchUser,
-                message = twitchMessage
-            ):
-                return
 
         if self.__chatActionsManager is not None:
             await self.__chatActionsManager.handleMessage(twitchMessage)
