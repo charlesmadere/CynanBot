@@ -9,6 +9,7 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -23,7 +24,6 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -111,8 +111,8 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
             )
-            correctAnswers: List[str] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
                 responses = triviaJson['incorrect_answers'],
@@ -120,13 +120,16 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = incorrectAnswers
             )
 
-            if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswers, multipleChoiceResponses):
+            if await self._verifyIsActuallyMultipleChoiceQuestion(
+                correctAnswers = correctAnswerStrings,
+                multipleChoiceResponses = multipleChoiceResponses
+            ):
                 return MultipleChoiceTriviaQuestion(
-                    correctAnswers = correctAnswers,
+                    correctAnswers = correctAnswerStrings,
                     multipleChoiceResponses = multipleChoiceResponses,
                     category = category,
                     categoryId = None,
@@ -141,11 +144,11 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswers: List[bool] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerBools: List[bool] = list()
+            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerBools,
                 category = category,
                 categoryId = None,
                 question = question,
