@@ -83,7 +83,9 @@ class TriviaQuestionCompiler():
         text: str,
         htmlUnescape: bool = False
     ) -> str:
-        if not utils.isValidBool(htmlUnescape):
+        if text is not None and not isinstance(text, str):
+            raise ValueError(f'text argument is malformed: \"{text}\"')
+        elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         if not utils.isValidStr(text):
