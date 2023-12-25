@@ -90,7 +90,7 @@ class TriviaQuestionCompiler():
     async def __compileText(
         self,
         text: str,
-        htmlUnescape: bool = False
+        htmlUnescape: bool
     ) -> str:
         if text is not None and not isinstance(text, str):
             raise ValueError(f'text argument is malformed: \"{text}\"')
