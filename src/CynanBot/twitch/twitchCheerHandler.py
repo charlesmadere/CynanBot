@@ -88,23 +88,21 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
                 user = user
             )
 
-        if user.areCheerActionsEnabled() and await self.__processCheerAction(
+        if not user.areCheerActionsEnabled() or not await self.__processCheerAction(
             bits = bits,
             cheerUserId = cheerUserId,
             cheerUserLogin = cheerUserLogin,
             message = message,
             user = user
         ):
-            # do nothing
-            pass
-        elif user.isTtsEnabled():
-            await self.__processTtsEvent(
-                bits = bits,
-                message = message,
-                cheerUserId = cheerUserId,
-                cheerUserLogin = cheerUserLogin,
-                user = user
-            )
+            if user.isTtsEnabled():
+                await self.__processTtsEvent(
+                   bits = bits,
+                    message = message,
+                    cheerUserId = cheerUserId,
+                    cheerUserLogin = cheerUserLogin,
+                    user = user
+                )
 
     async def __processCheerAction(
         self,
