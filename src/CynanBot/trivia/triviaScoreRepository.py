@@ -2,10 +2,12 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.trivia.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
 
 
-class TriviaScoreRepository():
+class TriviaScoreRepository(TriviaScoreRepositoryInterface):
 
     def __init__(self, backingDatabase: BackingDatabase):
         if not isinstance(backingDatabase, BackingDatabase):
@@ -24,8 +26,6 @@ class TriviaScoreRepository():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -81,8 +81,6 @@ class TriviaScoreRepository():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
@@ -120,8 +118,6 @@ class TriviaScoreRepository():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
@@ -165,8 +161,6 @@ class TriviaScoreRepository():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
@@ -270,8 +264,6 @@ class TriviaScoreRepository():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         connection = await self.__backingDatabase.getConnection()
         await connection.execute(

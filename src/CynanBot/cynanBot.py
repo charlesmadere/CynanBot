@@ -156,7 +156,8 @@ from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionReposito
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.triviaUtils import TriviaUtils
@@ -261,7 +262,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaHistoryRepository: Optional[TriviaHistoryRepositoryInterface],
         triviaIdGenerator: Optional[TriviaIdGeneratorInterface],
         triviaRepository: Optional[TriviaRepositoryInterface],
-        triviaScoreRepository: Optional[TriviaScoreRepository],
+        triviaScoreRepository: Optional[TriviaScoreRepositoryInterface],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         triviaUtils: Optional[TriviaUtils],
         ttsManager: Optional[TtsManagerInterface],
@@ -374,7 +375,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
-        elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepository):
+        elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')

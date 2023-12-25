@@ -65,13 +65,15 @@ from CynanBot.trivia.games.triviaGameStoreInterface import \
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from CynanBot.trivia.superTriviaCooldownHelperInterface import \
-    SuperTriviaCooldownHelperInterface
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaHelper import ToxicTriviaHelper
-from CynanBot.trivia.specialStatus.toxicTriviaPunishment import ToxicTriviaPunishment
+from CynanBot.trivia.specialStatus.toxicTriviaPunishment import \
+    ToxicTriviaPunishment
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
+from CynanBot.trivia.superTriviaCooldownHelperInterface import \
+    SuperTriviaCooldownHelperInterface
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
     TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
@@ -87,7 +89,8 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -112,7 +115,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         triviaGameStore: TriviaGameStoreInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
         triviaRepository: TriviaRepositoryInterface,
-        triviaScoreRepository: TriviaScoreRepository,
+        triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -144,7 +147,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaRepository, TriviaRepositoryInterface):
             raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
-        elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
+        elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
@@ -175,7 +178,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__triviaGameStore: TriviaGameStoreInterface = triviaGameStore
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
         self.__triviaRepository: TriviaRepositoryInterface = triviaRepository
-        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository

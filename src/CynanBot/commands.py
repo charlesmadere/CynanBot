@@ -104,7 +104,8 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.triviaUtils import TriviaUtils
@@ -3653,7 +3654,7 @@ class TriviaScoreCommand(AbsCommand):
         shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface,
         timber: TimberInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
-        triviaScoreRepository: TriviaScoreRepository,
+        triviaScoreRepository: TriviaScoreRepositoryInterface,
         triviaUtils: TriviaUtils,
         twitchUtils: TwitchUtils,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -3668,7 +3669,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
             raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
-        elif not isinstance(triviaScoreRepository, TriviaScoreRepository):
+        elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtils):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
@@ -3685,7 +3686,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
         self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
-        self.__triviaScoreRepository: TriviaScoreRepository = triviaScoreRepository
+        self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
         self.__triviaUtils: TriviaUtils = triviaUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository

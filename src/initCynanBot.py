@@ -200,6 +200,8 @@ from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
 from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
 from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
@@ -530,7 +532,7 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaScoreRepository = TriviaScoreRepository(
+triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
 triviaUtils = TriviaUtils(
