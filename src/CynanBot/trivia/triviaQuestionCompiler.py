@@ -1,6 +1,6 @@
 import html
 import re
-from typing import List, Optional, Pattern, Set
+from typing import Dict, List, Optional, Pattern, Set
 
 import CynanBot.misc.utils as utils
 
@@ -21,6 +21,20 @@ class TriviaQuestionCompiler():
         self.__underscoreRegEx: Pattern = re.compile(r'_{2,}', re.IGNORECASE)
         self.__weirdEllipsisRegEx: Pattern = re.compile(r'\.\s\.\s\.', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
+
+        self.__textReplacements: Dict[str, str] = self.__createTextReplacements()
+
+    async def __checkTextReplacements(self, text: str) -> Optional[str]:
+        if not isinstance(text, str):
+            raise ValueError(f'text argument is malformed: \"{text}\"')
+
+        text = text.lower()
+
+        for key, replacement in self.__textReplacements.items():
+            if key.lower() == text:
+                return replacement
+
+        return None
 
     async def compileCategory(
         self,
@@ -123,4 +137,14 @@ class TriviaQuestionCompiler():
         if htmlUnescape:
             text = html.unescape(text).strip()
 
-        return text
+        replacement = await self.__checkTextReplacements(text)
+
+        if utils.isValidStr(replacement):
+            return replacement
+        else:
+            return text
+
+    def __createTextReplacements(self) -> Dict[str, str]:
+        return {
+            'The Ukraine': 'Ukraine'
+        }
