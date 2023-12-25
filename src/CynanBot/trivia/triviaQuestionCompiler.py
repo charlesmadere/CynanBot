@@ -110,6 +110,6 @@ class TriviaQuestionCompiler():
         text = self.__whiteSpaceRegEx.sub(' ', text).strip()
 
         if htmlUnescape:
-            text = html.unescape(text)
+            text = html.unescape(text).strip()
 
-        return text
+        return text.strip()
