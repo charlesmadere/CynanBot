@@ -6,7 +6,10 @@ from CynanBot.misc import utils
 
 
 class EnumWithToFromStr(Enum):
-    """ Enum with `fromStr` and `toStr` methods attached """
+    """_summary_
+
+    Enum with `fromStr` and `toStr` methods attached.
+    """
 
     @classmethod
     def fromStr(cls, text: str) -> Self:

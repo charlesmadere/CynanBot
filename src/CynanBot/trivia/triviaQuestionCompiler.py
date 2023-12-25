@@ -7,6 +7,13 @@ import CynanBot.misc.utils as utils
 
 class TriviaQuestionCompiler():
 
+    """_summary_
+
+    This class is used for improving human readability of trivia question strings. The
+    output from this class is NOT intended to be used for the actual processing/evaluating
+    part of trivia questions.
+    """
+
     def __init__(self):
         self.__ellipsisRegEx: Pattern = re.compile(r'(\.){3,}', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)

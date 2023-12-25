@@ -463,7 +463,8 @@ trueRegEx: Pattern = re.compile(r't(rue)?|y(es)?', re.IGNORECASE)
 falseRegEx: Pattern = re.compile(r'f(alse)?|n(o)?', re.IGNORECASE)
 
 def strictStrToBool(s: Optional[str]) -> bool:
-    """
+    """_summary_
+
     Converts the given string into a bool. None/empty/whitespace strings will cause an exception
     to be raised. Random strings ("abc123", "asdf", "qwerty", etc) will return True. Only strings
     that provide a match with falseRegEx will return False.
@@ -491,7 +492,8 @@ def strictStrToBool(s: Optional[str]) -> bool:
         raise ValueError(f'no matching bool conversion: \"{s}\"')
 
 def strToBool(s: Optional[str]) -> bool:
-    """
+    """_summary_
+
     Converts the given string into a bool. None/empty/whitespace strings are converted into True.
     Random strings ("abc123", "asdf", "qwerty", etc) will return True. Only strings that provide a
     match with falseRegEx will return False.
