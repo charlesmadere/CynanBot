@@ -30,7 +30,10 @@ class TriviaQuestionCompiler():
         if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
-        return await self.__compileText(category, htmlUnescape)
+        return await self.__compileText(
+            text = category,
+            htmlUnescape = htmlUnescape
+        )
 
     async def compileQuestion(
         self,
@@ -42,7 +45,10 @@ class TriviaQuestionCompiler():
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
-        return await self.__compileText(question, htmlUnescape)
+        return await self.__compileText(
+            text = question,
+            htmlUnescape = htmlUnescape
+        )
 
     async def compileResponse(
         self,
@@ -52,7 +58,10 @@ class TriviaQuestionCompiler():
         if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
-        return await self.__compileText(response, htmlUnescape)
+        return await self.__compileText(
+            text = response,
+            htmlUnescape = htmlUnescape
+        )
 
     async def compileResponses(
         self,
