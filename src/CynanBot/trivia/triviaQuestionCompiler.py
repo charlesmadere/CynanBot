@@ -112,4 +112,4 @@ class TriviaQuestionCompiler():
         if htmlUnescape:
             text = html.unescape(text).strip()
 
-        return text.strip()
+        return text
