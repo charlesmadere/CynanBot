@@ -239,7 +239,7 @@ class TriviaAnswerCompiler():
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert either usDollarAmount (\"{usDollarAmount}\") into float (raw match group: \"{match.group()}\")', e, traceback.format_exc())
             return None
 
-        cleanedUsDollarAmount: str = None
+        cleanedUsDollarAmount: Optional[str] = None
 
         if usDollarFloat.is_integer():
             cleanedUsDollarAmount = str(int(usDollarFloat))
