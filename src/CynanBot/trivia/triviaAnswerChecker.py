@@ -46,21 +46,33 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
         self.__whitespacePattern: Pattern = re.compile(r'\s\s+', re.IGNORECASE)
 
-        self.__irregular_nouns: Dict[str, str] = {
-            'child': 'children',
-            'goose': 'geese',
-            'man': 'men',
-            'woman': 'women',
-            'person': 'people',
-            'tooth': 'teeth',
-            'foot': 'feet',
-            'mouse': 'mice',
-            'die': 'dice',
-            'ox': 'oxen',
-            'index': 'indices',
+        self.__irregularNouns: Dict[str, Set[str]] = {
+            'addendum': { 'addenda', 'addendums' },
+            'alumna': { 'alumnae' },
+            'bacterium': { 'bacteria' },
+            'child': { 'children' },
+            'deer': { 'deer', 'deers' },
+            'die': { 'dice' },
+            'fish': { 'fish', 'fishes' },
+            'foot': { 'feet' },
+            'goose': { 'geese' },
+            'index': { 'indexes', 'indices' },
+            'loaf': { 'loaves' },
+            'man': { 'men' },
+            'moose': { 'moose' },
+            'mouse': { 'mice' },
+            'person': { 'people' },
+            'ox': { 'ox', 'oxen' },
+            'scarf': { 'scarfs', 'scarves' },
+            'self': { 'selves' },
+            'tooth': { 'teeth' },
+            'vertebra': { 'vertebrae', 'vertebras' },
+            'wife': { 'wives' },
+            'wolf': { 'wolves' },
+            'woman': { 'women' }
         }
 
-        self.__stopwords: Set[str] = {
+        self.__stopWords: Set[str] = {
             'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',  'what',
             'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been',
             'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if',
@@ -228,7 +240,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         yield word
 
         # don't preprocess stopwords
-        if word in self.__stopwords:
+        if word in self.__stopWords:
             return
 
         # pluralizations
@@ -248,10 +260,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield word[:-2] + 'es'
         elif word.endswith('on') or word.endswith('um'):
             yield word[:-2] + 'a'
-        if word in self.__irregular_nouns:
-            yield self.__irregular_nouns[word]
         if word[-1] != 's':
             yield word + 's'
+
+        if word in self.__irregularNouns:
+            for irregularNoun in self.__irregularNouns[word]:
+                yield irregularNoun
 
         # titles
         if word == 'atty':
@@ -305,6 +319,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'jacob'
         if word in ('jon', 'jhon'):
             yield 'john'
+        if word == 'joshua':
+            yield 'josh'
         if word in ('micheal', 'mike'):
             yield 'michael'
         if word in ('rob', 'robbie'):
@@ -426,6 +442,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'american sign language'
         if word == 'antigua':
             yield 'antigua and barbuda'
+        if word == 'arctic':
+            yield 'arctic'
+            yield 'arctic ocean'
+        if word == 'atlantic':
+            yield 'atlantic'
+            yield 'atlantic ocean'
         if word == 'bosnia':
             yield 'bosnia and herzegovina'
         if word == 'burma':
@@ -449,6 +471,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'great britain'
         if word == 'holland':
             yield 'netherlands'
+        if word == 'indian':
+            yield 'indian'
+            yield 'indian ocean'
         if word == 'ivory coast':
             yield 'cote d ivoire'
             yield 'cote divoire'
@@ -457,6 +482,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'kr':
             yield 'korea'
         if word in ('macedonia', 'n macedonia'):
+            yield 'macedonia'
             yield 'north macedonia'
         if word == 'mx':
             yield 'mexico'
@@ -466,6 +492,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'papua new guinea'
         if word in ('ny', 'new york city', 'nyc'):
             yield 'new york'
+        if word == 'pacific':
+            yield 'pacific'
+            yield 'pacific ocean'
         if word in ('palestine state', 'palestinian', 'palestinian state', 'west bank'):
             yield 'palestine'
         if word == 'pr':
@@ -497,7 +526,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'democrat'
         if word == 'fbi':
             yield 'federal bureau of investigation'
-        if word == 'fedex':
+        if word in ('fedex', 'fed ex'):
             yield 'federal express'
         if word in ('conservative', 'gop', 'grand old party', 'republican party', 'rnc', 'republican national convention'):
             yield 'republican'
@@ -507,14 +536,17 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'secret intelligence service'
         if word == 'nsa':
             yield 'natural security agency'
+        if word in ('post', 'usps'):
+            yield 'post'
+            yield 'post office'
+            yield 'postal service'
+            yield 'united states postal service'
         if word == 'sec':
             yield 'securities and exchange commission'
         if word == 'tsa':
             yield 'transportation security administration'
         if word == 'ups':
             yield 'united parcel service'
-        if word == 'usps':
-            yield 'united states postal service'
 
         # currencies
         if word == 'eur':
