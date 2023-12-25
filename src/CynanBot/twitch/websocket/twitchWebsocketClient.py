@@ -2,7 +2,7 @@ import asyncio
 import queue
 import traceback
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
 from typing import Any, Dict, List, Optional, Set
 
@@ -63,8 +63,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         },
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
-        maxMessageAge: timedelta = timedelta(minutes = 5),
-        timeZone: timezone = timezone.utc
+        maxMessageAge: timedelta = timedelta(minutes = 3),
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -115,7 +115,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
         self.__subscriptionTypes: Set[WebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__badSubscriptionTypesFor: Dict[TwitchWebsocketUser, Set[WebsocketSubscriptionType]] = defaultdict(lambda: set())
