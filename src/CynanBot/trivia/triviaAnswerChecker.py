@@ -187,7 +187,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
 
-        answerBool: bool = None
+        answerBool: Optional[bool] = None
         try:
             answerBool = await self.__triviaAnswerCompiler.compileBoolAnswer(answer)
         except BadTriviaAnswerException as e:
