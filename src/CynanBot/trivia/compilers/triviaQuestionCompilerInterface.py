@@ -7,7 +7,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileCategory(
         self,
-        category: str,
+        category: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
         pass
@@ -15,7 +15,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileQuestion(
         self,
-        question: str,
+        question: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
         pass
@@ -23,7 +23,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileResponse(
         self,
-        response: str,
+        response: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
         pass

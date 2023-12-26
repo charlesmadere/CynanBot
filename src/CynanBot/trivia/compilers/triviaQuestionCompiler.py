@@ -36,10 +36,10 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
     async def compileCategory(
         self,
-        category: str,
+        category: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if not isinstance(category, str):
+        if category is not None and not isinstance(category, str):
             raise ValueError(f'category argument is malformed: \"{category}\"')
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
@@ -51,10 +51,10 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
     async def compileQuestion(
         self,
-        question: str,
+        question: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if not isinstance(question, str):
+        if question is not None and not isinstance(question, str):
             raise ValueError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
@@ -66,10 +66,10 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
     async def compileResponse(
         self,
-        response: str,
+        response: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if not isinstance(response, str):
+        if response is not None and not isinstance(response, str):
             raise ValueError(f'response argument is malformed: \"{response}\"')
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
@@ -108,7 +108,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
     async def __compileText(
         self,
-        text: str,
+        text: Optional[str],
         htmlUnescape: bool
     ) -> str:
         if text is not None and not isinstance(text, str):
