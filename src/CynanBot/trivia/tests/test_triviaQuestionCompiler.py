@@ -20,31 +20,31 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileCategory_withEmptyString(self):
-        category: str = await self.triviaQuestionCompiler.compileCategory('')
+        category = await self.triviaQuestionCompiler.compileCategory('')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withNewLineString(self):
-        category: str = await self.triviaQuestionCompiler.compileCategory('\n')
+        category = await self.triviaQuestionCompiler.compileCategory('\n')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withNone(self):
-        category: str = await self.triviaQuestionCompiler.compileCategory(None)
+        category = await self.triviaQuestionCompiler.compileCategory(None)
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileCategory_withWhitespaceString(self):
-        category: str = await self.triviaQuestionCompiler.compileCategory(' ')
+        category = await self.triviaQuestionCompiler.compileCategory(' ')
         assert category is not None
         assert category == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withEllipsis(self):
-        question: str = await self.triviaQuestionCompiler.compileQuestion('...And Justice for All')
+        question = await self.triviaQuestionCompiler.compileQuestion('...And Justice for All')
         assert question is not None
         assert question == '…And Justice for All'
 
@@ -63,19 +63,19 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withBbCodeTags(self):
-        question: str = await self.triviaQuestionCompiler.compileQuestion('[b]Scenes from a Memory[/b]')
+        question = await self.triviaQuestionCompiler.compileQuestion('[b]Scenes from a Memory[/b]')
         assert question is not None
         assert question == 'Scenes from a Memory'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withHtmlTags(self):
-        question: str = await self.triviaQuestionCompiler.compileQuestion('<i>The Great Misdirect</i>')
+        question = await self.triviaQuestionCompiler.compileQuestion('<i>The Great Misdirect</i>')
         assert question is not None
         assert question == 'The Great Misdirect'
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withManyUnderscores(self):
-        question: str = await self.triviaQuestionCompiler.compileQuestion('The _________ river is very long.')
+        question = await self.triviaQuestionCompiler.compileQuestion('The _________ river is very long.')
         assert question is not None
         assert question == 'The ___ river is very long.'
 
@@ -107,7 +107,7 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withExtranneousWhiteSpace(self):
-        question: str = await self.triviaQuestionCompiler.compileQuestion('    \nWhat  country    is  Tokyo in? \n')
+        question = await self.triviaQuestionCompiler.compileQuestion('    \nWhat  country    is  Tokyo in? \n')
         assert question is not None
         assert question == 'What country is Tokyo in?'
 
@@ -126,19 +126,19 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileResponse_withEmptyString(self):
-        response: str = await self.triviaQuestionCompiler.compileResponse('')
+        response = await self.triviaQuestionCompiler.compileResponse('')
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withNewLineString(self):
-        response: str = await self.triviaQuestionCompiler.compileResponse('\n')
+        response = await self.triviaQuestionCompiler.compileResponse('\n')
         assert response is not None
         assert response == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withNone(self):
-        response: str = await self.triviaQuestionCompiler.compileResponse(None)
+        response = await self.triviaQuestionCompiler.compileResponse(None)
         assert response is not None
         assert response == ''
 
@@ -149,7 +149,7 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileResponse_withWhitespaceString(self):
-        response: str = await self.triviaQuestionCompiler.compileResponse(' ')
+        response = await self.triviaQuestionCompiler.compileResponse(' ')
         assert response is not None
         assert response == ''
 

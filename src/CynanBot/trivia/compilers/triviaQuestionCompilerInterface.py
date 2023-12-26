@@ -9,7 +9,7 @@ class TriviaQuestionCompilerInterface(ABC):
         self,
         category: Optional[str],
         htmlUnescape: bool = False
-    ) -> Optional[str]:
+    ) -> str:
         pass
 
     @abstractmethod
@@ -17,7 +17,7 @@ class TriviaQuestionCompilerInterface(ABC):
         self,
         question: Optional[str],
         htmlUnescape: bool = False
-    ) -> Optional[str]:
+    ) -> str:
         pass
 
     @abstractmethod
@@ -25,7 +25,7 @@ class TriviaQuestionCompilerInterface(ABC):
         self,
         response: Optional[str],
         htmlUnescape: bool = False
-    ) -> Optional[str]:
+    ) -> str:
         pass
 
     @abstractmethod
