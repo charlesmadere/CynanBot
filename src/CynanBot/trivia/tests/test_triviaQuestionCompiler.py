@@ -144,7 +144,7 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileResponses_withNone(self):
-        responses: List[str] = await self.triviaQuestionCompiler.compileResponses(None)
+        responses = await self.triviaQuestionCompiler.compileResponses(None)
         assert responses is not None
         assert len(responses) == 0
 
