@@ -162,7 +162,7 @@ class TestTriviaQuestionCompiler():
     @pytest.mark.asyncio
     async def test_compileResponses_withMixedList(self):
         responses: List[str] = await self.triviaQuestionCompiler.compileResponses(
-            [ '', ' ', 'One', '', 'Two', '\n', 'Three' ]
+            [ '', ' ', 'One', '', 'Two', '\n', 'Three', None ]
         )
         assert responses is not None
         assert len(responses) == 3

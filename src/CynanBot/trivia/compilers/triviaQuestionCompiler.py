@@ -93,9 +93,6 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         compiledResponses: Set[str] = set()
 
         for response in responses:
-            if not utils.isValidStr(response):
-                continue
-
             compiledResponse = await self.compileResponse(
                 response = response,
                 htmlUnescape = htmlUnescape
