@@ -50,16 +50,8 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withEmptyString(self):
-        question: Optional[str] = None
-        exception: Optional[Exception] = None
-
-        try:
-            question = await self.triviaQuestionCompiler.compileQuestion('')
-        except Exception as e:
-            exception = e
-
-        assert question is None
-        assert isinstance(exception, ValueError)
+        question = await self.triviaQuestionCompiler.compileQuestion('')
+        assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withBbCodeTags(self):
@@ -81,29 +73,15 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNewLineString(self):
-        question: Optional[str] = None
-        exception: Optional[Exception] = None
-
-        try:
-            question = await self.triviaQuestionCompiler.compileQuestion('\n')
-        except Exception as e:
-            exception = e
-
-        assert question is None
-        assert isinstance(exception, ValueError)
+        question = await self.triviaQuestionCompiler.compileQuestion('\n')
+        assert question is not None
+        assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNone(self):
-        question: Optional[str] = None
-        exception: Optional[Exception] = None
-
-        try:
-            question = await self.triviaQuestionCompiler.compileQuestion(None)
-        except Exception as e:
-            exception = e
-
-        assert question is None
-        assert isinstance(exception, ValueError)
+        question = await self.triviaQuestionCompiler.compileQuestion(None)
+        assert question is not None
+        assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withExtranneousWhiteSpace(self):
@@ -113,16 +91,9 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withWhitespaceString(self):
-        question: Optional[str] = None
-        exception: Optional[Exception] = None
-
-        try:
-            question = await self.triviaQuestionCompiler.compileQuestion(' ')
-        except Exception as e:
-            exception = e
-
-        assert question is None
-        assert isinstance(exception, ValueError)
+        question = await self.triviaQuestionCompiler.compileQuestion(' ')
+        assert question is not None
+        assert question == ''
 
     @pytest.mark.asyncio
     async def test_compileResponse_withEmptyString(self):
