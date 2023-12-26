@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from CynanBot.timber.timberInterface import TimberInterface
