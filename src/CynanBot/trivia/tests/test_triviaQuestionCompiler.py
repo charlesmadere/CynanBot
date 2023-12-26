@@ -143,6 +143,11 @@ class TestTriviaQuestionCompiler():
         assert response == ''
 
     @pytest.mark.asyncio
+    async def test_compileResponse_withTextReplacementString_theUkraine(self):
+        response = await self.triviaQuestionCompiler.compileResponse('The Ukraine')
+        assert response == 'Ukraine'
+
+    @pytest.mark.asyncio
     async def test_compileResponse_withWhitespaceString(self):
         response: str = await self.triviaQuestionCompiler.compileResponse(' ')
         assert response is not None
