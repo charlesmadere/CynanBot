@@ -5,33 +5,48 @@ import pytest
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
+from CynanBot.trivia.compilers.triviaQuestionCompiler import \
+    TriviaQuestionCompiler
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
+from CynanBot.trivia.triviaAnswerCheckerInterface import \
+    TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TestTriviaAnswerChecker():
 
     timber: TimberInterface = TimberStub()
-    triviaAnswerCompiler = TriviaAnswerCompiler(timber = timber)
-    triviaQuestionCompiler = TriviaQuestionCompiler()
+
+    triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
+        timber = timber
+    )
+
+    triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
+        timber = timber
+    )
+
     triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
         settingsJsonReader = JsonStaticReader(dict())
     )
-    triviaAnswerChecker = TriviaAnswerChecker(
+
+    triviaAnswerChecker: TriviaAnswerCheckerInterface = TriviaAnswerChecker(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaSettingsRepository = triviaSettingsRepository

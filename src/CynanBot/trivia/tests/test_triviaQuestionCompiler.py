@@ -2,12 +2,21 @@ from typing import List
 
 import pytest
 
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
+from CynanBot.trivia.compilers.triviaQuestionCompiler import \
+    TriviaQuestionCompiler
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 
 
 class TestTriviaQuestionCompiler():
 
-    triviaQuestionCompiler: TriviaQuestionCompiler = TriviaQuestionCompiler()
+    timber: TimberInterface = TimberStub()
+
+    triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
+        timber = timber
+    )
 
     @pytest.mark.asyncio
     async def test_compileCategory_withEmptyString(self):

@@ -4,7 +4,7 @@ import pytest
 
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaExceptions import BadTriviaAnswerException
 
 

@@ -1,11 +1,14 @@
 import html
 import re
-from typing import Dict, List, Optional, Pattern, Set
+from typing import Collection, Dict, List, Optional, Pattern, Set
 
 import CynanBot.misc.utils as utils
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 
 
-class TriviaQuestionCompiler():
+class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
 
     """_summary_
 
@@ -14,7 +17,12 @@ class TriviaQuestionCompiler():
     part of trivia questions.
     """
 
-    def __init__(self):
+    def __init__(self, timber: TimberInterface):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+
+        self.__timber: TimberInterface = timber
+
         self.__ellipsisRegEx: Pattern = re.compile(r'(\.){3,}', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
         self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
@@ -22,26 +30,18 @@ class TriviaQuestionCompiler():
         self.__weirdEllipsisRegEx: Pattern = re.compile(r'\.\s\.\s\.', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-        self.__textReplacements: Dict[str, str] = self.__createTextReplacements()
-
-    async def __checkTextReplacements(self, text: str) -> Optional[str]:
-        if not isinstance(text, str):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
-
-        text = text.lower()
-
-        for key, replacement in self.__textReplacements.items():
-            if key.lower() == text:
-                return replacement
-
-        return None
+        self.__textReplacements: Dict[str, Optional[str]] = {
+            'the ukraine': 'Ukraine',
+        }
 
     async def compileCategory(
         self,
         category: str,
         htmlUnescape: bool = False
     ) -> str:
-        if not utils.isValidBool(htmlUnescape):
+        if not isinstance(category, str):
+            raise ValueError(f'category argument is malformed: \"{category}\"')
+        elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         return await self.__compileText(
@@ -54,7 +54,7 @@ class TriviaQuestionCompiler():
         question: str,
         htmlUnescape: bool = False
     ) -> str:
-        if not utils.isValidStr(question):
+        if not isinstance(question, str):
             raise ValueError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
@@ -69,7 +69,9 @@ class TriviaQuestionCompiler():
         response: str,
         htmlUnescape: bool = False
     ) -> str:
-        if not utils.isValidBool(htmlUnescape):
+        if not isinstance(response, str):
+            raise ValueError(f'response argument is malformed: \"{response}\"')
+        elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         return await self.__compileText(
@@ -79,7 +81,7 @@ class TriviaQuestionCompiler():
 
     async def compileResponses(
         self,
-        responses: Optional[List[str]],
+        responses: Optional[Collection[Optional[str]]],
         htmlUnescape: bool = False
     ) -> List[str]:
         if not utils.isValidBool(htmlUnescape):
@@ -91,6 +93,9 @@ class TriviaQuestionCompiler():
         compiledResponses: Set[str] = set()
 
         for response in responses:
+            if not utils.isValidStr(response):
+                continue
+
             compiledResponse = await self.compileResponse(
                 response = response,
                 htmlUnescape = htmlUnescape
@@ -137,14 +142,10 @@ class TriviaQuestionCompiler():
         if htmlUnescape:
             text = html.unescape(text).strip()
 
-        replacement = await self.__checkTextReplacements(text)
+        replacement = self.__textReplacements.get(text.lower(), None)
 
         if utils.isValidStr(replacement):
+            self.__timber.log('TriviaQuestionCompiler', f'Found replacement text for \"{text}\": \"{replacement}\"')
             return replacement
         else:
             return text
-
-    def __createTextReplacements(self) -> Dict[str, str]:
-        return {
-            'The Ukraine': 'Ukraine'
-        }

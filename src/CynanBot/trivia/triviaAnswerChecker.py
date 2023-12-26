@@ -7,6 +7,8 @@ import polyleven
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
@@ -18,7 +20,6 @@ from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
     TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaExceptions import (BadTriviaAnswerException,
                                               UnsupportedTriviaTypeException)
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
@@ -30,18 +31,18 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        triviaAnswerCompiler: TriviaAnswerCompiler,
+        triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompiler):
+        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
             raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompiler = triviaAnswerCompiler
+        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
         self.__whitespacePattern: Pattern = re.compile(r'\s\s+', re.IGNORECASE)
@@ -317,6 +318,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george'
         if word == 'jakob':
             yield 'jacob'
+        if word == 'joseph':
+            yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
         if word == 'joshua':

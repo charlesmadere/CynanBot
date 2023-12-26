@@ -8,10 +8,12 @@ from roman import RomanError
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
 from CynanBot.trivia.triviaExceptions import BadTriviaAnswerException
 
 
-class TriviaAnswerCompiler():
+class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):

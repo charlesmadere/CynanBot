@@ -9,6 +9,7 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -23,7 +24,6 @@ from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -136,7 +136,10 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         )
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswers, multipleChoiceResponses):
+            if await self._verifyIsActuallyMultipleChoiceQuestion(
+                correctAnswers = correctAnswers,
+                multipleChoiceResponses = multipleChoiceResponses
+            ):
                 return MultipleChoiceTriviaQuestion(
                     correctAnswers = correctAnswers,
                     multipleChoiceResponses = multipleChoiceResponses,

@@ -5,10 +5,13 @@ import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -18,12 +21,10 @@ from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -33,7 +34,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaQuestionCompiler: TriviaQuestionCompiler,
+        triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         super().__init__(triviaSettingsRepository)
@@ -44,13 +45,13 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompiler):
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaQuestionCompiler: TriviaQuestionCompiler = triviaQuestionCompiler
+        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -101,8 +102,8 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 response = utils.getStrFromDict(triviaJson, 'correctAnswer'),
                 htmlUnescape = True
             )
-            correctAnswers: List[str] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
                 responses = triviaJson['incorrectAnswers'],
@@ -110,13 +111,16 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = incorrectAnswers
             )
 
-            if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswers, multipleChoiceResponses):
+            if await self._verifyIsActuallyMultipleChoiceQuestion(
+                correctAnswers = correctAnswerStrings,
+                multipleChoiceResponses = multipleChoiceResponses
+            ):
                 return MultipleChoiceTriviaQuestion(
-                    correctAnswers = correctAnswers,
+                    correctAnswers = correctAnswerStrings,
                     multipleChoiceResponses = multipleChoiceResponses,
                     category = category,
                     categoryId = None,
@@ -131,11 +135,11 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correctAnswer')
-            correctAnswers: List[bool] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerBools: List[bool] = list()
+            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerBools,
                 category = category,
                 categoryId = None,
                 question = question,

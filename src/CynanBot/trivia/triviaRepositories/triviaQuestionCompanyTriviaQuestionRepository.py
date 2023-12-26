@@ -6,19 +6,20 @@ import aiosqlite
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import UnsupportedTriviaTypeException
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -26,7 +27,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
     def __init__(
         self,
         timber: TimberInterface,
-        triviaQuestionCompiler: TriviaQuestionCompiler,
+        triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaDatabaseFile: str = 'triviaQuestionCompanyTriviaQuestionRepository.sqlite'
     ):
@@ -34,13 +35,13 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
 
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompiler):
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
             raise ValueError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
         self.__timber: TimberInterface = timber
-        self.__triviaQuestionCompiler: TriviaQuestionCompiler = triviaQuestionCompiler
+        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
         self.__hasQuestionSetAvailable: Optional[bool] = None

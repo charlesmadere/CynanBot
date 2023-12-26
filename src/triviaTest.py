@@ -21,6 +21,9 @@ from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import 
     AdditionalTriviaAnswersRepository
 from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
     BannedTriviaIdsRepository
+from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.compilers.triviaQuestionCompiler import \
+    TriviaQuestionCompiler
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
@@ -35,7 +38,6 @@ from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
@@ -44,7 +46,6 @@ from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBot.trivia.triviaHistoryRepository import TriviaHistoryRepository
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \

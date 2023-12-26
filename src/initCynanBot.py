@@ -128,6 +128,13 @@ from CynanBot.trivia.banned.triviaBanHelperInterface import \
 from CynanBot.trivia.builder.triviaGameBuilder import TriviaGameBuilder
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
+from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
+from CynanBot.trivia.compilers.triviaQuestionCompiler import \
+    TriviaQuestionCompiler
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.gameController.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
@@ -150,7 +157,6 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaContentScannerInterface import \
     TriviaContentScannerInterface
@@ -166,7 +172,6 @@ from CynanBot.trivia.triviaHistoryRepositoryInterface import \
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
@@ -456,11 +461,13 @@ shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = Shin
 toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
     backingDatabase = backingDatabase
 )
-triviaAnswerCompiler = TriviaAnswerCompiler(
+triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
+    timber = timber
+)
+triviaQuestionCompiler: TriviaQuestionCompilerInterface = TriviaQuestionCompiler(
     timber = timber
 )
 triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
-triviaQuestionCompiler = TriviaQuestionCompiler()
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )

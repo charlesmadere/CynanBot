@@ -7,23 +7,25 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
-from CynanBot.trivia.triviaAnswerCompiler import TriviaAnswerCompiler
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (GenericTriviaNetworkException,
                                               MalformedTriviaJsonException)
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -33,9 +35,9 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
-        triviaAnswerCompiler: TriviaAnswerCompiler,
+        triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaQuestionCompiler: TriviaQuestionCompiler,
+        triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         super().__init__(triviaSettingsRepository)
@@ -46,19 +48,19 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompiler):
+        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
             raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompiler):
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
-        self.__triviaAnswerCompiler: TriviaAnswerCompiler = triviaAnswerCompiler
+        self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaQuestionCompiler: TriviaQuestionCompiler = triviaQuestionCompiler
+        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):

@@ -9,10 +9,13 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
@@ -23,12 +26,10 @@ from CynanBot.trivia.triviaExceptions import (BadTriviaSessionTokenException,
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Clearable):
@@ -39,7 +40,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaQuestionCompiler: TriviaQuestionCompiler,
+        triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         super().__init__(triviaSettingsRepository)
@@ -52,14 +53,14 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompiler):
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaQuestionCompiler: TriviaQuestionCompiler = triviaQuestionCompiler
+        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
 
         self.__isDatabaseReady: bool = False
         self.__cache: Dict[str, Optional[str]] = dict()
@@ -138,7 +139,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         elif utils.getIntFromDict(jsonResponse, 'response_code', fallback = -1) != 0:
             await self.__removeSessionToken(fetchOptions.getTwitchChannel())
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to bad \"response_code\" value: {jsonResponse}')
-            raise GenericTriviaNetworkException(f'Rejecting Open Trivia Database\'s JSON data due to bad \"response_code\" value: {jsonResponse}')
+            raise GenericTriviaNetworkException(self.getTriviaSource())
         elif not utils.hasItems(jsonResponse.get('results')):
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to missing/null/empty \"results\" array: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to missing/null/empty \"results\" array: {jsonResponse}')
@@ -173,8 +174,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
             )
-            correctAnswers: List[str] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
                 responses = triviaJson['incorrect_answers'],
@@ -182,13 +183,13 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             )
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = incorrectAnswers
             )
 
-            if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswers, multipleChoiceResponses):
+            if await self._verifyIsActuallyMultipleChoiceQuestion(correctAnswerStrings, multipleChoiceResponses):
                 return MultipleChoiceTriviaQuestion(
-                    correctAnswers = correctAnswers,
+                    correctAnswers = correctAnswerStrings,
                     multipleChoiceResponses = multipleChoiceResponses,
                     category = category,
                     categoryId = None,
@@ -203,11 +204,11 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswers: List[bool] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerBools: List[bool] = list()
+            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerBools,
                 category = category,
                 categoryId = None,
                 question = question,

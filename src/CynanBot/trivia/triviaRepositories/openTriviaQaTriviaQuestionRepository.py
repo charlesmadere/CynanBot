@@ -6,21 +6,22 @@ import aiosqlite
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
     MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import UnsupportedTriviaTypeException
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
-from CynanBot.trivia.triviaQuestionCompiler import TriviaQuestionCompiler
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
@@ -28,7 +29,7 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
     def __init__(
         self,
         timber: TimberInterface,
-        triviaQuestionCompiler: TriviaQuestionCompiler,
+        triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaDatabaseFile: str = 'openTriviaQaTriviaQuestionDatabase.sqlite'
     ):
@@ -36,13 +37,13 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompiler):
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
             raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
             raise ValueError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
         self.__timber: TimberInterface = timber
-        self.__triviaQuestionCompiler: TriviaQuestionCompiler = triviaQuestionCompiler
+        self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
         self.__hasQuestionSetAvailable: Optional[bool] = None
@@ -71,18 +72,18 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
             correctAnswer = utils.getStrFromDict(triviaDict, 'correctAnswer')
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(correctAnswer)
 
-            correctAnswers: List[str] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings.append(correctAnswer)
 
             responses = await self.__triviaQuestionCompiler.compileResponses(triviaDict['responses'])
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = responses
             )
 
             return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = multipleChoiceResponses,
                 category = category,
                 categoryId = None,
@@ -93,11 +94,11 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
-            correctAnswers: List[bool] = list()
-            correctAnswers.append(correctAnswer)
+            correctAnswerBools: List[bool] = list()
+            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerBools,
                 category = category,
                 categoryId = None,
                 question = question,
