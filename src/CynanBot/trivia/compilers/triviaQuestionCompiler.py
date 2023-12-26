@@ -38,7 +38,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self,
         category: Optional[str],
         htmlUnescape: bool = False
-    ) -> str:
+    ) -> Optional[str]:
         if category is not None and not isinstance(category, str):
             raise ValueError(f'category argument is malformed: \"{category}\"')
         elif not utils.isValidBool(htmlUnescape):
@@ -53,7 +53,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self,
         question: Optional[str],
         htmlUnescape: bool = False
-    ) -> str:
+    ) -> Optional[str]:
         if question is not None and not isinstance(question, str):
             raise ValueError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidBool(htmlUnescape):
@@ -68,7 +68,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self,
         response: Optional[str],
         htmlUnescape: bool = False
-    ) -> str:
+    ) -> Optional[str]:
         if response is not None and not isinstance(response, str):
             raise ValueError(f'response argument is malformed: \"{response}\"')
         elif not utils.isValidBool(htmlUnescape):
@@ -110,14 +110,14 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         self,
         text: Optional[str],
         htmlUnescape: bool
-    ) -> str:
+    ) -> Optional[str]:
         if text is not None and not isinstance(text, str):
             raise ValueError(f'text argument is malformed: \"{text}\"')
         elif not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         if not utils.isValidStr(text):
-            return ''
+            return None
 
         text = text.strip()
 
@@ -147,5 +147,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         if utils.isValidStr(replacement):
             self.__timber.log('TriviaQuestionCompiler', f'Found replacement text for \"{text}\": \"{replacement}\"')
             return replacement
-        else:
+        elif utils.isValidStr(text):
             return text
+        else:
+            return None

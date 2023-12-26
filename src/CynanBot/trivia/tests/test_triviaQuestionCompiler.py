@@ -50,8 +50,8 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withEmptyString(self):
-        question: str = None
-        exception: Exception = None
+        question: Optional[str] = None
+        exception: Optional[Exception] = None
 
         try:
             question = await self.triviaQuestionCompiler.compileQuestion('')
@@ -81,8 +81,8 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNewLineString(self):
-        question: str = None
-        exception: Exception = None
+        question: Optional[str] = None
+        exception: Optional[Exception] = None
 
         try:
             question = await self.triviaQuestionCompiler.compileQuestion('\n')
@@ -94,8 +94,8 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withNone(self):
-        question: str = None
-        exception: Exception = None
+        question: Optional[str] = None
+        exception: Optional[Exception] = None
 
         try:
             question = await self.triviaQuestionCompiler.compileQuestion(None)
@@ -113,8 +113,8 @@ class TestTriviaQuestionCompiler():
 
     @pytest.mark.asyncio
     async def test_compileQuestion_withWhitespaceString(self):
-        question: str = None
-        exception: Exception = None
+        question: Optional[str] = None
+        exception: Optional[Exception] = None
 
         try:
             question = await self.triviaQuestionCompiler.compileQuestion(' ')
