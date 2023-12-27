@@ -470,9 +470,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return f'({match.group(1)}) {match.group(2)}'
 
-    # This method checks to see if an answer has a word pattern such as "Eric the Great" or
-    # "Silvervale of Twitch", and if so, wraps the middle word in parenthesis. For example, this
-    # method will transform the string "Garfield the cat" into "Garfield (the) cat".
+    # This method checks to see if an answer has a word pattern such as "Eric the Great", and if
+    # so, wraps the middle word in parenthesis. For example, this method will transform the string
+    # "Garfield the cat" into "Garfield (the) cat".
     async def __patchAnswerWordTheWord(self, answer: str) -> str:
         match = self.__wordTheWordRegEx.fullmatch(answer)
 

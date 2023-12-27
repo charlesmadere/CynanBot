@@ -20,15 +20,3 @@ async def main():
     pass
 
 eventLoop.run_until_complete(main())
-
-# wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
-# match = wordTheWordRegEx.fullmatch('Silvervale of twitch')
-# print(match)
-
-# if match is not None:
-#     print(match.group())
-#     print(match.group(1))
-#     print(match.group(2))
-#     print(match.group(3))
-#     answer = f'{match.group(1)} ({match.group(2)}) {match.group(3)}'
-#     print(answer)

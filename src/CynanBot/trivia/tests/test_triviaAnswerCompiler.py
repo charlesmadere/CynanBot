@@ -452,12 +452,12 @@ class TestTriviaAnswerCompiler():
         assert 'second' in result
 
     @pytest.mark.asyncio
-    async def test_compileTextAnswersList_withSilvervaleOfTwitch(self):
-        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Silvervale of Twitch' ])
+    async def test_compileTextAnswersList_withPacificAnOcean(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Pacific an ocean' ])
         assert result is not None
         assert len(result) == 2
-        assert 'silvervale of twitch' in result
-        assert 'silvervale twitch' in result
+        assert 'pacific an ocean' in result
+        assert 'pacific ocean' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
