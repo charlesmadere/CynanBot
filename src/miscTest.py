@@ -15,7 +15,7 @@ eventLoop = asyncio.get_event_loop()
 
 async def main():
     pass
-    result = await triviaAnswerCompiler.compileTextAnswersList('Garfield the cat')
+    result = await triviaAnswerCompiler.compileTextAnswersList([ 'Garfield the cat' ])
     print(f'result=\"{result}\"')
     pass
 
