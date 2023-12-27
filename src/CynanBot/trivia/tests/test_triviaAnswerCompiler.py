@@ -244,11 +244,6 @@ class TestTriviaAnswerCompiler():
         assert result == ''
 
     @pytest.mark.asyncio
-    async def test_compileTextAnswer_withGarfieldTheCat(self):
-        result = await self.triviaAnswerCompiler.compileTextAnswer('Garfield the cat')
-        assert result == 'garfield (the) cat'
-
-    @pytest.mark.asyncio
     async def test_compileTextAnswer_withHelloWorld(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('Hello, World!')
         assert result == 'hello world'
@@ -277,11 +272,6 @@ class TestTriviaAnswerCompiler():
     async def test_compileTextAnswer_withSaintNicholas(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('Saint Nicholas')
         assert result == 'saint nicholas'
-
-    @pytest.mark.asyncio
-    async def test_compileTextAnswer_withSilvervaleOfTwitch(self):
-        result = await self.triviaAnswerCompiler.compileTextAnswer('Silvervale of Twitch')
-        assert result == 'silvervale (of) twitch'
 
     @pytest.mark.asyncio
     async def test_compileTextAnswer_withSirPeter(self):
@@ -319,6 +309,11 @@ class TestTriviaAnswerCompiler():
         result = await self.triviaAnswerCompiler.compileTextAnswersList(list())
         assert result is not None
         assert len(result) == 0
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withGarfieldTheCat(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswer('Garfield the cat')
+        assert result == 'garfield (the) cat'
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withGeorgeSchultz(self):
@@ -452,6 +447,11 @@ class TestTriviaAnswerCompiler():
         assert len(result) == 2
         assert 'first' in result
         assert 'second' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withSilvervaleOfTwitch(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList('Silvervale of Twitch')
+        assert result == 'silvervale (of) twitch'
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
