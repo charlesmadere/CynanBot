@@ -9,6 +9,10 @@ class TriviaAnswerCompilerInterface(ABC):
         pass
 
     @abstractmethod
+    async def compileMultipleChoiceAnswer(self, answer: Optional[str]) -> int:
+        pass
+
+    @abstractmethod
     async def compileTextAnswer(self, answer: Optional[str]) -> str:
         pass
 
@@ -18,10 +22,6 @@ class TriviaAnswerCompilerInterface(ABC):
         answers: Optional[Collection[Optional[str]]],
         expandParentheses: bool = True
     ) -> List[str]:
-        pass
-
-    @abstractmethod
-    async def compileTextAnswerToMultipleChoiceOrdinal(self, answer: Optional[str]) -> int:
         pass
 
     @abstractmethod

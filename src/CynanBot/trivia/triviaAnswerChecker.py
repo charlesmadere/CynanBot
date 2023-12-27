@@ -117,7 +117,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
         answerOrdinal: Optional[int] = None
         try:
-            answerOrdinal = await self.__triviaAnswerCompiler.compileTextAnswerToMultipleChoiceOrdinal(answer)
+            answerOrdinal = await self.__triviaAnswerCompiler.compileMultipleChoiceAnswer(answer)
         except BadTriviaAnswerException as e:
             self.__timber.log('TriviaAnswerChecker', f'Unable to convert multiple choice answer to ordinal: \"{answer}\": {e}', e, traceback.format_exc())
             return TriviaAnswerCheckResult.INVALID_INPUT
@@ -301,11 +301,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         # common names
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
+        if word in ('billie', 'billy'):
+            yield 'bill'
         if word == 'bob':
             yield 'bobby'
         if word in ('charlie', 'charly', 'chuck'):
             yield 'charles'
-        if word in ('chris', 'christ'):
+        if word in ('chris', 'christ', 'cris', 'kris'):
             yield 'christopher'
         if word == 'delanor':
             yield 'delano'
@@ -318,7 +320,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'george'
         if word == 'jakob':
             yield 'jacob'
-        if word == 'joseph':
+        if word in ('jo', 'joey', 'joseph'):
             yield 'joe'
         if word in ('jon', 'jhon'):
             yield 'john'
@@ -330,6 +332,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'robert'
         if word in ('ron', 'ronnie'):
             yield 'ronald'
+        if word == 'toni':
+            yield 'tony'
+        if word == 'william':
+            yield 'will'
 
         # geographical features/streets
         if word in ('aly', 'ally'):
@@ -446,10 +452,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'antigua':
             yield 'antigua and barbuda'
         if word == 'arctic':
-            yield 'arctic'
             yield 'arctic ocean'
         if word == 'atlantic':
-            yield 'atlantic'
             yield 'atlantic ocean'
         if word == 'bosnia':
             yield 'bosnia and herzegovina'
@@ -469,13 +473,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('en', 'eng'):
             yield 'english'
         if word == 'eu':
+            yield 'europe'
             yield 'european union'
         if word == 'gb':
             yield 'great britain'
         if word == 'holland':
             yield 'netherlands'
         if word == 'indian':
-            yield 'indian'
             yield 'indian ocean'
         if word == 'ivory coast':
             yield 'cote d ivoire'
@@ -496,7 +500,6 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('ny', 'new york city', 'nyc'):
             yield 'new york'
         if word == 'pacific':
-            yield 'pacific'
             yield 'pacific ocean'
         if word in ('palestine state', 'palestinian', 'palestinian state', 'west bank'):
             yield 'palestine'
@@ -540,6 +543,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'nsa':
             yield 'natural security agency'
         if word in ('post', 'usps'):
+            yield 'mail'
             yield 'post'
             yield 'post office'
             yield 'postal service'
@@ -899,6 +903,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'number'
         if word == 'ocd':
             yield 'obsessive compulsive disorder'
+        if word == 'parcel':
+            yield 'mail'
+            yield 'package'
         if word in ('phone', 'tel'):
             yield 'telephone'
         if word == 'precedent':

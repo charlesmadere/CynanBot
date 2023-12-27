@@ -41,6 +41,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s\s*', re.IGNORECASE)
         self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
+        self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
         self.__yearsRegEx: Pattern = re.compile(r'^(\d+)\s+years?(\s+old)?$', re.IGNORECASE)
 
         # RegEx pattern for arabic and roman numerals, returning only one capturing group
@@ -90,6 +91,30 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return utils.strictStrToBool(cleanedAnswer)
         except ValueError as e:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool (answer=\"{answer}\") (cleanedAnswer=\"{cleanedAnswer}\"): {e}')
+
+    async def compileMultipleChoiceAnswer(self, answer: Optional[str]) -> int:
+        if not utils.isValidStr(answer):
+            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal (answer=\"{answer}\")')
+
+        answer = answer.strip()
+        cleanedAnswer: Optional[str] = None
+
+        # check if the answer is just an alphabetical character from A to Z
+        if self.__multipleChoiceAnswerRegEx.fullmatch(answer) is not None:
+            cleanedAnswer = answer
+
+        if not utils.isValidStr(cleanedAnswer):
+            # check if the answer is an alphabetical character that is surrounded by braces, like "[A]" or "[B]"
+            bracedAnswerMatch = self.__multipleChoiceBracedAnswerRegEx.fullmatch(answer)
+
+            if bracedAnswerMatch is not None and utils.isValidStr(bracedAnswerMatch.group(1)):
+                cleanedAnswer = bracedAnswerMatch.group(1)
+
+        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1  or self.__multipleChoiceAnswerRegEx.fullmatch(cleanedAnswer) is None:
+            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal ({answer=}) ({cleanedAnswer=})')
+
+        # this converts the answer 'A' into 0, 'B' into 1, 'C' into 2, and so on...
+        return ord(cleanedAnswer.upper()) % 65
 
     async def compileTextAnswer(self, answer: Optional[str]) -> str:
         if not utils.isValidStr(answer):
@@ -319,30 +344,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return list(set(''.join(item) for item in utils.permuteSubArrays(split)))
 
-    async def compileTextAnswerToMultipleChoiceOrdinal(self, answer: Optional[str]) -> int:
-        if not utils.isValidStr(answer):
-            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal (answer=\"{answer}\")')
-
-        answer = answer.strip()
-        cleanedAnswer: Optional[str] = None
-
-        # check if the answer is just an alphabetical character from A to Z
-        if self.__multipleChoiceAnswerRegEx.fullmatch(answer) is not None:
-            cleanedAnswer = answer
-
-        if not utils.isValidStr(cleanedAnswer):
-            # check if the answer is an alphabetical character that is surrounded by braces, like "[A]" or "[B]"
-            bracedAnswerMatch = self.__multipleChoiceBracedAnswerRegEx.fullmatch(answer)
-
-            if bracedAnswerMatch is not None and utils.isValidStr(bracedAnswerMatch.group(1)):
-                cleanedAnswer = bracedAnswerMatch.group(1)
-
-        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1  or self.__multipleChoiceAnswerRegEx.fullmatch(cleanedAnswer) is None:
-            raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal ({answer=}) ({cleanedAnswer=})')
-
-        # this converts the answer 'A' into 0, 'B' into 1, 'C' into 2, and so on...
-        return ord(cleanedAnswer.upper()) % 65
-
     async def __getArabicNumeralSubstitutes(self, arabicNumerals: str) -> List[str]:
         individualDigits = ' '.join([num2words(int(digit)) for digit in arabicNumerals])
         n = int(arabicNumerals)
@@ -381,6 +382,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         answer = await self.__patchAnswerJapaneseHonorarySuffixes(answer)
         answer = await self.__patchAnswerPossessivePronounPrefixes(answer)
         answer = await self.__patchAnswerThingsThatArePhrase(answer)
+        answer = await self.__patchAnswerWordTheWord(answer)
 
         # Split the uncleaned answer with this regex to find all parentheticals
         splitPossibilities: List[str] = self.__parenGroupRegEx.split(answer)
@@ -467,6 +469,18 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return answer
 
         return f'({match.group(1)}) {match.group(2)}'
+
+    # This method checks to see if an answer has a word pattern such as "Eric the Great" or
+    # "Silvervale of Twitch", and if so, wraps the middle word in parenthesis. For example, this
+    # method will transform the string "Garfield the cat" into "Garfield (the) cat".
+    async def __patchAnswerWordTheWord(self, answer: str) -> str:
+        match = self.__wordTheWordRegEx.fullmatch(answer)
+
+        if match is None or not utils.isValidStr(match.group()) or not utils.isValidStr(match.group(1)) or not utils.isValidStr(match.group(2)) or not utils.isValidStr(match.group(3)):
+            # return the unmodified answer
+            return answer
+
+        return f'{match.group(1)} ({match.group(2)}) {match.group(3)}'
 
     # Recursively resolves the possibilities for each word in the answer.
     async def __getSubPossibilities(self, splitAnswer: str) -> List[str]:

@@ -11,17 +11,13 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
 class TriviaIdGenerator(TriviaIdGeneratorInterface):
 
     def __init__(self):
-        self.__actionIdRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
-
-    async def generateActionId(self) -> str:
-        actionId = str(uuid.uuid4())
-        return self.__actionIdRegEx.sub('', actionId)
+        self.__triviaIdRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def generateEventId(self) -> str:
-        return await self.generateActionId()
+        return await self.__generateTriviaId()
 
     async def generateGameId(self) -> str:
-        return await self.generateActionId()
+        return await self.__generateTriviaId()
 
     async def generateQuestionId(
         self,
@@ -31,6 +27,10 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
     ) -> str:
         if not utils.isValidStr(question):
             raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif category is not None and not isinstance(category, str):
+            raise ValueError(f'category argument is malformed: \"{category}\"')
+        elif difficulty is not None and not isinstance(difficulty, str):
+            raise ValueError(f'difficulty argument is malformed: \"{difficulty}\"')
 
         string = f'{question}'
 
@@ -40,4 +40,9 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
         if utils.isValidStr(difficulty):
             string = f'{string}:{difficulty}'
 
-        return hashlib.sha256(string.encode('utf-8')).hexdigest()
+        encodedString = string.encode('utf-8')
+        return hashlib.sha256(encodedString).hexdigest()
+
+    async def __generateTriviaId(self) -> str:
+        triviaId = str(uuid.uuid4())
+        return self.__triviaIdRegEx.sub('', triviaId)
