@@ -404,7 +404,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withMarioMarioSenior(self):
-        result: List[str] = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Mario M Mario Senior' ])
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Mario M Mario Senior' ])
         assert result is not None
         assert len(result) == 4
         assert 'mario m mario senior' in result
@@ -442,7 +442,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withOrdinalWords(self):
-        result: List[str] = await self.triviaAnswerCompiler.compileTextAnswersList([ 'first', 'second' ])
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'first', 'second' ])
         assert result is not None
         assert len(result) == 2
         assert 'first' in result
@@ -455,7 +455,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
-        result: List[str] = await self.triviaAnswerCompiler.compileTextAnswersList([ 'their house' ])
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'their house' ])
         assert result is not None
         assert len(result) == 2
         assert 'their house' in result
@@ -463,7 +463,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheyAreFriends(self):
-        result: List[str] = await self.triviaAnswerCompiler.compileTextAnswersList([ 'they are friends' ])
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'they are friends' ])
         assert result is not None
         assert len(result) == 2
         assert 'they are friends' in result
@@ -471,7 +471,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheyreFriends(self):
-        result: List[str] = await self.triviaAnswerCompiler.compileTextAnswersList([ 'they\'re friends' ])
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'they\'re friends' ])
         assert result is not None
         assert len(result) == 2
         assert 'theyre friends' in result
