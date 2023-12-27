@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, Optional
+import re
+from typing import Any, Optional, Pattern
 
 import CynanBot.misc.utils as utils
 
@@ -110,11 +111,23 @@ import CynanBot.misc.utils as utils
 
 # eventLoop.run_until_complete(main())
 
-x = utils.getDateTimeFromStr('2023-11-11T17:13:41Z+00:00')
-print(x)
+# x = utils.getDateTimeFromStr('2023-11-11T17:13:41Z+00:00')
+# print(x)
 
-y = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z')
-print(y)
+# y = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z')
+# print(y)
 
-z = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z+00:00')
-print(z)
+# z = utils.getDateTimeFromStr('2023-10-21T14:11:45.338014562Z+00:00')
+# print(z)
+
+wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
+match = wordTheWordRegEx.fullmatch('Silvervale of twitch')
+print(match)
+
+if match is not None:
+    print(match.group())
+    print(match.group(1))
+    print(match.group(2))
+    print(match.group(3))
+    answer = f'{match.group(1)} ({match.group(2)}) {match.group(3)}'
+    print(answer)

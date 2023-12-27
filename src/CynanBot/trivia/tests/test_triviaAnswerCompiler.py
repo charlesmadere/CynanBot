@@ -313,7 +313,9 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withGarfieldTheCat(self):
         result = await self.triviaAnswerCompiler.compileTextAnswersList('Garfield the cat')
-        assert result == 'garfield (the) cat'
+        assert len(result) == 2
+        assert 'garfield the cat' in result
+        assert 'garfield cat' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withGeorgeSchultz(self):
@@ -451,7 +453,9 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withSilvervaleOfTwitch(self):
         result = await self.triviaAnswerCompiler.compileTextAnswersList('Silvervale of Twitch')
-        assert result == 'silvervale (of) twitch'
+        assert len(result) == 2
+        assert 'silvervale of twitch' in result
+        assert 'silvervale twitch' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withTheirHouse(self):
