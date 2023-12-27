@@ -13,6 +13,9 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
     def __init__(self):
         self.__triviaIdRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
+    async def generateActionId(self) -> str:
+        return await self.__generateTriviaId()
+
     async def generateEventId(self) -> str:
         return await self.__generateTriviaId()
 
