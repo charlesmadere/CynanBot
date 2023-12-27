@@ -312,7 +312,7 @@ class TestTriviaAnswerCompiler():
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withGarfieldTheCat(self):
-        result = await self.triviaAnswerCompiler.compileTextAnswer('Garfield the cat')
+        result = await self.triviaAnswerCompiler.compileTextAnswersList('Garfield the cat')
         assert result == 'garfield (the) cat'
 
     @pytest.mark.asyncio
