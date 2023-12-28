@@ -299,13 +299,19 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'saint'
 
         # common names
+        if word == 'al':
+            yield 'alan'
+        if word in ('alberta', 'bert', 'bertie'):
+            yield 'albert'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
         if word in ('billie', 'billy'):
             yield 'bill'
         if word == 'bob':
             yield 'bobby'
-        if word in ('charlie', 'charly', 'chuck'):
+        if word in ('cathleen', 'katherine', 'kathleen', 'kathy'):
+            yield 'catherine'
+        if word in ('charlie', 'charly', 'chuck', 'chucky'):
             yield 'charles'
         if word in ('chris', 'christ', 'cris', 'kris'):
             yield 'christopher'
@@ -313,11 +319,15 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'delano'
         if word in ('dick', 'rick'):
             yield 'richard'
+        if word in ('ed', 'eddie', 'eddy'):
+            yield 'edward'
         if word == 'fdr':
             yield 'franklin roosevelt'
             yield 'franklin delano roosevelt'
         if word == 'goerge':
             yield 'george'
+        if word == 'gw':
+            yield 'george washington'
         if word == 'jakob':
             yield 'jacob'
         if word in ('jo', 'joey', 'joseph'):
@@ -326,15 +336,21 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'john'
         if word == 'joshua':
             yield 'josh'
+        if word == 'marty':
+            yield 'martin'
         if word in ('micheal', 'mike'):
             yield 'michael'
         if word in ('rob', 'robbie'):
             yield 'robert'
         if word in ('ron', 'ronnie'):
             yield 'ronald'
+        if word in ('sadie', 'sally', 'sara'):
+            yield 'sarah'
+        if word in ('tom', 'tony'):
+            yield 'thomas'
         if word == 'toni':
             yield 'tony'
-        if word == 'william':
+        if word in ('william', 'willie', 'willy'):
             yield 'will'
 
         # geographical features/streets
