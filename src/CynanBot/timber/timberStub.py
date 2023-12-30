@@ -15,4 +15,4 @@ class TimberStub(TimberInterface):
         exception: Optional[Exception] = None,
         traceback: Optional[str] = None
     ):
-        pass
+        print(f'{tag} — {msg}')
