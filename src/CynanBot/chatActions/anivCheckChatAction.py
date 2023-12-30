@@ -2,12 +2,12 @@ import traceback
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.aniv.anivContentCode import AnivContentCode
+from CynanBot.aniv.anivContentScannerInterface import \
+    AnivContentScannerInterface
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
 from CynanBot.chatActions.absChatAction import AbsChatAction
-from CynanBot.contentScanner.aniv.anivContentCode import AnivContentCode
-from CynanBot.contentScanner.aniv.anivContentScannerInterface import \
-    AnivContentScannerInterface
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from CynanBot.contentScanner.aniv.anivContentCode import AnivContentCode
+from CynanBot.aniv.anivContentCode import AnivContentCode
 
 
 class AnivContentScannerInterface(ABC):

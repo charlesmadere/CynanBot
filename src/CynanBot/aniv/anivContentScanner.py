@@ -1,8 +1,8 @@
 from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.contentScanner.aniv.anivContentCode import AnivContentCode
-from CynanBot.contentScanner.aniv.anivContentScannerInterface import \
+from CynanBot.aniv.anivContentCode import AnivContentCode
+from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
 from CynanBot.contentScanner.contentCode import ContentCode
 from CynanBot.contentScanner.contentScannerInterface import \

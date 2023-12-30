@@ -6,6 +6,7 @@ from typing import Optional
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -37,7 +38,6 @@ from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.contentScanner.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
