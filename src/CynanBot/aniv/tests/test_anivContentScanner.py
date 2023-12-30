@@ -37,6 +37,16 @@ class TestAnivContentScanner():
     )
 
     @pytest.mark.asyncio
+    async def test_scan_withBadParens(self):
+        result = await self.anivContentScanner.scan('(insanefirebat')
+        assert result is AnivContentCode.OPEN_PAREN
+
+    @pytest.mark.asyncio
+    async def test_scan_withBadQuotes(self):
+        result = await self.anivContentScanner.scan('\"insanefirebat')
+        assert result is AnivContentCode.OPEN_QUOTES
+
+    @pytest.mark.asyncio
     async def test_scan_withBannedPhrase1(self):
         result = await self.anivContentScanner.scan('qanonbelievers need help')
         assert result is AnivContentCode.OK
@@ -55,6 +65,16 @@ class TestAnivContentScanner():
     async def test_scan_withEmptyString(self):
         result = await self.anivContentScanner.scan('')
         assert result is AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodParens(self):
+        result = await self.anivContentScanner.scan('(insanefirebat)')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodQuotes(self):
+        result = await self.anivContentScanner.scan('\"insanefirebat\"')
+        assert result is AnivContentCode.OK
 
     @pytest.mark.asyncio
     async def test_scan_withHelloWorld(self):
