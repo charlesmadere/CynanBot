@@ -31,13 +31,13 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        for startParen, endParen in self.__parens.items():
+        for start, end in self.__parens.items():
             occurences = 0
 
             for character in message:
-                if character == startParen:
+                if character == start:
                     occurences += 1
-                elif character == endParen:
+                elif character == end:
                     occurences -= 1
 
             if occurences != 0:
@@ -50,13 +50,13 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        for startQuote, endQuote in self.__quotes.items():
+        for start, end in self.__quotes.items():
             occurences = 0
 
             for character in message:
-                if character == startQuote:
+                if character == start:
                     occurences += 1
-                elif character == endQuote:
+                elif character == end:
                     occurences -= 1
 
             if occurences != 0:
