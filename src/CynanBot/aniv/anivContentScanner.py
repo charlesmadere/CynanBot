@@ -27,6 +27,44 @@ class AnivContentScanner(AnivContentScannerInterface):
         self.__parens: Dict[str, str] = self.__createParensDict()
         self.__quotes: Dict[str, str] = self.__createQuotesDict()
 
+    async def __checkParens(self, message: str) -> AnivContentCode:
+        if not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        for startParen, endParen in self.__parens.items():
+            occurences = 0
+
+            for character in message:
+                if character == startParen:
+                    occurences += 1
+                elif character == endParen:
+                    occurences -= 1
+
+            if occurences != 0:
+                self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({occurences=})')
+                return AnivContentCode.OPEN_PAREN
+
+        return AnivContentCode.OK
+
+    async def __checkQuotes(self, message: str) -> AnivContentCode:
+        if not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        for startQuote, endQuote in self.__quotes.items():
+            occurences = 0
+
+            for character in message:
+                if character == startQuote:
+                    occurences += 1
+                elif character == endQuote:
+                    occurences -= 1
+
+            if occurences != 0:
+                self.__timber.log('AnivContentScanner', f'Discovered open quotes within aniv message ({message=}) ({occurences=})')
+                return AnivContentCode.OPEN_QUOTES
+
+        return AnivContentCode.OK
+
     def __createParensDict(self) -> Dict[str, str]:
         return {
             '[': ']',
@@ -44,31 +82,13 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        for startParen, endParen in self.__parens.items():
-            occurences = 0
+        parensContentCode = await self.__checkParens(message)
+        if parensContentCode is not AnivContentCode.OK:
+            return parensContentCode
 
-            for character in message:
-                if character == startParen:
-                    occurences += 1
-                elif character == endParen:
-                    occurences -= 1
-
-            if occurences != 0:
-                self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({occurences=})')
-                return AnivContentCode.OPEN_PAREN
-
-        for startQuote, endQuote in self.__quotes.items():
-            occurences = 0
-
-            for character in message:
-                if character == startQuote:
-                    occurences += 1
-                elif character == endQuote:
-                    occurences -= 1
-
-            if occurences != 0:
-                self.__timber.log('AnivContentScanner', f'Discovered open quotes within aniv message ({message=}) ({occurences=})')
-                return AnivContentCode.OPEN_QUOTES
+        quotesContentCode = await self.__checkQuotes(message)
+        if quotesContentCode is not AnivContentCode.OK:
+            return quotesContentCode
 
         return AnivContentCode.OK
 
