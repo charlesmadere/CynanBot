@@ -59,6 +59,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             WebsocketSubscriptionType.CHANNEL_UPDATE,
             WebsocketSubscriptionType.CHEER,
             WebsocketSubscriptionType.RAID,
+            WebsocketSubscriptionType.SUBSCRIBE,
             WebsocketSubscriptionType.SUBSCRIPTION_GIFT,
             WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         },
