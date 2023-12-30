@@ -74,7 +74,7 @@ class AnivContentScanner(AnivContentScannerInterface):
 
     async def scan(self, message: Optional[str]) -> AnivContentCode:
         if not utils.isValidStr(message):
-            return AnivContentCode.IS_NONE_OR_EMPTY_BLANK
+            return AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
 
         contentCode = await self.__contentScanner.scan(message)
 
@@ -83,7 +83,7 @@ class AnivContentScanner(AnivContentScannerInterface):
         elif contentCode is ContentCode.CONTAINS_URL:
             return AnivContentCode.CONTAINS_URL
         elif contentCode is ContentCode.IS_NONE or contentCode is ContentCode.IS_EMPTY or contentCode is ContentCode.IS_BLANK:
-            return AnivContentCode.IS_NONE_OR_EMPTY_BLANK
+            return AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
         elif contentCode is not ContentCode.OK:
             # this case is actually an error, it means that we're not properly mapping together
             # ContentCode values and AnivContentCode values

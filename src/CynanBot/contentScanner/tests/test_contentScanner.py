@@ -80,3 +80,7 @@ class TestContentScanner():
     @pytest.mark.asyncio
     async def test_updateWordsContent(self):
         pass
+
+    def test_sanity(self):
+        assert self.contentScanner is not None
+        assert isinstance(self.contentScanner, ContentScannerInterface)
