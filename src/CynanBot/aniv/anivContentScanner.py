@@ -32,6 +32,7 @@ class AnivContentScanner(AnivContentScannerInterface):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         stack: List[str] = list()
+        encounteredError = False
 
         try:
             for start, end in self.__parens.items():
@@ -41,12 +42,19 @@ class AnivContentScanner(AnivContentScannerInterface):
                     elif character == end:
                         stack.pop()
 
+                if len(stack) != 0:
+                    encounteredError = True
+                    break
+
                 stack.clear()
         except IndexError:
+            encounteredError = True
+
+        if encounteredError:
             self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({stack=})')
             return AnivContentCode.OPEN_PAREN
-
-        return AnivContentCode.OK
+        else:
+            return AnivContentCode.OK
 
     async def __checkQuotes(self, message: str) -> AnivContentCode:
         if not utils.isValidStr(message):
