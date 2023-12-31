@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -31,18 +31,20 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        for start, end in self.__parens.items():
-            stack = 0
+        stack: List[str] = list()
 
-            for character in message:
-                if character == start:
-                    stack += 1
-                elif character == end:
-                    stack -= 1
+        try:
+            for start, end in self.__parens.items():
+                for character in message:
+                    if character == start:
+                        stack.append(character)
+                    elif character == end:
+                        stack.pop()
 
-            if stack != 0:
-                self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({stack=})')
-                return AnivContentCode.OPEN_PAREN
+                stack.clear()
+        except IndexError:
+            self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({stack=})')
+            return AnivContentCode.OPEN_PAREN
 
         return AnivContentCode.OK
 
