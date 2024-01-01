@@ -7,6 +7,7 @@ from CynanBot.aniv.anivContentScannerInterface import \
 from CynanBot.contentScanner.contentCode import ContentCode
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
+from CynanBot.misc.stack import Stack
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -31,14 +32,14 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        stack: List[str] = list()
+        stack: Stack[str] = Stack()
         encounteredError = False
 
         try:
             for start, end in self.__parens.items():
                 for character in message:
                     if character == start:
-                        stack.append(character)
+                        stack.push(character)
                     elif character == end:
                         stack.pop()
 
