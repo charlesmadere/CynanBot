@@ -36,18 +36,24 @@ class AnivContentScanner(AnivContentScannerInterface):
         encounteredError = False
 
         try:
-            for start, end in self.__parens.items():
-                for character in message:
-                    if character == start:
-                        stack.push(character)
-                    elif character == end:
-                        stack.pop()
+            for character in message:
+                if character in self.__parens.keys():
+                    stack.push(character)
+                elif character in self.__parens.values():
+                    startCharacter: Optional[str] = None
 
-                if len(stack) != 0:
-                    encounteredError = True
-                    break
+                    for start, end in self.__parens.items():
+                        if end == character:
+                            startCharacter = start
+                            break
 
-                stack.clear()
+                    if not isinstance(startCharacter, str):
+                        raise RuntimeError(f'Unable to find corresponding start character for end character \"{character}\"')
+                    elif stack.top() != startCharacter:
+                        encounteredError = True
+                        break
+
+                    stack.pop()
         except IndexError:
             encounteredError = True
 
