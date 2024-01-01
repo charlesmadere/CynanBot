@@ -90,7 +90,7 @@ class TranslationHelper(TranslationHelperInterface):
         if not utils.hasItems(translationJson):
             raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" list entry: {jsonResponse}')
 
-        originalLanguage: LanguageEntry = None
+        originalLanguage: Optional[LanguageEntry] = None
         detectedSourceLanguage: str = translationJson.get('detected_source_language')
         if utils.isValidStr(detectedSourceLanguage):
             originalLanguage = await self.__languagesRepository.getLanguageForCommand(

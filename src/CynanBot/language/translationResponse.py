@@ -1,3 +1,5 @@
+from typing import Optional
+
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.translationApiSource import TranslationApiSource
@@ -7,8 +9,8 @@ class TranslationResponse():
 
     def __init__(
         self,
-        originalLanguage: LanguageEntry,
-        translatedLanguage: LanguageEntry,
+        originalLanguage: Optional[LanguageEntry],
+        translatedLanguage: Optional[LanguageEntry],
         originalText: str,
         translatedText: str,
         translationApiSource: TranslationApiSource
@@ -24,19 +26,19 @@ class TranslationResponse():
         elif translationApiSource is None:
             raise ValueError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
-        self.__originalLanguage: LanguageEntry = originalLanguage
-        self.__translatedLanguage: LanguageEntry = translatedLanguage
+        self.__originalLanguage: Optional[LanguageEntry] = originalLanguage
+        self.__translatedLanguage: Optional[LanguageEntry] = translatedLanguage
         self.__originalText: str = originalText
         self.__translatedText: str = translatedText
         self.__translationApiSource: TranslationApiSource = translationApiSource
 
-    def getOriginalLanguage(self) -> LanguageEntry:
+    def getOriginalLanguage(self) -> Optional[LanguageEntry]:
         return self.__originalLanguage
 
     def getOriginalText(self) -> str:
         return self.__originalText
 
-    def getTranslatedLanguage(self) -> LanguageEntry:
+    def getTranslatedLanguage(self) -> Optional[LanguageEntry]:
         return self.__translatedLanguage
 
     def getTranslatedText(self) -> str:
