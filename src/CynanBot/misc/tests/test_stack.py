@@ -7,6 +7,17 @@ from CynanBot.misc.stack import Stack
 
 class TestStack():
 
+    def test_clear(self):
+        stack: Stack[bool] = Stack()
+        stack.push(True)
+        stack.clear()
+        assert len(stack) == 0
+
+    def test_clear_withEmptyStack(self):
+        stack: Stack[bool] = Stack()
+        stack.clear()
+        assert len(stack) == 0
+
     def test_len_withEmptyStack(self):
         stack: Stack[int] = Stack()
         assert len(stack) == 0
