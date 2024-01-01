@@ -25,21 +25,36 @@ class AnivContentScanner(AnivContentScannerInterface):
 
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
-        self.__parens: Dict[str, str] = self.__createParensDict()
-        self.__quotes: Dict[str, Optional[str]] = self.__createQuotesDict()
 
-    async def __checkParens(self, message: str) -> AnivContentCode:
-        if not utils.isValidStr(message):
+        self.__parens: Dict[str, str] = {
+            '[': ']',
+            '(': ')',
+            '{': '}',
+            '<': '>'
+        }
+
+        self.__quotes: Dict[str, str] = {
+            '“': '”',
+            '「': '」'
+        }
+
+    async def __containsMatchingCharacterPairs(
+        self,
+        characterPairs: Dict[str, str],
+        message: str
+    ) -> bool:
+        if not isinstance(characterPairs, Dict):
+            raise ValueError(f'characterPairs argument is malformed: \"{characterPairs}\"')
+        elif not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
-        encounteredError = False
 
         try:
             for character in message:
-                if character in self.__parens.keys():
+                if character in characterPairs.keys():
                     stack.push(character)
-                elif character in self.__parens.values():
+                elif character in characterPairs.values():
                     startCharacter: Optional[str] = None
 
                     for start, end in self.__parens.items():
@@ -52,63 +67,49 @@ class AnivContentScanner(AnivContentScannerInterface):
                     elif stack.top() == startCharacter:
                         stack.pop()
                     else:
-                        encounteredError = True
-                        break
+                        self.__timber.log('AnivContentScanner', f'Discovered mismatching character pairs within aniv message ({message=}) ({stack=})')
+                        return False
         except IndexError:
-            encounteredError = True
+            return False
 
-        if encounteredError or len(stack) != 0:
-            self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({stack=})')
-            return AnivContentCode.OPEN_PAREN
+        if len(stack) == 0:
+            return True
         else:
-            return AnivContentCode.OK
+            self.__timber.log('AnivContentScanner', f'Discovered mismatching character pairs within aniv message ({message=}) ({stack=})')
+            return False
 
-    async def __checkQuotes(self, message: str) -> AnivContentCode:
+    async def __containsMatchingStraightQuotes(self, message: str) -> bool:
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        for start, end in self.__quotes.items():
-            stack = 0
+        count = message.count('\"')
 
-            for character in message:
-                if character == start:
-                    if end is None and (stack % 2) != 0:
-                        stack -= 1
-                    else:
-                        stack += 1
-                elif character == end:
-                    stack -= 1
-
-            if stack != 0:
-                self.__timber.log('AnivContentScanner', f'Discovered open quotes within aniv message ({message=}) ({stack=})')
-                return AnivContentCode.OPEN_QUOTES
-
-        return AnivContentCode.OK
-
-    def __createParensDict(self) -> Dict[str, str]:
-        return {
-            '[': ']',
-            '(': ')',
-            '{': '}'
-        }
-
-    def __createQuotesDict(self) -> Dict[str, Optional[str]]:
-        return {
-            '\"': None,
-            '“': '”'
-        }
+        if count % 2 == 0:
+            return True
+        else:
+            self.__timber.log('AnivContentScanner', f'Discovered mismatching straight quotes within aniv message ({message=}) ({count=})')
+            return False
 
     async def __deepScan(self, message: str) -> AnivContentCode:
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
-        parensContentCode = await self.__checkParens(message)
-        if parensContentCode is not AnivContentCode.OK:
-            return parensContentCode
+        if not await self.__containsMatchingCharacterPairs(
+            characterPairs = self.__parens,
+            message = message
+        ):
+            return AnivContentCode.OPEN_PAREN
 
-        quotesContentCode = await self.__checkQuotes(message)
-        if quotesContentCode is not AnivContentCode.OK:
-            return quotesContentCode
+        if not await self.__containsMatchingCharacterPairs(
+            characterPairs = self.__quotes,
+            message = message
+        ):
+            return AnivContentCode.OPEN_QUOTES
+
+        if not await self.__containsMatchingStraightQuotes(
+            message = message
+        ):
+            return AnivContentCode.OPEN_QUOTES
 
         return AnivContentCode.OK
 
