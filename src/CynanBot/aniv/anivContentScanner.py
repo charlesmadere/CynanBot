@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -49,15 +49,15 @@ class AnivContentScanner(AnivContentScannerInterface):
 
                     if not isinstance(startCharacter, str):
                         raise RuntimeError(f'Unable to find corresponding start character for end character \"{character}\"')
-                    elif stack.top() != startCharacter:
+                    elif stack.top() == startCharacter:
+                        stack.pop()
+                    else:
                         encounteredError = True
                         break
-
-                    stack.pop()
         except IndexError:
             encounteredError = True
 
-        if encounteredError:
+        if encounteredError or len(stack) != 0:
             self.__timber.log('AnivContentScanner', f'Discovered open parens within aniv message ({message=}) ({stack=})')
             return AnivContentCode.OPEN_PAREN
         else:

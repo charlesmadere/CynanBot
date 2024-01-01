@@ -49,7 +49,7 @@ async def main():
     # result = await triviaAnswerCompiler.compileTextAnswersList([ 'Garfield the cat' ])
     # print(f'result=\"{result}\"')
     pass
-    result = await anivContentScanner.scan('\"insanefirebat\"')
+    result = await anivContentScanner.scan('(insanefirebat)')
     print(f'{result=}')
     pass
 
