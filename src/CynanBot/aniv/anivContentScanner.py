@@ -118,8 +118,8 @@ class AnivContentScanner(AnivContentScannerInterface):
         elif contentCode is ContentCode.IS_NONE or contentCode is ContentCode.IS_EMPTY or contentCode is ContentCode.IS_BLANK:
             return AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
         elif contentCode is not ContentCode.OK:
-            # this case is actually an error, it means that we're not properly mapping together
-            # ContentCode values and AnivContentCode values
+            # This case is actually a programmatic error of some kind, it means that we're not
+            # properly mapping together ContentCode values and AnivContentCode values.
             self.__timber.log('AnivContentScanner', f'Message from aniv returned a ContentCode that we\'re not properly supporting ({contentCode=}) ({message=})')
             return AnivContentCode.CONTAINS_BANNED_CONTENT
         else:
