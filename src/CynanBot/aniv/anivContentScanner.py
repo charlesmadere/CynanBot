@@ -57,7 +57,7 @@ class AnivContentScanner(AnivContentScannerInterface):
                 elif character in characterPairs.values():
                     startCharacter: Optional[str] = None
 
-                    for start, end in self.__parens.items():
+                    for start, end in characterPairs.items():
                         if end == character:
                             startCharacter = start
                             break
