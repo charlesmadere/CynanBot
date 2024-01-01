@@ -21,6 +21,9 @@ class Stack(Generic[T]):
     def push(self, item: T):
         self.__backingList.append(item)
 
+    def __repr__(self) -> str:
+        return str(self.__backingList)
+
     def top(self) -> T:
         length = len(self)
 
