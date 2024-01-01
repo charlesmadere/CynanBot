@@ -5,10 +5,11 @@ from typing import List, Optional
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.channelJoinListener import ChannelJoinListener
-from CynanBot.twitch.finishedJoiningChannelsEvent import \
+from CynanBot.twitch.configuration.channelJoinListener import \
+    ChannelJoinListener
+from CynanBot.twitch.configuration.finishedJoiningChannelsEvent import \
     FinishedJoiningChannelsEvent
-from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
+from CynanBot.twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 

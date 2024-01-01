@@ -92,7 +92,7 @@ from CynanBot.tts.ttsSettingsRepositoryInterface import \
 from CynanBot.twitch.api.twitchApiService import TwitchApiService
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.configuration.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \

@@ -1,6 +1,7 @@
 from abc import ABC
 
-from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
+from CynanBot.twitch.configuration.channelJoinEventType import \
+    ChannelJoinEventType
 
 
 class AbsChannelJoinEvent(ABC):

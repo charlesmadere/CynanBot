@@ -1,8 +1,10 @@
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.absChannelJoinEvent import AbsChannelJoinEvent
-from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
+from CynanBot.twitch.configuration.absChannelJoinEvent import \
+    AbsChannelJoinEvent
+from CynanBot.twitch.configuration.channelJoinEventType import \
+    ChannelJoinEventType
 
 
 class FinishedJoiningChannelsEvent(AbsChannelJoinEvent):

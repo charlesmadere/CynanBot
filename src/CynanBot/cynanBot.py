@@ -164,7 +164,6 @@ from CynanBot.triviaUtils import TriviaUtils
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
-from CynanBot.twitch.absChannelJoinEvent import AbsChannelJoinEvent
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
@@ -173,9 +172,16 @@ from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.channelJoinEventType import ChannelJoinEventType
-from CynanBot.twitch.channelJoinHelper import ChannelJoinHelper
-from CynanBot.twitch.channelJoinListener import ChannelJoinListener
+from CynanBot.twitch.configuration.absChannelJoinEvent import \
+    AbsChannelJoinEvent
+from CynanBot.twitch.configuration.channelJoinEventType import \
+    ChannelJoinEventType
+from CynanBot.twitch.configuration.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.configuration.channelJoinListener import \
+    ChannelJoinListener
+from CynanBot.twitch.configuration.finishedJoiningChannelsEvent import \
+    FinishedJoiningChannelsEvent
+from CynanBot.twitch.configuration.joinChannelsEvent import JoinChannelsEvent
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
@@ -183,11 +189,8 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
-from CynanBot.twitch.finishedJoiningChannelsEvent import \
-    FinishedJoiningChannelsEvent
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.joinChannelsEvent import JoinChannelsEvent
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler

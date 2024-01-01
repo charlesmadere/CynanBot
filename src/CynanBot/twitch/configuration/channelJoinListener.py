@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.twitch.absChannelJoinEvent import AbsChannelJoinEvent
+from CynanBot.twitch.configuration.absChannelJoinEvent import \
+    AbsChannelJoinEvent
 
 
 class ChannelJoinListener(ABC):
