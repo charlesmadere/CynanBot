@@ -95,6 +95,9 @@ from CynanBot.recurringActions.recurringActionsRepository import \
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+    SoundPlayerHelperInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
@@ -109,6 +112,8 @@ from CynanBot.storage.linesFileReader import LinesFileReader
 from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
+from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
+    SystemCommandHelperInterface
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepository import \
@@ -399,6 +404,9 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
 )
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
+    timber = timber
+)
+systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
     timber = timber
 )
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
@@ -733,6 +741,12 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
 
+soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    systemCommandHelper = systemCommandHelper,
+    timber = timber
+)
+
 ttsManager: Optional[TtsManagerInterface] = None
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
@@ -752,10 +766,8 @@ if generalSettingsSnapshot.isTtsEnabled():
             backgroundTaskHelper = backgroundTaskHelper,
             timber = timber
         ),
-        soundPlayerHelper = None,
-        systemCommandHelper = SystemCommandHelper(
-            timber = timber
-        ),
+        soundPlayerHelper = soundPlayerHelper,
+        systemCommandHelper = systemCommandHelper,
         timber = timber,
         ttsSettingsRepository = ttsSettingsRepository
     )
