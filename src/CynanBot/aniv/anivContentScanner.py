@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Set, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -49,15 +49,18 @@ class AnivContentScanner(AnivContentScannerInterface):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
+        keys: Set[str] = set(characterPairs.keys())
+        values: Set[str] = set(characterPairs.values())
+        items: List[Tuple[str, str]] = list(characterPairs.items())
 
         try:
             for character in message:
-                if character in characterPairs.keys():
+                if character in keys:
                     stack.push(character)
-                elif character in characterPairs.values():
+                elif character in values:
                     startCharacter: Optional[str] = None
 
-                    for start, end in characterPairs.items():
+                    for start, end in items:
                         if end == character:
                             startCharacter = start
                             break
