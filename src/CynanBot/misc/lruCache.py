@@ -6,7 +6,7 @@ import CynanBot.misc.utils as utils
 # This class was taken from online:
 # https://gist.github.com/jerryan999/6677a2619e8175e54ed05d3c6e1621cf
 #
-# I then slightly tweaked it for simplifcation... (fingers crossed it works)
+# I then slightly tweaked it for simplification... (fingers crossed it works)
 class LinkedNode():
 
     def __init__(self, key: str):
