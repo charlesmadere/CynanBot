@@ -49,7 +49,7 @@ class WebsocketSubGift():
     def getCumulativeTotal(self) -> Optional[int]:
         return self.__cumulativeTotal
 
-    def getDurationMonths(self) -> str:
+    def getDurationMonths(self) -> int:
         return self.__durationMonths
 
     def getRecipientUserId(self) -> str:
