@@ -1,6 +1,6 @@
 from typing import Optional
 
-from CynanBot.twitch.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 
 
 class TestTwitchEmoteImageScale():

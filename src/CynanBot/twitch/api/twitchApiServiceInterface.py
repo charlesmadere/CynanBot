@@ -2,19 +2,20 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import List, Optional
 
+from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
+from CynanBot.twitch.api.twitchBannedUsersResponse import \
+    TwitchBannedUsersResponse
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
+from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
+from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
+from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
+from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
+from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
+from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
-from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
-from CynanBot.twitch.twitchBannedUsersResponse import TwitchBannedUsersResponse
-from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
-from CynanBot.twitch.twitchBanResponse import TwitchBanResponse
-from CynanBot.twitch.twitchEmoteDetails import TwitchEmoteDetails
-from CynanBot.twitch.twitchEventSubRequest import TwitchEventSubRequest
-from CynanBot.twitch.twitchEventSubResponse import TwitchEventSubResponse
-from CynanBot.twitch.twitchLiveUserDetails import TwitchLiveUserDetails
-from CynanBot.twitch.twitchModUser import TwitchModUser
-from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
-from CynanBot.twitch.twitchUnbanRequest import TwitchUnbanRequest
-from CynanBot.twitch.twitchUserSubscriptionDetails import \
+from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 
 

@@ -1,4 +1,5 @@
 from enum import auto
+
 from CynanBot.misc.enumWithToFromStr import EnumWithToFromStr
 
 

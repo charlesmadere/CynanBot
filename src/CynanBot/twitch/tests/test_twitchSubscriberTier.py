@@ -1,6 +1,6 @@
 from typing import Optional
 
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TestTwitchSubscriberTier():

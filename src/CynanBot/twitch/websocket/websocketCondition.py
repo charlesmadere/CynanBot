@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.websocket.websocketReward import WebsocketReward
 
 

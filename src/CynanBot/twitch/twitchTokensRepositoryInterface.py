@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import List, Optional
 
 from CynanBot.misc.clearable import Clearable
-from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.twitchTokensRepositoryListener import \
     TwitchTokensRepositoryListener
 

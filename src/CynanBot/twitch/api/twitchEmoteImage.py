@@ -1,5 +1,5 @@
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
 
 
 class TwitchEmoteImage():

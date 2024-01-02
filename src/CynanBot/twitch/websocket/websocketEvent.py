@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \
     WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketNoticeType import WebsocketNoticeType

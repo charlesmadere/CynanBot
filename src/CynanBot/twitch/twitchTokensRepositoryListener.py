@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 
 
 class TwitchTokensRepositoryListener(ABC):

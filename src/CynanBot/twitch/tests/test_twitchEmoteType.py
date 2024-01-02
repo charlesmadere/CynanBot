@@ -1,6 +1,6 @@
 from typing import Optional
 
-from CynanBot.twitch.twitchEmoteType import TwitchEmoteType
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
 
 
 class TestTwitchEmoteType():

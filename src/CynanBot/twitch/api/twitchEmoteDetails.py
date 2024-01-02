@@ -1,10 +1,10 @@
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchEmoteImage import TwitchEmoteImage
-from CynanBot.twitch.twitchEmoteImageScale import TwitchEmoteImageScale
-from CynanBot.twitch.twitchEmoteType import TwitchEmoteType
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TwitchEmoteDetails():

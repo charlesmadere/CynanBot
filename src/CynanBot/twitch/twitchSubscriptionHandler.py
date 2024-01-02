@@ -13,9 +13,9 @@ from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \

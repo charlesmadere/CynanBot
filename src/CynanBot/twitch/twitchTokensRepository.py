@@ -11,9 +11,9 @@ from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.exceptions import (NoTwitchTokenDetailsException,
                                         TwitchPasswordChangedException)
-from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchTokensRepositoryListener import \

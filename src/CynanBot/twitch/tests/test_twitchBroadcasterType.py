@@ -1,4 +1,4 @@
-from CynanBot.twitch.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
 
 
 class TestTwitchBroadcasterType():

@@ -1,6 +1,6 @@
 from typing import Dict
 
-from CynanBot.twitch.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType

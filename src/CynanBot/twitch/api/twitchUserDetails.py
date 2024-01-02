@@ -1,6 +1,6 @@
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchBroadcasterType import TwitchBroadcasterType
-from CynanBot.twitch.twitchUserType import TwitchUserType
+from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchUserType import TwitchUserType
 
 
 class TwitchUserDetails():

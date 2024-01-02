@@ -12,8 +12,8 @@ from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
-from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \

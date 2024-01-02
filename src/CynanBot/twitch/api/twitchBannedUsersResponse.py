@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchBannedUser import TwitchBannedUser
+from CynanBot.twitch.api.twitchBannedUser import TwitchBannedUser
 
 
 class TwitchBannedUsersResponse():

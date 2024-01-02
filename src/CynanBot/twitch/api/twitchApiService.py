@@ -11,7 +11,31 @@ from CynanBot.network.networkResponse import NetworkResponse
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchBannedUser import TwitchBannedUser
+from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
+from CynanBot.twitch.api.twitchBannedUsersPageResponse import \
+    TwitchBannedUsersPageResponse
+from CynanBot.twitch.api.twitchBannedUsersResponse import \
+    TwitchBannedUsersResponse
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
+from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
+from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
+from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
+from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
+from CynanBot.twitch.api.twitchEmoteType import TwitchEmoteType
+from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
+from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
+from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.api.twitchStreamType import TwitchStreamType
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
+from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
+from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
+    TwitchUserSubscriptionDetails
+from CynanBot.twitch.api.twitchUserType import TwitchUserType
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchErrorException,
                                         TwitchJsonException,
@@ -19,32 +43,9 @@ from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchRefreshTokenMissingException,
                                         TwitchStatusCodeException,
                                         TwitchTokenIsExpiredException)
-from CynanBot.twitch.twitchBannedUser import TwitchBannedUser
-from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
-from CynanBot.twitch.twitchBannedUsersPageResponse import \
-    TwitchBannedUsersPageResponse
-from CynanBot.twitch.twitchBannedUsersResponse import TwitchBannedUsersResponse
-from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
-from CynanBot.twitch.twitchBanResponse import TwitchBanResponse
-from CynanBot.twitch.twitchBroadcasterType import TwitchBroadcasterType
 from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
-from CynanBot.twitch.twitchEmoteDetails import TwitchEmoteDetails
-from CynanBot.twitch.twitchEmoteImage import TwitchEmoteImage
-from CynanBot.twitch.twitchEmoteImageScale import TwitchEmoteImageScale
-from CynanBot.twitch.twitchEmoteType import TwitchEmoteType
-from CynanBot.twitch.twitchEventSubRequest import TwitchEventSubRequest
-from CynanBot.twitch.twitchEventSubResponse import TwitchEventSubResponse
-from CynanBot.twitch.twitchLiveUserDetails import TwitchLiveUserDetails
-from CynanBot.twitch.twitchModUser import TwitchModUser
 from CynanBot.twitch.twitchPaginationResponse import TwitchPaginationResponse
-from CynanBot.twitch.twitchStreamType import TwitchStreamType
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
-from CynanBot.twitch.twitchTokensDetails import TwitchTokensDetails
-from CynanBot.twitch.twitchUnbanRequest import TwitchUnbanRequest
-from CynanBot.twitch.twitchUserSubscriptionDetails import \
-    TwitchUserSubscriptionDetails
-from CynanBot.twitch.twitchUserType import TwitchUserType
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 from CynanBot.twitch.websocket.websocketConnectionStatus import \

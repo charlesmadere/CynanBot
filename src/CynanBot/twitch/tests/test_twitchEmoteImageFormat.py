@@ -1,4 +1,4 @@
-from CynanBot.twitch.twitchEmoteImageFormat import TwitchEmoteImageFormat
+from CynanBot.twitch.api.twitchEmoteImageFormat import TwitchEmoteImageFormat
 
 
 class TestTwitchEmoteImageFormat():

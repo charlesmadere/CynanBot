@@ -1,5 +1,5 @@
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TwitchUserSubscriptionDetails():

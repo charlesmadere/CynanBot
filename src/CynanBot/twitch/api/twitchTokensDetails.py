@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Dict
 
 import CynanBot.misc.utils as utils
 
@@ -31,5 +32,13 @@ class TwitchTokensDetails():
     def getRefreshToken(self) -> str:
         return self.__refreshToken
 
-    def __str__(self) -> str:
-        return f'expirationTime={self.__expirationTime}, accessToken=\"{self.__accessToken}\", refreshToken=\"{self.__refreshToken}\"'
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'accessToken': self.__accessToken,
+            'expirationTime': self.__expirationTime,
+            'refreshToken': self.__refreshToken
+        }

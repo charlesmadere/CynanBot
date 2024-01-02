@@ -22,11 +22,11 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.twitchBannedUserRequest import TwitchBannedUserRequest
-from CynanBot.twitch.twitchBanRequest import TwitchBanRequest
+from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
+from CynanBot.twitch.api.twitchModUser import TwitchModUser
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.twitch.twitchModUser import TwitchModUser
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \

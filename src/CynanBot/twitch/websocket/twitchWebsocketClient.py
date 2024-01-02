@@ -15,7 +15,7 @@ from CynanBot.misc.lruCache import LruCache
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \

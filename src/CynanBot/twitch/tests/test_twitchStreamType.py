@@ -1,4 +1,4 @@
-from CynanBot.twitch.twitchStreamType import TwitchStreamType
+from CynanBot.twitch.api.twitchStreamType import TwitchStreamType
 
 
 class TestTwitchStreamType():

@@ -3,7 +3,7 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsDonationType import TtsDonationType
-from CynanBot.twitch.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
 class TtsSubscriptionDonation(TtsDonation):

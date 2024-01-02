@@ -2,7 +2,7 @@ import locale
 from typing import Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.twitchStreamType import TwitchStreamType
+from CynanBot.twitch.api.twitchStreamType import TwitchStreamType
 
 
 class TwitchLiveUserDetails():
