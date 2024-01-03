@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Set, Tuple
+import re
+from typing import Dict, List, Optional, Pattern, Set, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -26,6 +27,8 @@ class AnivContentScanner(AnivContentScannerInterface):
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
 
+        self.__commandRegEx: Pattern = re.compile(r'^\!\w+', re.IGNORECASE)
+
         self.__parens: Dict[str, str] = {
             '[': ']',
             '(': ')',
@@ -37,6 +40,12 @@ class AnivContentScanner(AnivContentScannerInterface):
             '“': '”',
             '「': '」'
         }
+
+    async def __containsAttemptedCommandUse(self, message: str) -> bool:
+        if not utils.isValidStr(message):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        return self.__commandRegEx.fullmatch(message) is not None
 
     async def __containsMatchingCharacterPairs(
         self,
@@ -96,6 +105,11 @@ class AnivContentScanner(AnivContentScannerInterface):
     async def __deepScan(self, message: str) -> AnivContentCode:
         if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
+
+        if not await self.__containsAttemptedCommandUse(
+            message = message
+        ):
+            return AnivContentCode.ATTEMPTS_COMMAND_USE
 
         if not await self.__containsMatchingCharacterPairs(
             characterPairs = self.__parens,
