@@ -1,5 +1,4 @@
-import re
-from typing import Dict, List, Optional, Pattern, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
