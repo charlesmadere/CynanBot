@@ -130,7 +130,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
             self.__timber.log('TriviaEmoteGenerator', f'Encountered out of bounds emoteIndex for \"{twitchChannel}\": {emoteIndex}')
             emoteIndex = 0
 
-        return emoteIndex
+        return self.__emotesList[emoteIndex]
 
     async def __getCurrentEmoteIndexFor(self, twitchChannel: str) -> int:
         if not utils.isValidStr(twitchChannel):
