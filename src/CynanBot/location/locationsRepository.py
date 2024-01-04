@@ -7,6 +7,7 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class LocationsRepository(LocationsRepositoryInterface):
@@ -14,20 +15,25 @@ class LocationsRepository(LocationsRepositoryInterface):
     def __init__(
         self,
         locationsJsonReader: JsonReaderInterface,
+        timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(locationsJsonReader, JsonReaderInterface):
             raise ValueError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__locationsJsonReader: JsonReaderInterface = locationsJsonReader
+        self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__cache: Dict[str, Optional[Location]] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
+        self.__timber.log('LocationsRepository', 'Caches cleared')
 
     async def getLocation(self, locationId: str) -> Location:
         if not utils.isValidStr(locationId):
