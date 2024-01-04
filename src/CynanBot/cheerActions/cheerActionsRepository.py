@@ -167,8 +167,10 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
-        if userId in self.__cache:
-            return self.__cache[userId]
+        actions: Optional[List[CheerAction]] = self.__cache.get(userId, None)
+
+        if actions is not None:
+            return actions
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -182,7 +184,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         )
 
         await connection.close()
-        actions: List[CheerAction] = list()
+        actions = list()
 
         if utils.hasItems(records):
             for record in records:

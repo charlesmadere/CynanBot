@@ -6,10 +6,7 @@ from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 class CutenessDate():
 
-    def __init__(
-        self,
-        utcYearAndMonthStr: Optional[str] = None
-    ):
+    def __init__(self, utcYearAndMonthStr: Optional[str] = None):
         if utcYearAndMonthStr is None:
             self.__simpleDateTime: SimpleDateTime = SimpleDateTime()
         else:

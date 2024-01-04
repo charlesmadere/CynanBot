@@ -396,6 +396,7 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
 languagesRepository = LanguagesRepository()
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader('locationsRepository.json'),
+    timber = timber,
     timeZoneRepository = timeZoneRepository
 )
 mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsRepository(

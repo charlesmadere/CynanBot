@@ -275,12 +275,12 @@ class CutenessRepository(CutenessRepositoryInterface):
             twitchChannel, userId, cutenessDate.getStr()
         )
 
-        oldCuteness: int = 0
+        oldCuteness = 0
 
         if utils.hasItems(record):
             oldCuteness = record[0]
 
-        newCuteness: int = oldCuteness + incrementAmount
+        newCuteness = oldCuteness + incrementAmount
 
         if newCuteness < 0:
             newCuteness = 0
@@ -355,11 +355,11 @@ class CutenessRepository(CutenessRepositoryInterface):
                     break
 
         specificLookupCutenessResult: Optional[CutenessResult] = None
-        if not specificLookupAlreadyInResults and (utils.isValidStr(specificLookupUserId) or utils.isValidStr(specificLookupUserName)):
-            if not utils.isValidStr(specificLookupUserId):
+        if not specificLookupAlreadyInResults:
+            if utils.isValidStr(specificLookupUserId):
+                specificLookupUserName = await self.__userIdsRepository.fetchUserName(userId = specificLookupUserId)
+            elif utils.isValidStr(specificLookupUserName):
                 specificLookupUserId = await self.__userIdsRepository.fetchUserId(userName = specificLookupUserName)
-            else:
-                specificLookupUserName = await self.__userIdsRepository.fetchUserName(specificLookupUserId)
 
             if utils.isValidStr(specificLookupUserId) and utils.isValidStr(specificLookupUserName):
                 specificLookupCutenessResult = await self.fetchCuteness(

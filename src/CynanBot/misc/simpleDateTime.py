@@ -22,9 +22,7 @@ class SimpleDateTime():
             self.__now: datetime = now
 
     def __add__(self, other: Any):
-        if isinstance(other, SimpleDateTime):
-            return SimpleDateTime(self.__now + other.__now)
-        elif isinstance(other, timedelta):
+        if isinstance(other, timedelta):
             return SimpleDateTime(self.__now + other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')
@@ -138,9 +136,7 @@ class SimpleDateTime():
         return str(self.__now)
 
     def __sub__(self, other: Any):
-        if isinstance(other, SimpleDateTime):
-            return self.__now - other.__now
-        elif isinstance(other, timedelta):
-            return self.__now - other
+        if isinstance(other, timedelta):
+            return SimpleDateTime(self.__now - other)
         else:
             raise ValueError(f'`other` is an unsupported type: \"{other}\"')

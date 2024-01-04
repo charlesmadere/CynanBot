@@ -34,9 +34,10 @@ class LocationsRepository(LocationsRepositoryInterface):
             raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
 
         locationId = locationId.lower()
+        location = self.__cache.get(locationId, None)
 
-        if locationId in self.__cache:
-            return self.__cache[locationId]
+        if location is not None:
+            return location
 
         jsonContents = await self.__readAllJson()
 

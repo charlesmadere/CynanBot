@@ -16,7 +16,7 @@ class CutenessLeaderboardHistoryResult():
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__twitchChannel: str = twitchChannel
-        self.__leaderboards: List[CutenessLeaderboardResult] = leaderboards
+        self.__leaderboards: Optional[List[CutenessLeaderboardResult]] = leaderboards
 
     def getLeaderboards(self) -> Optional[List[CutenessLeaderboardResult]]:
         return self.__leaderboards

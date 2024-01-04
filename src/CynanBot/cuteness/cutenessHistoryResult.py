@@ -19,14 +19,16 @@ class CutenessHistoryResult():
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif totalCuteness is not None and not utils.isValidNum(totalCuteness):
+        elif bestCuteness is not None and not isinstance(bestCuteness, CutenessHistoryEntry):
+            raise ValueError(f'bestCuteness argument is malformed: \"{bestCuteness}\"')
+        elif totalCuteness is not None and not utils.isValidInt(totalCuteness):
             raise ValueError(f'totalCuteness argument is malformed: \"{totalCuteness}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName
         self.__bestCuteness: Optional[CutenessHistoryEntry] = bestCuteness
         self.__totalCuteness: Optional[int] = totalCuteness
-        self.__entries: List[CutenessHistoryEntry] = entries
+        self.__entries: Optional[List[CutenessHistoryEntry]] = entries
 
     def getBestCuteness(self) -> Optional[CutenessHistoryEntry]:
         return self.__bestCuteness
