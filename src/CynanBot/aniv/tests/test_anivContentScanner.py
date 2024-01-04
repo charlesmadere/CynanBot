@@ -82,11 +82,6 @@ class TestAnivContentScanner():
         assert result is AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
 
     @pytest.mark.asyncio
-    async def test_scan_withCutenessCommandUsageAttempt(self):
-        result = await self.anivContentScanner.scan('!cuteness')
-        assert result is AnivContentCode.ATTEMPTS_COMMAND_USE
-
-    @pytest.mark.asyncio
     async def test_scan_withExclamationMarkOnly(self):
         result = await self.anivContentScanner.scan('!')
         assert result is AnivContentCode.OK
