@@ -16,6 +16,24 @@ class CutenessDate():
 
         self.__str: str = self.__simpleDateTime.getDateTime().strftime('%Y-%m')
 
+    def __ge__(self, other: Any) -> bool:
+        if isinstance(other, CutenessDate):
+            return self.__simpleDateTime >= other.__simpleDateTime
+        else:
+            return False
+
+    def __gt__(self, other: Any) -> bool:
+        if isinstance(other, CutenessDate):
+            return self.__simpleDateTime > other.__simpleDateTime
+        else:
+            return False
+
+    def __le__(self, other: Any) -> bool:
+        if isinstance(other, CutenessDate):
+            return self.__simpleDateTime <= other.__simpleDateTime
+        else:
+            return False
+
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, CutenessDate):
             return self.__simpleDateTime < other.__simpleDateTime
