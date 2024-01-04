@@ -63,7 +63,8 @@ class WordOfTheDayResponse():
         return utils.isValidStr(self.__transliteration)
 
     def toStr(self) -> str:
-        languageNameAndFlag = None
+        languageNameAndFlag: str
+
         if self.__languageEntry.hasFlag():
             languageNameAndFlag = f'{self.__languageEntry.getFlag()} {self.getLanguageName()}'
         else:

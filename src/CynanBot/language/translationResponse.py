@@ -55,25 +55,27 @@ class TranslationResponse():
 
     def toStr(self) -> str:
         prefixText = ''
+        originalLanguage = self.__originalLanguage
+        translatedLanguage = self.__translatedLanguage
 
-        if self.hasOriginalLanguage():
-            if self.hasTranslatedLanguage():
+        if originalLanguage is not None:
+            if translatedLanguage is not None:
                 firstLangText = ''
-                if self.__originalLanguage.hasFlag():
-                    firstLangText = self.__originalLanguage.getFlag()
+                if originalLanguage.hasFlag():
+                    firstLangText = originalLanguage.getFlag()
                 else:
-                    firstLangText = self.__originalLanguage.getIso6391Code().upper()
+                    firstLangText = originalLanguage.getIso6391Code().upper()
 
                 secondLangText = ''
-                if self.__translatedLanguage.hasFlag():
-                    secondLangText = self.__translatedLanguage.getFlag()
+                if translatedLanguage.hasFlag():
+                    secondLangText = translatedLanguage.getFlag()
                 else:
-                    secondLangText = self.__translatedLanguage.getIso6391Code().upper()
+                    secondLangText = translatedLanguage.getIso6391Code().upper()
 
                 prefixText = f'[ {firstLangText} ➡ {secondLangText} ] '
-            elif self.__originalLanguage.hasFlag():
-                prefixText = f'[ {self.__originalLanguage.getFlag()} ]'
+            elif originalLanguage.hasFlag():
+                prefixText = f'[ {originalLanguage.getFlag()} ]'
             else:
-                prefixText = f'[ {self.__originalLanguage.getIso6391Code().upper()} ]'
+                prefixText = f'[ {originalLanguage.getIso6391Code().upper()} ]'
 
         return f'{prefixText}{self.__translatedText}'
