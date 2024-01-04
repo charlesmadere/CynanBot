@@ -82,6 +82,7 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
+from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
 from CynanBot.recurringActions.recurringActionsJsonParser import \
@@ -405,6 +406,7 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
 )
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
+    pokepediaUtils = PokepediaUtils(),
     timber = timber
 )
 systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
