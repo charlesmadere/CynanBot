@@ -886,6 +886,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'birthday'
         if word == 'bunny':
             yield 'rabbit'
+        if word == 'dad':
+            yield 'father'
         if word == 'cnn':
             yield 'cable news network'
         if word == 'est':
@@ -915,6 +917,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'for your information'
         if word == 'grey':
             yield 'gray'
+        if word == 'mom':
+            yield 'mother'
         if word == 'no':
             yield 'number'
         if word == 'ocd':
