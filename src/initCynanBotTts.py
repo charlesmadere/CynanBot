@@ -153,7 +153,7 @@ generalSettingsRepository = GeneralSettingsRepository(
 
 generalSettingsSnapshot = generalSettingsRepository.getAll()
 
-backingDatabase: BackingDatabase = None
+backingDatabase: BackingDatabase
 if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
     backingDatabase: BackingDatabase = BackingPsqlDatabase(
         eventLoop = eventLoop,
@@ -168,7 +168,7 @@ elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
 else:
     raise RuntimeError(f'Unknown/misconfigured database type: \"{generalSettingsSnapshot.requireDatabaseType()}\"')
 
-networkClientProvider: NetworkClientProvider = None
+networkClientProvider: NetworkClientProvider
 if generalSettingsSnapshot.requireNetworkClientType() is NetworkClientType.AIOHTTP:
     networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
         eventLoop = eventLoop,
