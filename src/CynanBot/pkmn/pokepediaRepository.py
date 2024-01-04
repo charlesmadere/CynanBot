@@ -373,7 +373,7 @@ class PokepediaRepository():
         pp = utils.getIntFromDict(jsonResponse, 'pp')
         damageClass = PokepediaDamageClass.fromStr(jsonResponse['damage_class']['name'])
         elementType = PokepediaElementType.fromStr(jsonResponse['type']['name'])
-        move: PokepediaMoveGeneration = None
+        move: Optional[PokepediaMoveGeneration] = None
 
         pastValuesJson = jsonResponse.get('past_values')
         if pastValuesJson is None:
