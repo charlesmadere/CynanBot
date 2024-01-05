@@ -15,6 +15,8 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
+from CynanBot.chatLogger.chatLogger import ChatLogger
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelper import CheerActionHelper
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -416,6 +418,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ##############################################
 
 dependencyHolder = DependencyHolderBuilder(
+    chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber

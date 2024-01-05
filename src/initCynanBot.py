@@ -879,6 +879,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ##############################################
 
 dependencyHolder = DependencyHolderBuilder(
+    chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber
