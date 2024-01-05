@@ -378,7 +378,7 @@ class SuperTriviaGameRedemption(AbsPointRedemption):
         )
 
         if startNewSuperTriviaGameAction is None:
-            return
+            return False
 
         self.__triviaGameMachine.submitAction(startNewSuperTriviaGameAction)
 
@@ -417,7 +417,7 @@ class TriviaGameRedemption(AbsPointRedemption):
         )
 
         if startNewTriviaGameAction is None:
-            return
+            return False
 
         self.__triviaGameMachine.submitAction(startNewTriviaGameAction)
 

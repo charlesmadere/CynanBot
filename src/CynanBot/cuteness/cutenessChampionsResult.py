@@ -22,6 +22,3 @@ class CutenessChampionsResult():
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
-
-    def hasChampions(self) -> bool:
-        return utils.hasItems(self.__champions)

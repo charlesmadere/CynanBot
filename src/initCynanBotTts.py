@@ -38,6 +38,7 @@ from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.cynanBot import CynanBot
+from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
@@ -67,6 +68,8 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
+    SentMessageLoggerInterface
 from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
@@ -105,6 +108,8 @@ from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchPredictionWebsocketUtils import \
+    TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -226,6 +231,10 @@ usersRepository: UsersRepositoryInterface = UsersRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
+chatLogger: ChatLoggerInterface = ChatLogger(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
     emojiJsonReader = JsonFileReader('emojiRepository.json'),
     timber = timber
@@ -265,11 +274,13 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository
 )
+sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
 twitchUtils = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
-    sentMessageLogger = SentMessageLogger(
-        backgroundTaskHelper = backgroundTaskHelper
-    ),
+    sentMessageLogger = sentMessageLogger,
     timber = timber
 )
 
@@ -400,6 +411,17 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
+##############################################
+## Dependency Holder initialization section ##
+##############################################
+
+dependencyHolder = DependencyHolderBuilder(
+    generalSettingsRepository = generalSettingsRepository,
+    sentMessageLogger = sentMessageLogger,
+    timber = timber
+)
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -419,7 +441,7 @@ cynanBot = CynanBot(
         usersRepository = usersRepository
     ),
     chatActionsManager = chatActionsManager,
-    chatLogger = None,
+    chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
     cheerActionRemodHelper = cheerActionRemodHelper,
@@ -444,6 +466,7 @@ cynanBot = CynanBot(
     pokepediaRepository = None,
     recurringActionsMachine = None,
     recurringActionsRepository = None,
+    sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
@@ -466,19 +489,15 @@ cynanBot = CynanBot(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
+    twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
-    twitchUtils = TwitchUtils(
-        backgroundTaskHelper = backgroundTaskHelper,
-        sentMessageLogger = SentMessageLogger(
-            backgroundTaskHelper = backgroundTaskHelper
-        ),
-        timber = timber
-    ),
+    twitchUtils = twitchUtils,
     twitchWebsocketClient = twitchWebsocketClient,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = None,
+    websocketConnectionServer = None,
     wordOfTheDayRepository = None
 )
 

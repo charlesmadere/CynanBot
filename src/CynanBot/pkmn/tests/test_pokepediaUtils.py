@@ -2,11 +2,17 @@ import pytest
 
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.pkmn.pokepediaUtilsInterface import PokepediaUtilsInterface
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.timber.timberStub import TimberStub
 
 
 class TestPokepediaUtils():
 
-    pokepediaUtils: PokepediaUtilsInterface = PokepediaUtils()
+    timber: TimberInterface = TimberStub()
+
+    pokepediaUtils: PokepediaUtilsInterface = PokepediaUtils(
+        timber = timber
+    )
 
     @pytest.mark.asyncio
     async def test_getMachineNumber_withHmString(self):

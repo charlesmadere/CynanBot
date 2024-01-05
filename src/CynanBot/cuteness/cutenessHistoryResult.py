@@ -47,12 +47,3 @@ class CutenessHistoryResult():
 
     def getUserName(self) -> str:
         return self.__userName
-
-    def hasBestCuteness(self) -> bool:
-        return self.__bestCuteness is not None
-
-    def hasEntries(self) -> bool:
-        return utils.hasItems(self.__entries)
-
-    def hasTotalCuteness(self) -> bool:
-        return utils.isValidNum(self.__totalCuteness) and self.__totalCuteness >= 1

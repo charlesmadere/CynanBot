@@ -139,12 +139,14 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         self,
         twitchChannel: str,
         userThatRedeemed: str,
-        funtoonPkmnCatchType: FuntoonPkmnCatchType = None
+        funtoonPkmnCatchType: Optional[FuntoonPkmnCatchType] = None
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userThatRedeemed):
             raise ValueError(f'userThatRedeemed argument is malformed: \"{userThatRedeemed}\"')
+        elif funtoonPkmnCatchType is not None and not isinstance(funtoonPkmnCatchType, FuntoonPkmnCatchType):
+            raise ValueError(f'funtoonPkmnCatchType argument is malformed: \"{funtoonPkmnCatchType}\"')
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(twitchChannel)

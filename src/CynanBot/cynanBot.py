@@ -100,6 +100,8 @@ from CynanBot.recurringActions.weatherRecurringEvent import \
     WeatherRecurringEvent
 from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
+from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
+    SentMessageLoggerInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -193,6 +195,8 @@ from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
+from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
+    TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -214,6 +218,8 @@ from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 
 class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, RecurringActionEventListener, \
@@ -230,7 +236,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         chatActionsManager: Optional[ChatActionsManagerInterface],
-        chatLogger: Optional[ChatLoggerInterface],
+        chatLogger: ChatLoggerInterface,
         cheerActionHelper: Optional[CheerActionHelperInterface],
         cheerActionIdGenerator: Optional[CheerActionIdGeneratorInterface],
         cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface],
@@ -250,6 +256,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         pokepediaRepository: Optional[PokepediaRepository],
         recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
+        sentMessageLogger: SentMessageLoggerInterface,
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepositoryInterface],
         soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
         starWarsQuotesRepository: Optional[StarWarsQuotesRepositoryInterface],
@@ -272,6 +279,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
+        twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtils,
@@ -279,6 +287,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
+        websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
     ):
         super().__init__(
@@ -310,7 +319,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise ValueError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
-        elif chatLogger is not None and not isinstance(chatLogger, ChatLoggerInterface):
+        elif not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise ValueError(f'cheerActionsHelper argument is malformed: \"{cheerActionHelper}\"')
@@ -348,6 +357,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
         elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
+            raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
             raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
@@ -392,6 +403,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise ValueError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
+        elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
+            raise ValueError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -406,19 +419,21 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
+            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__chatActionsManager: Optional[ChatActionsManagerInterface] = chatActionsManager
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface] = cheerActionRemodHelper
-        self.__chatLogger: Optional[ChatLoggerInterface] = chatLogger
+        self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
+        self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
@@ -426,18 +441,20 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
+        self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
 
         #######################################
         ## Initialization of command objects ##
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -758,8 +775,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
         self.__timber.log('CynanBot', f'Finished joining channels: {event.getAllChannels()}')
 
-        if self.__chatLogger is not None:
-            self.__chatLogger.start()
+        self.__sentMessageLogger.start()
+        self.__chatLogger.start()
 
         if self.__cheerActionRemodHelper is not None:
             self.__cheerActionRemodHelper.start()
@@ -792,7 +809,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
             predictionHandler: Optional[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
                 timber = self.__timber,
-                ttsManager = self.__ttsManager
+                ttsManager = self.__ttsManager,
+                twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
+                websocketConnectionServer = self.__websocketConnectionServer
             )
 
             raidHandler: Optional[AbsTwitchRaidHandler] = TwitchRaidHandler(

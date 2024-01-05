@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from CynanBot.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 
@@ -23,7 +24,7 @@ class FuntoonRepositoryInterface(ABC):
         self,
         twitchChannel: str,
         userThatRedeemed: str,
-        funtoonPkmnCatchType: FuntoonPkmnCatchType = None
+        funtoonPkmnCatchType: Optional[FuntoonPkmnCatchType] = None
     ) -> bool:
         pass
 

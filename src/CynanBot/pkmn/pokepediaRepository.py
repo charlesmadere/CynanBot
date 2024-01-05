@@ -281,7 +281,7 @@ class PokepediaRepository():
         elif not isinstance(initialGeneration, PokepediaGeneration):
             raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
 
-        currentTypesJson = jsonResponse.get('types')
+        currentTypesJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('types')
         if not utils.hasItems(currentTypesJson):
             raise ValueError(f'\"types\" field in JSON response is null or empty: {jsonResponse}')
 
@@ -290,7 +290,7 @@ class PokepediaRepository():
         for currentTypeJson in currentTypesJson:
             currentTypesList.append(PokepediaElementType.fromStr(currentTypeJson['type']['name']))
 
-        pastTypesJson = jsonResponse.get('past_types')
+        pastTypesJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('past_types')
         if pastTypesJson is None:
             raise ValueError(f'\"past_types\" field in JSON response is null: {jsonResponse}')
 
@@ -303,7 +303,7 @@ class PokepediaRepository():
                 generation = PokepediaGeneration.fromStr(pastTypeJson['generation']['name'])
 
                 if generation is pokepediaGeneration:
-                    currentTypesList: List[PokepediaElementType] = list()
+                    currentTypesList = list()
 
                     typesJson = pastTypeJson.get('types')
                     if not utils.hasItems(typesJson):
@@ -320,15 +320,15 @@ class PokepediaRepository():
                 del elementTypeGenerationDictionary[pokepediaGeneration]
 
         # remove duplicates
-        currentTypesList: List[PokepediaElementType] = None
+        removeDuplicatesTypesList: Optional[List[PokepediaElementType]] = None
         for pokepediaGeneration in PokepediaGeneration:
             if pokepediaGeneration in elementTypeGenerationDictionary:
-                if currentTypesList is None:
-                    currentTypesList = elementTypeGenerationDictionary[pokepediaGeneration]
-                elif currentTypesList == elementTypeGenerationDictionary[pokepediaGeneration]:
+                if removeDuplicatesTypesList is None:
+                    removeDuplicatesTypesList = elementTypeGenerationDictionary[pokepediaGeneration]
+                elif removeDuplicatesTypesList == elementTypeGenerationDictionary[pokepediaGeneration]:
                     del elementTypeGenerationDictionary[pokepediaGeneration]
                 else:
-                    currentTypesList = elementTypeGenerationDictionary[pokepediaGeneration]
+                    removeDuplicatesTypesList = elementTypeGenerationDictionary[pokepediaGeneration]
 
         return elementTypeGenerationDictionary
 

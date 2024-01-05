@@ -212,6 +212,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def isChannelPredictionChartEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def isChatLoggingEnabled(self) -> bool:
         pass
 

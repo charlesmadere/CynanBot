@@ -41,6 +41,14 @@ class WebsocketPayload():
         dictionary = self.toDictionary()
         return str(dictionary)
 
+    def requireSubscription(self) -> WebsocketSubscription:
+        subscription = self.__subscription
+
+        if subscription is None:
+            raise RuntimeError(f'this WebsocketPayload has no subscription ({self})')
+
+        return subscription
+
     def toDictionary(self) -> Dict[str, Any]:
         dictionary: Dict[str, Any] = dict()
 

@@ -49,6 +49,7 @@ from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cutenessUtils import CutenessUtils
 from CynanBot.cynanBot import CynanBot
+from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
@@ -96,6 +97,8 @@ from CynanBot.recurringActions.recurringActionsRepository import \
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
+from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
+    SentMessageLoggerInterface
 from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
@@ -239,6 +242,8 @@ from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchPredictionWebsocketUtils import \
+    TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -372,7 +377,7 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    emojiJsonReader = JsonFileReader('CynanBot/emojiHelper/emojiRepository.json'),
     timber = timber
 )
 emojiHelper: EmojiHelperInterface = EmojiHelper(
@@ -406,7 +411,9 @@ mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsR
 )
 pokepediaRepository = PokepediaRepository(
     networkClientProvider = networkClientProvider,
-    pokepediaUtils = PokepediaUtils(),
+    pokepediaUtils = PokepediaUtils(
+        timber = timber
+    ),
     timber = timber
 )
 systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
@@ -415,11 +422,13 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository
 )
+sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
 twitchUtils = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
-    sentMessageLogger = SentMessageLogger(
-        backgroundTaskHelper = backgroundTaskHelper
-    ),
+    sentMessageLogger = sentMessageLogger,
     timber = timber
 )
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
@@ -865,6 +874,17 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
+##############################################
+## Dependency Holder initialization section ##
+##############################################
+
+dependencyHolder = DependencyHolderBuilder(
+    generalSettingsRepository = generalSettingsRepository,
+    sentMessageLogger = sentMessageLogger,
+    timber = timber
+)
+
+
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -909,6 +929,7 @@ cynanBot = CynanBot(
     pokepediaRepository = pokepediaRepository,
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
+    sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = StarWarsQuotesRepository(
@@ -933,6 +954,7 @@ cynanBot = CynanBot(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
+    twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     twitchUtils = twitchUtils,
@@ -940,6 +962,7 @@ cynanBot = CynanBot(
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,
+    websocketConnectionServer = None,
     wordOfTheDayRepository = wordOfTheDayRepository
 )
 

@@ -93,7 +93,6 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
         self.__isStarted = True
         self.__timber.log('CheerActionRemodHelper', 'Starting CheerActionRemodHelper...')
-
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 
     async def __startEventLoop(self):

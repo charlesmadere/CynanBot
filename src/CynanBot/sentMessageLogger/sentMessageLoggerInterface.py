@@ -14,3 +14,7 @@ class SentMessageLoggerInterface(ABC):
         twitchChannel: str
     ):
         pass
+
+    @abstractmethod
+    def start(self):
+        pass

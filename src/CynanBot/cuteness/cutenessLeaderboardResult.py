@@ -18,8 +18,8 @@ class CutenessLeaderboardResult():
             raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
 
         self.__cutenessDate: CutenessDate = cutenessDate
-        self.__specificLookupCutenessResult: CutenessResult = specificLookupCutenessResult
-        self.__entries: List[CutenessLeaderboardEntry] = entries
+        self.__specificLookupCutenessResult: Optional[CutenessResult] = specificLookupCutenessResult
+        self.__entries: Optional[List[CutenessLeaderboardEntry]] = entries
 
     def getCutenessDate(self) -> CutenessDate:
         return self.__cutenessDate
@@ -29,9 +29,6 @@ class CutenessLeaderboardResult():
 
     def getSpecificLookupCutenessResult(self) -> Optional[CutenessResult]:
         return self.__specificLookupCutenessResult
-
-    def hasEntries(self) -> bool:
-        return utils.hasItems(self.__entries)
 
     def hasSpecificLookupCutenessResult(self) -> bool:
         return self.__specificLookupCutenessResult is not None and self.__specificLookupCutenessResult.hasCuteness()

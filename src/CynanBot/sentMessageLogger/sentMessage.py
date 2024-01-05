@@ -45,8 +45,5 @@ class SentMessage():
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def hasExceptions(self) -> bool:
-        return utils.hasItems(self.__exceptions)
-
     def wasSuccessfullySent(self) -> bool:
         return self.__successfullySent

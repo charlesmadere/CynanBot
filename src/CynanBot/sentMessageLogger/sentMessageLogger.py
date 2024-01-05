@@ -13,6 +13,7 @@ from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.sentMessageLogger.sentMessage import SentMessage
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class SentMessageLogger(SentMessageLoggerInterface):
@@ -20,11 +21,14 @@ class SentMessageLogger(SentMessageLoggerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
+        timber: TimberInterface,
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/sentMessageLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
@@ -32,11 +36,13 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(logRootDirectory):
             raise ValueError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__timber: TimberInterface = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__logRootDirectory: str = logRootDirectory
 
+        self.__isStarted: bool = False
         self.__messageQueue: SimpleQueue[SentMessage] = SimpleQueue()
-        backgroundTaskHelper.createTask(self.__startMessageLoop())
 
     def __getLogStatement(self, message: SentMessage) -> str:
         if not isinstance(message, SentMessage):
@@ -81,6 +87,15 @@ class SentMessageLogger(SentMessageLoggerInterface):
         )
 
         self.__messageQueue.put(sentMessage)
+
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('SentMessageLogger', 'Not starting SentMessageLogger as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('SentMessageLogger', 'Starting SentMessageLogger...')
+        self.__backgroundTaskHelper.createTask(self.__startMessageLoop())
 
     async def __startMessageLoop(self):
         while True:

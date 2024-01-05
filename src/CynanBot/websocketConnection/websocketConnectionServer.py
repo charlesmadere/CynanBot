@@ -43,7 +43,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(port):
             raise ValueError(f'port argument is malformed: \"{port}\"')
-        elif port <= 1000:
+        elif port <= 1000 or port > utils.getIntMaxSafeSize():
             raise ValueError(f'port argument is out of bounds: {port}')
         elif not utils.isValidStr(host):
             raise ValueError(f'host argument is malformed: \"{host}\"')
@@ -57,8 +57,8 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
+        self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__port: int = port
-        self.__sleepTimeSeconds: int = sleepTimeSeconds
         self.__host: str = host
         self.__websocketSettingsFile: str = websocketSettingsFile
         self.__eventTimeToLive: timedelta = eventTimeToLive
@@ -116,7 +116,10 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             currentSize = self.__eventQueue.qsize()
             self.__timber.log('WebsocketConnectionServer', f'Adding event to queue (current qsize is {currentSize}): {event}')
 
-        self.__eventQueue.put(WebsocketEvent(eventData = event))
+        self.__eventQueue.put(WebsocketEvent(
+            eventData = event,
+            timeZone = self.__timeZone
+        ))
 
     def start(self):
         if self.__isStarted:
@@ -125,7 +128,6 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
         self.__isStarted = True
         self.__timber.log('WebsocketConnectionServer', 'Starting WebsocketConnectionServer...')
-
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 
     async def __startEventLoop(self):
@@ -179,9 +181,9 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
                         else:
                             self.__timber.log('WebsocketConnectionServer', f'Discarded an event meant for \"{path}\"')
                 except queue.Empty as e:
-                    self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events (qsize: {self.__eventQueue.qsize()}): {e}', e)
+                    self.__timber.log('WebsocketConnectionServer', f'Encountered queue.Empty error when looping through events (qsize: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-        if isDebugLoggingEnabled:
+        if await self.__isDebugLoggingEnabled():
             self.__timber.log('WebsocketConnectionServer', f'Exiting `__websocketConnectionReceived()`')

@@ -23,8 +23,10 @@ class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandle
         self.__cache = None
 
     def getAll(self) -> AuthRepositorySnapshot:
-        if self.__cache is not None:
-            return self.__cache
+        cache = self.__cache
+
+        if cache is not None:
+            return cache
 
         jsonContents = self.__readJson()
         snapshot = AuthRepositorySnapshot(jsonContents)
@@ -33,8 +35,10 @@ class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandle
         return snapshot
 
     async def getAllAsync(self) -> AuthRepositorySnapshot:
-        if self.__cache is not None:
-            return self.__cache
+        cache = self.__cache
+
+        if cache is not None:
+            return cache
 
         jsonContents = await self.__readJsonAsync()
         snapshot = AuthRepositorySnapshot(jsonContents)

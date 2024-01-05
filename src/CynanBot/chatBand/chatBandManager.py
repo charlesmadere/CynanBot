@@ -19,7 +19,7 @@ class ChatBandManager(ChatBandManagerInterface):
         settingsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
         websocketConnectionServer: WebsocketConnectionServerInterface,
-        eventType: str = 'chatBand',
+        websocketEventType: str = 'chatBand',
         eventCooldown: timedelta = timedelta(minutes = 5),
         memberCacheTimeToLive: timedelta = timedelta(minutes = 15)
     ):
@@ -29,8 +29,8 @@ class ChatBandManager(ChatBandManagerInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif not utils.isValidStr(eventType):
-            raise ValueError(f'eventType argument is malformed: \"{eventType}\"')
+        elif not utils.isValidStr(websocketEventType):
+            raise ValueError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
         elif not isinstance(eventCooldown, timedelta):
             raise ValueError(f'eventCooldown argument is malformed: \"{eventCooldown}\"')
         elif not isinstance(memberCacheTimeToLive, timedelta):
@@ -39,7 +39,7 @@ class ChatBandManager(ChatBandManagerInterface):
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
         self.__websocketConnectionServer: WebsocketConnectionServerInterface = websocketConnectionServer
-        self.__eventType: str = eventType
+        self.__websocketEventType: str = websocketEventType
 
         self.__stubChatBandMember = ChatBandMember(
             isEnabled = False,
@@ -147,7 +147,7 @@ class ChatBandManager(ChatBandManagerInterface):
 
         await self.__websocketConnectionServer.sendEvent(
             twitchChannel = twitchChannel,
-            eventType = self.__eventType,
+            eventType = self.__websocketEventType,
             eventData = eventData
         )
 
@@ -170,12 +170,12 @@ class ChatBandManager(ChatBandManagerInterface):
         self.__jsonCache = jsonContents
         return jsonContents
 
-    async def __readJsonForTwitchChannel(self, twitchChannel: str) -> Dict[str, Any]:
+    async def __readJsonForTwitchChannel(self, twitchChannel: str) -> Optional[Dict[str, Any]]:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         jsonContents = await self.__readAllJson()
-        twitchChannelsJson: Dict[str, Any] = jsonContents.get('twitchChannels')
+        twitchChannelsJson: Optional[Dict[str, Any]] = jsonContents.get('twitchChannels')
         if not utils.hasItems(twitchChannelsJson):
             raise ValueError(f'\"twitchChannels\" JSON contents of Chat Band file \"{self.__settingsJsonReader}\" is missing/empty')
 

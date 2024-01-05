@@ -20,7 +20,9 @@ class CutenessUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if result.hasCuteness() and result.getCuteness() >= 1:
+        cuteness = result.getCuteness()
+
+        if utils.isValidInt(cuteness) and cuteness >= 1:
             return f'@{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'@{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
@@ -31,13 +33,15 @@ class CutenessUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not result.hasChampions():
+        champions = result.getChampions()
+
+        if champions is None or len(champions) == 0:
             return f'There are no cuteness champions 😿'
 
         championsStrs: List[str] = list()
 
-        for entry in result.getChampions():
-            championsStrs.append(self.getLeaderboardPlacement(entry))
+        for champion in champions:
+            championsStrs.append(self.getLeaderboardPlacement(champion))
 
         championsStr = delimiter.join(championsStrs)
         return f'Cuteness Champions {championsStr} ✨'
@@ -48,21 +52,25 @@ class CutenessUtils():
         elif not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not result.hasEntries():
+        entries = result.getEntries()
+
+        if entries is None or len(entries) == 0:
             return f'{result.getUserName()} has no cuteness history 😿'
 
         historyStrs: List[str] = list()
 
-        for entry in result.getEntries():
+        for entry in entries:
             historyStrs.append(f'{entry.getCutenessDate().toStr()} ({entry.getCutenessStr()})')
 
         historyStr = delimiter.join(historyStrs)
+        bestCuteness = result.getBestCuteness()
+        totalCuteness = result.getTotalCuteness()
 
-        if result.hasBestCuteness() and result.hasTotalCuteness():
-            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}. And here is their recent cuteness history: {historyStr} ✨'
-        elif result.hasBestCuteness() and not result.hasTotalCuteness():
-            return f'@{result.getUserName()}\'s best ever cuteness was {result.getBestCuteness().getCutenessStr()} in {result.getBestCuteness().getCutenessDate().toStr()}, with a recent cuteness history of {historyStr} ✨'
-        elif not result.hasBestCuteness() and result.hasTotalCuteness():
+        if bestCuteness is not None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
+            return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()} with their best ever cuteness being {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate().toStr()}. And here is their recent cuteness history: {historyStr} ✨'
+        elif bestCuteness is not None and (not utils.isValidInt(totalCuteness) or totalCuteness == 0):
+            return f'@{result.getUserName()}\'s best ever cuteness was {bestCuteness.getCutenessStr()} in {bestCuteness.getCutenessDate().toStr()}, with a recent cuteness history of {historyStr} ✨'
+        elif bestCuteness is None and utils.isValidInt(totalCuteness) and totalCuteness >= 1:
             return f'@{result.getUserName()} has a total cuteness of {result.getTotalCutenessStr()}, with a recent cuteness history of {historyStr} ✨'
         else:
             return f'@{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
@@ -93,17 +101,20 @@ class CutenessUtils():
         elif not isinstance(leaderboardDelimiter, str):
             raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
-        if not result.hasLeaderboards():
-            return f'@{result.getTwitchChannel()} has no cuteness leaderboard history 😿'
+        leaderboards = result.getLeaderboards()
+
+        if leaderboards is None or len(leaderboards) == 0:
+            return f'There is no cuteness leaderboard history here 😿'
 
         leaderboardStrings: List[str] = list()
 
-        for leaderboard in result.getLeaderboards():
-            if not leaderboard.hasEntries():
+        for leaderboard in leaderboards:
+            entries = leaderboard.getEntries()
+            if entries is None or len(entries) == 0:
                 continue
 
             entryStrings: List[str] = list()
-            for entry in leaderboard.getEntries():
+            for entry in entries:
                 entryStrings.append(self.getLeaderboardPlacement(entry))
 
             leaderboardStrings.append(f'{leaderboard.getCutenessDate().toStr()} {entryDelimiter.join(entryStrings)}')

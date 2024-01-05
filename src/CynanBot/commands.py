@@ -132,6 +132,8 @@ from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 
 class AbsCommand(ABC):
@@ -819,6 +821,7 @@ class ClearCachesCommand(AbsCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
+        websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
         wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -861,6 +864,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
+            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
         elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
             raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
@@ -888,6 +893,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
         self.__clearables.append(weatherRepository)
+        self.__clearables.append(websocketConnectionServer)
         self.__clearables.append(wordOfTheDayRepository)
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -1240,17 +1246,21 @@ class CutenessCommand(AbsCommand):
         if not isinstance(result, CutenessLeaderboardResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
-        if not result.hasEntries():
+        entries = result.getEntries()
+
+        if not utils.hasItems(entries):
             return f'{result.getCutenessDate().toStr()} Leaderboard is empty 😿'
 
         specificLookupText: Optional[str] = None
-        if result.hasSpecificLookupCutenessResult():
-            userName = result.getSpecificLookupCutenessResult().getUserName()
-            cutenessStr = result.getSpecificLookupCutenessResult().getCutenessStr()
+        specificLookupCutenessResult = result.getSpecificLookupCutenessResult()
+
+        if specificLookupCutenessResult is not None:
+            userName = specificLookupCutenessResult.getUserName()
+            cutenessStr = specificLookupCutenessResult.getCutenessStr()
             specificLookupText = f'@{userName} your cuteness is {cutenessStr}'
 
         leaderboard = self.__cutenessUtils.getLeaderboard(
-            entries = result.getEntries(),
+            entries = entries,
             delimiter = self.__delimiter
         )
 
@@ -1263,7 +1273,9 @@ class CutenessCommand(AbsCommand):
         if not isinstance(result, CutenessResult):
             raise ValueError(f'result argument is malformed: \"{result}\"')
 
-        if result.hasCuteness() and result.getCuteness() >= 1:
+        cuteness = result.getCuteness()
+
+        if utils.isValidInt(cuteness) and cuteness >= 1:
             return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
         else:
             return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
@@ -3451,12 +3463,13 @@ class TimeCommand(AbsCommand):
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
-        if not user.hasTimeZones():
-            return
-        elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
+        if not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
         timeZones = user.getTimeZones()
+        if timeZones is None or len(timeZones) == 0:
+            return
+
         first = True
         text = ''
 
@@ -3614,7 +3627,7 @@ class TriviaInfoCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to get trivia question info as an invalid emote argument was given. Example: !triviainfo {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: Optional[str] = splits[1]
+        emote = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -4078,17 +4091,19 @@ class WeatherCommand(AbsCommand):
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(user.getHandle()):
             return
 
-        if not user.hasLocationId():
+        locationId = user.getLocationId()
+
+        if not utils.isValidStr(locationId):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Weather for {user.getHandle()} is enabled, but no location ID is available')
             return
 
-        location = await self.__locationsRepository.getLocation(user.getLocationId())
+        location = await self.__locationsRepository.getLocation(locationId)
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
             await self.__twitchUtils.safeSend(ctx, weatherReport.toStr())
         except (RuntimeError, ValueError) as e:
-            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{user.getLocationId()}\": {e}', e, traceback.format_exc())
+            self.__timber.log('WeatherCommand', f'Error fetching weather for \"{locationId}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
 
         self.__timber.log('WeatherCommand', f'Handled !weather command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -4145,8 +4160,8 @@ class WordCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
-        language: str = splits[1]
-        languageEntry: LanguageEntry = None
+        language = splits[1]
+        languageEntry: LanguageEntry
 
         try:
             languageEntry = await self.__languagesRepository.requireLanguageForCommand(

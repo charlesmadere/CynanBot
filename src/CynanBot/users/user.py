@@ -15,6 +15,7 @@ class User(UserInterface):
         areRecurringActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isCatJamMessageEnabled: bool,
+        isChannelPredictionChartEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
         isCutenessEnabled: bool,
@@ -90,6 +91,8 @@ class User(UserInterface):
             raise ValueError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isCatJamMessageEnabled):
             raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
+        elif not utils.isValidBool(isChannelPredictionChartEnabled):
+            raise ValueError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
             raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
@@ -217,6 +220,7 @@ class User(UserInterface):
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
+        self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
         self.__isChatLoggingEnabled: bool = isChatLoggingEnabled
         self.__isCutenessEnabled: bool = isCutenessEnabled
@@ -452,6 +456,9 @@ class User(UserInterface):
 
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled
+
+    def isChannelPredictionChartEnabled(self) -> bool:
+        return self.__isChannelPredictionChartEnabled
 
     def isChatBandEnabled(self) -> bool:
         return self.__isChatBandEnabled

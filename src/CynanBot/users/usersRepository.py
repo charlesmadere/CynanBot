@@ -98,6 +98,7 @@ class UsersRepository(UsersRepositoryInterface):
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
+        isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
         isChatLoggingEnabled = utils.getBoolFromDict(userJson, 'chatLoggingEnabled', False)
         isCutenessEnabled = utils.getBoolFromDict(userJson, 'cutenessEnabled', False)
@@ -206,6 +207,7 @@ class UsersRepository(UsersRepositoryInterface):
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
+            isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
             isCutenessEnabled = isCutenessEnabled,

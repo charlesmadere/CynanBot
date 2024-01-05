@@ -23,6 +23,3 @@ class CutenessLeaderboardHistoryResult():
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
-
-    def hasLeaderboards(self) -> bool:
-        return utils.hasItems(self.__leaderboards)

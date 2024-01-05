@@ -33,7 +33,7 @@ class WebsocketDataBundle():
         payload = self.__payload
 
         if payload is None:
-            raise RuntimeError(f'this WebsocketDataBundle has no payload (metadata=\"{self.__metadata}\")')
+            raise RuntimeError(f'this WebsocketDataBundle has no payload ({self})')
 
         return payload
 
