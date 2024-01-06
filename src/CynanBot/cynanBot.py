@@ -795,6 +795,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if self.__ttsManager is not None:
             self.__ttsManager.start()
 
+        if self.__websocketConnectionServer is not None:
+            self.__websocketConnectionServer.start()
+
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
