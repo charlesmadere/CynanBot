@@ -19,7 +19,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
             )
 
@@ -62,7 +62,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.CHANNEL_UPDATE
             )
 
@@ -73,7 +73,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.CHEER
             )
 
@@ -85,7 +85,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.FOLLOW
             )
 
@@ -97,7 +97,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.RAID
             )
 
@@ -108,7 +108,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.SUBSCRIBE
             )
 
@@ -119,7 +119,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.SUBSCRIPTION_GIFT
             )
 
@@ -130,7 +130,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[str] = None
 
         with pytest.raises(ValueError):
-            await self.utils.websocketSubscriptionTypeToString(
+            result = await self.utils.websocketSubscriptionTypeToString(
                subscriptionType = WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
             )
 
