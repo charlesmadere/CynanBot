@@ -45,19 +45,51 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
             'title': title
         }
 
-    async def websocketOutcomeColorToString(
+    async def websocketOutcomesToColorsArray(
+        self,
+        outcomes: List[WebsocketOutcome]
+    ) -> List[Dict[str, int]]:
+        if not isinstance(outcomes, List) or len(outcomes) == 0:
+            raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
+
+        colors: List[Dict[str, int]] = list()
+
+        if len(outcomes) <= 2:
+            for outcome in outcomes:
+                colors.append(await self.websocketOutcomeColorToEventData(outcome.getColor()))
+        else:
+            for index, outcome in enumerate(outcomes):
+                if index == 0:
+                    colors.append(await self.websocketOutcomeColorToEventData(WebsocketOutcomeColor.BLUE))
+                elif index == 1:
+                    colors.append(await self.websocketOutcomeColorToEventData(WebsocketOutcomeColor.PINK))
+                else:
+                    # TODO
+                    pass
+
+        return colors
+
+    async def websocketOutcomeColorToEventData(
         self,
         color: WebsocketOutcomeColor
-    ) -> str:
+    ) -> Dict[str, int]:
         if not isinstance(color, WebsocketOutcomeColor):
             raise ValueError(f'color argument is malformed: \"{color}\"')
 
         if color is WebsocketOutcomeColor.BLUE:
-            return 'blue'
+            return {
+                'red': 54,
+                'green': 162,
+                'blue': 235
+            }
         elif color is WebsocketOutcomeColor.PINK:
-            return 'pink'
+            return {
+                'red': 255,
+                'green': 99,
+                'blue': 132
+            }
         else:
-            return str(color).lower()
+            raise RuntimeError(f'Unknown WebsocketOutcomeColor: \"{color}\"')
 
     async def websocketOutcomesToEventDataArray(
         self,
@@ -67,14 +99,14 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
             raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
 
         sortedOutcomes = sorted(outcomes, key = lambda outcome: outcome.getTitle().lower())
+        colors = await self.websocketOutcomesToColorsArray(outcomes)
+
         events: List[Dict[str, Any]] = list()
 
-        for outcome in sortedOutcomes:
-            color = await self.websocketOutcomeColorToString(outcome.getColor())
-
+        for index, outcome in enumerate(sortedOutcomes):
             events.append({
                 'channelPoints': outcome.getChannelPoints(),
-                'color': color,
+                'color': colors[index],
                 'outcomeId': outcome.getOutcomeId(),
                 'title': outcome.getTitle(),
                 'users': outcome.getUsers()

@@ -96,14 +96,22 @@ class TestTwitchPredictionWebsocketUtils():
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomeColorToString_withBlue(self):
-        result = await self.utils.websocketOutcomeColorToString(WebsocketOutcomeColor.BLUE)
-        assert result == 'blue'
+    async def test_websocketOutcomeColorToEventData_withBlue(self):
+        result = await self.utils.websocketOutcomeColorToEventData(WebsocketOutcomeColor.BLUE)
+        assert isinstance(result, Dict)
+        assert len(result) == 3
+        assert result['red'] == 54
+        assert result['green'] == 162
+        assert result['blue'] == 235
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomeColorToString_withPink(self):
-        result = await self.utils.websocketOutcomeColorToString(WebsocketOutcomeColor.PINK)
-        assert result == 'pink'
+    async def test_websocketOutcomeColorToEventData_withPink(self):
+        result = await self.utils.websocketOutcomeColorToEventData(WebsocketOutcomeColor.PINK)
+        assert isinstance(result, Dict)
+        assert len(result) == 3
+        assert result['red'] == 255
+        assert result['green'] == 99
+        assert result['blue'] == 132
 
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPointsRedemption(self):

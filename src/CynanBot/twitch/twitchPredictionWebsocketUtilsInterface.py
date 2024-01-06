@@ -20,10 +20,10 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    async def websocketOutcomeColorToString(
+    async def websocketOutcomeColorToEventData(
         self,
         color: WebsocketOutcomeColor
-    ) -> str:
+    ) -> Dict[str, int]:
         pass
 
     @abstractmethod
