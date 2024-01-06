@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
@@ -142,42 +142,21 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(subscriptionType, WebsocketSubscriptionType):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if self.__websocketConnectionServer is None:
+        if self.__twitchPredictionWebsocketUtils is None or self.__websocketConnectionServer is None:
             return
         elif not user.isChannelPredictionChartEnabled():
             return
 
-        eventData = await self.__toEventData(
-            outcomes = outcomes,
-            title = title,
+        eventData = await self.__twitchPredictionWebsocketUtils.websocketEventToEventDataDictionary(
             event = event,
             subscriptionType = subscriptionType
         )
+
+        if eventData is None:
+            return
 
         await self.__websocketConnectionServer.sendEvent(
             twitchChannel = user.getHandle(),
             eventType = self.__websocketEventType,
             eventData = eventData
         )
-
-    async def __toEventData(
-        self,
-        outcomes: List[WebsocketOutcome],
-        title: str,
-        event: WebsocketEvent,
-        subscriptionType: WebsocketSubscriptionType
-    ) -> Dict[Any, Any]:
-        if not isinstance(outcomes, List):
-            raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
-        elif not utils.isValidStr(title):
-            raise ValueError(f'title argument is malformed: \"{title}\"')
-        elif not isinstance(event, WebsocketEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(subscriptionType, WebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-
-        # TODO
-
-        return {
-            'title': title
-        }
