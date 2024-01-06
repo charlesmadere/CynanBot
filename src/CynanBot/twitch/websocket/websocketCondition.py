@@ -297,13 +297,14 @@ class WebsocketCondition():
         return userId
 
     def toDictionary(self) -> Dict[str, Any]:
-        dictionary: Dict[str, Any] = {
+        return {
             'bits': self.__bits,
             'isAnonymous': self.__isAnonymous,
             'isGift': self.__isGift,
             'isPermanent': self.__isPermanent,
             'broadcasterUserId': self.__broadcasterUserId,
             'broadcasterUserLogin': self.__broadcasterUserLogin,
+            'broadcasterUserName': self.__broadcasterUserName,
             'categoryId': self.__categoryId,
             'categoryName': self.__categoryName,
             'clientId': self.__clientId,
@@ -316,6 +317,7 @@ class WebsocketCondition():
             'moderatorUserLogin': self.__moderatorUserLogin,
             'moderatorUserName': self.__moderatorUserName,
             'reason': self.__reason,
+            'reward': self.__reward,
             'rewardId': self.__rewardId,
             'tier': self.__tier,
             'title': self.__title,
@@ -329,10 +331,3 @@ class WebsocketCondition():
             'userName': self.__userName,
             'viewers': self.__viewers
         }
-
-        if self.__reward is None:
-            dictionary['reward'] = None
-        else:
-            dictionary['reward'] = self.__reward.toDictionary()
-
-        return dictionary
