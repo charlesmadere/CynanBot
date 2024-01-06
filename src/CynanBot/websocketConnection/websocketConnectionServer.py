@@ -103,7 +103,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(eventType):
             raise ValueError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
-        elif not utils.hasItems(eventData):
+        elif not isinstance(eventData, Dict) or len(eventData) == 0:
             raise ValueError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
 
         event: Dict[str, Any] = {

@@ -152,7 +152,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             subscriptionType = subscriptionType
         )
 
-        if eventData is None:
+        if eventData is None or len(eventData) == 0:
             return
 
         await self.__websocketConnectionServer.sendEvent(
