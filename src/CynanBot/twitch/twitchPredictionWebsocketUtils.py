@@ -63,9 +63,62 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                     colors.append(await self.websocketOutcomeColorToEventData(WebsocketOutcomeColor.BLUE))
                 elif index == 1:
                     colors.append(await self.websocketOutcomeColorToEventData(WebsocketOutcomeColor.PINK))
-                else:
-                    # TODO
-                    pass
+                elif index == 2:
+                    # orange
+                    colors.append({
+                        'red': 255,
+                        'green': 127,
+                        'blue': 0
+                    })
+                elif index == 3:
+                    # green
+                    colors.append({
+                        'red': 127,
+                        'green': 255,
+                        'blue': 0
+                    })
+                elif index == 4:
+                    # cyan
+                    colors.append({
+                        'red': 0,
+                        'green': 255,
+                        'blue': 255
+                    })
+                elif index == 5:
+                    # light-ish blue
+                    colors.append({
+                        'red': 0,
+                        'green': 127,
+                        'blue': 255
+                    })
+                elif index == 6:
+                    # magenta
+                    colors.append({
+                        'red': 255,
+                        'green': 0,
+                        'blue': 255
+                    })
+                elif index == 7:
+                    # red
+                    colors.append({
+                        'red': 255,
+                        'green': 0,
+                        'blue': 0
+                    })
+                elif index == 8:
+                    # yellow
+                    colors.append({
+                        'red': 255,
+                        'green': 255,
+                        'blue': 0
+                    })
+                elif index == 9:
+                    # purple
+                    colors.append({
+                        'red': 127,
+                        'green': 0,
+                        'blue': 255
+                    })
 
         return colors
 
