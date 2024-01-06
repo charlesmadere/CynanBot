@@ -135,6 +135,10 @@ from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.usersRepository import UsersRepository
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.websocketConnection.websocketConnectionServer import \
+    WebsocketConnectionServer
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 # Uncomment this chunk to turn on extra extra debug logging
 # logging.basicConfig(
@@ -218,6 +222,11 @@ userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService
+)
+websocketConnectionServer: WebsocketConnectionServerInterface = WebsocketConnectionServer(
+    backgroundTaskHelper = backgroundTaskHelper,
+    settingsJsonReader = JsonFileReader('websocketConnectionServer.json'),
+    timber = timber
 )
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
@@ -500,7 +509,7 @@ cynanBot = CynanBot(
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = None,
-    websocketConnectionServer = None,
+    websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayRepository = None
 )
 
