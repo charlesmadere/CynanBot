@@ -679,6 +679,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'file transfer protocol'
         if word == 'goog':
             yield 'google'
+        if word == 'gps':
+            yield 'global positioning system'
         if word == 'gpu':
             yield 'graphics processing unit'
         if word in ('hd', 'hdd'):
