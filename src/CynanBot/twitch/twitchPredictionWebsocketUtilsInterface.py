@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional
 
 from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
 from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
+from CynanBot.twitch.websocket.websocketOutcomeColor import \
+    WebsocketOutcomeColor
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
 
@@ -15,6 +17,13 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
         event: WebsocketEvent,
         subscriptionType: WebsocketSubscriptionType
     ) -> Optional[Dict[str, Any]]:
+        pass
+
+    @abstractmethod
+    async def websocketOutcomeColorToString(
+        self,
+        color: WebsocketOutcomeColor
+    ) -> str:
         pass
 
     @abstractmethod

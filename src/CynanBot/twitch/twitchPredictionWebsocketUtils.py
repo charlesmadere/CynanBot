@@ -5,6 +5,8 @@ from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
 from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
+from CynanBot.twitch.websocket.websocketOutcomeColor import \
+    WebsocketOutcomeColor
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
 
@@ -43,6 +45,20 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
             'title': title
         }
 
+    async def websocketOutcomeColorToString(
+        self,
+        color: WebsocketOutcomeColor
+    ) -> str:
+        if not isinstance(color, WebsocketOutcomeColor):
+            raise ValueError(f'color argument is malformed: \"{color}\"')
+
+        if color is WebsocketOutcomeColor.BLUE:
+            return 'blue'
+        elif color is WebsocketOutcomeColor.PINK:
+            return 'pink'
+        else:
+            return str(color).lower()
+
     async def websocketOutcomesToEventDataArray(
         self,
         outcomes: List[WebsocketOutcome]
@@ -54,8 +70,11 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         events: List[Dict[str, Any]] = list()
 
         for outcome in sortedOutcomes:
+            color = await self.websocketOutcomeColorToString(outcome.getColor())
+
             events.append({
                 'channelPoints': outcome.getChannelPoints(),
+                'color': color,
                 'outcomeId': outcome.getOutcomeId(),
                 'title': outcome.getTitle(),
                 'users': outcome.getUsers()
