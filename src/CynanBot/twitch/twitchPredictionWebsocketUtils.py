@@ -119,6 +119,20 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
                         'green': 0,
                         'blue': 255
                     })
+                elif index == 10:
+                    # silver
+                    colors.append({
+                        'red': 192,
+                        'green': 192,
+                        'blue': 192
+                    })
+                elif index == 11:
+                    # dark slate
+                    colors.append({
+                        'red': 47,
+                        'green': 79,
+                        'blue': 79
+                    })
 
         return colors
 
