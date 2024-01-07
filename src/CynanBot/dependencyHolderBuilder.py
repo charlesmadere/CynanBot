@@ -49,6 +49,9 @@ class DependencyHolderBuilder():
         )
 
     def setTwitchPredictionWebsocketUtils(self, instance: TwitchPredictionWebsocketUtilsInterface) -> Self:
+        if not isinstance(instance, TwitchPredictionWebsocketUtilsInterface):
+            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+
         self.__twitchPredictionWebsocketUtils = instance
         return self
 
