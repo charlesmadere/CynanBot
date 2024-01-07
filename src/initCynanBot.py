@@ -64,6 +64,8 @@ from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.language.translationHelper import TranslationHelper
 from CynanBot.language.wordOfTheDayRepository import WordOfTheDayRepository
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
@@ -399,7 +401,7 @@ isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = IsLiveOnTwitchRepo
     twitchApiService = twitchApiService,
     twitchTokensRepository = twitchTokensRepository
 )
-languagesRepository = LanguagesRepository()
+languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     locationsJsonReader = JsonFileReader('locationsRepository.json'),
     timber = timber,

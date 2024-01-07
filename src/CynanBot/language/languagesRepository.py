@@ -3,9 +3,11 @@ from typing import List, Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 
 
-class LanguagesRepository():
+class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
         self.__languageList: List[LanguageEntry] = self.__createLanguageList()
@@ -176,7 +178,10 @@ class LanguagesRepository():
 
         return languagesList
 
-    async def getAllWotdApiCodes(self, delimiter: str = ', ') -> str:
+    async def getAllWotdApiCodes(
+        self,
+        delimiter: str = ', '
+    ) -> str:
         if not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 

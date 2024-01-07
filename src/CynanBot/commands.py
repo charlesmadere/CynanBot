@@ -34,7 +34,8 @@ from CynanBot.generalSettingsRepositorySnapshot import \
     GeneralSettingsRepositorySnapshot
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.language.languageEntry import LanguageEntry
-from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.language.translationHelper import TranslationHelper
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
@@ -2469,7 +2470,7 @@ class RecurringActionCommand(AbsCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        languagesRepository: LanguagesRepository,
+        languagesRepository: LanguagesRepositoryInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
@@ -2477,7 +2478,7 @@ class RecurringActionCommand(AbsCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(languagesRepository, LanguagesRepository):
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
@@ -2489,7 +2490,7 @@ class RecurringActionCommand(AbsCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -3494,7 +3495,7 @@ class TranslateCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        languagesRepository: LanguagesRepository,
+        languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
         translationHelper: TranslationHelper,
         twitchUtils: TwitchUtils,
@@ -3503,7 +3504,7 @@ class TranslateCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(languagesRepository, LanguagesRepository):
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -3517,7 +3518,7 @@ class TranslateCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
         self.__translationHelper: TranslationHelper = translationHelper
         self.__twitchUtils: TwitchUtils = twitchUtils
@@ -4114,7 +4115,7 @@ class WordCommand(AbsCommand):
     def __init__(
         self,
         generalSettingsRepository: GeneralSettingsRepository,
-        languagesRepository: LanguagesRepository,
+        languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtils,
         usersRepository: UsersRepositoryInterface,
@@ -4123,7 +4124,7 @@ class WordCommand(AbsCommand):
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(languagesRepository, LanguagesRepository):
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
@@ -4137,7 +4138,7 @@ class WordCommand(AbsCommand):
             raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtils = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository

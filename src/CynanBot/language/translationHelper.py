@@ -16,7 +16,8 @@ except:
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
-from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationHelperInterface import \
     TranslationHelperInterface
@@ -30,13 +31,13 @@ class TranslationHelper(TranslationHelperInterface):
 
     def __init__(
         self,
-        languagesRepository: LanguagesRepository,
+        languagesRepository: LanguagesRepositoryInterface,
         networkClientProvider: NetworkClientProvider,
         deepLAuthKey: str,
         timber: TimberInterface,
         googleServiceAccountFile: str = 'googleServiceAccount.json'
     ):
-        if not isinstance(languagesRepository, LanguagesRepository):
+        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
             raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -47,7 +48,7 @@ class TranslationHelper(TranslationHelperInterface):
         elif not utils.isValidStr(googleServiceAccountFile):
             raise ValueError(f'googleServiceAccountFile argument is malformed: \"{googleServiceAccountFile}\"')
 
-        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__deepLAuthKey: str = deepLAuthKey
         self.__timber: TimberInterface = timber
@@ -91,7 +92,7 @@ class TranslationHelper(TranslationHelperInterface):
             raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" list entry: {jsonResponse}')
 
         originalLanguage: Optional[LanguageEntry] = None
-        detectedSourceLanguage: str = translationJson.get('detected_source_language')
+        detectedSourceLanguage: Optional[str] = translationJson.get('detected_source_language')
         if utils.isValidStr(detectedSourceLanguage):
             originalLanguage = await self.__languagesRepository.getLanguageForCommand(
                 command = detectedSourceLanguage,
@@ -137,11 +138,11 @@ class TranslationHelper(TranslationHelperInterface):
         if not utils.hasItems(translationResult):
             raise RuntimeError(f'error in the data response when attempting to translate \"{text}\": {translationResult}')
 
-        originalText: str = translationResult.get('input')
+        originalText: Optional[str] = translationResult.get('input')
         if not utils.isValidStr(originalText):
             raise RuntimeError(f'\"input\" field is missing or malformed from translation result for \"{text}\": {translationResult}')
 
-        translatedText: str = translationResult.get('translatedText')
+        translatedText: Optional[str] = translationResult.get('translatedText')
         if not utils.isValidStr(translatedText):
             raise RuntimeError(f'\"translatedText\" field is missing or malformed from translation result for \"{text}\": {translationResult}')
 

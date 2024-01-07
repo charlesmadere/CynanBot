@@ -69,7 +69,8 @@ from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.language.jishoHelperInterface import JishoHelperInterface
-from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.language.translationHelper import TranslationHelper
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
@@ -248,7 +249,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         generalSettingsRepository: GeneralSettingsRepository,
         isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
         jishoHelper: Optional[JishoHelperInterface],
-        languagesRepository: LanguagesRepository,
+        languagesRepository: LanguagesRepositoryInterface,
         locationsRepository: Optional[LocationsRepositoryInterface],
         modifyUserDataHelper: ModifyUserDataHelper,
         mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
@@ -341,7 +342,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
             raise ValueError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
-        elif not isinstance(languagesRepository, LanguagesRepository):
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
             raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')

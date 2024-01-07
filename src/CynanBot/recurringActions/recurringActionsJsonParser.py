@@ -2,7 +2,8 @@ import json
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.language.languagesRepository import LanguagesRepository
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.recurringActions.recurringAction import RecurringAction
 from CynanBot.recurringActions.recurringActionsJsonParserInterface import \
     RecurringActionsJsonParserInterface
@@ -17,11 +18,14 @@ from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
 
 class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
-    def __init__(self, languagesRepository: LanguagesRepository):
-        if not isinstance(languagesRepository, LanguagesRepository):
+    def __init__(
+        self,
+        languagesRepository: LanguagesRepositoryInterface
+    ):
+        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
 
-        self.__languagesRepository: LanguagesRepository = languagesRepository
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
 
     async def parseSuperTrivia(
         self,
