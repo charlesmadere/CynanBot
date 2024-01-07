@@ -103,7 +103,6 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
         jsonContents: Dict[str, Any] = dict()
-
         return json.dumps(jsonContents)
 
     async def toJson(self, action: RecurringAction) -> str:
