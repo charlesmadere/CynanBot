@@ -102,11 +102,11 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise ValueError(f'refreshSleepTimeSeconds argument is malformed: \"{refreshSleepTimeSeconds}\"')
         elif refreshSleepTimeSeconds < 30 or refreshSleepTimeSeconds > 600:
             raise ValueError(f'refreshSleepTimeSeconds argument is out of bounds: {refreshSleepTimeSeconds}')
-        elif not utils.isValidNum(queueTimeoutSeconds):
+        elif not utils.isValidInt(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
-        elif not utils.isValidNum(superTriviaCountdownSeconds):
+        elif not utils.isValidInt(superTriviaCountdownSeconds):
             raise ValueError(f'superTriviaCountdownSeconds argument is malformed: \"{superTriviaCountdownSeconds}\"')
         elif superTriviaCountdownSeconds < 3 or superTriviaCountdownSeconds > 10:
             raise ValueError(f'superTriviaCountdownSeconds argument is out of bounds: {superTriviaCountdownSeconds}')
@@ -258,10 +258,14 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(action, WeatherRecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        if not user.hasLocationId() or self.__weatherRepository is None:
+        if self.__weatherRepository is None:
             return False
 
-        location = await self.__locationsRepository.getLocation(user.getLocationId())
+        locationId = user.getLocationId()
+        if not utils.isValidStr(locationId):
+            return False
+
+        location = await self.__locationsRepository.getLocation(locationId)
         weatherReport: Optional[WeatherReport] = None
 
         try:
@@ -306,7 +310,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
-            languageEntry = action.getLanguageEntry(),
+            languageEntry = action.requireLanguageEntry(),
             twitchChannel = action.getTwitchChannel(),
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
@@ -384,7 +388,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         self.__isStarted = True
         self.__timber.log('RecurringActionsMachine', 'Starting RecurringActionsMachine...')
-
         self.__backgroundTaskHelper.createTask(self.__startActionRefreshLoop())
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 
