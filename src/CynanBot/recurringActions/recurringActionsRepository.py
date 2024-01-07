@@ -216,6 +216,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         action: RecurringAction,
         configurationJson: str
     ):
+        if not isinstance(action, RecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+        elif not utils.isValidStr(configurationJson):
+            raise ValueError(f'configurationJson argument is malformed: \"{configurationJson}\"')
+
         isEnabled = utils.boolToNum(action.isEnabled())
 
         connection = await self.__getDatabaseConnection()
