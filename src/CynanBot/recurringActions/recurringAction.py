@@ -36,8 +36,5 @@ class RecurringAction(ABC):
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def hasMinutesBetween(self) -> bool:
-        return utils.isValidInt(self.__minutesBetween)
-
     def isEnabled(self) -> bool:
         return self.__enabled
