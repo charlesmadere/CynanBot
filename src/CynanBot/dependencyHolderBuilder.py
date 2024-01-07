@@ -8,6 +8,8 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 
 class DependencyHolderBuilder():
@@ -34,6 +36,7 @@ class DependencyHolderBuilder():
         self.__timber: TimberInterface = timber
 
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = None
+        self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = None
 
     def build(self) -> DependencyHolder:
         return DependencyHolder(
@@ -41,9 +44,17 @@ class DependencyHolderBuilder():
             generalSettingsRepository = self.__generalSettingsRepository,
             sentMessageLogger = self.__sentMessageLogger,
             timber = self.__timber,
-            twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils
+            twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
+            websocketConnectionServer = self.__websocketConnectionServer
         )
 
     def setTwitchPredictionWebsocketUtils(self, instance: TwitchPredictionWebsocketUtilsInterface) -> Self:
         self.__twitchPredictionWebsocketUtils = instance
+        return self
+
+    def setWebsocketConnectionServer(self, instance: WebsocketConnectionServerInterface) -> Self:
+        if not isinstance(instance, WebsocketConnectionServerInterface):
+            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+
+        self.__websocketConnectionServer = instance
         return self

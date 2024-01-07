@@ -7,6 +7,8 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 
 class DependencyHolder():
@@ -18,6 +20,7 @@ class DependencyHolder():
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
+        websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
             raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
@@ -29,12 +32,15 @@ class DependencyHolder():
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise ValueError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
+        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
+            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
 
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
+        self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
 
     def getChatLogger(self) -> ChatLoggerInterface:
         return self.__chatLogger
@@ -50,3 +56,6 @@ class DependencyHolder():
 
     def getTwitchPredictionWebsocketUtils(self) -> Optional[TwitchPredictionWebsocketUtilsInterface]:
         return self.__twitchPredictionWebsocketUtils
+
+    def getWebsocketConnectionServer(self) -> Optional[WebsocketConnectionServerInterface]:
+        return self.__websocketConnectionServer
