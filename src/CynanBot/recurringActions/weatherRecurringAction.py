@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -30,3 +30,16 @@ class WeatherRecurringAction(RecurringAction):
 
     def isAlertsOnly(self) -> bool:
         return self.__alertsOnly
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'actionType': self.getActionType(),
+            'alertsOnly': self.__alertsOnly,
+            'enabled': self.isEnabled(),
+            'minutesBetween': self.getMinutesBetween(),
+            'twitchChannel': self.getTwitchChannel()
+        }

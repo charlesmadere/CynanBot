@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -25,14 +25,18 @@ class WordOfTheDayRecurringAction(RecurringAction):
 
         self.__languageEntry: Optional[LanguageEntry] = languageEntry
 
-    def getLanguageEntry(self) -> Optional[LanguageEntry]:
-        return self.__languageEntry
-
     def getActionType(self) -> RecurringActionType:
         return RecurringActionType.WORD_OF_THE_DAY
 
+    def getLanguageEntry(self) -> Optional[LanguageEntry]:
+        return self.__languageEntry
+
     def hasLanguageEntry(self) -> bool:
         return self.__languageEntry is not None
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
 
     def requireLanguageEntry(self) -> LanguageEntry:
         languageEntry = self.__languageEntry
@@ -41,3 +45,12 @@ class WordOfTheDayRecurringAction(RecurringAction):
             raise RuntimeError(f'No languageEntry value has been set!')
 
         return languageEntry
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'actionType': self.getActionType(),
+            'enabled': self.isEnabled(),
+            'languageEntry': self.__languageEntry,
+            'minutesBetween': self.getMinutesBetween(),
+            'twitchChannel': self.getTwitchChannel()
+        }
