@@ -80,7 +80,7 @@ class TestRecurringActionType():
         assert result is None
         assert isinstance(exception, Exception)
 
-    def test_toReadableStr_withWeather(self):
+    def test_toReadableStr_withSuperTrivia(self):
         result = RecurringActionType.SUPER_TRIVIA.toReadableStr()
         assert result == 'Super Trivia'
 
@@ -92,7 +92,7 @@ class TestRecurringActionType():
         result = RecurringActionType.WORD_OF_THE_DAY.toReadableStr()
         assert result == 'Word of the Day'
 
-    def test_toStr_withWeather(self):
+    def test_toStr_withSuperTrivia(self):
         result = RecurringActionType.SUPER_TRIVIA.toStr()
         assert result == 'super_trivia'
 
