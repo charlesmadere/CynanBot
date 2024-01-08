@@ -22,6 +22,7 @@ class WebsocketEvent():
         total: Optional[int] = None,
         viewers: Optional[int] = None,
         endedAt: Optional[SimpleDateTime] = None,
+        endsAt: Optional[SimpleDateTime] = None,
         followedAt: Optional[SimpleDateTime] = None,
         lockedAt: Optional[SimpleDateTime] = None,
         locksAt: Optional[SimpleDateTime] = None,
@@ -68,6 +69,8 @@ class WebsocketEvent():
             raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
         elif endedAt is not None and not isinstance(endedAt, SimpleDateTime):
             raise ValueError(f'endedAt argument is malformed: \"{endedAt}\"')
+        elif endsAt is not None and not isinstance(endsAt, SimpleDateTime):
+            raise ValueError(f'endsAt argument is malformed: \"{endsAt}\"')
         elif followedAt is not None and not isinstance(followedAt, SimpleDateTime):
             raise ValueError(f'followedAt argument is malformed: \"{followedAt}\"')
         elif lockedAt is not None and not isinstance(lockedAt, SimpleDateTime):
@@ -138,6 +141,7 @@ class WebsocketEvent():
         self.__total: Optional[int] = total
         self.__viewers: Optional[int] = viewers
         self.__endedAt: Optional[SimpleDateTime] = endedAt
+        self.__endsAt: Optional[SimpleDateTime] = endsAt
         self.__followedAt: Optional[SimpleDateTime] = followedAt
         self.__lockedAt: Optional[SimpleDateTime] = lockedAt
         self.__locksAt: Optional[SimpleDateTime] = locksAt
@@ -196,6 +200,9 @@ class WebsocketEvent():
 
     def getEndedAt(self) -> Optional[SimpleDateTime]:
         return self.__endedAt
+
+    def getEndsAt(self) -> Optional[SimpleDateTime]:
+        return self.__endsAt
 
     def getEventId(self) -> Optional[str]:
         return self.__eventId
@@ -299,6 +306,7 @@ class WebsocketEvent():
             'communitySubGift': self.__communitySubGift,
             'cumulativeMonths': self.__cumulativeMonths,
             'endedAt': self.__endedAt,
+            'endsAt': self.__endsAt,
             'eventId': self.__eventId,
             'followedAt': self.__followedAt,
             'fromBroadcasterUserId': self.__fromBroadcasterUserId,

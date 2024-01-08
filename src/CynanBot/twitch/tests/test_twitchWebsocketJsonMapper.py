@@ -9,9 +9,6 @@ from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
-from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
-from CynanBot.twitch.websocket.websocketReward import WebsocketReward
-from CynanBot.twitch.websocket.websocketSession import WebsocketSession
 from CynanBot.twitch.websocket.websocketSubscription import \
     WebsocketSubscription
 
@@ -163,7 +160,7 @@ class TestTwitchWebsocketJsonMapper():
         assert isinstance(result, WebsocketSubscription)
 
     @pytest.mark.asyncio
-    async def test_parseWebsocketSubscription_withEmptyDictionary(self):
+    async def test_parseWebsocketSubscription_withNone(self):
         result = await self.jsonMapper.parseWebsocketSubscription(None)
         assert result is None
 

@@ -350,6 +350,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'ended_at' in eventJson and utils.isValidStr(eventJson.get('ended_at')):
             endedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ended_at')))
 
+        endsAt: Optional[SimpleDateTime] = None
+        if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
+            endsAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ends_at')))
+
         followedAt: Optional[SimpleDateTime] = None
         if 'followed_at' in eventJson and utils.isValidStr(eventJson.get('followed_at')):
             followedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'followed_at')))
@@ -499,6 +503,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             total = total,
             viewers = viewers,
             endedAt = endedAt,
+            endsAt = endsAt,
             followedAt = followedAt,
             lockedAt = lockedAt,
             locksAt = locksAt,
