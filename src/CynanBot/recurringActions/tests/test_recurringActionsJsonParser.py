@@ -93,7 +93,7 @@ class TestRecurringActionsJsonParser():
         assert isinstance(action, WeatherRecurringAction)
         assert action.getMinutesBetween() is None
         assert action.getTwitchChannel() == 'smCharles'
-        assert not action.isAlertsOnly()
+        assert action.isAlertsOnly()
         assert action.isEnabled()
 
     @pytest.mark.asyncio
