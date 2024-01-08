@@ -724,7 +724,8 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 recurringActionsRepository: RecurringActionsRepositoryInterface = RecurringActionsRepository(
     backingDatabase = backingDatabase,
     recurringActionsJsonParser = RecurringActionsJsonParser(
-        languagesRepository = languagesRepository
+        languagesRepository = languagesRepository,
+        timber = timber
     ),
     timber = timber
 )

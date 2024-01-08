@@ -2,6 +2,7 @@ import json
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -14,18 +15,23 @@ from CynanBot.recurringActions.weatherRecurringAction import \
     WeatherRecurringAction
 from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
     def __init__(
         self,
-        languagesRepository: LanguagesRepositoryInterface
+        languagesRepository: LanguagesRepositoryInterface,
+        timber: TimberInterface
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
             raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
+        self.__timber: TimberInterface = timber
 
     async def parseSuperTrivia(
         self,
@@ -86,10 +92,15 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             fallback = ''
         )
 
-        if not utils.isValidStr(wotdApiCode):
-            return None
+        languageEntry: Optional[LanguageEntry] = None
 
-        languageEntry = await self.__languagesRepository.requireLanguageForWotdApiCode(wotdApiCode)
+        if utils.isValidStr(wotdApiCode):
+            languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(
+                wotdApiCode = wotdApiCode
+            )
+
+            if languageEntry is None:
+                self.__timber.log('RecurringActionsJsonParser', f'Unable to find language for Word of the Day API code \"{wotdApiCode}\"')
 
         return WordOfTheDayRecurringAction(
             twitchChannel = twitchChannel,
@@ -134,8 +145,15 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         if not isinstance(action, WordOfTheDayRecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        jsonContents: Dict[str, Any] = {
-            'languageEntry': action.requireLanguageEntry().getWotdApiCode()
-        }
+        languageEntry = action.getLanguageEntry()
+        wotdApiCode: Optional[str] = None
+
+        if languageEntry is not None:
+            wotdApiCode = languageEntry.getWotdApiCode()
+
+        jsonContents: Dict[str, Any] = dict()
+
+        if utils.isValidStr(wotdApiCode):
+            jsonContents['languageEntry'] = wotdApiCode
 
         return json.dumps(jsonContents)
