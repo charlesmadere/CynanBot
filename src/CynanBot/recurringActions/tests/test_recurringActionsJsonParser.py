@@ -247,7 +247,7 @@ class TestRecurringActionsJsonParser():
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, Dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('alertsOnly', None) is action.isAlertsOnly()
+        assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
 
     @pytest.mark.asyncio
     async def test_toJson_withWeatherRecurringAction_alertsOnlyTrue(self):
@@ -265,7 +265,7 @@ class TestRecurringActionsJsonParser():
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, Dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('alertsOnly', None) is action.isAlertsOnly()
+        assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
 
     @pytest.mark.asyncio
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryJapanese(self):
@@ -285,7 +285,7 @@ class TestRecurringActionsJsonParser():
         jsonObject = json.loads(jsonString)
         assert isinstance(jsonObject, Dict)
         assert len(jsonObject) == 1
-        assert jsonObject.get('languageEntry', None) == languageEntry.getWotdApiCode()
+        assert jsonObject.get('languageEntry') == languageEntry.getWotdApiCode()
 
     @pytest.mark.asyncio
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryNone(self):
