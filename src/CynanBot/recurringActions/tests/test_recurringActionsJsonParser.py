@@ -157,6 +157,43 @@ class TestRecurringActionsJsonParser():
         assert action is None
 
     @pytest.mark.asyncio
+    async def test_parseWordOfTheDay1(self):
+        action = await self.parser.parseWordOfTheDay(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = '{}',
+            twitchChannel = 'smCharles'
+        )
+
+        assert isinstance(action, WordOfTheDayRecurringAction)
+        assert action.getLanguageEntry() is None
+        assert action.getMinutesBetween() is None
+        assert action.getTwitchChannel() == 'smCharles'
+        assert action.isEnabled()
+
+    @pytest.mark.asyncio
+    async def test_parseWordOfTheDay2(self):
+        jsonObject: Dict[str, Any] = {
+            'languageEntry': 'ja'
+        }
+
+        action = await self.parser.parseWordOfTheDay(
+            enabled = False,
+            minutesBetween = 180,
+            jsonString = json.dumps(jsonObject),
+            twitchChannel = 'smCharles'
+        )
+
+        assert isinstance(action, WordOfTheDayRecurringAction)
+        assert action.getMinutesBetween() == 180
+        assert action.getTwitchChannel() == 'smCharles'
+        assert not action.isEnabled()
+
+        languageEntry = action.getLanguageEntry()
+        assert languageEntry is not None
+        assert languageEntry.getWotdApiCode() == 'ja'
+
+    @pytest.mark.asyncio
     async def test_parseWordOfTheDay_withJsonStringEmpty(self):
         action = await self.parser.parseWordOfTheDay(
             enabled = True,
