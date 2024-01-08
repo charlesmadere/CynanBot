@@ -34,7 +34,7 @@ class LanguageEntry():
         if isinstance(other, LanguageEntry):
             return self.__name.lower() == other.__name.lower()
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            return False
 
     def getCommandNames(self) -> List[str]:
         return self.__commandNames
@@ -72,5 +72,5 @@ class LanguageEntry():
     def hasWotdApiCode(self) -> bool:
         return utils.isValidStr(self.__wotdApiCode)
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.getName()
