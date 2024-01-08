@@ -85,6 +85,26 @@ class TestRecurringActionsJsonParser():
         assert jsonObject.get('alertsOnly', None) is action.isAlertsOnly()
 
     @pytest.mark.asyncio
+    async def test_toJson_withWordOfTheDayRecurringAction_languageEntryJapanese(self):
+        languageEntry = await self.languagesRepository.requireLanguageForWotdApiCode('ja')
+
+        action = WordOfTheDayRecurringAction(
+            enabled = True,
+            twitchChannel = 'smCharles',
+            languageEntry = languageEntry
+        )
+
+        jsonString = await self.parser.toJson(action)
+        assert isinstance(jsonString, str)
+        assert len(jsonString) != 0
+        assert not jsonString.isspace()
+
+        jsonObject = json.loads(jsonString)
+        assert isinstance(jsonObject, Dict)
+        assert len(jsonObject) == 1
+        assert jsonObject.get('languageEntry', None) == languageEntry.getWotdApiCode()
+
+    @pytest.mark.asyncio
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryNone(self):
         action = WordOfTheDayRecurringAction(
             enabled = True,
