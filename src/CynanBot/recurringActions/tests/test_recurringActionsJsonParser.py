@@ -116,6 +116,25 @@ class TestRecurringActionsJsonParser():
         assert not action.isEnabled()
 
     @pytest.mark.asyncio
+    async def test_parseWeather3(self):
+        jsonObject: Dict[str, Any] = {
+            'alertsOnly': False
+        }
+
+        action = await self.parser.parseWeather(
+            enabled = True,
+            minutesBetween = 120,
+            jsonString = json.dumps(jsonObject),
+            twitchChannel = 'smCharles'
+        )
+
+        assert isinstance(action, WeatherRecurringAction)
+        assert action.getMinutesBetween() == 120
+        assert action.getTwitchChannel() == 'smCharles'
+        assert not action.isAlertsOnly()
+        assert action.isEnabled()
+
+    @pytest.mark.asyncio
     async def test_parseWeather_withJsonStringEmpty(self):
         action = await self.parser.parseWeather(
             enabled = True,
