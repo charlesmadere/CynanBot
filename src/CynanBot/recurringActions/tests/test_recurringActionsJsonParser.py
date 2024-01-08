@@ -33,6 +33,72 @@ class TestRecurringActionsJsonParser():
     )
 
     @pytest.mark.asyncio
+    async def test_parseSuperTrivia_withJsonStringEmpty(self):
+        action = await self.parser.parseSuperTrivia(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = '',
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
+    async def test_parseSuperTrivia_withJsonStringNone(self):
+        action = await self.parser.parseSuperTrivia(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = None,
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
+    async def test_parseWeather_withJsonStringEmpty(self):
+        action = await self.parser.parseWeather(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = '',
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
+    async def test_parseWeather_withJsonStringNone(self):
+        action = await self.parser.parseWeather(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = None,
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
+    async def test_parseWordOfTheDay_withJsonStringEmpty(self):
+        action = await self.parser.parseWordOfTheDay(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = '',
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
+    async def test_parseWordOfTheDay_withJsonStringNone(self):
+        action = await self.parser.parseWordOfTheDay(
+            enabled = True,
+            minutesBetween = None,
+            jsonString = None,
+            twitchChannel = 'smCharles'
+        )
+
+        assert action is None
+
+    @pytest.mark.asyncio
     async def test_toJson_withSuperTriviaAction(self):
         action = SuperTriviaRecurringAction(
             enabled = True,
