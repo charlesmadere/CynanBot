@@ -31,9 +31,6 @@ class WordOfTheDayRecurringAction(RecurringAction):
     def getLanguageEntry(self) -> Optional[LanguageEntry]:
         return self.__languageEntry
 
-    def hasLanguageEntry(self) -> bool:
-        return self.__languageEntry is not None
-
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)

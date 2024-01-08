@@ -296,13 +296,15 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(action, WordOfTheDayRecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        if not action.hasLanguageEntry():
+        languageEntry = action.getLanguageEntry()
+
+        if languageEntry is None:
             return False
 
         wordOfTheDayResponse: Optional[WordOfTheDayResponse] = None
 
         try:
-            wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(action.requireLanguageEntry())
+            wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
         except:
             pass
 
@@ -310,7 +312,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(WordOfTheDayRecurringEvent(
-            languageEntry = action.requireLanguageEntry(),
+            languageEntry = languageEntry,
             twitchChannel = action.getTwitchChannel(),
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
