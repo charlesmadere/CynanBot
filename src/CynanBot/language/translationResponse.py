@@ -64,18 +64,18 @@ class TranslationResponse():
                 if originalLanguage.hasFlag():
                     firstLangText = originalLanguage.getFlag()
                 else:
-                    firstLangText = originalLanguage.getIso6391Code().upper()
+                    firstLangText = originalLanguage.requireIso6391Code().upper()
 
                 secondLangText = ''
                 if translatedLanguage.hasFlag():
                     secondLangText = translatedLanguage.getFlag()
                 else:
-                    secondLangText = translatedLanguage.getIso6391Code().upper()
+                    secondLangText = translatedLanguage.requireIso6391Code().upper()
 
                 prefixText = f'[ {firstLangText} ➡ {secondLangText} ] '
             elif originalLanguage.hasFlag():
                 prefixText = f'[ {originalLanguage.getFlag()} ]'
             else:
-                prefixText = f'[ {originalLanguage.getIso6391Code().upper()} ]'
+                prefixText = f'[ {originalLanguage.requireIso6391Code().upper()} ]'
 
         return f'{prefixText}{self.__translatedText}'

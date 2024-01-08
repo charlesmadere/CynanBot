@@ -42,11 +42,8 @@ class LanguageEntry():
     def getFlag(self) -> Optional[str]:
         return self.__flag
 
-    def getIso6391Code(self) -> str:
-        if self.hasIso6391Code():
-            return self.__iso6391Code
-        else:
-            raise RuntimeError(f'this LanguageEntry ({self.getName()}) has no ISO 639-1 code!')
+    def getIso6391Code(self) -> Optional[str]:
+        return self.__iso6391Code
 
     def getName(self) -> str:
         return self.__name
@@ -54,11 +51,8 @@ class LanguageEntry():
     def getPrimaryCommandName(self) -> str:
         return self.__commandNames[0]
 
-    def getWotdApiCode(self) -> str:
-        if self.hasWotdApiCode():
-            return self.__wotdApiCode
-        else:
-            raise RuntimeError(f'this LanguageEntry ({self.getName()}) has no Word Of The Day API code!')
+    def getWotdApiCode(self) -> Optional[str]:
+        return self.__wotdApiCode
 
     def hasFlag(self) -> bool:
         return utils.isValidStr(self.__flag)
@@ -74,3 +68,19 @@ class LanguageEntry():
 
     def __repr__(self) -> str:
         return self.getName()
+
+    def requireIso6391Code(self) -> str:
+        iso6391Code = self.__iso6391Code
+
+        if not utils.isValidStr(iso6391Code):
+            raise RuntimeError(f'This LanguageEntry ({self}) has no ISO 639-1 code!')
+
+        return iso6391Code
+
+    def requireWotdApiCode(self) -> str:
+        wotdApiCode = self.__wotdApiCode
+
+        if not utils.isValidStr(wotdApiCode):
+            raise RuntimeError(f'This LanguageEntry ({self}) has no WOTD API code!')
+
+        return wotdApiCode

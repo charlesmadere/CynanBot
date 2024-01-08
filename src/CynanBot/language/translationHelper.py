@@ -57,12 +57,19 @@ class TranslationHelper(TranslationHelperInterface):
         self.__googleTranslateClient: Optional[Any] = None
 
     async def __deepLTranslate(self, text: str, targetLanguageEntry: LanguageEntry) -> TranslationResponse:
-        self.__timber.log('TranslationHelper', f'Fetching translation from DeepL...')
+        if not utils.isValidStr(text):
+            raise ValueError(f'text argument is malformed: \"{text}\"')
+        elif not isinstance(targetLanguageEntry, LanguageEntry):
+            raise ValueError(f'targetLanguageEntry argument is malformed: \"{targetLanguageEntry}\"')
+        elif not targetLanguageEntry.hasIso6391Code():
+            raise ValueError(f'targetLanguageEntry has no ISO 639-1 code: \"{targetLanguageEntry}\"')
+
+        self.__timber.log('TranslationHelper', f'Fetching translation from DeepL ({text=}) ({targetLanguageEntry=})...')
 
         # Retrieve translation from DeepL API: https://www.deepl.com/en/docs-api/
 
         requestUrl = 'https://api-free.deepl.com/v2/translate?auth_key={}&text={}&target_lang={}'.format(
-            self.__deepLAuthKey, text, targetLanguageEntry.getIso6391Code())
+            self.__deepLAuthKey, text, targetLanguageEntry.requireIso6391Code())
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -124,7 +131,14 @@ class TranslationHelper(TranslationHelperInterface):
         return self.__googleTranslateClient
 
     async def __googleTranslate(self, text: str, targetLanguageEntry: LanguageEntry) -> TranslationResponse:
-        self.__timber.log('TranslationHelper', f'Fetching translation from Google Translate...')
+        if not utils.isValidStr(text):
+            raise ValueError(f'text argument is malformed: \"{text}\"')
+        elif not isinstance(targetLanguageEntry, LanguageEntry):
+            raise ValueError(f'targetLanguageEntry argument is malformed: \"{targetLanguageEntry}\"')
+        elif not targetLanguageEntry.hasIso6391Code():
+            raise ValueError(f'targetLanguageEntry has no ISO 639-1 code: \"{targetLanguageEntry}\"')
+
+        self.__timber.log('TranslationHelper', f'Fetching translation from Google Translate ({text=}) ({targetLanguageEntry=})...')
 
         googleTranslateClient = await self.__getGoogleTranslateClient()
         if googleTranslateClient is None:
@@ -132,7 +146,7 @@ class TranslationHelper(TranslationHelperInterface):
 
         translationResult: Optional[Dict[str, Any]] = googleTranslateClient.translate(
             text,
-            target_language = targetLanguageEntry.getIso6391Code()
+            target_language = targetLanguageEntry.requireIso6391Code()
         )
 
         if not utils.hasItems(translationResult):
@@ -177,7 +191,7 @@ class TranslationHelper(TranslationHelperInterface):
             except JSONDecodeError as e:
                 exception = e
 
-        return utils.hasItems(jsonContents) and exception is None
+        return isinstance(jsonContents, Dict) and len(jsonContents) >= 1 and exception is None
 
     async def translate(
         self,
@@ -186,6 +200,10 @@ class TranslationHelper(TranslationHelperInterface):
     ) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise ValueError(f'text argument is malformed: \"{text}\"')
+        elif targetLanguageEntry is not None and not isinstance(targetLanguageEntry, LanguageEntry):
+            raise ValueError(f'targetLanguageEntry argument is malformed: \"{targetLanguageEntry}\"')
+        elif targetLanguageEntry is not None and not targetLanguageEntry.hasIso6391Code():
+            raise ValueError(f'targetLanguageEntry has no ISO 639-1 code: \"{targetLanguageEntry}\"')
 
         text = utils.cleanStr(text)
 
@@ -202,20 +220,29 @@ class TranslationHelper(TranslationHelperInterface):
             # situation where we have no Google API credentials, but we do have DeepL credentials.
             # So here we'll just always use DeepL for translation, rather than evenly splitting
             # the workload between both services.
-            return await self.__deepLTranslate(text, targetLanguageEntry)
+            return await self.__deepLTranslate(
+                text = text,
+                targetLanguageEntry = targetLanguageEntry
+            )
 
         # In order to help keep us from running beyond the free usage tiers for the Google
         # Translate and DeepL translation services, let's randomly choose which translation service
         # to use. At the time of this writing, both services have a 500,000 character monthly limit.
         # So theoretically, this gives us a 1,000,000 character translation capability.
 
-        translationApiSource = random.choice(list(TranslationApiSource))
-        while not translationApiSource.isEnabled():
+        translationApiSource: Optional[TranslationApiSource] = None
+        while translationApiSource is None or not translationApiSource.isEnabled():
             translationApiSource = random.choice(list(TranslationApiSource))
 
         if translationApiSource is TranslationApiSource.DEEP_L:
-            return await self.__deepLTranslate(text, targetLanguageEntry)
+            return await self.__deepLTranslate(
+                text = text,
+                targetLanguageEntry = targetLanguageEntry
+            )
         elif translationApiSource is TranslationApiSource.GOOGLE_TRANSLATE:
-            return await self.__googleTranslate(text, targetLanguageEntry)
+            return await self.__googleTranslate(
+                text = text,
+                targetLanguageEntry = targetLanguageEntry
+            )
         else:
             raise ValueError(f'unknown TranslationApiSource: \"{translationApiSource}\"')

@@ -4158,7 +4158,7 @@ class WordCommand(AbsCommand):
         if len(splits) < 2:
             exampleEntry = await self.__languagesRepository.getExampleLanguageEntry(hasWotdApiCode = True)
             allWotdApiCodes = await self.__languagesRepository.getAllWotdApiCodes()
-            await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.getWotdApiCode()}. Available languages: {allWotdApiCodes}')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ A language code is necessary for the !word command. Example: !word {exampleEntry.requireWotdApiCode()}. Available languages: {allWotdApiCodes}')
             return
 
         language = splits[1]
