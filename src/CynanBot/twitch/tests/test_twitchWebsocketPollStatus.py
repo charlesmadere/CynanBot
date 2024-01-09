@@ -13,7 +13,7 @@ class TestTwitchWebsocketPollStatus():
         assert result is TwitchWebsocketPollStatus.ARCHIVED
 
     def test_fromStr_withCompletedString(self):
-        result = TwitchWebsocketPollStatus.fromStr('blue')
+        result = TwitchWebsocketPollStatus.fromStr('completed')
         assert result is TwitchWebsocketPollStatus.COMPLETED
 
     def test_fromStr_withEmptyString(self):
