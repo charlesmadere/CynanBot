@@ -6,6 +6,10 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
+from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
+    TwitchWebsocketPollStatus
+from CynanBot.twitch.websocket.twitchWebsocketRewardRedemptionStatus import \
+    TwitchWebsocketRewardRedemptionStatus
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \
     WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
@@ -463,6 +467,12 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
 
+        pollStatus: Optional[TwitchWebsocketPollStatus] = None
+        rewardRedemptionStatus: Optional[TwitchWebsocketRewardRedemptionStatus] = None
+        if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
+            pollStatus = TwitchWebsocketPollStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
+            rewardRedemptionStatus = TwitchWebsocketRewardRedemptionStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
+
         communitySubGift: Optional[WebsocketCommunitySubGift] = None
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.parseWebsocketCommunitySubGift(eventJson.get('community_sub_gift'))
@@ -530,6 +540,8 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             tier = tier,
+            pollStatus = pollStatus,
+            rewardRedemptionStatus = rewardRedemptionStatus,
             communitySubGift = communitySubGift,
             noticeType = noticeType,
             outcomes = outcomes,

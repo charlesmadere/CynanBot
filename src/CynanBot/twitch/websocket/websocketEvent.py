@@ -3,6 +3,10 @@ from typing import Any, Dict, List, Optional
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
+    TwitchWebsocketPollStatus
+from CynanBot.twitch.websocket.twitchWebsocketRewardRedemptionStatus import \
+    TwitchWebsocketRewardRedemptionStatus
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \
     WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketNoticeType import WebsocketNoticeType
@@ -49,6 +53,8 @@ class WebsocketEvent():
         userLogin: Optional[str] = None,
         userName: Optional[str] = None,
         tier: Optional[TwitchSubscriberTier] = None,
+        pollStatus: Optional[TwitchWebsocketPollStatus] = None,
+        rewardRedemptionStatus: Optional[TwitchWebsocketRewardRedemptionStatus] = None,
         communitySubGift: Optional[WebsocketCommunitySubGift] = None,
         noticeType: Optional[WebsocketNoticeType] = None,
         outcomes: Optional[List[WebsocketOutcome]] = None,
@@ -123,6 +129,10 @@ class WebsocketEvent():
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
         elif tier is not None and not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
+        elif pollStatus is not None and not isinstance(pollStatus, TwitchWebsocketPollStatus):
+            raise ValueError(f'pollStatus argument is malformed: \"{pollStatus}\"')
+        elif rewardRedemptionStatus is not None and not isinstance(rewardRedemptionStatus, TwitchWebsocketRewardRedemptionStatus):
+            raise ValueError(f'rewardRedemptionStatus argument is malformed: \"{rewardRedemptionStatus}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, WebsocketCommunitySubGift):
             raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
         elif noticeType is not None and not isinstance(noticeType, WebsocketNoticeType):
@@ -168,6 +178,8 @@ class WebsocketEvent():
         self.__userLogin: Optional[str] = userLogin
         self.__userName: Optional[str] = userName
         self.__tier: Optional[TwitchSubscriberTier] = tier
+        self.__pollStatus: Optional[TwitchWebsocketPollStatus] = pollStatus
+        self.__rewardRedemptionStatus: Optional[TwitchWebsocketRewardRedemptionStatus] = rewardRedemptionStatus
         self.__communitySubGift: Optional[WebsocketCommunitySubGift] = communitySubGift
         self.__noticeType: Optional[WebsocketNoticeType] = noticeType
         self.__outcomes: Optional[List[WebsocketOutcome]] = outcomes
@@ -234,6 +246,9 @@ class WebsocketEvent():
     def getOutcomes(self) -> Optional[List[WebsocketOutcome]]:
         return self.__outcomes
 
+    def getPollStatus(self) -> Optional[TwitchWebsocketPollStatus]:
+        return self.__pollStatus
+
     def getRedeemedAt(self) -> Optional[SimpleDateTime]:
         return self.__redeemedAt
 
@@ -242,6 +257,9 @@ class WebsocketEvent():
 
     def getRewardId(self) -> Optional[str]:
         return self.__rewardId
+
+    def getRewardRedemptionStatus(self) -> Optional[TwitchWebsocketRewardRedemptionStatus]:
+        return self.__rewardRedemptionStatus
 
     def getStartedAt(self) -> Optional[SimpleDateTime]:
         return self.__startedAt
@@ -317,9 +335,11 @@ class WebsocketEvent():
             'message': self.__message,
             'noticeType': self.__noticeType,
             'outcomes': self.__outcomes,
+            'pollStatus': self.__pollStatus,
             'redeemedAt': self.__redeemedAt,
             'reward': self.__reward,
             'rewardId': self.__rewardId,
+            'rewardRedemptionStatus': self.__rewardRedemptionStatus,
             'startedAt': self.__startedAt,
             'subGift': self.__subGift,
             'text': self.__text,

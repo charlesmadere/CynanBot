@@ -1,7 +1,3 @@
-from typing import Optional
-
-import pytest
-
 from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
     TwitchWebsocketPollStatus
 
@@ -17,19 +13,11 @@ class TestTwitchWebsocketPollStatus():
         assert result is TwitchWebsocketPollStatus.COMPLETED
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[TwitchWebsocketPollStatus] = None
-
-        with pytest.raises(Exception):
-            result = TwitchWebsocketPollStatus.fromStr('')
-
+        result = TwitchWebsocketPollStatus.fromStr('')
         assert result is None
 
     def test_fromStr_withNone(self):
-        result: Optional[TwitchWebsocketPollStatus] = None
-
-        with pytest.raises(Exception):
-            result = TwitchWebsocketPollStatus.fromStr(None)
-
+        result = TwitchWebsocketPollStatus.fromStr(None)
         assert result is None
 
     def test_fromStr_withTerminatedString(self):
@@ -37,9 +25,5 @@ class TestTwitchWebsocketPollStatus():
         assert result is TwitchWebsocketPollStatus.TERMINATED
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[TwitchWebsocketPollStatus] = None
-
-        with pytest.raises(Exception):
-            result = TwitchWebsocketPollStatus.fromStr(' ')
-
+        result = TwitchWebsocketPollStatus.fromStr(' ')
         assert result is None
