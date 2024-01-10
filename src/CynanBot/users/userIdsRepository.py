@@ -14,6 +14,8 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
+from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
+    TwitchAnonymousUserIdProviderInterface
 from CynanBot.users.exceptions import NoSuchUserException
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
@@ -25,18 +27,26 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
+        twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface,
         twitchApiService: TwitchApiServiceInterface,
-        cacheSize: int = 100
+        cacheSize: int = 128
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchAnonymousUserIdProvider, TwitchAnonymousUserIdProviderInterface):
+            raise ValueError(f'twitchAnonymousUserIdProvider argument is malformed: \"{twitchAnonymousUserIdProvider}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not utils.isValidInt(cacheSize):
+            raise ValueError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+        elif cacheSize < 32 or cacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = twitchAnonymousUserIdProvider
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
         self.__isDatabaseReady: bool = False
@@ -50,8 +60,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        # this is hardcoded to the ID of the "AnAnonymousGifter" account on Twitch
-        return '274598607'
+        return await self.__twitchAnonymousUserIdProvider.getTwitchAnonymousUserId()
 
     async def fetchAnonymousUserName(self, twitchAccessToken: str) -> Optional[str]:
         if not utils.isValidStr(twitchAccessToken):
@@ -93,10 +102,10 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         if utils.isValidStr(userId):
             return userId
         elif not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch user ID for \"{userName}\" as no twitchAccessToken was specified')
+            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch user ID for \"{userName}\" as no Twitch access token was specified')
             return None
 
-        self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead...')
+        self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
         userDetails: Optional[TwitchUserDetails] = None
 
         try:
@@ -105,11 +114,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 userName = userName
             )
         except GenericNetworkException as e:
-            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch user ID for username \"{userName}\": {e}', e, traceback.format_exc())
+            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch user ID for username \"{userName}\" ({twitchAccessToken=}): {e}', e, traceback.format_exc())
             return None
 
         if userDetails is None:
-            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch user ID for username \"{userName}\"')
+            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
             return None
 
         userId = userDetails.getUserId()
@@ -171,10 +180,10 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__cache[userId] = userName
             return userName
         elif not utils.isValidStr(twitchAccessToken):
-            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch username for \"{userId}\" as no twitchAccessToken was specified')
+            self.__timber.log('UserIdsRepository', f'Can\'t lookup Twitch username for \"{userId}\" as no Twitch access token was specified')
             return None
 
-        self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead...')
+        self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
         userDetails: Optional[TwitchUserDetails] = None
 
         try:
@@ -183,11 +192,11 @@ class UserIdsRepository(UserIdsRepositoryInterface):
                 userId = userId
             )
         except GenericNetworkException as e:
-            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch username for user ID \"{userId}\": {e}', e, traceback.format_exc())
+            self.__timber.log('UserIdsRepository', f'Received a network error when fetching Twitch username for user ID \"{userId}\" ({twitchAccessToken=}): {e}', e, traceback.format_exc())
             return None
 
         if userDetails is None:
-            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\"')
+            self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\" ({twitchAccessToken=})')
             return None
 
         userName = userDetails.getLogin()
@@ -230,6 +239,10 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await connection.close()
 
+    async def optionallySetUser(self, userId: Optional[str], userName: Optional[str]):
+        if utils.isValidStr(userId) and utils.isValidStr(userName):
+            await self.setUser(userId = userId, userName = userName)
+
     async def requireAnonymousUserId(self, twitchAccessToken: str) -> str:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
@@ -263,7 +276,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidStr(userId):
-            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\"')
+            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
 
         return userId
 
@@ -279,13 +292,14 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         userIdInt: Optional[int] = None
 
-        try:
-            userIdInt = int(userIdStr)
-        except:
-            pass
+        if utils.isValidStr(userIdStr):
+            try:
+                userIdInt = int(userIdStr)
+            except:
+                pass
 
         if not utils.isValidInt(userIdInt):
-            raise NoSuchUserException(f'Unable to find Twitch user ID for username \"{userName}\"')
+            raise NoSuchUserException(f'Unable to find Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
 
         return userIdInt
 
@@ -300,7 +314,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         if not utils.isValidStr(userName):
-            raise NoSuchUserException(f'Unable to fetch Twitch user name for user ID \"{userId}\"')
+            raise NoSuchUserException(f'Unable to fetch Twitch user name for user ID \"{userId}\" ({twitchAccessToken=})')
 
         return userName
 
@@ -323,3 +337,4 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         )
 
         await connection.close()
+        self.__cache[userId] = userName

@@ -136,10 +136,18 @@ class UsersRepository(UsersRepositoryInterface):
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
-        minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount', 100)
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
+
+        maximumTtsCheerAmount: Optional[int] = None
+        minimumTtsCheerAmount: Optional[int] = None
+        if isTtsEnabled:
+            if 'maximumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('maximumTtsCheerAmount')):
+                maximumTtsCheerAmount = utils.getIntFromDict(userJson, 'maximumTtsCheerAmount')
+
+            if 'minimumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('minimumTtsCheerAmount')):
+                minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount')
 
         timeZones: Optional[List[tzinfo]] = None
         if 'timeZones' in userJson:
@@ -150,7 +158,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = None
         if isCutenessEnabled:
-            cutenessBoosterPacksJson: List[Dict] = userJson.get('cutenessBoosterPacks')
+            cutenessBoosterPacksJson: Optional[List[Dict[str, Any]]] = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
@@ -199,7 +207,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
             pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
-            pkmnCatchBoosterPacksJson: List[Dict] = userJson.get('pkmnCatchBoosterPacks')
+            pkmnCatchBoosterPacksJson: Optional[List[Dict[str, Any]]] = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
         user = User(
@@ -246,6 +254,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
+            maximumTtsCheerAmount = maximumTtsCheerAmount,
             minimumTtsCheerAmount = minimumTtsCheerAmount,
             superTriviaCheerTriggerMaximum = superTriviaCheerTriggerMaximum,
             superTriviaGamePoints = superTriviaGamePoints,
@@ -333,7 +342,10 @@ class UsersRepository(UsersRepositoryInterface):
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 
-    def __parseCutenessBoosterPacksFromJson(self, jsonList: List[Dict]) -> Optional[List[CutenessBoosterPack]]:
+    def __parseCutenessBoosterPacksFromJson(
+        self,
+        jsonList: Optional[List[Dict]]
+    ) -> Optional[List[CutenessBoosterPack]]:
         if not utils.hasItems(jsonList):
             return None
 

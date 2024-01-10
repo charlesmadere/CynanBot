@@ -186,7 +186,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     ):
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+        elif bits <= 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(cheerUserId):
             raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
@@ -202,9 +202,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not user.isTtsEnabled():
             return
 
+        maximumTtsCheerAmount = user.getMaximumTtsCheerAmount()
         minimumTtsCheerAmount = user.getMinimumTtsCheerAmount()
 
-        if not utils.isValidInt(minimumTtsCheerAmount) or bits < minimumTtsCheerAmount:
+        if utils.isValidInt(maximumTtsCheerAmount) and utils.isValidInt(minimumTtsCheerAmount) and (bits < minimumTtsCheerAmount or bits > maximumTtsCheerAmount):
+            return
+        elif utils.isValidInt(maximumTtsCheerAmount) and bits > maximumTtsCheerAmount:
+            return
+        elif utils.isValidInt(minimumTtsCheerAmount) and bits < minimumTtsCheerAmount:
             return
 
         donation: TtsDonation = TtsCheerDonation(bits = bits)

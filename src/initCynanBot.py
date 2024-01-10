@@ -244,6 +244,10 @@ from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchAnonymousUserIdProvider import \
+    TwitchAnonymousUserIdProvider
+from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
+    TwitchAnonymousUserIdProviderInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
@@ -351,9 +355,11 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     twitchApiService = twitchApiService,
     seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
 )
+twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(

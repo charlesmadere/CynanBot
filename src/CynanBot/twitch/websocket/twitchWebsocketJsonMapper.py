@@ -4,6 +4,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
+from CynanBot.twitch.websocket.twitchWebsocketChannelPointsVoting import \
+    TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
@@ -45,6 +47,21 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
+
+    async def parseWebsocketChannelPointsVoting(
+        self,
+        channelPointsVotingJson: Optional[Dict[str, Any]]
+    ) -> Optional[TwitchWebsocketChannelPointsVoting]:
+        if not isinstance(channelPointsVotingJson, Dict) or len(channelPointsVotingJson) == 0:
+            return None
+
+        isEnabled = utils.getBoolFromDict(channelPointsVotingJson, 'is_enabled')
+        amountPerVote = utils.getIntFromDict(channelPointsVotingJson, 'amount_per_vote')
+
+        return TwitchWebsocketChannelPointsVoting(
+            isEnabled = isEnabled,
+            amountPerVote = amountPerVote
+        )
 
     async def parseWebsocketCommunitySubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[WebsocketCommunitySubGift]:
         if not isinstance(giftJson, Dict) or not utils.hasItems(giftJson):
@@ -467,6 +484,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
 
+        channelPointsVoting: Optional[TwitchWebsocketChannelPointsVoting] = None
+        if 'channel_points_voting' in eventJson:
+            channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
+
         pollStatus: Optional[TwitchWebsocketPollStatus] = None
         rewardRedemptionStatus: Optional[TwitchWebsocketRewardRedemptionStatus] = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
@@ -539,6 +560,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userInput = userInput,
             userLogin = userLogin,
             userName = userName,
+            channelPointsVoting = channelPointsVoting,
             tier = tier,
             pollStatus = pollStatus,
             rewardRedemptionStatus = rewardRedemptionStatus,

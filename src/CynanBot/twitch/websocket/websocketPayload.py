@@ -50,21 +50,8 @@ class WebsocketPayload():
         return subscription
 
     def toDictionary(self) -> Dict[str, Any]:
-        dictionary: Dict[str, Any] = dict()
-
-        if self.__event is None:
-            dictionary['event'] = None
-        else:
-            dictionary['event'] = self.__event.toDictionary()
-
-        if self.__session is None:
-            dictionary['session'] = None
-        else:
-            dictionary['session'] = self.__session.toDictionary()
-
-        if self.__subscription is None:
-            dictionary['subscription'] = None
-        else:
-            dictionary['subscription'] = self.__subscription.toDictionary()
-
-        return dictionary
+        return {
+            'event': self.__event,
+            'session': self.__session,
+            'subscription': self.__subscription
+        }

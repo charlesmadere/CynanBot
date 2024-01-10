@@ -9,8 +9,6 @@ from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
-from CynanBot.twitch.websocket.websocketSubscription import \
-    WebsocketSubscription
 
 
 class TestTwitchWebsocketJsonMapper():
@@ -20,6 +18,16 @@ class TestTwitchWebsocketJsonMapper():
     jsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
         timber = timber
     )
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketChannelPointsVoting_withEmptyDictionary(self):
+        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(dict())
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_parseWebsocketChannelPointsVoting_withNone(self):
+        result = await self.jsonMapper.parseWebsocketChannelPointsVoting(None)
+        assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCommunitySubGift_withEmptyDictionary(self):

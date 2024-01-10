@@ -38,13 +38,7 @@ class WebsocketDataBundle():
         return payload
 
     def toDictionary(self) -> Dict[str, Any]:
-        dictionary: Dict[str, Any] = {
-            'metadata': self.__metadata.toDictionary()
+        return {
+            'metadata': self.__metadata,
+            'payload': self.__payload
         }
-
-        if self.__payload is None:
-            dictionary['payload'] = None
-        else:
-            dictionary['payload'] = self.__payload.toDictionary()
-
-        return dictionary

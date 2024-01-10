@@ -36,6 +36,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getMaximumTtsCheerAmount(self) -> Optional[int]:
+        pass
+
+    @abstractmethod
     def getMinimumTtsCheerAmount(self) -> Optional[int]:
         pass
 

@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from CynanBot.twitch.websocket.twitchWebsocketChannelPointsVoting import \
+    TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \
     WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
@@ -17,6 +19,10 @@ from CynanBot.twitch.websocket.websocketSubscription import \
 
 
 class TwitchWebsocketJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseWebsocketChannelPointsVoting(self, channelPointsVotingJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketChannelPointsVoting]:
+        pass
 
     @abstractmethod
     async def parseWebsocketCommunitySubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[WebsocketCommunitySubGift]:

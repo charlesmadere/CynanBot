@@ -54,6 +54,7 @@ class User(UserInterface):
         isWordOfTheDayEnabled: bool,
         superTriviaCheerTriggerAmount: Optional[float],
         superTriviaSubscribeTriggerAmount: Optional[float],
+        maximumTtsCheerAmount: Optional[int],
         minimumTtsCheerAmount: Optional[int],
         superTriviaCheerTriggerMaximum: Optional[int],
         superTriviaGamePoints: Optional[int],
@@ -169,6 +170,8 @@ class User(UserInterface):
             raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
             raise ValueError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
+        elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
+            raise ValueError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
             raise ValueError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
@@ -259,6 +262,7 @@ class User(UserInterface):
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
         self.__superTriviaCheerTriggerAmount: Optional[float] = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: Optional[float] = superTriviaSubscribeTriggerAmount
+        self.__maximumTtsCheerAmount: Optional[int] = maximumTtsCheerAmount
         self.__minimumTtsCheerAmount: Optional[int] = minimumTtsCheerAmount
         self.__superTriviaCheerTriggerMaximum: Optional[int] = superTriviaCheerTriggerMaximum
         self.__superTriviaGamePoints: Optional[int] = superTriviaGamePoints
@@ -311,6 +315,9 @@ class User(UserInterface):
 
     def getMastodonUrl(self) -> Optional[str]:
         return self.__mastodonUrl
+
+    def getMaximumTtsCheerAmount(self) -> Optional[int]:
+        return self.__maximumTtsCheerAmount
 
     def getMinimumTtsCheerAmount(self) -> Optional[int]:
         return self.__minimumTtsCheerAmount
@@ -568,5 +575,5 @@ class User(UserInterface):
     def isWordOfTheDayEnabled(self) -> bool:
         return self.__isWordOfTheDayEnabled
 
-    def __str__(self) -> str:
-        return self.getHandle()
+    def __repr__(self) -> str:
+        return self.__handle

@@ -39,6 +39,10 @@ class UserIdsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
+    async def optionallySetUser(self, userId: Optional[str], userName: Optional[str]):
+        pass
+
+    @abstractmethod
     async def requireAnonymousUserId(self, twitchAccessToken: str) -> str:
         pass
 

@@ -60,22 +60,37 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-    async def __isChannelPointsRedemptionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+    async def __isChannelPointsRedemptionType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
 
-    async def __isCheerType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+    async def __isCheerType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHEER
 
-    async def __isPredictionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+    async def __isPredictionType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN \
             or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_END \
             or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK \
             or subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
 
-    async def __isRaidType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+    async def __isRaidType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.RAID
 
-    async def __isSubscriptionType(self, subscriptionType: WebsocketSubscriptionType) -> bool:
+    async def __isSubscriptionType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.SUBSCRIBE \
             or subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_GIFT \
             or subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
@@ -110,7 +125,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                 self.__timber.log('TwitchWebsocketDataBundleHandler', f'Unable to find broadcaster user login (\"{userLogin}\") for data bundle: \"{dataBundle}\"')
                 return
 
-        await self.__setOtherUserInfo(event)
+        await self.__persistUserInfo(event)
         user = await self.__usersRepository.getUserAsync(userLogin)
         subscriptionType = dataBundle.getMetadata().getSubscriptionType()
 
@@ -162,44 +177,46 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
 
-    async def __setOtherUserInfo(self, event: WebsocketEvent):
-        if not isinstance(event, WebsocketEvent):
+    async def __persistUserInfo(self, event: Optional[WebsocketEvent]):
+        if event is None:
+            return
+        elif not isinstance(event, WebsocketEvent):
             raise ValueError(f'event argument is malformed: \"{event}\"')
 
-        if utils.isValidStr(event.getBroadcasterUserId()) and utils.isValidStr(event.getBroadcasterUserLogin()):
+        await self.__userIdsRepository.optionallySetUser(
+            userId = event.getBroadcasterUserId(),
+            userName = event.getBroadcasterUserLogin()
+        )
+
+        await self.__userIdsRepository.optionallySetUser(
+            userId = event.getFromBroadcasterUserId(),
+            userName = event.getFromBroadcasterUserLogin()
+        )
+
+        await self.__userIdsRepository.optionallySetUser(
+            userId = event.getToBroadcasterUserId(),
+            userName = event.getToBroadcasterUserLogin()
+        )
+
+        await self.__userIdsRepository.optionallySetUser(
+            userId = event.getUserId(),
+            userName = event.getUserLogin()
+        )
+
+        subGift = event.getSubGift()
+        if subGift is not None:
             await self.__userIdsRepository.setUser(
-                userId = event.getBroadcasterUserId(),
-                userName = event.getBroadcasterUserLogin()
+                userId = subGift.getRecipientUserId(),
+                userName = subGift.getRecipientUserLogin()
             )
 
-        if utils.isValidStr(event.getFromBroadcasterUserId()) and utils.isValidStr(event.getFromBroadcasterUserLogin()):
-            await self.__userIdsRepository.setUser(
-                userId = event.getFromBroadcasterUserId(),
-                userName = event.getFromBroadcasterUserLogin()
-            )
+        outcomes = event.getOutcomes()
+        if outcomes is not None and len(outcomes) >= 1:
+            for outcome in outcomes:
+                topPredictors = outcome.getTopPredictors()
 
-        if utils.isValidStr(event.getToBroadcasterUserId()) and utils.isValidStr(event.getToBroadcasterUserLogin()):
-            await self.__userIdsRepository.setUser(
-                userId = event.getToBroadcasterUserId(),
-                userName = event.getToBroadcasterUserLogin()
-            )
-
-        if utils.isValidStr(event.getUserId()) and utils.isValidStr(event.getUserLogin()):
-            await self.__userIdsRepository.setUser(
-                userId = event.getUserId(),
-                userName = event.getUserLogin()
-            )
-
-        if event.getSubGift() is not None:
-            await self.__userIdsRepository.setUser(
-                userId = event.getSubGift().getRecipientUserId(),
-                userName = event.getSubGift().getRecipientUserLogin()
-            )
-
-        if utils.hasItems(event.getOutcomes()):
-            for outcome in event.getOutcomes():
-                if utils.hasItems(outcome.getTopPredictors()):
-                    for topPredictor in outcome.getTopPredictors():
+                if topPredictors is not None and len(topPredictors) >= 1:
+                    for topPredictor in topPredictors:
                         await self.__userIdsRepository.setUser(
                             userId = topPredictor.getUserId(),
                             userName = topPredictor.getUserLogin()
