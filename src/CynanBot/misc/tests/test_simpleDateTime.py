@@ -74,7 +74,7 @@ class TestSimpleDateTime():
     def test__repr(self):
         someDate = utils.getDateTimeFromStr('2023-08-25T04:55:21+00:00')
         sdt = SimpleDateTime(someDate)
-        return str(someDate) == str(sdt)
+        assert str(someDate) == str(sdt)
 
     def test_sub(self):
         someDate = utils.getDateTimeFromStr('2023-08-25T04:55:21+00:00')
