@@ -385,7 +385,7 @@ cutenessRepository: CutenessRepositoryInterface = CutenessRepository(
     userIdsRepository = userIdsRepository
 )
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('CynanBot/emojiHelper/emojiRepository.json'),
+    emojiJsonReader = JsonFileReader('emojiRepository.json'),
     timber = timber
 )
 emojiHelper: EmojiHelperInterface = EmojiHelper(
