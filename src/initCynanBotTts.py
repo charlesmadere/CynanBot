@@ -255,7 +255,7 @@ chatLogger: ChatLoggerInterface = ChatLogger(
     timber = timber
 )
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
-    emojiJsonReader = JsonFileReader('emojiRepository.json'),
+    emojiJsonReader = JsonFileReader('CynanBot/emojiHelper/emojiRepository.json'),
     timber = timber
 )
 emojiHelper: EmojiHelperInterface = EmojiHelper(
