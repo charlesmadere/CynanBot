@@ -7,9 +7,10 @@ from CynanBot.cuteness.cutenessLeaderboardEntry import CutenessLeaderboardEntry
 from CynanBot.cuteness.cutenessLeaderboardHistoryResult import \
     CutenessLeaderboardHistoryResult
 from CynanBot.cuteness.cutenessResult import CutenessResult
+from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 
 
-class CutenessUtils():
+class CutenessUtils(CutenessUtilsInterface):
 
     def __init__(self):
         pass

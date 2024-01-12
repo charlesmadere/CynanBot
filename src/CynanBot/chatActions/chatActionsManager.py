@@ -18,7 +18,7 @@ from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
-from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -40,7 +40,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         supStreamerChatAction: Optional[SupStreamerChatAction],
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
-        twitchUtils: TwitchUtils,
+        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -66,7 +66,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -82,7 +82,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__schubertWalkChatAction: Optional[AbsChatAction] = schubertWalkChatAction
         self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
         self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleMessage(self, message: TwitchMessage):

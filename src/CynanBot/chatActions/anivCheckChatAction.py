@@ -18,7 +18,7 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -34,7 +34,7 @@ class AnivCheckChatAction(AbsChatAction):
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
-        twitchUtils: TwitchUtils,
+        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         timeoutDurationSeconds: int = 60
     ):
@@ -50,7 +50,7 @@ class AnivCheckChatAction(AbsChatAction):
             raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
@@ -65,7 +65,7 @@ class AnivCheckChatAction(AbsChatAction):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__timeoutDurationSeconds: int = timeoutDurationSeconds
 

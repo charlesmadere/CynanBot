@@ -12,9 +12,10 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.outboundMessage import OutboundMessage
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
-class TwitchUtils():
+class TwitchUtils(TwitchUtilsInterface):
 
     def __init__(
         self,

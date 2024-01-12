@@ -9,7 +9,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.user import User
 
 
@@ -71,18 +71,18 @@ class RaidThankEvent(AbsEvent):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchUtils: TwitchUtils
+        twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
@@ -129,7 +129,7 @@ class SubGiftThankingEvent(AbsEvent):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
-        twitchUtils: TwitchUtils
+        twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -137,13 +137,13 @@ class SubGiftThankingEvent(AbsEvent):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
     async def handleEvent(self, channel: TwitchChannel, user: User, tags: Dict[str, Any]) -> bool:
         generalSettings = await self.__generalSettingsRepository.getAllAsync()

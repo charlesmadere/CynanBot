@@ -8,7 +8,7 @@ from CynanBot.misc.timedDict import TimedDict
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
-from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -18,7 +18,7 @@ class CatJamChatAction(AbsChatAction):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        twitchUtils: TwitchUtils,
+        twitchUtils: TwitchUtilsInterface,
         catJamMessage: str = 'catJAM',
         cooldown: timedelta = timedelta(minutes = 20)
     ):
@@ -26,7 +26,7 @@ class CatJamChatAction(AbsChatAction):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(catJamMessage):
             raise ValueError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
@@ -35,7 +35,7 @@ class CatJamChatAction(AbsChatAction):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__catJamMessage: str = catJamMessage
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 

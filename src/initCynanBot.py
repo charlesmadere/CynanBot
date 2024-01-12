@@ -47,7 +47,7 @@ from CynanBot.contentScanner.contentScannerInterface import \
 from CynanBot.cuteness.cutenessRepository import CutenessRepository
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
-from CynanBot.cutenessUtils import CutenessUtils
+from CynanBot.cuteness.cutenessUtils import CutenessUtils
 from CynanBot.cynanBot import CynanBot
 from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
@@ -257,6 +257,7 @@ from CynanBot.twitch.twitchTokensUtils import TwitchTokensUtils
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
 from CynanBot.twitch.websocket.twitchWebsocketClient import \
@@ -434,7 +435,7 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber
 )
-twitchUtils = TwitchUtils(
+twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     sentMessageLogger = sentMessageLogger,
     timber = timber
@@ -888,10 +889,12 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 ##############################################
 
 dependencyHolder = DependencyHolderBuilder(
+    administratorProvider = administratorProvider,
     chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
-    timber = timber
+    timber = timber,
+    twitchUtils = twitchUtils
 )
 
 

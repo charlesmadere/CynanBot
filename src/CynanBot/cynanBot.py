@@ -60,7 +60,7 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
-from CynanBot.cutenessUtils import CutenessUtils
+from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from CynanBot.events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                              SubGiftThankingEvent)
 from CynanBot.funtoon.funtoonRepositoryInterface import \
@@ -204,7 +204,7 @@ from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
-from CynanBot.twitch.twitchUtils import TwitchUtils
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.twitch.twitchWebsocketDataBundleHandler import \
     TwitchWebsocketDataBundleHandler
 from CynanBot.twitch.websocket.twitchWebsocketClientInterface import \
@@ -243,7 +243,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface],
         cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         cutenessRepository: Optional[CutenessRepositoryInterface],
-        cutenessUtils: Optional[CutenessUtils],
+        cutenessUtils: Optional[CutenessUtilsInterface],
         funtoonRepository: Optional[FuntoonRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
@@ -283,7 +283,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
-        twitchUtils: TwitchUtils,
+        twitchUtils: TwitchUtilsInterface,
         twitchWebsocketClient: Optional[TwitchWebsocketClientInterface],
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
@@ -332,7 +332,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtils):
+        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
@@ -410,7 +410,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
             raise ValueError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtils):
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
             raise ValueError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
@@ -444,7 +444,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
-        self.__twitchUtils: TwitchUtils = twitchUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
