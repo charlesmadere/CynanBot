@@ -83,9 +83,9 @@ class EmojiRepository(EmojiRepositoryInterface):
             self.__timber.log('EmojiRepository', f'\"emojis\" field not in jsonContents!')
             return
 
-        emojisList: Optional[List[Dict[str, Any]]] = jsonContents['emojis']
+        emojisList: Optional[List[Dict[str, Any]]] = jsonContents.get('emojis')
 
-        if not isinstance(emojisList, List) or not utils.hasItems(emojisList):
+        if not isinstance(emojisList, List) or not len(emojisList) == 1:
             self.__timber.log('EmojiRepository', f'\"emojis\" field is either malformed or empty!')
             return
 
