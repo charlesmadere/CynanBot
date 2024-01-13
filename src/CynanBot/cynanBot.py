@@ -61,6 +61,7 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
+from CynanBot.dependencyHolder import DependencyHolder
 from CynanBot.events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
                              SubGiftThankingEvent)
 from CynanBot.funtoon.funtoonRepositoryInterface import \
@@ -244,6 +245,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         cutenessRepository: Optional[CutenessRepositoryInterface],
         cutenessUtils: Optional[CutenessUtilsInterface],
+        dependencyHolder: DependencyHolder,
         funtoonRepository: Optional[FuntoonRepositoryInterface],
         funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
         generalSettingsRepository: GeneralSettingsRepository,
@@ -334,6 +336,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
             raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+        elif not isinstance(dependencyHolder, DependencyHolder):
+            raise ValueError(f'dependencyHolder argument is malformed: \"{dependencyHolder}\"')
         elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):

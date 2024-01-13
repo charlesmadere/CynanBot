@@ -895,7 +895,8 @@ dependencyHolder = DependencyHolderBuilder(
     sentMessageLogger = sentMessageLogger,
     timber = timber,
     twitchUtils = twitchUtils
-)
+)\
+    .build()
 
 
 #####################################
@@ -924,6 +925,7 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
+    dependencyHolder = dependencyHolder,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,
