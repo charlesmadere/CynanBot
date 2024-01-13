@@ -8,6 +8,7 @@ from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -25,6 +26,7 @@ class DependencyHolder():
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
+        triviaUtils: Optional[TriviaUtilsInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchUtils: TwitchUtilsInterface,
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
@@ -41,6 +43,8 @@ class DependencyHolder():
             raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
+            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise ValueError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -54,6 +58,7 @@ class DependencyHolder():
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
+        self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
@@ -75,6 +80,9 @@ class DependencyHolder():
 
     def getTimber(self) -> TimberInterface:
         return self.__timber
+
+    def getTriviaUtils(self) -> Optional[TriviaUtilsInterface]:
+        return self.__triviaUtils
 
     def getTwitchPredictionWebsocketUtils(self) -> Optional[TwitchPredictionWebsocketUtilsInterface]:
         return self.__twitchPredictionWebsocketUtils

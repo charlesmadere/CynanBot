@@ -9,6 +9,7 @@ from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -48,6 +49,7 @@ class DependencyHolderBuilder():
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = None
+        self.__triviaUtils: Optional[TriviaUtilsInterface] = None
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = None
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = None
 
@@ -59,6 +61,7 @@ class DependencyHolderBuilder():
             generalSettingsRepository = self.__generalSettingsRepository,
             sentMessageLogger = self.__sentMessageLogger,
             timber = self.__timber,
+            triviaUtils = self.__triviaUtils,
             twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
             twitchUtils = self.__twitchUtils,
             websocketConnectionServer = self.__websocketConnectionServer
@@ -69,6 +72,13 @@ class DependencyHolderBuilder():
             raise ValueError(f'instance argument is malformed: \"{instance}\"')
 
         self.__cutenessUtils = instance
+        return self
+
+    def setTriviaUtils(self, instance: TriviaUtilsInterface) -> Self:
+        if not isinstance(instance, TriviaUtilsInterface):
+            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+
+        self.__triviaUtils = instance
         return self
 
     def setTwitchPredictionWebsocketUtils(self, instance: TwitchPredictionWebsocketUtilsInterface) -> Self:

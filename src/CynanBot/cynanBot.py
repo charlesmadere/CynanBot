@@ -164,7 +164,7 @@ from CynanBot.trivia.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.triviaUtils import TriviaUtils
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
@@ -277,7 +277,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         triviaRepository: Optional[TriviaRepositoryInterface],
         triviaScoreRepository: Optional[TriviaScoreRepositoryInterface],
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
-        triviaUtils: Optional[TriviaUtils],
+        triviaUtils: Optional[TriviaUtilsInterface],
         ttsManager: Optional[TtsManagerInterface],
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchApiService: TwitchApiServiceInterface,
@@ -398,7 +398,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtils):
+        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
             raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
@@ -443,7 +443,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
-        self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
+        self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils

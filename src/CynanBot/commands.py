@@ -109,7 +109,7 @@ from CynanBot.trivia.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
-from CynanBot.triviaUtils import TriviaUtils
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
@@ -394,7 +394,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         answerDelimiter: str = ', '
@@ -409,7 +409,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -423,7 +423,7 @@ class AddTriviaAnswerCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__answerDelimiter: str = answerDelimiter
@@ -720,7 +720,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         triviaBanHelper: TriviaBanHelperInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -734,7 +734,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -746,7 +746,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -921,7 +921,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         timber: TimberInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
@@ -932,7 +932,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
             raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
@@ -941,7 +941,7 @@ class ClearSuperTriviaQueueCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleCommand(self, ctx: TwitchContext):
@@ -974,7 +974,7 @@ class CommandsCommand(AbsCommand):
         self,
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
-        triviaUtils: Optional[TriviaUtils],
+        triviaUtils: Optional[TriviaUtilsInterface],
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         delimiter: str = ', ',
@@ -984,7 +984,7 @@ class CommandsCommand(AbsCommand):
             raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtils):
+        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -997,7 +997,7 @@ class CommandsCommand(AbsCommand):
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__triviaUtils: Optional[TriviaUtils] = triviaUtils
+        self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__delimiter: str = delimiter
@@ -1583,7 +1583,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         answerDelimiter: str = ', '
@@ -1598,7 +1598,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1612,7 +1612,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__answerDelimiter: str = answerDelimiter
@@ -1712,7 +1712,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
         timber: TimberInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -1730,7 +1730,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
         self.__timber: TimberInterface = timber
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -1822,7 +1822,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         administratorProvider: AdministratorProviderInterface,
         timber: TimberInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -1840,7 +1840,7 @@ class GetGlobalTriviaControllersCommand(AbsCommand):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -1868,7 +1868,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
         answerDelimiter: str = ', '
@@ -1883,7 +1883,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -1897,7 +1897,7 @@ class GetTriviaAnswersCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__answerDelimiter: str = answerDelimiter
@@ -1963,7 +1963,7 @@ class GetTriviaControllersCommand(AbsCommand):
         generalSettingsRepository: GeneralSettingsRepository,
         timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -1984,7 +1984,7 @@ class GetTriviaControllersCommand(AbsCommand):
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -2014,7 +2014,7 @@ class GiveCutenessCommand(AbsCommand):
         self,
         cutenessRepository: CutenessRepositoryInterface,
         timber: TimberInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -2023,7 +2023,7 @@ class GiveCutenessCommand(AbsCommand):
             raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -2034,7 +2034,7 @@ class GiveCutenessCommand(AbsCommand):
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__timber: TimberInterface = timber
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -3302,7 +3302,7 @@ class SuperTriviaCommand(AbsCommand):
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -3316,7 +3316,7 @@ class SuperTriviaCommand(AbsCommand):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3328,7 +3328,7 @@ class SuperTriviaCommand(AbsCommand):
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -3579,7 +3579,7 @@ class TriviaInfoCommand(AbsCommand):
         timber: TimberInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -3593,7 +3593,7 @@ class TriviaInfoCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3605,7 +3605,7 @@ class TriviaInfoCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -3670,7 +3670,7 @@ class TriviaScoreCommand(AbsCommand):
         timber: TimberInterface,
         toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface,
         triviaScoreRepository: TriviaScoreRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
@@ -3686,7 +3686,7 @@ class TriviaScoreCommand(AbsCommand):
             raise ValueError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
             raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3702,7 +3702,7 @@ class TriviaScoreCommand(AbsCommand):
         self.__timber: TimberInterface = timber
         self.__toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = toxicTriviaOccurencesRepository
         self.__triviaScoreRepository: TriviaScoreRepositoryInterface = triviaScoreRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -3972,7 +3972,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         triviaBanHelper: TriviaBanHelperInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface,
-        triviaUtils: TriviaUtils,
+        triviaUtils: TriviaUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
@@ -3986,7 +3986,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
             raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif not isinstance(triviaUtils, TriviaUtils):
+        elif not isinstance(triviaUtils, TriviaUtilsInterface):
             raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
@@ -3998,7 +3998,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
         self.__triviaHistoryRepository: TriviaHistoryRepositoryInterface = triviaHistoryRepository
-        self.__triviaUtils: TriviaUtils = triviaUtils
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 

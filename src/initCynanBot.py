@@ -224,8 +224,9 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
+from CynanBot.trivia.triviaUtils import TriviaUtils
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
-from CynanBot.triviaUtils import TriviaUtils
 from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
@@ -572,7 +573,7 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
-triviaUtils = TriviaUtils(
+triviaUtils: TriviaUtilsInterface = TriviaUtils(
     administratorProvider = administratorProvider,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
