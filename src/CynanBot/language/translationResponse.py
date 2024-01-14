@@ -23,7 +23,7 @@ class TranslationResponse():
             raise ValueError(f'originalText argument is malformed: \"{originalText}\"')
         elif not utils.isValidStr(translatedText):
             raise ValueError(f'translatedText argument is malformed: \"{translatedText}\"')
-        elif translationApiSource is None:
+        elif not isinstance(translationApiSource, TranslationApiSource):
             raise ValueError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
         self.__originalLanguage: Optional[LanguageEntry] = originalLanguage
