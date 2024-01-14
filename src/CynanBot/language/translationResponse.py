@@ -47,12 +47,6 @@ class TranslationResponse():
     def getTranslationApiSource(self) -> TranslationApiSource:
         return self.__translationApiSource
 
-    def hasOriginalLanguage(self) -> bool:
-        return self.__originalLanguage is not None
-
-    def hasTranslatedLanguage(self) -> bool:
-        return self.__translatedLanguage is not None
-
     def toStr(self) -> str:
         prefixText = ''
         originalLanguage = self.__originalLanguage
