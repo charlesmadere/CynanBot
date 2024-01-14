@@ -1,6 +1,8 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -14,6 +16,7 @@ class AddRecurringActionCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        languagesRepository: LanguagesRepositoryInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -21,6 +24,8 @@ class AddRecurringActionCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
+            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -31,6 +36,7 @@ class AddRecurringActionCommand(AbsChatCommand):
             raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
