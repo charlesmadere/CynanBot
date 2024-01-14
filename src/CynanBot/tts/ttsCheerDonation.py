@@ -21,6 +21,10 @@ class TtsCheerDonation(TtsDonation):
     def getType(self) -> TtsDonationType:
         return TtsDonationType.CHEER
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def toDictionary(self) -> Dict[str, Any]:
         return {
             'bits': self.__bits,

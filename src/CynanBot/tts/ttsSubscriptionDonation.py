@@ -37,6 +37,10 @@ class TtsSubscriptionDonation(TtsDonation):
     def isGift(self) -> bool:
         return self.__isGift
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def toDictionary(self) -> Dict[str, Any]:
         return {
             'isAnonymous': self.__isAnonymous,

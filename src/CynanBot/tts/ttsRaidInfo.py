@@ -16,6 +16,10 @@ class TtsRaidInfo():
     def getViewers(self) -> int:
         return self.__viewers
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def toDictionary(self) -> Dict[str, Any]:
         return {
             'viewers': self.__viewers

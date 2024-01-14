@@ -55,17 +55,15 @@ class TtsEvent():
         return self.__userName
 
     def __repr__(self) -> str:
-        dictionary: Dict[str, Any] = {
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'donation': self.__donation,
             'message': self.__message,
+            'raidInfo': self.__raidInfo,
             'twitchChannel': self.__twitchChannel,
             'userId': self.__userId,
             'userName': self.__userName
         }
-
-        if self.__donation is not None:
-            dictionary['donation'] = self.__donation.toDictionary()
-
-        if self.__raidInfo is not None:
-            dictionary['raidInfo'] = self.__raidInfo.toDictionary()
-
-        return f'{dictionary}'
