@@ -34,12 +34,6 @@ class EmojiRepository(EmojiRepositoryInterface):
             raise ValueError(f'emoji argument is malformed: \"{emoji}\"')
         elif not utils.isValidStr(emoji):
             return None
-        else:
-            return await self.__fetchEmojiInfo(emoji)
-
-    async def __fetchEmojiInfo(self, emoji: Optional[str]) -> Optional[EmojiInfo]:
-        if not utils.isValidStr(emoji):
-            raise ValueError(f'emoji argument is malformed: \"{emoji}\"')
 
         await self.__readJson()
         return self.__emojiInfoData.get(emoji)
