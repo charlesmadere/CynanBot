@@ -42,7 +42,7 @@ class EmojiRepository(EmojiRepositoryInterface):
         self,
         emojiDict: Optional[Dict[str, Any]]
     ) -> Optional[EmojiInfo]:
-        if not isinstance(emojiDict, Dict) or not utils.hasItems(emojiDict):
+        if not isinstance(emojiDict, Dict) or len(emojiDict) == 0:
             return None
 
         codes: Set[str] = set()
