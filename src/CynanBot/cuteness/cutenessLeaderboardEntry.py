@@ -21,7 +21,7 @@ class CutenessLeaderboardEntry(CutenessEntry):
 
         if not utils.isValidInt(rank):
             raise ValueError(f'rank argument is malformed: \"{rank}\"')
-        elif rank < 1 or rank > utils.getLongMaxSafeSize():
+        elif rank < 1 or rank > utils.getIntMaxSafeSize():
             raise ValueError(f'rank argument is out of bounds: {rank}')
 
         self.__rank: int = rank

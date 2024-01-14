@@ -29,6 +29,3 @@ class CutenessLeaderboardResult():
 
     def getSpecificLookupCutenessResult(self) -> Optional[CutenessResult]:
         return self.__specificLookupCutenessResult
-
-    def hasSpecificLookupCutenessResult(self) -> bool:
-        return self.__specificLookupCutenessResult is not None and self.__specificLookupCutenessResult.hasCuteness()

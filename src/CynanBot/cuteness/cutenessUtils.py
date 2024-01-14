@@ -126,7 +126,8 @@ class CutenessUtils(CutenessUtilsInterface):
         if not isinstance(entry, CutenessLeaderboardEntry):
             raise ValueError(f'result argument is malformed: \"{entry}\"')
 
-        rankStr: str = ''
+        rankStr = ''
+
         if entry.getRank() == 1:
             rankStr = '🥇'
         elif entry.getRank() == 2:
