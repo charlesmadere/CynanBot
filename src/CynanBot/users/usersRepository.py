@@ -183,16 +183,21 @@ class UsersRepository(UsersRepositoryInterface):
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
             isSuperTriviaGameEnabled = utils.getBoolFromDict(userJson, 'superTriviaGameEnabled', isSuperTriviaGameEnabled)
-            superTriviaCheerTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaCheerTriggerAmount', 250)
-            superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount', 1)
-            superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 1)
+
+            if 'superTriviaCheerTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaCheerTriggerAmount')):
+                superTriviaCheerTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaCheerTriggerAmount')
+
+            if 'superTriviaSubscribeTriggerAmount' in userJson and utils.isValidNum(userJson.get('superTriviaSubscribeTriggerAmount')):
+                superTriviaSubscribeTriggerAmount = utils.getFloatFromDict(userJson, 'superTriviaSubscribeTriggerAmount')
+
+            superTriviaCheerTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaCheerTriggerMaximum', 5)
             superTriviaGamePoints = userJson.get('superTriviaGamePoints')
             superTriviaGameRewardId = userJson.get('superTriviaGameRewardId')
             superTriviaGameShinyMultiplier = userJson.get('superTriviaGameShinyMultiplier')
             superTriviaGameToxicMultiplier = userJson.get('superTriviaGameToxicMultiplier')
             superTriviaGameToxicPunishmentMultiplier = userJson.get('superTriviaGameToxicPunishmentMultiplier')
             superTriviaPerUserAttempts = userJson.get('superTriviaPerUserAttempts')
-            superTriviaSubscribeTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaSubscribeTriggerMaximum', 2)
+            superTriviaSubscribeTriggerMaximum = utils.getIntFromDict(userJson, 'superTriviaSubscribeTriggerMaximum', 5)
             triviaGamePoints = userJson.get('triviaGamePoints')
             triviaGameShinyMultiplier = userJson.get('triviaGameShinyMultiplier')
             triviaGameRewardId = userJson.get('triviaGameRewardId')
