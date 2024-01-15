@@ -427,9 +427,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             try:
                 async with websockets.connect(twitchWebsocketUrl) as websocket:
                     async for message in websocket:
-                        dataBundles = await self.__parseMessageToDataBundlesFor(message, user)
+                        dataBundles = await self.__parseMessageToDataBundlesFor(
+                            message = message,
+                            user = user
+                        )
 
-                        if not utils.hasItems(dataBundles):
+                        if dataBundles is None or len(dataBundles) == 0:
                             continue
 
                         for dataBundle in dataBundles:
