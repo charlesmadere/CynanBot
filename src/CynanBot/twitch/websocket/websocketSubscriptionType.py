@@ -7,6 +7,9 @@ import CynanBot.misc.utils as utils
 class WebsocketSubscriptionType(Enum):
 
     CHANNEL_POINTS_REDEMPTION = auto()
+    CHANNEL_POLL_BEGIN = auto()
+    CHANNEL_POLL_END = auto()
+    CHANNEL_POLL_PROGRESS = auto()
     CHANNEL_PREDICTION_BEGIN = auto()
     CHANNEL_PREDICTION_END = auto()
     CHANNEL_PREDICTION_LOCK = auto()
@@ -28,8 +31,12 @@ class WebsocketSubscriptionType(Enum):
 
         if text == 'channel.channel_points_custom_reward_redemption.add':
             return WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
-        elif text == 'channel.cheer':
-            return WebsocketSubscriptionType.CHEER
+        elif text == 'channel.poll.begin':
+            return WebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+        elif text == 'channel.poll.end':
+            return WebsocketSubscriptionType.CHANNEL_POLL_END
+        elif text == 'channel.poll.progress':
+            return WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
         elif text == 'channel.prediction.begin':
             return WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
         elif text == 'channel.prediction.end':
@@ -40,6 +47,8 @@ class WebsocketSubscriptionType(Enum):
             return WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
         elif text == 'channel.update':
             return WebsocketSubscriptionType.CHANNEL_UPDATE
+        elif text == 'channel.cheer':
+            return WebsocketSubscriptionType.CHEER
         elif text == 'channel.follow':
             return WebsocketSubscriptionType.FOLLOW
         elif text == 'channel.raid':
@@ -55,6 +64,12 @@ class WebsocketSubscriptionType(Enum):
 
     def getVersion(self) -> str:
         if self is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
+            return '1'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+            return '1'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_END:
+            return '1'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
             return '1'
         elif self is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return '1'
@@ -84,6 +99,12 @@ class WebsocketSubscriptionType(Enum):
     def toStr(self) -> str:
         if self is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
             return 'channel.channel_points_custom_reward_redemption.add'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+            return 'channel.poll.begin'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_END:
+            return 'channel.poll.end'
+        elif self is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
+            return 'channel.poll.progress'
         elif self is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return 'channel.prediction.begin'
         elif self is WebsocketSubscriptionType.CHANNEL_PREDICTION_END:

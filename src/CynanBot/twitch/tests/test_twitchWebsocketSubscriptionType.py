@@ -8,6 +8,18 @@ class TestTwitchWebsocketSubscriptionType():
         result = WebsocketSubscriptionType.fromStr('channel.channel_points_custom_reward_redemption.add')
         assert result is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
 
+    def test_fromStr_withChannelPollBeginString(self):
+        result = WebsocketSubscriptionType.fromStr('channel.poll.begin')
+        assert result is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+
+    def test_fromStr_withChannelPollEndString(self):
+        result = WebsocketSubscriptionType.fromStr('channel.poll.end')
+        assert result is WebsocketSubscriptionType.CHANNEL_POLL_END
+
+    def test_fromStr_withChannelPollProgressString(self):
+        result = WebsocketSubscriptionType.fromStr('channel.poll.progress')
+        assert result is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+
     def test_fromStr_withChannelPredictionBeginString(self):
         result = WebsocketSubscriptionType.fromStr('channel.prediction.begin')
         assert result is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
@@ -68,6 +80,18 @@ class TestTwitchWebsocketSubscriptionType():
         version = WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION.getVersion()
         assert version == '1'
 
+    def test_getVersion_withChannelPollBegin(self):
+        version = WebsocketSubscriptionType.CHANNEL_POLL_BEGIN.getVersion()
+        assert version == '1'
+
+    def test_getVersion_withChannelPollEnd(self):
+        version = WebsocketSubscriptionType.CHANNEL_POLL_END.getVersion()
+        assert version == '1'
+
+    def test_getVersion_withChannelPollProgress(self):
+        version = WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS.getVersion()
+        assert version == '1'
+
     def test_getVersion_withChannelPredictionBegin(self):
         version = WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN.getVersion()
         assert version == '1'
@@ -115,6 +139,18 @@ class TestTwitchWebsocketSubscriptionType():
     def test_toStr_withChannelPointsRedemption(self):
         string = WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION.toStr()
         assert string == 'channel.channel_points_custom_reward_redemption.add'
+
+    def test_toStr_withChannelPollBegin(self):
+        string = WebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+        assert string == 'channel.poll.begin'
+
+    def test_toStr_withChannelPollEnd(self):
+        string = WebsocketSubscriptionType.CHANNEL_POLL_END
+        assert string == 'channel.poll.end'
+
+    def test_toStr_withChannelPollProgress(self):
+        string = WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+        assert string == 'channel.poll.progress'
 
     def test_toStr_withChannelPredictionBegin(self):
         string = WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN.toStr()

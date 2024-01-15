@@ -52,6 +52,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         websocketSleepTimeSeconds: float = 3,
         subscriptionTypes: Set[WebsocketSubscriptionType] = {
             WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
+            WebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
+            WebsocketSubscriptionType.CHANNEL_POLL_END,
+            WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS,
             WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
             WebsocketSubscriptionType.CHANNEL_PREDICTION_END,
             WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK,
@@ -186,6 +189,12 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if subscriptionType is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
+            return WebsocketCondition(
+                broadcasterUserId = user.getUserId()
+            )
+        elif subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN or \
+                subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_END or \
+                subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
             return WebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
