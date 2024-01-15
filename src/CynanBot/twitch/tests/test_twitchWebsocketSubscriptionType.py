@@ -141,15 +141,15 @@ class TestTwitchWebsocketSubscriptionType():
         assert string == 'channel.channel_points_custom_reward_redemption.add'
 
     def test_toStr_withChannelPollBegin(self):
-        string = WebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+        string = WebsocketSubscriptionType.CHANNEL_POLL_BEGIN.toStr()
         assert string == 'channel.poll.begin'
 
     def test_toStr_withChannelPollEnd(self):
-        string = WebsocketSubscriptionType.CHANNEL_POLL_END
+        string = WebsocketSubscriptionType.CHANNEL_POLL_END.toStr()
         assert string == 'channel.poll.end'
 
     def test_toStr_withChannelPollProgress(self):
-        string = WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+        string = WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS.toStr()
         assert string == 'channel.poll.progress'
 
     def test_toStr_withChannelPredictionBegin(self):
