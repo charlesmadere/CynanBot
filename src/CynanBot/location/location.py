@@ -18,7 +18,7 @@ class Location():
         elif not utils.isValidNum(longitude):
             raise ValueError(f'longitude argument is malformed: \"{longitude}\"')
         elif not utils.isValidStr(locationId):
-            raise ValueError(f'id_ argument is malformed: \"{locationId}\"')
+            raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
         elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
         elif not isinstance(timeZone, tzinfo):
