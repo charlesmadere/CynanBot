@@ -1,4 +1,5 @@
 from datetime import tzinfo
+from typing import Any, Dict
 
 import CynanBot.misc.utils as utils
 
@@ -44,3 +45,16 @@ class Location():
 
     def getTimeZone(self) -> tzinfo:
         return self.__timeZone
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'latitude': self.__latitude,
+            'locationId': self.__locationId,
+            'longitude': self.__longitude,
+            'name': self.__name,
+            'timeZone': self.__timeZone
+        }
