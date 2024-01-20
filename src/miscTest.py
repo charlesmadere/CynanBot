@@ -12,7 +12,20 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+    SoundPlayerHelperInterface
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
+    SoundPlayerSettingsRepository
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.storage.linesStaticReader import LinesStaticReader
+from CynanBot.systemCommandHelper.systemCommandHelper import \
+    SystemCommandHelper
+from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
+    SystemCommandHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
@@ -42,6 +55,20 @@ triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
 )
 
+soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
+    settingsJsonReader = JsonStaticReader(dict())
+)
+
+systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
+    timber = timber
+)
+
+soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    systemCommandHelper = systemCommandHelper,
+    timber = timber
+)
+
 eventLoop = asyncio.get_event_loop()
 
 async def main():
@@ -49,8 +76,12 @@ async def main():
     # result = await triviaAnswerCompiler.compileTextAnswersList([ 'Garfield the cat' ])
     # print(f'result=\"{result}\"')
     pass
-    result = await anivContentScanner.scan('(insanefirebat)')
-    print(f'{result=}')
+    # result = await anivContentScanner.scan('(insanefirebat)')
+    # print(f'{result=}')
+    pass
+    await soundPlayerHelper.play(SoundAlert.SUBSCRIBE)
+    print('sleep')
+    await asyncio.sleep(10000)
     pass
 
 eventLoop.run_until_complete(main())
