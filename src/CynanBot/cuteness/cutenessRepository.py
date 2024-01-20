@@ -157,8 +157,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
@@ -204,7 +202,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             twitchChannel, userId
         )
 
-        totalCuteness: int = 0
+        totalCuteness = 0
 
         if utils.hasItems(record):
             # this should be impossible at this point, but let's just be safe
