@@ -44,7 +44,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
                 fut = process.communicate(),
                 timeout = timeoutSeconds
             )
-        except (AsyncioCancelledError, Exception) as e:
+        except BaseException as e:
             exception = e
 
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):

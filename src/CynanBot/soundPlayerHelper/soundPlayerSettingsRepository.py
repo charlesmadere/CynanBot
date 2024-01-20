@@ -29,20 +29,20 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
         if soundAlert is SoundAlert.CHEER:
             return utils.getStrFromDict(
                 d = jsonContents,
-                key = 'cheerPath',
-                fallback = 'Bit Alert.wav'
+                key = 'cheerFileName',
+                fallback = 'src/Bit Alert.wav'
             )
         elif soundAlert is SoundAlert.RAID:
             return utils.getStrFromDict(
                 d = jsonContents,
-                key = 'raidPath',
-                fallback = 'Raid Alert.wav'
+                key = 'raidFileName',
+                fallback = 'src/Raid Alert.wav'
             )
         elif soundAlert is SoundAlert.SUBSCRIBE:
             return utils.getStrFromDict(
                 d = jsonContents,
-                key = 'subscribePath',
-                fallback = 'Subscriber Alert.wav'
+                key = 'subscribeFileName',
+                fallback = 'src/Subscriber Alert.wav'
             )
         else:
             raise RuntimeError(f'Sound path for SoundAlert \"{soundAlert}\" is undefined!')
