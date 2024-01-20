@@ -13,7 +13,7 @@ class AirQualityIndex(Enum):
 
     @classmethod
     def fromInt(cls, airQualityIndex: int):
-        if not utils.isValidNum(airQualityIndex):
+        if not utils.isValidInt(airQualityIndex):
             raise ValueError(f'airQualityIndex argument is malformed: \"{airQualityIndex}\"')
 
         if airQualityIndex <= 1:
