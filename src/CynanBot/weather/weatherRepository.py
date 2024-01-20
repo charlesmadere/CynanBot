@@ -236,6 +236,7 @@ class WeatherRepository(WeatherRepositoryInterface):
             alerts = alerts,
             conditions = conditions,
             tomorrowsConditions = tomorrowsConditions,
+            locationId = location.getLocationId(),
             uvIndex = uvIndex
         )
 
