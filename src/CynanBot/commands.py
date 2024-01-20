@@ -1251,7 +1251,7 @@ class CutenessCommand(AbsCommand):
         entries = result.getEntries()
 
         if not utils.hasItems(entries):
-            return f'{result.getCutenessDate().toStr()} Leaderboard is empty 😿'
+            return f'{result.getCutenessDate().getHumanString()} Leaderboard is empty 😿'
 
         specificLookupText: Optional[str] = None
         specificLookupCutenessResult = result.getSpecificLookupCutenessResult()
@@ -1267,9 +1267,9 @@ class CutenessCommand(AbsCommand):
         )
 
         if utils.isValidStr(specificLookupText):
-            return f'{specificLookupText}, and the {result.getCutenessDate().toStr()} Leaderboard is: {leaderboard} ✨'
+            return f'{specificLookupText}, and the {result.getCutenessDate().getHumanString()} Leaderboard is: {leaderboard} ✨'
         else:
-            return f'{result.getCutenessDate().toStr()} Leaderboard {leaderboard} ✨'
+            return f'{result.getCutenessDate().getHumanString()} Leaderboard {leaderboard} ✨'
 
     def __cutenessResultToStr(self, result: CutenessResult) -> str:
         if not isinstance(result, CutenessResult):
@@ -1278,9 +1278,9 @@ class CutenessCommand(AbsCommand):
         cuteness = result.getCuteness()
 
         if utils.isValidInt(cuteness) and cuteness >= 1:
-            return f'{result.getUserName()}\'s {result.getCutenessDate().toStr()} cuteness is {result.getCutenessStr()} ✨'
+            return f'{result.getUserName()}\'s {result.getCutenessDate().getHumanString()} cuteness is {result.getCutenessStr()} ✨'
         else:
-            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().toStr()}'
+            return f'{result.getUserName()} has no cuteness in {result.getCutenessDate().getHumanString()}'
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())

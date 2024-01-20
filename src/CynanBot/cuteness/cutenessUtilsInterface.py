@@ -35,7 +35,3 @@ class CutenessUtilsInterface(ABC):
     @abstractmethod
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         pass
-
-    @abstractmethod
-    def getLeaderboardPlacement(self, entry: CutenessLeaderboardEntry) -> str:
-        pass

@@ -23,6 +23,10 @@ class CutenessHistoryResult():
             raise ValueError(f'bestCuteness argument is malformed: \"{bestCuteness}\"')
         elif totalCuteness is not None and not utils.isValidInt(totalCuteness):
             raise ValueError(f'totalCuteness argument is malformed: \"{totalCuteness}\"')
+        elif totalCuteness is not None and (totalCuteness < 0 or totalCuteness > utils.getLongMaxSafeSize()):
+            raise ValueError(f'totalCuteness argument is out of bounds: {totalCuteness}')
+        elif entries is not None and not isinstance(entries, List):
+            raise ValueError(f'entries argument is malformed: \"{entries}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName
@@ -40,10 +44,19 @@ class CutenessHistoryResult():
         return self.__totalCuteness
 
     def getTotalCutenessStr(self) -> str:
-        return locale.format_string("%d", self.__totalCuteness, grouping = True)
+        totalCuteness = self.requireTotalCuteness()
+        return locale.format_string("%d", totalCuteness, grouping = True)
 
     def getUserId(self) -> str:
         return self.__userId
 
     def getUserName(self) -> str:
         return self.__userName
+
+    def requireTotalCuteness(self) -> int:
+        totalCuteness = self.__totalCuteness
+
+        if not utils.isValidInt(totalCuteness):
+            raise RuntimeError(f'No totalCuteness value is available: {totalCuteness}')
+
+        return totalCuteness

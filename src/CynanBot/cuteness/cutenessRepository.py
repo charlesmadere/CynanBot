@@ -40,7 +40,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise ValueError(f'historyLeaderboardSize argument is out of bounds: {historyLeaderboardSize}')
         elif not utils.isValidInt(historySize):
             raise ValueError(f'historySize argument is malformed: \"{historySize}\"')
-        elif historySize < 2 or historySize > 12:
+        elif historySize < 3 or historySize > 12:
             raise ValueError(f'historySize argument is out of bounds: {historySize}')
         elif not utils.isValidInt(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
@@ -82,7 +82,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 WHERE cuteness.twitchchannel = $1 AND cuteness.userid = $2 AND cuteness.utcyearandmonth = $3
                 LIMIT 1
             ''',
-            twitchChannel, userId, cutenessDate.getStr()
+            twitchChannel, userId, cutenessDate.getDatabaseString()
         )
 
         await connection.close()
@@ -272,7 +272,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 WHERE twitchchannel = $1 AND userid = $2 AND utcyearandmonth = $3
                 LIMIT 1
             ''',
-            twitchChannel, userId, cutenessDate.getStr()
+            twitchChannel, userId, cutenessDate.getDatabaseString()
         )
 
         oldCuteness = 0
@@ -293,7 +293,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (twitchchannel, userid, utcyearandmonth) DO UPDATE SET cuteness = EXCLUDED.cuteness
             ''',
-            newCuteness, twitchChannel, userId, cutenessDate.getStr()
+            newCuteness, twitchChannel, userId, cutenessDate.getDatabaseString()
         )
 
         await connection.close()
@@ -326,7 +326,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 ORDER BY cuteness.cuteness DESC
                 LIMIT $4
             ''',
-            twitchChannel, cutenessDate.getStr(), twitchChannelUserId, self.__leaderboardSize
+            twitchChannel, cutenessDate.getDatabaseString(), twitchChannelUserId, self.__leaderboardSize
         )
 
         await connection.close()
@@ -388,7 +388,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                 ORDER BY utcyearandmonth DESC
                 LIMIT $3
             ''',
-            twitchChannel, CutenessDate().getStr(), self.__historyLeaderboardSize
+            twitchChannel, CutenessDate().getDatabaseString(), self.__historyLeaderboardSize
         )
 
         if not utils.hasItems(records):
@@ -407,7 +407,7 @@ class CutenessRepository(CutenessRepositoryInterface):
                     ORDER BY cuteness.cuteness DESC
                     LIMIT $4
                 ''',
-                twitchChannel, twitchChannelUserId, cutenessDate.getStr(), self.__historyLeaderboardSize
+                twitchChannel, twitchChannelUserId, cutenessDate.getDatabaseString(), self.__historyLeaderboardSize
             )
 
             if not utils.hasItems(monthRecords):
