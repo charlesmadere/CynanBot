@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
@@ -28,3 +29,14 @@ class AbsTriviaEvent(ABC):
     @abstractmethod
     def getTriviaEventType(self) -> TriviaEventType:
         pass
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'actionId': self.__actionId,
+            'eventId': self.__eventId,
+            'triviaEventType': self.getTriviaEventType()
+        }

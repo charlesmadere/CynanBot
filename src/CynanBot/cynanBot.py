@@ -866,10 +866,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         await self.join_channels(event.getChannels())
 
     async def onNewRecurringActionEvent(self, event: RecurringEvent):
-        eventType = event.getEventType()
-        self.__timber.log('CynanBot', f'Received new recurring action event: \"{eventType}\"')
-
         await self.wait_for_ready()
+
+        self.__timber.log('CynanBot', f'Received new recurring action event: \"{event}\"')
+        eventType = event.getEventType()
 
         if eventType is RecurringEventType.SUPER_TRIVIA:
             await self.__handleSuperTriviaRecurringActionEvent(event)
@@ -900,10 +900,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         await self.__twitchUtils.safeSend(twitchChannel, event.getWordOfTheDayResponse().toStr())
 
     async def onNewTriviaEvent(self, event: AbsTriviaEvent):
-        eventType = event.getTriviaEventType()
-        self.__timber.log('CynanBot', f'Received new trivia event: \"{eventType}\"')
-
         await self.wait_for_ready()
+
+        self.__timber.log('CynanBot', f'Received new trivia event: \"{event}\"')
+        eventType = event.getTriviaEventType()
 
         if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
