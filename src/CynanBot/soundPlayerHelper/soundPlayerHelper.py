@@ -34,22 +34,19 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
         if not isinstance(soundAlert, SoundAlert):
             raise ValueError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
-        path = await self.__soundPlayerSettingsRepository.getFileNameFor(soundAlert)
+        filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
 
-        if not utils.isValidStr(path):
+        if not utils.isValidStr(filePath):
             return
 
-        path = utils.cleanPath(path)
+        filePath = utils.cleanPath(filePath)
 
-        if not await aiofiles.ospath.exists(path):
-            self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} does not exist ({path=})')
+        if not await aiofiles.ospath.exists(filePath):
+            self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} does not exist ({filePath=})')
             return
-        elif not await aiofiles.ospath.isfile(path):
-            self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} is not a file ({path=})')
+        elif not await aiofiles.ospath.isfile(filePath):
+            self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} is not a file ({filePath=})')
             return
 
-        self.__timber.log('SoundPlayerHelper', f'Playing sound alert {soundAlert} ({path=})...')
-
-        await self.__systemCommandHelper.executeCommand(
-            command = f'(New-Object Media.SoundPlayer \'{path}\').PlaySync();'
-        )
+        self.__timber.log('SoundPlayerHelper', f'Playing sound alert {soundAlert} ({filePath=})...')
+        await self.__systemCommandHelper.executeVlcCommand(filePath)

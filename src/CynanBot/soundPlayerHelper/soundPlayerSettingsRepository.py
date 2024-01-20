@@ -20,7 +20,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__settingsCache = None
 
-    async def getFileNameFor(self, soundAlert: SoundAlert) -> Optional[str]:
+    async def getFilePathFor(self, soundAlert: SoundAlert) -> Optional[str]:
         if not isinstance(soundAlert, SoundAlert):
             raise ValueError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 

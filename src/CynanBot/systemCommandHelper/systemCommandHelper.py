@@ -1,10 +1,12 @@
 import asyncio
+import traceback
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from typing import ByteString, Optional, Tuple
 
 import psutil
+import vlc
 
 import CynanBot.misc.utils as utils
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
@@ -56,6 +58,24 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             outputString = outputTuple[1].decode('utf-8').strip()
 
         self.__timber.log('SystemCommandHelper', f'Ran system command ({command}) ({outputString=}) ({exception=})')
+
+    async def executeVlcCommand(self, filePath: str):
+        if not utils.isValidStr(filePath):
+            self.__timber.log('SystemCommandHelper', f'Received malformed filePath argument: \"{filePath}\"')
+            return
+
+        exception: Optional[Exception] = None
+
+        try:
+            player = vlc.MediaPlayer()
+            player.play()
+        except Exception as e:
+            exception = e
+
+        if exception is None:
+            self.__timber.log('SystemCommandHelper', f'Ran VLC command ({filePath=})')
+        else:
+            self.__timber.log('SystemCommandHelper', f'Attempted to run VLC command ({filePath=}) but encountered an exception: {exception}', exception, traceback.format_exc())
 
     async def __killProcess(self, process: Optional[Process]):
         if process is None:
