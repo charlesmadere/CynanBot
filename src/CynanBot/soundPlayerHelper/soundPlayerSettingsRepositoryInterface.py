@@ -8,5 +8,5 @@ from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 class SoundPlayerSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def getSoundPathFor(self, soundAlert: SoundAlert) -> Optional[str]:
+    async def getFileNameFor(self, soundAlert: SoundAlert) -> Optional[str]:
         pass

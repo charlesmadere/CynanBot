@@ -34,7 +34,7 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
         if not isinstance(soundAlert, SoundAlert):
             raise ValueError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
-        path = await self.__soundPlayerSettingsRepository.getSoundPathFor(soundAlert)
+        path = await self.__soundPlayerSettingsRepository.getFileNameFor(soundAlert)
 
         if not utils.isValidStr(path):
             return
@@ -43,6 +43,9 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
 
         if not await aiofiles.ospath.exists(path):
             self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} does not exist ({path=})')
+            return
+        elif not await aiofiles.ospath.isfile(path):
+            self.__timber.log('SoundPlayerHelper', f'File for sound alert {soundAlert} is not a file ({path=})')
             return
 
         self.__timber.log('SoundPlayerHelper', f'Playing sound alert {soundAlert} ({path=})...')
