@@ -202,11 +202,11 @@ class CutenessRepository(CutenessRepositoryInterface):
             twitchChannel, userId
         )
 
-        totalCuteness = 0
+        totalCuteness: int = 0
 
         if utils.hasItems(record):
             # this should be impossible at this point, but let's just be safe
-            totalCuteness = record[0]
+            totalCuteness = int(round(record[0]))
 
         record = await connection.fetchRow(
             '''
