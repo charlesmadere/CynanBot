@@ -67,7 +67,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
         exception: Optional[Exception] = None
 
         try:
-            player = vlc.MediaPlayer()
+            player = vlc.MediaPlayer(filePath)
             player.play()
         except Exception as e:
             exception = e
