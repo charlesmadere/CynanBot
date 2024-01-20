@@ -6,7 +6,15 @@ If you'd like to add CynanBot to your Twitch stream, please talk to me on Discor
 
 ---
 
-to install:
+## Python
+
+At this time, the minimum required Python version is `3.11`.
+
+---
+
+## Installation
+
+To install:
 ```
 python -m pip install pipenv
 python -m pipenv install
