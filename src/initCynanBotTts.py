@@ -7,6 +7,8 @@ from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
+from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
+from CynanBot.vlcHelper.vlcHelper import VlcHelper
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
@@ -303,6 +305,9 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     sentMessageLogger = sentMessageLogger,
     timber = timber
 )
+vlcHelper: VlcHelperInterface = VlcHelper(
+    timber = timber
+)
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
@@ -330,9 +335,10 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    systemCommandHelper = systemCommandHelper,
-    timber = timber
+    timber = timber,
+    vlcHelper = vlcHelper
 )
 
 ttsManager: Optional[TtsManagerInterface] = None
@@ -437,6 +443,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 
 dependencyHolder = DependencyHolderBuilder(
     administratorProvider = administratorProvider,
+    backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,

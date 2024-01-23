@@ -5,7 +5,7 @@ from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
-from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 
 
 class IncorrectAnswerTriviaEvent(AbsTriviaEvent):

@@ -38,7 +38,7 @@ from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
@@ -74,7 +74,7 @@ from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper

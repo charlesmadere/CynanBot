@@ -25,27 +25,33 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
             raise ValueError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
         jsonContents = await self.__readJson()
+        filePath: Optional[str] = None
 
         if soundAlert is SoundAlert.CHEER:
-            return utils.getStrFromDict(
+            filePath = utils.getStrFromDict(
                 d = jsonContents,
-                key = 'cheerFileName',
-                fallback = 'src/Bit Alert.wav'
+                key = 'cheerFilePath',
+                fallback = 'Cheer Alert.mp3'
             )
         elif soundAlert is SoundAlert.RAID:
-            return utils.getStrFromDict(
+            filePath = utils.getStrFromDict(
                 d = jsonContents,
-                key = 'raidFileName',
-                fallback = 'src/Raid Alert.wav'
+                key = 'raidFilePath',
+                fallback = 'Raid Alert.mp3'
             )
         elif soundAlert is SoundAlert.SUBSCRIBE:
-            return utils.getStrFromDict(
+            filePath = utils.getStrFromDict(
                 d = jsonContents,
-                key = 'subscribeFileName',
-                fallback = 'src/Subscriber Alert.wav'
+                key = 'subscribeFilePath',
+                fallback = 'Subscribe Alert.mp3'
             )
         else:
             raise RuntimeError(f'Sound path for SoundAlert \"{soundAlert}\" is undefined!')
+
+        if not utils.isValidStr(filePath):
+            return None
+
+        return utils.cleanPath(filePath)
 
     async def __readJson(self) -> Dict[str, Any]:
         if self.__settingsCache is not None:

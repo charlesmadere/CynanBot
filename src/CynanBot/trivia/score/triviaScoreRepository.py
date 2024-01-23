@@ -2,9 +2,9 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.trivia.triviaScoreRepositoryInterface import \
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
-from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 
 
 class TriviaScoreRepository(TriviaScoreRepositoryInterface):

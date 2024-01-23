@@ -160,7 +160,7 @@ from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionReposito
     OpenTriviaDatabaseTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBot.trivia.triviaScoreRepositoryInterface import \
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface

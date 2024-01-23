@@ -3,6 +3,8 @@ from typing import Optional
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
@@ -21,6 +23,7 @@ class DependencyHolder():
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        backgroundTaskHelper: BackgroundTaskHelper,
         chatLogger: ChatLoggerInterface,
         cutenessUtils: Optional[CutenessUtilsInterface],
         generalSettingsRepository: GeneralSettingsRepository,
@@ -29,30 +32,36 @@ class DependencyHolder():
         triviaUtils: Optional[TriviaUtilsInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchUtils: TwitchUtilsInterface,
+        vlcHelper: Optional[VlcHelperInterface],
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
-            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise ValueError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
+            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
-            raise ValueError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
+            raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
-            raise ValueError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
+            raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif vlcHelper is not None and not isinstance(vlcHelper, VlcHelperInterface):
+            raise TypeError(f'vlcHelper argument is malformed: \"{vlcHelper}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
+            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = cutenessUtils
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -61,10 +70,14 @@ class DependencyHolder():
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__vlcHelper: Optional[VlcHelperInterface] = vlcHelper
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
 
     def getAdministratorProvider(self) -> AdministratorProviderInterface:
         return self.__administratorProvider
+
+    def getBackgroundTaskHelper(self) -> BackgroundTaskHelper:
+        return self.__backgroundTaskHelper
 
     def getChatLogger(self) -> ChatLoggerInterface:
         return self.__chatLogger
@@ -89,6 +102,9 @@ class DependencyHolder():
 
     def getTwitchUtils(self) -> TwitchUtilsInterface:
         return self.__twitchUtils
+
+    def getVlcHelper(self) -> Optional[VlcHelperInterface]:
+        return self.__vlcHelper
 
     def getWebsocketConnectionServer(self) -> Optional[WebsocketConnectionServerInterface]:
         return self.__websocketConnectionServer

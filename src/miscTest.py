@@ -1,8 +1,11 @@
 import asyncio
 import re
+from asyncio import AbstractEventLoop
 from typing import Any, Optional, Pattern
 
 from CynanBot.aniv.anivContentCode import AnivContentCode
+from CynanBot.vlcHelper.vlcHelper import VlcHelper
+from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
@@ -16,6 +19,7 @@ from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
@@ -32,6 +36,10 @@ from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
     TriviaAnswerCompilerInterface
 
+eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+backgroundTaskHelper = BackgroundTaskHelper(
+    eventLoop = eventLoop
+)
 timber: TimberInterface = TimberStub()
 
 bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
@@ -63,10 +71,15 @@ systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
     timber = timber
 )
 
-soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    systemCommandHelper = systemCommandHelper,
+vlcHelper: VlcHelperInterface = VlcHelper(
     timber = timber
+)
+
+soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber,
+    vlcHelper = vlcHelper
 )
 
 eventLoop = asyncio.get_event_loop()

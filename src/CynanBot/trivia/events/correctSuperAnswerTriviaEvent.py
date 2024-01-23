@@ -9,7 +9,7 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
-from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 
 
 class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):

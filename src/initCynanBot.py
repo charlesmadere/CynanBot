@@ -51,6 +51,8 @@ from CynanBot.cuteness.cutenessUtils import CutenessUtils
 from CynanBot.cynanBot import CynanBot
 from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
+from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
+from CynanBot.vlcHelper.vlcHelper import VlcHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
@@ -169,8 +171,8 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.triviaContentScannerInterface import \
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
@@ -216,8 +218,8 @@ from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBot.trivia.triviaScoreRepository import TriviaScoreRepository
-from CynanBot.trivia.triviaScoreRepositoryInterface import \
+from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
@@ -439,6 +441,9 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     sentMessageLogger = sentMessageLogger,
+    timber = timber
+)
+vlcHelper: VlcHelperInterface = VlcHelper(
     timber = timber
 )
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
@@ -765,9 +770,10 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    systemCommandHelper = systemCommandHelper,
-    timber = timber
+    timber = timber,
+    vlcHelper = vlcHelper
 )
 
 ttsManager: Optional[TtsManagerInterface] = None
@@ -891,6 +897,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 
 dependencyHolder = DependencyHolderBuilder(
     administratorProvider = administratorProvider,
+    backgroundTaskHelper = backgroundTaskHelper,
     chatLogger = chatLogger,
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,

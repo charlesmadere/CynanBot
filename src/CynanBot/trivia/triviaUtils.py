@@ -28,7 +28,7 @@ from CynanBot.trivia.specialStatus.specialTriviaStatus import \
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
-from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

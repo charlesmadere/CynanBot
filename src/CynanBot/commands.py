@@ -105,7 +105,7 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaScoreRepositoryInterface import \
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface

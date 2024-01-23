@@ -15,7 +15,7 @@ from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
-from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaExceptions import (
     GenericTriviaNetworkException, MalformedTriviaJsonException,
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException,

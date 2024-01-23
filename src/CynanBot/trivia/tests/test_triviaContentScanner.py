@@ -21,9 +21,9 @@ from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion
-from CynanBot.trivia.triviaContentCode import TriviaContentCode
-from CynanBot.trivia.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.triviaContentScannerInterface import \
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.trivia.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 
 
 class TriviaScoreRepositoryInterface(ABC):

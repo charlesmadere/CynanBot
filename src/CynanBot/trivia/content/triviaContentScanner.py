@@ -11,8 +11,8 @@ from CynanBot.contentScanner.contentScannerInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
-from CynanBot.trivia.triviaContentCode import TriviaContentCode
-from CynanBot.trivia.triviaContentScannerInterface import \
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface

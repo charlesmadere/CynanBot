@@ -4,7 +4,7 @@ from typing import Optional
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionReference import \
     TriviaQuestionReference
-from CynanBot.trivia.triviaContentCode import TriviaContentCode
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 
 
 class TriviaHistoryRepositoryInterface(ABC):
