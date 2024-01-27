@@ -8,6 +8,8 @@ from CynanBot.twitch.websocket.twitchWebsocketChannelPointsVoting import \
     TwitchWebsocketChannelPointsVoting
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
+from CynanBot.twitch.websocket.twitchWebsocketPollChoice import \
+    TwitchWebsocketPollChoice
 from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
     TwitchWebsocketPollStatus
 from CynanBot.twitch.websocket.twitchWebsocketRewardRedemptionStatus import \
@@ -61,6 +63,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchWebsocketChannelPointsVoting(
             isEnabled = isEnabled,
             amountPerVote = amountPerVote
+        )
+
+    async def parseWebsocketPollChoice(self, choiceJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketPollChoice]:
+        if not isinstance(choiceJson, Dict) or not utils.hasItems(choiceJson):
+            return None
+
+        channelPointsVotes = utils.getIntFromDict(choiceJson, 'channel_points_votes', 0)
+        choiceId = utils.getStrFromDict(choiceJson, 'id')
+        title = utils.getStrFromDict(choiceJson, 'title')
+        votes = utils.getIntFromDict(choiceJson, 'votes', 0)
+
+        return TwitchWebsocketPollChoice(
+            channelPointsVotes = channelPointsVotes,
+            votes = votes,
+            choiceId = choiceId,
+            title = title
         )
 
     async def parseWebsocketCommunitySubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[WebsocketCommunitySubGift]:
@@ -488,6 +506,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
+        choices: Optional[List[TwitchWebsocketPollChoice]] = None
+        if 'choices' in eventJson:
+            choicesItem: Any = eventJson.get('choices')
+
+            if isinstance(choicesItem, List) and utils.hasItems(choicesItem):
+                choices = list()
+
+                for choiceItem in choicesItem:
+                    choice = await self.parseWebsocketPollChoice(choiceItem)
+
+                    if choice is not None:
+                        choices.append(choice)
+
+                if len(choices) == 0:
+                    choices = None
+
         pollStatus: Optional[TwitchWebsocketPollStatus] = None
         rewardRedemptionStatus: Optional[TwitchWebsocketRewardRedemptionStatus] = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
@@ -561,6 +595,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userLogin = userLogin,
             userName = userName,
             channelPointsVoting = channelPointsVoting,
+            choices = choices,
             tier = tier,
             pollStatus = pollStatus,
             rewardRedemptionStatus = rewardRedemptionStatus,

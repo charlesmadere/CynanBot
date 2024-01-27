@@ -169,6 +169,7 @@ from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -196,6 +197,7 @@ from CynanBot.twitch.configuration.twitchConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
+from CynanBot.twitch.twitchPollHandler import TwitchPollHandler
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
@@ -815,6 +817,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 twitchChannelProvider = self
             )
 
+            pollHandler: Optional[AbsTwitchPollHandler] = TwitchPollHandler(
+                timber = self.__timber,
+                ttsManager = self.__ttsManager
+            )
+
             predictionHandler: Optional[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
                 timber = self.__timber,
                 ttsManager = self.__ttsManager,
@@ -851,7 +858,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     userIdsRepository = self.__userIdsRepository
                 ),
                 cheerHandler = cheerHandler,
-                pollHandler = None,
+                pollHandler = pollHandler,
                 predictionHandler = predictionHandler,
                 raidHandler = raidHandler,
                 subscriptionHandler = subscriptionHandler,

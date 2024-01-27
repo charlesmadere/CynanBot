@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional
 
 from CynanBot.twitch.websocket.twitchWebsocketChannelPointsVoting import \
     TwitchWebsocketChannelPointsVoting
+from CynanBot.twitch.websocket.twitchWebsocketPollChoice import \
+    TwitchWebsocketPollChoice
 from CynanBot.twitch.websocket.websocketCommunitySubGift import \
     WebsocketCommunitySubGift
 from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
@@ -22,6 +24,10 @@ class TwitchWebsocketJsonMapperInterface(ABC):
 
     @abstractmethod
     async def parseWebsocketChannelPointsVoting(self, channelPointsVotingJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketChannelPointsVoting]:
+        pass
+
+    @abstractmethod
+    async def parseWebsocketPollChoice(self, choiceJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketPollChoice]:
         pass
 
     @abstractmethod
