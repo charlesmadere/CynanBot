@@ -32,6 +32,9 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
         if not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
+        if not await self.__soundPlayerSettingsRepository.isEnabled():
+            return
+
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
 
         if not utils.isValidStr(filePath):

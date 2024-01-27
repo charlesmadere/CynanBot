@@ -409,54 +409,17 @@ class User(UserInterface):
     def hasMastodonUrl(self) -> bool:
         return utils.isValidUrl(self.__mastodonUrl)
 
-    def hasMinimumTtsCheerAmount(self) -> bool:
-        return utils.isValidInt(self.__minimumTtsCheerAmount) and self.__minimumTtsCheerAmount >= 1
-
     def hasPkmnCatchBoosterPacks(self) -> bool:
         return utils.hasItems(self.__pkmnCatchBoosterPacks)
 
     def hasSpeedrunProfile(self) -> bool:
         return utils.isValidUrl(self.__speedrunProfile)
 
-    def hasSuperTriviaCheerTriggerAmount(self) -> bool:
-        return utils.isValidInt(self.__superTriviaCheerTriggerAmount) and self.__superTriviaCheerTriggerAmount >= 1
-
-    def hasSuperTriviaGamePoints(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGamePoints)
-
-    def hasSuperTriviaGameShinyMultiplier(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGameShinyMultiplier)
-
-    def hasSuperTriviaGameToxicMultiplier(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGameToxicMultiplier)
-
-    def hasSuperTriviaGameToxicPunishmentMultiplier(self) -> bool:
-        return utils.isValidInt(self.__superTriviaGameToxicPunishmentMultiplier)
-
-    def hasSuperTriviaPerUserAttempts(self) -> bool:
-        return utils.isValidInt(self.__superTriviaPerUserAttempts)
-
-    def hasSuperTriviaSubscribeTriggerAmount(self) -> bool:
-        superTriviaSubscribeTriggerAmount = self.__superTriviaSubscribeTriggerAmount
-        return utils.isValidNum(superTriviaSubscribeTriggerAmount) and superTriviaSubscribeTriggerAmount > 0
-
     def hasTimeZones(self) -> bool:
         return utils.hasItems(self.__timeZones)
 
-    def hasTriviaGamePoints(self) -> bool:
-        return utils.isValidInt(self.__triviaGamePoints)
-
-    def hasTriviaGameShinyMultiplier(self) -> bool:
-        return utils.isValidInt(self.__triviaGameShinyMultiplier)
-
     def hasTwitter(self) -> bool:
         return utils.isValidUrl(self.__twitter)
-
-    def hasWaitForSuperTriviaAnswerDelay(self) -> bool:
-        return utils.isValidInt(self.__waitForSuperTriviaAnswerDelay)
-
-    def hasWaitForTriviaAnswerDelay(self) -> bool:
-        return utils.isValidInt(self.__waitForTriviaAnswerDelay)
 
     def isAnivContentScanningEnabled(self) -> bool:
         return self.__isAnivContentScanningEnabled

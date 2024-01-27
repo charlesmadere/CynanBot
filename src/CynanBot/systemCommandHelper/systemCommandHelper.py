@@ -17,7 +17,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
 
@@ -26,7 +26,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             self.__timber.log('SystemCommandHelper', f'Received malformed command argument: \"{command}\"')
             return
         elif not utils.isValidNum(timeoutSeconds):
-            raise ValueError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
+            raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 

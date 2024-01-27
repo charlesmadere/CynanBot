@@ -22,13 +22,13 @@ from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterfa
     TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.specialStatus.shinyTriviaResult import ShinyTriviaResult
 from CynanBot.trivia.specialStatus.specialTriviaStatus import \
     SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
-from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface

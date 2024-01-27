@@ -86,6 +86,8 @@ from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface imp
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface import \
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
@@ -105,8 +107,6 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
-    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface

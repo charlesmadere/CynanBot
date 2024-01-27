@@ -769,6 +769,7 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
 )
 
 soundPlayer: SoundPlayerInterface = VlcSoundPlayer(
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
 

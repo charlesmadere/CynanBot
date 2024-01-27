@@ -11,16 +11,16 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
 class TriviaIdGenerator(TriviaIdGeneratorInterface):
 
     def __init__(self):
-        self.__triviaIdRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
+        self.__idRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def generateActionId(self) -> str:
-        return await self.__generateTriviaId()
+        return await self.__generateRandomId()
 
     async def generateEventId(self) -> str:
-        return await self.__generateTriviaId()
+        return await self.__generateRandomId()
 
     async def generateGameId(self) -> str:
-        return await self.__generateTriviaId()
+        return await self.__generateRandomId()
 
     async def generateQuestionId(
         self,
@@ -46,6 +46,6 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
         encodedString = string.encode('utf-8')
         return hashlib.sha256(encodedString).hexdigest()
 
-    async def __generateTriviaId(self) -> str:
+    async def __generateRandomId(self) -> str:
         triviaId = str(uuid.uuid4())
-        return self.__triviaIdRegEx.sub('', triviaId)
+        return self.__idRegEx.sub('', triviaId)

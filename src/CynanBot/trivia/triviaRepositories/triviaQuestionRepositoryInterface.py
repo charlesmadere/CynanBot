@@ -3,8 +3,8 @@ from typing import Set
 
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
-from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.questions.triviaSource import TriviaSource
+from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 
 
 class TriviaQuestionRepositoryInterface(ABC):

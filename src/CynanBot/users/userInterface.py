@@ -144,10 +144,6 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def hasMinimumTtsCheerAmount(self) -> bool:
-        pass
-
-    @abstractmethod
     def hasPkmnCatchBoosterPacks(self) -> bool:
         pass
 
@@ -156,55 +152,11 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def hasSuperTriviaCheerTriggerAmount(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaGamePoints(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaPerUserAttempts(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaGameShinyMultiplier(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaGameToxicMultiplier(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaGameToxicPunishmentMultiplier(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasSuperTriviaSubscribeTriggerAmount(self) -> bool:
-        pass
-
-    @abstractmethod
     def hasTimeZones(self) -> bool:
         pass
 
     @abstractmethod
     def hasTwitter(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasTriviaGamePoints(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasTriviaGameShinyMultiplier(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasWaitForSuperTriviaAnswerDelay(self) -> bool:
-        pass
-
-    @abstractmethod
-    def hasWaitForTriviaAnswerDelay(self) -> bool:
         pass
 
     @abstractmethod

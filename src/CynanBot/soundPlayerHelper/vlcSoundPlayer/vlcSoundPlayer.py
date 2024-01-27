@@ -7,6 +7,8 @@ import vlc
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerHelper.soundPlayerInterface import \
     SoundPlayerInterface
+from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.soundPlayerHelper.soundReferenceInterface import \
     SoundReferenceInterface
 from CynanBot.soundPlayerHelper.soundReferenceStub import SoundReferenceStub
@@ -17,16 +19,28 @@ from CynanBot.timber.timberInterface import TimberInterface
 
 class VlcSoundPlayer(SoundPlayerInterface):
 
-    def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
+    def __init__(
+        self,
+        soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
+        timber: TimberInterface
+    ):
+        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
+            raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
     async def load(self, filePath: str) -> SoundReferenceInterface:
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayer', f'filePath argument is invalid: \"{filePath}\"')
 
+            return SoundReferenceStub(
+                filePath = filePath,
+                timber = self.__timber
+            )
+        elif not await self.__soundPlayerSettingsRepository.isEnabled():
             return SoundReferenceStub(
                 filePath = filePath,
                 timber = self.__timber

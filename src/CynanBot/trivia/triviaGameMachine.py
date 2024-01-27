@@ -64,6 +64,8 @@ from CynanBot.trivia.games.triviaGameStoreInterface import \
     TriviaGameStoreInterface
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.specialStatus.specialTriviaStatus import \
     SpecialTriviaStatus
@@ -89,8 +91,6 @@ from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
 from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
     TriviaRepositoryInterface
-from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
-    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \

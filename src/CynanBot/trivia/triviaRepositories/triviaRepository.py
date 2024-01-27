@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Set
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
@@ -15,7 +16,6 @@ from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
-from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.triviaExceptions import (
     GenericTriviaNetworkException, MalformedTriviaJsonException,
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException,

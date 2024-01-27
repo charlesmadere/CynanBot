@@ -9,13 +9,13 @@ from CynanBot.trivia.gameController.triviaGameController import \
 from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 from CynanBot.trivia.specialStatus.shinyTriviaResult import ShinyTriviaResult
 from CynanBot.trivia.specialStatus.specialTriviaStatus import \
     SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
-from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 from CynanBot.users.userInterface import UserInterface
 
 
