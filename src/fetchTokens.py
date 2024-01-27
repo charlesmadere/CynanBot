@@ -1,3 +1,4 @@
+from typing import Any, Dict, Optional
 import requests
 
 # This file is meant to be run separately from the others in this repository. It retrieves some
@@ -9,22 +10,32 @@ import requests
 # users.py files.
 
 # taken from "Client ID" at https://dev.twitch.tv/console/apps/
-TWITCH_CLIENT_ID: str = None
+TWITCH_CLIENT_ID: Optional[str] = None
 
 # taken from "Client Secret" at https://dev.twitch.tv/console/apps/
-TWITCH_CLIENT_SECRET: str = None
+TWITCH_CLIENT_SECRET: Optional[str] = None
 
 # This code is derived from clicking this URL and then authenticating:
-# https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=channel:bot+chat:read+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor+channel:read:redemptions+channel:manage:redemptions+channel:read:subscriptions+channel:read:polls+channel:read:predictions+channel:manage:predictions+moderator:read:chatters+user:read:chat+bits:read+moderator:read:followers+moderation:read+moderator:manage:banned_users+channel:manage:moderators+moderation:read
-TWITCH_CODE_SECRET: str = None
+# https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=channel:bot+chat:read+user:read:chat+user:write:chat+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor+channel:read:redemptions+channel:manage:redemptions+channel:read:subscriptions+channel:read:polls+channel:read:predictions+channel:manage:predictions+moderator:read:chatters+user:read:chat+bits:read+moderator:read:followers+moderation:read+moderator:manage:banned_users+channel:manage:moderators+moderation:read
+TWITCH_CODE_SECRET: Optional[str] = None
 
-if TWITCH_CLIENT_SECRET is None or TWITCH_CLIENT_SECRET is None or TWITCH_CODE_SECRET is None:
-    raise ValueError('TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, and TWITCH_CODE_SECRET must all be set!')
+if not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CODE_SECRET, str):
+    raise ValueError(f'All variables must be set: {TWITCH_CLIENT_ID=}, {TWITCH_CLIENT_SECRET=}, {TWITCH_CODE_SECRET=}')
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
-rawResponse = requests.post(url)
-jsonResponse = rawResponse.json()
-accessToken = jsonResponse['access_token']
-refreshToken = jsonResponse['refresh_token']
-print(f'Twitch accessToken: \"{accessToken}\"')
-print(f'Twitch refreshToken: \"{refreshToken}\"')
+
+jsonResponse: Optional[Dict[str, Any]] = None
+
+try:
+    rawResponse = requests.post(url)
+    jsonResponse = rawResponse.json()
+except Exception as e:
+    print(f'Encountered exception ({e=}) ({TWITCH_CLIENT_ID=}) ({TWITCH_CLIENT_SECRET}) ({TWITCH_CODE_SECRET=})')
+
+print(f'All Twitch JSON: {jsonResponse}')
+
+if jsonResponse is not None:    
+    accessToken: Optional[str] = jsonResponse.get('access_token')
+    refreshToken: Optional[str] = jsonResponse.get('refresh_token')
+    print(f'Twitch accessToken: \"{accessToken}\"')
+    print(f'Twitch refreshToken: \"{refreshToken}\"')
