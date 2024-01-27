@@ -851,6 +851,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     userIdsRepository = self.__userIdsRepository
                 ),
                 cheerHandler = cheerHandler,
+                pollHandler = None,
                 predictionHandler = predictionHandler,
                 raidHandler = raidHandler,
                 subscriptionHandler = subscriptionHandler,

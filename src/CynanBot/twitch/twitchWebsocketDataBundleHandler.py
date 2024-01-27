@@ -5,6 +5,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
@@ -27,6 +28,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
         cheerHandler: Optional[AbsTwitchCheerHandler],
+        pollHandler: Optional[AbsTwitchPollHandler],
         predictionHandler: Optional[AbsTwitchPredictionHandler],
         raidHandler: Optional[AbsTwitchRaidHandler],
         subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
@@ -35,24 +37,27 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         usersRepository: UsersRepositoryInterface
     ):
         if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
-            raise ValueError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
+            raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
-            raise ValueError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+            raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+        elif pollHandler is not None and not isinstance(pollHandler, AbsTwitchPollHandler):
+            raise TypeError(f'pollHandler argument is malformed: \"{pollHandler}\"')
         elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
-            raise ValueError(f'predictionHandler argument is malformed: \"{predictionHandler}\"')
+            raise TypeError(f'predictionHandler argument is malformed: \"{predictionHandler}\"')
         elif raidHandler is not None and not isinstance(raidHandler, AbsTwitchRaidHandler):
-            raise ValueError(f'raidHandler argument is malformed: \"{raidHandler}\"')
+            raise TypeError(f'raidHandler argument is malformed: \"{raidHandler}\"')
         elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
-            raise ValueError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
+            raise TypeError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
         self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
+        self.__pollHandler: Optional[AbsTwitchPollHandler] = pollHandler
         self.__predictionHandler: Optional[AbsTwitchPredictionHandler] = predictionHandler
         self.__raidHandler: Optional[AbsTwitchRaidHandler] = raidHandler
         self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
@@ -71,6 +76,14 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType: Optional[WebsocketSubscriptionType]
     ) -> bool:
         return subscriptionType is WebsocketSubscriptionType.CHEER
+
+    async def __isPollType(
+        self,
+        subscriptionType: Optional[WebsocketSubscriptionType]
+    ) -> bool:
+        return subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN \
+            or subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_END \
+            or subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
 
     async def __isPredictionType(
         self,
@@ -97,7 +110,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def onNewWebsocketDataBundle(self, dataBundle: WebsocketDataBundle):
         if not isinstance(dataBundle, WebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.getPayload()
         if payload is None:
@@ -147,6 +160,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
                     user = user,
                     dataBundle = dataBundle
                 )
+        elif await self.__isPollType(subscriptionType):
+            pollHandler = self.__pollHandler
+
+            if pollHandler is not None:
+                await pollHandler.onNewPoll(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
         elif await self.__isPredictionType(subscriptionType):
             predictionHandler = self.__predictionHandler
 
@@ -181,7 +203,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if event is None:
             return
         elif not isinstance(event, WebsocketEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         await self.__userIdsRepository.optionallySetUser(
             userId = event.getBroadcasterUserId(),
