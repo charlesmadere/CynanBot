@@ -7,8 +7,6 @@ from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
-from CynanBot.vlcHelper.vlcHelper import VlcHelper
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
@@ -76,13 +74,17 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerHelper.soundAlertHelper import SoundPlayerHelper
-from CynanBot.soundPlayerHelper.soundAlertHelperInterface import \
+from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.soundPlayerHelper.soundPlayerInterface import \
+    SoundPlayerInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerHelper.vlcSoundPlayer.vlcSoundPlayer import \
+    VlcSoundPlayer
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -305,9 +307,6 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     sentMessageLogger = sentMessageLogger,
     timber = timber
 )
-vlcHelper: VlcHelperInterface = VlcHelper(
-    timber = timber
-)
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
@@ -326,20 +325,28 @@ if generalSettingsSnapshot.isEventSubEnabled():
     )
 
 
-################################
-## TTS initialization section ##
-################################
+#########################################
+## Sound player initialization section ##
+#########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
 
-soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber,
-    vlcHelper = vlcHelper
+soundPlayer: SoundPlayerInterface = VlcSoundPlayer(
+    timber = timber
 )
+
+soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    soundPlayer = soundPlayer,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber
+)
+
+
+################################
+## TTS initialization section ##
+################################
 
 ttsManager: Optional[TtsManagerInterface] = None
 

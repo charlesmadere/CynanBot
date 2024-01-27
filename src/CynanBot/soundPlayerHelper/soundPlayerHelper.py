@@ -1,3 +1,4 @@
+import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
@@ -31,5 +32,11 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
         if not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
-        # TODO
-        return
+        filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
+
+        if not utils.isValidStr(filePath):
+            self.__timber.log('SoundPlayerHelper', f'No file path available for sound alert \"{soundAlert}\" ({filePath=})')
+            return
+
+        soundReference = await self.__soundPlayer.load(filePath)
+        await soundReference.play()
