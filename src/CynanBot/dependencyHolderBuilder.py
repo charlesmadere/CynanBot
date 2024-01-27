@@ -2,14 +2,15 @@ from typing import Optional, Self
 
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
 from CynanBot.dependencyHolder import DependencyHolder
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+    SoundPlayerHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
@@ -55,9 +56,9 @@ class DependencyHolderBuilder():
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = None
+        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = None
         self.__triviaUtils: Optional[TriviaUtilsInterface] = None
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = None
-        self.__vlcHelper: Optional[VlcHelperInterface] = None
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = None
 
     def build(self) -> DependencyHolder:
@@ -68,11 +69,11 @@ class DependencyHolderBuilder():
             cutenessUtils = self.__cutenessUtils,
             generalSettingsRepository = self.__generalSettingsRepository,
             sentMessageLogger = self.__sentMessageLogger,
+            soundPlayerHelper = self.__soundPlayerHelper,
             timber = self.__timber,
             triviaUtils = self.__triviaUtils,
             twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
             twitchUtils = self.__twitchUtils,
-            vlcHelper = self.__vlcHelper,
             websocketConnectionServer = self.__websocketConnectionServer
         )
 
@@ -81,6 +82,13 @@ class DependencyHolderBuilder():
             raise ValueError(f'instance argument is malformed: \"{instance}\"')
 
         self.__cutenessUtils = instance
+        return self
+
+    def setSoundPlayerHelper(self, instance: SoundPlayerHelperInterface) -> Self:
+        if not isinstance(instance, SoundPlayerHelperInterface):
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+
+        self.__soundPlayerHelper = instance
         return self
 
     def setTriviaUtils(self, instance: TriviaUtilsInterface) -> Self:
@@ -95,13 +103,6 @@ class DependencyHolderBuilder():
             raise ValueError(f'instance argument is malformed: \"{instance}\"')
 
         self.__twitchPredictionWebsocketUtils = instance
-        return self
-
-    def setVlcHelper(self, instance: VlcHelperInterface) -> Self:
-        if not isinstance(instance, VlcHelperInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
-
-        self.__vlcHelper = instance
         return self
 
     def setWebsocketConnectionServer(self, instance: WebsocketConnectionServerInterface) -> Self:

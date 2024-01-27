@@ -2,13 +2,14 @@ from typing import Optional
 
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
+from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+    SoundPlayerHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
@@ -28,11 +29,11 @@ class DependencyHolder():
         cutenessUtils: Optional[CutenessUtilsInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
+        soundPlayerHelper: Optional[SoundPlayerHelperInterface],
         timber: TimberInterface,
         triviaUtils: Optional[TriviaUtilsInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchUtils: TwitchUtilsInterface,
-        vlcHelper: Optional[VlcHelperInterface],
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -47,6 +48,8 @@ class DependencyHolder():
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
+        elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
+            raise TypeError(f'vlcHelper argument is malformed: \"{soundPlayerHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
@@ -55,8 +58,6 @@ class DependencyHolder():
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif vlcHelper is not None and not isinstance(vlcHelper, VlcHelperInterface):
-            raise TypeError(f'vlcHelper argument is malformed: \"{vlcHelper}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
             raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
 
@@ -66,11 +67,11 @@ class DependencyHolder():
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = cutenessUtils
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
+        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = soundPlayerHelper
         self.__timber: TimberInterface = timber
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__vlcHelper: Optional[VlcHelperInterface] = vlcHelper
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
 
     def getAdministratorProvider(self) -> AdministratorProviderInterface:
@@ -91,6 +92,9 @@ class DependencyHolder():
     def getSentMessageLogger(self) -> SentMessageLoggerInterface:
         return self.__sentMessageLogger
 
+    def getSoundPlayerHelper(self) -> Optional[SoundPlayerHelperInterface]:
+        return self.__soundPlayerHelper
+
     def getTimber(self) -> TimberInterface:
         return self.__timber
 
@@ -102,9 +106,6 @@ class DependencyHolder():
 
     def getTwitchUtils(self) -> TwitchUtilsInterface:
         return self.__twitchUtils
-
-    def getVlcHelper(self) -> Optional[VlcHelperInterface]:
-        return self.__vlcHelper
 
     def getWebsocketConnectionServer(self) -> Optional[WebsocketConnectionServerInterface]:
         return self.__websocketConnectionServer
