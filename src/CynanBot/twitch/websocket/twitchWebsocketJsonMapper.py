@@ -70,9 +70,9 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         channelPointsVotes = utils.getIntFromDict(choiceJson, 'channel_points_votes', 0)
+        votes = utils.getIntFromDict(choiceJson, 'votes', 0)
         choiceId = utils.getStrFromDict(choiceJson, 'id')
         title = utils.getStrFromDict(choiceJson, 'title')
-        votes = utils.getIntFromDict(choiceJson, 'votes', 0)
 
         return TwitchWebsocketPollChoice(
             channelPointsVotes = channelPointsVotes,
