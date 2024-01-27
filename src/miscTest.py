@@ -16,8 +16,8 @@ from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
-from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+from CynanBot.soundPlayerHelper.soundAlertHelper import SoundPlayerHelper
+from CynanBot.soundPlayerHelper.soundAlertHelperInterface import \
     SoundPlayerHelperInterface
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \

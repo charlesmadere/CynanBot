@@ -1,12 +1,18 @@
-from CynanBot.soundPlayerHelper.soundPlayerInterface import SoundPlayerInterface
 import traceback
 from typing import Optional
-import CynanBot.misc.utils as utils
+
+import aiofiles.ospath
 import vlc
-from CynanBot.timber.timberInterface import TimberInterface
+
+import CynanBot.misc.utils as utils
+from CynanBot.soundPlayerHelper.soundPlayerInterface import \
+    SoundPlayerInterface
+from CynanBot.soundPlayerHelper.soundReferenceInterface import \
+    SoundReferenceInterface
 from CynanBot.soundPlayerHelper.soundReferenceStub import SoundReferenceStub
-from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
-from CynanBot.soundPlayerHelper.vlcPlayer.vlcSoundReference import VlcSoundReference
+from CynanBot.soundPlayerHelper.vlcSoundPlayer.vlcSoundReference import \
+    VlcSoundReference
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class VlcSoundPlayer(SoundPlayerInterface):
@@ -19,7 +25,21 @@ class VlcSoundPlayer(SoundPlayerInterface):
 
     async def load(self, filePath: str) -> SoundReferenceInterface:
         if not utils.isValidStr(filePath):
-            self.__timber.log('VlcHelper', f'filePath argument is invalid: \"{filePath}\"')
+            self.__timber.log('VlcSoundPlayer', f'filePath argument is invalid: \"{filePath}\"')
+
+            return SoundReferenceStub(
+                filePath = filePath,
+                timber = self.__timber
+            )
+        elif not await aiofiles.ospath.exists(filePath):
+            self.__timber.log('VlcSoundPlayer', f'File for filePath does not exist: \"{filePath}\"')
+
+            return SoundReferenceStub(
+                filePath = filePath,
+                timber = self.__timber
+            )
+        elif not await aiofiles.ospath.isfile(filePath):
+            self.__timber.log('VlcSoundPlayer', f'File for filePath is not a file: \"{filePath}\"')
 
             return SoundReferenceStub(
                 filePath = filePath,

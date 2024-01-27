@@ -10,3 +10,7 @@ class SoundPlayerSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def getFilePathFor(self, soundAlert: SoundAlert) -> Optional[str]:
         pass
+
+    @abstractmethod
+    async def isEnabled(self) -> bool:
+        pass

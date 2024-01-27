@@ -76,8 +76,8 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
+from CynanBot.soundPlayerHelper.soundAlertHelper import SoundPlayerHelper
+from CynanBot.soundPlayerHelper.soundAlertHelperInterface import \
     SoundPlayerHelperInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository

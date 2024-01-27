@@ -1,8 +1,11 @@
 import traceback
-import CynanBot.misc.utils as utils
-import vlc
 from typing import Optional
-from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
+
+import vlc
+
+import CynanBot.misc.utils as utils
+from CynanBot.soundPlayerHelper.soundReferenceInterface import \
+    SoundReferenceInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 

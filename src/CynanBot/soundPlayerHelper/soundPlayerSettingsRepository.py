@@ -53,6 +53,10 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
         return utils.cleanPath(filePath)
 
+    async def isEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'enabled', True)
+
     async def __readJson(self) -> Dict[str, Any]:
         if self.__settingsCache is not None:
             return self.__settingsCache

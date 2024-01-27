@@ -1,6 +1,9 @@
-from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
-from CynanBot.timber.timberInterface import TimberInterface
 from typing import Optional
+
+from CynanBot.soundPlayerHelper.soundReferenceInterface import \
+    SoundReferenceInterface
+from CynanBot.timber.timberInterface import TimberInterface
+
 
 class SoundReferenceStub(SoundReferenceInterface):
 

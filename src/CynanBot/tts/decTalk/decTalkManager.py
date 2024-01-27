@@ -95,7 +95,7 @@ class DecTalkManager(TtsManagerInterface):
         if soundAlert is None:
             return
 
-        await self.__soundPlayerHelper.play(soundAlert)
+        await self.__soundPlayerHelper.playSoundAlert(soundAlert)
 
     async def __processTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):

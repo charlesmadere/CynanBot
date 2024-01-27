@@ -51,8 +51,6 @@ from CynanBot.cuteness.cutenessUtils import CutenessUtils
 from CynanBot.cynanBot import CynanBot
 from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
-from CynanBot.vlcHelper.vlcHelperInterface import VlcHelperInterface
-from CynanBot.vlcHelper.vlcHelper import VlcHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
@@ -106,10 +104,14 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
 from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.soundPlayerHelper.soundPlayerInterface import \
+    SoundPlayerInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerHelper.vlcSoundPlayer.vlcSoundPlayer import \
+    VlcSoundPlayer
 from CynanBot.starWars.starWarsQuotesRepository import StarWarsQuotesRepository
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
@@ -149,6 +151,9 @@ from CynanBot.trivia.compilers.triviaQuestionCompiler import \
     TriviaQuestionCompiler
 from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
     TriviaQuestionCompilerInterface
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
+from CynanBot.trivia.content.triviaContentScannerInterface import \
+    TriviaContentScannerInterface
 from CynanBot.trivia.gameController.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
@@ -159,6 +164,9 @@ from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterfa
     TriviaGameGlobalControllersRepositoryInterface
 from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
+from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
+from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
+    TriviaScoreRepositoryInterface
 from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
@@ -171,9 +179,6 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
-from CynanBot.trivia.content.triviaContentScannerInterface import \
-    TriviaContentScannerInterface
 from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
@@ -218,9 +223,6 @@ from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
-from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
-    TriviaScoreRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
@@ -441,9 +443,6 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     sentMessageLogger = sentMessageLogger,
-    timber = timber
-)
-vlcHelper: VlcHelperInterface = VlcHelper(
     timber = timber
 )
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
@@ -761,20 +760,28 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 )
 
 
-################################
-## TTS initialization section ##
-################################
+#########################################
+## Sound player initialization section ##
+#########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
 
-soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber,
-    vlcHelper = vlcHelper
+soundPlayer: SoundPlayerInterface = VlcSoundPlayer(
+    timber = timber
 )
+
+soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+    soundPlayer = soundPlayer,
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber
+)
+
+
+################################
+## TTS initialization section ##
+################################
 
 ttsManager: Optional[TtsManagerInterface] = None
 
