@@ -96,7 +96,7 @@ class TestTwitchPredictionWebsocketUtils():
         result: Optional[List[Dict[str, Any]]] = None
         outcomes: List[WebsocketOutcome] = list()
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = await self.utils.websocketOutcomesToEventDataArray(
                 outcomes = outcomes
             )
