@@ -25,11 +25,11 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         cacheSize: int = 100
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(cacheSize):
-            raise ValueError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -43,9 +43,9 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
 
     async def get(self, chatterUserId: str, twitchChannelId: str) -> Optional[MostRecentChat]:
         if not utils.isValidStr(chatterUserId):
-            raise ValueError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
-            raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         cache = self.__caches[twitchChannelId]
 
@@ -117,9 +117,9 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
 
     async def set(self, chatterUserId: str, twitchChannelId: str):
         if not utils.isValidStr(chatterUserId):
-            raise ValueError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
-            raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         simpleDateTime = SimpleDateTime()
 
