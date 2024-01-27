@@ -19,9 +19,9 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         subscriptionType: WebsocketSubscriptionType
     ) -> Optional[Dict[str, Any]]:
         if not isinstance(event, WebsocketEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(subscriptionType, WebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         eventId = event.getEventId()
         if not utils.isValidStr(eventId):
@@ -50,7 +50,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         outcomes: List[WebsocketOutcome]
     ) -> List[Dict[str, int]]:
         if not isinstance(outcomes, List) or len(outcomes) == 0:
-            raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
+            raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
         colors: List[Dict[str, int]] = list()
 
@@ -141,7 +141,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         color: WebsocketOutcomeColor
     ) -> Dict[str, int]:
         if not isinstance(color, WebsocketOutcomeColor):
-            raise ValueError(f'color argument is malformed: \"{color}\"')
+            raise TypeError(f'color argument is malformed: \"{color}\"')
 
         if color is WebsocketOutcomeColor.BLUE:
             return {
@@ -163,7 +163,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         outcomes: List[WebsocketOutcome]
     ) -> List[Dict[str, Any]]:
         if not isinstance(outcomes, List) or len(outcomes) == 0:
-            raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
+            raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
         sortedOutcomes = sorted(outcomes, key = lambda outcome: outcome.getTitle().lower())
         colors = await self.websocketOutcomesToColorsArray(outcomes)
@@ -186,7 +186,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         subscriptionType: WebsocketSubscriptionType
     ) -> str:
         if not isinstance(subscriptionType, WebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return 'prediction_begin'
