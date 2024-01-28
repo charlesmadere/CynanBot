@@ -97,7 +97,7 @@ class DecTalkManager(TtsManagerInterface):
 
         await self.__soundPlayerHelper.playSoundAlert(soundAlert)
 
-    async def __processTtsEvent(self, event: TtsEvent):
+    async def processTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
@@ -153,7 +153,7 @@ class DecTalkManager(TtsManagerInterface):
                 continue
 
             try:
-                await self.__processTtsEvent(event)
+                await self.processTtsEvent(event)
             except Exception as e:
                 self.__timber.log('DecTalkManager', f'Encountered unexpected exception when processing TTS event (event: {event}) (queue size: {self.__eventQueue.qsize()}): {e}', e, traceback.format_exc())
 
