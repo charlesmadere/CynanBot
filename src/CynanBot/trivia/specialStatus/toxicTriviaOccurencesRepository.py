@@ -18,9 +18,9 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         timeZone: timezone = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timeZone: timezone = timeZone
@@ -33,11 +33,9 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         userId: str
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -76,11 +74,9 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         userId: str
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchDetails(
             twitchChannel = twitchChannel,
@@ -148,15 +144,13 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         userId: str
     ):
         if not utils.isValidInt(newToxicCount):
-            raise ValueError(f'newToxicCount argument is malformed: \"{newToxicCount}\"')
+            raise TypeError(f'newToxicCount argument is malformed: \"{newToxicCount}\"')
         elif newToxicCount < 0 or newToxicCount > utils.getIntMaxSafeSize():
             raise ValueError(f'newToxicCount argument is out of bounds: {newToxicCount}')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         nowDateTime = datetime.now(self.__timeZone)
         nowDateTimeStr = nowDateTime.isoformat()

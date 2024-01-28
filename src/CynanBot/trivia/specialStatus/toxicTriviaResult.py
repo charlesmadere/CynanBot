@@ -56,6 +56,3 @@ class ToxicTriviaResult():
 
     def getUserId(self) -> str:
         return self.__userId
-
-    def hasMostRecent(self) -> bool:
-        return self.__mostRecent is not None
