@@ -17,17 +17,17 @@ class TtsEvent():
         raidInfo: Optional[TtsRaidInfo]
     ):
         if message is not None and not isinstance(message, str):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif donation is not None and not isinstance(donation, TtsDonation):
-            raise ValueError(f'donation argument is malformed: \"{donation}\"')
+            raise TypeError(f'donation argument is malformed: \"{donation}\"')
         elif raidInfo is not None and not isinstance(raidInfo, TtsRaidInfo):
-            raise ValueError(f'raidInfo argument is malformed: \"{raidInfo}\"')
+            raise TypeError(f'raidInfo argument is malformed: \"{raidInfo}\"')
 
         self.__message: Optional[str] = message
         self.__twitchChannel: str = twitchChannel
