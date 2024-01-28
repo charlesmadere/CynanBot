@@ -11,10 +11,10 @@ class TwitchWebsocketChannelPointsVoting():
         amountPerVote: int
     ):
         if not utils.isValidBool(isEnabled):
-            raise ValueError(f'isEnabled argument is malformed: \"{isEnabled}\"')
+            raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
         elif not utils.isValidInt(amountPerVote):
-            raise ValueError(f'amountPerVote argument is malformed: \"{amountPerVote}\"')
-        elif amountPerVote <= 0 or amountPerVote > utils.getLongMaxSafeSize():
+            raise TypeError(f'amountPerVote argument is malformed: \"{amountPerVote}\"')
+        elif amountPerVote < 0 or amountPerVote > utils.getLongMaxSafeSize():
             raise ValueError(f'amountPerVote argument is out of bounds: {amountPerVote}')
 
         self.__isEnabled: bool = isEnabled
