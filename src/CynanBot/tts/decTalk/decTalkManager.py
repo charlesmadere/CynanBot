@@ -38,25 +38,25 @@ class DecTalkManager(TtsManagerInterface):
         queueTimeoutSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(decTalkCommandBuilder, DecTalkCommandBuilder):
-            raise ValueError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
+            raise TypeError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
         elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
-            raise ValueError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
+            raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
         elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
-            raise ValueError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
+            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
         elif not isinstance(systemCommandHelper, SystemCommandHelperInterface):
-            raise ValueError(f'systemCommandHelper argument is malformed: \"{systemCommandHelper}\"')
+            raise TypeError(f'systemCommandHelper argument is malformed: \"{systemCommandHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
-            raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 3:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
@@ -75,7 +75,7 @@ class DecTalkManager(TtsManagerInterface):
 
     async def __playSound(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if self.__soundPlayerHelper is None:
             return
@@ -99,7 +99,7 @@ class DecTalkManager(TtsManagerInterface):
 
     async def __processTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isTtsEnabled():
             return
@@ -161,7 +161,7 @@ class DecTalkManager(TtsManagerInterface):
 
     def submitTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)
