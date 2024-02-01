@@ -2,6 +2,10 @@ import math
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -9,7 +13,7 @@ from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
@@ -32,33 +36,33 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
-        ttsManager: Optional[TtsManagerInterface],
         twitchChannelProvider: TwitchChannelProvider,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
+            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise ValueError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
+            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -200,7 +204,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif communitySubGift is not None and not isinstance(communitySubGift, WebsocketCommunitySubGift):
             raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
 
-        if self.__ttsManager is None:
+        if self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
@@ -241,11 +245,16 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             tier = tier
         )
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = actualMessage,
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.getHandle(),
-            userId = actualUserId,
-            userName = actualUserName,
-            donation = donation,
-            raidInfo = None
+            ttsEvent = TtsEvent(
+                message = actualMessage,
+                twitchChannel = user.getHandle(),
+                userId = actualUserId,
+                userName = actualUserName,
+                donation = donation,
+                provider = TtsProvider.DEC_TALK,
+                raidInfo = None
+            )
         ))

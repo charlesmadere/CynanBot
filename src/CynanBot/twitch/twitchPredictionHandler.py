@@ -1,10 +1,12 @@
 from typing import List, Optional
-from CynanBot.streamAlertsManager.streamAlert import StreamAlert
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+
 import CynanBot.misc.utils as utils
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
@@ -14,7 +16,6 @@ from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
 from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
-from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
@@ -124,6 +125,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
                 userId = userId,
                 userName = user.getHandle(),
                 donation = None,
+                provider = TtsProvider.DEC_TALK,
                 raidInfo = None
             )
         ))

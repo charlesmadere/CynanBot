@@ -17,9 +17,12 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 from CynanBot.misc.simpleDateTime import SimpleDateTime
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
@@ -38,43 +41,39 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
-        administratorProvider: AdministratorProviderInterface,
         cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface],
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
-            raise ValueError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
+        if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
+            raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -342,14 +341,19 @@ class CheerActionHelper(CheerActionHelperInterface):
                 userId = userIdToTimeout
             ))
 
-        if user.isTtsEnabled() and self.__ttsManager is not None:
-            self.__ttsManager.submitTtsEvent(TtsEvent(
-                message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds!',
+        if user.isTtsEnabled() and self.__streamAlertsManager is not None:
+            self.__streamAlertsManager.submitAlert(StreamAlert(
+                soundAlert = None,
                 twitchChannel = user.getHandle(),
-                userId = cheerUserId,
-                userName = cheerUserName,
-                donation = None,
-                raidInfo = None
+                ttsEvent = TtsEvent(
+                    message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds!',
+                    twitchChannel = user.getHandle(),
+                    userId = cheerUserId,
+                    userName = cheerUserName,
+                    donation = None,
+                    provider = TtsProvider.DEC_TALK,
+                    raidInfo = None
+                )
             ))
 
             return True

@@ -4,8 +4,6 @@ import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Optional
-from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
-from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -61,6 +59,9 @@ from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.actions.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
@@ -113,7 +114,7 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
@@ -3832,6 +3833,7 @@ class TtsCommand(AbsCommand):
                 userId = ctx.getAuthorId(),
                 userName = ctx.getAuthorName(),
                 donation = None,
+                provider = TtsProvider.DEC_TALK,
                 raidInfo = None
             )
         ))

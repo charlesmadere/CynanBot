@@ -1,12 +1,15 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.users.userInterface import UserInterface
 
@@ -15,24 +18,24 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
-        ttsManager: TtsManagerInterface,
         cooldown: timedelta = timedelta(hours = 6),
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__ttsManager: TtsManagerInterface = ttsManager
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
     async def handleChat(
         self,
@@ -58,13 +61,19 @@ class SupStreamerChatAction(AbsChatAction):
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = f'{message.getAuthorName()} sup',
-            twitchChannel = user.getHandle(),
-            userId = message.getAuthorId(),
-            userName = message.getAuthorName(),
-            donation = None,
-            raidInfo = None
-        ))
+        if self.__streamAlertsManager is not None:
+            self.__streamAlertsManager.submitAlert(StreamAlert(
+                soundAlert = None,
+                twitchChannel = user.getHandle(),
+                ttsEvent = TtsEvent(
+                    message = f'{message.getAuthorName()} sup',
+                    twitchChannel = user.getHandle(),
+                    userId = message.getAuthorId(),
+                    userName = message.getAuthorName(),
+                    donation = None,
+                    provider = TtsProvider.DEC_TALK,
+                    raidInfo = None
+                )
+            ))
 
         return True

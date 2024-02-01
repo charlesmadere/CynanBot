@@ -1,9 +1,12 @@
 from typing import List, Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
@@ -15,16 +18,16 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
     def __init__(
         self,
-        timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface]
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        timber: TimberInterface
     ):
-        if not isinstance(timber, TimberInterface):
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
 
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
 
     async def onNewPoll(
         self,
@@ -81,16 +84,21 @@ class TwitchPollHandler(AbsTwitchPollHandler):
 
         if subscriptionType is not WebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
-        elif self.__ttsManager is None:
+        elif self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = f'A new poll has begun! \"{title}\"',
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
             twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = user.getHandle(),
-            donation = None,
-            raidInfo = None
+            ttsEvent = TtsEvent(
+                message = f'A new poll has begun! \"{title}\"',
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = user.getHandle(),
+                donation = None,
+                provider = TtsProvider.DEC_TALK,
+                raidInfo = None
+            )
         ))

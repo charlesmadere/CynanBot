@@ -1,9 +1,13 @@
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
 from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
@@ -14,16 +18,16 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
     def __init__(
         self,
-        timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface]
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        timber: TimberInterface
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
 
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
 
     async def onNewRaid(
         self,
@@ -32,13 +36,13 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         dataBundle: WebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, WebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.getPayload().getEvent()
+        event = dataBundle.requirePayload().getEvent()
 
         if event is None:
             self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
@@ -73,17 +77,17 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         user: UserInterface
     ):
         if not utils.isValidInt(viewers):
-            raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
+            raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
         elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
             raise ValueError(f'viewers argument is out of bounds: {viewers}')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(fromUserName):
-            raise ValueError(f'fromUserName argument is malformed: \"{fromUserName}\"')
+            raise TypeError(f'fromUserName argument is malformed: \"{fromUserName}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__ttsManager is None:
+        if self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
@@ -92,11 +96,16 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         raidInfo = TtsRaidInfo(viewers = viewers)
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = SoundAlert.RAID,
             twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = fromUserName,
-            donation = None,
-            raidInfo = raidInfo
+            ttsEvent = TtsEvent(
+                message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = fromUserName,
+                donation = None,
+                provider = TtsProvider.DEC_TALK,
+                raidInfo = raidInfo
+            )
         ))

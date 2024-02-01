@@ -16,7 +16,6 @@ from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
@@ -39,7 +38,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
         schubertWalkChatAction: Optional[SchubertWalkChatAction],
         supStreamerChatAction: Optional[SupStreamerChatAction],
         timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface],
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -64,8 +62,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise ValueError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):

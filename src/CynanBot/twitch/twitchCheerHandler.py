@@ -4,6 +4,10 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
@@ -12,7 +16,7 @@ from CynanBot.trivia.triviaGameMachineInterface import \
 from CynanBot.tts.ttsCheerDonation import TtsCheerDonation
 from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsEvent import TtsEvent
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
@@ -25,30 +29,30 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     def __init__(
         self,
         cheerActionHelper: Optional[CheerActionHelperInterface],
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         triviaGameBuilder: Optional[TriviaGameBuilderInterface],
         triviaGameMachine: Optional[TriviaGameMachineInterface],
-        ttsManager: Optional[TtsManagerInterface],
         twitchChannelProvider: TwitchChannelProvider
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
             raise ValueError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
+        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise ValueError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
     async def onNewCheer(
@@ -197,7 +201,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        if self.__ttsManager is None:
+        if self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
@@ -214,11 +218,16 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         donation: TtsDonation = TtsCheerDonation(bits = bits)
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = message,
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = SoundAlert.CHEER,
             twitchChannel = user.getHandle(),
-            userId = cheerUserId,
-            userName = cheerUserLogin,
-            donation = donation,
-            raidInfo = None
+            ttsEvent = TtsEvent(
+                message = message,
+                twitchChannel = user.getHandle(),
+                userId = cheerUserId,
+                userName = cheerUserLogin,
+                donation = donation,
+                provider = TtsProvider.DEC_TALK,
+                raidInfo = None
+            )
         ))

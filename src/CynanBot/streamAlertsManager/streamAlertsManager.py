@@ -1,7 +1,6 @@
 import asyncio
 import queue
 import traceback
-from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
 from queue import SimpleQueue
 from typing import Optional
 
@@ -9,6 +8,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.soundPlayerHelper.soundReferenceInterface import \
+    SoundReferenceInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface

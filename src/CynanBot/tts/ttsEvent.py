@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
 
 
@@ -14,6 +15,7 @@ class TtsEvent():
         userId: str,
         userName: str,
         donation: Optional[TtsDonation],
+        provider: TtsProvider,
         raidInfo: Optional[TtsRaidInfo]
     ):
         if message is not None and not isinstance(message, str):
@@ -26,6 +28,8 @@ class TtsEvent():
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif donation is not None and not isinstance(donation, TtsDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
+        elif not isinstance(provider, TtsProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
         elif raidInfo is not None and not isinstance(raidInfo, TtsRaidInfo):
             raise TypeError(f'raidInfo argument is malformed: \"{raidInfo}\"')
 
@@ -34,6 +38,7 @@ class TtsEvent():
         self.__userId: str = userId
         self.__userName: str = userName
         self.__donation: Optional[TtsDonation] = donation
+        self.__provider: TtsProvider = provider
         self.__raidInfo: Optional[TtsRaidInfo] = raidInfo
 
     def getDonation(self) -> Optional[TtsDonation]:
@@ -41,6 +46,9 @@ class TtsEvent():
 
     def getMessage(self) -> Optional[str]:
         return self.__message
+
+    def getProvider(self) -> TtsProvider:
+        return self.__provider
 
     def getRaidInfo(self) -> Optional[TtsRaidInfo]:
         return self.__raidInfo
@@ -62,6 +70,7 @@ class TtsEvent():
         return {
             'donation': self.__donation,
             'message': self.__message,
+            'provider': self.__provider,
             'raidInfo': self.__raidInfo,
             'twitchChannel': self.__twitchChannel,
             'userId': self.__userId,

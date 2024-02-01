@@ -7,7 +7,7 @@ class TtsRaidInfo():
 
     def __init__(self, viewers: int):
         if not utils.isValidInt(viewers):
-            raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
+            raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
         elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
             raise ValueError(f'viewers argument is out of bounds: {viewers}')
 
