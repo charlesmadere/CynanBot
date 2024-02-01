@@ -57,6 +57,7 @@ class VlcSoundReference(SoundReferenceInterface):
             exception = e
 
         if exception is None:
-            self.__timber.log('VlcSoundReference', f'Played media using VLC ({self.__filePath=})')
+            durationMillis = await self.getDurationMillis()
+            self.__timber.log('VlcSoundReference', f'Played media using VLC ({self.__filePath=}) (duration is {durationMillis} millisecond(s))')
         else:
             self.__timber.log('VlcSoundReference', f'Attempted to play media using VLC ({self.__filePath=}) but encountered an exception: {exception}', exception, traceback.format_exc())

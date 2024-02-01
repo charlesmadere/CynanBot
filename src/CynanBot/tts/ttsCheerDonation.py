@@ -9,7 +9,7 @@ class TtsCheerDonation(TtsDonation):
 
     def __init__(self, bits: int):
         if not utils.isValidInt(bits):
-            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
 

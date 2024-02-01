@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from CynanBot.soundPlayerHelper.soundReferenceInterface import \
     SoundReferenceInterface
@@ -7,5 +8,5 @@ from CynanBot.soundPlayerHelper.soundReferenceInterface import \
 class SoundPlayerInterface(ABC):
 
     @abstractmethod
-    async def load(self, filePath: str) -> SoundReferenceInterface:
+    async def load(self, filePath: Optional[str]) -> SoundReferenceInterface:
         pass

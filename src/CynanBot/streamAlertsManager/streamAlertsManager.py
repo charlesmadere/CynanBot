@@ -1,6 +1,7 @@
 import asyncio
 import queue
 import traceback
+from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
 from queue import SimpleQueue
 from typing import Optional
 
@@ -64,12 +65,18 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
 
         ttsEvent = alert.getTtsEvent()
+
         if ttsEvent is not None and self.__ttsManager is not None:
             await self.__ttsManager.processTtsEvent(ttsEvent)
 
         soundAlert = alert.getSoundAlert()
+        soundReference: Optional[SoundReferenceInterface] = None
+
         if soundAlert is not None and self.__soundPlayerHelper is not None:
-            await self.__soundPlayerHelper.playSoundAlert(soundAlert)
+            soundReference = await self.__soundPlayerHelper.loadSoundAlert(soundAlert)
+
+        # TODO
+        pass
 
     def start(self):
         if self.__isStarted:

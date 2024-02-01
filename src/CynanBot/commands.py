@@ -4,6 +4,8 @@ import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Optional
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -3773,28 +3775,28 @@ class TtsCommand(AbsCommand):
         self,
         administratorProvider: AdministratorProviderInterface,
         generalSettingsRepository: GeneralSettingsRepository,
+        streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
-        ttsManager: TtsManagerInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsManager, TtsManagerInterface):
-            raise ValueError(f'ttsManager argument is malformed: \"{ttsManager}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
+        self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__ttsManager: TtsManagerInterface = ttsManager
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
@@ -3821,13 +3823,17 @@ class TtsCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, '⚠ Missing a message argument! Example: !tts Hello, World!')
             return
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = message,
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
             twitchChannel = user.getHandle(),
-            userId = ctx.getAuthorId(),
-            userName = ctx.getAuthorName(),
-            donation = None,
-            raidInfo = None
+            ttsEvent = TtsEvent(
+                message = message,
+                twitchChannel = user.getHandle(),
+                userId = ctx.getAuthorId(),
+                userName = ctx.getAuthorName(),
+                donation = None,
+                raidInfo = None
+            )
         ))
 
         self.__timber.log('TtsCommand', f'Handled !tts command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

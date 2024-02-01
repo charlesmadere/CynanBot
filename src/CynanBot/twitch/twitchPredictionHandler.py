@@ -1,5 +1,6 @@
 from typing import List, Optional
-
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
+from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
@@ -13,6 +14,7 @@ from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
 from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
 from CynanBot.twitch.websocket.websocketSubscriptionType import \
     WebsocketSubscriptionType
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
@@ -22,16 +24,16 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     def __init__(
         self,
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
         websocketEventType: str = 'channelPrediction',
     ):
-        if not isinstance(timber, TimberInterface):
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
@@ -39,8 +41,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not utils.isValidStr(websocketEventType):
             raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
 
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
         self.__websocketEventType: str = websocketEventType
@@ -108,18 +110,22 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
         if subscriptionType is not WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
-        elif self.__ttsManager is None:
+        elif self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
 
-        self.__ttsManager.submitTtsEvent(TtsEvent(
-            message = f'A new prediction has begun! \"{title}\"',
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
             twitchChannel = user.getHandle(),
-            userId = userId,
-            userName = user.getHandle(),
-            donation = None,
-            raidInfo = None
+            ttsEvent = TtsEvent(
+                message = f'A new prediction has begun! \"{title}\"',
+                twitchChannel = user.getHandle(),
+                userId = userId,
+                userName = user.getHandle(),
+                donation = None,
+                raidInfo = None
+            )
         ))
 
     async def __processWebsocketEvent(

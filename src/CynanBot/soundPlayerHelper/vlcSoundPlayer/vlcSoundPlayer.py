@@ -32,15 +32,20 @@ class VlcSoundPlayer(SoundPlayerInterface):
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
-    async def load(self, filePath: str) -> SoundReferenceInterface:
+    async def load(self, filePath: Optional[str]) -> SoundReferenceInterface:
+        if filePath is not None and not isinstance(filePath, str):
+            raise TypeError(f'filePath argument is malformed: \"{filePath}\"')
+
         if not utils.isValidStr(filePath):
-            self.__timber.log('VlcSoundPlayer', f'filePath argument is invalid: \"{filePath}\"')
+            self.__timber.log('VlcSoundPlayer', f'Given filePath is None/empty: \"{filePath}\"')
 
             return SoundReferenceStub(
                 filePath = filePath,
                 timber = self.__timber
             )
         elif not await self.__soundPlayerSettingsRepository.isEnabled():
+            self.__timber.log('VlcSoundPlayer', f'Sound player is disabled so will not attempt to load file \"{filePath}\"')
+
             return SoundReferenceStub(
                 filePath = filePath,
                 timber = self.__timber
@@ -75,9 +80,9 @@ class VlcSoundPlayer(SoundPlayerInterface):
                 filePath = filePath,
                 timber = self.__timber
             )
-        else:
-            return VlcSoundReference(
-                filePath = filePath,
-                timber = self.__timber,
-                mediaPlayer = mediaPlayer
-            )
+
+        return VlcSoundReference(
+            filePath = filePath,
+            timber = self.__timber,
+            mediaPlayer = mediaPlayer
+        )
