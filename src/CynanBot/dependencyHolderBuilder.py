@@ -11,8 +11,11 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -57,7 +60,9 @@ class DependencyHolderBuilder():
 
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = None
         self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = None
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = None
         self.__triviaUtils: Optional[TriviaUtilsInterface] = None
+        self.__ttsManager: Optional[TtsManagerInterface] = None
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = None
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = None
 
@@ -70,8 +75,10 @@ class DependencyHolderBuilder():
             generalSettingsRepository = self.__generalSettingsRepository,
             sentMessageLogger = self.__sentMessageLogger,
             soundPlayerHelper = self.__soundPlayerHelper,
+            streamAlertsManager = self.__streamAlertsManager,
             timber = self.__timber,
             triviaUtils = self.__triviaUtils,
+            ttsManager = self.__ttsManager,
             twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
             twitchUtils = self.__twitchUtils,
             websocketConnectionServer = self.__websocketConnectionServer
@@ -79,7 +86,7 @@ class DependencyHolderBuilder():
 
     def setCutenessUtils(self, instance: CutenessUtilsInterface) -> Self:
         if not isinstance(instance, CutenessUtilsInterface):
-            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
 
         self.__cutenessUtils = instance
         return self
@@ -91,23 +98,37 @@ class DependencyHolderBuilder():
         self.__soundPlayerHelper = instance
         return self
 
+    def setStreamAlertsManager(self, instance: StreamAlertsManagerInterface) -> Self:
+        if not isinstance(instance, StreamAlertsManagerInterface):
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+
+        self.__streamAlertsManager = instance
+        return self
+
     def setTriviaUtils(self, instance: TriviaUtilsInterface) -> Self:
         if not isinstance(instance, TriviaUtilsInterface):
-            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
 
         self.__triviaUtils = instance
         return self
 
+    def setTtsManager(self, instance: TtsManagerInterface) -> Self:
+        if not isinstance(instance, TtsManagerInterface):
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+
+        self.__ttsManager = instance
+        return self
+
     def setTwitchPredictionWebsocketUtils(self, instance: TwitchPredictionWebsocketUtilsInterface) -> Self:
         if not isinstance(instance, TwitchPredictionWebsocketUtilsInterface):
-            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
 
         self.__twitchPredictionWebsocketUtils = instance
         return self
 
     def setWebsocketConnectionServer(self, instance: WebsocketConnectionServerInterface) -> Self:
         if not isinstance(instance, WebsocketConnectionServerInterface):
-            raise ValueError(f'instance argument is malformed: \"{instance}\"')
+            raise TypeError(f'instance argument is malformed: \"{instance}\"')
 
         self.__websocketConnectionServer = instance
         return self

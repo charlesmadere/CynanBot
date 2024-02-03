@@ -10,8 +10,11 @@ from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
+from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -30,8 +33,10 @@ class DependencyHolder():
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         soundPlayerHelper: Optional[SoundPlayerHelperInterface],
+        streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         triviaUtils: Optional[TriviaUtilsInterface],
+        ttsManager: Optional[TtsManagerInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchUtils: TwitchUtilsInterface,
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
@@ -49,11 +54,15 @@ class DependencyHolder():
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
-            raise TypeError(f'vlcHelper argument is malformed: \"{soundPlayerHelper}\"')
+            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
+        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
             raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
+            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -68,8 +77,10 @@ class DependencyHolder():
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = soundPlayerHelper
+        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
+        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
@@ -95,11 +106,17 @@ class DependencyHolder():
     def getSoundPlayerHelper(self) -> Optional[SoundPlayerHelperInterface]:
         return self.__soundPlayerHelper
 
+    def getStreamAlertsManager(self) -> Optional[StreamAlertsManagerInterface]:
+        return self.__streamAlertsManager
+
     def getTimber(self) -> TimberInterface:
         return self.__timber
 
     def getTriviaUtils(self) -> Optional[TriviaUtilsInterface]:
         return self.__triviaUtils
+
+    def getTtsManager(self) -> Optional[TtsManagerInterface]:
+        return self.__ttsManager
 
     def getTwitchPredictionWebsocketUtils(self) -> Optional[TwitchPredictionWebsocketUtilsInterface]:
         return self.__twitchPredictionWebsocketUtils
