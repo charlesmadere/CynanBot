@@ -1110,7 +1110,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addUserCommand.handleCommand(context)
 
-    @commands.command(name = 'answer', aliases = [ 'ANSWER', 'a', 'A' ])
+    @commands.command(name = 'answer', aliases = [ 'ANSWER', 'Answer', 'a', 'A' ])
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__answerCommand.handleCommand(context)
@@ -1280,7 +1280,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__setTwitchCodeCommand.handleCommand(context)
 
-    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'sa', 'SA', 'sanswer', 'SANSWER' ])
+    @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'sanswer', 'SANSWER' ])
     async def command_superanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__superAnswerCommand.handleCommand(context)
