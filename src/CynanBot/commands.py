@@ -3775,7 +3775,6 @@ class TtsCommand(AbsCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
-        generalSettingsRepository: GeneralSettingsRepository,
         streamAlertsManager: StreamAlertsManagerInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -3783,8 +3782,6 @@ class TtsCommand(AbsCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -3795,7 +3792,6 @@ class TtsCommand(AbsCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -3803,9 +3799,8 @@ class TtsCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
-        if not generalSettings.isTtsEnabled() or not user.isTtsEnabled():
+        if not user.isTtsEnabled():
             return
 
         administrator = await self.__administratorProvider.getAdministratorUserId()

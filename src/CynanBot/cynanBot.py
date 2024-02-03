@@ -449,7 +449,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
         self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
@@ -595,7 +594,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if streamAlertsManager is None:
             self.__ttsCommand: AbsCommand = StubCommand()
         else:
-            self.__ttsCommand: AbsCommand = TtsCommand(administratorProvider, generalSettingsRepository, streamAlertsManager, timber, twitchUtils, usersRepository)
+            self.__ttsCommand: AbsCommand = TtsCommand(administratorProvider, streamAlertsManager, timber, twitchUtils, usersRepository)
 
         if locationsRepository is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
@@ -813,16 +812,16 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
             cheerHandler: Optional[AbsTwitchCheerHandler] = TwitchCheerHandler(
                 cheerActionHelper = self.__cheerActionHelper,
+                streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
-                ttsManager = self.__ttsManager,
                 twitchChannelProvider = self
             )
 
             pollHandler: Optional[AbsTwitchPollHandler] = TwitchPollHandler(
-                timber = self.__timber,
-                ttsManager = self.__ttsManager
+                streamAlertsManager = self.__streamAlertsManager,
+                timber = self.__timber
             )
 
             predictionHandler: Optional[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
@@ -833,15 +832,15 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             )
 
             raidHandler: Optional[AbsTwitchRaidHandler] = TwitchRaidHandler(
-                timber = self.__timber,
-                ttsManager = self.__ttsManager
+                streamAlertsManager = self.__streamAlertsManager,
+                timber = self.__timber
             )
 
             subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
+                streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
                 triviaGameMachine = self.__triviaGameMachine,
-                ttsManager = self.__ttsManager,
                 twitchChannelProvider = self,
                 twitchTokensUtils = self.__twitchTokensUtils,
                 userIdsRepository = self.__userIdsRepository

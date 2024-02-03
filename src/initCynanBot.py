@@ -120,6 +120,14 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.jsonFileReader import JsonFileReader
 from CynanBot.storage.linesFileReader import LinesFileReader
 from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
+from CynanBot.streamAlertsManager.streamAlertsManager import \
+    StreamAlertsManager
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
+from CynanBot.streamAlertsManager.streamAlertsSettingsRepository import \
+    StreamAlertsSettingsRepository
+from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import \
+    StreamAlertsSettingsRepositoryInterface
 from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
@@ -761,7 +769,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
 
 
 #########################################
-## Sound player initialization section ##
+## Sound Player initialization section ##
 #########################################
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
@@ -773,7 +781,7 @@ soundPlayer: SoundPlayerInterface = VlcSoundPlayer(
     timber = timber
 )
 
-soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
+soundPlayerHelper: Optional[SoundPlayerHelperInterface] = SoundPlayerHelper(
     soundPlayer = soundPlayer,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
@@ -784,30 +792,42 @@ soundPlayerHelper: SoundPlayerHelperInterface = SoundPlayerHelper(
 ## TTS initialization section ##
 ################################
 
-ttsManager: Optional[TtsManagerInterface] = None
-
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
-if generalSettingsSnapshot.isTtsEnabled():
-    ttsManager = DecTalkManager(
-        backgroundTaskHelper = backgroundTaskHelper,
-        decTalkCommandBuilder = DecTalkCommandBuilder(
-            contentScanner = contentScanner,
-            emojiHelper = emojiHelper,
-            timber = timber,
-            ttsSettingsRepository = ttsSettingsRepository
-        ),
-        decTalkFileManager = DecTalkFileManager(
-            backgroundTaskHelper = backgroundTaskHelper,
-            timber = timber
-        ),
-        soundPlayerHelper = soundPlayerHelper,
-        systemCommandHelper = systemCommandHelper,
+ttsManager: Optional[TtsManagerInterface] = DecTalkManager(
+    decTalkCommandBuilder = DecTalkCommandBuilder(
+        contentScanner = contentScanner,
+        emojiHelper = emojiHelper,
         timber = timber,
         ttsSettingsRepository = ttsSettingsRepository
-    )
+    ),
+    decTalkFileManager = DecTalkFileManager(
+        backgroundTaskHelper = backgroundTaskHelper,
+        timber = timber
+    ),
+    systemCommandHelper = systemCommandHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
+
+#################################################
+## Stream Alerts Manager intialization section ##
+#################################################
+
+streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = StreamAlertsSettingsRepository(
+    settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')
+)
+
+streamAlertsManager: Optional[StreamAlertsManagerInterface] = StreamAlertsManager(
+    backgroundTaskHelper = backgroundTaskHelper,
+    soundPlayerHelper = soundPlayerHelper,
+    streamAlertsSettingsRepository = streamAlertsSettingsRepository,
+    timber = timber,
+    ttsManager = ttsManager
+)
 
 
 #########################################
@@ -854,7 +874,6 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     ),
     supStreamerChatAction = None,
     timber = timber,
-    ttsManager = ttsManager,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
@@ -887,11 +906,10 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    administratorProvider = administratorProvider,
     cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
+    streamAlertsManager = streamAlertsManager,
     timber = timber,
-    ttsManager = ttsManager,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
@@ -966,6 +984,7 @@ cynanBot = CynanBot(
     starWarsQuotesRepository = StarWarsQuotesRepository(
         quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
     ),
+    streamAlertsManager = streamAlertsManager,
     timber = timber,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,
@@ -981,7 +1000,6 @@ cynanBot = CynanBot(
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
     triviaUtils = triviaUtils,
-    ttsManager = ttsManager,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
