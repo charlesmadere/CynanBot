@@ -1,11 +1,9 @@
 import re
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import List, Optional, Pattern
 
 import CynanBot.misc.utils as utils
-from CynanBot.administratorProviderInterface import \
-    AdministratorProviderInterface
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -49,7 +47,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
             raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
@@ -67,7 +65,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(timeZone, timezone):
+        elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
@@ -78,7 +76,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 
