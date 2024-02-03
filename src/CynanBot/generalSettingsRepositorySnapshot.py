@@ -138,9 +138,6 @@ class GeneralSettingsRepositorySnapshot():
     def isTriviaGameEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'triviaGameEnabled', True)
 
-    def isTtsEnabled(self) -> bool:
-        return utils.getBoolFromDict(self.__jsonContents, 'ttsEnabled', False)
-
     def isWeatherEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'weatherEnabled', False)
 
