@@ -167,7 +167,6 @@ from CynanBot.trivia.triviaRepositories.triviaRepositoryInterface import \
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
-from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
