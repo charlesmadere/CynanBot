@@ -372,7 +372,6 @@ ttsManager: Optional[TtsManagerInterface] = DecTalkManager(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
     ),
-    systemCommandHelper = systemCommandHelper,
     timber = timber,
     ttsSettingsRepository = ttsSettingsRepository
 )
