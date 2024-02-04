@@ -72,12 +72,13 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         playbackResult: Optional[int] = None
 
         try:
+            mediaPlayer.set_media(media)
             playbackResult = mediaPlayer.play()
         except Exception as e:
             exception = e
 
         if playbackResult != 0 or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sound alert ({alert=}) ({filePath=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sound alert ({alert=}) ({filePath=}) ({media=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
             return False
 
         self.__timber.log('VlcSoundPlayerManager', f'Started playing sound alert ({alert=}) ({filePath=}) ({media=}) ({playbackResult=})')
