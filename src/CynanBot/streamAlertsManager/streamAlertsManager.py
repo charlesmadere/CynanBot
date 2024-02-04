@@ -8,8 +8,6 @@ import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
-from CynanBot.soundPlayerHelper.soundReferenceInterface import \
-    SoundReferenceInterface
 from CynanBot.streamAlertsManager.currentStreamAlert import CurrentStreamAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
