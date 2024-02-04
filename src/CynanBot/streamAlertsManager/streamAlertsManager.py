@@ -10,11 +10,13 @@ from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
 from CynanBot.soundPlayerHelper.soundReferenceInterface import \
     SoundReferenceInterface
+from CynanBot.streamAlertsManager.currentStreamAlert import CurrentStreamAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import \
     StreamAlertsSettingsRepositoryInterface
+from CynanBot.streamAlertsManager.streamAlertState import StreamAlertState
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 
@@ -59,25 +61,24 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
         self.__isStarted: bool = False
+        self.__currentAlert: Optional[CurrentStreamAlert] = None
         self.__alertQueue: SimpleQueue[StreamAlert] = SimpleQueue()
 
-    async def __processAlert(self, alert: StreamAlert):
-        if not isinstance(alert, StreamAlert):
-            raise TypeError(f'alert argument is malformed: \"{alert}\"')
+    async def __processCurrentAlert(self) -> bool:
+        currentAlert = self.__currentAlert
 
-        ttsEvent = alert.getTtsEvent()
+        if currentAlert is None:
+            return False
 
-        if ttsEvent is not None and self.__ttsManager is not None:
-            await self.__ttsManager.processTtsEvent(ttsEvent)
+        currentState = currentAlert.getAlertState()
 
-        soundAlert = alert.getSoundAlert()
-        soundReference: Optional[SoundReferenceInterface] = None
+        soundPlayerHelper = self.__soundPlayerHelper
+        soundAlert = currentAlert.getSoundAlert()
 
-        if soundAlert is not None and self.__soundPlayerHelper is not None:
-            soundReference = await self.__soundPlayerHelper.loadSoundAlert(soundAlert)
+        ttsManager = self.__ttsManager
+        ttsEvent = currentAlert.getTtsEvent()
 
-        # TODO
-        pass
+        return False
 
     def start(self):
         if self.__isStarted:
@@ -91,6 +92,10 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     async def __startAlertLoop(self):
         while True:
+            if await self.__processCurrentAlert():
+                await asyncio.sleep(self.__queueSleepTimeSeconds)
+                continue
+
             alert: Optional[StreamAlert] = None
 
             if not self.__alertQueue.empty():
@@ -99,14 +104,8 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 except queue.Empty as e:
                     self.__timber.log('StreamAlertsManager', f'Encountered queue.Empty when grabbing alert from queue (queue size: {self.__alertQueue.qsize()}): {e}', e, traceback.format_exc())
 
-            if alert is None:
-                await asyncio.sleep(self.__queueSleepTimeSeconds)
-                continue
-
-            try:
-                await self.__processAlert(alert)
-            except Exception as e:
-                self.__timber.log('StreamAlertsManager', f'Encountered unexpected exception when processing alert (alert: {alert}) (queue size: {self.__alertQueue.qsize()}): {e}', e, traceback.format_exc())
+            if alert is not None:
+                self.__currentAlert = CurrentStreamAlert(alert)
 
             await asyncio.sleep(await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds())
 

@@ -1,5 +1,4 @@
 import CynanBot.misc.utils as utils
-from typing import Optional
 from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
     SoundPlayerHelperInterface
@@ -7,8 +6,10 @@ from CynanBot.soundPlayerHelper.soundPlayerInterface import \
     SoundPlayerInterface
 from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerHelper.soundReferenceInterface import \
+    SoundReferenceInterface
+from CynanBot.soundPlayerHelper.soundReferenceStub import SoundReferenceStub
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.soundPlayerHelper.soundReferenceInterface import SoundReferenceInterface
 
 
 class SoundPlayerHelper(SoundPlayerHelperInterface):
@@ -30,17 +31,24 @@ class SoundPlayerHelper(SoundPlayerHelperInterface):
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
-    async def loadSoundAlert(self, soundAlert: SoundAlert) -> Optional[SoundReferenceInterface]:
+    async def loadSoundAlert(self, soundAlert: SoundAlert) -> SoundReferenceInterface:
         if not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
-            return None
+            return SoundReferenceStub(
+                filePath = None,
+                timber = self.__timber
+            )
 
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(soundAlert)
 
         if not utils.isValidStr(filePath):
             self.__timber.log('SoundPlayerHelper', f'No file path available for sound alert \"{soundAlert}\" ({filePath=})')
-            return None
+
+            return SoundReferenceStub(
+                filePath = None,
+                timber = self.__timber
+            )
 
         return await self.__soundPlayer.load(filePath)

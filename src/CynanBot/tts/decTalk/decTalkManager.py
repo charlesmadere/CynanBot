@@ -1,6 +1,12 @@
+import asyncio
+from asyncio import CancelledError as AsyncioCancelledError
+from asyncio import TimeoutError as AsyncioTimeoutError
+from asyncio.subprocess import Process
+from typing import ByteString, Optional, Tuple
+
+import psutil
+
 import CynanBot.misc.utils as utils
-from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
-    SystemCommandHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
@@ -18,7 +24,6 @@ class DecTalkManager(TtsManagerInterface):
         self,
         decTalkCommandBuilder: DecTalkCommandBuilder,
         decTalkFileManager: DecTalkFileManagerInterface,
-        systemCommandHelper: SystemCommandHelperInterface,
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
@@ -26,18 +31,82 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
         elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
-        elif not isinstance(systemCommandHelper, SystemCommandHelperInterface):
-            raise TypeError(f'systemCommandHelper argument is malformed: \"{systemCommandHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
-        self.__systemCommandHelper: SystemCommandHelperInterface = systemCommandHelper
         self.__timber: TimberInterface = timber
         self.__decTalkCommandBuilder: TtsCommandBuilderInterface = decTalkCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+
+        self.__isExecuting: bool = False
+
+    async def __executeDecTalkCommand(self, command: str):
+        if not utils.isValidStr(command):
+            raise TypeError(f'command argument is malformed: \"{command}\"')
+
+        if self.__isExecuting:
+            self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
+            return
+
+        self.__isExecuting = True
+        timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
+
+        process: Optional[Process] = None
+        outputTuple: Optional[Tuple[ByteString, ByteString]] = None
+        exception: Optional[BaseException] = None
+
+        try:
+            process = await asyncio.create_subprocess_shell(
+                cmd = command,
+                stdout = asyncio.subprocess.PIPE,
+                stderr = asyncio.subprocess.PIPE
+            )
+
+            outputTuple = await asyncio.wait_for(
+                fut = process.communicate(),
+                timeout = timeoutSeconds
+            )
+        except BaseException as e:
+            exception = e
+
+        if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
+            await self.__killDecTalkProcess(process)
+
+        process = None
+        outputString: Optional[str] = None
+
+        if outputTuple is not None and len(outputTuple) >= 2:
+            outputString = outputTuple[1].decode('utf-8').strip()
+
+        self.__timber.log('DecTalkManager', f'Ran Dec Talk system command ({command}) ({outputString=}) ({exception=})')
+        self.__isExecuting = False
+
+    async def __killDecTalkProcess(self, process: Optional[Process]):
+        if process is None:
+            self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process is None: \"{process}\"')
+            return
+        elif not isinstance(process, Process):
+            raise TypeError(f'process argument is malformed: \"{process}\"')
+        elif process.returncode is not None:
+            self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process (\"{process}\") has a return code: \"{process.returncode}\"')
+            return
+
+        self.__timber.log('DecTalkManager', f'Killing Dec Talk process \"{process}\"...')
+        parent = psutil.Process(process.pid)
+        childCount = 0
+
+        for child in parent.children(recursive = True):
+            child.terminate()
+            childCount += 1
+
+        parent.terminate()
+        self.__timber.log('DecTalkManager', f'Finished killing process \"{process}\" ({childCount=})')
+
+    async def isExecuting(self) -> bool:
+        return self.__isExecuting
 
     async def processTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
@@ -60,10 +129,5 @@ class DecTalkManager(TtsManagerInterface):
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
-
-        await self.__systemCommandHelper.executeCommand(
-            command = f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"',
-            timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
-        )
-
+        await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__decTalkFileManager.deleteFile(fileName)

@@ -80,9 +80,9 @@ class VlcSoundPlayer(SoundPlayerInterface):
                 filePath = filePath,
                 timber = self.__timber
             )
-
-        return VlcSoundReference(
-            filePath = filePath,
-            timber = self.__timber,
-            mediaPlayer = mediaPlayer
-        )
+        else:
+            return VlcSoundReference(
+                filePath = filePath,
+                timber = self.__timber,
+                mediaPlayer = mediaPlayer
+            )
