@@ -73,7 +73,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         ttsManager = self.__ttsManager
         ttsEvent = currentAlert.getTtsEvent()
 
-        if currentAlert.getAlertState() is StreamAlertState.NOT_STARTED and soundAlert is not None and soundPlayerManager is not None:
+        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED) and soundAlert is not None and soundPlayerManager is not None:
             if await soundPlayerManager.isPlaying():
                 return True
             elif currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED:
@@ -84,7 +84,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             else:
                 currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
 
-        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_FINISHED) and ttsEvent is not None and ttsManager is not None:
+        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.TTS_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_FINISHED) and ttsEvent is not None and ttsManager is not None:
             if await ttsManager.isPlaying():
                 return True
             elif currentAlert.getAlertState() is StreamAlertState.TTS_STARTED:
