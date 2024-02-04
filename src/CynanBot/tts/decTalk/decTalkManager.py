@@ -41,17 +41,17 @@ class DecTalkManager(TtsManagerInterface):
         self.__decTalkCommandBuilder: TtsCommandBuilderInterface = decTalkCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__isExecuting: bool = False
+        self.__isPlaying: bool = False
 
     async def __executeDecTalkCommand(self, command: str):
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
-        if self.__isExecuting:
+        if self.__isPlaying:
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
             return
 
-        self.__isExecuting = True
+        self.__isPlaying = True
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
         process: Optional[Process] = None
@@ -82,7 +82,7 @@ class DecTalkManager(TtsManagerInterface):
             outputString = outputTuple[1].decode('utf-8').strip()
 
         self.__timber.log('DecTalkManager', f'Ran Dec Talk system command ({command}) ({outputString=}) ({exception=})')
-        self.__isExecuting = False
+        self.__isPlaying = False
 
     async def __killDecTalkProcess(self, process: Optional[Process]):
         if process is None:
@@ -105,8 +105,8 @@ class DecTalkManager(TtsManagerInterface):
         parent.terminate()
         self.__timber.log('DecTalkManager', f'Finished killing process \"{process}\" ({childCount=})')
 
-    async def isExecuting(self) -> bool:
-        return self.__isExecuting
+    async def isPlaying(self) -> bool:
+        return self.__isPlaying
 
     async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):

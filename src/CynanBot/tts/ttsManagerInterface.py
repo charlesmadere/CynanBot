@@ -6,7 +6,7 @@ from CynanBot.tts.ttsEvent import TtsEvent
 class TtsManagerInterface(ABC):
 
     @abstractmethod
-    async def isExecuting(self) -> bool:
+    async def isPlaying(self) -> bool:
         pass
 
     @abstractmethod
