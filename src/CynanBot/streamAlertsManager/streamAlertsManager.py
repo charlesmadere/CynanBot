@@ -64,16 +64,14 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     async def __processCurrentAlert(self) -> bool:
         currentAlert = self.__currentAlert
+        soundPlayerHelper = self.__soundPlayerHelper
+        ttsManager = self.__ttsManager
 
         if currentAlert is None:
             return False
 
         currentState = currentAlert.getAlertState()
-
-        soundPlayerHelper = self.__soundPlayerHelper
         soundAlert = currentAlert.getSoundAlert()
-
-        ttsManager = self.__ttsManager
         ttsEvent = currentAlert.getTtsEvent()
 
         return False
