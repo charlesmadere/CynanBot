@@ -1,16 +1,16 @@
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import aiofiles.ospath
 import vlc
 
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -97,3 +97,12 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'Started playing sound alert (\"{alert}\") ({filePath=}) ({durationMillis=})')
         else:
             self.__timber.log('VlcSoundPlayerManager', f'Attempted to play sound alert (\"{alert}\") ({filePath=}) ({durationMillis=}) but encountered an exception: {exception}', exception, traceback.format_exc())
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'currentSoundEndTime': self.__currentSoundEndTime
+        }

@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import ByteString, Optional, Tuple
+from typing import Any, ByteString, Dict, Optional, Tuple
 
 import psutil
 
@@ -134,3 +134,12 @@ class DecTalkManager(TtsManagerInterface):
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__decTalkFileManager.deleteFile(fileName)
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'isPlaying': self.__isPlaying
+        }
