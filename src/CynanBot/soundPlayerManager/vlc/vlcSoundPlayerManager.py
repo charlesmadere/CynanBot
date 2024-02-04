@@ -46,7 +46,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         alert: SoundAlert,
         filePath: str,
         mediaPlayer: vlc.MediaPlayer
-    ) -> int:
+    ) -> Optional[int]:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
         elif not utils.isValidStr(filePath):
@@ -64,7 +64,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         if not utils.isValidNum(mediaLengthMillis) or mediaLengthMillis <= 0 or exception is not None:
             self.__timber.log('VlcSoundPlayerManager', f'Unable to determine playback duration of alert ({alert=}) ({filePath=}) ({mediaLengthMillis=}) ({exception=})', exception, traceback.format_exc())
-            return utils.getIntMinSafeSize()
+            return None
 
         return int(round(mediaLengthMillis)) + self.__soundAlertBufferMillis
 
@@ -128,7 +128,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             mediaPlayer = mediaPlayer
         )
 
-        if durationMillis < 1:
+        if not utils.isValidInt(durationMillis):
             self.__timber.log('VlcSoundPlayerManager', f'Failed to determine sound alert\'s duration, or its duration is 0 ({alert=}) ({filePath=}) ({playbackResult=}) ({durationMillis=})')
             return False
 
