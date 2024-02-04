@@ -74,17 +74,14 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerHelper.soundPlayerHelper import SoundPlayerHelper
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
-    SoundPlayerHelperInterface
-from CynanBot.soundPlayerHelper.soundPlayerInterface import \
-    SoundPlayerInterface
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
-from CynanBot.soundPlayerHelper.vlcSoundPlayer.vlcSoundPlayer import \
-    VlcSoundPlayer
+from CynanBot.soundPlayerManager.vlc.vlcSoundPlayerManager import \
+    VlcSoundPlayerManager
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingPsqlDatabase import BackingPsqlDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
@@ -341,13 +338,7 @@ soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPla
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
 )
 
-soundPlayer: SoundPlayerInterface = VlcSoundPlayer(
-    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
-    timber = timber
-)
-
-soundPlayerHelper: Optional[SoundPlayerHelperInterface] = SoundPlayerHelper(
-    soundPlayer = soundPlayer,
+soundPlayerManager: Optional[SoundPlayerManagerInterface] = VlcSoundPlayerManager(
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -387,7 +378,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
 
 streamAlertsManager: Optional[StreamAlertsManagerInterface] = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
-    soundPlayerHelper = soundPlayerHelper,
+    soundPlayerManager = soundPlayerManager,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
     timber = timber,
     ttsManager = ttsManager

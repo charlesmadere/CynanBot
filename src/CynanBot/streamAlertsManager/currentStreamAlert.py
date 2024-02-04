@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertState import StreamAlertState
 from CynanBot.tts.ttsEvent import TtsEvent

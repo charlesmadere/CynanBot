@@ -47,7 +47,7 @@ class DecTalkManager(TtsManagerInterface):
         if not utils.isValidStr(command):
             raise TypeError(f'command argument is malformed: \"{command}\"')
 
-        if self.__isPlaying:
+        if await self.isPlaying():
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
             return
 
@@ -113,6 +113,9 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isTtsEnabled():
+            return
+        elif await self.isPlaying():
+            self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
             return
 
         command = await self.__decTalkCommandBuilder.buildAndCleanEvent(event)

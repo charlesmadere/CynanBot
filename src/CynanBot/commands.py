@@ -55,7 +55,7 @@ from CynanBot.recurringActions.weatherRecurringAction import \
     WeatherRecurringAction
 from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface

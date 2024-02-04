@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.tts.ttsEvent import TtsEvent
 
 

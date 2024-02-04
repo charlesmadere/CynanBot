@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 

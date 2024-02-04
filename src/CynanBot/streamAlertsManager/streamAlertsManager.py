@@ -6,8 +6,8 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
-    SoundPlayerHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
 from CynanBot.streamAlertsManager.currentStreamAlert import CurrentStreamAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
@@ -24,7 +24,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
-        soundPlayerHelper: Optional[SoundPlayerHelperInterface],
+        soundPlayerManager: Optional[SoundPlayerManagerInterface],
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
@@ -33,8 +33,8 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
-            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
+        elif soundPlayerManager is not None and not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+            raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(streamAlertsSettingsRepository, StreamAlertsSettingsRepositoryInterface):
             raise TypeError(f'streamAlertsSettingsRepository argument is malformed: \"{streamAlertsSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -51,7 +51,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
-        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = soundPlayerHelper
+        self.__soundPlayerManager: Optional[SoundPlayerManagerInterface] = soundPlayerManager
         self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
         self.__timber: TimberInterface = timber
         self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
@@ -64,7 +64,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     async def __processCurrentAlert(self) -> bool:
         currentAlert = self.__currentAlert
-        soundPlayerHelper = self.__soundPlayerHelper
+        soundPlayerManager = self.__soundPlayerManager
         ttsManager = self.__ttsManager
 
         if currentAlert is None:

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 
 
 class SoundPlayerManagerInterface(ABC):

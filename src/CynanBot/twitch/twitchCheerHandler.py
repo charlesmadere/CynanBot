@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface

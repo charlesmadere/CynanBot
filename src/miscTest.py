@@ -15,14 +15,14 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
-from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerHelper.soundAlertHelper import SoundPlayerHelper
 from CynanBot.soundPlayerHelper.soundAlertHelperInterface import \
     SoundPlayerHelperInterface
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepository import \
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
     SoundPlayerSettingsRepository
-from CynanBot.soundPlayerHelper.soundPlayerSettingsRepositoryInterface import \
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.storage.linesStaticReader import LinesStaticReader
