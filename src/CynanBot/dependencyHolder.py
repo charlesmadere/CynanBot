@@ -8,8 +8,8 @@ from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
-    SoundPlayerHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -32,7 +32,7 @@ class DependencyHolder():
         cutenessUtils: Optional[CutenessUtilsInterface],
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
-        soundPlayerHelper: Optional[SoundPlayerHelperInterface],
+        soundPlayerManager: Optional[SoundPlayerManagerInterface],
         streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         triviaUtils: Optional[TriviaUtilsInterface],
@@ -53,8 +53,8 @@ class DependencyHolder():
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif soundPlayerHelper is not None and not isinstance(soundPlayerHelper, SoundPlayerHelperInterface):
-            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerHelper}\"')
+        elif soundPlayerManager is not None and not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
+            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerManager}\"')
         elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -76,7 +76,7 @@ class DependencyHolder():
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = cutenessUtils
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
-        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = soundPlayerHelper
+        self.__soundPlayerManager: Optional[SoundPlayerManagerInterface] = soundPlayerManager
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
@@ -103,8 +103,8 @@ class DependencyHolder():
     def getSentMessageLogger(self) -> SentMessageLoggerInterface:
         return self.__sentMessageLogger
 
-    def getSoundPlayerHelper(self) -> Optional[SoundPlayerHelperInterface]:
-        return self.__soundPlayerHelper
+    def getSoundPlayerManager(self) -> Optional[SoundPlayerManagerInterface]:
+        return self.__soundPlayerManager
 
     def getStreamAlertsManager(self) -> Optional[StreamAlertsManagerInterface]:
         return self.__streamAlertsManager

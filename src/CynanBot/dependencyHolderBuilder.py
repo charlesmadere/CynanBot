@@ -9,8 +9,8 @@ from CynanBot.dependencyHolder import DependencyHolder
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerHelper.soundPlayerHelperInterface import \
-    SoundPlayerHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
+    SoundPlayerManagerInterface
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -59,7 +59,7 @@ class DependencyHolderBuilder():
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
         self.__cutenessUtils: Optional[CutenessUtilsInterface] = None
-        self.__soundPlayerHelper: Optional[SoundPlayerHelperInterface] = None
+        self.__soundPlayerManager: Optional[SoundPlayerManagerInterface] = None
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = None
         self.__triviaUtils: Optional[TriviaUtilsInterface] = None
         self.__ttsManager: Optional[TtsManagerInterface] = None
@@ -74,7 +74,7 @@ class DependencyHolderBuilder():
             cutenessUtils = self.__cutenessUtils,
             generalSettingsRepository = self.__generalSettingsRepository,
             sentMessageLogger = self.__sentMessageLogger,
-            soundPlayerHelper = self.__soundPlayerHelper,
+            soundPlayerManager = self.__soundPlayerManager,
             streamAlertsManager = self.__streamAlertsManager,
             timber = self.__timber,
             triviaUtils = self.__triviaUtils,
@@ -91,11 +91,11 @@ class DependencyHolderBuilder():
         self.__cutenessUtils = instance
         return self
 
-    def setSoundPlayerHelper(self, instance: SoundPlayerHelperInterface) -> Self:
-        if not isinstance(instance, SoundPlayerHelperInterface):
+    def setSoundPlayerHelper(self, instance: SoundPlayerManagerInterface) -> Self:
+        if not isinstance(instance, SoundPlayerManagerInterface):
             raise TypeError(f'instance argument is malformed: \"{instance}\"')
 
-        self.__soundPlayerHelper = instance
+        self.__soundPlayerManager = instance
         return self
 
     def setStreamAlertsManager(self, instance: StreamAlertsManagerInterface) -> Self:
