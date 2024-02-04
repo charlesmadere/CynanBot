@@ -50,27 +50,27 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         now = datetime.now(self.__timeZone)
         return currentSoundEndTime <= now
 
-    async def playSoundAlert(self, alert: SoundAlert):
+    async def playSoundAlert(self, alert: SoundAlert) -> bool:
         if not isinstance(alert, SoundAlert):
             raise TypeError(f'alert argument is malformed: \"{alert}\"')
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
-            return
+            return False
         elif await self.isPlaying():
             self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound alert!')
-            return
+            return False
 
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(alert)
 
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert \"{alert}\" ({filePath=})')
-            return
+            return False
         elif not await aiofiles.ospath.exists(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'Sound alert\'s (\"{alert}\") file path does not exist ({filePath=})')
-            return
+            return False
         elif not await aiofiles.ospath.isfile(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'Sound alert\'s (\"{alert}\") file path is not a file ({filePath=})')
-            return
+            return False
 
         exception: Optional[Exception] = None
         mediaPlayer: Optional[vlc.MediaPlayer] = None
@@ -82,7 +82,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         if mediaPlayer is None or exception is not None:
             self.__timber.log('VlcSoundPlayerManager', f'Failed to load sound alert (\"{alert}\") with file path \"{filePath}\": {exception}', exception, traceback.format_exc())
-            return
+            return False
 
         now = datetime.now(self.__timeZone)
         durationMillis = mediaPlayer.get_length() + self.__soundAlertBufferMillis
@@ -95,8 +95,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         if exception is None:
             self.__timber.log('VlcSoundPlayerManager', f'Started playing sound alert (\"{alert}\") ({filePath=}) ({durationMillis=})')
+            return True
         else:
             self.__timber.log('VlcSoundPlayerManager', f'Attempted to play sound alert (\"{alert}\") ({filePath=}) ({durationMillis=}) but encountered an exception: {exception}', exception, traceback.format_exc())
+            return False
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

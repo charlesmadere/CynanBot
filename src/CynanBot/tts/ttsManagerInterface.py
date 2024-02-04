@@ -10,5 +10,5 @@ class TtsManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def playTtsEvent(self, event: TtsEvent):
+    async def playTtsEvent(self, event: TtsEvent) -> bool:
         pass

@@ -108,32 +108,34 @@ class DecTalkManager(TtsManagerInterface):
     async def isPlaying(self) -> bool:
         return self.__isPlaying
 
-    async def playTtsEvent(self, event: TtsEvent):
+    async def playTtsEvent(self, event: TtsEvent) -> bool:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
         if not await self.__ttsSettingsRepository.isTtsEnabled():
-            return
+            return False
         elif await self.isPlaying():
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
-            return
+            return False
 
         command = await self.__decTalkCommandBuilder.buildAndCleanEvent(event)
 
         if not utils.isValidStr(command):
             self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a valid command: \"{event}\"')
-            return
+            return False
 
         fileName = await self.__decTalkFileManager.writeCommandToNewFile(command)
 
         if not utils.isValidStr(fileName):
             self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to temporary file ({command=})')
-            return
+            return False
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__decTalkFileManager.deleteFile(fileName)
+
+        return True
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

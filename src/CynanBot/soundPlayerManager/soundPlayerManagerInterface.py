@@ -10,5 +10,5 @@ class SoundPlayerManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def playSoundAlert(self, alert: SoundAlert):
+    async def playSoundAlert(self, alert: SoundAlert) -> bool:
         pass
