@@ -62,7 +62,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         except Exception as e:
             exception = e
 
-        if not utils.isValidNum(mediaLengthMillis) or mediaLengthMillis < 0 or exception is not None:
+        if not utils.isValidNum(mediaLengthMillis) or mediaLengthMillis <= 0 or exception is not None:
             self.__timber.log('VlcSoundPlayerManager', f'Unable to determine playback duration of alert ({alert=}) ({filePath=}) ({mediaLengthMillis=}) ({exception=})', exception, traceback.format_exc())
             return utils.getIntMinSafeSize()
 
