@@ -111,7 +111,6 @@ class UsersRepository(UsersRepositoryInterface):
         isImytSlurpMessageEnabled = utils.getBoolFromDict(userJson, 'imytSlurpMessageEnabled', False)
         isJamCatMessageEnabled = utils.getBoolFromDict(userJson, 'jamCatMessageEnabled', False)
         isJishoEnabled = utils.getBoolFromDict(userJson, 'jishoEnabled', False)
-        isJokeTriviaRepositoryEnabled = utils.getBoolFromDict(userJson, 'jokeTriviaRepositoryEnabled', False)
         isLoremIpsumEnabled = utils.getBoolFromDict(userJson, 'loremIpsumEnabled', True)
         isPkmnEnabled = utils.getBoolFromDict(userJson, 'pkmnEnabled', False)
         isPokepediaEnabled = utils.getBoolFromDict(userJson, 'pokepediaEnabled', False)
@@ -233,7 +232,6 @@ class UsersRepository(UsersRepositoryInterface):
             isImytSlurpMessageEnabled = isImytSlurpMessageEnabled,
             isJamCatMessageEnabled = isJamCatMessageEnabled,
             isJishoEnabled = isJishoEnabled,
-            isJokeTriviaRepositoryEnabled = isJokeTriviaRepositoryEnabled,
             isLoremIpsumEnabled = isLoremIpsumEnabled,
             isPkmnEnabled = isPkmnEnabled,
             isPokepediaEnabled = isPokepediaEnabled,

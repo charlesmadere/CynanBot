@@ -10,18 +10,14 @@ class TriviaFetchOptions():
     def __init__(
         self,
         twitchChannel: str,
-        isJokeTriviaRepositoryEnabled: bool = False,
         questionAnswerTriviaConditions: QuestionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
     ):
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidBool(isJokeTriviaRepositoryEnabled):
-            raise ValueError(f'isJokeTriviaRepositoryEnabled argument is malformed: \"{isJokeTriviaRepositoryEnabled}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not isinstance(questionAnswerTriviaConditions, QuestionAnswerTriviaConditions):
-            raise ValueError(f'questionAnswerTriviaConditions argument is malformed: \"{questionAnswerTriviaConditions}\"')
+            raise TypeError(f'questionAnswerTriviaConditions argument is malformed: \"{questionAnswerTriviaConditions}\"')
 
         self.__twitchChannel: str = twitchChannel
-        self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__questionAnswerTriviaConditions: QuestionAnswerTriviaConditions = questionAnswerTriviaConditions
 
     def areQuestionAnswerTriviaQuestionsEnabled(self) -> bool:
@@ -30,9 +26,6 @@ class TriviaFetchOptions():
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
-
-    def isJokeTriviaRepositoryEnabled(self) -> bool:
-        return self.__isJokeTriviaRepositoryEnabled
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
@@ -43,7 +36,6 @@ class TriviaFetchOptions():
 
     def toDictionary(self) -> Dict[str, Any]:
         return {
-            'isJokeTriviaRepositoryEnabled': self.__isJokeTriviaRepositoryEnabled,
             'questionAnswerTriviaConditions': self.__questionAnswerTriviaConditions,
             'twitchChannel': self.__twitchChannel
         }

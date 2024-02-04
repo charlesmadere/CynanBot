@@ -50,7 +50,6 @@ class TestQueuedTriviaGameStore1():
         actionId = 'action1',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -71,7 +70,6 @@ class TestQueuedTriviaGameStore1():
         actionId = 'action2',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -92,7 +90,6 @@ class TestQueuedTriviaGameStore1():
         actionId = 'action3',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -113,7 +110,6 @@ class TestQueuedTriviaGameStore1():
         actionId = 'action4',
         twitchChannel = 'stashiocat',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'stashiocat',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -257,7 +253,6 @@ class TestQueuedTriviaGameStore4():
         actionId = 'action5',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -313,7 +308,6 @@ class TestQueuedTriviaGameStore5():
         actionId = 'action6',
         twitchChannel = 'stashiocat',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'stashiocat',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -369,7 +363,6 @@ class TestQueuedTriviaGameStore6():
         actionId = 'action7',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
@@ -446,7 +439,6 @@ class TestQueuedTriviaGameStore7():
         actionId = 'action8',
         twitchChannel = 'smCharles',
         triviaFetchOptions = TriviaFetchOptions(
-            isJokeTriviaRepositoryEnabled = False,
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )

@@ -24,6 +24,7 @@ from CynanBot.trivia.banned.bannedTriviaIdsRepository import \
 from CynanBot.trivia.compilers.triviaAnswerCompiler import TriviaAnswerCompiler
 from CynanBot.trivia.compilers.triviaQuestionCompiler import \
     TriviaQuestionCompiler
+from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.games.queuedTriviaGameStore import QueuedTriviaGameStore
 from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
@@ -33,12 +34,12 @@ from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaSource import TriviaSource
+from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
@@ -74,7 +75,6 @@ from CynanBot.trivia.triviaRepositories.willFryTriviaQuestionRepository import \
     WillFryTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.wwtbamTriviaQuestionRepository import \
     WwtbamTriviaQuestionRepository
-from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.triviaSettingsRepository import TriviaSettingsRepository
 from CynanBot.trivia.triviaSourceInstabilityHelper import \
     TriviaSourceInstabilityHelper
@@ -186,7 +186,6 @@ triviaGameMachine = TriviaGameMachine(
             triviaQuestionCompiler = triviaQuestionCompiler,
             triviaSettingsRepository = triviaSettingsRepository
         ),
-        jokeTriviaQuestionRepository = None,
         jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
             additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
             networkClientProvider = networkClientProvider,

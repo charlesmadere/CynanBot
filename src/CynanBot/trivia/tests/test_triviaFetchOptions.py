@@ -8,7 +8,6 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'smCharles',
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -17,7 +16,6 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsNotAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'imyt',
-            isJokeTriviaRepositoryEnabled = True,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -26,7 +24,6 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsRequired(self):
         options = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -35,7 +32,6 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'zoasty',
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -44,7 +40,6 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsNotAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'behemoth87',
-            isJokeTriviaRepositoryEnabled = True,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -53,7 +48,6 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsRequired(self):
         options = TriviaFetchOptions(
             twitchChannel = 'Oatsngoats',
-            isJokeTriviaRepositoryEnabled = True,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 

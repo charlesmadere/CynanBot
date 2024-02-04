@@ -37,10 +37,6 @@ class TestTriviaSource():
         result = TriviaSource.fromStr('funtoon')
         assert result is TriviaSource.FUNTOON
 
-    def test_fromStr_withJokeTriviaRepositoryString(self):
-        result = TriviaSource.fromStr('joke_trivia_repository')
-        assert result is TriviaSource.JOKE_TRIVIA_REPOSITORY
-
     def test_fromStr_withJServiceString(self):
         result = TriviaSource.fromStr('j_service')
         assert result is TriviaSource.J_SERVICE
@@ -111,10 +107,6 @@ class TestTriviaSource():
     def test_toStr_withFuntoon(self):
         result = TriviaSource.FUNTOON.toStr()
         assert result == 'FUNTOON'
-
-    def test_toStr_withJokeTriviaRepository(self):
-        result = TriviaSource.JOKE_TRIVIA_REPOSITORY.toStr()
-        assert result == 'JOKE_TRIVIA_REPOSITORY'
 
     def test_toStr_withJService(self):
         result = TriviaSource.J_SERVICE.toStr()

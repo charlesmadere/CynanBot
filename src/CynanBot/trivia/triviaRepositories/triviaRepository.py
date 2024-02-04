@@ -25,8 +25,6 @@ from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
-    JokeTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -69,7 +67,6 @@ class TriviaRepository(TriviaRepositoryInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         bongoTriviaQuestionRepository: BongoTriviaQuestionRepository,
         funtoonTriviaQuestionRepository: FuntoonTriviaQuestionRepository,
-        jokeTriviaQuestionRepository: Optional[JokeTriviaQuestionRepository],
         jServiceTriviaQuestionRepository: Optional[JServiceTriviaQuestionRepository],
         lotrTriviaQuestionRepository: Optional[LotrTriviaQuestionRepository],
         millionaireTriviaQuestionRepository: MillionaireTriviaQuestionRepository,
@@ -90,58 +87,55 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaRetrySleepTimeSeconds: float = 0.25
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(bongoTriviaQuestionRepository, BongoTriviaQuestionRepository):
-            raise ValueError(f'bongoTriviaQuestionRepository argument is malformed: \"{bongoTriviaQuestionRepository}\"')
+            raise TypeError(f'bongoTriviaQuestionRepository argument is malformed: \"{bongoTriviaQuestionRepository}\"')
         elif not isinstance(funtoonTriviaQuestionRepository, FuntoonTriviaQuestionRepository):
-            raise ValueError(f'funtoonTriviaQuestionRepository argument is malformed: \"{funtoonTriviaQuestionRepository}\"')
-        elif jokeTriviaQuestionRepository is not None and not isinstance(jokeTriviaQuestionRepository, JokeTriviaQuestionRepository):
-            raise ValueError(f'jokeTriviaQuestionRepository argument is malformed: \"{jokeTriviaQuestionRepository}\"')
+            raise TypeError(f'funtoonTriviaQuestionRepository argument is malformed: \"{funtoonTriviaQuestionRepository}\"')
         elif jServiceTriviaQuestionRepository is not None and not isinstance(jServiceTriviaQuestionRepository, JServiceTriviaQuestionRepository):
-            raise ValueError(f'jServiceTriviaQuestionRepository argument is malformed \"{jServiceTriviaQuestionRepository}\"')
+            raise TypeError(f'jServiceTriviaQuestionRepository argument is malformed \"{jServiceTriviaQuestionRepository}\"')
         elif lotrTriviaQuestionRepository is not None and not isinstance(lotrTriviaQuestionRepository, LotrTriviaQuestionRepository):
-            raise ValueError(f'lotrTriviaQuestionRepository argument is malformed: \"{lotrTriviaQuestionRepository}\"')
+            raise TypeError(f'lotrTriviaQuestionRepository argument is malformed: \"{lotrTriviaQuestionRepository}\"')
         elif not isinstance(millionaireTriviaQuestionRepository, MillionaireTriviaQuestionRepository):
-            raise ValueError(f'millionaireTriviaQuestionRepository argument is malformed: \"{millionaireTriviaQuestionRepository}\"')
+            raise TypeError(f'millionaireTriviaQuestionRepository argument is malformed: \"{millionaireTriviaQuestionRepository}\"')
         elif not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
-            raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
+            raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
         elif not isinstance(openTriviaQaTriviaQuestionRepository, OpenTriviaQaTriviaQuestionRepository):
-            raise ValueError(f'openTriviaQaTriviaQuestionRepository argument is malformed: \"{openTriviaQaTriviaQuestionRepository}\"')
+            raise TypeError(f'openTriviaQaTriviaQuestionRepository argument is malformed: \"{openTriviaQaTriviaQuestionRepository}\"')
         elif not isinstance(pkmnTriviaQuestionRepository, PkmnTriviaQuestionRepository):
-            raise ValueError(f'pkmnTriviaQuestionRepository argument is malformed: \"{pkmnTriviaQuestionRepository}\"')
+            raise TypeError(f'pkmnTriviaQuestionRepository argument is malformed: \"{pkmnTriviaQuestionRepository}\"')
         elif quizApiTriviaQuestionRepository is not None and not isinstance(quizApiTriviaQuestionRepository, QuizApiTriviaQuestionRepository):
-            raise ValueError(f'quizApiTriviaQuestionRepository argument is malformed: \"{quizApiTriviaQuestionRepository}\"')
+            raise TypeError(f'quizApiTriviaQuestionRepository argument is malformed: \"{quizApiTriviaQuestionRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaDatabaseTriviaQuestionRepository, TriviaDatabaseTriviaQuestionRepository):
-            raise ValueError(f'triviaDatabaseTriviaQuestionRepository argument is malformed: \"{triviaDatabaseTriviaQuestionRepository}\"')
+            raise TypeError(f'triviaDatabaseTriviaQuestionRepository argument is malformed: \"{triviaDatabaseTriviaQuestionRepository}\"')
         elif not isinstance(triviaQuestionCompanyTriviaQuestionRepository, TriviaQuestionCompanyTriviaQuestionRepository):
-            raise ValueError(f'triviaQuestionCompanyTriviaQuestionRepository argument is malformed: \"{triviaQuestionCompanyTriviaQuestionRepository}\"')
+            raise TypeError(f'triviaQuestionCompanyTriviaQuestionRepository argument is malformed: \"{triviaQuestionCompanyTriviaQuestionRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(triviaSourceInstabilityHelper, TriviaSourceInstabilityHelper):
-            raise ValueError(f'triviaSourceInstabilityHelper argument is malformed: \"{triviaSourceInstabilityHelper}\"')
+            raise TypeError(f'triviaSourceInstabilityHelper argument is malformed: \"{triviaSourceInstabilityHelper}\"')
         elif not isinstance(triviaVerifier, TriviaVerifierInterface):
-            raise ValueError(f'triviaVerifier argument is malformed: \"{triviaVerifier}\"')
+            raise TypeError(f'triviaVerifier argument is malformed: \"{triviaVerifier}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(willFryTriviaQuestionRepository, WillFryTriviaQuestionRepository):
-            raise ValueError(f'willFryTriviaQuestionRepository argument is malformed: \"{willFryTriviaQuestionRepository}\"')
+            raise TypeError(f'willFryTriviaQuestionRepository argument is malformed: \"{willFryTriviaQuestionRepository}\"')
         elif not isinstance(wwtbamTriviaQuestionRepository, WwtbamTriviaQuestionRepository):
-            raise ValueError(f'wwtbamTriviaQuestionRepository argument is malformed: \"{wwtbamTriviaQuestionRepository}\"')
+            raise TypeError(f'wwtbamTriviaQuestionRepository argument is malformed: \"{wwtbamTriviaQuestionRepository}\"')
         elif not utils.isValidNum(spoolerLoopSleepTimeSeconds):
-            raise ValueError(f'spoolerLoopSleepTimeSeconds argument is malformed: \"{spoolerLoopSleepTimeSeconds}\"')
+            raise TypeError(f'spoolerLoopSleepTimeSeconds argument is malformed: \"{spoolerLoopSleepTimeSeconds}\"')
         elif spoolerLoopSleepTimeSeconds < 15 or spoolerLoopSleepTimeSeconds > 300:
             raise ValueError(f'spoolerLoopSleepTimeSeconds argument is out of bounds: {spoolerLoopSleepTimeSeconds}')
         elif not utils.isValidNum(triviaRetrySleepTimeSeconds):
-            raise ValueError(f'triviaRetrySleepTimeSeconds argument is malformed: \"{triviaRetrySleepTimeSeconds}\"')
+            raise TypeError(f'triviaRetrySleepTimeSeconds argument is malformed: \"{triviaRetrySleepTimeSeconds}\"')
         elif triviaRetrySleepTimeSeconds < 0.25 or triviaRetrySleepTimeSeconds > 3:
             raise ValueError(f'triviaRetrySleepTimeSeconds argument is out of bounds: {triviaRetrySleepTimeSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__bongoTriviaQuestionRepository: TriviaQuestionRepositoryInterface = bongoTriviaQuestionRepository
         self.__funtoonTriviaQuestionRepository: TriviaQuestionRepositoryInterface = funtoonTriviaQuestionRepository
-        self.__jokeTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = jokeTriviaQuestionRepository
         self.__jServiceTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = jServiceTriviaQuestionRepository
         self.__lotrTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = lotrTriviaQuestionRepository
         self.__millionaireTriviaQuestionRepository: TriviaQuestionRepositoryInterface = millionaireTriviaQuestionRepository
@@ -168,7 +162,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     async def __chooseRandomTriviaSource(self, triviaFetchOptions: TriviaFetchOptions) -> TriviaQuestionRepositoryInterface:
         if not isinstance(triviaFetchOptions, TriviaFetchOptions):
-            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
+            raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         triviaSourcesAndWeights: Dict[TriviaSource, int] = await self.__triviaSettingsRepository.getAvailableTriviaSourcesAndWeights()
         triviaSourcesToRemove: Set[TriviaSource] = await self.__getCurrentlyInvalidTriviaSources(triviaFetchOptions)
@@ -196,13 +190,19 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise RuntimeError(f'TriviaSource list returned by random.choices() is malformed: \"{randomChoices}\"')
 
         randomlyChosenTriviaSource = randomChoices[0]
-        return self.__triviaSourceToRepositoryMap[randomlyChosenTriviaSource]
+        randomlyChosenTriviaRepository = self.__triviaSourceToRepositoryMap[randomlyChosenTriviaSource]
+
+        if randomlyChosenTriviaRepository is None:
+            # this scenario should definitely be impossible, but the Python type checking was
+            # getting angry without this check
+            raise RuntimeError(f'Couldn\'t retrieve corresponding TriviaQuestionRepository from given randomlyChosenTriviaSource ({randomlyChosenTriviaSource=}) ({randomlyChosenTriviaRepository=}) ({self.__triviaSourceToRepositoryMap=})')
+
+        return randomlyChosenTriviaRepository
 
     def __createTriviaSourceToRepositoryMap(self) -> Dict[TriviaSource, Optional[TriviaQuestionRepositoryInterface]]:
         triviaSourceToRepositoryMap: Dict[TriviaSource, Optional[TriviaQuestionRepositoryInterface]] = {
             TriviaSource.BONGO: self.__bongoTriviaQuestionRepository,
             TriviaSource.FUNTOON: self.__funtoonTriviaQuestionRepository,
-            TriviaSource.JOKE_TRIVIA_REPOSITORY: self.__jokeTriviaQuestionRepository,
             TriviaSource.J_SERVICE: self.__jServiceTriviaQuestionRepository,
             TriviaSource.LORD_OF_THE_RINGS: self.__lotrTriviaQuestionRepository,
             TriviaSource.MILLIONAIRE: self.__millionaireTriviaQuestionRepository,
@@ -258,7 +258,7 @@ class TriviaRepository(TriviaRepositoryInterface):
                     errorCount = self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
                     self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching trivia question (trivia source was \"{triviaSource}\") (new error count is {errorCount}): {e}', e, traceback.format_exc())
 
-            if await self.__verifyTriviaQuestionContent(
+            if question is not None and await self.__verifyTriviaQuestionContent(
                 question = question,
                 triviaFetchOptions = triviaFetchOptions
             ) and await self.__verifyTriviaQuestionIsNotDuplicate(
@@ -290,16 +290,10 @@ class TriviaRepository(TriviaRepositoryInterface):
                 if TriviaQuestionType.QUESTION_ANSWER in triviaQuestionRepository.getSupportedTriviaTypes():
                     currentlyInvalidTriviaSources.add(triviaSource)
 
-        if not triviaFetchOptions.isJokeTriviaRepositoryEnabled():
-            currentlyInvalidTriviaSources.add(TriviaSource.JOKE_TRIVIA_REPOSITORY)
-
         if triviaFetchOptions.requireQuestionAnswerTriviaQuestion():
             for triviaSource, triviaQuestionRepository in availableTriviaSourcesMap.items():
                 if TriviaQuestionType.QUESTION_ANSWER not in triviaQuestionRepository.getSupportedTriviaTypes():
                     currentlyInvalidTriviaSources.add(triviaSource)
-
-        if not await self.__isJokeTriviaQuestionRepositoryAvailable():
-            currentlyInvalidTriviaSources.add(TriviaSource.JOKE_TRIVIA_REPOSITORY)
 
         if not await self.__isJServiceTriviaQuestionRepositoryAvailable():
             currentlyInvalidTriviaSources.add(TriviaSource.J_SERVICE)
@@ -324,9 +318,6 @@ class TriviaRepository(TriviaRepositoryInterface):
                 unstableTriviaSources.add(triviaSource)
 
         return unstableTriviaSources
-
-    async def __isJokeTriviaQuestionRepositoryAvailable(self) -> bool:
-        return self.__jokeTriviaQuestionRepository is not None
 
     async def __isJServiceTriviaQuestionRepositoryAvailable(self) -> bool:
         return self.__jServiceTriviaQuestionRepository is not None
@@ -367,7 +358,6 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 
@@ -412,7 +402,6 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle(),
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -481,9 +470,9 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaFetchOptions: TriviaFetchOptions
     ) -> bool:
         if question is not None and not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
-            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
+            raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         triviaContentCode = await self.__triviaVerifier.checkContent(
             question = question,
@@ -503,11 +492,11 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaFetchOptions: TriviaFetchOptions
     ) -> bool:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
-            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
+            raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         triviaContentCode = await self.__triviaVerifier.checkHistory(
             question = question, 

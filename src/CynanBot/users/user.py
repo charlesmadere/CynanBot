@@ -28,7 +28,6 @@ class User(UserInterface):
         isImytSlurpMessageEnabled: bool,
         isJamCatMessageEnabled: bool,
         isJishoEnabled: bool,
-        isJokeTriviaRepositoryEnabled: bool,
         isLoremIpsumEnabled: bool,
         isPkmnEnabled: bool,
         isPokepediaEnabled: bool,
@@ -118,8 +117,6 @@ class User(UserInterface):
             raise ValueError(f'isJamCatMessageEnabled argument is malformed: \"{isJamCatMessageEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
             raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
-        elif not utils.isValidBool(isJokeTriviaRepositoryEnabled):
-            raise ValueError(f'isJokeTriviaRepositoryEnabled argument is malformed: \"{isJokeTriviaRepositoryEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
             raise ValueError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
         elif not utils.isValidBool(isPkmnEnabled):
@@ -236,7 +233,6 @@ class User(UserInterface):
         self.__isImytSlurpMessageEnabled: bool = isImytSlurpMessageEnabled
         self.__isJamCatMessageEnabled: bool = isJamCatMessageEnabled
         self.__isJishoEnabled: bool = isJishoEnabled
-        self.__isJokeTriviaRepositoryEnabled: bool = isJokeTriviaRepositoryEnabled
         self.__isLoremIpsumEnabled: bool = isLoremIpsumEnabled
         self.__isPkmnEnabled: bool = isPkmnEnabled
         self.__isPokepediaEnabled: bool = isPokepediaEnabled
@@ -465,9 +461,6 @@ class User(UserInterface):
 
     def isJishoEnabled(self) -> bool:
         return self.__isJishoEnabled
-
-    def isJokeTriviaRepositoryEnabled(self) -> bool:
-        return self.__isJokeTriviaRepositoryEnabled
 
     def isLoremIpsumEnabled(self) -> bool:
         return self.__isLoremIpsumEnabled

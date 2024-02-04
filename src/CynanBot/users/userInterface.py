@@ -200,10 +200,6 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def isJokeTriviaRepositoryEnabled(self) -> bool:
-        pass
-
-    @abstractmethod
     def isLoremIpsumEnabled(self) -> bool:
         pass
 

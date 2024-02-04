@@ -75,7 +75,6 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
-            isJokeTriviaRepositoryEnabled = user.isJokeTriviaRepositoryEnabled(),
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -146,7 +145,6 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
-            isJokeTriviaRepositoryEnabled = False,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 

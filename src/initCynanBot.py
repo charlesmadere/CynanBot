@@ -200,8 +200,6 @@ from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
-from CynanBot.trivia.triviaRepositories.jokeTriviaQuestionRepository import \
-    JokeTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -627,11 +625,6 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         timber = timber,
         triviaAnswerCompiler = triviaAnswerCompiler,
         triviaQuestionCompiler = triviaQuestionCompiler,
-        triviaSettingsRepository = triviaSettingsRepository
-    ),
-    jokeTriviaQuestionRepository = JokeTriviaQuestionRepository(
-        jokeTriviaJsonReader = JsonFileReader('jokeTriviaQuestionRepository.json'),
-        timber = timber,
         triviaSettingsRepository = triviaSettingsRepository
     ),
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
