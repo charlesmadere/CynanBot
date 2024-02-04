@@ -108,7 +108,7 @@ class DecTalkManager(TtsManagerInterface):
     async def isExecuting(self) -> bool:
         return self.__isExecuting
 
-    async def processTtsEvent(self, event: TtsEvent):
+    async def playTtsEvent(self, event: TtsEvent):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
