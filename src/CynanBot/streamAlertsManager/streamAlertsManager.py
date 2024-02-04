@@ -30,7 +30,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
         ttsManager: Optional[TtsManagerInterface],
-        queueSleepTimeSeconds: float = 3,
+        queueSleepTimeSeconds: float = 0.25,
         queueTimeoutSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -45,7 +45,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
+        elif queueSleepTimeSeconds < 0.25 or queueSleepTimeSeconds > 8:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
@@ -96,16 +96,16 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 await asyncio.sleep(self.__queueSleepTimeSeconds)
                 continue
 
-            alert: Optional[StreamAlert] = None
+            newAlert: Optional[StreamAlert] = None
 
             if not self.__alertQueue.empty():
                 try:
-                    alert = self.__alertQueue.get_nowait()
+                    newAlert = self.__alertQueue.get_nowait()
                 except queue.Empty as e:
                     self.__timber.log('StreamAlertsManager', f'Encountered queue.Empty when grabbing alert from queue (queue size: {self.__alertQueue.qsize()}): {e}', e, traceback.format_exc())
 
-            if alert is not None:
-                self.__currentAlert = CurrentStreamAlert(alert)
+            if newAlert is not None:
+                self.__currentAlert = CurrentStreamAlert(newAlert)
 
             await asyncio.sleep(await self.__streamAlertsSettingsRepository.getAlertsDelayBetweenSeconds())
 

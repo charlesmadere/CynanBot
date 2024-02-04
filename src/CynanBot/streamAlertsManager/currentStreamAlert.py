@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from CynanBot.soundPlayerHelper.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -30,8 +30,18 @@ class CurrentStreamAlert():
     def getTwitchChannel(self) -> str:
         return self.__streamAlert.getTwitchChannel()
 
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
     def setAlertState(self, alertState: StreamAlertState):
         if not isinstance(alertState, StreamAlertState):
             raise TypeError(f'alertState argument is malformed: \"{alertState}\"')
 
         self.__alertState = alertState
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'alertState': self.__alertState,
+            'streamAlert': self.__streamAlert
+        }
