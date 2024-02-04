@@ -9,7 +9,7 @@ class GeneralSettingsRepositorySnapshot():
 
     def __init__(self, jsonContents: Dict[str, Any]):
         if not utils.hasItems(jsonContents):
-            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         self.__jsonContents: Dict[str, Any] = jsonContents
 
