@@ -64,15 +64,34 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     async def __processCurrentAlert(self) -> bool:
         currentAlert = self.__currentAlert
-        soundPlayerManager = self.__soundPlayerManager
-        ttsManager = self.__ttsManager
 
         if currentAlert is None:
             return False
 
-        currentState = currentAlert.getAlertState()
+        soundPlayerManager = self.__soundPlayerManager
         soundAlert = currentAlert.getSoundAlert()
+        ttsManager = self.__ttsManager
         ttsEvent = currentAlert.getTtsEvent()
+
+        if currentAlert.getAlertState() is StreamAlertState.NOT_STARTED and soundAlert is not None and soundPlayerManager is not None:
+            if await soundPlayerManager.isPlaying():
+                return True
+            elif currentAlert.getAlertState() is StreamAlertState.SOUND_STARTED:
+                currentAlert.setAlertState(StreamAlertState.SOUND_FINISHED)
+            else:
+                await soundPlayerManager.playSoundAlert(soundAlert)
+                currentAlert.setAlertState(StreamAlertState.SOUND_STARTED)
+                return True
+
+        if (currentAlert.getAlertState() is StreamAlertState.NOT_STARTED or currentAlert.getAlertState() is StreamAlertState.SOUND_FINISHED) and ttsEvent is not None and ttsManager is not None:
+            if await ttsManager.isPlaying():
+                return True
+            elif currentAlert.getAlertState() is StreamAlertState.TTS_STARTED:
+                currentAlert.setAlertState(StreamAlertState.TTS_FINISHED)
+            else:
+                await ttsManager.playTtsEvent(ttsEvent)
+                currentAlert.setAlertState(StreamAlertState.TTS_STARTED)
+                return True
 
         return False
 
