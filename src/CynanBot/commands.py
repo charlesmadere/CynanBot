@@ -55,6 +55,7 @@ from CynanBot.recurringActions.weatherRecurringAction import \
     WeatherRecurringAction
 from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
     WordOfTheDayRecurringAction
+from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -3797,6 +3798,11 @@ class TtsCommand(AbsCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
+    async def __chooseRandomSoundAlert(self) -> Optional[SoundAlert]:
+        soundAlerts: List[Optional[SoundAlert]] = list(SoundAlert)
+        soundAlerts.append(None)
+        return random.choice(soundAlerts)
+
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
 
@@ -3820,7 +3826,7 @@ class TtsCommand(AbsCommand):
             return
 
         self.__streamAlertsManager.submitAlert(StreamAlert(
-            soundAlert = None,
+            soundAlert = await self.__chooseRandomSoundAlert(),
             twitchChannel = user.getHandle(),
             ttsEvent = TtsEvent(
                 message = message,
