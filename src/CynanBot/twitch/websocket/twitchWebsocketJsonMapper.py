@@ -419,6 +419,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'user_name' in eventJson and utils.isValidStr(eventJson.get('user_name')):
             userName = utils.getStrFromDict(eventJson, 'user_name')
 
+        winningOutcomeId: Optional[str] = None
+        if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
+            winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
+
         tier: Optional[TwitchSubscriberTier] = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
@@ -515,6 +519,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userInput = userInput,
             userLogin = userLogin,
             userName = userName,
+            winningOutcomeId = winningOutcomeId,
             channelPointsVoting = channelPointsVoting,
             choices = choices,
             tier = tier,

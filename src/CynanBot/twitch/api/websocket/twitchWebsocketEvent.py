@@ -54,6 +54,7 @@ class TwitchWebsocketEvent():
         userInput: Optional[str] = None,
         userLogin: Optional[str] = None,
         userName: Optional[str] = None,
+        winningOutcomeId: Optional[str] = None,
         tier: Optional[TwitchSubscriberTier] = None,
         channelPointsVoting: Optional[TwitchChannelPointsVoting] = None,
         choices: Optional[List[TwitchPollChoice]] = None,
@@ -131,6 +132,8 @@ class TwitchWebsocketEvent():
             raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif userName is not None and not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
+        elif winningOutcomeId is not None and not utils.isValidStr(winningOutcomeId):
+            raise ValueError(f'winningOutcomeId argument is malformed: \"{winningOutcomeId}\"')
         elif tier is not None and not isinstance(tier, TwitchSubscriberTier):
             raise ValueError(f'tier argument is malformed: \"{tier}\"')
         elif channelPointsVoting is not None and not isinstance(channelPointsVoting, TwitchChannelPointsVoting):
@@ -185,6 +188,7 @@ class TwitchWebsocketEvent():
         self.__userInput: Optional[str] = userInput
         self.__userLogin: Optional[str] = userLogin
         self.__userName: Optional[str] = userName
+        self.__winningOutcomeId: Optional[str] = winningOutcomeId
         self.__tier: Optional[TwitchSubscriberTier] = tier
         self.__channelPointsVoting: Optional[TwitchChannelPointsVoting] = channelPointsVoting
         self.__choices: Optional[List[TwitchPollChoice]] = choices
@@ -319,6 +323,9 @@ class TwitchWebsocketEvent():
     def getViewers(self) -> Optional[int]:
         return self.__viewers
 
+    def getWinningOutcomeId(self) -> Optional[str]:
+        return self.__winningOutcomeId
+
     def isAnonymous(self) -> Optional[bool]:
         return self.__isAnonymous
 
@@ -372,6 +379,7 @@ class TwitchWebsocketEvent():
             'userLogin': self.__userLogin,
             'userName': self.__userName,
             'viewers': self.__viewers,
+            'winningOutcomeId': self.__winningOutcomeId,
             'isAnonymous': self.__isAnonymous,
             'isGift': self.__isGift
         }
