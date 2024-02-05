@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 
 
-class WebsocketMessageType(Enum):
+class TwitchWebsocketMessageType(Enum):
 
     KEEP_ALIVE = auto()
     NOTIFICATION = auto()
@@ -20,14 +20,14 @@ class WebsocketMessageType(Enum):
         text = text.lower()
 
         if text == 'session_keepalive':
-            return WebsocketMessageType.KEEP_ALIVE
+            return TwitchWebsocketMessageType.KEEP_ALIVE
         elif text == 'notification':
-            return WebsocketMessageType.NOTIFICATION
+            return TwitchWebsocketMessageType.NOTIFICATION
         elif text == 'session_reconnect':
-            return WebsocketMessageType.RECONNECT
+            return TwitchWebsocketMessageType.RECONNECT
         elif text == 'revocation':
-            return WebsocketMessageType.REVOCATION
+            return TwitchWebsocketMessageType.REVOCATION
         elif text == 'session_welcome':
-            return WebsocketMessageType.WELCOME
+            return TwitchWebsocketMessageType.WELCOME
         else:
             return None

@@ -22,13 +22,13 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__timber: TimberInterface = timber
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository

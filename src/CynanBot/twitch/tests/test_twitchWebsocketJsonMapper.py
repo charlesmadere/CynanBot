@@ -4,11 +4,12 @@ import pytest
 
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
+    TwitchWebsocketCondition
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapper import \
     TwitchWebsocketJsonMapper
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
-from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
 
 
 class TestTwitchWebsocketJsonMapper():
@@ -52,39 +53,25 @@ class TestTwitchWebsocketJsonMapper():
     @pytest.mark.asyncio
     async def test_parseWebsocketCondition_withEmptyDictionary(self):
         result = await self.jsonMapper.parseWebsocketCondition(dict())
-        assert isinstance(result, WebsocketCondition)
-        assert result.getBits() is None
+        assert isinstance(result, TwitchWebsocketCondition)
         assert result.getBroadcasterUserId() is None
         assert result.getBroadcasterUserLogin() is None
         assert result.getBroadcasterUserName() is None
-        assert result.getCategoryId() is None
-        assert result.getCategoryName() is None
         assert result.getClientId() is None
-        assert result.getCumulativeTotal() is None
         assert result.getFromBroadcasterUserId() is None
         assert result.getFromBroadcasterUserLogin() is None
         assert result.getFromBroadcasterUserName() is None
-        assert result.getMessage() is None
         assert result.getModeratorUserId() is None
         assert result.getModeratorUserLogin() is None
         assert result.getModeratorUserName() is None
-        assert result.getReason() is None
-        assert result.getReward() is None
         assert result.getRewardId() is None
-        assert result.getTier() is None
-        assert result.getTitle() is None
         assert result.getToBroadcasterUserId() is None
         assert result.getToBroadcasterUserLogin() is None
         assert result.getToBroadcasterUserName() is None
-        assert result.getTotal() is None
         assert result.getUserId() is None
-        assert result.getUserInput() is None
         assert result.getUserLogin() is None
         assert result.getUserName() is None
-        assert result.getViewers() is None
         assert result.isAnonymous() is None
-        assert result.isGift() is None
-        assert result.isPermanent() is None
 
         broadcasterUserId: Optional[str] = None
         exception: Optional[Exception] = None
@@ -124,22 +111,22 @@ class TestTwitchWebsocketJsonMapper():
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcome_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketOutcome(dict())
+        result = await self.jsonMapper.parseTwitchOutcome(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcome_withNone(self):
-        result = await self.jsonMapper.parseWebsocketOutcome(None)
+        result = await self.jsonMapper.parseTwitchOutcome(None)
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcomePredictor_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketOutcomePredictor(dict())
+        result = await self.jsonMapper.parseTwitchOutcomePredictor(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketOutcomePredictor_withNone(self):
-        result = await self.jsonMapper.parseWebsocketOutcomePredictor(None)
+        result = await self.jsonMapper.parseTwitchOutcomePredictor(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -154,12 +141,12 @@ class TestTwitchWebsocketJsonMapper():
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSession_withEmptyDictionary(self):
-        result = await self.jsonMapper.parseWebsocketSession(dict())
+        result = await self.jsonMapper.parseTwitchWebsocketSession(dict())
         assert result is None
 
     @pytest.mark.asyncio
     async def test_parseWebsocketSession_withNone(self):
-        result = await self.jsonMapper.parseWebsocketSession(None)
+        result = await self.jsonMapper.parseTwitchWebsocketSession(None)
         assert result is None
 
     @pytest.mark.asyncio

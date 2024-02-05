@@ -12,9 +12,9 @@ class TwitchBannedUsersPageResponse():
         pagination: Optional[TwitchPaginationResponse]
     ):
         if users is not None and not isinstance(users, List):
-            raise ValueError(f'users argument is malformed: \"{users}\"')
+            raise TypeError(f'users argument is malformed: \"{users}\"')
         elif pagination is not None and not isinstance(pagination, TwitchPaginationResponse):
-            raise ValueError(f'pagination argument is malformed: \"{pagination}\"')
+            raise TypeError(f'pagination argument is malformed: \"{pagination}\"')
 
         self.__users: Optional[List[TwitchBannedUser]] = users
         self.__pagination: Optional[TwitchPaginationResponse] = pagination

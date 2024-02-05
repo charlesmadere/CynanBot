@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 
 
-class TwitchWebsocketRewardRedemptionStatus(Enum):
+class TwitchRewardRedemptionStatus(Enum):
 
     CANCELED = auto()
     FULFILLED = auto()
@@ -19,12 +19,12 @@ class TwitchWebsocketRewardRedemptionStatus(Enum):
         text = text.lower()
 
         if text == 'canceled':
-            return TwitchWebsocketRewardRedemptionStatus.CANCELED
+            return TwitchRewardRedemptionStatus.CANCELED
         elif text == 'fulfilled':
-            return TwitchWebsocketRewardRedemptionStatus.FULFILLED
+            return TwitchRewardRedemptionStatus.FULFILLED
         elif text == 'unfulfilled':
-            return TwitchWebsocketRewardRedemptionStatus.UNFULFILLED
+            return TwitchRewardRedemptionStatus.UNFULFILLED
         elif text == 'unknown':
-            return TwitchWebsocketRewardRedemptionStatus.UNKNOWN
+            return TwitchRewardRedemptionStatus.UNKNOWN
         else:
             return None

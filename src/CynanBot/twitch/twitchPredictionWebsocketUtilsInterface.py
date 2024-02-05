@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
 
-from CynanBot.twitch.websocket.websocketEvent import WebsocketEvent
-from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
-from CynanBot.twitch.websocket.websocketOutcomeColor import \
-    WebsocketOutcomeColor
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
+from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
+from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
+from CynanBot.twitch.api.websocket.twitchWebsocketEvent import \
+    TwitchWebsocketEvent
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
 
 
 class TwitchPredictionWebsocketUtilsInterface(ABC):
@@ -14,28 +14,28 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
     @abstractmethod
     async def websocketEventToEventDataDictionary(
         self,
-        event: WebsocketEvent,
-        subscriptionType: WebsocketSubscriptionType
+        event: TwitchWebsocketEvent,
+        subscriptionType: TwitchWebsocketSubscriptionType
     ) -> Optional[Dict[str, Any]]:
         pass
 
     @abstractmethod
     async def websocketOutcomeColorToEventData(
         self,
-        color: WebsocketOutcomeColor
+        color: TwitchOutcomeColor
     ) -> Dict[str, int]:
         pass
 
     @abstractmethod
     async def websocketOutcomesToEventDataArray(
         self,
-        outcomes: List[WebsocketOutcome]
+        outcomes: List[TwitchOutcome]
     ) -> List[Dict[str, Any]]:
         pass
 
     @abstractmethod
     async def websocketSubscriptionTypeToString(
         self,
-        subscriptionType: WebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType
     ) -> str:
         pass

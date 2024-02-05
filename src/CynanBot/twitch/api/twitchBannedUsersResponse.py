@@ -13,11 +13,11 @@ class TwitchBannedUsersResponse():
         requestedUserId: Optional[str]
     ):
         if users is not None and not isinstance(users, List):
-            raise ValueError(f'users argument is malformed: \"{users}\"')
+            raise TypeError(f'users argument is malformed: \"{users}\"')
         elif not utils.isValidStr(broadcasterId):
-            raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
+            raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif requestedUserId is not None and not isinstance(requestedUserId, str):
-            raise ValueError(f'requestedUserId argument is malformed: \"{requestedUserId}\"')
+            raise TypeError(f'requestedUserId argument is malformed: \"{requestedUserId}\"')
 
         self.__users: Optional[List[TwitchBannedUser]] = users
         self.__broadcasterId: str = broadcasterId

@@ -8,9 +8,10 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
-from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
+    TwitchWebsocketDataBundle
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -33,13 +34,13 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: WebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, WebsocketDataBundle):
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
@@ -71,7 +72,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         title: str,
         userId: str,
         user: UserInterface,
-        subscriptionType: WebsocketSubscriptionType
+        subscriptionType: TwitchWebsocketSubscriptionType
     ):
         if not utils.isValidStr(title):
             raise ValueError(f'title argument is malformed: \"{title}\"')
@@ -79,10 +80,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(subscriptionType, WebsocketSubscriptionType):
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if subscriptionType is not WebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+        if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
         elif self.__streamAlertsManager is None:
             return

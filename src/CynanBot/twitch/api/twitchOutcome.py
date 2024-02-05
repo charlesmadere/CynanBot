@@ -1,13 +1,11 @@
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.websocket.websocketOutcomeColor import \
-    WebsocketOutcomeColor
-from CynanBot.twitch.websocket.websocketOutcomePredictor import \
-    WebsocketOutcomePredictor
+from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
+from CynanBot.twitch.api.twitchOutcomePredictor import TwitchOutcomePredictor
 
 
-class WebsocketOutcome():
+class TwitchOutcome():
 
     def __init__(
         self,
@@ -15,37 +13,37 @@ class WebsocketOutcome():
         users: int,
         outcomeId: str,
         title: str,
-        color: WebsocketOutcomeColor,
-        topPredictors: Optional[List[WebsocketOutcomePredictor]] = None
+        color: TwitchOutcomeColor,
+        topPredictors: Optional[List[TwitchOutcomePredictor]] = None
     ):
         if not utils.isValidInt(channelPoints):
-            raise ValueError(f'channelPoints argument is malformed: \"{channelPoints}\"')
+            raise TypeError(f'channelPoints argument is malformed: \"{channelPoints}\"')
         elif channelPoints < 0 or channelPoints > utils.getLongMaxSafeSize():
             raise ValueError(f'channelPoints argument is out of bounds: {channelPoints}')
         elif not utils.isValidInt(users):
-            raise ValueError(f'users argument is malformed: \"{users}\"')
+            raise TypeError(f'users argument is malformed: \"{users}\"')
         elif users < 0 or users > utils.getIntMaxSafeSize():
             raise ValueError(f'users argument is out of bounds: {users}')
         elif not utils.isValidStr(outcomeId):
-            raise ValueError(f'outcomeId argument is malformed: \"{outcomeId}\"')
+            raise TypeError(f'outcomeId argument is malformed: \"{outcomeId}\"')
         elif not utils.isValidStr(title):
-            raise ValueError(f'title argument is malformed: \"{title}\"')
-        elif not isinstance(color, WebsocketOutcomeColor):
-            raise ValueError(f'color argument is malformed: \"{color}\"')
+            raise TypeError(f'title argument is malformed: \"{title}\"')
+        elif not isinstance(color, TwitchOutcomeColor):
+            raise TypeError(f'color argument is malformed: \"{color}\"')
         elif topPredictors is not None and not isinstance(topPredictors, List):
-            raise ValueError(f'topPredictors argument is malformed: \"{topPredictors}\"')
+            raise TypeError(f'topPredictors argument is malformed: \"{topPredictors}\"')
 
         self.__channelPoints: int = channelPoints
         self.__users: int = users
         self.__outcomeId: str = outcomeId
         self.__title: str = title
-        self.__color: WebsocketOutcomeColor = color
-        self.__topPredictors: Optional[List[WebsocketOutcomePredictor]] = topPredictors
+        self.__color: TwitchOutcomeColor = color
+        self.__topPredictors: Optional[List[TwitchOutcomePredictor]] = topPredictors
 
     def getChannelPoints(self) -> int:
         return self.__channelPoints
 
-    def getColor(self) -> WebsocketOutcomeColor:
+    def getColor(self) -> TwitchOutcomeColor:
         return self.__color
 
     def getOutcomeId(self) -> str:
@@ -54,7 +52,7 @@ class WebsocketOutcome():
     def getTitle(self) -> str:
         return self.__title
 
-    def getTopPredictors(self) -> Optional[List[WebsocketOutcomePredictor]]:
+    def getTopPredictors(self) -> Optional[List[TwitchOutcomePredictor]]:
         return self.__topPredictors
 
     def getUsers(self) -> int:

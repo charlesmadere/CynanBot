@@ -1,41 +1,40 @@
-from CynanBot.twitch.websocket.twitchWebsocketPollStatus import \
-    TwitchWebsocketPollStatus
+from CynanBot.twitch.api.twitchPollStatus import TwitchPollStatus
 
 
 class TestTwitchWebsocketPollStatus():
 
     def test_fromStr_withActiveString(self):
-        result = TwitchWebsocketPollStatus.fromStr('active')
-        assert result is TwitchWebsocketPollStatus.ACTIVE
+        result = TwitchPollStatus.fromStr('active')
+        assert result is TwitchPollStatus.ACTIVE
 
     def test_fromStr_withArchivedString(self):
-        result = TwitchWebsocketPollStatus.fromStr('archived')
-        assert result is TwitchWebsocketPollStatus.ARCHIVED
+        result = TwitchPollStatus.fromStr('archived')
+        assert result is TwitchPollStatus.ARCHIVED
 
     def test_fromStr_withCompletedString(self):
-        result = TwitchWebsocketPollStatus.fromStr('completed')
-        assert result is TwitchWebsocketPollStatus.COMPLETED
+        result = TwitchPollStatus.fromStr('completed')
+        assert result is TwitchPollStatus.COMPLETED
 
     def test_fromStr_withEmptyString(self):
-        result = TwitchWebsocketPollStatus.fromStr('')
+        result = TwitchPollStatus.fromStr('')
         assert result is None
 
     def test_fromStr_withInvalidString(self):
-        result = TwitchWebsocketPollStatus.fromStr('invalid')
-        assert result is TwitchWebsocketPollStatus.INVALID
+        result = TwitchPollStatus.fromStr('invalid')
+        assert result is TwitchPollStatus.INVALID
 
     def test_fromStr_withModeratedString(self):
-        result = TwitchWebsocketPollStatus.fromStr('moderated')
-        assert result is TwitchWebsocketPollStatus.MODERATED
+        result = TwitchPollStatus.fromStr('moderated')
+        assert result is TwitchPollStatus.MODERATED
 
     def test_fromStr_withNone(self):
-        result = TwitchWebsocketPollStatus.fromStr(None)
+        result = TwitchPollStatus.fromStr(None)
         assert result is None
 
     def test_fromStr_withTerminatedString(self):
-        result = TwitchWebsocketPollStatus.fromStr('terminated')
-        assert result is TwitchWebsocketPollStatus.TERMINATED
+        result = TwitchPollStatus.fromStr('terminated')
+        assert result is TwitchPollStatus.TERMINATED
 
     def test_fromStr_withWhitespaceString(self):
-        result = TwitchWebsocketPollStatus.fromStr(' ')
+        result = TwitchPollStatus.fromStr(' ')
         assert result is None

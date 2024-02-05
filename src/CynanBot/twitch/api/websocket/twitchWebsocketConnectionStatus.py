@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 
 
-class WebsocketConnectionStatus(Enum):
+class TwitchWebsocketConnectionStatus(Enum):
 
     CONNECTED = auto()
     ENABLED = auto()
@@ -21,16 +21,16 @@ class WebsocketConnectionStatus(Enum):
         text = text.lower()
 
         if text == 'connected':
-            return WebsocketConnectionStatus.CONNECTED
+            return TwitchWebsocketConnectionStatus.CONNECTED
         elif text == 'enabled':
-            return WebsocketConnectionStatus.ENABLED
+            return TwitchWebsocketConnectionStatus.ENABLED
         elif text == 'reconnecting':
-            return WebsocketConnectionStatus.RECONNECTING
+            return TwitchWebsocketConnectionStatus.RECONNECTING
         elif text == 'authorization_revoked':
-            return WebsocketConnectionStatus.REVOKED
+            return TwitchWebsocketConnectionStatus.REVOKED
         elif text == 'user_removed':
-            return WebsocketConnectionStatus.USER_REMOVED
+            return TwitchWebsocketConnectionStatus.USER_REMOVED
         elif text == 'version_removed':
-            return WebsocketConnectionStatus.VERSION_REMOVED
+            return TwitchWebsocketConnectionStatus.VERSION_REMOVED
         else:
             return None

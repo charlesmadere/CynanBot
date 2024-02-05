@@ -1,12 +1,13 @@
 from typing import Optional
 
-from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
+from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
+    TwitchWebsocketCondition
 
 
 class TestTwitchWebsocketCondition():
 
     def test_requireBroadcasterUserId_withEmptyString(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = ''
         )
 
@@ -22,7 +23,7 @@ class TestTwitchWebsocketCondition():
         assert isinstance(exception, Exception)
 
     def test_requireBroadcasterUserId_withNone(self):
-        condition = WebsocketCondition()
+        condition = TwitchWebsocketCondition()
         broadcasterUserId: Optional[str] = None
         exception: Optional[Exception] = None
 
@@ -35,14 +36,14 @@ class TestTwitchWebsocketCondition():
         assert isinstance(exception, Exception)
 
     def test_requireBroadcasterUserId_withValidString(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = 'abc123'
         )
 
         assert condition.requireBroadcasterUserId() == 'abc123'
 
     def test_requireBroadcasterUserId_withWhitespaceString(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = ' '
         )
 

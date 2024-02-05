@@ -2,11 +2,11 @@ from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
-from CynanBot.twitch.websocket.websocketTransportMethod import \
-    WebsocketTransportMethod
+from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \
+    TwitchWebsocketTransportMethod
 
 
-class WebsocketTransport():
+class TwitchWebsocketTransport():
 
     def __init__(
         self,
@@ -14,24 +14,24 @@ class WebsocketTransport():
         disconnectedAt: Optional[SimpleDateTime] = None,
         secret: Optional[str] = None,
         sessionId: Optional[str] = None,
-        method: WebsocketTransportMethod = WebsocketTransportMethod.WEBSOCKET,
+        method: TwitchWebsocketTransportMethod = TwitchWebsocketTransportMethod.WEBSOCKET,
     ):
         if connectedAt is not None and not isinstance(connectedAt, SimpleDateTime):
-            raise ValueError(f'connectedAt argument is malformed: \"{connectedAt}\"')
+            raise TypeError(f'connectedAt argument is malformed: \"{connectedAt}\"')
         elif disconnectedAt is not None and not isinstance(disconnectedAt, SimpleDateTime):
-            raise ValueError(f'disconnectedAt argument is malformed: \"{disconnectedAt}\"')
+            raise TypeError(f'disconnectedAt argument is malformed: \"{disconnectedAt}\"')
         elif secret is not None and not isinstance(secret, str):
-            raise ValueError(f'secret argument is malformed: \"{secret}\"')
+            raise TypeError(f'secret argument is malformed: \"{secret}\"')
         elif sessionId is not None and not isinstance(sessionId, str):
-            raise ValueError(f'sessionId argument is malformed: \"{sessionId}\"')
-        elif not isinstance(method, WebsocketTransportMethod):
-            raise ValueError(f'method argument is malformed: \"{method}\"')
+            raise TypeError(f'sessionId argument is malformed: \"{sessionId}\"')
+        elif not isinstance(method, TwitchWebsocketTransportMethod):
+            raise TypeError(f'method argument is malformed: \"{method}\"')
 
         self.__connectedAt: Optional[SimpleDateTime] = connectedAt
         self.__disconnectedAt: Optional[SimpleDateTime] = disconnectedAt
         self.__secret: Optional[str] = secret
         self.__sessionId: Optional[str] = sessionId
-        self.__method: WebsocketTransportMethod = method
+        self.__method: TwitchWebsocketTransportMethod = method
 
     def getConnectedAt(self) -> Optional[SimpleDateTime]:
         return self.__connectedAt
@@ -39,7 +39,7 @@ class WebsocketTransport():
     def getDisconnectedAt(self) -> Optional[SimpleDateTime]:
         return self.__disconnectedAt
 
-    def getMethod(self) -> WebsocketTransportMethod:
+    def getMethod(self) -> TwitchWebsocketTransportMethod:
         return self.__method
 
     def getSecret(self) -> Optional[str]:

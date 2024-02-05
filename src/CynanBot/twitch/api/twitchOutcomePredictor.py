@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 import CynanBot.misc.utils as utils
 
 
-class WebsocketOutcomePredictor():
+class TwitchOutcomePredictor():
 
     def __init__(
         self,
@@ -14,19 +14,19 @@ class WebsocketOutcomePredictor():
         userName: str
     ):
         if not utils.isValidInt(channelPointsUsed):
-            raise ValueError(f'channelPointsUsed argument is malformed: \"{channelPointsUsed}\"')
+            raise TypeError(f'channelPointsUsed argument is malformed: \"{channelPointsUsed}\"')
         elif channelPointsUsed < 0 or channelPointsUsed > utils.getLongMaxSafeSize():
             raise ValueError(f'channelPointsUsed argument is out of bounds: {channelPointsUsed}')
         elif channelPointsWon is not None and not utils.isValidInt(channelPointsWon):
-            raise ValueError(f'channelPointsWon argument is malformed: \"{channelPointsWon}\"')
+            raise TypeError(f'channelPointsWon argument is malformed: \"{channelPointsWon}\"')
         elif channelPointsWon is not None and (channelPointsWon < 0 or channelPointsWon > utils.getLongMaxSafeSize()):
             raise ValueError(f'channelPointsWon argument is out of bounds: {channelPointsWon}')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userLogin):
-            raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__channelPointsUsed: int = channelPointsUsed
         self.__channelPointsWon: Optional[int] = channelPointsWon

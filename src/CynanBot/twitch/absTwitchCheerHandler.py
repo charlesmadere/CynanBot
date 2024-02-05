@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
+    TwitchWebsocketDataBundle
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -11,6 +12,6 @@ class AbsTwitchCheerHandler(ABC):
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: WebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle
     ):
         pass

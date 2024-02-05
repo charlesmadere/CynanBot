@@ -10,11 +10,12 @@ from CynanBot.pointRedemptions import (AbsPointRedemption, CutenessRedemption,
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
+from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
+    TwitchWebsocketDataBundle
 from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
-from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -71,13 +72,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: WebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, WebsocketDataBundle):
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         event = dataBundle.getPayload().getEvent()

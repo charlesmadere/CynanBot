@@ -1,21 +1,20 @@
 from typing import Optional
 
-from CynanBot.twitch.websocket.websocketOutcomeColor import \
-    WebsocketOutcomeColor
+from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 
 
-class TestTwitchWebsocketOutcomeColor():
+class TestTwitchOutcomeColor():
 
     def test_fromStr_withBlueString(self):
-        result = WebsocketOutcomeColor.fromStr('blue')
-        assert result is WebsocketOutcomeColor.BLUE
+        result = TwitchOutcomeColor.fromStr('blue')
+        assert result is TwitchOutcomeColor.BLUE
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[WebsocketOutcomeColor] = None
+        result: Optional[TwitchOutcomeColor] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketOutcomeColor.fromStr('')
+            result = TwitchOutcomeColor.fromStr('')
         except Exception as e:
             exception = e
 
@@ -23,11 +22,11 @@ class TestTwitchWebsocketOutcomeColor():
         assert isinstance(exception, Exception)
 
     def test_fromStr_withNone(self):
-        result: Optional[WebsocketOutcomeColor] = None
+        result: Optional[TwitchOutcomeColor] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketOutcomeColor.fromStr(None)
+            result = TwitchOutcomeColor.fromStr(None)
         except Exception as e:
             exception = e
 
@@ -35,15 +34,15 @@ class TestTwitchWebsocketOutcomeColor():
         assert isinstance(exception, Exception)
 
     def test_fromStr_withPinkString(self):
-        result = WebsocketOutcomeColor.fromStr('pink')
-        assert result is WebsocketOutcomeColor.PINK
+        result = TwitchOutcomeColor.fromStr('pink')
+        assert result is TwitchOutcomeColor.PINK
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[WebsocketOutcomeColor] = None
+        result: Optional[TwitchOutcomeColor] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketOutcomeColor.fromStr(' ')
+            result = TwitchOutcomeColor.fromStr(' ')
         except Exception as e:
             exception = e
 

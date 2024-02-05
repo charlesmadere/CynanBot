@@ -10,7 +10,8 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsRaidInfo import TtsRaidInfo
 from CynanBot.twitch.absTwitchRaidHandler import AbsTwitchRaidHandler
-from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
+from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
+    TwitchWebsocketDataBundle
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -33,13 +34,13 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         self,
         userId: str,
         user: UserInterface,
-        dataBundle: WebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, WebsocketDataBundle):
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         event = dataBundle.requirePayload().getEvent()

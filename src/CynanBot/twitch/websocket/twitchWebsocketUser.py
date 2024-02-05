@@ -11,9 +11,9 @@ class TwitchWebsocketUser():
         userName: str
     ):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName

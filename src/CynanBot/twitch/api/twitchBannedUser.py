@@ -19,23 +19,23 @@ class TwitchBannedUser():
         userName: str
     ):
         if not isinstance(createdAt, SimpleDateTime):
-            raise ValueError(f'createdAt argument is malformed: \"{createdAt}\"')
+            raise TypeError(f'createdAt argument is malformed: \"{createdAt}\"')
         elif expiresAt is not None and not isinstance(expiresAt, SimpleDateTime):
-            raise ValueError(f'expiresAt argument is malformed: \"{expiresAt}\"')
+            raise TypeError(f'expiresAt argument is malformed: \"{expiresAt}\"')
         elif not utils.isValidStr(moderatorId):
-            raise ValueError(f'moderatorId argument is malformed: \"{moderatorId}\"')
+            raise TypeError(f'moderatorId argument is malformed: \"{moderatorId}\"')
         elif not utils.isValidStr(moderatorLogin):
-            raise ValueError(f'moderatorLogin argument is malformed: \"{moderatorLogin}\"')
+            raise TypeError(f'moderatorLogin argument is malformed: \"{moderatorLogin}\"')
         elif not utils.isValidStr(moderatorName):
-            raise ValueError(f'moderatorName argument is malformed: \"{moderatorName}\"')
+            raise TypeError(f'moderatorName argument is malformed: \"{moderatorName}\"')
         elif reason is not None and not isinstance(reason, str):
-            raise ValueError(f'reason argument is malformed: \"{reason}\"')
+            raise TypeError(f'reason argument is malformed: \"{reason}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userLogin):
-            raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__createdAt: SimpleDateTime = createdAt
         self.__expiresAt: Optional[SimpleDateTime] = expiresAt

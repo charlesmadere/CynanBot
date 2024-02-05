@@ -24,7 +24,7 @@ class TwitchBroadcasterType(Enum):
         else:
             return TwitchBroadcasterType.NORMAL
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         if self is TwitchBroadcasterType.AFFILIATE:
             return 'affiliate'
         elif self is TwitchBroadcasterType.NORMAL:

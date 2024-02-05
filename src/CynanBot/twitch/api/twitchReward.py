@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional
 import CynanBot.misc.utils as utils
 
 
-class WebsocketReward():
+class TwitchReward():
 
     def __init__(
         self,
@@ -13,13 +13,13 @@ class WebsocketReward():
         title: str
     ):
         if not utils.isValidInt(cost):
-            raise ValueError(f'cost argument is malformed: \"{cost}\"')
+            raise TypeError(f'cost argument is malformed: \"{cost}\"')
         elif prompt is not None and not isinstance(prompt, str):
-            raise ValueError(f'prompt argument is malformed: \"{prompt}\"')
+            raise TypeError(f'prompt argument is malformed: \"{prompt}\"')
         elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
+            raise TypeError(f'rewardId argument is malformed: \"{rewardId}\"')
         elif not utils.isValidStr(title):
-            raise ValueError(f'title argument is malformed: \"{title}\"')
+            raise TypeError(f'title argument is malformed: \"{title}\"')
 
         self.__cost: int = cost
         self.__prompt: Optional[str] = prompt

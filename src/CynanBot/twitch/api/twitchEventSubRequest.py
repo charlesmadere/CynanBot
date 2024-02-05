@@ -1,10 +1,12 @@
 from typing import Any, Dict
 
 import CynanBot.misc.utils as utils
-from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
-from CynanBot.twitch.websocket.websocketTransport import WebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
+    TwitchWebsocketCondition
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
 
 
 # This class intends to directly correspond to Twitch's "Create EventSub Subscription" API:
@@ -13,28 +15,28 @@ class TwitchEventSubRequest():
 
     def __init__(
         self,
-        condition: WebsocketCondition,
-        subscriptionType: WebsocketSubscriptionType,
-        transport: WebsocketTransport
+        condition: TwitchWebsocketCondition,
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        transport: TwitchWebsocketTransport
     ):
-        if not isinstance(condition, WebsocketCondition):
+        if not isinstance(condition, TwitchWebsocketCondition):
             raise ValueError(f'condition argument is malformed: \"{condition}\"')
-        elif not isinstance(subscriptionType, WebsocketSubscriptionType):
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(transport, WebsocketTransport):
+        elif not isinstance(transport, TwitchWebsocketTransport):
             raise ValueError(f'transport argument is malformed: \"{transport}\"')
 
-        self.__condition: WebsocketCondition = condition
-        self.__subscriptionType: WebsocketSubscriptionType = subscriptionType
-        self.__transport: WebsocketTransport = transport
+        self.__condition: TwitchWebsocketCondition = condition
+        self.__subscriptionType: TwitchWebsocketSubscriptionType = subscriptionType
+        self.__transport: TwitchWebsocketTransport = transport
 
-    def getCondition(self) -> WebsocketCondition:
+    def getCondition(self) -> TwitchWebsocketCondition:
         return self.__condition
 
-    def getSubscriptionType(self) -> WebsocketSubscriptionType:
+    def getSubscriptionType(self) -> TwitchWebsocketSubscriptionType:
         return self.__subscriptionType
 
-    def getTransport(self) -> WebsocketTransport:
+    def getTransport(self) -> TwitchWebsocketTransport:
         return self.__transport
 
     def __repr__(self) -> str:

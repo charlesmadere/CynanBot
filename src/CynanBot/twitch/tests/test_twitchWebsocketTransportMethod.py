@@ -1,17 +1,17 @@
 from typing import Optional
 
-from CynanBot.twitch.websocket.websocketTransportMethod import \
-    WebsocketTransportMethod
+from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \
+    TwitchWebsocketTransportMethod
 
 
 class TestTwitchWebsocketTransportMethod():
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[WebsocketTransportMethod] = None
+        result: Optional[TwitchWebsocketTransportMethod] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketTransportMethod.fromStr('')
+            result = TwitchWebsocketTransportMethod.fromStr('')
         except Exception as e:
             exception = e
 
@@ -19,19 +19,19 @@ class TestTwitchWebsocketTransportMethod():
         assert isinstance(exception, Exception)
 
     def test_fromStr_withWebhookString(self):
-        result = WebsocketTransportMethod.fromStr('webhook')
-        assert result is WebsocketTransportMethod.WEBHOOK
+        result = TwitchWebsocketTransportMethod.fromStr('webhook')
+        assert result is TwitchWebsocketTransportMethod.WEBHOOK
 
     def test_fromStr_withWebsocketString(self):
-        result = WebsocketTransportMethod.fromStr('websocket')
-        assert result is WebsocketTransportMethod.WEBSOCKET
+        result = TwitchWebsocketTransportMethod.fromStr('websocket')
+        assert result is TwitchWebsocketTransportMethod.WEBSOCKET
 
     def test_fromStr_withNone(self):
-        result: Optional[WebsocketTransportMethod] = None
+        result: Optional[TwitchWebsocketTransportMethod] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketTransportMethod.fromStr(None)
+            result = TwitchWebsocketTransportMethod.fromStr(None)
         except Exception as e:
             exception = e
 
@@ -39,11 +39,11 @@ class TestTwitchWebsocketTransportMethod():
         assert isinstance(exception, Exception)
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[WebsocketTransportMethod] = None
+        result: Optional[TwitchWebsocketTransportMethod] = None
         exception: Optional[Exception] = None
 
         try:
-            result = WebsocketTransportMethod.fromStr(' ')
+            result = TwitchWebsocketTransportMethod.fromStr(' ')
         except Exception as e:
             exception = e
 
@@ -51,9 +51,9 @@ class TestTwitchWebsocketTransportMethod():
         assert isinstance(exception, Exception)
 
     def test_toStr_withWebhook(self):
-        string = WebsocketTransportMethod.WEBHOOK.toStr()
+        string = TwitchWebsocketTransportMethod.WEBHOOK.toStr()
         assert string == 'webhook'
 
     def test_toStr_withWebsocket(self):
-        string = WebsocketTransportMethod.WEBSOCKET.toStr()
+        string = TwitchWebsocketTransportMethod.WEBSOCKET.toStr()
         assert string == 'websocket'

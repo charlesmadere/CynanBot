@@ -2,11 +2,11 @@ from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
-from CynanBot.twitch.websocket.websocketConnectionStatus import \
-    WebsocketConnectionStatus
+from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
+    TwitchWebsocketConnectionStatus
 
 
-class WebsocketSession():
+class TwitchWebsocketSession():
 
     def __init__(
         self,
@@ -14,7 +14,7 @@ class WebsocketSession():
         connectedAt: SimpleDateTime,
         reconnectUrl: Optional[str],
         sessionId: str,
-        status: Optional[WebsocketConnectionStatus]
+        status: Optional[TwitchWebsocketConnectionStatus]
     ):
         if not utils.isValidInt(keepAliveTimeoutSeconds):
             raise ValueError(f'keepAliveTimeoutSeconds argument is malformed: \"{keepAliveTimeoutSeconds}\"')
@@ -24,14 +24,14 @@ class WebsocketSession():
             raise ValueError(f'reconnectUrl argument is malformed: \"{reconnectUrl}\"')
         elif not utils.isValidStr(sessionId):
             raise ValueError(f'sessionId argument is malformed: \"{sessionId}\"')
-        elif status is not None and not isinstance(status, WebsocketConnectionStatus):
+        elif status is not None and not isinstance(status, TwitchWebsocketConnectionStatus):
             raise ValueError(f'status argument is malformed: \"{status}\"')
 
         self.__keepAliveTimeoutSeconds: int = keepAliveTimeoutSeconds
         self.__connectedAt: SimpleDateTime = connectedAt
         self.__reconnectUrl: Optional[str] = reconnectUrl
         self.__sessionId: str = sessionId
-        self.__status: Optional[WebsocketConnectionStatus] = status
+        self.__status: Optional[TwitchWebsocketConnectionStatus] = status
 
     def getConnectedAt(self) -> SimpleDateTime:
         return self.__connectedAt
@@ -45,7 +45,7 @@ class WebsocketSession():
     def getSessionId(self) -> str:
         return self.__sessionId
 
-    def getStatus(self) -> Optional[WebsocketConnectionStatus]:
+    def getStatus(self) -> Optional[TwitchWebsocketConnectionStatus]:
         return self.__status
 
     def __repr__(self) -> str:

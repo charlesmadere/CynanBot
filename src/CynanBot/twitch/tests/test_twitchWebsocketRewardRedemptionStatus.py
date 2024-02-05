@@ -1,33 +1,33 @@
-from CynanBot.twitch.websocket.twitchWebsocketRewardRedemptionStatus import \
-    TwitchWebsocketRewardRedemptionStatus
+from CynanBot.twitch.api.twitchRewardRedemptionStatus import \
+    TwitchRewardRedemptionStatus
 
 
 class TestTwitchWebsocketRewardRedemptionStatus():
 
     def test_fromStr_withCanceledString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr('canceled')
-        assert result is TwitchWebsocketRewardRedemptionStatus.CANCELED
+        result = TwitchRewardRedemptionStatus.fromStr('canceled')
+        assert result is TwitchRewardRedemptionStatus.CANCELED
 
     def test_fromStr_withFulfilledString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr('fulfilled')
-        assert result is TwitchWebsocketRewardRedemptionStatus.FULFILLED
+        result = TwitchRewardRedemptionStatus.fromStr('fulfilled')
+        assert result is TwitchRewardRedemptionStatus.FULFILLED
 
     def test_fromStr_withEmptyString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr('')
+        result = TwitchRewardRedemptionStatus.fromStr('')
         assert result is None
 
     def test_fromStr_withNone(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr(None)
+        result = TwitchRewardRedemptionStatus.fromStr(None)
         assert result is None
 
     def test_fromStr_withUnfulfilledString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr('unfulfilled')
-        assert result is TwitchWebsocketRewardRedemptionStatus.UNFULFILLED
+        result = TwitchRewardRedemptionStatus.fromStr('unfulfilled')
+        assert result is TwitchRewardRedemptionStatus.UNFULFILLED
 
     def test_fromStr_withUnknownString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr('unknown')
-        assert result is TwitchWebsocketRewardRedemptionStatus.UNKNOWN
+        result = TwitchRewardRedemptionStatus.fromStr('unknown')
+        assert result is TwitchRewardRedemptionStatus.UNKNOWN
 
     def test_fromStr_withWhitespaceString(self):
-        result = TwitchWebsocketRewardRedemptionStatus.fromStr(' ')
+        result = TwitchRewardRedemptionStatus.fromStr(' ')
         assert result is None

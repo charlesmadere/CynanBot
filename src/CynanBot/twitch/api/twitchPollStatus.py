@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 
 
-class TwitchWebsocketPollStatus(Enum):
+class TwitchPollStatus(Enum):
 
     ACTIVE = auto()
     ARCHIVED = auto()
@@ -21,16 +21,16 @@ class TwitchWebsocketPollStatus(Enum):
         text = text.lower()
 
         if text == 'active':
-            return TwitchWebsocketPollStatus.ACTIVE
+            return TwitchPollStatus.ACTIVE
         elif text == 'archived':
-            return TwitchWebsocketPollStatus.ARCHIVED
+            return TwitchPollStatus.ARCHIVED
         elif text == 'completed':
-            return TwitchWebsocketPollStatus.COMPLETED
+            return TwitchPollStatus.COMPLETED
         elif text == 'invalid':
-            return TwitchWebsocketPollStatus.INVALID
+            return TwitchPollStatus.INVALID
         elif text == 'moderated':
-            return TwitchWebsocketPollStatus.MODERATED
+            return TwitchPollStatus.MODERATED
         elif text == 'terminated':
-            return TwitchWebsocketPollStatus.TERMINATED
+            return TwitchPollStatus.TERMINATED
         else:
             return None

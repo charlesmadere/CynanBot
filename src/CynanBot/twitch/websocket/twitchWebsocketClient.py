@@ -16,6 +16,16 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
+    TwitchWebsocketCondition
+from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
+    TwitchWebsocketDataBundle
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \
+    TwitchWebsocketTransportMethod
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepositoryInterface import \
@@ -27,13 +37,6 @@ from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
 from CynanBot.twitch.websocket.twitchWebsocketUser import TwitchWebsocketUser
-from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
-from CynanBot.twitch.websocket.websocketDataBundle import WebsocketDataBundle
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
-from CynanBot.twitch.websocket.websocketTransport import WebsocketTransport
-from CynanBot.twitch.websocket.websocketTransportMethod import \
-    WebsocketTransportMethod
 
 
 class TwitchWebsocketClient(TwitchWebsocketClientInterface):
@@ -50,21 +53,21 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.25,
         websocketSleepTimeSeconds: float = 3,
-        subscriptionTypes: Set[WebsocketSubscriptionType] = {
-            WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
-            WebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
-            WebsocketSubscriptionType.CHANNEL_POLL_END,
-            WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS,
-            WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
-            WebsocketSubscriptionType.CHANNEL_PREDICTION_END,
-            WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK,
-            WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
-            WebsocketSubscriptionType.CHANNEL_UPDATE,
-            WebsocketSubscriptionType.CHEER,
-            WebsocketSubscriptionType.RAID,
-            WebsocketSubscriptionType.SUBSCRIBE,
-            WebsocketSubscriptionType.SUBSCRIPTION_GIFT,
-            WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+        subscriptionTypes: Set[TwitchWebsocketSubscriptionType] = {
+            TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
+            TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
+            TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
+            TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS,
+            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN,
+            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END,
+            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK,
+            TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
+            TwitchWebsocketSubscriptionType.CHANNEL_UPDATE,
+            TwitchWebsocketSubscriptionType.CHEER,
+            TwitchWebsocketSubscriptionType.RAID,
+            TwitchWebsocketSubscriptionType.SUBSCRIBE,
+            TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
+            TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         },
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
         maxMessageAge: timedelta = timedelta(minutes = 3),
@@ -117,17 +120,17 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__subscriptionTypes: Set[WebsocketSubscriptionType] = subscriptionTypes
+        self.__subscriptionTypes: Set[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
         self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
-        self.__badSubscriptionTypesFor: Dict[TwitchWebsocketUser, Set[WebsocketSubscriptionType]] = defaultdict(lambda: set())
+        self.__badSubscriptionTypesFor: Dict[TwitchWebsocketUser, Set[TwitchWebsocketSubscriptionType]] = defaultdict(lambda: set())
         self.__jsonBuilderFor: Dict[TwitchWebsocketUser, IncrementalJsonBuilder] = defaultdict(lambda: IncrementalJsonBuilder())
         self.__sessionIdFor: Dict[TwitchWebsocketUser, Optional[str]] = defaultdict(lambda: '')
         self.__twitchWebsocketUrlFor: Dict[TwitchWebsocketUser, str] = defaultdict(lambda: twitchWebsocketUrl)
         self.__messageIdCache: LruCache = LruCache(128)
-        self.__dataBundleQueue: SimpleQueue[WebsocketDataBundle] = SimpleQueue()
+        self.__dataBundleQueue: SimpleQueue[TwitchWebsocketDataBundle] = SimpleQueue()
         self.__dataBundleListener: Optional[TwitchWebsocketDataBundleListener] = None
 
     async def __createEventSubSubscription(self, sessionId: str, user: TwitchWebsocketUser):
@@ -136,14 +139,14 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         elif not isinstance(user, TwitchWebsocketUser):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
-        transport = WebsocketTransport(
+        transport = TwitchWebsocketTransport(
             sessionId = sessionId,
-            method = WebsocketTransportMethod.WEBSOCKET
+            method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
         await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getUserName())
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.getUserName())
-        results: Dict[WebsocketSubscriptionType, Optional[Exception]] = OrderedDict()
+        results: Dict[TwitchWebsocketSubscriptionType, Optional[Exception]] = OrderedDict()
 
         for subscriptionType in self.__subscriptionTypes:
             if subscriptionType in self.__badSubscriptionTypesFor[user]:
@@ -181,51 +184,51 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
     async def __createWebsocketCondition(
         self,
         user: TwitchWebsocketUser,
-        subscriptionType: WebsocketSubscriptionType
-    ) -> WebsocketCondition:
+        subscriptionType: TwitchWebsocketSubscriptionType
+    ) -> TwitchWebsocketCondition:
         if not isinstance(user, TwitchWebsocketUser):
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(subscriptionType, WebsocketSubscriptionType):
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if subscriptionType is WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
-            return WebsocketCondition(
+        if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_BEGIN or \
-                subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_END or \
-                subscriptionType is WebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN or \
-                subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_END or \
-                subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK or \
-                subscriptionType is WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK or \
+                subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.CHANNEL_UPDATE:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.CHEER:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.CHEER:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.FOLLOW:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId(),
                 moderatorUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.RAID:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.RAID:
+            return TwitchWebsocketCondition(
                 toBroadcasterUserId = user.getUserId()
             )
-        elif subscriptionType is WebsocketSubscriptionType.SUBSCRIBE or \
-                subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_GIFT or \
-                subscriptionType is WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
-            return WebsocketCondition(
+        elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
+                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT or \
+                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
+            return TwitchWebsocketCondition(
                 broadcasterUserId = user.getUserId()
             )
         else:
@@ -234,11 +237,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
     async def __handleConnectionRelatedMessageFor(
         self,
         user: TwitchWebsocketUser,
-        dataBundle: WebsocketDataBundle
+        dataBundle: TwitchWebsocketDataBundle
     ):
         if not isinstance(user, TwitchWebsocketUser):
             raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, WebsocketDataBundle):
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.getPayload()
@@ -308,8 +311,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
         self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed to \"{newTwitchWebsocketUrl}\" from \"{oldTwitchWebsocketUrl}\"')
 
-    async def __isValidMessage(self, dataBundle: WebsocketDataBundle) -> bool:
-        if not isinstance(dataBundle, WebsocketDataBundle):
+    async def __isValidMessage(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
+        if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         # ensure that this isn't a message we've seen before
@@ -333,7 +336,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self,
         message: Optional[Any],
         user: TwitchWebsocketUser
-    ) -> Optional[List[WebsocketDataBundle]]:
+    ) -> Optional[List[TwitchWebsocketDataBundle]]:
         if not isinstance(user, TwitchWebsocketUser):
             raise ValueError(f'user argument is malformed: \"{user}\"')
 
@@ -350,10 +353,10 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not utils.hasItems(dictionaries):
             return None
 
-        dataBundles: List[WebsocketDataBundle] = list()
+        dataBundles: List[TwitchWebsocketDataBundle] = list()
 
         for index, dictionary in enumerate(dictionaries):
-            dataBundle: Optional[WebsocketDataBundle] = None
+            dataBundle: Optional[TwitchWebsocketDataBundle] = None
             exception: Optional[Exception] = None
 
             try:
@@ -397,7 +400,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             dataBundleListener = self.__dataBundleListener
 
             if dataBundleListener is not None:
-                dataBundles: List[WebsocketDataBundle] = list()
+                dataBundles: List[TwitchWebsocketDataBundle] = list()
 
                 try:
                     while not self.__dataBundleQueue.empty():
@@ -451,8 +454,8 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         self.__timber.log('TwitchWebsocketClient', f'Finished establishing websocket connections for {len(users)} user(s)')
 
-    async def __submitDataBundle(self, dataBundle: WebsocketDataBundle):
-        if not isinstance(dataBundle, WebsocketDataBundle):
+    async def __submitDataBundle(self, dataBundle: TwitchWebsocketDataBundle):
+        if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         try:

@@ -1,12 +1,13 @@
 from typing import Optional
 
-from CynanBot.twitch.websocket.websocketTransport import WebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
 
 
 class TestTwitchWebsocketTransport():
 
     def test_requireSessionId_withEmptyString(self):
-        transport = WebsocketTransport(sessionId = '')
+        transport = TwitchWebsocketTransport(sessionId = '')
         sessionId: Optional[str] = None
         exception: Optional[Exception] = None
 
@@ -19,7 +20,7 @@ class TestTwitchWebsocketTransport():
         assert isinstance(exception, Exception)
 
     def test_requireSessionId_withNone(self):
-        transport = WebsocketTransport()
+        transport = TwitchWebsocketTransport()
         sessionId: Optional[str] = None
         exception: Optional[Exception] = None
 
@@ -32,11 +33,11 @@ class TestTwitchWebsocketTransport():
         assert isinstance(exception, Exception)
 
     def test_requireSessionId_withValidString(self):
-        transport = WebsocketTransport(sessionId = 'abc123')
+        transport = TwitchWebsocketTransport(sessionId = 'abc123')
         assert transport.requireSessionId() == 'abc123'
 
     def test_requireSessionId_withWhitespaceString(self):
-        transport = WebsocketTransport(sessionId = ' ')
+        transport = TwitchWebsocketTransport(sessionId = ' ')
         sessionId: Optional[str] = None
         exception: Optional[Exception] = None
 

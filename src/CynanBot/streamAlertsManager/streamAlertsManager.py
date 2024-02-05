@@ -95,6 +95,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             else:
                 currentAlert.setAlertState(StreamAlertState.TTS_FINISHED)
 
+        self.__currentAlert = None
         return False
 
     def start(self):

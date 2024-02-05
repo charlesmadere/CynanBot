@@ -4,7 +4,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
-class WebsocketSubGift():
+class TwitchSubGift():
 
     def __init__(
         self,
@@ -17,23 +17,23 @@ class WebsocketSubGift():
         subTier: TwitchSubscriberTier
     ):
         if cumulativeTotal is not None and not utils.isValidInt(cumulativeTotal):
-            raise ValueError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
+            raise TypeError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
         elif cumulativeTotal is not None and (cumulativeTotal < 1 or cumulativeTotal > utils.getIntMaxSafeSize()):
-            raise ValueError(f'cumulativeTotal argument is out of bounds: {cumulativeTotal}')
+            raise TypeError(f'cumulativeTotal argument is out of bounds: {cumulativeTotal}')
         elif not utils.isValidInt(durationMonths):
-            raise ValueError(f'durationMonths argument is malformed: \"{durationMonths}\"')
+            raise TypeError(f'durationMonths argument is malformed: \"{durationMonths}\"')
         elif durationMonths < 1 or durationMonths > utils.getIntMaxSafeSize():
             raise ValueError(f'durationMonths argument is out of boudns: {durationMonths}')
         elif communityGiftId is not None and not isinstance(communityGiftId, str):
-            raise ValueError(f'communityGiftId argument is malformed: \"{communityGiftId}\"')
+            raise TypeError(f'communityGiftId argument is malformed: \"{communityGiftId}\"')
         elif not utils.isValidStr(recipientUserId):
-            raise ValueError(f'recipientUserId argument is malformed: \"{recipientUserId}\"')
+            raise TypeError(f'recipientUserId argument is malformed: \"{recipientUserId}\"')
         elif not utils.isValidStr(recipientUserLogin):
-            raise ValueError(f'recipientUserLogin argument is malformed: \"{recipientUserLogin}\"')
+            raise TypeError(f'recipientUserLogin argument is malformed: \"{recipientUserLogin}\"')
         elif not utils.isValidStr(recipientUserName):
-            raise ValueError(f'recipientUserName argument is malformed: \"{recipientUserName}\"')
+            raise TypeError(f'recipientUserName argument is malformed: \"{recipientUserName}\"')
         elif not isinstance(subTier, TwitchSubscriberTier):
-            raise ValueError(f'subTier argument is malformed: \"{subTier}\"')
+            raise TypeError(f'subTier argument is malformed: \"{subTier}\"')
 
         self.__cumulativeTotal: Optional[int] = cumulativeTotal
         self.__durationMonths: int = durationMonths

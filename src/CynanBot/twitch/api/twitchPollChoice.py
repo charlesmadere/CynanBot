@@ -3,7 +3,7 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 
 
-class TwitchWebsocketPollChoice():
+class TwitchPollChoice():
 
     def __init__(
         self,
@@ -13,17 +13,17 @@ class TwitchWebsocketPollChoice():
         title: str
     ):
         if not utils.isValidInt(channelPointsVotes):
-            raise ValueError(f'channelPointsVotes argument is malformed: \"{channelPointsVotes}\"')
+            raise TypeError(f'channelPointsVotes argument is malformed: \"{channelPointsVotes}\"')
         elif channelPointsVotes < 0 or channelPointsVotes > utils.getIntMaxSafeSize():
             raise ValueError(f'channelPointsVotes argument is out of bounds: {channelPointsVotes}')
         elif not utils.isValidInt(votes):
-            raise ValueError(f'votes argument is malformed: \"{votes}\"')
+            raise TypeError(f'votes argument is malformed: \"{votes}\"')
         elif votes < 0 or votes > utils.getIntMaxSafeSize():
             raise ValueError(f'votes argument is out of bounds: {votes}')
         elif not utils.isValidStr(choiceId):
-            raise ValueError(f'choiceId argument is malformed: \"{choiceId}\"')
+            raise TypeError(f'choiceId argument is malformed: \"{choiceId}\"')
         elif not utils.isValidStr(title):
-            raise ValueError(f'title argument is malformed: \"{title}\"')
+            raise TypeError(f'title argument is malformed: \"{title}\"')
 
         self.__channelPointsVotes: int = channelPointsVotes
         self.__votes: int = votes

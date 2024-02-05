@@ -4,7 +4,7 @@ from typing import Optional
 import CynanBot.misc.utils as utils
 
 
-class WebsocketTransportMethod(Enum):
+class TwitchWebsocketTransportMethod(Enum):
 
     WEBHOOK = auto()
     WEBSOCKET = auto()
@@ -12,21 +12,21 @@ class WebsocketTransportMethod(Enum):
     @classmethod
     def fromStr(cls, text: Optional[str]):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 
         if text == 'webhook':
-            return WebsocketTransportMethod.WEBHOOK
+            return TwitchWebsocketTransportMethod.WEBHOOK
         elif text == 'websocket':
-            return WebsocketTransportMethod.WEBSOCKET
+            return TwitchWebsocketTransportMethod.WEBSOCKET
         else:
             raise ValueError(f'unknown WebsocketTransportMethod: \"{text}\"')
 
     def toStr(self) -> str:
-        if self is WebsocketTransportMethod.WEBHOOK:
+        if self is TwitchWebsocketTransportMethod.WEBHOOK:
             return 'webhook'
-        elif self is WebsocketTransportMethod.WEBSOCKET:
+        elif self is TwitchWebsocketTransportMethod.WEBSOCKET:
             return 'websocket'
         else:
             raise RuntimeError(f'unknown WebsocketTransportMethod: \"{self}\"')

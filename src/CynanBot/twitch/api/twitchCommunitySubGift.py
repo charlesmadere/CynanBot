@@ -4,7 +4,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
-class WebsocketCommunitySubGift():
+class TwitchCommunitySubGift():
 
     def __init__(
         self,
@@ -14,13 +14,13 @@ class WebsocketCommunitySubGift():
         subTier: TwitchSubscriberTier
     ):
         if cumulativeTotal is not None and not utils.isValidInt(cumulativeTotal):
-            raise ValueError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
+            raise TypeError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
         elif not utils.isValidInt(total):
-            raise ValueError(f'total argument is malformed: \"{total}\"')
+            raise TypeError(f'total argument is malformed: \"{total}\"')
         elif not utils.isValidStr(communitySubGiftId):
-            raise ValueError(f'communitySubGiftId argument is malformed: \"{communitySubGiftId}\"')
+            raise TypeError(f'communitySubGiftId argument is malformed: \"{communitySubGiftId}\"')
         elif not isinstance(subTier, TwitchSubscriberTier):
-            raise ValueError(f'subTier argument is malformed: \"{subTier}\"')
+            raise TypeError(f'subTier argument is malformed: \"{subTier}\"')
 
         self.__cumulativeTotal: Optional[int] = cumulativeTotal
         self.__total: int = total

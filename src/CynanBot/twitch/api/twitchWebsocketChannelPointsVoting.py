@@ -3,7 +3,7 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 
 
-class TwitchWebsocketChannelPointsVoting():
+class TwitchChannelPointsVoting():
 
     def __init__(
         self,

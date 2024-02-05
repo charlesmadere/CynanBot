@@ -36,6 +36,14 @@ from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 from CynanBot.twitch.api.twitchUserType import TwitchUserType
+from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
+    TwitchWebsocketConnectionStatus
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \
+    TwitchWebsocketTransportMethod
 from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchErrorException,
                                         TwitchJsonException,
@@ -48,13 +56,6 @@ from CynanBot.twitch.twitchCredentialsProviderInterface import \
 from CynanBot.twitch.twitchPaginationResponse import TwitchPaginationResponse
 from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
     TwitchWebsocketJsonMapperInterface
-from CynanBot.twitch.websocket.websocketConnectionStatus import \
-    WebsocketConnectionStatus
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
-from CynanBot.twitch.websocket.websocketTransport import WebsocketTransport
-from CynanBot.twitch.websocket.websocketTransportMethod import \
-    WebsocketTransportMethod
 
 
 class TwitchApiService(TwitchApiServiceInterface):
@@ -248,25 +249,25 @@ class TwitchApiService(TwitchApiServiceInterface):
         createdAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(dataJson, 'created_at')))
         subscriptionId = utils.getStrFromDict(dataJson, 'id')
         version = utils.getStrFromDict(dataJson, 'version')
-        subscriptionType = WebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
-        status = WebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
+        subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
+        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
 
-        conditionJson: Dict[str, Any] = dataJson.get('condition')
+        conditionJson: Optional[Dict[str, Any]] = dataJson.get('condition')
         if not utils.hasItems(conditionJson):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         condition = await self.__twitchWebsocketJsonMapper.parseWebsocketCondition(dataJson.get('condition'))
 
-        transportJson: Dict[str, Any] = dataJson.get('transport')
+        transportJson: Optional[Dict[str, Any]] = dataJson.get('transport')
         if not utils.hasItems(transportJson):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        transport = WebsocketTransport(
+        transport = TwitchWebsocketTransport(
             connectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'connected_at'))),
             sessionId = utils.getStrFromDict(transportJson, 'session_id'),
-            method = WebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
+            method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
         )
 
         return TwitchEventSubResponse(
@@ -322,8 +323,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         allUsers: List[TwitchBannedUser] = list()
 
         for page in pages:
-            if utils.hasItems(page.getUsers()):
-                allUsers.extend(page.getUsers())
+            usersPage = page.getUsers()
+
+            if usersPage is not None and len(usersPage) >= 1:
+                allUsers.extend(usersPage)
 
         allUsers.sort(key = lambda user: user.getUserLogin().lower())
 

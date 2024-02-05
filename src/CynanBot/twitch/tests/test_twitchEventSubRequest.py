@@ -1,25 +1,27 @@
 from typing import Dict
 
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
-from CynanBot.twitch.websocket.websocketCondition import WebsocketCondition
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
-from CynanBot.twitch.websocket.websocketTransport import WebsocketTransport
-from CynanBot.twitch.websocket.websocketTransportMethod import \
-    WebsocketTransportMethod
+from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
+    TwitchWebsocketCondition
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
+from CynanBot.twitch.api.websocket.twitchWebsocketTransportMethod import \
+    TwitchWebsocketTransportMethod
 
 
 class TestTwitchEventSubRequest():
 
     def test_toJson1(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = 'abc123'
         )
 
-        subscriptionType = WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+        subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
 
-        transport = WebsocketTransport(
-            method = WebsocketTransportMethod.WEBSOCKET,
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
             sessionId = 'qwerty'
         )
 
@@ -56,14 +58,14 @@ class TestTwitchEventSubRequest():
         assert dictionary['version'] == subscriptionType.getVersion()
 
     def test_toJson2(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = 'def987'
         )
 
-        subscriptionType = WebsocketSubscriptionType.SUBSCRIBE
+        subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIBE
 
-        transport = WebsocketTransport(
-            method = WebsocketTransportMethod.WEBSOCKET,
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
             sessionId = 'azerty'
         )
 
@@ -100,15 +102,15 @@ class TestTwitchEventSubRequest():
         assert dictionary['version'] == subscriptionType.getVersion()
 
     def test_toJson3(self):
-        condition = WebsocketCondition(
+        condition = TwitchWebsocketCondition(
             broadcasterUserId = 'foo',
             moderatorUserId = 'bar'
         )
 
-        subscriptionType = WebsocketSubscriptionType.SUBSCRIBE
+        subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIBE
 
-        transport = WebsocketTransport(
-            method = WebsocketTransportMethod.WEBSOCKET,
+        transport = TwitchWebsocketTransport(
+            method = TwitchWebsocketTransportMethod.WEBSOCKET,
             sessionId = 'azerty'
         )
 

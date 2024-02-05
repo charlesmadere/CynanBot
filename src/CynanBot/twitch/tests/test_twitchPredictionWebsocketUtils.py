@@ -2,15 +2,14 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
+from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
+from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
-from CynanBot.twitch.websocket.websocketOutcome import WebsocketOutcome
-from CynanBot.twitch.websocket.websocketOutcomeColor import \
-    WebsocketOutcomeColor
-from CynanBot.twitch.websocket.websocketSubscriptionType import \
-    WebsocketSubscriptionType
 
 
 class TestTwitchPredictionWebsocketUtils():
@@ -18,36 +17,37 @@ class TestTwitchPredictionWebsocketUtils():
     utils: TwitchPredictionWebsocketUtilsInterface = TwitchPredictionWebsocketUtils()
 
     @pytest.mark.asyncio
-    async def test_websocketOutcomesToEventDataArray(self):
+    async def test_twitchOutcomesToEventDataArray(self):
         result: Optional[List[Dict[str, Any]]] = None
-        outcomes: List[WebsocketOutcome] = [
-            WebsocketOutcome(
+
+        outcomes: List[TwitchOutcome] = [
+            TwitchOutcome(
                 channelPoints = 0,
                 users = 0,
                 outcomeId = 'abc',
                 title = 'Whomp',
-                color = WebsocketOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE
             ),
-            WebsocketOutcome(
+            TwitchOutcome(
                 channelPoints = 5,
                 users = 1,
                 outcomeId = 'def',
                 title = 'Thwomp',
-                color = WebsocketOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE
             ),
-            WebsocketOutcome(
+            TwitchOutcome(
                 channelPoints = 10,
                 users = 2,
                 outcomeId = 'ghi',
                 title = 'Boo',
-                color = WebsocketOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE
             ),
-            WebsocketOutcome(
+            TwitchOutcome(
                 channelPoints = 15,
                 users = 3,
                 outcomeId = 'jkl',
                 title = 'Bob-omb',
-                color = WebsocketOutcomeColor.BLUE
+                color = TwitchOutcomeColor.BLUE
             )
         ]
 
@@ -94,7 +94,7 @@ class TestTwitchPredictionWebsocketUtils():
     @pytest.mark.asyncio
     async def test_websocketOutcomesToEventDataArray_withEmptyList(self):
         result: Optional[List[Dict[str, Any]]] = None
-        outcomes: List[WebsocketOutcome] = list()
+        outcomes: List[TwitchOutcome] = list()
 
         with pytest.raises(TypeError):
             result = await self.utils.websocketOutcomesToEventDataArray(
@@ -105,7 +105,7 @@ class TestTwitchPredictionWebsocketUtils():
 
     @pytest.mark.asyncio
     async def test_websocketOutcomeColorToEventData_withBlue(self):
-        result = await self.utils.websocketOutcomeColorToEventData(WebsocketOutcomeColor.BLUE)
+        result = await self.utils.websocketOutcomeColorToEventData(TwitchOutcomeColor.BLUE)
         assert isinstance(result, Dict)
         assert len(result) == 3
         assert result['red'] == 54
@@ -114,7 +114,7 @@ class TestTwitchPredictionWebsocketUtils():
 
     @pytest.mark.asyncio
     async def test_websocketOutcomeColorToEventData_withPink(self):
-        result = await self.utils.websocketOutcomeColorToEventData(WebsocketOutcomeColor.PINK)
+        result = await self.utils.websocketOutcomeColorToEventData(TwitchOutcomeColor.PINK)
         assert isinstance(result, Dict)
         assert len(result) == 3
         assert result['red'] == 255
@@ -127,7 +127,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+               subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
             )
 
         assert result is None
@@ -135,7 +135,7 @@ class TestTwitchPredictionWebsocketUtils():
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPredictionBegin(self):
         result = await self.utils.websocketSubscriptionTypeToString(
-            subscriptionType = WebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
         )
 
         assert result == 'prediction_begin'
@@ -143,7 +143,7 @@ class TestTwitchPredictionWebsocketUtils():
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPredictionEnd(self):
         result = await self.utils.websocketSubscriptionTypeToString(
-            subscriptionType = WebsocketSubscriptionType.CHANNEL_PREDICTION_END
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END
         )
 
         assert result == 'prediction_end'
@@ -151,7 +151,7 @@ class TestTwitchPredictionWebsocketUtils():
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPredictionLock(self):
         result = await self.utils.websocketSubscriptionTypeToString(
-            subscriptionType = WebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK
         )
 
         assert result == 'prediction_lock'
@@ -159,7 +159,7 @@ class TestTwitchPredictionWebsocketUtils():
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withChannelPredictionProgress(self):
         result = await self.utils.websocketSubscriptionTypeToString(
-            subscriptionType = WebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
+            subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
         )
 
         assert result == 'prediction_progress'
@@ -170,7 +170,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.CHANNEL_UPDATE
+               subscriptionType = TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
             )
 
         assert result is None
@@ -181,11 +181,10 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.CHEER
+               subscriptionType = TwitchWebsocketSubscriptionType.CHEER
             )
 
         assert result is None
-
 
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withFollow(self):
@@ -193,11 +192,10 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.FOLLOW
+               subscriptionType = TwitchWebsocketSubscriptionType.FOLLOW
             )
 
         assert result is None
-
 
     @pytest.mark.asyncio
     async def test_websocketSubscriptionTypeToString_withRaid(self):
@@ -205,7 +203,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.RAID
+               subscriptionType = TwitchWebsocketSubscriptionType.RAID
             )
 
         assert result is None
@@ -216,7 +214,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.SUBSCRIBE
+               subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIBE
             )
 
         assert result is None
@@ -227,7 +225,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.SUBSCRIPTION_GIFT
+               subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT
             )
 
         assert result is None
@@ -238,7 +236,7 @@ class TestTwitchPredictionWebsocketUtils():
 
         with pytest.raises(ValueError):
             result = await self.utils.websocketSubscriptionTypeToString(
-               subscriptionType = WebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+               subscriptionType = TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
             )
 
         assert result is None
