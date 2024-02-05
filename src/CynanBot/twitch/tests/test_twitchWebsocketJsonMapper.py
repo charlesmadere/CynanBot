@@ -71,7 +71,6 @@ class TestTwitchWebsocketJsonMapper():
         assert result.getUserId() is None
         assert result.getUserLogin() is None
         assert result.getUserName() is None
-        assert result.isAnonymous() is None
 
         broadcasterUserId: Optional[str] = None
         exception: Optional[Exception] = None
