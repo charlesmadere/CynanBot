@@ -435,7 +435,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'choices' in eventJson:
             choicesItem: Any = eventJson.get('choices')
 
-            if isinstance(choicesItem, List) and utils.hasItems(choicesItem):
+            if isinstance(choicesItem, List) and len(choicesItem) >= 1:
                 choices = list()
 
                 for choiceItem in choicesItem:
@@ -465,7 +465,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'outcomes' in eventJson:
             outcomesItem: Any = eventJson.get('outcomes')
 
-            if isinstance(outcomesItem, List) and utils.hasItems(outcomesItem):
+            if isinstance(outcomesItem, List) and len(outcomesItem) >= 1:
                 outcomes = list()
 
                 for outcomeItem in outcomesItem:
@@ -533,7 +533,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         )
 
     async def parseTwitchOutcome(self, outcomeJson: Optional[Dict[str, Any]]) -> Optional[TwitchOutcome]:
-        if not isinstance(outcomeJson, Dict) or not utils.hasItems(outcomeJson):
+        if not isinstance(outcomeJson, Dict) or len(outcomeJson) == 0:
             return None
 
         channelPoints = utils.getIntFromDict(outcomeJson, 'channel_points', fallback = 0)
@@ -546,7 +546,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'top_predictors' in outcomeJson:
             topPredictorsItem: Any = outcomeJson.get('top_predictors')
 
-            if isinstance(topPredictorsItem, List) and utils.hasItems(outcomeId):
+            if isinstance(topPredictorsItem, List) and len(topPredictorsItem) >= 1:
                 topPredictors = list()
 
                 for topPredictorItem in topPredictorsItem:
