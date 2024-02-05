@@ -20,14 +20,14 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    async def websocketOutcomeColorToEventData(
+    async def outcomeColorToEventData(
         self,
         color: TwitchOutcomeColor
     ) -> Dict[str, int]:
         pass
 
     @abstractmethod
-    async def websocketOutcomesToEventDataArray(
+    async def outcomesToEventDataArray(
         self,
         outcomes: List[TwitchOutcome]
     ) -> List[Dict[str, Any]]:

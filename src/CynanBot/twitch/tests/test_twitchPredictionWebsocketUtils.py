@@ -51,7 +51,7 @@ class TestTwitchPredictionWebsocketUtils():
             )
         ]
 
-        result = await self.utils.websocketOutcomesToEventDataArray(outcomes)
+        result = await self.utils.outcomesToEventDataArray(outcomes)
         assert isinstance(result, List)
         assert len(result) == 4
 
@@ -97,7 +97,7 @@ class TestTwitchPredictionWebsocketUtils():
         outcomes: List[TwitchOutcome] = list()
 
         with pytest.raises(TypeError):
-            result = await self.utils.websocketOutcomesToEventDataArray(
+            result = await self.utils.outcomesToEventDataArray(
                 outcomes = outcomes
             )
 
@@ -105,7 +105,7 @@ class TestTwitchPredictionWebsocketUtils():
 
     @pytest.mark.asyncio
     async def test_websocketOutcomeColorToEventData_withBlue(self):
-        result = await self.utils.websocketOutcomeColorToEventData(TwitchOutcomeColor.BLUE)
+        result = await self.utils.outcomeColorToEventData(TwitchOutcomeColor.BLUE)
         assert isinstance(result, Dict)
         assert len(result) == 3
         assert result['red'] == 54
@@ -114,7 +114,7 @@ class TestTwitchPredictionWebsocketUtils():
 
     @pytest.mark.asyncio
     async def test_websocketOutcomeColorToEventData_withPink(self):
-        result = await self.utils.websocketOutcomeColorToEventData(TwitchOutcomeColor.PINK)
+        result = await self.utils.outcomeColorToEventData(TwitchOutcomeColor.PINK)
         assert isinstance(result, Dict)
         assert len(result) == 3
         assert result['red'] == 255

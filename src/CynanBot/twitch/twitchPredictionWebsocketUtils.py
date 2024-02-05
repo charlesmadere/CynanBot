@@ -5,10 +5,10 @@ from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
 from CynanBot.twitch.api.websocket.twitchWebsocketEvent import \
     TwitchWebsocketEvent
-from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
-    TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
+from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
+    TwitchPredictionWebsocketUtilsInterface
 
 
 class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
@@ -35,7 +35,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         if outcomes is None or len(outcomes) == 0:
             return None
 
-        outcomesArray = await self.websocketOutcomesToEventDataArray(outcomes)
+        outcomesArray = await self.outcomesToEventDataArray(outcomes)
         predictionTypeString = await self.websocketSubscriptionTypeToString(subscriptionType)
 
         return {
@@ -56,13 +56,13 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
         if len(outcomes) <= 2:
             for outcome in outcomes:
-                colors.append(await self.websocketOutcomeColorToEventData(outcome.getColor()))
+                colors.append(await self.outcomeColorToEventData(outcome.getColor()))
         else:
             for index, outcome in enumerate(outcomes):
                 if index == 0:
-                    colors.append(await self.websocketOutcomeColorToEventData(TwitchOutcomeColor.BLUE))
+                    colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.BLUE))
                 elif index == 1:
-                    colors.append(await self.websocketOutcomeColorToEventData(TwitchOutcomeColor.PINK))
+                    colors.append(await self.outcomeColorToEventData(TwitchOutcomeColor.PINK))
                 elif index == 2:
                     # orange
                     colors.append({
@@ -136,7 +136,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
         return colors
 
-    async def websocketOutcomeColorToEventData(
+    async def outcomeColorToEventData(
         self,
         color: TwitchOutcomeColor
     ) -> Dict[str, int]:
@@ -158,7 +158,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         else:
             raise RuntimeError(f'Unknown WebsocketOutcomeColor: \"{color}\"')
 
-    async def websocketOutcomesToEventDataArray(
+    async def outcomesToEventDataArray(
         self,
         outcomes: List[TwitchOutcome]
     ) -> List[Dict[str, Any]]:
