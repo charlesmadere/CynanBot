@@ -27,13 +27,13 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if not isinstance(contentScanner, ContentScannerInterface):
-            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+            raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')
         elif not isinstance(emojiHelper, EmojiHelperInterface):
-            raise ValueError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
+            raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
@@ -49,7 +49,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         if event is None:
             return None
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         prefix = await self.__processDonationPrefix(event)
         message = event.getMessage()
@@ -212,17 +212,17 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         donation: TtsCheerDonation
     ) -> Optional[str]:
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsCheerDonation):
-            raise ValueError(f'donation argument is malformed: \"{donation}\"')
+            raise TypeError(f'donation argument is malformed: \"{donation}\"')
         elif donation.getType() is not TtsDonationType.CHEER:
-            raise ValueError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\"')
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\"')
 
         return f'{event.getUserName()} cheered {donation.getBits()}!'
 
     async def __processDonationPrefix(self, event: TtsEvent) -> Optional[str]:
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         donation: Optional[TtsDonation] = event.getDonation()
 
@@ -250,11 +250,11 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         donation: TtsSubscriptionDonation
     ) -> Optional[str]:
         if not isinstance(event, TtsEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsSubscriptionDonation):
-            raise ValueError(f'donation argument is malformed: \"{donation}\"')
+            raise TypeError(f'donation argument is malformed: \"{donation}\"')
         elif donation.getType() is not TtsDonationType.SUBSCRIPTION:
-            raise ValueError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\"')
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\"')
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 

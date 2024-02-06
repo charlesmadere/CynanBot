@@ -34,11 +34,11 @@ class CurrentStreamAlert():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def setAlertState(self, alertState: StreamAlertState):
-        if not isinstance(alertState, StreamAlertState):
-            raise TypeError(f'alertState argument is malformed: \"{alertState}\"')
+    def setAlertState(self, state: StreamAlertState):
+        if not isinstance(state, StreamAlertState):
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
-        self.__alertState = alertState
+        self.__alertState = state
 
     def toDictionary(self) -> Dict[str, Any]:
         return {

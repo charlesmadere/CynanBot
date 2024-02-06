@@ -74,11 +74,11 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
         event = payload.getEvent()
@@ -135,13 +135,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
         if not isinstance(tier, TwitchSubscriberTier):
-            raise ValueError(f'tier argument is malformed: \"{tier}\"')
+            raise TypeError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
-            raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+            raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
@@ -184,25 +184,25 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubGift: Optional[TwitchCommunitySubGift]
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
-            raise ValueError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
+            raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
         elif isGift is not None and not utils.isValidBool(isGift):
-            raise ValueError(f'isGift argument is malformed: \"{isGift}\"')
+            raise TypeError(f'isGift argument is malformed: \"{isGift}\"')
         elif message is not None and not isinstance(message, str):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif userId is not None and not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif userInput is not None and not isinstance(userInput, str):
-            raise ValueError(f'userInput argument is malformed: \"{userInput}\"')
+            raise TypeError(f'userInput argument is malformed: \"{userInput}\"')
         elif userLogin is not None and not utils.isValidStr(userLogin):
-            raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
+            raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif userName is not None and not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
-            raise ValueError(f'tier argument is malformed: \"{tier}\"')
+            raise TypeError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
-            raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+            raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
 
         if self.__streamAlertsManager is None:
             return
@@ -245,16 +245,18 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             tier = tier
         )
 
+        ttsEvent = TtsEvent(
+            message = actualMessage,
+            twitchChannel = user.getHandle(),
+            userId = actualUserId,
+            userName = actualUserName,
+            donation = donation,
+            provider = TtsProvider.DEC_TALK,
+            raidInfo = None
+        )
+
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.getHandle(),
-            ttsEvent = TtsEvent(
-                message = actualMessage,
-                twitchChannel = user.getHandle(),
-                userId = actualUserId,
-                userName = actualUserName,
-                donation = donation,
-                provider = TtsProvider.DEC_TALK,
-                raidInfo = None
-            )
+            ttsEvent = ttsEvent
         ))
