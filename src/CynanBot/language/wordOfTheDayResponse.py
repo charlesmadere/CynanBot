@@ -2,6 +2,7 @@ from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.romaji import to_romaji
 
 
 class WordOfTheDayResponse():
@@ -32,7 +33,12 @@ class WordOfTheDayResponse():
         self.__definition: str = definition
         self.__englishExample: Optional[str] = englishExample
         self.__foreignExample: Optional[str] = foreignExample
-        self.__transliteration: Optional[str] = transliteration
+        self.__transliteration: Optional[str]
+        romaji = to_romaji(transliteration)
+        if romaji is None:
+            self.__transliteration = transliteration
+        else:
+            self.__transliteration = f"{transliteration} - {romaji}"
         self.__word: str = word
 
     def getDefinition(self) -> str:
