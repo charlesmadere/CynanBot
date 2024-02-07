@@ -21,6 +21,10 @@ class TwitchUtilsInterface(ABC):
         pass
 
     @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
     async def waitThenSend(
         self,
         messageable: TwitchMessageable,

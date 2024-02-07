@@ -53,6 +53,7 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not isinstance(timeZone, tzinfo):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
@@ -61,8 +62,8 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__maxRetries: int = maxRetries
         self.__timeZone: tzinfo = timeZone
 
+        self.__isStarted: bool = False
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
-        backgroundTaskHelper.createTask(self.__startOutboundMessageLoop())
 
     def getMaxMessageSize(self) -> int:
         return 494
@@ -156,6 +157,16 @@ class TwitchUtils(TwitchUtilsInterface):
             self.__messageQueue.put(outboundMessage, block = True, timeout = self.__queueTimeoutSeconds)
         except queue.Full as e:
             self.__timber.log('TwitchUtils', f'Encountered queue.Full when submitting a new outbound message ({outboundMessage}) into the outbound message queue (queue size: {self.__messageQueue.qsize()}): {e}', e)
+
+    def start(self):
+        if self.__isStarted:
+            self.__timber.log('TwitchUtils', 'Not starting TwitchUtils as it has already been started')
+            return
+
+        self.__isStarted = True
+        self.__timber.log('TwitchUtils', 'Starting TwitchUtils...')
+
+        self.__backgroundTaskHelper.createTask(self.__startOutboundMessageLoop())
 
     async def __startOutboundMessageLoop(self):
         while True:

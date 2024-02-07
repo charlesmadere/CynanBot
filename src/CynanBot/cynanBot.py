@@ -785,6 +785,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         self.__sentMessageLogger.start()
         self.__chatLogger.start()
+        self.__twitchUtils.start()
 
         if self.__streamAlertsManager is not None:
             self.__streamAlertsManager.start()
