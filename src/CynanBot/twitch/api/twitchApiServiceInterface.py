@@ -14,6 +14,7 @@ from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
+from CynanBot.twitch.api.twitchFollower import TwitchFollower
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
@@ -60,6 +61,15 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str
     ) -> List[TwitchEmoteDetails]:
+        pass
+
+    @abstractmethod
+    async def fetchFollower(
+        self,
+        broadcasterId: str,
+        twitchAccessToken: str,
+        userId: str
+    ) -> Optional[TwitchFollower]:
         pass
 
     @abstractmethod
