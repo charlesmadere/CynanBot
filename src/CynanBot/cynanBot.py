@@ -198,6 +198,8 @@ from CynanBot.twitch.configuration.twitchConfiguration import \
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPollHandler import TwitchPollHandler
 from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
@@ -285,6 +287,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
+        twitchFollowerRepository: Optional[TwitchFollowerRepositoryInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
@@ -411,6 +414,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
+        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
+            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -462,7 +467,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

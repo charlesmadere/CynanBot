@@ -125,6 +125,9 @@ from CynanBot.twitch.twitchAnonymousUserIdProvider import \
     TwitchAnonymousUserIdProvider
 from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
     TwitchAnonymousUserIdProviderInterface
+from CynanBot.twitch.twitchFollowerRepository import TwitchFollowerRepository
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
@@ -254,6 +257,11 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
+)
+twitchFollowerRepository: TwitchFollowerRepositoryInterface = TwitchFollowerRepository(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    userIdsRepository = userIdsRepository
 )
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
@@ -447,6 +455,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
@@ -537,6 +546,7 @@ cynanBot = CynanBot(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
+    twitchFollowerRepository = twitchFollowerRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,

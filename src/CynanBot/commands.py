@@ -124,6 +124,8 @@ from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -821,6 +823,7 @@ class ClearCachesCommand(AbsCommand):
         timber: TimberInterface,
         triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
         ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
+        twitchFollowerRepository: Optional[TwitchFollowerRepositoryInterface],
         twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -859,6 +862,8 @@ class ClearCachesCommand(AbsCommand):
             raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
+            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -894,6 +899,7 @@ class ClearCachesCommand(AbsCommand):
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
+        self.__clearables.append(twitchFollowerRepository)
         self.__clearables.append(twitchTokensRepository)
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)
