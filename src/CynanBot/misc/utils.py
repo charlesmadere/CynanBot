@@ -353,6 +353,7 @@ def isValidNum(n: Optional[float]) -> TypeGuard[float]:
     return n is not None and isinstance(n, (float, int)) and math.isfinite(n)
 
 def isValidStr(s: Optional[str]) -> TypeGuard[str]:
+    """ str len >= 1, not all space """
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
 
 def isValidUrl(s: Optional[str]) -> TypeGuard[str]:
