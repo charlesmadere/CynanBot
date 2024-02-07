@@ -9,7 +9,6 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
-from CynanBot.twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
@@ -22,7 +21,6 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         self,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         cacheTimeDelta: timedelta = timedelta(hours = 8)
     ):
@@ -30,8 +28,6 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(cacheTimeDelta, timedelta):
@@ -39,7 +35,6 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
 
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__cache: TimedDict = TimedDict(cacheTimeDelta)
