@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
 from typing import List, Optional
 
@@ -26,7 +26,7 @@ class TwitchUtils(TwitchUtilsInterface):
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -50,7 +50,7 @@ class TwitchUtils(TwitchUtilsInterface):
             raise ValueError(f'maxRetries argument is malformed: \"{maxRetries}\"')
         elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
-        elif not isinstance(timeZone, timezone):
+        elif not isinstance(timeZone, tzinfo):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
@@ -59,7 +59,7 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
         backgroundTaskHelper.createTask(self.__startOutboundMessageLoop())

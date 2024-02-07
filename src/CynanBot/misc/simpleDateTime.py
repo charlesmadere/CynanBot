@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any, Optional
 
 import CynanBot.misc.utils as utils
@@ -9,11 +9,11 @@ class SimpleDateTime():
     def __init__(
         self,
         now: Optional[datetime] = None,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if now is not None and not isinstance(now, datetime):
             raise ValueError(f'now argument is malformed: \"{now}\"')
-        elif not isinstance(timeZone, timezone):
+        elif not isinstance(timeZone, tzinfo):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         if now is None:

@@ -37,17 +37,17 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         twitchChannelProvider: TwitchChannelProvider
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise ValueError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
+            raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
         elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise ValueError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
@@ -63,11 +63,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         event = dataBundle.requirePayload().getEvent()
 
