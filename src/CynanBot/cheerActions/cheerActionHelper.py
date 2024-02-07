@@ -23,6 +23,7 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
+from CynanBot.twitch.twitchFollowerRepositoryInterface import TwitchFollowerRepositoryInterface
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
@@ -44,9 +45,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchFollowerRepository: TwitchFollowerRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        minimumFollowDuration: timedelta = timedelta(weeks = 1),
         timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
@@ -59,12 +62,16 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
+            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(minimumFollowDuration, timedelta):
+            raise TypeError(f'minimumFollowDuration argument is malformed: \"{minimumFollowDuration}\"')
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
@@ -73,9 +80,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__minimumFollowDuration: timedelta = minimumFollowDuration
         self.__timeZone: tzinfo = timeZone
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
@@ -365,11 +374,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         userIdToTimeout: str
     ) -> bool:
         if not utils.isValidStr(broadcasterUserId):
-            raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userIdToTimeout):
-            raise ValueError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
+            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         try:
             bannedUsersResponse = await self.__twitchApiService.fetchBannedUsers(
@@ -380,7 +389,7 @@ class CheerActionHelper(CheerActionHelperInterface):
                 )
             )
         except Exception as e:
-            self.__timber.log('CheerActionHelper', f'Failed to verify if the given user ID (\"{userIdToTimeout}\") can be timed out: {e}', e, traceback.format_exc())
+            self.__timber.log('CheerActionHelper', f'Failed to verify if the given user ID can be timed out ({broadcasterUserId=}) ({twitchAccessToken=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
             return False
 
         bannedUsers = bannedUsersResponse.getUsers()
@@ -391,10 +400,26 @@ class CheerActionHelper(CheerActionHelperInterface):
         for bannedUser in bannedUsers:
             if bannedUser.getUserId() == userIdToTimeout:
                 if bannedUser.getExpiresAt() is None:
-                    self.__timber.log('CheerActionHelper', f'The given user ID (\"{userIdToTimeout}\") will not be timed out as this user is banned: {bannedUser=}')
+                    self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user is banned: {bannedUser=} ({broadcasterUserId=}) ({twitchAccessToken=}) ({userIdToTimeout=})')
                 else:
-                    self.__timber.log('CheerActionHelper', f'The given user ID (\"{userIdToTimeout}\") will not be timed out as this user is already timed out: {bannedUser=}')
+                    self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user is already timed out: {bannedUser=} ({broadcasterUserId=}) ({twitchAccessToken=}) ({userIdToTimeout=})')
 
                 return False
+
+        twitchFollower = await self.__twitchFollowerRepository.fetchFollowingInfo(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = broadcasterUserId,
+            userId = userIdToTimeout
+        )
+
+        if twitchFollower is None:
+            self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user is not following the channel ({broadcasterUserId=}) ({twitchAccessToken=}) ({userIdToTimeout=})')
+            return False
+
+        now = SimpleDateTime()
+
+        if twitchFollower.getFollowedAt() + self.__minimumFollowDuration <= now:
+            self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user started following the channel within the minimum follow duration window: {twitchFollower} ({self.__minimumFollowDuration=}) ({broadcasterUserId=}) ({twitchAccessToken=}) ({userIdToTimeout=})')
+            return False
 
         return True
