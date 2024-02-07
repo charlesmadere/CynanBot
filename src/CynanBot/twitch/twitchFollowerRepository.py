@@ -1,6 +1,7 @@
 import traceback
+from collections import defaultdict
 from datetime import timedelta
-from typing import Optional
+from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.timedDict import TimedDict
@@ -37,7 +38,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-        self.__cache: TimedDict = TimedDict(cacheTimeDelta)
+        self.__cache: Dict[str, TimedDict] = defaultdict(lambda: TimedDict(cacheTimeDelta))
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -56,7 +57,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        follower: Optional[TwitchFollower] = self.__cache[f'{twitchChannelId}:{userId}']
+        follower: Optional[TwitchFollower] = self.__cache[twitchChannelId][userId]
 
         if follower is not None:
             return follower
@@ -77,5 +78,5 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
             self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId}) ({userId=}): {exception}', exception, traceback.format_exc())
             return None
 
-        self.__cache[f'{twitchChannelId}:{userId}'] = follower
+        self.__cache[twitchChannelId][userId] = follower
         return follower
