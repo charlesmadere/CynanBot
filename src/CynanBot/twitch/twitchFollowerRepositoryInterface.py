@@ -10,7 +10,7 @@ class TwitchFollowerRepositoryInterface(Clearable):
     @abstractmethod
     async def fetchFollowingInfo(
         self,
-        twitchAccessToken: Optional[str],
+        twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
     ) -> Optional[TwitchFollower]:

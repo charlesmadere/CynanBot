@@ -1,17 +1,19 @@
-from datetime import timedelta
 import traceback
+from datetime import timedelta
 from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.timedDict import TimedDict
+from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
-from CynanBot.twitch.twitchFollowerRepositoryInterface import TwitchFollowerRepositoryInterface
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from CynanBot.twitch.twitchTokensUtilsInterface import TwitchTokensUtilsInterface
-from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
@@ -48,11 +50,11 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
 
     async def fetchFollowingInfo(
         self,
-        twitchAccessToken: Optional[str],
+        twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
     ) -> Optional[TwitchFollower]:
-        if twitchAccessToken is not None and not isinstance(twitchAccessToken, str):
+        if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
@@ -65,10 +67,6 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
             return follower
 
         twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
-
-        if not utils.isValidStr(twitchAccessToken):
-            twitchAccessToken = await self.__twitchTokensUtils.requireAccessTokenOrFallback(twitchChannel)
-
         exception: Optional[GenericNetworkException] = None
 
         try:

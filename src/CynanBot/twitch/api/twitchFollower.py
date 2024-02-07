@@ -1,5 +1,6 @@
+from typing import Any, Dict
+
 import CynanBot.misc.utils as utils
-from typing import Dict, Any
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 

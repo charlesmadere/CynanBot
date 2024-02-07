@@ -23,10 +23,11 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import TwitchFollowerRepositoryInterface
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \

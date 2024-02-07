@@ -18,10 +18,10 @@ from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
-from CynanBot.twitch.configuration.twitchChannelProvider import \
-    TwitchChannelProvider
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.users.userInterface import UserInterface
 
 

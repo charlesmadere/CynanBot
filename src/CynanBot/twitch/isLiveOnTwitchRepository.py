@@ -26,15 +26,15 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         cacheTimeDelta: timedelta = timedelta(minutes = 10)
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(cacheTimeDelta, timedelta):
-            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+            raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
