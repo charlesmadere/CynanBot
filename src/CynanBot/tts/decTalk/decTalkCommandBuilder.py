@@ -15,6 +15,8 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from CynanBot.tts.ttsSubscriptionDonationGiftType import \
+    TtsSubscriptionDonationGiftType
 
 
 class DecTalkCommandBuilder(TtsCommandBuilderInterface):
@@ -248,7 +250,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         self,
         event: TtsEvent,
         donation: TtsSubscriptionDonation
-    ) -> Optional[str]:
+    ) -> str:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsSubscriptionDonation):
@@ -258,12 +260,15 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 
-        if donation.isAnonymous() and donation.isGift():
-            return f'anonymous gifted a sub!'
-        elif donation.isGift():
-            return f'{event.getUserName()} was gifted a sub!'
+        if donation.getGiftType() is TtsSubscriptionDonationGiftType.GIVER:
+            if donation.isAnonymous():
+                return f'anonymous gifted a sub!'
+            else:
+                return f'{event.getUserName()} gifted a sub!'
+        elif donation.getGiftType() is TtsSubscriptionDonationGiftType.RECEIVER:
+            return f'{event.getUserName()} received a sub gift!'
         else:
-            return f'{event.getUserName()} subscribed!'
+            raise RuntimeError(f'illegal event and donation configuration ({event=}) ({donation=})')
 
     async def __purgeCheers(self, message: Optional[str]) -> Optional[str]:
         if not utils.isValidStr(message):

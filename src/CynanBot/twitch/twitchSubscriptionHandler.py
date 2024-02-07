@@ -15,18 +15,20 @@ from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
+from CynanBot.tts.ttsSubscriptionDonationGiftType import \
+    TtsSubscriptionDonationGiftType
 from CynanBot.twitch.absTwitchSubscriptionHandler import \
     AbsTwitchSubscriptionHandler
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
+from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
+    TwitchWebsocketSubscriptionType
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
 from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
-from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
-    TwitchWebsocketSubscriptionType
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -119,12 +121,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 isGift = isGift,
                 message = message,
                 userId = eventUserId,
+                userInput = eventUserInput,
                 userLogin = eventUserLogin,
                 userName = eventUserName,
-                userInput = eventUserInput,
+                communitySubGift = communitySubGift,
                 tier = tier,
-                user = user,
-                communitySubGift = communitySubGift
+                subscriptionType = subscriptionType,
+                user = user
             )
 
     async def __processSuperTriviaEvent(
@@ -179,9 +182,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         userInput: Optional[str],
         userLogin: Optional[str],
         userName: Optional[str],
+        communitySubGift: Optional[TwitchCommunitySubGift],
         tier: TwitchSubscriberTier,
+        subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface,
-        communitySubGift: Optional[TwitchCommunitySubGift]
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
             raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
@@ -197,16 +201,23 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
         elif userName is not None and not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
-        elif not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
             raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+        elif not isinstance(tier, TwitchSubscriberTier):
+            raise TypeError(f'tier argument is malformed: \"{tier}\"')
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if self.__streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
+            return
+        elif isGift is None and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE:
+            # prevents an annoying situation where subscribers end up causing two distinct events
+            # to come from Twitch, where each are subtly different but both inform of an apparent
+            # new subscriber
             return
 
         actualMessage = message
@@ -215,9 +226,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         if isAnonymous is None:
             isAnonymous = False
-
-        if isGift is None:
-            isGift = False
 
         actualUserId = userId
         actualUserName = userName
@@ -239,9 +247,16 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=})')
                 return
 
+        giftType: Optional[TtsSubscriptionDonationGiftType] = None
+
+        if isGift is True:
+            giftType = TtsSubscriptionDonationGiftType.RECEIVER
+        elif subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
+            giftType = TtsSubscriptionDonationGiftType.GIVER
+
         donation: TtsDonation = TtsSubscriptionDonation(
             isAnonymous = isAnonymous,
-            isGift = isGift,
+            giftType = giftType,
             tier = tier
         )
 

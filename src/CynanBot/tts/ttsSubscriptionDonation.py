@@ -1,8 +1,10 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsDonationType import TtsDonationType
+from CynanBot.tts.ttsSubscriptionDonationGiftType import \
+    TtsSubscriptionDonationGiftType
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
@@ -11,19 +13,22 @@ class TtsSubscriptionDonation(TtsDonation):
     def __init__(
         self,
         isAnonymous: bool,
-        isGift: bool,
+        giftType: Optional[TtsSubscriptionDonationGiftType],
         tier: TwitchSubscriberTier
     ):
         if not utils.isValidBool(isAnonymous):
-            raise ValueError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
-        elif not utils.isValidBool(isGift):
-            raise ValueError(f'isGift argument is malformed: \"{isGift}\"')
+            raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
+        elif giftType is not None and not isinstance(giftType, TtsSubscriptionDonationGiftType):
+            raise TypeError(f'giftType argument is malformed: \"{giftType}\"')
         elif not isinstance(tier, TwitchSubscriberTier):
-            raise ValueError(f'tier argument is malformed: \"{tier}\"')
+            raise TypeError(f'tier argument is malformed: \"{tier}\"')
 
         self.__isAnonymous: bool = isAnonymous
-        self.__isGift: bool = isGift
+        self.__giftType: Optional[TtsSubscriptionDonationGiftType] = giftType
         self.__tier: TwitchSubscriberTier = tier
+
+    def getGiftType(self) -> Optional[TtsSubscriptionDonationGiftType]:
+        return self.__giftType
 
     def getTier(self) -> TwitchSubscriberTier:
         return self.__tier
@@ -34,17 +39,14 @@ class TtsSubscriptionDonation(TtsDonation):
     def isAnonymous(self) -> bool:
         return self.__isAnonymous
 
-    def isGift(self) -> bool:
-        return self.__isGift
-
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
     def toDictionary(self) -> Dict[str, Any]:
         return {
+            'giftType': self.__giftType,
             'isAnonymous': self.__isAnonymous,
-            'isGift': self.__isGift,
             'tier': self.__tier,
             'type': self.getType()
         }
