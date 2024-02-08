@@ -240,14 +240,14 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
                 donation = donation
             )
         elif donationType is TtsDonationType.SUBSCRIPTION:
-            return await self.__processSusbcriptionDonationPrefix(
+            return await self.__processSubcriptionDonationPrefix(
                 event = event,
                 donation = donation
             )
         else:
             raise RuntimeError(f'donationType is unknown: \"{donationType}\"')
 
-    async def __processSusbcriptionDonationPrefix(
+    async def __processSubcriptionDonationPrefix(
         self,
         event: TtsEvent,
         donation: TtsSubscriptionDonation
@@ -269,7 +269,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         elif donation.getGiftType() is TtsSubscriptionDonationGiftType.RECEIVER:
             return f'{event.getUserName()} received a sub gift!'
         else:
-            raise RuntimeError(f'illegal event and donation configuration ({event=}) ({donation=})')
+            return f'{event.getUserName()} subscribed!'
 
     async def __purgeCheers(self, message: Optional[str]) -> Optional[str]:
         if not utils.isValidStr(message):
