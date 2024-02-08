@@ -49,11 +49,23 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'No file path available for sound alert ({alert=}) ({filePath=})')
             return False
+
+        return await self.playSoundFile(filePath)
+
+    async def playSoundFile(self, filePath: Optional[str]) -> bool:
+        if not utils.isValidStr(filePath):
+            self.__timber.log('VlcSoundPlayerManager', f'filePath argument is malformed: \"{filePath}\"')
+            return False
+        elif not await self.__soundPlayerSettingsRepository.isEnabled():
+            return False
+        elif await self.isPlaying():
+            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
+            return False
         elif not await aiofiles.ospath.exists(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'Sound alert\'s file path does not exist ({alert=}) ({filePath=})')
+            self.__timber.log('VlcSoundPlayerManager', f'The given file path does not exist ({filePath=})')
             return False
         elif not await aiofiles.ospath.isfile(filePath):
-            self.__timber.log('VlcSoundPlayerManager', f'Sound alert\'s file path is not a file ({alert=}) ({filePath=})')
+            self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a file ({filePath=})')
             return False
 
         media: Optional[vlc.Media] = None
