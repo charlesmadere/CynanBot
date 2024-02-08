@@ -41,7 +41,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False
         elif await self.isPlaying():
-            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound alert!')
+            self.__timber.log('VlcSoundPlayerManager', f'There is already an ongoing sound!')
             return False
 
         filePath = await self.__soundPlayerSettingsRepository.getFilePathFor(alert)
@@ -77,7 +77,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             exception = e
 
         if media is None or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to load sound alert from file path: \"{filePath}\" ({alert=}) ({media=}) ({exception=})', exception, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to load sound from file path: \"{filePath}\" ({media=}) ({exception=})', exception, traceback.format_exc())
             return False
 
         mediaPlayer = await self.__retrieveMediaPlayer()
@@ -90,10 +90,10 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             exception = e
 
         if playbackResult != 0 or exception is not None:
-            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sound alert ({alert=}) ({filePath=}) ({media=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
+            self.__timber.log('VlcSoundPlayerManager', f'Failed to play sound from file path: \"{filePath}\" ({media=}) ({mediaPlayer=}) ({playbackResult=}) ({exception=})', exception, traceback.format_exc())
             return False
 
-        self.__timber.log('VlcSoundPlayerManager', f'Started playing sound alert ({alert=}) ({filePath=}) ({media=}) ({playbackResult=})')
+        self.__timber.log('VlcSoundPlayerManager', f'Started playing sound ({filePath=}) ({media=}) ({playbackResult=})')
         return True
 
     def __repr__(self) -> str:
