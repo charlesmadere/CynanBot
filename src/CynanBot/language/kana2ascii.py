@@ -1,4 +1,24 @@
 kana2ascii = {
+    # small vowels
+    "ぁ": "a",
+    "ァ": "a",
+    "ぃ": "i",
+    "ィ": "i",
+    "ぅ": "u",
+    "ゥ": "u",
+    "ぇ": "e",
+    "ェ": "e",
+    "ぉ": "o",
+    "ォ": "o",
+
+    # other small versions
+    "ゎ": "wa",
+    "ヮ": "wa",
+    "ゕ": "ka",
+    "ヵ": "ka",
+    "ゖ": "ke",
+    "ヶ": "ke",
+
     "あ": "a",
     "ア": "a",
     "い": "i",
@@ -148,6 +168,11 @@ kana2ascii = {
     "ゔ": "vu",
     "ヴ": "vu",
 
+    "ヷ": "va",
+    "ヸ": "vi",
+    "ヹ": "ve",
+    "ヺ": "vo",
+
     "ゃ": "*^a",
     "ャ": "*^a",
     "ゅ": "*^u",
@@ -156,13 +181,26 @@ kana2ascii = {
     "ョ": "*^o",
 
     " ": " ",
-    "一": "-",
+    "゠": "-",
+    "一": "-",  # 4e00
     "、": ", ",
     "。": ". ",
+    "゛": "",  # 309b voiced mark
+    "゜": "",  # 309c semi-voiced mark
+    "・": "・",
+    "ー": "~",  # 30fc prolonged sound mark
+
+    "ゝ": "",  # 309d hiragana iteration mark
+    "ゞ": "",  # 309e hiragana voiced iteration mark
+    "ヽ": "",  # 30fd katakana iteration mark
+    "ヾ": "",  # 30fe katakana voiced iteration mark
+
+    "ゟ": "yori",  # 309f digraph yori
+    "ヿ": "koto",  # 30ff digraph koto
 
     # wikipedia says there's no common way to translate these "sokuon or small tsu kana"
     "っ": "t",
-    "ッ": "t"
+    "ッ": "t",
 }
 """
 these "pre" 2-char symbols, if followed by "*^",
