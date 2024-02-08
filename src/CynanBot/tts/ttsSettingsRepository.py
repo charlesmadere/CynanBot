@@ -51,7 +51,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
         return ttsTimeoutSeconds
 
-    async def isTtsEnabled(self) -> bool:
+    async def isEnabled(self) -> bool:
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = False)
 

@@ -18,7 +18,7 @@ class TtsSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def isTtsEnabled(self) -> bool:
+    async def isEnabled(self) -> bool:
         pass
 
     @abstractmethod

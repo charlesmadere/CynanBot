@@ -112,7 +112,7 @@ class DecTalkManager(TtsManagerInterface):
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        if not await self.__ttsSettingsRepository.isTtsEnabled():
+        if not await self.__ttsSettingsRepository.isEnabled():
             return False
         elif await self.isPlaying():
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')

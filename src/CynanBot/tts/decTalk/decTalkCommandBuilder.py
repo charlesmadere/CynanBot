@@ -48,10 +48,11 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def buildAndCleanEvent(self, event: Optional[TtsEvent]) -> Optional[str]:
+        if event is not None and not isinstance(event, TtsEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
+
         if event is None:
             return None
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         prefix = await self.__processDonationPrefix(event)
         message = event.getMessage()
@@ -218,7 +219,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         elif not isinstance(donation, TtsCheerDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
         elif donation.getType() is not TtsDonationType.CHEER:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\"')
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\" ({donation=})')
 
         return f'{event.getUserName()} cheered {donation.getBits()}!'
 
@@ -256,7 +257,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         elif not isinstance(donation, TtsSubscriptionDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
         elif donation.getType() is not TtsDonationType.SUBSCRIPTION:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\"')
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\" ({donation=})')
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 
