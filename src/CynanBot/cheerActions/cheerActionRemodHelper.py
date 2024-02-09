@@ -27,17 +27,17 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         queueSleepTimeSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(cheerActionRemodRepository, CheerActionRemodRepositoryInterface):
-            raise ValueError(f'cheerActionRemodRepository argument is malformed: \"{cheerActionRemodRepository}\"')
+            raise TypeError(f'cheerActionRemodRepository argument is malformed: \"{cheerActionRemodRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not utils.isValidInt(queueSleepTimeSeconds):
-            raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
 
@@ -102,6 +102,6 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
     async def submitRemodData(self, data: CheerActionRemodData):
         if not isinstance(data, CheerActionRemodData):
-            raise ValueError(f'data argument is malformed: \"{data}\"')
+            raise TypeError(f'data argument is malformed: \"{data}\"')
 
         await self.__cheerActionRemodRepository.add(data)

@@ -12,9 +12,9 @@ class SimpleDateTime():
         timeZone: tzinfo = timezone.utc
     ):
         if now is not None and not isinstance(now, datetime):
-            raise ValueError(f'now argument is malformed: \"{now}\"')
+            raise TypeError(f'now argument is malformed: \"{now}\"')
         elif not isinstance(timeZone, tzinfo):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         if now is None:
             self.__now: datetime = datetime.now(timeZone)
@@ -25,7 +25,7 @@ class SimpleDateTime():
         if isinstance(other, timedelta):
             return SimpleDateTime(self.__now + other)
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, SimpleDateTime):
@@ -40,7 +40,7 @@ class SimpleDateTime():
 
     def getDateAndTimeStr(self, includeMillis: bool = False) -> str:
         if not utils.isValidBool(includeMillis):
-            raise ValueError(f'includeMillis argument is malformed: \"{includeMillis}\"')
+            raise TypeError(f'includeMillis argument is malformed: \"{includeMillis}\"')
 
         return f'{self.getYearMonthDayStr()} {self.getTimeStr(includeMillis)}'
 
@@ -82,7 +82,7 @@ class SimpleDateTime():
 
     def getTimeStr(self, includeMillis: bool = False) -> str:
         if not utils.isValidBool(includeMillis):
-            raise ValueError(f'includeMillis argument is malformed: \"{includeMillis}\"')
+            raise TypeError(f'includeMillis argument is malformed: \"{includeMillis}\"')
 
         timeStr = f'{self.getHourStr()}:{self.getMinuteStr()}:{self.getSecondStr()}'
 
@@ -106,7 +106,7 @@ class SimpleDateTime():
         elif isinstance(other, datetime):
             return self.__now >= other
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')
 
     def __gt__(self, other: Any) -> bool:
         if isinstance(other, SimpleDateTime):
@@ -114,7 +114,7 @@ class SimpleDateTime():
         elif isinstance(other, datetime):
             return self.__now > other
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')
 
     def __le__(self, other: Any) -> bool:
         if isinstance(other, SimpleDateTime):
@@ -122,7 +122,7 @@ class SimpleDateTime():
         elif isinstance(other, datetime):
             return self.__now <= other
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')
 
     def __lt__(self, other: Any) -> bool:
         if isinstance(other, SimpleDateTime):
@@ -130,7 +130,7 @@ class SimpleDateTime():
         elif isinstance(other, datetime):
             return self.__now < other
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')
 
     def __repr__(self) -> str:
         return str(self.__now)
@@ -139,4 +139,4 @@ class SimpleDateTime():
         if isinstance(other, timedelta):
             return SimpleDateTime(self.__now - other)
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            raise TypeError(f'`other` is an unsupported type: \"{other}\"')

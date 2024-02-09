@@ -5,12 +5,13 @@ from typing import List, Optional, Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerAction import CheerAction
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
 from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
-from CynanBot.cheerActions.cheerActionRequirement import CheerActionRequirement
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionType import CheerActionType
@@ -90,12 +91,12 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
 
-    async def __getTwitchAccessToken(self, userName: str) -> str:
-        if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+    async def __getTwitchAccessToken(self, twitchChannel: str) -> str:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(userName)
-        return await self.__twitchTokensRepository.requireAccessToken(userName)
+        await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
+        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel)
 
     async def handleCheerAction(
         self,
@@ -106,23 +107,25 @@ class CheerActionHelper(CheerActionHelperInterface):
         user: UserInterface
     ) -> bool:
         if not utils.isValidInt(bits):
-            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(cheerUserId):
-            raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
-            raise ValueError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         moderatorTwitchAccessToken = await self.__getTwitchAccessToken(
-            userName = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
         )
 
-        userTwitchAccessToken = await self.__getTwitchAccessToken(user.getHandle())
+        userTwitchAccessToken = await self.__getTwitchAccessToken(
+            twitchChannel = user.getHandle()
+        )
 
         broadcasterUserId = await self.__userIdsRepository.requireUserId(
             userName = user.getHandle(),
@@ -159,11 +162,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         userIdToTimeout: str
     ) -> bool:
         if not utils.isValidStr(broadcasterUserId):
-            raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userIdToTimeout):
-            raise ValueError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
+            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         moderatorInfo: Optional[TwitchModUser] = None
 
@@ -192,27 +195,27 @@ class CheerActionHelper(CheerActionHelperInterface):
         user: UserInterface
     ) -> bool:
         if not utils.isValidInt(bits):
-            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not isinstance(actions, List):
-            raise ValueError(f'actions argument is malformed: \"{actions}\"')
+            raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidStr(broadcasterUserId):
-            raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
-            raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
-            raise ValueError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(moderatorTwitchAccessToken):
-            raise ValueError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
+            raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
-            raise ValueError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+            raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
-            raise ValueError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
+            raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         timeoutActions: List[CheerAction] = list()
 
@@ -227,13 +230,13 @@ class CheerActionHelper(CheerActionHelperInterface):
         timeoutAction: Optional[CheerAction] = None
 
         for action in timeoutActions:
-            if action.getActionRequirement() is CheerActionRequirement.EXACT and bits == action.getAmount():
+            if action.getBitRequirement() is CheerActionBitRequirement.EXACT and bits == action.getAmount():
                 timeoutAction = action
                 break
 
         if timeoutAction is None:
             for action in timeoutActions:
-                if action.getActionRequirement() is CheerActionRequirement.GREATER_THAN_OR_EQUAL_TO and bits >= action.getAmount():
+                if action.getBitRequirement() is CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO and bits >= action.getAmount():
                     timeoutAction = action
                     break
 
@@ -261,6 +264,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         return await self.__timeoutUser(
             action = timeoutAction,
+            bits = bits,
             broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserName,
@@ -274,6 +278,7 @@ class CheerActionHelper(CheerActionHelperInterface):
     async def __timeoutUser(
         self,
         action: CheerAction,
+        bits: int,
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
@@ -284,23 +289,25 @@ class CheerActionHelper(CheerActionHelperInterface):
         user: UserInterface
     ) -> bool:
         if not isinstance(action, CheerAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
+        elif not utils.isValidInt(bits):
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif not utils.isValidStr(broadcasterUserId):
-            raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
-            raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
+            raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
-            raise ValueError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
+            raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
         elif not utils.isValidStr(moderatorTwitchAccessToken):
-            raise ValueError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
+            raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
         elif not utils.isValidStr(moderatorUserId):
-            raise ValueError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
+            raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
         elif not utils.isValidStr(userIdToTimeout):
-            raise ValueError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
+            raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
         elif not utils.isValidStr(userTwitchAccessToken):
-            raise ValueError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
+            raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if not await self.__verifyUserCanBeTimedOut(
             broadcasterUserId = broadcasterUserId,
@@ -322,7 +329,7 @@ class CheerActionHelper(CheerActionHelperInterface):
                     duration = action.getDurationSeconds(),
                     broadcasterUserId = broadcasterUserId,
                     moderatorUserId = moderatorUserId,
-                    reason = f'cheer timeout from {cheerUserName}',
+                    reason = f'cheer timeout from {cheerUserName} ({bits} bit(s), {action.getDurationSeconds()} second(s))',
                     userIdToBan = userIdToTimeout
                 )
             )

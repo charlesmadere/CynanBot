@@ -10,11 +10,14 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.cheerActions.cheerAction import CheerAction
+from CynanBot.cheerActions.cheerActionBitRequirement import \
+    CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBot.cheerActions.cheerActionRequirement import CheerActionRequirement
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
+    CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 from CynanBot.cheerActions.exceptions import (
     CheerActionAlreadyExistsException, TimeoutDurationSecondsTooLongException,
@@ -297,9 +300,18 @@ class AddCheerActionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Failed to parse either your bits amount or your duration seconds amount for the !addcheeraction command. Example: !addcheeraction 50 120 (50 bits, 120 second timeout)')
             return
 
+        streamStatus = CheerActionStreamStatusRequirement.ANY
+        if len(splits) >= 3:
+            streamStatusString = splits[3]
+            try:
+                streamStatus = CheerActionStreamStatusRequirement.fromStr(streamStatusString)
+            except Exception as e:
+                self.__timber.log('AddCheerActionCommand', f'The streamStatus value (\"{streamStatusString}\") given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed/invalid: {e}', e, traceback.format_exc())
+
         try:
             action = await self.__cheerActionsRepository.addAction(
-                actionRequirement = CheerActionRequirement.EXACT,
+                bitRequirement = CheerActionBitRequirement.EXACT,
+                streamStatusRequirement = streamStatus,
                 actionType = CheerActionType.TIMEOUT,
                 amount = bits,
                 durationSeconds = durationSeconds,

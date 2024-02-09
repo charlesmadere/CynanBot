@@ -11,7 +11,7 @@ class CheerActionIdGenerator(CheerActionIdGeneratorInterface):
 
     def __init__(self, maxLength: int = 3):
         if not utils.isValidInt(maxLength):
-            raise ValueError(f'maxLength argument is malformed: \"{maxLength}\"')
+            raise TypeError(f'maxLength argument is malformed: \"{maxLength}\"')
         elif maxLength < 3 or maxLength > 8:
             raise ValueError(f'maxLength argument is out of bounds: {maxLength}')
 

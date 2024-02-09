@@ -21,11 +21,11 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         remodTimeBuffer: timedelta = timedelta(seconds = 2)
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(remodTimeBuffer, timedelta):
-            raise ValueError(f'remodTimeBuffer argument is malformed: \"{remodTimeBuffer}\"')
+            raise TypeError(f'remodTimeBuffer argument is malformed: \"{remodTimeBuffer}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -35,7 +35,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
 
     async def add(self, data: CheerActionRemodData):
         if not isinstance(data, CheerActionRemodData):
-            raise ValueError(f'data argument is malformed: \"{data}\"')
+            raise TypeError(f'data argument is malformed: \"{data}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -51,9 +51,9 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
 
     async def delete(self, broadcasterUserId: str, userId: str):
         if not utils.isValidStr(broadcasterUserId):
-            raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
