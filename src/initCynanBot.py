@@ -899,6 +899,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
     twitchApiService = twitchApiService,
