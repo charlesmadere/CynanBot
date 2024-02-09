@@ -14,6 +14,8 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
+    CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -27,6 +29,8 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
@@ -44,6 +48,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self,
         cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
+        isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
@@ -58,6 +63,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
+            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -79,6 +86,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
+        self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
@@ -262,6 +270,13 @@ class CheerActionHelper(CheerActionHelperInterface):
             userIdToTimeout = cheerUserId
             self.__timber.log('CheerActionHelper', f'Attempt to timeout the broadcaster themself from {cheerUserName}:{cheerUserId} in {user.getHandle()}, so will instead time out the user: ({message=}) ({timeoutAction=})')
 
+        if not await self.__verifyStreamStatus(
+            timeoutAction = timeoutAction,
+            user = user
+        ):
+            self.__timber.log('CheerActionHelper', f'Attempted to timeout {cheerUserName}:{cheerUserId} in {user.getHandle()}, but failed to verify the current stream status: ({timeoutAction=})')
+            return False
+
         return await self.__timeoutUser(
             action = timeoutAction,
             bits = bits,
@@ -374,6 +389,27 @@ class CheerActionHelper(CheerActionHelperInterface):
             return True
         else:
             return False
+
+    async def __verifyStreamStatus(
+        self,
+        timeoutAction: CheerAction,
+        user: UserInterface
+    ) -> bool:
+        if not isinstance(timeoutAction, CheerAction):
+            raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        requirement = timeoutAction.getStreamStatusRequirement()
+
+        if requirement is CheerActionStreamStatusRequirement.ANY:
+            return True
+
+        isLiveDictionary = await self.__isLiveOnTwitchRepository.isLive(list(user.getHandle()))
+        isLive = isLiveDictionary.get(user.getHandle()) is True
+
+        return isLive and requirement is CheerActionStreamStatusRequirement.ONLINE or \
+            not isLive and requirement is CheerActionStreamStatusRequirement.OFFLINE
 
     async def __verifyUserCanBeTimedOut(
         self,
