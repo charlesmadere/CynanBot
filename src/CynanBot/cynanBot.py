@@ -14,6 +14,9 @@ from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
+from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
+from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -24,7 +27,6 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.commands import (AbsCommand, AddBannedTriviaControllerCommand,
-                               AddCheerActionCommand,
                                AddGlobalTriviaControllerCommand,
                                AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
@@ -482,11 +484,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         self.__twitterCommand: AbsCommand = TwitterCommand(timber, twitchUtils, usersRepository)
 
         if cheerActionHelper is None or cheerActionIdGenerator is None or cheerActionsRepository is None:
-            self.__addCheerActionCommand: AbsCommand = StubCommand()
+            self.__addCheerActionCommand: AbsChatCommand = StubChatCommand()
             self.__deleteCheerActionCommand: AbsCommand = StubCommand()
             self.__getCheerActionsCommand: AbsCommand = StubCommand()
         else:
-            self.__addCheerActionCommand: AbsCommand = AddCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__addCheerActionCommand: AbsChatCommand = AddCheerActionCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
@@ -1092,7 +1094,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'addcheeraction')
     async def command_addcheeraction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addCheerActionCommand.handleCommand(context)
+        await self.__addCheerActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):

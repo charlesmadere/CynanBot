@@ -8,6 +8,8 @@ from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -20,26 +22,30 @@ class AddRecurringActionCommand(AbsChatCommand):
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleChatCommand(self, ctx: TwitchContext):
