@@ -214,11 +214,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             return
         elif not user.isTtsEnabled():
             return
-        elif isGift is None and subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE:
-            # prevents an annoying situation where subscribers end up causing two distinct events
-            # to come from Twitch, where each are subtly different but both inform of an apparent
-            # new subscriber
-            return
+        elif isGift is None:
+            if subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE or \
+                subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
+                # prevents an annoying situation where some subscription events end up causing
+                # two distinct events to come from Twitch, where each are subtly different but
+                # both inform of the same new subscriber
+                return
 
         actualMessage = message
         if not utils.isValidStr(actualMessage):
