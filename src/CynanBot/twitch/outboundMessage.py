@@ -13,11 +13,11 @@ class OutboundMessage():
         messageable: TwitchMessageable
     ):
         if not isinstance(delayUntilTime, datetime):
-            raise ValueError(f'delayUntilTime argument is malformed: \"{delayUntilTime}\"')
+            raise TypeError(f'delayUntilTime argument is malformed: \"{delayUntilTime}\"')
         elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not isinstance(messageable, TwitchMessageable):
-            raise ValueError(f'messageable argument is malformed: \"{messageable}\"')
+            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
 
         self.__delayUntilTime: datetime = delayUntilTime
         self.__message: str = message

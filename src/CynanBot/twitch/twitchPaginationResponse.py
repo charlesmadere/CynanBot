@@ -7,7 +7,7 @@ class TwitchPaginationResponse():
 
     def __init__(self, cursor: str):
         if not utils.isValidStr(cursor):
-            raise ValueError(f'cursor argument is malformed: \"{cursor}\"')
+            raise TypeError(f'cursor argument is malformed: \"{cursor}\"')
 
         self.__cursor: str = cursor
 

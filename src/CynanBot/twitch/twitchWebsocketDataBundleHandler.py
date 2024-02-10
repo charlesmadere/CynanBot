@@ -15,10 +15,10 @@ from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
 from CynanBot.twitch.api.websocket.twitchWebsocketEvent import \
     TwitchWebsocketEvent
-from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
-    TwitchWebsocketDataBundleListener
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
+from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
+    TwitchWebsocketDataBundleListener
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface

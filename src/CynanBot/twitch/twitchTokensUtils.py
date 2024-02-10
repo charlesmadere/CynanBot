@@ -18,16 +18,16 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
 
     async def getAccessTokenOrFallback(self, twitchChannel: str) -> Optional[str]:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         if await self.__twitchTokensRepository.hasAccessToken(twitchChannel):
             await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
@@ -39,7 +39,7 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
 
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         accessToken = await self.getAccessTokenOrFallback(twitchChannel)
 

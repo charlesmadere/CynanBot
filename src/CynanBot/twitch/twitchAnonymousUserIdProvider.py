@@ -11,7 +11,7 @@ class TwitchAnonymousUserIdProvider(TwitchAnonymousUserIdProviderInterface):
                                                  # "AnAnonymousGifter" account on Twitch.
     ):
         if not utils.isValidStr(twitchAnonymousUserId):
-            raise ValueError(f'twitchAnonymousUserId argument is malformed: \"{twitchAnonymousUserId}\"')
+            raise TypeError(f'twitchAnonymousUserId argument is malformed: \"{twitchAnonymousUserId}\"')
 
         self.__twitchAnonymousUserId: str = twitchAnonymousUserId
 
