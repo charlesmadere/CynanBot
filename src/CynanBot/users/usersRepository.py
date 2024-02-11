@@ -27,11 +27,11 @@ class UsersRepository(UsersRepositoryInterface):
         usersFile: str = 'usersRepository.json'
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
-            raise ValueError(f'usersFile argument is malformed: \"{usersFile}\"')
+            raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
@@ -97,6 +97,7 @@ class UsersRepository(UsersRepositoryInterface):
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
+        isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
         isChatBandEnabled = utils.getBoolFromDict(userJson, 'chatBandEnabled', False)
@@ -131,6 +132,8 @@ class UsersRepository(UsersRepositoryInterface):
         isWeatherEnabled = utils.getBoolFromDict(userJson, 'weatherEnabled', False)
         isWelcomeTtsEnabled = utils.getBoolFromDict(userJson, 'welcomeTtsEnabled', False)
         isWordOfTheDayEnabled = utils.getBoolFromDict(userJson, 'wordOfTheDayEnabled', False)
+        casualGamePollRewardId = utils.getStrFromDict(userJson, 'casualGamePollRewardId', '')
+        casualGamePollUrl = utils.getStrFromDict(userJson, 'casualGamePollUrl', '')
         discord = utils.getStrFromDict(userJson, 'discord', '')
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
@@ -219,6 +222,7 @@ class UsersRepository(UsersRepositoryInterface):
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
+            isCasualGamePollEnabled = isCasualGamePollEnabled,
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,
             isChatBandEnabled = isChatBandEnabled,
             isChatLoggingEnabled = isChatLoggingEnabled,
@@ -271,6 +275,8 @@ class UsersRepository(UsersRepositoryInterface):
             triviaGameShinyMultiplier = triviaGameShinyMultiplier,
             waitForSuperTriviaAnswerDelay = waitForSuperTriviaAnswerDelay,
             waitForTriviaAnswerDelay = waitForTriviaAnswerDelay,
+            casualGamePollRewardId = casualGamePollRewardId,
+            casualGamePollUrl = casualGamePollUrl,
             discord = discord,
             handle = handle,
             instagram = instagram,

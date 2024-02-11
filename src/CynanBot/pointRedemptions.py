@@ -1,8 +1,9 @@
 import traceback
-from abc import ABC, abstractmethod
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
+    AbsChannelPointRedemption
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
@@ -24,18 +25,7 @@ from CynanBot.users.pkmnCatchType import PkmnCatchType
 from CynanBot.users.user import User
 
 
-class AbsPointRedemption(ABC):
-
-    @abstractmethod
-    async def handlePointRedemption(
-        self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
-    ) -> bool:
-        pass
-
-
-class CutenessRedemption(AbsPointRedemption):
+class CutenessRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -44,11 +34,11 @@ class CutenessRedemption(AbsPointRedemption):
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__timber: TimberInterface = timber
@@ -92,7 +82,7 @@ class CutenessRedemption(AbsPointRedemption):
         return True
 
 
-class PkmnBattleRedemption(AbsPointRedemption):
+class PkmnBattleRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -102,13 +92,13 @@ class PkmnBattleRedemption(AbsPointRedemption):
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -150,7 +140,7 @@ class PkmnBattleRedemption(AbsPointRedemption):
         return actionCompleted
 
 
-class PkmnCatchRedemption(AbsPointRedemption):
+class PkmnCatchRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -236,7 +226,7 @@ class PkmnCatchRedemption(AbsPointRedemption):
             raise ValueError(f'unknown PkmnCatchType: \"{pkmnCatchBoosterPack.getCatchType()}\"')
 
 
-class PkmnEvolveRedemption(AbsPointRedemption):
+class PkmnEvolveRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -286,7 +276,7 @@ class PkmnEvolveRedemption(AbsPointRedemption):
         return actionCompleted
 
 
-class PkmnShinyRedemption(AbsPointRedemption):
+class PkmnShinyRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -336,20 +326,7 @@ class PkmnShinyRedemption(AbsPointRedemption):
         return actionCompleted
 
 
-class StubPointRedemption(AbsPointRedemption):
-
-    def __init__(self):
-        pass
-
-    async def handlePointRedemption(
-        self,
-        twitchChannel: TwitchChannel,
-        twitchChannelPointsMessage: TwitchChannelPointsMessage
-    ) -> bool:
-        return False
-
-
-class SuperTriviaGameRedemption(AbsPointRedemption):
+class SuperTriviaGameRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -386,7 +363,7 @@ class SuperTriviaGameRedemption(AbsPointRedemption):
         return True
 
 
-class TriviaGameRedemption(AbsPointRedemption):
+class TriviaGameRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,

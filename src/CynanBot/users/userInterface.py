@@ -16,6 +16,14 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getCasualGamePollRewardId(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
+    def getCasualGamePollUrl(self) -> Optional[str]:
+        pass
+
+    @abstractmethod
     def getCutenessBoosterPacks(self) -> Optional[List[CutenessBoosterPack]]:
         pass
 
@@ -161,6 +169,10 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isAnivContentScanningEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
+    def isCasualGamePollEnabled(self) -> bool:
         pass
 
     @abstractmethod

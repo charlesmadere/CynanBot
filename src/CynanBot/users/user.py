@@ -15,6 +15,7 @@ class User(UserInterface):
         areRecurringActionsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isCatJamMessageEnabled: bool,
+        isCasualGamePollEnabled: bool,
         isChannelPredictionChartEnabled: bool,
         isChatBandEnabled: bool,
         isChatLoggingEnabled: bool,
@@ -67,6 +68,8 @@ class User(UserInterface):
         triviaGameShinyMultiplier: Optional[int],
         waitForSuperTriviaAnswerDelay: Optional[int],
         waitForTriviaAnswerDelay: Optional[int],
+        casualGamePollRewardId: Optional[str],
+        casualGamePollUrl: Optional[str],
         discord: Optional[str],
         handle: str,
         instagram: Optional[str],
@@ -84,141 +87,148 @@ class User(UserInterface):
         timeZones: Optional[List[tzinfo]]
     ):
         if not utils.isValidBool(areCheerActionsEnabled):
-            raise ValueError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
+            raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
-            raise ValueError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
+            raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
-            raise ValueError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
+            raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
+        elif not utils.isValidBool(isCasualGamePollEnabled):
+            raise TypeError(f'isCasualGamePollEnabled argument is malformed: \"{isCasualGamePollEnabled}\"')
         elif not utils.isValidBool(isCatJamMessageEnabled):
-            raise ValueError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
+            raise TypeError(f'isCatJamMessageEnabled argument is malformed: \"{isCatJamMessageEnabled}\"')
         elif not utils.isValidBool(isChannelPredictionChartEnabled):
-            raise ValueError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
+            raise TypeError(f'isChannelPredictionChartEnabled argument is malformed: \"{isChannelPredictionChartEnabled}\"')
         elif not utils.isValidBool(isChatBandEnabled):
-            raise ValueError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
+            raise TypeError(f'isChatBandEnabled argument is malformed: \"{isChatBandEnabled}\"')
         elif not utils.isValidBool(isChatLoggingEnabled):
-            raise ValueError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
+            raise TypeError(f'isChatLoggingEnabled argument is malformed: \"{isChatLoggingEnabled}\"')
         elif not utils.isValidBool(isCutenessEnabled):
-            raise ValueError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
+            raise TypeError(f'isCutenessEnabled argument is malformed: \"{isCutenessEnabled}\"')
         elif not utils.isValidBool(isCynanSourceEnabled):
-            raise ValueError(f'isCynanSourceEnabled argument is malformed: \"{isCynanSourceEnabled}\"')
+            raise TypeError(f'isCynanSourceEnabled argument is malformed: \"{isCynanSourceEnabled}\"')
         elif not utils.isValidBool(isDeerForceMessageEnabled):
-            raise ValueError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
+            raise TypeError(f'isDeerForceMessageEnabled argument is malformed: \"{isDeerForceMessageEnabled}\"')
         elif not utils.isValidBool(isEnabled):
-            raise ValueError(f'isEnabled argument is malformed: \"{isEnabled}\"')
+            raise TypeError(f'isEnabled argument is malformed: \"{isEnabled}\"')
         elif not utils.isValidBool(isEyesMessageEnabled):
-            raise ValueError(f'isEyesMessageEnabled argument is malformed: \"{isEyesMessageEnabled}\"')
+            raise TypeError(f'isEyesMessageEnabled argument is malformed: \"{isEyesMessageEnabled}\"')
         elif not utils.isValidBool(isGiftSubscriptionThanksMessageEnabled):
-            raise ValueError(f'isGiftSubscriptionThanksMessageEnabled argument is malformed: \"{isGiftSubscriptionThanksMessageEnabled}\"')
+            raise TypeError(f'isGiftSubscriptionThanksMessageEnabled argument is malformed: \"{isGiftSubscriptionThanksMessageEnabled}\"')
         elif not utils.isValidBool(isGiveCutenessEnabled):
-            raise ValueError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
+            raise TypeError(f'isGiveCutenessEnabled argument is malformed: \"{isGiveCutenessEnabled}\"')
         elif not utils.isValidBool(isImytSlurpMessageEnabled):
-            raise ValueError(f'isImytSlurpMessageEnabled argument is malformed: \"{isImytSlurpMessageEnabled}\"')
+            raise TypeError(f'isImytSlurpMessageEnabled argument is malformed: \"{isImytSlurpMessageEnabled}\"')
         elif not utils.isValidBool(isJamCatMessageEnabled):
-            raise ValueError(f'isJamCatMessageEnabled argument is malformed: \"{isJamCatMessageEnabled}\"')
+            raise TypeError(f'isJamCatMessageEnabled argument is malformed: \"{isJamCatMessageEnabled}\"')
         elif not utils.isValidBool(isJishoEnabled):
-            raise ValueError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
+            raise TypeError(f'isJishoEnabled argument is malformed: \"{isJishoEnabled}\"')
         elif not utils.isValidBool(isLoremIpsumEnabled):
-            raise ValueError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
+            raise TypeError(f'isLoremIpsumEnabled argument is malformed: \"{isLoremIpsumEnabled}\"')
         elif not utils.isValidBool(isPkmnEnabled):
-            raise ValueError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
+            raise TypeError(f'isPkmnEnabled argument is malformed: \"{isPkmnEnabled}\"')
         elif not utils.isValidBool(isPokepediaEnabled):
-            raise ValueError(f'isPokepediaEnabled argument is malformed: \"{isPokepediaEnabled}\"')
+            raise TypeError(f'isPokepediaEnabled argument is malformed: \"{isPokepediaEnabled}\"')
         elif not utils.isValidBool(isRaceEnabled):
-            raise ValueError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
+            raise TypeError(f'isRaceEnabled argument is malformed: \"{isRaceEnabled}\"')
         elif not utils.isValidBool(isRaidLinkMessagingEnabled):
-            raise ValueError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
+            raise TypeError(f'isRaidLinkMessagingEnabled argument is malformed: \"{isRaidLinkMessagingEnabled}\"')
         elif not utils.isValidBool(isRatJamMessageEnabled):
-            raise ValueError(f'isRatJamMessageEnabled argument is malformed: \"{isRatJamMessageEnabled}\"')
+            raise TypeError(f'isRatJamMessageEnabled argument is malformed: \"{isRatJamMessageEnabled}\"')
         elif not utils.isValidBool(isRewardIdPrintingEnabled):
-            raise ValueError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
+            raise TypeError(f'isRewardIdPrintingEnabled argument is malformed: \"{isRewardIdPrintingEnabled}\"')
         elif not utils.isValidBool(isRoachMessageEnabled):
-            raise ValueError(f'isRoachMessageEnabled argument is malformed: \"{isRoachMessageEnabled}\"')
+            raise TypeError(f'isRoachMessageEnabled argument is malformed: \"{isRoachMessageEnabled}\"')
         elif not utils.isValidBool(isSchubertWalkMessageEnabled):
-            raise ValueError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
+            raise TypeError(f'isSchubertWalkMessageEnabled argument is malformed: \"{isSchubertWalkMessageEnabled}\"')
         elif not utils.isValidBool(isShinyTriviaEnabled):
-            raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
+            raise TypeError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
         elif not utils.isValidBool(isStarWarsQuotesEnabled):
-            raise ValueError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
+            raise TypeError(f'isStarWarsQuotesEnabled argument is malformed: \"{isStarWarsQuotesEnabled}\"')
         elif not utils.isValidBool(isSubGiftThankingEnabled):
-            raise ValueError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
+            raise TypeError(f'isSubGiftThankingEnabled argument is malformed: \"{isSubGiftThankingEnabled}\"')
         elif not utils.isValidBool(isSuperTriviaGameEnabled):
-            raise ValueError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
+            raise TypeError(f'isSuperTriviaGameEnabled argument is malformed: \"{isSuperTriviaGameEnabled}\"')
         elif not utils.isValidBool(isSupStreamerEnabled):
-            raise ValueError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
+            raise TypeError(f'isSupStreamerEnabled argument is malformed: \"{isSupStreamerEnabled}\"')
         elif not utils.isValidBool(isToxicTriviaEnabled):
-            raise ValueError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
+            raise TypeError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
         elif not utils.isValidBool(isTranslateEnabled):
-            raise ValueError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
+            raise TypeError(f'isTranslateEnabled argument is malformed: \"{isTranslateEnabled}\"')
         elif not utils.isValidBool(isTriviaEnabled):
-            raise ValueError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
+            raise TypeError(f'isTriviaEnabled argument is malformed: \"{isTriviaEnabled}\"')
         elif not utils.isValidBool(isTriviaGameEnabled):
-            raise ValueError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
+            raise TypeError(f'isTriviaGameEnabled argument is malformed: \"{isTriviaGameEnabled}\"')
         elif not utils.isValidBool(isTriviaScoreEnabled):
-            raise ValueError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
+            raise TypeError(f'isTriviaScoreEnabled argument is malformed: \"{isTriviaScoreEnabled}\"')
         elif not utils.isValidBool(isTtsEnabled):
-            raise ValueError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
+            raise TypeError(f'isTtsEnabled argument is malformed: \"{isTtsEnabled}\"')
         elif not utils.isValidBool(isWeatherEnabled):
-            raise ValueError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
+            raise TypeError(f'isWeatherEnabled argument is malformed: \"{isWeatherEnabled}\"')
         elif not utils.isValidBool(isWelcomeTtsEnabled):
-            raise ValueError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
+            raise TypeError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
-            raise ValueError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+            raise TypeError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
         elif superTriviaCheerTriggerAmount is not None and not utils.isValidNum(superTriviaCheerTriggerAmount):
-            raise ValueError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
+            raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
-            raise ValueError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
+            raise TypeError(f'superTriviaSubscribeTriggerAmount argument is malformed: \"{superTriviaSubscribeTriggerAmount}\"')
         elif maximumTtsCheerAmount is not None and not utils.isValidInt(maximumTtsCheerAmount):
-            raise ValueError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
+            raise TypeError(f'maximumTtsCheerAmount argument is malformed: \"{maximumTtsCheerAmount}\"')
         elif minimumTtsCheerAmount is not None and not utils.isValidInt(minimumTtsCheerAmount):
-            raise ValueError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
+            raise TypeError(f'minimumTtsCheerAmount argument is malformed: \"{minimumTtsCheerAmount}\"')
         elif superTriviaGamePoints is not None and not utils.isValidInt(superTriviaGamePoints):
-            raise ValueError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
+            raise TypeError(f'superTriviaGamePoints argument is malformed: \"{superTriviaGamePoints}\"')
         elif superTriviaCheerTriggerMaximum is not None and not utils.isValidInt(superTriviaCheerTriggerMaximum):
-            raise ValueError(f'superTriviaCheerTriggerMaximum argument is malformed: \"{superTriviaCheerTriggerMaximum}\"')
+            raise TypeError(f'superTriviaCheerTriggerMaximum argument is malformed: \"{superTriviaCheerTriggerMaximum}\"')
         elif superTriviaGameRewardId is not None and not isinstance(superTriviaGameRewardId, str):
-            raise ValueError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
+            raise TypeError(f'superTriviaGameRewardId argument is malformed: \"{superTriviaGameRewardId}\"')
         elif superTriviaGameShinyMultiplier is not None and not utils.isValidInt(superTriviaGameShinyMultiplier):
-            raise ValueError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
+            raise TypeError(f'superTriviaGameShinyMultiplier argument is malformed: \"{superTriviaGameShinyMultiplier}\"')
         elif superTriviaGameToxicPunishmentMultiplier is not None and not utils.isValidInt(superTriviaGameToxicPunishmentMultiplier):
-            raise ValueError(f'superTriviaGameToxicPunishmentMultiplier argument is malformed: \"{superTriviaGameToxicPunishmentMultiplier}\"')
+            raise TypeError(f'superTriviaGameToxicPunishmentMultiplier argument is malformed: \"{superTriviaGameToxicPunishmentMultiplier}\"')
         elif superTriviaPerUserAttempts is not None and not utils.isValidInt(superTriviaPerUserAttempts):
-            raise ValueError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
+            raise TypeError(f'superTriviaPeruserAttempts argument is malformed: \"{superTriviaPerUserAttempts}\"')
         elif superTriviaSubscribeTriggerMaximum is not None and not utils.isValidInt(superTriviaSubscribeTriggerMaximum):
-            raise ValueError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
+            raise TypeError(f'superTriviaSubscribeTriggerMaximum argument is malformed: \"{superTriviaSubscribeTriggerMaximum}\"')
         elif triviaGamePoints is not None and not utils.isValidInt(triviaGamePoints):
-            raise ValueError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
+            raise TypeError(f'triviaGamePoints argument is malformed: \"{triviaGamePoints}\"')
         elif triviaGameShinyMultiplier is not None and not utils.isValidInt(triviaGameShinyMultiplier):
-            raise ValueError(f'triviaGameShinyMultiplier argument is malformed: \"{triviaGameShinyMultiplier}\"')
+            raise TypeError(f'triviaGameShinyMultiplier argument is malformed: \"{triviaGameShinyMultiplier}\"')
         elif waitForSuperTriviaAnswerDelay is not None and not utils.isValidInt(waitForSuperTriviaAnswerDelay):
-            raise ValueError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
+            raise TypeError(f'waitForSuperTriviaAnswerDelay argument is malformed: \"{waitForSuperTriviaAnswerDelay}\"')
         elif waitForTriviaAnswerDelay is not None and not utils.isValidInt(waitForTriviaAnswerDelay):
-            raise ValueError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
+            raise TypeError(f'waitForTriviaAnswerDelay argument is malformed: \"{waitForTriviaAnswerDelay}\"')
+        elif casualGamePollRewardId is not None and not isinstance(casualGamePollRewardId, str):
+            raise TypeError(f'casualGamePollRewardId argument is malformed: \"{casualGamePollRewardId}\"')
+        elif casualGamePollUrl is not None and not isinstance(casualGamePollUrl, str):
+            raise TypeError(f'casualGamePollUrl argument is malformed: \"{casualGamePollUrl}\"')
         elif discord is not None and not isinstance(discord, str):
-            raise ValueError(f'discord argument is malformed: \"{discord}\"')
+            raise TypeError(f'discord argument is malformed: \"{discord}\"')
         elif not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif locationId is not None and not isinstance(locationId, str):
-            raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
+            raise TypeError(f'locationId argument is malformed: \"{locationId}\"')
         elif mastodonUrl is not None and not isinstance(mastodonUrl, str):
-            raise ValueError(f'mastodonUrl argument is malformed: \"{mastodonUrl}\"')
+            raise TypeError(f'mastodonUrl argument is malformed: \"{mastodonUrl}\"')
         elif pkmnBattleRewardId is not None and not isinstance(pkmnBattleRewardId, str):
-            raise ValueError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
+            raise TypeError(f'pkmnBattleRewardId argument is malformed: \"{pkmnBattleRewardId}\"')
         elif pkmnEvolveRewardId and not isinstance(pkmnEvolveRewardId, str):
-            raise ValueError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
+            raise TypeError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
         elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
-            raise ValueError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
+            raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
-            raise ValueError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
+            raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif supStreamerMessage is not None and not isinstance(supStreamerMessage, str):
-            raise ValueError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
+            raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
-            raise ValueError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
+            raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
         elif twitter is not None and not isinstance(twitter, str):
-            raise ValueError(f'twitter argument is malformed: \"{twitter}\"')
+            raise TypeError(f'twitter argument is malformed: \"{twitter}\"')
 
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
+        self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
         self.__isChannelPredictionChartEnabled: bool = isChannelPredictionChartEnabled
         self.__isChatBandEnabled: bool = isChatBandEnabled
@@ -272,6 +282,8 @@ class User(UserInterface):
         self.__triviaGameShinyMultiplier: Optional[int] = triviaGameShinyMultiplier
         self.__waitForTriviaAnswerDelay: Optional[int] = waitForTriviaAnswerDelay
         self.__waitForSuperTriviaAnswerDelay: Optional[int] = waitForSuperTriviaAnswerDelay
+        self.__casualGamePollRewardId: Optional[str] = casualGamePollRewardId
+        self.__casualGamePollUrl: Optional[str] = casualGamePollUrl
         self.__discord: Optional[str] = discord
         self.__handle: str = handle
         self.__instagram: Optional[str] = instagram
@@ -293,6 +305,12 @@ class User(UserInterface):
 
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
+
+    def getCasualGamePollRewardId(self) -> Optional[str]:
+        return self.__casualGamePollRewardId
+
+    def getCasualGamePollUrl(self) -> Optional[str]:
+        return self.__casualGamePollUrl
 
     def getCutenessBoosterPacks(self) -> Optional[List[CutenessBoosterPack]]:
         return self.__cutenessBoosterPacks
@@ -419,6 +437,9 @@ class User(UserInterface):
 
     def isAnivContentScanningEnabled(self) -> bool:
         return self.__isAnivContentScanningEnabled
+
+    def isCasualGamePollEnabled(self) -> bool:
+        return self.__isCasualGamePollEnabled
 
     def isCatJamMessageEnabled(self) -> bool:
         return self.__isCatJamMessageEnabled

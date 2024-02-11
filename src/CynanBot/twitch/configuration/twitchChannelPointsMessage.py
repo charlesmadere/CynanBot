@@ -18,17 +18,17 @@ class TwitchChannelPointsMessage():
         userName: str
     ):
         if not utils.isValidStr(eventId):
-            raise ValueError(f'eventId argument is malformed: \"{eventId}\"')
+            raise TypeError(f'eventId argument is malformed: \"{eventId}\"')
         elif redemptionMessage is not None and not isinstance(redemptionMessage, str):
-            raise ValueError(f'redemptionMessage argument is malformed: \"{redemptionMessage}\"')
+            raise TypeError(f'redemptionMessage argument is malformed: \"{redemptionMessage}\"')
         elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
+            raise TypeError(f'rewardId argument is malformed: \"{rewardId}\"')
         elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
+            raise TypeError(f'twitchUser argument is malformed: \"{twitchUser}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__eventId: str = eventId
         self.__redemptionMessage: Optional[str] = redemptionMessage
