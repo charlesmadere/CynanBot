@@ -32,7 +32,7 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
-        self.__cache: TimedDict = TimedDict(timeDelta = cacheTimeDelta)
+        self.__cache: TimedDict = TimedDict(cacheTimeDelta)
 
     async def clearCaches(self):
         self.__cache.clear()

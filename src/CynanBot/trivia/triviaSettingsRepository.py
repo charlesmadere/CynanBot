@@ -11,7 +11,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
@@ -89,7 +89,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getMaxQuestionLength(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_question_length', 350)
+        return utils.getIntFromDict(jsonContents, 'max_question_length', 200)
 
     async def getMaxPhraseAnswerLength(self) -> int:
         jsonContents = await self.__readJson()
@@ -97,7 +97,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     async def getMaxPhraseGuessLength(self) -> int:
         jsonContents = await self.__readJson()
-        return utils.getIntFromDict(jsonContents, 'max_phrase_guess_length', 48)
+        return utils.getIntFromDict(jsonContents, 'max_phrase_guess_length', 40)
 
     async def getMaxSuperTriviaQuestionSpoolSize(self) -> int:
         jsonContents = await self.__readJson()

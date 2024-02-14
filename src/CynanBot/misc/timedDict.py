@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
@@ -8,17 +8,18 @@ class TimedDict():
 
     def __init__(
         self,
-        timeDelta: timedelta,
-        timeZone: timezone = timezone.utc
+        cacheTimeToLive: timedelta,
+        timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(timeDelta, timedelta):
-            raise ValueError(f'timeDelta argument is malformed: \"{timeDelta}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        if not isinstance(cacheTimeToLive, timedelta):
+            raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__timeDelta: timedelta = timeDelta
-        self.__timeZone: timezone = timeZone
-        self.__times: Dict[str, Optional[Any]] = dict()
+        self.__cacheTimeToLive: timedelta = cacheTimeToLive
+        self.__timeZone: tzinfo = timeZone
+
+        self.__times: Dict[str, Optional[datetime]] = dict()
         self.__values: Dict[str, Optional[Any]] = dict()
 
     def clear(self):
@@ -36,15 +37,18 @@ class TimedDict():
         if not utils.isValidStr(key):
             raise ValueError(f'key argument is malformed: \"{key}\"')
 
-        if key not in self.__times or key not in self.__values:
+        cachedTime = self.__times.get(key, None)
+        cachedValue = self.__values.get(key, None)
+
+        if cachedTime is None or cachedValue is None:
             return None
 
         nowDateTime = datetime.now(self.__timeZone)
 
-        if nowDateTime > self.__times[key]:
+        if nowDateTime > cachedTime:
             return None
 
-        return self.__values[key]
+        return cachedValue
 
     def isReady(self, key: str) -> bool:
         if not utils.isValidStr(key):
@@ -66,12 +70,13 @@ class TimedDict():
         if not utils.isValidStr(key):
             raise ValueError(f'key argument is malformed: \"{key}\"')
 
-        self.__times[key] = datetime.now(self.__timeZone) + self.__timeDelta
+        self.__times[key] = datetime.now(self.__timeZone) + self.__cacheTimeToLive
         self.__values[key] = value
 
     def update(self, key: str):
         if not utils.isValidStr(key):
             raise ValueError(f'key argument is malformed: \"{key}\"')
 
-        self.__times[key] = datetime.now(self.__timeZone) + self.__timeDelta
-        self.__values[key] = self.__times[key]
+        newCachedTime = datetime.now(self.__timeZone) + self.__cacheTimeToLive
+        self.__times[key] = newCachedTime
+        self.__values[key] = newCachedTime
