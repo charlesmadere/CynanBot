@@ -66,7 +66,14 @@ from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
+from CynanBot.language.translation.deepLTranslationApi import \
+    DeepLTranslationApi
+from CynanBot.language.translation.googleTranslationApi import \
+    GoogleTranslationApi
+from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationHelper import TranslationHelper
+from CynanBot.language.translationHelperInterface import \
+    TranslationHelperInterface
 from CynanBot.language.wordOfTheDayRepository import WordOfTheDayRepository
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
@@ -463,14 +470,24 @@ wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository
 
 authSnapshot = authRepository.getAll()
 
-translationHelper: Optional[TranslationHelper] = None
-if authSnapshot.hasDeepLAuthKey():
-    translationHelper = TranslationHelper(
-        languagesRepository = languagesRepository,
-        networkClientProvider = networkClientProvider,
-        deepLAuthKey = authSnapshot.requireDeepLAuthKey(),
-        timber = timber
-    )
+deepLTranslationApi: TranslationApi = DeepLTranslationApi(
+    languagesRepository = languagesRepository,
+    networkClientProvider = networkClientProvider,
+    deepLAuthKey = authSnapshot.getDeepLAuthKey(),
+    timber = timber
+)
+
+googleTranslationApi: TranslationApi = GoogleTranslationApi(
+    languagesRepository = languagesRepository,
+    timber = timber
+)
+
+translationHelper: Optional[TranslationHelperInterface] = TranslationHelper(
+    deepLTranslationApi = deepLTranslationApi,
+    googleTranslationApi = googleTranslationApi,
+    languagesRepository = languagesRepository,
+    timber = timber
+)
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
