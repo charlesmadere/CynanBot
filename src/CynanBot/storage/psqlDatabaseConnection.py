@@ -12,9 +12,9 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
     def __init__(self, connection: asyncpg.Connection, pool: asyncpg.Pool):
         if not isinstance(connection, asyncpg.Connection):
-            raise ValueError(f'connection argument is malformed: \"{connection}\"')
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
         elif not isinstance(pool, asyncpg.Pool):
-            raise ValueError(f'pool argument is malformed: \"{pool}\"')
+            raise TypeError(f'pool argument is malformed: \"{pool}\"')
 
         self.__connection: asyncpg.Connection = connection
         self.__pool: asyncpg.Pool = pool
@@ -30,7 +30,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
     async def createTableIfNotExists(self, query: str, *args: Optional[Any]):
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
 
@@ -41,7 +41,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
     async def execute(self, query: str, *args: Optional[Any]):
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
 
@@ -50,7 +50,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
     async def fetchRow(self, query: str, *args: Optional[Any]) -> Optional[List[Any]]:
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
         record = await self.__connection.fetchrow(query, *args)
@@ -62,7 +62,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
     async def fetchRows(self, query: str, *args: Optional[Any]) -> Optional[List[List[Any]]]:
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
         records = await self.__connection.fetch(query, *args)

@@ -13,7 +13,7 @@ class JsonFileReader(JsonReaderInterface):
 
     def __init__(self, fileName: str):
         if not utils.isValidStr(fileName):
-            raise ValueError(f'fileName argument is malformed: \"{fileName}\"')
+            raise TypeError(f'fileName argument is malformed: \"{fileName}\"')
 
         self.__fileName: str = fileName
 

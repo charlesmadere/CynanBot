@@ -9,18 +9,15 @@ class BannedPhrase(AbsBannedWord):
 
     def __init__(self, phrase: str):
         if not utils.isValidStr(phrase):
-            raise ValueError(f'phrase argument is malformed: \"{phrase}\"')
+            raise TypeError(f'phrase argument is malformed: \"{phrase}\"')
 
         self.__phrase: str = phrase.lower()
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, AbsBannedWord):
-            if isinstance(other, BannedPhrase):
-                return self.__phrase == other.__phrase
-            else:
-                return False
+        if isinstance(other, BannedPhrase):
+            return self.__phrase == other.__phrase
         else:
-            raise ValueError(f'`other` is an unsupported type: \"{other}\"')
+            return False
 
     def getPhrase(self) -> str:
         return self.__phrase

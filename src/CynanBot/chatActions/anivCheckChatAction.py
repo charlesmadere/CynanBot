@@ -39,23 +39,23 @@ class AnivCheckChatAction(AbsChatAction):
         timeoutDurationSeconds: int = 60
     ):
         if not isinstance(anivContentScanner, AnivContentScannerInterface):
-            raise ValueError(f'anivContentScanner argument is malformed: \"{anivContentScanner}\"')
+            raise TypeError(f'anivContentScanner argument is malformed: \"{anivContentScanner}\"')
         elif not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise ValueError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
+            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(timeoutDurationSeconds):
-            raise ValueError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
+            raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
         elif timeoutDurationSeconds < 1 or timeoutDurationSeconds > 1209600:
             raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
 
@@ -113,7 +113,7 @@ class AnivCheckChatAction(AbsChatAction):
             duration = self.__timeoutDurationSeconds,
             broadcasterUserId = await channel.getTwitchChannelId(),
             moderatorUserId = moderatorUserId,
-            reason = f'{message.getAuthorName()} posted bad content',
+            reason = f'{message.getAuthorName()} posted bad content ({contentCode})',
             userIdToBan = anivUserId
         )
 

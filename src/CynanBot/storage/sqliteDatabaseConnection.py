@@ -12,7 +12,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
 
     def __init__(self, connection: aiosqlite.Connection):
         if not isinstance(connection, aiosqlite.Connection):
-            raise ValueError(f'connection argument is malformed: \"{connection}\"')
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
 
         self.__connection: aiosqlite.Connection = connection
         self.__isClosed: bool = False
@@ -26,7 +26,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
 
     async def createTableIfNotExists(self, query: str, *args: Optional[Any]):
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         if utils.hasItems(args):
             await self.execute(query, args)
@@ -35,7 +35,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
 
     async def execute(self, query: str, *args: Optional[Any]):
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
         cursor = await self.__connection.execute(query, args)
@@ -44,7 +44,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
 
     async def fetchRow(self, query: str, *args: Optional[Any]) -> Optional[List[Any]]:
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
         cursor = await self.__connection.execute(query, args)
@@ -62,7 +62,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
 
     async def fetchRows(self, query: str, *args: Optional[Any]) -> Optional[List[List[Any]]]:
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
         cursor = await self.__connection.execute(query, args)

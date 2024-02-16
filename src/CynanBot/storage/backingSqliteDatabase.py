@@ -17,9 +17,9 @@ class BackingSqliteDatabase(BackingDatabase):
         backingDatabaseFile: str = 'database.sqlite'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not utils.isValidStr(backingDatabaseFile):
-            raise ValueError(f'backingDatabaseFile argument is malformed: \"{backingDatabaseFile}\"')
+            raise TypeError(f'backingDatabaseFile argument is malformed: \"{backingDatabaseFile}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__backingDatabaseFile: str = backingDatabaseFile

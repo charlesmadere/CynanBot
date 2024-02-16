@@ -1,11 +1,6 @@
-import json
 import random
 import traceback
-from json.decoder import JSONDecodeError
-from typing import Any, Dict, List, Optional
-
-import aiofiles
-import aiofiles.ospath
+from typing import Optional
 
 isGoogleMissing = False
 
@@ -27,8 +22,6 @@ from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationHelperInterface import \
     TranslationHelperInterface
 from CynanBot.language.translationResponse import TranslationResponse
-from CynanBot.network.exceptions import GenericNetworkException
-from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -71,13 +64,11 @@ class TranslationHelper(TranslationHelperInterface):
         elif targetLanguage is not None and not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguageEntry argument is malformed: \"{targetLanguage}\"')
         elif targetLanguage is not None and not targetLanguage.hasIso6391Code():
-            raise TypeError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
+            raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
         text = utils.cleanStr(text)
 
-        if targetLanguage is not None and not targetLanguage.hasIso6391Code():
-            raise ValueError(f'the given LanguageEntry is not supported for translation: \"{targetLanguage.getName()}\"')
-        elif targetLanguage is None:
+        if targetLanguage is None:
             targetLanguage = await self.__languagesRepository.requireLanguageForCommand(
                 command = 'en',
                 hasIso6391Code = True
@@ -111,7 +102,7 @@ class TranslationHelper(TranslationHelperInterface):
                     targetLanguage = targetLanguage
                 )
             except Exception as e:
-                self.__timber.log('TranslationHelper', f'Exception occurred when translating ({text=}) ({attempt=}) ({translationApiSource=})', e, traceback.format_exc())
+                self.__timber.log('TranslationHelper', f'Exception occurred when translating ({text=}) ({targetLanguage=}) ({attempt=}) ({translationApiSource=})', e, traceback.format_exc())
 
             attempt = attempt + 1
 

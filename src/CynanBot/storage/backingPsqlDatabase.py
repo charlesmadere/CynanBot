@@ -18,9 +18,9 @@ class BackingPsqlDatabase(BackingDatabase):
         psqlCredentialsProvider: PsqlCredentialsProvider
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(psqlCredentialsProvider, PsqlCredentialsProvider):
-            raise ValueError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
+            raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__psqlCredentialsProvider: PsqlCredentialsProvider = psqlCredentialsProvider
@@ -29,7 +29,7 @@ class BackingPsqlDatabase(BackingDatabase):
 
     async def __createCollations(self, databaseConnection: DatabaseConnection):
         if not isinstance(databaseConnection, DatabaseConnection):
-            raise ValueError(f'databaseConnection argument is malformed: \"{databaseConnection}\"')
+            raise TypeError(f'databaseConnection argument is malformed: \"{databaseConnection}\"')
 
         await databaseConnection.execute('CREATE EXTENSION IF NOT EXISTS citext')
 

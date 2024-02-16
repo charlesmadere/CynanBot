@@ -6,6 +6,7 @@ from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
 from CynanBot.language.translation.translationApi import TranslationApi
+from CynanBot.language.translation.exceptions import TranslationEngineUnavailableException, TranslationException
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
 from CynanBot.network.exceptions import GenericNetworkException
@@ -36,6 +37,9 @@ class DeepLTranslationApi(TranslationApi):
         self.__deepLAuthKey: Optional[str] = deepLAuthKey
         self.__timber: TimberInterface = timber
 
+    def getTranslationApiSource(self) -> TranslationApiSource:
+        return TranslationApiSource.DEEP_L
+
     async def isAvailable(self) -> bool:
         return utils.isValidStr(self.__deepLAuthKey)
 
@@ -47,12 +51,20 @@ class DeepLTranslationApi(TranslationApi):
         elif not targetLanguage.hasIso6391Code():
             raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
+        deepLAuthKey = self.__deepLAuthKey
+
+        if not utils.isValidStr(deepLAuthKey):
+            raise TranslationEngineUnavailableException(
+                message = f'DeepL Translation engine is currently unavailable ({text=}) ({targetLanguage=}) ({deepLAuthKey=})',
+                translationApiSource = self.getTranslationApiSource()
+            )
+
         self.__timber.log('DeepLTranslationApi', f'Fetching translation ({text=}) ({targetLanguage=})...')
 
         # Retrieve translation from DeepL API: https://www.deepl.com/en/docs-api/
 
         requestUrl = 'https://api-free.deepl.com/v2/translate?auth_key={}&text={}&target_lang={}'.format(
-            self.__deepLAuthKey, text, targetLanguage.requireIso6391Code())
+            deepLAuthKey, text, targetLanguage.requireIso6391Code())
 
         clientSession = await self.__networkClientProvider.get()
 
@@ -101,5 +113,5 @@ class DeepLTranslationApi(TranslationApi):
             translatedLanguage = targetLanguage,
             originalText = text,
             translatedText = translatedText,
-            translationApiSource = TranslationApiSource.DEEP_L
+            translationApiSource = self.getTranslationApiSource()
         )

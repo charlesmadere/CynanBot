@@ -1,10 +1,15 @@
 from abc import ABC, abstractmethod
 
 from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
 
 
 class TranslationApi(ABC):
+
+    @abstractmethod
+    def getTranslationApiSource(self) -> TranslationApiSource:
+        pass
 
     @abstractmethod
     async def isAvailable(self) -> bool:

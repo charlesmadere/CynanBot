@@ -13,7 +13,7 @@ class ContentScannerInterface(ABC):
     @abstractmethod
     async def updatePhrasesContent(
         self,
-        phrases: Set[Optional[str]],
+        phrases: Set[str],
         string: Optional[str]
     ):
         pass
@@ -21,7 +21,7 @@ class ContentScannerInterface(ABC):
     @abstractmethod
     async def updateWordsContent(
         self,
-        words: Set[Optional[str]],
+        words: Set[str],
         string: Optional[str]
     ):
         pass

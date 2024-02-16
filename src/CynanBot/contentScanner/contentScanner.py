@@ -21,9 +21,9 @@ class ContentScanner(ContentScannerInterface):
         timber: TimberInterface
     ):
         if not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+            raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
         self.__timber: TimberInterface = timber
@@ -32,10 +32,10 @@ class ContentScanner(ContentScannerInterface):
         self.__wordRegEx: Pattern = re.compile(r'\w', re.IGNORECASE)
 
     async def scan(self, string: Optional[str]) -> ContentCode:
-        if string is None:
+        if string is not None and not isinstance(string, str):
+            raise TypeError(f'string argument is malformed: \"{string}\"')
+        elif string is None:
             return ContentCode.IS_NONE
-        elif not isinstance(string, str):
-            raise ValueError(f'message argument is malformed: \"{string}\"')
         elif len(string) == 0:
             return ContentCode.IS_EMPTY
         elif string.isspace():
@@ -45,10 +45,10 @@ class ContentScanner(ContentScannerInterface):
             self.__timber.log('ContentScanner', f'Content contains a URL: \"{string}\"')
             return ContentCode.CONTAINS_URL
 
-        phrases: Set[Optional[str]] = set()
+        phrases: Set[str] = set()
         await self.updatePhrasesContent(phrases, string)
 
-        words: Set[Optional[str]] = set()
+        words: Set[str] = set()
         await self.updateWordsContent(words, string)
 
         phrasesAndWordsContentCode = await self.__scanPhrasesAndWords(phrases, words)
@@ -59,29 +59,29 @@ class ContentScanner(ContentScannerInterface):
 
     async def __scanPhrasesAndWords(
         self,
-        phrases: Set[Optional[str]],
-        words: Set[Optional[str]]
+        phrases: Set[str],
+        words: Set[str]
     ) -> ContentCode:
         if not isinstance(phrases, Set):
-            raise ValueError(f'phrases argument is malformed: \"{phrases}\"')
+            raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
         elif not isinstance(words, Set):
-            raise ValueError(f'words argument is malformed: \"{words}\"')
+            raise TypeError(f'words argument is malformed: \"{words}\"')
 
         absBannedWords = await self.__bannedWordsRepository.getBannedWordsAsync()
 
         for absBannedWord in absBannedWords:
-            if absBannedWord.getType() is BannedWordType.EXACT_WORD:
+            if absBannedWord.getType() is BannedWordType.EXACT_WORD and isinstance(absBannedWord, BannedWord):
                 bannedWord: BannedWord = absBannedWord
 
                 if bannedWord.getWord() in words:
-                    self.__timber.log('ContentScanner', f'Content contains a banned word ({absBannedWord}): \"{bannedWord.getWord()}\"')
+                    self.__timber.log('ContentScanner', f'Content contains a banned word ({bannedWord=}) ({phrases=}) ({words=})')
                     return ContentCode.CONTAINS_BANNED_CONTENT
-            elif absBannedWord.getType() is BannedWordType.PHRASE:
+            elif absBannedWord.getType() is BannedWordType.PHRASE and isinstance(absBannedWord, BannedPhrase):
                 bannedPhrase: BannedPhrase = absBannedWord
 
                 for phrase in phrases:
                     if bannedPhrase.getPhrase() in phrase:
-                        self.__timber.log('ContentScanner', f'Content contains a banned phrase ({absBannedWord}): \"{bannedPhrase.getPhrase()}\"')
+                        self.__timber.log('ContentScanner', f'Content contains a banned phrase ({bannedPhrase=}) ({phrases=}) ({words=})')
                         return ContentCode.CONTAINS_BANNED_CONTENT
             else:
                 raise RuntimeError(f'unknown BannedWordType ({absBannedWord}): \"{absBannedWord.getType()}\"')
@@ -90,11 +90,11 @@ class ContentScanner(ContentScannerInterface):
 
     async def updatePhrasesContent(
         self,
-        phrases: Set[Optional[str]],
+        phrases: Set[str],
         string: Optional[str]
     ):
         if not isinstance(phrases, Set):
-            raise ValueError(f'phrases argument is malformed: \"{phrases}\"')
+            raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
 
         if not utils.isValidStr(string):
             return
@@ -110,11 +110,11 @@ class ContentScanner(ContentScannerInterface):
 
     async def updateWordsContent(
         self,
-        words: Set[Optional[str]],
+        words: Set[str],
         string: Optional[str]
     ):
         if not isinstance(words, Set):
-            raise ValueError(f'words argument is malformed: \"{words}\"')
+            raise TypeError(f'words argument is malformed: \"{words}\"')
 
         if not utils.isValidStr(string):
             return

@@ -1,4 +1,5 @@
 import json
+import traceback
 from json.decoder import JSONDecodeError
 from typing import Any, Dict, Optional
 
@@ -16,6 +17,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
+from CynanBot.language.translation.exceptions import TranslationEngineUnavailableException, TranslationException
 from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
@@ -41,7 +43,7 @@ class GoogleTranslationApi(TranslationApi):
             return None
 
         if self.__googleTranslateClient is None:
-            self.__timber.log('TranslationHelper', f'Initializing new Google translate.Client instance...')
+            self.__timber.log('GoogleTranslationApi', f'Initializing new Google translate.Client instance...')
 
             if not await self.__hasGoogleApiCredentials():
                 raise RuntimeError(f'Unable to initialize a new Google translate.Client instance because the Google API credentials are missing')
@@ -51,6 +53,9 @@ class GoogleTranslationApi(TranslationApi):
             self.__googleTranslateClient = translate.Client.from_service_account_json(self.__googleServiceAccountFile)
 
         return self.__googleTranslateClient
+
+    def getTranslationApiSource(self) -> TranslationApiSource:
+        return TranslationApiSource.GOOGLE_TRANSLATE
 
     async def __hasGoogleApiCredentials(self) -> bool:
         if self.__googleTranslateClient is not None:
@@ -84,19 +89,33 @@ class GoogleTranslationApi(TranslationApi):
         elif not targetLanguage.hasIso6391Code():
             raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
-        self.__timber.log('TranslationHelper', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=})...')
-
         googleTranslateClient = await self.__getGoogleTranslateClient()
+
         if googleTranslateClient is None:
-            raise RuntimeError(f'googleTranslateClient is None!')
+            raise TranslationEngineUnavailableException(
+                message = f'Google Translation engine is currently unavailable ({text=}) ({targetLanguage=})',
+                translationApiSource = self.getTranslationApiSource()
+            )
 
-        translationResult: Optional[Dict[str, Any]] = googleTranslateClient.translate(
-            text,
-            target_language = targetLanguage.requireIso6391Code()
-        )
+        self.__timber.log('GoogleTranslationApi', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=})...')
+        translationResult: Optional[Dict[str, Any]] = None
+        exception: Optional[Exception] = None
 
-        if not utils.hasItems(translationResult):
-            raise RuntimeError(f'error in the data response when attempting to translate \"{text}\": {translationResult}')
+        try:
+            translationResult = googleTranslateClient.translate(
+                text,
+                target_language = targetLanguage.requireIso6391Code()
+            )
+        except Exception as e:
+            exception = e
+
+        if translationResult is None or len(translationResult) == 0 or exception is not None:
+            self.__timber.log('GoogleTranslationApi', f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=})', exception, traceback.format_exc())
+
+            raise TranslationException(
+                message = f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=}) ({translationResult=}) ({exception=})',
+                translationApiSource = self.getTranslationApiSource()
+            )
 
         originalText: Optional[str] = translationResult.get('input')
         if not utils.isValidStr(originalText):
@@ -124,5 +143,5 @@ class GoogleTranslationApi(TranslationApi):
             translatedLanguage = targetLanguage,
             originalText = originalText,
             translatedText = translatedText,
-            translationApiSource = TranslationApiSource.GOOGLE_TRANSLATE
+            translationApiSource = self.getTranslationApiSource()
         )

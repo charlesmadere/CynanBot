@@ -20,9 +20,9 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         timber: TimberInterface
     ):
         if not isinstance(bannedWordsLinesReader, LinesReaderInterface):
-            raise ValueError(f'bannedWordsLinesReader argument is malformed: \"{bannedWordsLinesReader}\"')
+            raise TypeError(f'bannedWordsLinesReader argument is malformed: \"{bannedWordsLinesReader}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__bannedWordsLinesReader: LinesReaderInterface = bannedWordsLinesReader
         self.__timber: TimberInterface = timber
@@ -36,11 +36,14 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
     def __createCleanedBannedWordsSetFromLines(
         self,
-        lines: Optional[List[Optional[str]]]
+        lines: Optional[List[str]]
     ) -> Set[AbsBannedWord]:
+        if lines is not None and not isinstance(lines, List):
+            raise TypeError(f'lines argument is malformed: \"{lines}\"')
+
         cleanedBannedWords: Set[AbsBannedWord] = set()
 
-        if not utils.hasItems(lines):
+        if lines is None or len(lines) == 0:
             return cleanedBannedWords
 
         for line in lines:
@@ -52,30 +55,31 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         return cleanedBannedWords
 
     def __fetchBannedWords(self) -> Set[AbsBannedWord]:
-        lines: Optional[List[Optional[str]]] = None
+        lines: Optional[List[str]] = None
 
         try:
             lines = self.__bannedWordsLinesReader.readLines()
         except FileNotFoundError as e:
-            self.__timber.log('BannedWordsRepository', f'Banned words file not found when trying to synchronously read from banned words file', e, traceback.format_exc())
-            raise FileNotFoundError('Banned words file not found when trying to synchronously read from banned words file')
+            self.__timber.log('BannedWordsRepository', f'Banned words file not found when trying to synchronously read from banned words file ({self.__bannedWordsLinesReader=})', e, traceback.format_exc())
+            raise FileNotFoundError(f'Banned words file not found when trying to synchronously read from banned words file ({self.__bannedWordsLinesReader=})')
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
     async def __fetchBannedWordsAsync(self) -> Set[AbsBannedWord]:
-        lines: Optional[List[Optional[str]]] = None
+        lines: Optional[List[str]] = None
 
         try:
             lines = await self.__bannedWordsLinesReader.readLinesAsync()
         except FileNotFoundError as e:
-            self.__timber.log('BannedWordsRepository', 'Banned words file not found when trying to asynchronously read from banned words file', e, traceback.format_exc())
-            raise FileNotFoundError('Banned words file not found when trying to asynchronously read from banned words file')
+            self.__timber.log('BannedWordsRepository', f'Banned words file not found when trying to asynchronously read from banned words file ({self.__bannedWordsLinesReader=})', e, traceback.format_exc())
+            raise FileNotFoundError(f'Banned words file not found when trying to asynchronously read from banned words file ({self.__bannedWordsLinesReader=})')
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
     def getBannedWords(self) -> Set[AbsBannedWord]:
-        if self.__cache is not None:
-            return self.__cache
+        cache = self.__cache
+        if cache is not None:
+            return cache
 
         bannedWords = self.__fetchBannedWords()
         self.__cache = bannedWords
@@ -84,8 +88,9 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         return bannedWords
 
     async def getBannedWordsAsync(self) -> Set[AbsBannedWord]:
-        if self.__cache is not None:
-            return self.__cache
+        cache = self.__cache
+        if cache is not None:
+            return cache
 
         bannedWords = await self.__fetchBannedWordsAsync()
         self.__cache = bannedWords
@@ -94,6 +99,9 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         return bannedWords
 
     def __processLine(self, line: Optional[str]) -> Optional[AbsBannedWord]:
+        if line is not None and not isinstance(line, str):
+            raise TypeError(f'line argument is malformed: \"{line}\"')
+
         if not utils.isValidStr(line):
             return None
 
