@@ -17,7 +17,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
-from CynanBot.language.translation.exceptions import TranslationEngineUnavailableException, TranslationException
+from CynanBot.language.translation.exceptions import (
+    TranslationEngineUnavailableException, TranslationException)
 from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse

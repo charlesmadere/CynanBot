@@ -5,8 +5,9 @@ import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
+from CynanBot.language.translation.exceptions import (
+    TranslationEngineUnavailableException, TranslationException)
 from CynanBot.language.translation.translationApi import TranslationApi
-from CynanBot.language.translation.exceptions import TranslationEngineUnavailableException, TranslationException
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
 from CynanBot.network.exceptions import GenericNetworkException
@@ -72,7 +73,11 @@ class DeepLTranslationApi(TranslationApi):
             response = await clientSession.get(requestUrl)
         except GenericNetworkException as e:
             self.__timber.log('DeepLTranslationApi', f'Encountered network error when translating \"{text}\": {e}', e, traceback.format_exc())
-            raise RuntimeError(f'Encountered network error when translating \"{text}\": {e}')
+
+            raise TranslationException(
+                message = f'Encountered network error when translating \"{text}\": {e}',
+                translationApiSource = self.getTranslationApiSource()
+            )
 
         if response.getStatusCode() != 200:
             self.__timber.log('DeepLTranslationApi', f'Encountered non-200 HTTP status code when fetching translation from DeepL for \"{text}\": {response.getStatusCode()}')
