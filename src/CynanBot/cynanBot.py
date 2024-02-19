@@ -23,6 +23,7 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
+from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -57,11 +58,10 @@ from CynanBot.commands import (AbsCommand, AddBannedTriviaControllerCommand,
                                RemoveGlobalTriviaControllerCommand,
                                RemoveTriviaControllerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
-                               StubCommand, SuperAnswerCommand,
-                               SuperTriviaCommand, SwQuoteCommand, TimeCommand,
-                               TranslateCommand, TriviaInfoCommand,
-                               TriviaScoreCommand, TtsCommand,
-                               TwitchInfoCommand, TwitterCommand,
+                               StubCommand, SuperTriviaCommand, SwQuoteCommand,
+                               TimeCommand, TranslateCommand,
+                               TriviaInfoCommand, TriviaScoreCommand,
+                               TtsCommand, TwitchInfoCommand, TwitterCommand,
                                UnbanTriviaQuestionCommand, WeatherCommand,
                                WordCommand)
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
@@ -527,14 +527,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__answerCommand: AbsCommand = StubCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
-            self.__superAnswerCommand: AbsCommand = StubCommand()
+            self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__superTriviaCommand: AbsCommand = StubCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__superAnswerCommand: AbsCommand = SuperAnswerCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
+            self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
@@ -1297,7 +1297,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'superanswer', aliases = [ 'SUPERANSWER', 'SuperAnswer', 'Superanswer', 'sa', 'SA', 'sanswer', 'SANSWER' ])
     async def command_superanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superAnswerCommand.handleCommand(context)
+        await self.__superAnswerCommand.handleChatCommand(context)
 
     @commands.command(name = 'supertrivia')
     async def command_supertrivia(self, ctx: Context):
