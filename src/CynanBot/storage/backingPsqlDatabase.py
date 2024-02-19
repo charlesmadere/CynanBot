@@ -1,3 +1,4 @@
+import traceback
 from asyncio import AbstractEventLoop
 from typing import Optional
 
@@ -8,6 +9,7 @@ from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.psqlCredentialsProvider import PsqlCredentialsProvider
 from CynanBot.storage.psqlDatabaseConnection import PsqlDatabaseConnection
+from CynanBot.timber.timberInterface import TimberInterface
 
 
 class BackingPsqlDatabase(BackingDatabase):
@@ -15,15 +17,19 @@ class BackingPsqlDatabase(BackingDatabase):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
-        psqlCredentialsProvider: PsqlCredentialsProvider
+        psqlCredentialsProvider: PsqlCredentialsProvider,
+        timber: TimberInterface
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(psqlCredentialsProvider, PsqlCredentialsProvider):
             raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__psqlCredentialsProvider: PsqlCredentialsProvider = psqlCredentialsProvider
+        self.__timber: TimberInterface = timber
 
         self.__connectionPool: Optional[asyncpg.Pool] = None
 
@@ -35,15 +41,16 @@ class BackingPsqlDatabase(BackingDatabase):
 
     async def getConnection(self) -> DatabaseConnection:
         connectionPoolCreated = False
+        connectionPool = self.__connectionPool
 
-        if self.__connectionPool is None:
+        if connectionPool is None:
             connectionPoolCreated = True
             databaseName = await self.__psqlCredentialsProvider.requireDatabaseName()
             maxConnections = await self.__psqlCredentialsProvider.requireMaxConnections()
             password = await self.__psqlCredentialsProvider.getPassword()
             user = await self.__psqlCredentialsProvider.requireUser()
 
-            self.__connectionPool = await asyncpg.create_pool(
+            connectionPool = await asyncpg.create_pool(
                 database = databaseName,
                 loop = self.__eventLoop,
                 max_size = maxConnections,
@@ -51,11 +58,18 @@ class BackingPsqlDatabase(BackingDatabase):
                 user = user
             )
 
-        connection = await self.__connectionPool.acquire()
+        if not isinstance(connectionPool, asyncpg.Pool):
+            # this scenario should definitely be impossible, but the Python type checking was
+            # getting angry without this check
+            exception = RuntimeError(f'Failed to instantiate asyncpg.Pool: \"{connectionPool}\"')
+            self.__timber.log('BackingPsqlDatabase', f'Failed to instantiate asyncpg.Pool: \"{connectionPool}\" ({exception=})', exception, traceback.format_exc())
+            raise exception
+
+        connection = await connectionPool.acquire()
 
         databaseConnection: DatabaseConnection = PsqlDatabaseConnection(
             connection = connection,
-            pool = self.__connectionPool
+            pool = connectionPool
         )
 
         if connectionPoolCreated:

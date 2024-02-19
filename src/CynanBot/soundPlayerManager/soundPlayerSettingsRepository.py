@@ -11,7 +11,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
         if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
@@ -22,7 +22,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
     async def getFilePathFor(self, soundAlert: SoundAlert) -> Optional[str]:
         if not isinstance(soundAlert, SoundAlert):
-            raise ValueError(f'soundAlert argument is malformed: \"{soundAlert}\"')
+            raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
 
         jsonContents = await self.__readJson()
         filePath: Optional[str] = None

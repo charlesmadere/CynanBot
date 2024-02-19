@@ -189,7 +189,8 @@ if generalSettingsSnapshot.requireDatabaseType() is DatabaseType.POSTGRESQL:
         eventLoop = eventLoop,
         psqlCredentialsProvider = PsqlCredentialsProvider(
             credentialsJsonReader = JsonFileReader('psqlCredentials.json')
-        )
+        ),
+        timber = timber
     )
 elif generalSettingsSnapshot.requireDatabaseType() is DatabaseType.SQLITE:
     backingDatabase: BackingDatabase = BackingSqliteDatabase(
