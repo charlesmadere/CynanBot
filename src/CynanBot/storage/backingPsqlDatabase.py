@@ -58,6 +58,8 @@ class BackingPsqlDatabase(BackingDatabase):
                 user = user
             )
 
+            self.__connectionPool = connectionPool
+
         if not isinstance(connectionPool, asyncpg.Pool):
             # this scenario should definitely be impossible, but the Python type checking was
             # getting angry without this check
