@@ -23,14 +23,10 @@ class SupStreamerChatAction(AbsChatAction):
         cooldown: timedelta = timedelta(hours = 6),
         timeZone: tzinfo = timezone.utc
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(cooldown, timedelta):
-            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(cooldown, timedelta), f"malformed {cooldown=}"
+        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
 
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber

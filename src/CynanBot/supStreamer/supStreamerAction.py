@@ -12,11 +12,10 @@ class SupStreamerAction():
         broadcasterUserId: str,
         broadcasterUserName: str
     ):
-        if not isinstance(chatters, Dict):
-            raise ValueError(f'chatters argument is malformed: \"{chatters}\"')
-        elif not utils.isValidStr(broadcasterUserId):
+        assert isinstance(chatters, Dict), f"malformed {chatters=}"
+        if not utils.isValidStr(broadcasterUserId):
             raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(broadcasterUserName):
+        if not utils.isValidStr(broadcasterUserName):
             raise ValueError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
 
         self.__chatters: Dict[str, Optional[SupStreamerChatter]] = chatters

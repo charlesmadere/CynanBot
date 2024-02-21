@@ -17,14 +17,13 @@ class TranslationResponse():
     ):
         if originalLanguage is not None and not originalLanguage.hasIso6391Code():
             raise ValueError(f'originalLanguage argument must be either None or have an ISO 639-1 code: \"{originalLanguage}\"')
-        elif translatedLanguage is not None and not translatedLanguage.hasIso6391Code():
+        if translatedLanguage is not None and not translatedLanguage.hasIso6391Code():
             raise ValueError(f'translatedLanguage argument must be either None or have an ISO 639-1 code: \"{translatedLanguage}\"')
-        elif not utils.isValidStr(originalText):
+        if not utils.isValidStr(originalText):
             raise ValueError(f'originalText argument is malformed: \"{originalText}\"')
-        elif not utils.isValidStr(translatedText):
+        if not utils.isValidStr(translatedText):
             raise ValueError(f'translatedText argument is malformed: \"{translatedText}\"')
-        elif not isinstance(translationApiSource, TranslationApiSource):
-            raise ValueError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
+        assert isinstance(translationApiSource, TranslationApiSource), f"malformed {translationApiSource=}"
 
         self.__originalLanguage: Optional[LanguageEntry] = originalLanguage
         self.__translatedLanguage: Optional[LanguageEntry] = translatedLanguage

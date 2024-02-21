@@ -28,14 +28,10 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(contentScanner, ContentScannerInterface):
-            raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')
-        elif not isinstance(emojiHelper, EmojiHelperInterface):
-            raise TypeError(f'emojiHelper argument is malformed: \"{emojiHelper}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        assert isinstance(contentScanner, ContentScannerInterface), f"malformed {contentScanner=}"
+        assert isinstance(emojiHelper, EmojiHelperInterface), f"malformed {emojiHelper=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface), f"malformed {ttsSettingsRepository=}"
 
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__emojiHelper: EmojiHelperInterface = emojiHelper
@@ -48,8 +44,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
     async def buildAndCleanEvent(self, event: Optional[TtsEvent]) -> Optional[str]:
-        if event is not None and not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        assert event is None or isinstance(event, TtsEvent), f"malformed {event=}"
 
         if event is None:
             return None
@@ -214,18 +209,15 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         event: TtsEvent,
         donation: TtsCheerDonation
     ) -> Optional[str]:
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsCheerDonation):
-            raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.getType() is not TtsDonationType.CHEER:
+        assert isinstance(event, TtsEvent), f"malformed {event=}"
+        assert isinstance(donation, TtsCheerDonation), f"malformed {donation=}"
+        if donation.getType() is not TtsDonationType.CHEER:
             raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\" ({donation=})')
 
         return f'{event.getUserName()} cheered {donation.getBits()}!'
 
     async def __processDonationPrefix(self, event: TtsEvent) -> Optional[str]:
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        assert isinstance(event, TtsEvent), f"malformed {event=}"
 
         donation: Optional[TtsDonation] = event.getDonation()
 
@@ -252,11 +244,9 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         event: TtsEvent,
         donation: TtsSubscriptionDonation
     ) -> str:
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(donation, TtsSubscriptionDonation):
-            raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.getType() is not TtsDonationType.SUBSCRIPTION:
+        assert isinstance(event, TtsEvent), f"malformed {event=}"
+        assert isinstance(donation, TtsSubscriptionDonation), f"malformed {donation=}"
+        if donation.getType() is not TtsDonationType.SUBSCRIPTION:
             raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\" ({donation=})')
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?

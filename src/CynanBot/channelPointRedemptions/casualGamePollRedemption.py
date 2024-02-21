@@ -19,10 +19,8 @@ class CasualGamePollRedemption(AbsChannelPointRedemption):
         twitchUtils: TwitchUtilsInterface,
         cooldown: timedelta = timedelta(seconds = 30)
     ):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils

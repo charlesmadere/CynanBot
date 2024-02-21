@@ -22,7 +22,7 @@ class PokepediaTypeChart(Enum):
     ) -> Dict[PokepediaDamageMultiplier, List[PokepediaElementType]]:
         if noEffect is None:
             raise ValueError(f'noEffect argument is malformed: \"{noEffect}\"')
-        elif resistances is None:
+        if resistances is None:
             raise ValueError(f'resistances argument is malformed: \"{resistances}\"')
         if weaknesses is None:
             raise ValueError(f'noEffect argument is malformed: \"{weaknesses}\"')
@@ -100,8 +100,7 @@ class PokepediaTypeChart(Enum):
 
     @classmethod
     def fromPokepediaGeneration(cls, pokepediaGeneration: PokepediaGeneration):
-        if not isinstance(pokepediaGeneration, PokepediaGeneration):
-            raise ValueError(f'pokepediaGeneration argument is malformed: \"{pokepediaGeneration}\"')
+        assert isinstance(pokepediaGeneration, PokepediaGeneration), f"malformed {pokepediaGeneration=}"
 
         if pokepediaGeneration is PokepediaGeneration.GENERATION_1:
             return PokepediaTypeChart.GENERATION_1
@@ -132,7 +131,7 @@ class PokepediaTypeChart(Enum):
                 weaknesses.append(PokepediaElementType.ROCK)
             elif elementType is PokepediaElementType.DARK:
                 raise ValueError(f'illegal PokepediaElementType for this type chart ({self}): \"{elementType}\"')
-            elif elementType is PokepediaElementType.DRAGON:
+            if elementType is PokepediaElementType.DRAGON:
                 resistances.append(PokepediaElementType.ELECTRIC)
                 resistances.append(PokepediaElementType.FIRE)
                 resistances.append(PokepediaElementType.GRASS)
@@ -145,7 +144,7 @@ class PokepediaTypeChart(Enum):
                 weaknesses.append(PokepediaElementType.GROUND)
             elif elementType is PokepediaElementType.FAIRY:
                 raise ValueError(f'illegal PokepediaElementType for this type chart ({self}): \"{elementType}\"')
-            elif elementType is PokepediaElementType.FIGHTING:
+            if elementType is PokepediaElementType.FIGHTING:
                 resistances.append(PokepediaElementType.BUG)
                 resistances.append(PokepediaElementType.ROCK)
                 weaknesses.append(PokepediaElementType.FLYING)
@@ -219,9 +218,9 @@ class PokepediaTypeChart(Enum):
                 weaknesses.append(PokepediaElementType.WATER)
             elif elementType is PokepediaElementType.STEEL:
                 raise ValueError(f'illegal PokepediaElementType for this type chart ({self}): \"{elementType}\"')
-            elif elementType is PokepediaElementType.UNKNOWN:
+            if elementType is PokepediaElementType.UNKNOWN:
                 raise ValueError(f'illegal PokepediaElementType for this type chart ({self}): \"{elementType}\"')
-            elif elementType is PokepediaElementType.WATER:
+            if elementType is PokepediaElementType.WATER:
                 resistances.append(PokepediaElementType.FIRE)
                 resistances.append(PokepediaElementType.ICE)
                 resistances.append(PokepediaElementType.WATER)
@@ -274,7 +273,7 @@ class PokepediaTypeChart(Enum):
                 weaknesses.append(PokepediaElementType.GROUND)
             elif elementType is PokepediaElementType.FAIRY:
                 raise ValueError(f'illegal PokepediaElementType for this type chart ({self}): \"{elementType}\"')
-            elif elementType is PokepediaElementType.FIGHTING:
+            if elementType is PokepediaElementType.FIGHTING:
                 resistances.append(PokepediaElementType.BUG)
                 resistances.append(PokepediaElementType.DARK)
                 resistances.append(PokepediaElementType.ROCK)

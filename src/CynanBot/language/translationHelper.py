@@ -35,17 +35,13 @@ class TranslationHelper(TranslationHelperInterface):
         timber: TimberInterface,
         maxAttempts: int = 3
     ):
-        if not isinstance(deepLTranslationApi, DeepLTranslationApi):
-            raise TypeError(f'deepLTranslationApi argument is malformed: \"{deepLTranslationApi}\"')
-        elif not isinstance(googleTranslationApi, GoogleTranslationApi):
-            raise TypeError(f'googleTranslationApi argument is malformed: \"{googleTranslationApi}\"')
-        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(maxAttempts):
+        assert isinstance(deepLTranslationApi, DeepLTranslationApi), f"malformed {deepLTranslationApi=}"
+        assert isinstance(googleTranslationApi, GoogleTranslationApi), f"malformed {googleTranslationApi=}"
+        assert isinstance(languagesRepository, LanguagesRepositoryInterface), f"malformed {languagesRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidInt(maxAttempts):
             raise TypeError(f'maxAttempts argument is malformed: \"{maxAttempts}\"')
-        elif maxAttempts < 1 or maxAttempts > 10:
+        if maxAttempts < 1 or maxAttempts > 10:
             raise ValueError(f'maxAttempts argument is out of bounds: {maxAttempts}')
 
         self.__deepLTranslationApi: TranslationApi = deepLTranslationApi
@@ -61,9 +57,8 @@ class TranslationHelper(TranslationHelperInterface):
     ) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
-        elif targetLanguage is not None and not isinstance(targetLanguage, LanguageEntry):
-            raise TypeError(f'targetLanguageEntry argument is malformed: \"{targetLanguage}\"')
-        elif targetLanguage is not None and not targetLanguage.hasIso6391Code():
+        assert targetLanguage is None or isinstance(targetLanguage, LanguageEntry), f"malformed {targetLanguage=}"
+        if targetLanguage is not None and not targetLanguage.hasIso6391Code():
             raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
         text = utils.cleanStr(text)

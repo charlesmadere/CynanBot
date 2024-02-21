@@ -16,8 +16,7 @@ class WeatherRecurringEvent(RecurringEvent):
 
         if not utils.isValidBool(alertsOnly):
             raise ValueError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
-        elif not isinstance(weatherReport, WeatherReport):
-            raise ValueError(f'weatherReport argument is malformed: \"{weatherReport}\"')
+        assert isinstance(weatherReport, WeatherReport), f"malformed {weatherReport=}"
 
         self.__alertsOnly: bool = alertsOnly
         self.__weatherReport: WeatherReport = weatherReport

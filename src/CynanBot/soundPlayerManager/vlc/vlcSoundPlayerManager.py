@@ -20,10 +20,8 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface,
         timber: TimberInterface
     ):
-        if not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
-            raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface), f"malformed {soundPlayerSettingsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
@@ -35,8 +33,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         return mediaPlayer is not None and mediaPlayer.is_playing()
 
     async def playSoundAlert(self, alert: SoundAlert) -> bool:
-        if not isinstance(alert, SoundAlert):
-            raise TypeError(f'alert argument is malformed: \"{alert}\"')
+        assert isinstance(alert, SoundAlert), f"malformed {alert=}"
 
         if not await self.__soundPlayerSettingsRepository.isEnabled():
             return False

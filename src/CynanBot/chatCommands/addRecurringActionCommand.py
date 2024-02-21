@@ -25,20 +25,13 @@ class AddRecurringActionCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(languagesRepository, LanguagesRepositoryInterface), f"malformed {languagesRepository=}"
+        assert isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface), f"malformed {recurringActionsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository

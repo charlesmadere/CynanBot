@@ -71,9 +71,9 @@ def cleanStr(
 ) -> str:
     if replacement is None:
         raise ValueError(f'replacement argument is malformed: \"{replacement}\"')
-    elif not isValidBool(htmlUnescape):
+    if not isValidBool(htmlUnescape):
         raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
-    elif not isValidBool(removeCarrots):
+    if not isValidBool(removeCarrots):
         raise ValueError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
     if s is None:
@@ -130,7 +130,7 @@ def formatTime(time) -> str:
 def formatTimeShort(time, includeSeconds: bool = False) -> str:
     if time is None:
         raise ValueError(f'time argument is malformed: \"{time}\"')
-    elif not isValidBool(includeSeconds):
+    if not isValidBool(includeSeconds):
         raise ValueError(f'includeSeconds argument is malformed: \"{includeSeconds}\"')
 
     if includeSeconds:
@@ -141,7 +141,7 @@ def formatTimeShort(time, includeSeconds: bool = False) -> str:
 def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bool] = None) -> bool:
     if not isValidStr(key):
         raise ValueError(f'key argument is malformed: \"{key}\"')
-    elif fallback is not None and not isValidBool(fallback):
+    if fallback is not None and not isValidBool(fallback):
         raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
 
     value: Optional[bool] = None
@@ -218,7 +218,7 @@ def getDateTimeFromStr(text: Optional[str]) -> Optional[datetime]:
 def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[float] = None) -> float:
     if not isValidStr(key):
         raise ValueError(f'key argument is malformed: \"{key}\"')
-    elif fallback is not None and not isValidNum(fallback):
+    if fallback is not None and not isValidNum(fallback):
         raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
 
     value: Optional[float] = None
@@ -246,7 +246,7 @@ def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[f
 def getIntFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[int] = None) -> int:
     if not isValidStr(key):
         raise ValueError(f'key argument is malformed: \"{key}\"')
-    elif fallback is not None and not isValidNum(fallback):
+    if fallback is not None and not isValidNum(fallback):
         raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
 
     value: Optional[int] = None
@@ -307,13 +307,12 @@ def getStrFromDict(
 ) -> str:
     if not isValidStr(key):
         raise ValueError(f'key argument is malformed: \"{key}\"')
-    elif fallback is not None and not isinstance(fallback, str):
-        raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
-    elif not isValidBool(clean):
+    assert fallback is None or isinstance(fallback, str), f"malformed {fallback=}"
+    if not isValidBool(clean):
         raise ValueError(f'clean argument is malformed: \"{clean}\"')
-    elif not isValidBool(htmlUnescape):
+    if not isValidBool(htmlUnescape):
         raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
-    elif not isValidBool(removeCarrots):
+    if not isValidBool(removeCarrots):
         raise ValueError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
     value: Optional[str] = None
@@ -415,11 +414,11 @@ def splitLongStringIntoMessages(
 ) -> List[str]:
     if not isValidInt(maxMessages):
         raise ValueError(f'maxMessages argument is malformed: \"{maxMessages}\"')
-    elif maxMessages < 1 or maxMessages >= getIntMaxSafeSize():
+    if maxMessages < 1 or maxMessages >= getIntMaxSafeSize():
         raise ValueError(f'maxMessages argument is out of bounds: {maxMessages}')
-    elif not isValidInt(perMessageMaxSize):
+    if not isValidInt(perMessageMaxSize):
         raise ValueError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
-    elif perMessageMaxSize < 50 or perMessageMaxSize >= getIntMaxSafeSize():
+    if perMessageMaxSize < 50 or perMessageMaxSize >= getIntMaxSafeSize():
         raise ValueError(f'perMessageMaxSize argument is out of bounds: {perMessageMaxSize}')
 
     messages: List[str] = list()

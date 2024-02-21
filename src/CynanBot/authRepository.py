@@ -12,8 +12,7 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
 class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
-        if not isinstance(authJsonReader, JsonReaderInterface):
-            raise ValueError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
+        assert isinstance(authJsonReader, JsonReaderInterface), f"malformed {authJsonReader=}"
 
         self.__authJsonReader: JsonReaderInterface = authJsonReader
 
@@ -66,7 +65,7 @@ class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandle
 
         if jsonContents is None:
             raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
 
         return jsonContents
@@ -79,7 +78,7 @@ class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandle
 
         if jsonContents is None:
             raise IOError(f'Error reading from Auth Repository file: \"{self.__authJsonReader}\"')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of Auth Repository file \"{self.__authJsonReader}\" is empty')
 
         return jsonContents

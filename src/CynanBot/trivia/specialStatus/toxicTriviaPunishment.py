@@ -14,19 +14,18 @@ class ToxicTriviaPunishment():
         userId: str,
         userName: str
     ):
-        if not isinstance(cutenessResult, CutenessResult):
-            raise ValueError(f'cutenessResult argument is malformed: \"{cutenessResult}\"')
-        elif not utils.isValidInt(numberOfPunishments):
+        assert isinstance(cutenessResult, CutenessResult), f"malformed {cutenessResult=}"
+        if not utils.isValidInt(numberOfPunishments):
             raise ValueError(f'numberOfPunishments argument is malformed: \"{numberOfPunishments}\"')
-        elif numberOfPunishments < 1 or numberOfPunishments > utils.getIntMaxSafeSize():
+        if numberOfPunishments < 1 or numberOfPunishments > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfPunishments argument is malformed: {numberOfPunishments}')
-        elif not utils.isValidInt(punishedByPoints):
+        if not utils.isValidInt(punishedByPoints):
             raise ValueError(f'punishedByPoints argument is malformed: \"{punishedByPoints}\"')
-        elif punishedByPoints > 0 or punishedByPoints < utils.getIntMinSafeSize():
+        if punishedByPoints > 0 or punishedByPoints < utils.getIntMinSafeSize():
             raise ValueError(f'punishedByPoints argument is out of bounds: {punishedByPoints}')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cutenessResult: CutenessResult = cutenessResult

@@ -17,10 +17,8 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         administratorProvider: AdministratorProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository

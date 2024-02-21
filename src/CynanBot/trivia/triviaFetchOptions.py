@@ -14,8 +14,7 @@ class TriviaFetchOptions():
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not isinstance(questionAnswerTriviaConditions, QuestionAnswerTriviaConditions):
-            raise TypeError(f'questionAnswerTriviaConditions argument is malformed: \"{questionAnswerTriviaConditions}\"')
+        assert isinstance(questionAnswerTriviaConditions, QuestionAnswerTriviaConditions), f"malformed {questionAnswerTriviaConditions=}"
 
         self.__twitchChannel: str = twitchChannel
         self.__questionAnswerTriviaConditions: QuestionAnswerTriviaConditions = questionAnswerTriviaConditions

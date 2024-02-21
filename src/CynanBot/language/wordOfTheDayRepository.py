@@ -23,12 +23,9 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         timber: TimberInterface,
         cacheTimeDelta: timedelta = timedelta(hours = 1)
     ):
-        if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(cacheTimeDelta, timedelta):
-            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(cacheTimeDelta, timedelta), f"malformed {cacheTimeDelta=}"
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
@@ -39,9 +36,8 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         self.__timber.log('WordOfTheDayRepository', 'Caches cleared')
 
     async def fetchWotd(self, languageEntry: LanguageEntry) -> WordOfTheDayResponse:
-        if not isinstance(languageEntry, LanguageEntry):
-            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
-        elif not languageEntry.hasWotdApiCode():
+        assert isinstance(languageEntry, LanguageEntry), f"malformed {languageEntry=}"
+        if not languageEntry.hasWotdApiCode():
             raise ValueError(f'the given languageEntry is not supported for Word Of The Day: \"{languageEntry.getName()}\"')
 
         cacheValue = self.__cache[languageEntry.getName()]
@@ -54,9 +50,8 @@ class WordOfTheDayRepository(WordOfTheDayRepositoryInterface):
         return wotd
 
     async def __fetchWotd(self, languageEntry: LanguageEntry) -> WordOfTheDayResponse:
-        if not isinstance(languageEntry, LanguageEntry):
-            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
-        elif not languageEntry.hasWotdApiCode():
+        assert isinstance(languageEntry, LanguageEntry), f"malformed {languageEntry=}"
+        if not languageEntry.hasWotdApiCode():
             raise ValueError(f'the given languageEntry is not supported for Word Of The Day: \"{languageEntry.getName()}\"')
 
         self.__timber.log('WordOfTheDayRepository', f'Fetching Word Of The Day for \"{languageEntry.getName()}\" ({languageEntry.getWotdApiCode()})...')

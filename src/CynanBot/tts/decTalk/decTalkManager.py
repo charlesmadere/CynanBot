@@ -27,14 +27,10 @@ class DecTalkManager(TtsManagerInterface):
         timber: TimberInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(decTalkCommandBuilder, DecTalkCommandBuilder):
-            raise TypeError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
-        elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
-            raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        assert isinstance(decTalkCommandBuilder, DecTalkCommandBuilder), f"malformed {decTalkCommandBuilder=}"
+        assert isinstance(decTalkFileManager, DecTalkFileManagerInterface), f"malformed {decTalkFileManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface), f"malformed {ttsSettingsRepository=}"
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
         self.__timber: TimberInterface = timber
@@ -88,9 +84,8 @@ class DecTalkManager(TtsManagerInterface):
         if process is None:
             self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process is None: \"{process}\"')
             return
-        elif not isinstance(process, Process):
-            raise TypeError(f'process argument is malformed: \"{process}\"')
-        elif process.returncode is not None:
+        elassert isinstance(process, Process), f"malformed {process=}"
+        if process.returncode is not None:
             self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process (\"{process}\") has a return code: \"{process.returncode}\"')
             return
 
@@ -109,8 +104,7 @@ class DecTalkManager(TtsManagerInterface):
         return self.__isPlaying
 
     async def playTtsEvent(self, event: TtsEvent) -> bool:
-        if not isinstance(event, TtsEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        assert isinstance(event, TtsEvent), f"malformed {event=}"
 
         if not await self.__ttsSettingsRepository.isEnabled():
             return False

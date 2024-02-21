@@ -41,34 +41,20 @@ class DependencyHolder():
         twitchUtils: TwitchUtilsInterface,
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface]
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(chatLogger, ChatLoggerInterface):
-            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
-            raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif soundPlayerManager is not None and not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
-            raise TypeError(f'soundPlayerHelper argument is malformed: \"{soundPlayerManager}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif ttsManager is not None and not isinstance(ttsManager, TtsManagerInterface):
-            raise TypeError(f'ttsManager argument is malformed: \"{ttsManager}\"')
-        elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
-            raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        assert isinstance(chatLogger, ChatLoggerInterface), f"malformed {chatLogger=}"
+        assert cutenessUtils is None or isinstance(cutenessUtils, CutenessUtilsInterface), f"malformed {cutenessUtils=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(sentMessageLogger, SentMessageLoggerInterface), f"malformed {sentMessageLogger=}"
+        assert soundPlayerManager is None or isinstance(soundPlayerManager, SoundPlayerManagerInterface), f"malformed {soundPlayerManager=}"
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert triviaUtils is None or isinstance(triviaUtils, TriviaUtilsInterface), f"malformed {triviaUtils=}"
+        assert ttsManager is None or isinstance(ttsManager, TtsManagerInterface), f"malformed {ttsManager=}"
+        assert twitchPredictionWebsocketUtils is None or isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface), f"malformed {twitchPredictionWebsocketUtils=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
+        assert websocketConnectionServer is None or isinstance(websocketConnectionServer, WebsocketConnectionServerInterface), f"malformed {websocketConnectionServer=}"
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper

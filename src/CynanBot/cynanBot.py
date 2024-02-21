@@ -317,132 +317,69 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             heartbeat = 15
         )
 
-        if not isinstance(eventLoop, AbstractEventLoop):
-            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
-        elif additionalTriviaAnswersRepository is not None and not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
-            raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(authRepository, AuthRepository):
-            raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif bannedTriviaGameControllersRepository is not None and not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
-            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif not isinstance(channelJoinHelper, ChannelJoinHelper):
-            raise TypeError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
-        elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
-            raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
-        elif not isinstance(chatLogger, ChatLoggerInterface):
-            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise TypeError(f'cheerActionsHelper argument is malformed: \"{cheerActionHelper}\"')
-        elif cheerActionIdGenerator is not None and not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
-            raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
-        elif cheerActionRemodHelper is not None and not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
-            raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
-        elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
-        elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
-            raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(dependencyHolder, DependencyHolder):
-            raise TypeError(f'dependencyHolder argument is malformed: \"{dependencyHolder}\"')
-        elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
-            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif jishoHelper is not None and not isinstance(jishoHelper, JishoHelperInterface):
-            raise TypeError(f'jishoHelper argument is malformed: \"{jishoHelper}\"')
-        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
-            raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise TypeError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
-            raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
-            raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
-        elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepository):
-            raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif recurringActionsMachine is not None and not isinstance(recurringActionsMachine, RecurringActionsMachineInterface):
-            raise TypeError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
-        elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
-        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
-            raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
-            raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
-        elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
-            raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
-        elif starWarsQuotesRepository is not None and not isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface):
-            raise TypeError(f'starWarsQuotesRepository argument is malformed: \"{starWarsQuotesRepository}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif toxicTriviaOccurencesRepository is not None and not isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface):
-            raise TypeError(f'toxicTriviaOccurencesRepository argument is malformed: \"{toxicTriviaOccurencesRepository}\"')
-        elif translationHelper is not None and not isinstance(translationHelper, TranslationHelper):
-            raise TypeError(f'translationHelper argument is malformed: \"{translationHelper}\"')
-        elif triviaBanHelper is not None and not isinstance(triviaBanHelper, TriviaBanHelperInterface):
-            raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
-        elif triviaEmoteGenerator is not None and not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
-            raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
-        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameControllersRepository is not None and not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif triviaGameGlobalControllersRepository is not None and not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif triviaHistoryRepository is not None and not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
-            raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
-        elif triviaIdGenerator is not None and not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif triviaRepository is not None and not isinstance(triviaRepository, TriviaRepositoryInterface):
-            raise TypeError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
-        elif triviaScoreRepository is not None and not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
-            raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
-        elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif triviaUtils is not None and not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchConfiguration, TwitchConfiguration):
-            raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
-        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
-        elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
-            raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif twitchWebsocketClient is not None and not isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface):
-            raise TypeError(f'twitchWebsocketClient argument is malformed: \"{twitchWebsocketClient}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
-            raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
-            raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+        assert isinstance(eventLoop, AbstractEventLoop), f"malformed {eventLoop=}"
+        assert additionalTriviaAnswersRepository is None or isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface), f"malformed {additionalTriviaAnswersRepository=}"
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(authRepository, AuthRepository), f"malformed {authRepository=}"
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        assert bannedTriviaGameControllersRepository is None or isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface), f"malformed {bannedTriviaGameControllersRepository=}"
+        assert bannedWordsRepository is None or isinstance(bannedWordsRepository, BannedWordsRepositoryInterface), f"malformed {bannedWordsRepository=}"
+        assert isinstance(channelJoinHelper, ChannelJoinHelper), f"malformed {channelJoinHelper=}"
+        assert chatActionsManager is None or isinstance(chatActionsManager, ChatActionsManagerInterface), f"malformed {chatActionsManager=}"
+        assert isinstance(chatLogger, ChatLoggerInterface), f"malformed {chatLogger=}"
+        assert cheerActionHelper is None or isinstance(cheerActionHelper, CheerActionHelperInterface), f"malformed {cheerActionHelper=}"
+        assert cheerActionIdGenerator is None or isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface), f"malformed {cheerActionIdGenerator=}"
+        assert cheerActionRemodHelper is None or isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface), f"malformed {cheerActionRemodHelper=}"
+        assert cheerActionsRepository is None or isinstance(cheerActionsRepository, CheerActionsRepositoryInterface), f"malformed {cheerActionsRepository=}"
+        assert cutenessRepository is None or isinstance(cutenessRepository, CutenessRepositoryInterface), f"malformed {cutenessRepository=}"
+        assert cutenessUtils is None or isinstance(cutenessUtils, CutenessUtilsInterface), f"malformed {cutenessUtils=}"
+        assert isinstance(dependencyHolder, DependencyHolder), f"malformed {dependencyHolder=}"
+        assert funtoonRepository is None or isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isLiveOnTwitchRepository is None or isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface), f"malformed {isLiveOnTwitchRepository=}"
+        assert jishoHelper is None or isinstance(jishoHelper, JishoHelperInterface), f"malformed {jishoHelper=}"
+        assert isinstance(languagesRepository, LanguagesRepositoryInterface), f"malformed {languagesRepository=}"
+        assert locationsRepository is None or isinstance(locationsRepository, LocationsRepositoryInterface), f"malformed {locationsRepository=}"
+        assert isinstance(modifyUserDataHelper, ModifyUserDataHelper), f"malformed {modifyUserDataHelper=}"
+        assert mostRecentChatsRepository is None or isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface), f"malformed {mostRecentChatsRepository=}"
+        assert openTriviaDatabaseTriviaQuestionRepository is None or isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository), f"malformed {openTriviaDatabaseTriviaQuestionRepository=}"
+        assert pokepediaRepository is None or isinstance(pokepediaRepository, PokepediaRepository), f"malformed {pokepediaRepository=}"
+        assert recurringActionsMachine is None or isinstance(recurringActionsMachine, RecurringActionsMachineInterface), f"malformed {recurringActionsMachine=}"
+        assert recurringActionsRepository is None or isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface), f"malformed {recurringActionsRepository=}"
+        assert isinstance(sentMessageLogger, SentMessageLoggerInterface), f"malformed {sentMessageLogger=}"
+        assert shinyTriviaOccurencesRepository is None or isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface), f"malformed {shinyTriviaOccurencesRepository=}"
+        assert soundPlayerSettingsRepository is None or isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface), f"malformed {soundPlayerSettingsRepository=}"
+        assert starWarsQuotesRepository is None or isinstance(starWarsQuotesRepository, StarWarsQuotesRepositoryInterface), f"malformed {starWarsQuotesRepository=}"
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert toxicTriviaOccurencesRepository is None or isinstance(toxicTriviaOccurencesRepository, ToxicTriviaOccurencesRepositoryInterface), f"malformed {toxicTriviaOccurencesRepository=}"
+        assert translationHelper is None or isinstance(translationHelper, TranslationHelper), f"malformed {translationHelper=}"
+        assert triviaBanHelper is None or isinstance(triviaBanHelper, TriviaBanHelperInterface), f"malformed {triviaBanHelper=}"
+        assert triviaEmoteGenerator is None or isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface), f"malformed {triviaEmoteGenerator=}"
+        assert triviaGameBuilder is None or isinstance(triviaGameBuilder, TriviaGameBuilderInterface), f"malformed {triviaGameBuilder=}"
+        assert triviaGameControllersRepository is None or isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface), f"malformed {triviaGameControllersRepository=}"
+        assert triviaGameGlobalControllersRepository is None or isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface), f"malformed {triviaGameGlobalControllersRepository=}"
+        assert triviaGameMachine is None or isinstance(triviaGameMachine, TriviaGameMachineInterface), f"malformed {triviaGameMachine=}"
+        assert triviaHistoryRepository is None or isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface), f"malformed {triviaHistoryRepository=}"
+        assert triviaIdGenerator is None or isinstance(triviaIdGenerator, TriviaIdGeneratorInterface), f"malformed {triviaIdGenerator=}"
+        assert triviaRepository is None or isinstance(triviaRepository, TriviaRepositoryInterface), f"malformed {triviaRepository=}"
+        assert triviaScoreRepository is None or isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface), f"malformed {triviaScoreRepository=}"
+        assert triviaSettingsRepository is None or isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
+        assert triviaUtils is None or isinstance(triviaUtils, TriviaUtilsInterface), f"malformed {triviaUtils=}"
+        assert ttsSettingsRepository is None or isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface), f"malformed {ttsSettingsRepository=}"
+        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
+        assert isinstance(twitchConfiguration, TwitchConfiguration), f"malformed {twitchConfiguration=}"
+        assert twitchFollowerRepository is None or isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface), f"malformed {twitchFollowerRepository=}"
+        assert twitchPredictionWebsocketUtils is None or isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface), f"malformed {twitchPredictionWebsocketUtils=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
+        assert isinstance(twitchTokensUtils, TwitchTokensUtilsInterface), f"malformed {twitchTokensUtils=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
+        assert twitchWebsocketClient is None or isinstance(twitchWebsocketClient, TwitchWebsocketClientInterface), f"malformed {twitchWebsocketClient=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
+        assert weatherRepository is None or isinstance(weatherRepository, WeatherRepositoryInterface), f"malformed {weatherRepository=}"
+        assert websocketConnectionServer is None or isinstance(websocketConnectionServer, WebsocketConnectionServerInterface), f"malformed {websocketConnectionServer=}"
+        assert wordOfTheDayRepository is None or isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface), f"malformed {wordOfTheDayRepository=}"
 
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
@@ -904,22 +841,19 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             await self.__handleWordOfTheDayRecurringActionEvent(event)
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
-        if not isinstance(event, SuperTriviaRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+        assert isinstance(event, SuperTriviaRecurringEvent), f"malformed {event=}"
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, 'Super trivia starting soon!')
 
     async def __handleWeatherRecurringActionEvent(self, event: WeatherRecurringEvent):
-        if not isinstance(event, WeatherRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+        assert isinstance(event, WeatherRecurringEvent), f"malformed {event=}"
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, event.getWeatherReport().toStr())
 
     async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
-        if not isinstance(event, WordOfTheDayRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+        assert isinstance(event, WordOfTheDayRecurringEvent), f"malformed {event=}"
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, event.getWordOfTheDayResponse().toStr())

@@ -16,15 +16,13 @@ class TwitchBanResponse():
         moderatorUserId: str,
         userId: str
     ):
-        if not isinstance(createdAt, SimpleDateTime):
-            raise TypeError(f'createdAt argument is malformed: \"{createdAt}\"')
-        elif endTime is not None and not isinstance(endTime, SimpleDateTime):
-            raise TypeError(f'endTime argument is malformed: \"{endTime}\"')
-        elif not utils.isValidStr(broadcasterUserId):
+        assert isinstance(createdAt, SimpleDateTime), f"malformed {createdAt=}"
+        assert endTime is None or isinstance(endTime, SimpleDateTime), f"malformed {endTime=}"
+        if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(moderatorUserId):
+        if not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__createdAt: SimpleDateTime = createdAt

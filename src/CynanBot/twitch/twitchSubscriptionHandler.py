@@ -46,20 +46,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
-        elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
-            raise TypeError(f'twitchTokensUtils argument is malformed: \"{twitchTokensUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert triviaGameBuilder is None or isinstance(triviaGameBuilder, TriviaGameBuilderInterface), f"malformed {triviaGameBuilder=}"
+        assert triviaGameMachine is None or isinstance(triviaGameMachine, TriviaGameMachineInterface), f"malformed {triviaGameMachine=}"
+        assert isinstance(twitchChannelProvider, TwitchChannelProvider), f"malformed {twitchChannelProvider=}"
+        assert isinstance(twitchTokensUtils, TwitchTokensUtilsInterface), f"malformed {twitchTokensUtils=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
@@ -77,10 +70,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         payload = dataBundle.requirePayload()
         event = payload.getEvent()
@@ -137,14 +128,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         communitySubGift: Optional[TwitchCommunitySubGift],
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
-        if not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
-            raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        assert isinstance(tier, TwitchSubscriberTier), f"malformed {tier=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert communitySubGift is None or isinstance(communitySubGift, TwitchCommunitySubGift), f"malformed {communitySubGift=}"
+        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
 
         if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
@@ -189,26 +176,20 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
             raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
-        elif isGift is not None and not utils.isValidBool(isGift):
+        if isGift is not None and not utils.isValidBool(isGift):
             raise TypeError(f'isGift argument is malformed: \"{isGift}\"')
-        elif message is not None and not isinstance(message, str):
-            raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif userId is not None and not utils.isValidStr(userId):
+        assert message is None or isinstance(message, str), f"malformed {message=}"
+        if userId is not None and not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif userInput is not None and not isinstance(userInput, str):
-            raise TypeError(f'userInput argument is malformed: \"{userInput}\"')
-        elif userLogin is not None and not utils.isValidStr(userLogin):
+        assert userInput is None or isinstance(userInput, str), f"malformed {userInput=}"
+        if userLogin is not None and not utils.isValidStr(userLogin):
             raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
-        elif userName is not None and not utils.isValidStr(userName):
+        if userName is not None and not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
-        elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
-            raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
-        elif not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert communitySubGift is None or isinstance(communitySubGift, TwitchCommunitySubGift), f"malformed {communitySubGift=}"
+        assert isinstance(tier, TwitchSubscriberTier), f"malformed {tier=}"
+        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__streamAlertsManager is None:
             return

@@ -29,15 +29,12 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         timber: TimberInterface,
         maximumPerUser: int = 5
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
-            raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(maximumPerUser):
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
+        assert isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface), f"malformed {cheerActionIdGenerator=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidInt(maximumPerUser):
             raise TypeError(f'maximumPerUser argument is malformed: \"{maximumPerUser}\"')
-        elif maximumPerUser < 1 or maximumPerUser > 16:
+        if maximumPerUser < 1 or maximumPerUser > 16:
             raise ValueError(f'maximumPerUser argument is out of bounds: {maximumPerUser}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -57,23 +54,20 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         durationSeconds: int,
         userId: str
     ) -> CheerAction:
-        if not isinstance(bitRequirement, CheerActionBitRequirement):
-            raise TypeError(f'actionRequirement argument is malformed: \"{bitRequirement}\"')
-        elif not isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement):
-            raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
-        elif not isinstance(actionType, CheerActionType):
-            raise TypeError(f'cheerActionType argument is malformed: \"{actionType}\"')
-        elif not utils.isValidInt(amount):
+        assert isinstance(bitRequirement, CheerActionBitRequirement), f"malformed {bitRequirement=}"
+        assert isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement), f"malformed {streamStatusRequirement=}"
+        assert isinstance(actionType, CheerActionType), f"malformed {actionType=}"
+        if not utils.isValidInt(amount):
             raise TypeError(f'amount argument is malformed: \"{amount}\"')
-        elif amount < 1 or amount > utils.getIntMaxSafeSize():
+        if amount < 1 or amount > utils.getIntMaxSafeSize():
             raise ValueError(f'amount argument is out of bounds: {amount}')
-        elif not utils.isValidInt(durationSeconds):
+        if not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        elif durationSeconds < 1:
+        if durationSeconds < 1:
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        elif durationSeconds > 1209600:
+        if durationSeconds > 1209600:
             raise TimeoutDurationSecondsTooLongException(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         actions = await self.getActions(userId)
@@ -125,7 +119,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
     async def deleteAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
         if not utils.isValidStr(actionId):
             raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         action = await self.getAction(
@@ -155,7 +149,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
     async def getAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
         if not utils.isValidStr(actionId):
             raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         actions = await self.getActions(userId)

@@ -16,8 +16,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 class SystemCommandHelper(SystemCommandHelperInterface):
 
     def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__timber: TimberInterface = timber
 
@@ -27,7 +26,7 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             return
         elif not utils.isValidNum(timeoutSeconds):
             raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
-        elif timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
+        if timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         process: Optional[Process] = None
@@ -61,9 +60,8 @@ class SystemCommandHelper(SystemCommandHelperInterface):
     async def __killProcess(self, process: Optional[Process]):
         if process is None:
             return
-        elif not isinstance(process, Process):
-            raise ValueError(f'process argument is malformed: \"{process}\"')
-        elif process.returncode is not None:
+        elassert isinstance(process, Process), f"malformed {process=}"
+        if process.returncode is not None:
             return
 
         self.__timber.log('SystemCommandHelper', f'Killing process \"{process}\"...')

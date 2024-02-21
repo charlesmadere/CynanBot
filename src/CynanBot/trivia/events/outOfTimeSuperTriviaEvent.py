@@ -30,25 +30,22 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
             eventId = eventId
         )
 
-        if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not utils.isValidInt(pointsForWinning):
+        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
+        if not utils.isValidInt(pointsForWinning):
             raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
-        elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
+        if pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
-        elif not utils.isValidInt(remainingQueueSize):
+        if not utils.isValidInt(remainingQueueSize):
             raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
-        elif remainingQueueSize < 0 or remainingQueueSize > utils.getIntMaxSafeSize():
+        if remainingQueueSize < 0 or remainingQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'remainingQueueSize argument is out of bounds: {remainingQueueSize}')
-        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not utils.isValidStr(emote):
+        assert toxicTriviaPunishmentResult is None or isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult), f"malformed {toxicTriviaPunishmentResult=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(gameId):
+        if not utils.isValidStr(gameId):
             raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
-        elif not utils.isValidStr(twitchChannel):
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion

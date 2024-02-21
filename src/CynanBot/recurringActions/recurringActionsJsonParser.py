@@ -25,10 +25,8 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface
     ):
-        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(languagesRepository, LanguagesRepositoryInterface), f"malformed {languagesRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
@@ -110,15 +108,13 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         )
 
     async def __superTriviaToJson(self, action: SuperTriviaRecurringAction) -> str:
-        if not isinstance(action, SuperTriviaRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+        assert isinstance(action, SuperTriviaRecurringAction), f"malformed {action=}"
 
         jsonContents: Dict[str, Any] = dict()
         return json.dumps(jsonContents)
 
     async def toJson(self, action: RecurringAction) -> str:
-        if not isinstance(action, RecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+        assert isinstance(action, RecurringAction), f"malformed {action=}"
 
         actionType = action.getActionType()
 
@@ -132,8 +128,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             raise RuntimeError(f'Encountered unknown actionType (\"{actionType}\") for action (\"{action}\")')
 
     async def __weatherToJson(self, action: WeatherRecurringAction) -> str:
-        if not isinstance(action, WeatherRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+        assert isinstance(action, WeatherRecurringAction), f"malformed {action=}"
 
         jsonContents: Dict[str, Any] = {
             'alertsOnly': action.isAlertsOnly()
@@ -142,8 +137,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         return json.dumps(jsonContents)
 
     async def __wordOfTheDayToJson(self, action: WordOfTheDayRecurringAction) -> str:
-        if not isinstance(action, WordOfTheDayRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+        assert isinstance(action, WordOfTheDayRecurringAction), f"malformed {action=}"
 
         languageEntry = action.getLanguageEntry()
         wotdApiCode: Optional[str] = None

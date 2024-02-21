@@ -49,8 +49,7 @@ from CynanBot.twitch.websocket.twitchWebsocketJsonMapperInterface import \
 class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__timber: TimberInterface = timber
 

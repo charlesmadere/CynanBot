@@ -17,8 +17,7 @@ class TriviaGameStore(TriviaGameStoreInterface):
         self.__superGameStates: List[SuperTriviaGameState] = list()
 
     async def add(self, state: AbsTriviaGameState):
-        if not isinstance(state, AbsTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+        assert isinstance(state, AbsTriviaGameState), f"malformed {state=}"
 
         if state.getTriviaGameType() is TriviaGameType.NORMAL:
             await self.__addNormalGame(state)
@@ -28,14 +27,12 @@ class TriviaGameStore(TriviaGameStoreInterface):
             raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType: \"{state.getTriviaGameType()}\"')
 
     async def __addNormalGame(self, state: TriviaGameState):
-        if not isinstance(state, TriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+        assert isinstance(state, TriviaGameState), f"malformed {state=}"
 
         self.__normalGameStates.append(state)
 
     async def __addSuperGame(self, state: SuperTriviaGameState):
-        if not isinstance(state, SuperTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+        assert isinstance(state, SuperTriviaGameState), f"malformed {state=}"
 
         self.__superGameStates.append(state)
 
@@ -52,7 +49,7 @@ class TriviaGameStore(TriviaGameStoreInterface):
     async def getNormalGame(self, twitchChannel: str, userId: str) -> Optional[TriviaGameState]:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         normalGames = await self.getNormalGames()
@@ -96,7 +93,7 @@ class TriviaGameStore(TriviaGameStoreInterface):
     async def removeNormalGame(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         normalGames = await self.getNormalGames()

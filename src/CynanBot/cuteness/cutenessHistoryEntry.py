@@ -17,8 +17,7 @@ class CutenessHistoryEntry(CutenessEntry):
             userName = userName
         )
 
-        if not isinstance(cutenessDate, CutenessDate):
-            raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
+        assert isinstance(cutenessDate, CutenessDate), f"malformed {cutenessDate=}"
 
         self.__cutenessDate: CutenessDate = cutenessDate
 

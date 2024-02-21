@@ -42,8 +42,7 @@ class JishoVariant():
         return utils.isValidStr(self.__word)
 
     def toStr(self, definitionDelimiter: str = ', ') -> str:
-        if not isinstance(definitionDelimiter, str):
-            raise ValueError(f'definitionDelimiter argument is malformed: \"{definitionDelimiter}\"')
+        assert isinstance(definitionDelimiter, str), f"malformed {definitionDelimiter=}"
 
         word = ''
         if self.hasWord():

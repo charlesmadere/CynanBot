@@ -15,14 +15,12 @@ class TwitchUserDetails():
     ):
         if not utils.isValidStr(displayName):
             raise ValueError(f'displayName argument is malformed: \"{displayName}\"')
-        elif not utils.isValidStr(login):
+        if not utils.isValidStr(login):
             raise ValueError(f'login argument is malformed: \"{login}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(broadcasterType, TwitchBroadcasterType):
-            raise ValueError(f'broadcasterType argument is malformed: \"{broadcasterType}\"')
-        elif not isinstance(userType, TwitchUserType):
-            raise ValueError(f'userType argument is malformed: \"{userType}\"')
+        assert isinstance(broadcasterType, TwitchBroadcasterType), f"malformed {broadcasterType=}"
+        assert isinstance(userType, TwitchUserType), f"malformed {userType=}"
 
         self.__displayName: str = displayName
         self.__login: str = login

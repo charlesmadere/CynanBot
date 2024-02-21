@@ -52,22 +52,14 @@ class TriviaUtils(TriviaUtilsInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
-            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface):
-            raise ValueError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
-        elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface), f"malformed {bannedTriviaGameControllersRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaGameControllersRepository, TriviaGameControllersRepositoryInterface), f"malformed {triviaGameControllersRepository=}"
+        assert isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface), f"malformed {triviaGameGlobalControllersRepository=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
@@ -81,7 +73,7 @@ class TriviaUtils(TriviaUtilsInterface):
     async def getClearedSuperTriviaQueueMessage(self, numberOfGamesRemoved: int) -> str:
         if not utils.isValidInt(numberOfGamesRemoved):
             raise ValueError(f'numberOfGamesRemoved argument is malformed: \"{numberOfGamesRemoved}\"')
-        elif numberOfGamesRemoved < 0 or numberOfGamesRemoved > utils.getIntMaxSafeSize():
+        if numberOfGamesRemoved < 0 or numberOfGamesRemoved > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGamesRemoved argument is out of bounds: {numberOfGamesRemoved}')
 
         numberOfGamesRemovedStr = locale.format_string("%d", numberOfGamesRemoved, grouping = True)
@@ -97,20 +89,15 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, CutenessResult):
-            raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        assert isinstance(newCuteness, CutenessResult), f"malformed {newCuteness=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
+        if not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(twitchUser, UserInterface), f"malformed {twitchUser=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -140,16 +127,13 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
+        if not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -173,14 +157,12 @@ class TriviaUtils(TriviaUtilsInterface):
         userNameThatRedeemed: str,
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
+        if not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -209,12 +191,9 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
-        elif not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
-        elif not isinstance(bucketDelimiter, str):
-            raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult), f"malformed {toxicTriviaPunishmentResult=}"
+        assert isinstance(bucketDelimiter, str), f"malformed {bucketDelimiter=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
 
@@ -246,16 +225,13 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
+        if not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -280,10 +256,8 @@ class TriviaUtils(TriviaUtilsInterface):
     ) -> str:
         if not utils.isValidStr(emotePrompt):
             raise ValueError(f'emotePrompt argument is malformed: \"{emotePrompt}\"')
-        elif not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult), f"malformed {toxicTriviaPunishmentResult=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
 
@@ -318,22 +292,17 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(newCuteness, CutenessResult):
-            raise ValueError(f'newCuteness argument is malformed: \"{newCuteness}\"')
-        elif not utils.isValidInt(points):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        assert isinstance(newCuteness, CutenessResult), f"malformed {newCuteness=}"
+        if not utils.isValidInt(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
-        elif not utils.isValidStr(emote):
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(twitchUser, UserInterface), f"malformed {twitchUser=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -375,14 +344,11 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = '; '
     ) -> str:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -409,24 +375,20 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
-        if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not utils.isValidInt(delaySeconds):
+        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
+        if not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
+        if delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidInt(points):
+        if not utils.isValidInt(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
-        elif points < 1 or points > utils.getIntMaxSafeSize():
+        if points < 1 or points > utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
-        elif not utils.isValidStr(emote):
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(twitchUser, UserInterface), f"malformed {twitchUser=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -457,16 +419,12 @@ class TriviaUtils(TriviaUtilsInterface):
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
     ) -> Optional[str]:
-        if toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
-        elif not utils.isValidStr(emote):
+        assert toxicTriviaPunishmentResult is None or isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult), f"malformed {toxicTriviaPunishmentResult=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif not isinstance(bucketDelimiter, str):
-            raise ValueError(f'bucketDelimiter argument is malformed: \"{bucketDelimiter}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(twitchUser, UserInterface), f"malformed {twitchUser=}"
+        assert isinstance(bucketDelimiter, str), f"malformed {bucketDelimiter=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         if not twitchUser.isCutenessEnabled() or toxicTriviaPunishmentResult is None:
             return None
@@ -492,8 +450,7 @@ class TriviaUtils(TriviaUtilsInterface):
         bannedControllers: Optional[List[BannedTriviaGameController]],
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         if not utils.hasItems(bannedControllers):
             return f'ⓘ There are no banned trivia game controllers.'
@@ -510,8 +467,7 @@ class TriviaUtils(TriviaUtilsInterface):
         gameControllers: Optional[List[TriviaGameController]],
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         if not utils.hasItems(gameControllers):
             return f'ⓘ Your channel has no trivia game controllers.'
@@ -528,8 +484,7 @@ class TriviaUtils(TriviaUtilsInterface):
         gameControllers: Optional[List[TriviaGameGlobalController]],
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         if not utils.hasItems(gameControllers):
             return f'ⓘ There are no global trivia game controllers.'
@@ -552,26 +507,22 @@ class TriviaUtils(TriviaUtilsInterface):
         specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
         delimiter: str = ' '
     ) -> str:
-        if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif not utils.isValidInt(delaySeconds):
+        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
+        if not utils.isValidInt(delaySeconds):
             raise ValueError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
+        if delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        elif not utils.isValidInt(points):
+        if not utils.isValidInt(points):
             raise ValueError(f'points argument is malformed: \"{points}\"')
-        elif points < 1 or points > utils.getIntMaxSafeSize():
+        if points < 1 or points > utils.getIntMaxSafeSize():
             raise ValueError(f'points argument is out of bounds: {points}')
-        elif not utils.isValidStr(emote):
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(userNameThatRedeemed):
+        if not utils.isValidStr(userNameThatRedeemed):
             raise ValueError(f'userNameThatRedeemed argument is malformed: \"{userNameThatRedeemed}\"')
-        elif not isinstance(twitchUser, UserInterface):
-            raise ValueError(f'twitchUser argument is malformed: \"{twitchUser}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(twitchUser, UserInterface), f"malformed {twitchUser=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         emotePrompt = emote
         if specialTriviaStatus is SpecialTriviaStatus.SHINY:
@@ -601,14 +552,11 @@ class TriviaUtils(TriviaUtilsInterface):
         toxicResult: ToxicTriviaResult,
         triviaResult: TriviaScoreResult
     ) -> str:
-        if not isinstance(shinyResult, ShinyTriviaResult):
-            raise ValueError(f'shinyResult argument is malformed: \"{shinyResult}\"')
-        elif not utils.isValidStr(userName):
+        assert isinstance(shinyResult, ShinyTriviaResult), f"malformed {shinyResult=}"
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif not isinstance(toxicResult, ToxicTriviaResult):
-            raise ValueError(f'toxicResult argument is malformed: \"{toxicResult}\"')
-        elif not isinstance(triviaResult, TriviaScoreResult):
-            raise ValueError(f'triviaResult argument is malformed: \"{triviaResult}\"')
+        assert isinstance(toxicResult, ToxicTriviaResult), f"malformed {toxicResult=}"
+        assert isinstance(triviaResult, TriviaScoreResult), f"malformed {triviaResult=}"
 
         triviaStr = ''
         if triviaResult.getTotal() >= 1:
@@ -653,7 +601,7 @@ class TriviaUtils(TriviaUtilsInterface):
     async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         twitchUser: Optional[UserInterface] = None

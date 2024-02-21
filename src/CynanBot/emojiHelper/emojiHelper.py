@@ -14,8 +14,7 @@ class EmojiHelper(EmojiHelperInterface):
         self,
         emojiRepository: EmojiRepositoryInterface
     ):
-        if not isinstance(emojiRepository, EmojiRepositoryInterface):
-            raise ValueError(f'emojiRepository argument is malformed: \"{emojiRepository}\"')
+        assert isinstance(emojiRepository, EmojiRepositoryInterface), f"malformed {emojiRepository=}"
 
         self.__emojiRepository: EmojiRepositoryInterface = emojiRepository
 

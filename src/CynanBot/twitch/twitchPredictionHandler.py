@@ -33,15 +33,11 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
         websocketEventType: str = 'channelPrediction',
     ):
-        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
-            raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise TypeError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif not utils.isValidStr(websocketEventType):
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert twitchPredictionWebsocketUtils is None or isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface), f"malformed {twitchPredictionWebsocketUtils=}"
+        assert websocketConnectionServer is None or isinstance(websocketConnectionServer, WebsocketConnectionServerInterface), f"malformed {websocketConnectionServer=}"
+        if not utils.isValidStr(websocketEventType):
             raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
 
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
@@ -58,10 +54,8 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         payload = dataBundle.requirePayload()
         event = payload.getEvent()
@@ -104,12 +98,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
     ):
         if not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
 
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
@@ -140,16 +132,12 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
-        if not isinstance(outcomes, List):
-            raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
-        elif not utils.isValidStr(title):
+        assert isinstance(outcomes, List), f"malformed {outcomes=}"
+        if not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(event, TwitchWebsocketEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(event, TwitchWebsocketEvent), f"malformed {event=}"
+        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
 
         if self.__twitchPredictionWebsocketUtils is None or self.__websocketConnectionServer is None:
             return

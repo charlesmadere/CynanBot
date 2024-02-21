@@ -15,14 +15,11 @@ class LanguageEntry():
     ):
         if not utils.areValidStrs(commandNames):
             raise ValueError(f'commandNames argument is malformed: \"{commandNames}\"')
-        elif not utils.isValidStr(name):
+        if not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
-        elif flag is not None and not isinstance(flag, str):
-            raise ValueError(f'flag argument is malformed: \"{flag}\"')
-        elif iso6391Code is not None and not isinstance(iso6391Code, str):
-            raise ValueError(f'iso6391Code argument is malformed: \"{iso6391Code}\"')
-        elif wotdApiCode is not None and not isinstance(wotdApiCode, str):
-            raise ValueError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
+        assert flag is None or isinstance(flag, str), f"malformed {flag=}"
+        assert iso6391Code is None or isinstance(iso6391Code, str), f"malformed {iso6391Code=}"
+        assert wotdApiCode is None or isinstance(wotdApiCode, str), f"malformed {wotdApiCode=}"
 
         self.__commandNames: List[str] = commandNames
         self.__name: str = name

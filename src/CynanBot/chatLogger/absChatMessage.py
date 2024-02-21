@@ -12,9 +12,8 @@ class AbsChatMessage(ABC):
         chatEventType: ChatEventType,
         twitchChannel: str
     ):
-        if not isinstance(chatEventType, ChatEventType):
-            raise ValueError(f'chatEventType argument is malformed: \"{chatEventType}\"')
-        elif not utils.isValidStr(twitchChannel):
+        assert isinstance(chatEventType, ChatEventType), f"malformed {chatEventType=}"
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__chatEventType: ChatEventType = chatEventType

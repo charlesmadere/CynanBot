@@ -35,20 +35,13 @@ class DependencyHolderBuilder():
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(chatLogger, ChatLoggerInterface):
-            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
-            raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        assert isinstance(chatLogger, ChatLoggerInterface), f"malformed {chatLogger=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(sentMessageLogger, SentMessageLoggerInterface), f"malformed {sentMessageLogger=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
@@ -85,50 +78,43 @@ class DependencyHolderBuilder():
         )
 
     def setCutenessUtils(self, instance: CutenessUtilsInterface) -> Self:
-        if not isinstance(instance, CutenessUtilsInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, CutenessUtilsInterface), f"malformed {instance=}"
 
         self.__cutenessUtils = instance
         return self
 
     def setSoundPlayerHelper(self, instance: SoundPlayerManagerInterface) -> Self:
-        if not isinstance(instance, SoundPlayerManagerInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, SoundPlayerManagerInterface), f"malformed {instance=}"
 
         self.__soundPlayerManager = instance
         return self
 
     def setStreamAlertsManager(self, instance: StreamAlertsManagerInterface) -> Self:
-        if not isinstance(instance, StreamAlertsManagerInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, StreamAlertsManagerInterface), f"malformed {instance=}"
 
         self.__streamAlertsManager = instance
         return self
 
     def setTriviaUtils(self, instance: TriviaUtilsInterface) -> Self:
-        if not isinstance(instance, TriviaUtilsInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, TriviaUtilsInterface), f"malformed {instance=}"
 
         self.__triviaUtils = instance
         return self
 
     def setTtsManager(self, instance: TtsManagerInterface) -> Self:
-        if not isinstance(instance, TtsManagerInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, TtsManagerInterface), f"malformed {instance=}"
 
         self.__ttsManager = instance
         return self
 
     def setTwitchPredictionWebsocketUtils(self, instance: TwitchPredictionWebsocketUtilsInterface) -> Self:
-        if not isinstance(instance, TwitchPredictionWebsocketUtilsInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, TwitchPredictionWebsocketUtilsInterface), f"malformed {instance=}"
 
         self.__twitchPredictionWebsocketUtils = instance
         return self
 
     def setWebsocketConnectionServer(self, instance: WebsocketConnectionServerInterface) -> Self:
-        if not isinstance(instance, WebsocketConnectionServerInterface):
-            raise TypeError(f'instance argument is malformed: \"{instance}\"')
+        assert isinstance(instance, WebsocketConnectionServerInterface), f"malformed {instance=}"
 
         self.__websocketConnectionServer = instance
         return self

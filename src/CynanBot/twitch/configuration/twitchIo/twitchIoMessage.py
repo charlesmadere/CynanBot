@@ -22,10 +22,8 @@ class TwitchIoMessage(TwitchMessage):
         message: Message,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(message, Message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert isinstance(message, Message), f"malformed {message=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__message: Message = message
         self.__author: TwitchAuthor = TwitchIoAuthor(message.author)

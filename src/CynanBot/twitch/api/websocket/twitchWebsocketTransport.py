@@ -16,16 +16,11 @@ class TwitchWebsocketTransport():
         sessionId: Optional[str] = None,
         method: TwitchWebsocketTransportMethod = TwitchWebsocketTransportMethod.WEBSOCKET,
     ):
-        if connectedAt is not None and not isinstance(connectedAt, SimpleDateTime):
-            raise TypeError(f'connectedAt argument is malformed: \"{connectedAt}\"')
-        elif disconnectedAt is not None and not isinstance(disconnectedAt, SimpleDateTime):
-            raise TypeError(f'disconnectedAt argument is malformed: \"{disconnectedAt}\"')
-        elif secret is not None and not isinstance(secret, str):
-            raise TypeError(f'secret argument is malformed: \"{secret}\"')
-        elif sessionId is not None and not isinstance(sessionId, str):
-            raise TypeError(f'sessionId argument is malformed: \"{sessionId}\"')
-        elif not isinstance(method, TwitchWebsocketTransportMethod):
-            raise TypeError(f'method argument is malformed: \"{method}\"')
+        assert connectedAt is None or isinstance(connectedAt, SimpleDateTime), f"malformed {connectedAt=}"
+        assert disconnectedAt is None or isinstance(disconnectedAt, SimpleDateTime), f"malformed {disconnectedAt=}"
+        assert secret is None or isinstance(secret, str), f"malformed {secret=}"
+        assert sessionId is None or isinstance(sessionId, str), f"malformed {sessionId=}"
+        assert isinstance(method, TwitchWebsocketTransportMethod), f"malformed {method=}"
 
         self.__connectedAt: Optional[SimpleDateTime] = connectedAt
         self.__disconnectedAt: Optional[SimpleDateTime] = disconnectedAt

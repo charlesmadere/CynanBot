@@ -14,8 +14,7 @@ class CutenessLeaderboardResult():
         specificLookupCutenessResult: Optional[CutenessResult] = None,
         entries: Optional[List[CutenessLeaderboardEntry]] = None
     ):
-        if not isinstance(cutenessDate, CutenessDate):
-            raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
+        assert isinstance(cutenessDate, CutenessDate), f"malformed {cutenessDate=}"
 
         self.__cutenessDate: CutenessDate = cutenessDate
         self.__specificLookupCutenessResult: Optional[CutenessResult] = specificLookupCutenessResult

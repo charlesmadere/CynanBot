@@ -19,12 +19,9 @@ class TwitchEventSubRequest():
         subscriptionType: TwitchWebsocketSubscriptionType,
         transport: TwitchWebsocketTransport
     ):
-        if not isinstance(condition, TwitchWebsocketCondition):
-            raise ValueError(f'condition argument is malformed: \"{condition}\"')
-        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
-        elif not isinstance(transport, TwitchWebsocketTransport):
-            raise ValueError(f'transport argument is malformed: \"{transport}\"')
+        assert isinstance(condition, TwitchWebsocketCondition), f"malformed {condition=}"
+        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
+        assert isinstance(transport, TwitchWebsocketTransport), f"malformed {transport=}"
 
         self.__condition: TwitchWebsocketCondition = condition
         self.__subscriptionType: TwitchWebsocketSubscriptionType = subscriptionType

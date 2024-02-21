@@ -31,28 +31,23 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         eventTimeToLive: timedelta = timedelta(seconds = 30),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidNum(sleepTimeSeconds):
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 3 or sleepTimeSeconds > 10:
+        if sleepTimeSeconds < 3 or sleepTimeSeconds > 10:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not utils.isValidInt(port):
+        if not utils.isValidInt(port):
             raise ValueError(f'port argument is malformed: \"{port}\"')
-        elif port <= 1000 or port > utils.getIntMaxSafeSize():
+        if port <= 1000 or port > utils.getIntMaxSafeSize():
             raise ValueError(f'port argument is out of bounds: {port}')
-        elif not utils.isValidStr(host):
+        if not utils.isValidStr(host):
             raise ValueError(f'host argument is malformed: \"{host}\"')
-        elif not utils.isValidStr(websocketSettingsFile):
+        if not utils.isValidStr(websocketSettingsFile):
             raise ValueError(f'websocketSettingsFile argument is malformed: \"{websocketSettingsFile}\"')
-        elif not isinstance(eventTimeToLive, timedelta):
-            raise ValueError(f'eventTimeToLive argument is malformed: \"{eventTimeToLive}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(eventTimeToLive, timedelta), f"malformed {eventTimeToLive=}"
+        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
@@ -101,9 +96,9 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
     ):
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(eventType):
+        if not utils.isValidStr(eventType):
             raise ValueError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
-        elif not isinstance(eventData, Dict) or len(eventData) == 0:
+        if not isinstance(eventData, Dict) or len(eventData) == 0:
             raise ValueError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
 
         event: Dict[str, Any] = {

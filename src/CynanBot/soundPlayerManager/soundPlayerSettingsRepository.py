@@ -10,8 +10,7 @@ from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
-        if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
@@ -21,8 +20,7 @@ class SoundPlayerSettingsRepository(SoundPlayerSettingsRepositoryInterface):
         self.__settingsCache = None
 
     async def getFilePathFor(self, soundAlert: SoundAlert) -> Optional[str]:
-        if not isinstance(soundAlert, SoundAlert):
-            raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
+        assert isinstance(soundAlert, SoundAlert), f"malformed {soundAlert=}"
 
         jsonContents = await self.__readJson()
         filePath: Optional[str] = None

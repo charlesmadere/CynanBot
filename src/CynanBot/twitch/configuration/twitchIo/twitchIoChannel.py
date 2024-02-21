@@ -17,10 +17,8 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
         channel: Channel,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(channel, Channel):
-            raise ValueError(f'channel argument is malformed: \"{channel}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert isinstance(channel, Channel), f"malformed {channel=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__channel: Channel = channel
         self.__twitchChannelId: Optional[str] = None

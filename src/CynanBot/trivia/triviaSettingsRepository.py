@@ -10,8 +10,7 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
 class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
-        if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
@@ -82,7 +81,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
         if minMultipleChoiceResponses < 2 or minMultipleChoiceResponses > utils.getIntMaxSafeSize():
             raise ValueError(f'\"min_multiple_choice_responses\" is out of bounds: {minMultipleChoiceResponses}')
-        elif maxMultipleChoiceResponses < minMultipleChoiceResponses:
+        if maxMultipleChoiceResponses < minMultipleChoiceResponses:
             raise ValueError(f'\"min_multiple_choice_responses\" ({minMultipleChoiceResponses}) is less than \"max_multiple_choice_responses\" ({maxMultipleChoiceResponses})')
 
         return maxMultipleChoiceResponses
@@ -136,7 +135,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
         if minMultipleChoiceResponses < 2 or minMultipleChoiceResponses > utils.getIntMaxSafeSize():
             raise ValueError(f'\"min_multiple_choice_responses\" is out of bounds: {minMultipleChoiceResponses}')
-        elif maxMultipleChoiceResponses < minMultipleChoiceResponses:
+        if maxMultipleChoiceResponses < minMultipleChoiceResponses:
             raise ValueError(f'\"min_multiple_choice_responses\" ({minMultipleChoiceResponses}) is less than \"max_multiple_choice_responses\" ({maxMultipleChoiceResponses})')
 
         return minMultipleChoiceResponses

@@ -25,27 +25,24 @@ class PokepediaMove():
         name: str,
         rawName: str
     ):
-        if contestType is not None and not isinstance(contestType, PokepediaContestType):
-            raise ValueError(f'contestType argument is malformed: \"{contestType}\"')
-        elif not isinstance(damageClass, PokepediaDamageClass):
-            raise ValueError(f'damageClass argument is malformed: \"{damageClass}\"')
-        elif not utils.hasItems(generationMoves):
+        assert contestType is None or isinstance(contestType, PokepediaContestType), f"malformed {contestType=}"
+        assert isinstance(damageClass, PokepediaDamageClass), f"malformed {damageClass=}"
+        if not utils.hasItems(generationMoves):
             raise ValueError(f'generationMoves argument is malformed: \"{generationMoves}\"')
-        elif not utils.isValidInt(critRate):
+        if not utils.isValidInt(critRate):
             raise ValueError(f'critRate argument is malformed: \"{critRate}\"')
-        elif not utils.isValidInt(drain):
+        if not utils.isValidInt(drain):
             raise ValueError(f'drain argument is malformed: \"{drain}\"')
-        elif not utils.isValidInt(flinchChance):
+        if not utils.isValidInt(flinchChance):
             raise ValueError(f'flinchChance argument is malformed: \"{flinchChance}\"')
-        elif not utils.isValidInt(moveId):
+        if not utils.isValidInt(moveId):
             raise ValueError(f'moveId argument is malformed: \"{moveId}\"')
-        elif not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
-        elif not utils.isValidStr(description):
+        assert isinstance(initialGeneration, PokepediaGeneration), f"malformed {initialGeneration=}"
+        if not utils.isValidStr(description):
             raise ValueError(f'description argument is malformed: \"{description}\"')
-        elif not utils.isValidStr(name):
+        if not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
-        elif not utils.isValidStr(rawName):
+        if not utils.isValidStr(rawName):
             raise ValueError(f'rawName argument is malformed: \"{rawName}\"')
 
         self.__contestType: Optional[PokepediaContestType] = contestType

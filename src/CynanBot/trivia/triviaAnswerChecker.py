@@ -34,12 +34,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaAnswerCompiler: TriviaAnswerCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
-            raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface), f"malformed {triviaAnswerCompiler=}"
+        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
 
         self.__timber: TimberInterface = timber
         self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
@@ -90,8 +87,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaQuestion: AbsTriviaQuestion,
         extras: Optional[Dict[str, Any]] = None
     ) -> TriviaAnswerCheckResult:
-        if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
 
         if not utils.isValidStr(answer):
             return TriviaAnswerCheckResult.INVALID_INPUT
@@ -110,9 +106,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         answer: Optional[str],
         triviaQuestion: MultipleChoiceTriviaQuestion
     ) -> TriviaAnswerCheckResult:
-        if not isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
+        assert isinstance(triviaQuestion, MultipleChoiceTriviaQuestion), f"malformed {triviaQuestion=}"
+        if triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
 
         answerOrdinal: Optional[int] = None
@@ -147,9 +142,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaQuestion: QuestionAnswerTriviaQuestion,
         extras: Optional[Dict[str, Any]] = None
     ) -> TriviaAnswerCheckResult:
-        if not isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
+        assert isinstance(triviaQuestion, QuestionAnswerTriviaQuestion), f"malformed {triviaQuestion=}"
+        if triviaQuestion.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.getTriviaType()}\"')
 
         # prevent potential for insane answer lengths
@@ -195,9 +189,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         answer: Optional[str],
         triviaQuestion: TrueFalseTriviaQuestion
     ) -> TriviaAnswerCheckResult:
-        if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
+        assert isinstance(triviaQuestion, TrueFalseTriviaQuestion), f"malformed {triviaQuestion=}"
+        if triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
 
         answerBool: Optional[bool] = None

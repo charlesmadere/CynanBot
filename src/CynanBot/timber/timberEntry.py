@@ -15,12 +15,10 @@ class TimberEntry():
     ):
         if not utils.isValidStr(tag):
             raise ValueError(f'tag argument is malformed: \"{tag}\"')
-        elif not utils.isValidStr(msg):
+        if not utils.isValidStr(msg):
             raise ValueError(f'msg argument is malformed: \"{msg}\"')
-        elif exception is not None and not isinstance(exception, Exception):
-            raise ValueError(f'exception argument is malformed: \"{exception}\"')
-        elif traceback is not None and not isinstance(traceback, str):
-            raise ValueError(f'traceback argument is malformed: \"{traceback}\"')
+        assert exception is None or isinstance(exception, Exception), f"malformed {exception=}"
+        assert traceback is None or isinstance(traceback, str), f"malformed {traceback=}"
 
         self.__tag: str = tag.strip()
         self.__msg: str = msg.strip()

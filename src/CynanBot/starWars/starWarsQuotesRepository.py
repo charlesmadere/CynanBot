@@ -11,8 +11,7 @@ from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
 
     def __init__(self, quotesJsonReader: JsonReaderInterface):
-        if not isinstance(quotesJsonReader, JsonReaderInterface):
-            raise ValueError(f'quotesJsonReader argument is malformed: \"{quotesJsonReader}\"')
+        assert isinstance(quotesJsonReader, JsonReaderInterface), f"malformed {quotesJsonReader=}"
 
         self.__quotesJsonReader: JsonReaderInterface = quotesJsonReader
 

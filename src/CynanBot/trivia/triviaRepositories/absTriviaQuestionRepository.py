@@ -15,8 +15,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
         self,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
 
         self._triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
@@ -27,7 +26,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
     ) -> List[str]:
         if not utils.hasItems(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        if not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         filteredMultipleChoiceResponses: List[str] = utils.copyList(correctAnswers)
@@ -74,7 +73,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
     ) -> bool:
         if not utils.hasItems(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        if not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         for correctAnswer in correctAnswers:

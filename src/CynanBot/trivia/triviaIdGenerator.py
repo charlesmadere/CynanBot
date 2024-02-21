@@ -30,10 +30,8 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
     ) -> str:
         if not utils.isValidStr(question):
             raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif category is not None and not isinstance(category, str):
-            raise ValueError(f'category argument is malformed: \"{category}\"')
-        elif difficulty is not None and not isinstance(difficulty, str):
-            raise ValueError(f'difficulty argument is malformed: \"{difficulty}\"')
+        assert category is None or isinstance(category, str), f"malformed {category=}"
+        assert difficulty is None or isinstance(difficulty, str), f"malformed {difficulty=}"
 
         string = f'{question}'
 

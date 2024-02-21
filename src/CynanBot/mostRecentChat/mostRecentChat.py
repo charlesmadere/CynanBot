@@ -12,11 +12,10 @@ class MostRecentChat():
         twitchChannelId: str,
         userId: str
     ):
-        if not isinstance(mostRecentChat, SimpleDateTime):
-            raise TypeError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        assert isinstance(mostRecentChat, SimpleDateTime), f"malformed {mostRecentChat=}"
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__mostRecentChat: SimpleDateTime = mostRecentChat

@@ -13,10 +13,8 @@ class TwitchWebsocketDataBundle():
         metadata: TwitchWebsocketMetadata,
         payload: Optional[TwitchWebsocketPayload] = None
     ):
-        if not isinstance(metadata, TwitchWebsocketMetadata):
-            raise TypeError(f'metadata argument is malformed: \"{metadata}\"')
-        if payload is not None and not isinstance(payload, TwitchWebsocketPayload):
-            raise TypeError(f'payload argument is malformed: \"{payload}\"')
+        assert isinstance(metadata, TwitchWebsocketMetadata), f"malformed {metadata=}"
+        assert payload is None or isinstance(payload, TwitchWebsocketPayload), f"malformed {payload=}"
 
         self.__metadata: TwitchWebsocketMetadata = metadata
         self.__payload: Optional[TwitchWebsocketPayload] = payload
