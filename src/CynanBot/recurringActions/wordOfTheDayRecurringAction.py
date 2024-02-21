@@ -20,7 +20,8 @@ class WordOfTheDayRecurringAction(RecurringAction):
             minutesBetween = minutesBetween
         )
 
-        assert languageEntry is None or isinstance(languageEntry, LanguageEntry), f"malformed {languageEntry=}"
+        if languageEntry is not None and not isinstance(languageEntry, LanguageEntry):
+            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
         self.__languageEntry: Optional[LanguageEntry] = languageEntry
 

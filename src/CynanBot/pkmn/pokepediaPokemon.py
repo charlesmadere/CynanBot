@@ -21,14 +21,15 @@ class PokepediaPokemon():
     ):
         if not utils.hasItems(generationElementTypes):
             raise ValueError(f'generationElementTypes argument is malformed: \"{generationElementTypes}\"')
-        assert isinstance(initialGeneration, PokepediaGeneration), f"malformed {initialGeneration=}"
-        if not utils.isValidNum(height):
+        elif not isinstance(initialGeneration, PokepediaGeneration):
+            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+        elif not utils.isValidNum(height):
             raise ValueError(f'height argument is malformed: \"{height}\"')
-        if not utils.isValidNum(pokedexId):
+        elif not utils.isValidNum(pokedexId):
             raise ValueError(f'pokedexId argument is malformed: \"{pokedexId}\"')
-        if not utils.isValidNum(weight):
+        elif not utils.isValidNum(weight):
             raise ValueError(f'weight argument is malformed: \"{weight}\"')
-        if not utils.isValidStr(name):
+        elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
 
         self.__generationElementTypes: Dict[PokepediaGeneration, List[PokepediaElementType]] = generationElementTypes
@@ -46,8 +47,10 @@ class PokepediaPokemon():
     ) -> Optional[str]:
         if not utils.hasItems(weaknessesAndResistances):
             raise ValueError(f'weaknessesAndResistances argument is malformed: \"{weaknessesAndResistances}\"')
-        assert isinstance(damageMultiplier, PokepediaDamageMultiplier), f"malformed {damageMultiplier=}"
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        elif not isinstance(damageMultiplier, PokepediaDamageMultiplier):
+            raise ValueError(f'damageMultiplier argument is malformed: \"{damageMultiplier}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         if damageMultiplier not in weaknessesAndResistances or not utils.hasItems(weaknessesAndResistances[damageMultiplier]):
             return None
@@ -63,7 +66,8 @@ class PokepediaPokemon():
         self,
         generation: PokepediaGeneration
     ) -> List[PokepediaElementType]:
-        assert isinstance(generation, PokepediaGeneration), f"malformed {generation=}"
+        if not isinstance(generation, PokepediaGeneration):
+            raise ValueError(f'generation argument is malformed: \"{generation}\"')
 
         allGenerations = list(PokepediaGeneration)
         index = allGenerations.index(generation)
@@ -104,7 +108,8 @@ class PokepediaPokemon():
         return locale.format_string("%d", self.__weight, grouping = True)
 
     def toStrList(self, delimiter: str = ', ') -> List[str]:
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        if not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         strings: List[str] = list()
         strings.append(f'{self.__name} (#{self.getPokedexIdStr()}) — introduced in {self.__initialGeneration.toShortStr()}, weight is {self.getWeightStr()} and height is {self.getHeightStr()}.')

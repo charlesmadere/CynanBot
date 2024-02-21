@@ -13,10 +13,11 @@ class RequestsClientProvider(NetworkClientProvider):
         timber: TimberInterface,
         timeoutSeconds: int = 8
     ):
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidInt(timeoutSeconds):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidInt(timeoutSeconds):
             raise ValueError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
-        if timeoutSeconds < 3 or timeoutSeconds > 16:
+        elif timeoutSeconds < 3 or timeoutSeconds > 16:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
         self.__timber: TimberInterface = timber

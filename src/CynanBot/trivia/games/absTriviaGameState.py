@@ -23,25 +23,27 @@ class AbsTriviaGameState(ABC):
         emote: str,
         twitchChannel: str
     ):
-        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
-        if not utils.isValidInt(basePointsForWinning):
+        if not isinstance(triviaQuestion, AbsTriviaQuestion):
+            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+        elif not utils.isValidInt(basePointsForWinning):
             raise ValueError(f'basePointsForWinning argument is malformed: \"{basePointsForWinning}\"')
-        if basePointsForWinning < 1 or basePointsForWinning > utils.getIntMaxSafeSize():
+        elif basePointsForWinning < 1 or basePointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'basePointsForWinning argument is out of bounds: {basePointsForWinning}')
-        if not utils.isValidInt(pointsForWinning):
+        elif not utils.isValidInt(pointsForWinning):
             raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
-        if pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
+        elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
-        if not utils.isValidInt(secondsToLive):
+        elif not utils.isValidInt(secondsToLive):
             raise ValueError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
-        if secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
+        elif secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
             raise ValueError(f'secondsToLive argument is out of bounds: {secondsToLive}')
-        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
-        if not utils.isValidStr(actionId):
+        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
+            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+        elif not utils.isValidStr(actionId):
             raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
-        if not utils.isValidStr(emote):
+        elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion

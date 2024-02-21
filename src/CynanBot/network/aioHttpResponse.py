@@ -20,9 +20,10 @@ class AioHttpResponse(NetworkResponse):
     ):
         if not isinstance(response, aiohttp.ClientResponse):
             raise ValueError(f'response argument is malformed: \"{response}\"')
-        if not utils.isValidStr(url):
+        elif not utils.isValidStr(url):
             raise ValueError(f'url argument is malformed: \"{url}\"')
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__response: aiohttp.ClientResponse = response
         self.__url: str = url

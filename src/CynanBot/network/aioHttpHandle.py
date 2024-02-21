@@ -19,7 +19,8 @@ class AioHttpHandle(NetworkHandle):
     ):
         if not isinstance(clientSession, aiohttp.ClientSession):
             raise ValueError(f'clientSession argument is malformed: \"{clientSession}\"')
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__clientSession: aiohttp.ClientSession = clientSession
         self.__timber: TimberInterface = timber

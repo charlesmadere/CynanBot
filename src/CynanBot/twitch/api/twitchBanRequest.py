@@ -18,16 +18,17 @@ class TwitchBanRequest():
     ):
         if duration is not None and not utils.isValidInt(duration):
             raise TypeError(f'duration argument is malformed: \"{duration}\"')
-        if duration is not None and duration < 1:
+        elif duration is not None and duration < 1:
             raise ValueError(f'duration argument is out of bounds: {duration}')
-        if duration is not None and duration > 1209600:
+        elif duration is not None and duration > 1209600:
             raise TimeoutDurationSecondsTooLongException(f'duration argument is out of bounds: {duration}')
-        if not utils.isValidStr(broadcasterUserId):
+        elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        if not utils.isValidStr(moderatorUserId):
+        elif not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
-        assert reason is None or isinstance(reason, str), f"malformed {reason=}"
-        if not utils.isValidStr(userIdToBan):
+        elif reason is not None and not isinstance(reason, str):
+            raise TypeError(f'reason argument is malformed: \"{reason}\"')
+        elif not utils.isValidStr(userIdToBan):
             raise TypeError(f'userIdToBan argument is malformed: \"{userIdToBan}\"')
 
         self.__duration: Optional[int] = duration

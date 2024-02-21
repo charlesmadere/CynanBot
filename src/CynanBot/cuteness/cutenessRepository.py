@@ -30,19 +30,21 @@ class CutenessRepository(CutenessRepositoryInterface):
         historySize: int = 5,
         leaderboardSize: int = 10
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
-        if not utils.isValidInt(historyLeaderboardSize):
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not utils.isValidInt(historyLeaderboardSize):
             raise ValueError(f'historyLeaderboardSize argument is malformed: \"{historyLeaderboardSize}\"')
-        if historyLeaderboardSize < 2 or historyLeaderboardSize > 6:
+        elif historyLeaderboardSize < 2 or historyLeaderboardSize > 6:
             raise ValueError(f'historyLeaderboardSize argument is out of bounds: {historyLeaderboardSize}')
-        if not utils.isValidInt(historySize):
+        elif not utils.isValidInt(historySize):
             raise ValueError(f'historySize argument is malformed: \"{historySize}\"')
-        if historySize < 3 or historySize > 12:
+        elif historySize < 3 or historySize > 12:
             raise ValueError(f'historySize argument is out of bounds: {historySize}')
-        if not utils.isValidInt(leaderboardSize):
+        elif not utils.isValidInt(leaderboardSize):
             raise ValueError(f'leaderboardSize argument is malformed: \"{leaderboardSize}\"')
-        if leaderboardSize < 3 or leaderboardSize > 10:
+        elif leaderboardSize < 3 or leaderboardSize > 10:
             raise ValueError(f'leaderboardSize argument is out of bounds: {leaderboardSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -61,11 +63,11 @@ class CutenessRepository(CutenessRepositoryInterface):
     ) -> CutenessResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
@@ -153,9 +155,9 @@ class CutenessRepository(CutenessRepositoryInterface):
     ) -> CutenessHistoryResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)
@@ -246,15 +248,15 @@ class CutenessRepository(CutenessRepositoryInterface):
     ) -> CutenessResult:
         if not utils.isValidInt(incrementAmount):
             raise ValueError(f'incrementAmount argument is malformed: \"{incrementAmount}\"')
-        if incrementAmount < utils.getLongMinSafeSize() or incrementAmount > utils.getLongMaxSafeSize():
+        elif incrementAmount < utils.getLongMinSafeSize() or incrementAmount > utils.getLongMaxSafeSize():
             raise ValueError(f'incrementAmount argument is out of bounds: {incrementAmount}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         await self.__userIdsRepository.setUser(userId = userId, userName = userName)

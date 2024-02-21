@@ -27,10 +27,14 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        assert isinstance(bannedWordsRepository, BannedWordsRepositoryInterface), f"malformed {bannedWordsRepository=}"
-        assert isinstance(contentScanner, ContentScannerInterface), f"malformed {contentScanner=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
+        if not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
+            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+        elif not isinstance(contentScanner, ContentScannerInterface):
+            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
         self.__contentScanner: ContentScannerInterface = contentScanner
@@ -38,7 +42,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
     async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> Set[Optional[str]]:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         phrases: Set[Optional[str]] = set()
         await self.__contentScanner.updatePhrasesContent(phrases, question.getQuestion())
@@ -56,7 +61,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return phrases
 
     async def __getAllWordsFromQuestion(self, question: AbsTriviaQuestion) -> Set[Optional[str]]:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         words: Set[Optional[str]] = set()
         await self.__contentScanner.updateWordsContent(words, question.getQuestion())
@@ -77,7 +83,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if question is None:
             return TriviaContentCode.IS_NONE
 
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         coreContentCode = await self.__verifyQuestionCoreContent(question)
         if coreContentCode is not TriviaContentCode.OK:
@@ -102,7 +109,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return TriviaContentCode.OK
 
     async def __verifyQuestionContentLengths(self, question: AbsTriviaQuestion) -> TriviaContentCode:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         maxQuestionLength = await self.__triviaSettingsRepository.getMaxQuestionLength()
 
@@ -128,7 +136,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return TriviaContentCode.OK
 
     async def __verifyQuestionContentProfanity(self, question: AbsTriviaQuestion) -> TriviaContentCode:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         phrases = await self.__getAllPhrasesFromQuestion(question)
         words = await self.__getAllWordsFromQuestion(question)
@@ -154,7 +163,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return TriviaContentCode.OK
 
     async def __verifyQuestionCoreContent(self, question: AbsTriviaQuestion) -> TriviaContentCode:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         if not utils.isValidStr(question.getQuestion()):
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.getQuestion()}\"')
@@ -174,7 +184,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return TriviaContentCode.OK
 
     async def __verifyQuestionDoesNotContainUrl(self, question: AbsTriviaQuestion):
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         if utils.containsUrl(question.getQuestion()):
             self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) question contains a URL: \"{question.getQuestion()}\"')
@@ -192,7 +203,8 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         return TriviaContentCode.OK
 
     async def __verifyQuestionResponseCount(self, question: AbsTriviaQuestion) -> TriviaContentCode:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
 
         if question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             return TriviaContentCode.OK

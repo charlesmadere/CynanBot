@@ -14,14 +14,15 @@ class CutenessResult():
         userId: str,
         userName: str
     ):
-        assert isinstance(cutenessDate, CutenessDate), f"malformed {cutenessDate=}"
-        if cuteness is not None and not utils.isValidInt(cuteness):
+        if not isinstance(cutenessDate, CutenessDate):
+            raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
+        elif cuteness is not None and not utils.isValidInt(cuteness):
             raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
-        if cuteness is not None and (cuteness < 0 or cuteness > utils.getLongMaxSafeSize()):
+        elif cuteness is not None and (cuteness < 0 or cuteness > utils.getLongMaxSafeSize()):
             raise ValueError(f'cuteness argument is out of bounds: {cuteness}')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cutenessDate: CutenessDate = cutenessDate

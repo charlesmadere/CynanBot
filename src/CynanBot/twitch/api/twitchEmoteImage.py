@@ -7,7 +7,8 @@ class TwitchEmoteImage():
     def __init__(self, url: str, imageScale: TwitchEmoteImageScale):
         if not utils.isValidUrl(url):
             raise ValueError(f'url argument is malformed: \"{url}\"')
-        assert isinstance(imageScale, TwitchEmoteImageScale), f"malformed {imageScale=}"
+        elif not isinstance(imageScale, TwitchEmoteImageScale):
+            raise ValueError(f'imageScale argument is malformed: \"{imageScale}\"')
 
         self.__url: str = url
         self.__imageScale: TwitchEmoteImageScale = imageScale

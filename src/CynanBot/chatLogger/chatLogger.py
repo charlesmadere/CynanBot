@@ -27,13 +27,15 @@ class ChatLogger(ChatLoggerInterface):
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/chatLogger'
     ):
-        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidNum(sleepTimeSeconds):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        if sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
+        elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        if not utils.isValidStr(logRootDirectory):
+        elif not utils.isValidStr(logRootDirectory):
             raise ValueError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
@@ -45,7 +47,8 @@ class ChatLogger(ChatLoggerInterface):
         self.__messageQueue: SimpleQueue[AbsChatMessage] = SimpleQueue()
 
     def __getLogStatement(self, message: AbsChatMessage) -> str:
-        assert isinstance(message, AbsChatMessage), f"malformed {message=}"
+        if not isinstance(message, AbsChatMessage):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
 
         logStatement: str = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} —'
 
@@ -63,11 +66,11 @@ class ChatLogger(ChatLoggerInterface):
     def logMessage(self, msg: str, twitchChannel: str, userId: str, userName: str):
         if not utils.isValidStr(msg):
             raise ValueError(f'msg argument is malformed: \"{msg}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         chatMessage: AbsChatMessage = ChatMessage(
@@ -82,11 +85,11 @@ class ChatLogger(ChatLoggerInterface):
     def logRaid(self, raidSize: int, fromWho: str, twitchChannel: str):
         if not utils.isValidInt(raidSize):
             raise ValueError(f'raidSize argument is malformed: \"{raidSize}\"')
-        if raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
+        elif raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
             raise ValueError(f'raidSize argument is out of bounds: {raidSize}')
-        if not utils.isValidStr(fromWho):
+        elif not utils.isValidStr(fromWho):
             raise ValueError(f'fromWho argument is malformed: \"{fromWho}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         raidMessage: AbsChatMessage = RaidMessage(

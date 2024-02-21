@@ -13,12 +13,13 @@ class TwitchFollower():
         userLogin: str,
         userName: str
     ):
-        assert isinstance(followedAt, SimpleDateTime), f"malformed {followedAt=}"
-        if not utils.isValidStr(userId):
+        if not isinstance(followedAt, SimpleDateTime):
+            raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userLogin):
+        elif not utils.isValidStr(userLogin):
             raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__followedAt: SimpleDateTime = followedAt

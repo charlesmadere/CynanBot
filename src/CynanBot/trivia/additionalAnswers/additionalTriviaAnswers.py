@@ -18,10 +18,12 @@ class AdditionalTriviaAnswers():
     ):
         if not utils.hasItems(additionalAnswers):
             raise ValueError(f'additionalAnswers argument is malformed: \"{additionalAnswers}\"')
-        if not utils.isValidStr(triviaId):
+        elif not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
-        assert isinstance(triviaType, TriviaQuestionType), f"malformed {triviaType=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+        elif not isinstance(triviaType, TriviaQuestionType):
+            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         self.__additionalAnswers: List[AdditionalTriviaAnswer] = additionalAnswers
         self.__triviaId: str = triviaId

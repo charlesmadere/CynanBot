@@ -18,18 +18,20 @@ class TwitchOutcome():
     ):
         if not utils.isValidInt(channelPoints):
             raise TypeError(f'channelPoints argument is malformed: \"{channelPoints}\"')
-        if channelPoints < 0 or channelPoints > utils.getLongMaxSafeSize():
+        elif channelPoints < 0 or channelPoints > utils.getLongMaxSafeSize():
             raise ValueError(f'channelPoints argument is out of bounds: {channelPoints}')
-        if not utils.isValidInt(users):
+        elif not utils.isValidInt(users):
             raise TypeError(f'users argument is malformed: \"{users}\"')
-        if users < 0 or users > utils.getIntMaxSafeSize():
+        elif users < 0 or users > utils.getIntMaxSafeSize():
             raise ValueError(f'users argument is out of bounds: {users}')
-        if not utils.isValidStr(outcomeId):
+        elif not utils.isValidStr(outcomeId):
             raise TypeError(f'outcomeId argument is malformed: \"{outcomeId}\"')
-        if not utils.isValidStr(title):
+        elif not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
-        assert isinstance(color, TwitchOutcomeColor), f"malformed {color=}"
-        assert topPredictors is None or isinstance(topPredictors, List), f"malformed {topPredictors=}"
+        elif not isinstance(color, TwitchOutcomeColor):
+            raise TypeError(f'color argument is malformed: \"{color}\"')
+        elif topPredictors is not None and not isinstance(topPredictors, List):
+            raise TypeError(f'topPredictors argument is malformed: \"{topPredictors}\"')
 
         self.__channelPoints: int = channelPoints
         self.__users: int = users

@@ -8,8 +8,10 @@ class TranslationEngineUnavailableException(Exception):
         message: str,
         translationApiSource: TranslationApiSource
     ):
-        assert isinstance(message, str), f"malformed {message=}"
-        assert isinstance(translationApiSource, TranslationApiSource), f"malformed {translationApiSource=}"
+        if not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(translationApiSource, TranslationApiSource):
+            raise TypeError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
         super().__init__(message, translationApiSource)
 
@@ -21,7 +23,9 @@ class TranslationException(Exception):
         message: str,
         translationApiSource: TranslationApiSource
     ):
-        assert isinstance(message, str), f"malformed {message=}"
-        assert isinstance(translationApiSource, TranslationApiSource), f"malformed {translationApiSource=}"
+        if not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(translationApiSource, TranslationApiSource):
+            raise TypeError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
         super().__init__(message, translationApiSource)

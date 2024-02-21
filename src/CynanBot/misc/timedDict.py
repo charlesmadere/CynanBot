@@ -11,8 +11,10 @@ class TimedDict():
         cacheTimeToLive: timedelta,
         timeZone: tzinfo = timezone.utc
     ):
-        assert isinstance(cacheTimeToLive, timedelta), f"malformed {cacheTimeToLive=}"
-        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
+        if not isinstance(cacheTimeToLive, timedelta):
+            raise TypeError(f'cacheTimeToLive argument is malformed: \"{cacheTimeToLive}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cacheTimeToLive: timedelta = cacheTimeToLive
         self.__timeZone: tzinfo = timeZone

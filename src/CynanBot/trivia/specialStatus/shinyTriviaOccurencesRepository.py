@@ -17,8 +17,10 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
         backingDatabase: BackingDatabase,
         timeZone: timezone = timezone.utc
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timeZone: timezone = timeZone
@@ -32,9 +34,9 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -75,9 +77,9 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         result = await self.fetchDetails(
@@ -147,13 +149,13 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     ):
         if not utils.isValidInt(newShinyCount):
             raise ValueError(f'newShinyCount argument is malformed: \"{newShinyCount}\"')
-        if newShinyCount < 0 or newShinyCount > utils.getIntMaxSafeSize():
+        elif newShinyCount < 0 or newShinyCount > utils.getIntMaxSafeSize():
             raise ValueError(f'newShinyCount argument is out of bounds: {newShinyCount}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
 
         nowDateTime = datetime.now(self.__timeZone)

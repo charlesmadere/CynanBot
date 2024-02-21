@@ -23,9 +23,11 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
         timber: TimberInterface,
         directory: str = 'temp'
     ):
-        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidStr(directory):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidStr(directory):
             raise ValueError(f'directory argument is malformed: \"{directory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper

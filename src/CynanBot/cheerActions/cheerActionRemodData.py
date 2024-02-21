@@ -13,12 +13,13 @@ class CheerActionRemodData():
         broadcasterUserName: str,
         userId: str
     ):
-        assert isinstance(remodDateTime, SimpleDateTime), f"malformed {remodDateTime=}"
-        if not utils.isValidStr(broadcasterUserId):
+        if not isinstance(remodDateTime, SimpleDateTime):
+            raise TypeError(f'remodDateTime argument is malformed: \"{remodDateTime}\"')
+        elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        if not utils.isValidStr(broadcasterUserName):
+        elif not utils.isValidStr(broadcasterUserName):
             raise TypeError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__remodDateTime: SimpleDateTime = remodDateTime

@@ -34,12 +34,18 @@ class AddCheerActionCommand(AbsChatCommand):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        assert isinstance(administratorProvider, AdministratorProviderInterface), f"malformed {administratorProvider=}"
-        assert isinstance(cheerActionsRepository, CheerActionsRepositoryInterface), f"malformed {cheerActionsRepository=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
-        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
-        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
@@ -49,7 +55,8 @@ class AddCheerActionCommand(AbsChatCommand):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def __actionToStr(self, action: CheerAction) -> str:
-        assert isinstance(action, CheerAction), f"malformed {action=}"
+        if not isinstance(action, CheerAction):
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         cheerActionString = f'id={action.getActionId()}, amount={action.getAmount()}, duration={action.getDurationSeconds()}, streamStatus={action.getStreamStatusRequirement()}'
         return f'ⓘ Your new cheer action — {cheerActionString}'

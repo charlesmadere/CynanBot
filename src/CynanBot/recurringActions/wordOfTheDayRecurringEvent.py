@@ -14,8 +14,10 @@ class WordOfTheDayRecurringEvent(RecurringEvent):
     ):
         super().__init__(twitchChannel = twitchChannel)
 
-        assert isinstance(languageEntry, LanguageEntry), f"malformed {languageEntry=}"
-        assert isinstance(wordOfTheDayResponse, WordOfTheDayResponse), f"malformed {wordOfTheDayResponse=}"
+        if not isinstance(languageEntry, LanguageEntry):
+            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+        elif not isinstance(wordOfTheDayResponse, WordOfTheDayResponse):
+            raise ValueError(f'wordOfTheDayResponse argument is malformed: \"{wordOfTheDayResponse}\"')
 
         self.__languageEntry: LanguageEntry = languageEntry
         self.__wordOfTheDayResponse: WordOfTheDayResponse = wordOfTheDayResponse

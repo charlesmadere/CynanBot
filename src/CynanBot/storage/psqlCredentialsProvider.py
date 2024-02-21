@@ -8,7 +8,8 @@ from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 class PsqlCredentialsProvider(Clearable):
 
     def __init__(self, credentialsJsonReader: JsonReaderInterface):
-        assert isinstance(credentialsJsonReader, JsonReaderInterface), f"malformed {credentialsJsonReader=}"
+        if not isinstance(credentialsJsonReader, JsonReaderInterface):
+            raise ValueError(f'credentialsJsonReader argument is malformed: \"{credentialsJsonReader}\"')
 
         self.__credentialsJsonReader: JsonReaderInterface = credentialsJsonReader
 

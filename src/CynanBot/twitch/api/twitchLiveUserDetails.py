@@ -24,24 +24,30 @@ class TwitchLiveUserDetails():
     ):
         if not utils.isValidBool(isMature):
             raise ValueError(f'isMature argument is malformed: \"{isMature}\"')
-        if not utils.isValidInt(viewerCount):
+        elif not utils.isValidInt(viewerCount):
             raise ValueError(f'viewerCount argument is malformed: \"{viewerCount}\"')
-        if viewerCount < 0 or viewerCount > utils.getIntMaxSafeSize():
+        elif viewerCount < 0 or viewerCount > utils.getIntMaxSafeSize():
             raise ValueError(f'viewerCount argument is out of bounds: {viewerCount}')
-        if not utils.isValidStr(streamId):
+        elif not utils.isValidStr(streamId):
             raise ValueError(f'streamId argument is malformed: \"{streamId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userLogin):
+        elif not utils.isValidStr(userLogin):
             raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        assert gameId is None or isinstance(gameId, str), f"malformed {gameId=}"
-        assert gameName is None or isinstance(gameName, str), f"malformed {gameName=}"
-        assert language is None or isinstance(language, str), f"malformed {language=}"
-        assert thumbnailUrl is None or isinstance(thumbnailUrl, str), f"malformed {thumbnailUrl=}"
-        assert title is None or isinstance(title, str), f"malformed {title=}"
-        assert isinstance(streamType, TwitchStreamType), f"malformed {streamType=}"
+        elif gameId is not None and not isinstance(gameId, str):
+            raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
+        elif gameName is not None and not isinstance(gameName, str):
+            raise ValueError(f'gameName argument is malformed: \"{gameName}\"')
+        elif language is not None and not isinstance(language, str):
+            raise ValueError(f'language argument is malformed: \"{language}\"')
+        elif thumbnailUrl is not None and not isinstance(thumbnailUrl, str):
+            raise ValueError(f'thumbnailUrl argument is malformed: \"{thumbnailUrl}\"')
+        elif title is not None and not isinstance(title, str):
+            raise ValueError(f'title argument is malformed: \"{title}\"')
+        elif not isinstance(streamType, TwitchStreamType):
+            raise ValueError(f'streamType argument is malformed: \"{streamType}\"')
 
         self.__isMature: bool = isMature
         self.__viewerCount: int = viewerCount

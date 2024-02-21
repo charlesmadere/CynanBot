@@ -13,10 +13,11 @@ class ChatBandMember():
     ):
         if not utils.isValidBool(isEnabled):
             raise ValueError(f'isEnabled argument is malformed: \"{isEnabled}\"')
-        assert isinstance(instrument, ChatBandInstrument), f"malformed {instrument=}"
-        if not utils.isValidStr(author):
+        elif not isinstance(instrument, ChatBandInstrument):
+            raise ValueError(f'instrument argument is malformed: \"{instrument}\"')
+        elif not utils.isValidStr(author):
             raise ValueError(f'author argument is malformed: \"{author}\"')
-        if not utils.isValidStr(keyPhrase):
+        elif not utils.isValidStr(keyPhrase):
             raise ValueError(f'keyPhrase argument is malformed: \"{keyPhrase}\"')
 
         self.__isEnabled: bool = isEnabled

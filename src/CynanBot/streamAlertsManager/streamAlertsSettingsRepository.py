@@ -9,7 +9,8 @@ from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import
 class StreamAlertsSettingsRepository(StreamAlertsSettingsRepositoryInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
-        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
+        if not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 

@@ -28,26 +28,30 @@ class TwitchUtils(TwitchUtilsInterface):
         maxRetries: int = 3,
         timeZone: tzinfo = timezone.utc
     ):
-        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
-        assert isinstance(sentMessageLogger, SentMessageLoggerInterface), f"malformed {sentMessageLogger=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidNum(queueTimeoutSeconds):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
+            raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        if queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
-        if not utils.isValidNum(sleepBeforeRetryTimeSeconds):
+        elif not utils.isValidNum(sleepBeforeRetryTimeSeconds):
             raise TypeError(f'sleepBeforeRetryTimeSeconds argument is malformed: \"{sleepBeforeRetryTimeSeconds}\"')
-        if sleepBeforeRetryTimeSeconds < 0.25 or sleepBeforeRetryTimeSeconds > 3:
+        elif sleepBeforeRetryTimeSeconds < 0.25 or sleepBeforeRetryTimeSeconds > 3:
             raise ValueError(f'sleepBeforeRetryTimeSeconds argument is out of bounds: {sleepBeforeRetryTimeSeconds}')
-        if not utils.isValidNum(sleepTimeSeconds):
+        elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        if sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
+        elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        if not utils.isValidInt(maxRetries):
+        elif not utils.isValidInt(maxRetries):
             raise TypeError(f'maxRetries argument is malformed: \"{maxRetries}\"')
-        if maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
+        elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
-        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
@@ -71,16 +75,17 @@ class TwitchUtils(TwitchUtilsInterface):
         maxMessages: int = 3,
         perMessageMaxSize: int = 494
     ):
-        assert isinstance(messageable, TwitchMessageable), f"malformed {messageable=}"
-        if not utils.isValidInt(maxMessages):
+        if not isinstance(messageable, TwitchMessageable):
+            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidInt(maxMessages):
             raise TypeError(f'maxMessages argument is malformed: \"{maxMessages}\"')
-        if maxMessages < 1 or maxMessages > 5:
+        elif maxMessages < 1 or maxMessages > 5:
             raise ValueError(f'maxMessages is out of bounds: {maxMessages}')
-        if not utils.isValidInt(perMessageMaxSize):
+        elif not utils.isValidInt(perMessageMaxSize):
             raise TypeError(f'perMessageMaxSize argument is malformed: \"{perMessageMaxSize}\"')
-        if perMessageMaxSize < 300:
+        elif perMessageMaxSize < 300:
             raise ValueError(f'perMessageMaxSize is too small: {perMessageMaxSize}')
-        if perMessageMaxSize > self.getMaxMessageSize():
+        elif perMessageMaxSize > self.getMaxMessageSize():
             raise ValueError(f'perMessageMaxSize is too big: {perMessageMaxSize} (max size is {self.getMaxMessageSize()})')
 
         if not utils.isValidStr(message):
@@ -110,8 +115,9 @@ class TwitchUtils(TwitchUtilsInterface):
         messageable: TwitchMessageable,
         message: str
     ):
-        assert isinstance(messageable, TwitchMessageable), f"malformed {messageable=}"
-        if not utils.isValidStr(message):
+        if not isinstance(messageable, TwitchMessageable):
+            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         successfullySent = False
@@ -144,7 +150,8 @@ class TwitchUtils(TwitchUtilsInterface):
             self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries (twitchChannel={messageable.getTwitchChannelName()}) (len={len(message)}) \"{message}\"')
 
     async def __sendOutboundMessage(self, outboundMessage: OutboundMessage):
-        assert isinstance(outboundMessage, OutboundMessage), f"malformed {outboundMessage=}"
+        if not isinstance(outboundMessage, OutboundMessage):
+            raise TypeError(f'outboundMessage argument is malformed: \"{outboundMessage}\"')
 
         try:
             self.__messageQueue.put(outboundMessage, block = True, timeout = self.__queueTimeoutSeconds)
@@ -190,12 +197,13 @@ class TwitchUtils(TwitchUtilsInterface):
         delaySeconds: int,
         message: str
     ):
-        assert isinstance(messageable, TwitchMessageable), f"malformed {messageable=}"
-        if not utils.isValidInt(delaySeconds):
+        if not isinstance(messageable, TwitchMessageable):
+            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidInt(delaySeconds):
             raise TypeError(f'delaySeconds argument is malformed: \"{delaySeconds}\"')
-        if delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
+        elif delaySeconds < 1 or delaySeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'delaySeconds argument is out of bounds: {delaySeconds}')
-        if not utils.isValidStr(message):
+        elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         now = datetime.now(self.__timeZone)

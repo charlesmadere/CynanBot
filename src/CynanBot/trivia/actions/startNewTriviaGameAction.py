@@ -24,25 +24,26 @@ class StartNewTriviaGameAction(AbsTriviaAction):
 
         if not utils.isValidBool(isShinyTriviaEnabled):
             raise ValueError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
-        if not utils.isValidInt(pointsForWinning):
+        elif not utils.isValidInt(pointsForWinning):
             raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
-        if pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
+        elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
-        if not utils.isValidInt(secondsToLive):
+        elif not utils.isValidInt(secondsToLive):
             raise ValueError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
-        if secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
+        elif secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
             raise ValueError(f'secondsToLive argument is out of bounds: {secondsToLive}')
-        if not utils.isValidInt(shinyMultiplier):
+        elif not utils.isValidInt(shinyMultiplier):
             raise ValueError(f'shinyMultiplier argument is malformed: \"{shinyMultiplier}\"')
-        if shinyMultiplier < 1 or shinyMultiplier > utils.getIntMaxSafeSize():
+        elif shinyMultiplier < 1 or shinyMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'shinyMultiplier argument is out of bounds: {shinyMultiplier}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        assert isinstance(triviaFetchOptions, TriviaFetchOptions), f"malformed {triviaFetchOptions=}"
+        elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
+            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled
         self.__pointsForWinning: int = pointsForWinning

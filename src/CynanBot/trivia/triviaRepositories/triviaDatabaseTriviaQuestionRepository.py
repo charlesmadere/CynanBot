@@ -35,9 +35,11 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ):
         super().__init__(triviaSettingsRepository)
 
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface), f"malformed {triviaQuestionCompiler=}"
-        if not utils.isValidStr(triviaDatabaseFile):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
+            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+        elif not utils.isValidStr(triviaDatabaseFile):
             raise ValueError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
         self.__timber: TimberInterface = timber
@@ -47,7 +49,8 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__hasQuestionSetAvailable: Optional[bool] = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
-        assert isinstance(fetchOptions, TriviaFetchOptions), f"malformed {fetchOptions=}"
+        if not isinstance(fetchOptions, TriviaFetchOptions):
+            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         self.__timber.log('TriviaDatabaseTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 

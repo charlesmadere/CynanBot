@@ -16,8 +16,10 @@ class PersistAllUsersChatAction(AbsChatAction):
         generalSettingsRepository: GeneralSettingsRepository,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
-        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository

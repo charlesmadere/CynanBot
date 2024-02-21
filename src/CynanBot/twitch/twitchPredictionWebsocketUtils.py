@@ -18,8 +18,10 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
     ) -> Optional[Dict[str, Any]]:
-        assert isinstance(event, TwitchWebsocketEvent), f"malformed {event=}"
-        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
+        if not isinstance(event, TwitchWebsocketEvent):
+            raise TypeError(f'event argument is malformed: \"{event}\"')
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         eventId = event.getEventId()
         if not utils.isValidStr(eventId):
@@ -138,7 +140,8 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         self,
         color: TwitchOutcomeColor
     ) -> Dict[str, int]:
-        assert isinstance(color, TwitchOutcomeColor), f"malformed {color=}"
+        if not isinstance(color, TwitchOutcomeColor):
+            raise TypeError(f'color argument is malformed: \"{color}\"')
 
         if color is TwitchOutcomeColor.BLUE:
             return {
@@ -182,7 +185,8 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         self,
         subscriptionType: TwitchWebsocketSubscriptionType
     ) -> str:
-        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
+        if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return 'prediction_begin'

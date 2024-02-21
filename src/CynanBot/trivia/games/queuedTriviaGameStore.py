@@ -26,12 +26,15 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         queueTimeoutSeconds: float = 3
     ):
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(triviaIdGenerator, TriviaIdGeneratorInterface), f"malformed {triviaIdGenerator=}"
-        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
-        if not utils.isValidNum(queueTimeoutSeconds):
+        if not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not utils.isValidNum(queueTimeoutSeconds):
             raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
-        if queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
+        elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__timber: TimberInterface = timber
@@ -48,7 +51,8 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
     ) -> AddQueuedGamesResult:
         if not utils.isValidBool(isSuperTriviaGameCurrentlyInProgress):
             raise ValueError(f'isSuperTriviaGameCurrentlyInProgress argument is malformed: \"{isSuperTriviaGameCurrentlyInProgress}\"')
-        assert isinstance(action, StartNewSuperTriviaGameAction), f"malformed {action=}"
+        elif not isinstance(action, StartNewSuperTriviaGameAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
 
         queuedSuperGames = self.__queuedSuperGames[action.getTwitchChannel().lower()]
         oldQueueSize = queuedSuperGames.qsize()

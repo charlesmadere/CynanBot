@@ -13,7 +13,8 @@ class WebsocketEvent():
     ):
         if not utils.hasItems(eventData):
             raise ValueError(f'eventData argument is malformed: \"{eventData}\"')
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__eventTime: datetime = datetime.now(timeZone)
         self.__eventData: Dict[str, Any] = eventData

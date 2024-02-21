@@ -24,24 +24,27 @@ class CheerAction():
         userId: str,
         userName: str
     ):
-        assert isinstance(bitRequirement, CheerActionBitRequirement), f"malformed {bitRequirement=}"
-        assert isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement), f"malformed {streamStatusRequirement=}"
-        assert isinstance(actionType, CheerActionType), f"malformed {actionType=}"
-        if not utils.isValidInt(amount):
+        if not isinstance(bitRequirement, CheerActionBitRequirement):
+            raise TypeError(f'bitRequirement argument is malformed: \"{bitRequirement}\"')
+        elif not isinstance(streamStatusRequirement, CheerActionStreamStatusRequirement):
+            raise TypeError(f'streamStatusRequirement argument is malformed: \"{streamStatusRequirement}\"')
+        elif not isinstance(actionType, CheerActionType):
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
+        elif not utils.isValidInt(amount):
             raise TypeError(f'amount argument is malformed: \"{amount}\"')
-        if amount < 1 or amount > utils.getIntMaxSafeSize():
+        elif amount < 1 or amount > utils.getIntMaxSafeSize():
             raise ValueError(f'amount argument is out of bounds: {amount}')
-        if not utils.isValidInt(durationSeconds):
+        elif not utils.isValidInt(durationSeconds):
             raise TypeError(f'durationSeconds argument is malformed: \"{durationSeconds}\"')
-        if durationSeconds < 1:
+        elif durationSeconds < 1:
             raise ValueError(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        if durationSeconds > 1209600:
+        elif durationSeconds > 1209600:
             raise TimeoutDurationSecondsTooLongException(f'durationSeconds argument is out of bounds: {durationSeconds}')
-        if not utils.isValidStr(actionId):
+        elif not utils.isValidStr(actionId):
             raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__bitRequirement: CheerActionBitRequirement = bitRequirement

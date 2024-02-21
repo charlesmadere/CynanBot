@@ -26,14 +26,19 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         queueSleepTimeSeconds: float = 3
     ):
-        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
-        assert isinstance(cheerActionRemodRepository, CheerActionRemodRepositoryInterface), f"malformed {cheerActionRemodRepository=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
-        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
-        if not utils.isValidInt(queueSleepTimeSeconds):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(cheerActionRemodRepository, CheerActionRemodRepositoryInterface):
+            raise TypeError(f'cheerActionRemodRepository argument is malformed: \"{cheerActionRemodRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not utils.isValidInt(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
-        if queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
+        elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
@@ -96,6 +101,7 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
             await asyncio.sleep(self.__queueSleepTimeSeconds)
 
     async def submitRemodData(self, data: CheerActionRemodData):
-        assert isinstance(data, CheerActionRemodData), f"malformed {data=}"
+        if not isinstance(data, CheerActionRemodData):
+            raise TypeError(f'data argument is malformed: \"{data}\"')
 
         await self.__cheerActionRemodRepository.add(data)

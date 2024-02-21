@@ -15,18 +15,19 @@ class ToxicTriviaResult():
         twitchChannel: str,
         userId: str
     ):
-        assert mostRecent is None or isinstance(mostRecent, datetime), f"malformed {mostRecent=}"
-        if not utils.isValidInt(newToxicCount):
+        if mostRecent is not None and not isinstance(mostRecent, datetime):
+            raise ValueError(f'mostRecent argument is malformed: \"{mostRecent}\"')
+        elif not utils.isValidInt(newToxicCount):
             raise ValueError(f'newToxicCount argument is malformed: \"{newToxicCount}\"')
-        if newToxicCount < 0 or newToxicCount > utils.getIntMaxSafeSize():
+        elif newToxicCount < 0 or newToxicCount > utils.getIntMaxSafeSize():
             raise ValueError(f'newToxicCount argument is out of bounds: {newToxicCount}')
-        if not utils.isValidInt(oldToxicCount):
+        elif not utils.isValidInt(oldToxicCount):
             raise ValueError(f'oldToxicCount argument is malformed: \"{oldToxicCount}\"')
-        if oldToxicCount < 0 or oldToxicCount > utils.getIntMaxSafeSize():
+        elif oldToxicCount < 0 or oldToxicCount > utils.getIntMaxSafeSize():
             raise ValueError(f'oldToxicCount argument is out of bounds: {oldToxicCount}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__mostRecent: Optional[datetime] = mostRecent

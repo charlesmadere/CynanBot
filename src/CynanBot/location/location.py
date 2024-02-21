@@ -16,13 +16,14 @@ class Location():
     ):
         if not utils.isValidNum(latitude):
             raise ValueError(f'latitude argument is malformed: \"{latitude}\"')
-        if not utils.isValidNum(longitude):
+        elif not utils.isValidNum(longitude):
             raise ValueError(f'longitude argument is malformed: \"{longitude}\"')
-        if not utils.isValidStr(locationId):
+        elif not utils.isValidStr(locationId):
             raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
-        if not utils.isValidStr(name):
+        elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
-        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
+        elif not isinstance(timeZone, tzinfo):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__latitude: float = latitude
         self.__longitude: float = longitude

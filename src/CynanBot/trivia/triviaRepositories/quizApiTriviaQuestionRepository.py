@@ -38,11 +38,14 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ):
         super().__init__(triviaSettingsRepository)
 
-        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
-        if not utils.isValidStr(quizApiKey):
+        if not isinstance(networkClientProvider, NetworkClientProvider):
+            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+        elif not utils.isValidStr(quizApiKey):
             raise ValueError(f'quizApiKey argument is malformed: \"{quizApiKey}\"')
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(triviaIdGenerator, TriviaIdGeneratorInterface), f"malformed {triviaIdGenerator=}"
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
+            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__quizApiKey: str = quizApiKey
@@ -50,7 +53,8 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
-        assert isinstance(fetchOptions, TriviaFetchOptions), f"malformed {fetchOptions=}"
+        if not isinstance(fetchOptions, TriviaFetchOptions):
+            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         self.__timber.log('QuizApiTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 

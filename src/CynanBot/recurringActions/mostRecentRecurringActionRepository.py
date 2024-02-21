@@ -23,9 +23,12 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         timber: TimberInterface,
         timeZone: timezone = timezone.utc
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -101,7 +104,8 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         await connection.close()
 
     async def setMostRecentRecurringAction(self, action: RecurringAction):
-        assert isinstance(action, RecurringAction), f"malformed {action=}"
+        if not isinstance(action, RecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
 
         nowDateTime = datetime.now(self.__timeZone)
         nowDateTimeStr = nowDateTime.isoformat()

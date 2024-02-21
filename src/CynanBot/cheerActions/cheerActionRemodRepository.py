@@ -20,9 +20,12 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         timber: TimberInterface,
         remodTimeBuffer: timedelta = timedelta(seconds = 2)
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(remodTimeBuffer, timedelta), f"malformed {remodTimeBuffer=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(remodTimeBuffer, timedelta):
+            raise TypeError(f'remodTimeBuffer argument is malformed: \"{remodTimeBuffer}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -31,7 +34,8 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         self.__isDatabaseReady: bool = False
 
     async def add(self, data: CheerActionRemodData):
-        assert isinstance(data, CheerActionRemodData), f"malformed {data=}"
+        if not isinstance(data, CheerActionRemodData):
+            raise TypeError(f'data argument is malformed: \"{data}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -48,7 +52,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
     async def delete(self, broadcasterUserId: str, userId: str):
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()

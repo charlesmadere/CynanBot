@@ -20,9 +20,12 @@ class BackingPsqlDatabase(BackingDatabase):
         psqlCredentialsProvider: PsqlCredentialsProvider,
         timber: TimberInterface
     ):
-        assert isinstance(eventLoop, AbstractEventLoop), f"malformed {eventLoop=}"
-        assert isinstance(psqlCredentialsProvider, PsqlCredentialsProvider), f"malformed {psqlCredentialsProvider=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(psqlCredentialsProvider, PsqlCredentialsProvider):
+            raise TypeError(f'psqlCredentialsProvider argument is malformed: \"{psqlCredentialsProvider}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__psqlCredentialsProvider: PsqlCredentialsProvider = psqlCredentialsProvider
@@ -31,7 +34,8 @@ class BackingPsqlDatabase(BackingDatabase):
         self.__connectionPool: Optional[asyncpg.Pool] = None
 
     async def __createCollations(self, databaseConnection: DatabaseConnection):
-        assert isinstance(databaseConnection, DatabaseConnection), f"malformed {databaseConnection=}"
+        if not isinstance(databaseConnection, DatabaseConnection):
+            raise TypeError(f'databaseConnection argument is malformed: \"{databaseConnection}\"')
 
         await databaseConnection.execute('CREATE EXTENSION IF NOT EXISTS citext')
 

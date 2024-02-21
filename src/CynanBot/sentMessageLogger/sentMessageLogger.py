@@ -25,13 +25,15 @@ class SentMessageLogger(SentMessageLoggerInterface):
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/sentMessageLogger'
     ):
-        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidNum(sleepTimeSeconds):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        if sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
+        elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        if not utils.isValidStr(logRootDirectory):
+        elif not utils.isValidStr(logRootDirectory):
             raise ValueError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
@@ -43,7 +45,8 @@ class SentMessageLogger(SentMessageLoggerInterface):
         self.__messageQueue: SimpleQueue[SentMessage] = SimpleQueue()
 
     def __getLogStatement(self, message: SentMessage) -> str:
-        assert isinstance(message, SentMessage), f"malformed {message=}"
+        if not isinstance(message, SentMessage):
+            raise ValueError(f'message argument is malformed: \"{message}\"')
 
         prefix = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} — '
         error = ''
@@ -68,11 +71,11 @@ class SentMessageLogger(SentMessageLoggerInterface):
     ):
         if not utils.isValidBool(successfullySent):
             raise ValueError(f'successfullySent argument is malformed: \"{successfullySent}\"')
-        if not utils.isValidInt(numberOfRetries):
+        elif not utils.isValidInt(numberOfRetries):
             raise ValueError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
-        if not utils.isValidStr(msg):
+        elif not utils.isValidStr(msg):
             raise ValueError(f'msg argument is malformed: \"{msg}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         sentMessage = SentMessage(

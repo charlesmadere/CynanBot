@@ -17,14 +17,16 @@ class CutenessHistoryResult():
     ):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        assert bestCuteness is None or isinstance(bestCuteness, CutenessHistoryEntry), f"malformed {bestCuteness=}"
-        if totalCuteness is not None and not utils.isValidInt(totalCuteness):
+        elif bestCuteness is not None and not isinstance(bestCuteness, CutenessHistoryEntry):
+            raise ValueError(f'bestCuteness argument is malformed: \"{bestCuteness}\"')
+        elif totalCuteness is not None and not utils.isValidInt(totalCuteness):
             raise ValueError(f'totalCuteness argument is malformed: \"{totalCuteness}\"')
-        if totalCuteness is not None and (totalCuteness < 0 or totalCuteness > utils.getLongMaxSafeSize()):
+        elif totalCuteness is not None and (totalCuteness < 0 or totalCuteness > utils.getLongMaxSafeSize()):
             raise ValueError(f'totalCuteness argument is out of bounds: {totalCuteness}')
-        assert entries is None or isinstance(entries, List), f"malformed {entries=}"
+        elif entries is not None and not isinstance(entries, List):
+            raise ValueError(f'entries argument is malformed: \"{entries}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName

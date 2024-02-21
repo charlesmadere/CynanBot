@@ -18,16 +18,20 @@ class TtsEvent():
         provider: TtsProvider,
         raidInfo: Optional[TtsRaidInfo]
     ):
-        assert message is None or isinstance(message, str), f"malformed {message=}"
-        if not utils.isValidStr(twitchChannel):
+        if message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
-        assert donation is None or isinstance(donation, TtsDonation), f"malformed {donation=}"
-        assert isinstance(provider, TtsProvider), f"malformed {provider=}"
-        assert raidInfo is None or isinstance(raidInfo, TtsRaidInfo), f"malformed {raidInfo=}"
+        elif donation is not None and not isinstance(donation, TtsDonation):
+            raise TypeError(f'donation argument is malformed: \"{donation}\"')
+        elif not isinstance(provider, TtsProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+        elif raidInfo is not None and not isinstance(raidInfo, TtsRaidInfo):
+            raise TypeError(f'raidInfo argument is malformed: \"{raidInfo}\"')
 
         self.__message: Optional[str] = message
         self.__twitchChannel: str = twitchChannel

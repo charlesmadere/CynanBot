@@ -30,45 +30,46 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
 
         if not utils.isValidBool(isQueueActionConsumed):
             raise TypeError(f'isQueueActionConsumed argument is malformed: \"{isQueueActionConsumed}\"')
-        if not utils.isValidBool(isShinyTriviaEnabled):
+        elif not utils.isValidBool(isShinyTriviaEnabled):
             raise TypeError(f'isShinyTriviaEnabled argument is malformed: \"{isShinyTriviaEnabled}\"')
-        if not utils.isValidBool(isToxicTriviaEnabled):
+        elif not utils.isValidBool(isToxicTriviaEnabled):
             raise TypeError(f'isToxicTriviaEnabled argument is malformed: \"{isToxicTriviaEnabled}\"')
-        if not utils.isValidInt(numberOfGames):
+        elif not utils.isValidInt(numberOfGames):
             raise TypeError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
-        if numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
+        elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGames argument is out of bounds: {numberOfGames}')
-        if not utils.isValidInt(perUserAttempts):
+        elif not utils.isValidInt(perUserAttempts):
             raise TypeError(f'perUserAttempts argument is malformed: \"{perUserAttempts}\"')
-        if perUserAttempts < 1 or perUserAttempts > 5:
+        elif perUserAttempts < 1 or perUserAttempts > 5:
             raise ValueError(f'perUserAttempts argument is out of bounds: {perUserAttempts}')
-        if not utils.isValidInt(pointsForWinning):
+        elif not utils.isValidInt(pointsForWinning):
             raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
-        if pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
+        elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
-        if not utils.isValidInt(regularTriviaPointsForWinning):
+        elif not utils.isValidInt(regularTriviaPointsForWinning):
             raise TypeError(f'regularTriviaPointsForWinning argument is malformed: \"{regularTriviaPointsForWinning}\"')
-        if regularTriviaPointsForWinning < 1 or regularTriviaPointsForWinning > utils.getIntMaxSafeSize():
+        elif regularTriviaPointsForWinning < 1 or regularTriviaPointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'regularTriviaPointsForWinning argument is out of bounds: {regularTriviaPointsForWinning}')
-        if not utils.isValidInt(secondsToLive):
+        elif not utils.isValidInt(secondsToLive):
             raise TypeError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
-        if secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
+        elif secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
             raise ValueError(f'secondsToLive argument is out of bounds: {secondsToLive}')
-        if not utils.isValidInt(shinyMultiplier):
+        elif not utils.isValidInt(shinyMultiplier):
             raise TypeError(f'shinyMultiplier argument is malformed: \"{shinyMultiplier}\"')
-        if shinyMultiplier < 1 or shinyMultiplier > utils.getIntMaxSafeSize():
+        elif shinyMultiplier < 1 or shinyMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'shinyMultiplier argument is out of bounds: {shinyMultiplier}')
-        if not utils.isValidInt(toxicMultiplier):
+        elif not utils.isValidInt(toxicMultiplier):
             raise TypeError(f'toxicMultiplier argument is malformed: \"{toxicMultiplier}\"')
-        if toxicMultiplier < 1 or toxicMultiplier > utils.getIntMaxSafeSize():
+        elif toxicMultiplier < 1 or toxicMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'toxicMultiplier argument is out of bounds: {toxicMultiplier}')
-        if not utils.isValidInt(toxicTriviaPunishmentMultiplier):
+        elif not utils.isValidInt(toxicTriviaPunishmentMultiplier):
             raise TypeError(f'toxicTriviaPunishmentMultiplier argument is malformed: \"{toxicTriviaPunishmentMultiplier}\"')
-        if toxicTriviaPunishmentMultiplier < 0 or toxicTriviaPunishmentMultiplier > utils.getIntMaxSafeSize():
+        elif toxicTriviaPunishmentMultiplier < 0 or toxicTriviaPunishmentMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'toxicTriviaPunishmentMultiplier argument is out of bounds: {toxicTriviaPunishmentMultiplier}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        assert isinstance(triviaFetchOptions, TriviaFetchOptions), f"malformed {triviaFetchOptions=}"
+        elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
+            raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
         self.__isQueueActionConsumed: bool = isQueueActionConsumed
         self.__isShinyTriviaEnabled: bool = isShinyTriviaEnabled

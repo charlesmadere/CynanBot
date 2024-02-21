@@ -25,10 +25,14 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         cacheTimeDelta: timedelta = timedelta(hours = 8)
     ):
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
-        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
-        assert isinstance(cacheTimeDelta, timedelta), f"malformed {cacheTimeDelta=}"
+        if not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(cacheTimeDelta, timedelta):
+            raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
@@ -48,9 +52,9 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
     ) -> Optional[TwitchFollower]:
         if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        if not utils.isValidStr(twitchChannelId):
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         follower: Optional[TwitchFollower] = self.__cache[twitchChannelId][userId]

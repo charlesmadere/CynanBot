@@ -18,12 +18,14 @@ class TwitchWebsocketSession():
     ):
         if not utils.isValidInt(keepAliveTimeoutSeconds):
             raise ValueError(f'keepAliveTimeoutSeconds argument is malformed: \"{keepAliveTimeoutSeconds}\"')
-        assert isinstance(connectedAt, SimpleDateTime), f"malformed {connectedAt=}"
-        if reconnectUrl is not None and not utils.isValidUrl(reconnectUrl):
+        elif not isinstance(connectedAt, SimpleDateTime):
+            raise ValueError(f'connectedAt argument is malformed: \"{connectedAt}\"')
+        elif reconnectUrl is not None and not utils.isValidUrl(reconnectUrl):
             raise ValueError(f'reconnectUrl argument is malformed: \"{reconnectUrl}\"')
-        if not utils.isValidStr(sessionId):
+        elif not utils.isValidStr(sessionId):
             raise ValueError(f'sessionId argument is malformed: \"{sessionId}\"')
-        assert status is None or isinstance(status, TwitchWebsocketConnectionStatus), f"malformed {status=}"
+        elif status is not None and not isinstance(status, TwitchWebsocketConnectionStatus):
+            raise ValueError(f'status argument is malformed: \"{status}\"')
 
         self.__keepAliveTimeoutSeconds: int = keepAliveTimeoutSeconds
         self.__connectedAt: SimpleDateTime = connectedAt

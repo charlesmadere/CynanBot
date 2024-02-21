@@ -11,8 +11,9 @@ class SupStreamerChatter():
         mostRecentSup: Optional[SimpleDateTime],
         userId: str
     ):
-        assert mostRecentSup is None or isinstance(mostRecentSup, SimpleDateTime), f"malformed {mostRecentSup=}"
-        if not utils.isValidStr(userId):
+        if mostRecentSup is not None and not isinstance(mostRecentSup, SimpleDateTime):
+            raise ValueError(f'mostRecentSup argument is malformed: \"{mostRecentSup}\"')
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__mostRecentSup: Optional[SimpleDateTime] = mostRecentSup

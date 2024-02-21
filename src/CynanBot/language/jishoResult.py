@@ -13,7 +13,7 @@ class JishoResult():
     ):
         if not utils.hasItems(variants):
             raise ValueError(f'variants argument is malformed: \"{variants}\"')
-        if not utils.isValidStr(initialQuery):
+        elif not utils.isValidStr(initialQuery):
             raise ValueError(f'initialQuery argument is malformed: \"{initialQuery}\"')
 
         self.__variants: List[JishoVariant] = variants
@@ -26,7 +26,8 @@ class JishoResult():
         return self.__variants
 
     def toStrList(self, definitionDelimiter: str = ', ') -> List[str]:
-        assert isinstance(definitionDelimiter, str), f"malformed {definitionDelimiter=}"
+        if not isinstance(definitionDelimiter, str):
+            raise ValueError(f'definitionDelimiter argument is malformed: \"{definitionDelimiter}\"')
 
         strings: List[str] = list()
         for variant in self.__variants:

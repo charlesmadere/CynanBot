@@ -17,12 +17,13 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
     ):
         super().__init__(actionId = actionId)
 
-        assert answer is None or isinstance(answer, str), f"malformed {answer=}"
-        if not utils.isValidStr(twitchChannel):
+        if answer is not None and not isinstance(answer, str):
+            raise ValueError(f'answer argument is malformed: \"{answer}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__answer: Optional[str] = answer

@@ -9,7 +9,8 @@ from CynanBot.tts.ttsEvent import TtsEvent
 class CurrentStreamAlert():
 
     def __init__(self, streamAlert: StreamAlert):
-        assert isinstance(streamAlert, StreamAlert), f"malformed {streamAlert=}"
+        if not isinstance(streamAlert, StreamAlert):
+            raise TypeError(f'streamAlert argument is malformed: \"{streamAlert}\"')
 
         self.__streamAlert: StreamAlert = streamAlert
         self.__alertState: StreamAlertState = StreamAlertState.NOT_STARTED
@@ -34,7 +35,8 @@ class CurrentStreamAlert():
         return str(dictionary)
 
     def setAlertState(self, state: StreamAlertState):
-        assert isinstance(state, StreamAlertState), f"malformed {state=}"
+        if not isinstance(state, StreamAlertState):
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         self.__alertState = state
 

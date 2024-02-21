@@ -13,10 +13,12 @@ class StreamAlert():
         twitchChannel: str,
         ttsEvent: Optional[TtsEvent]
     ):
-        assert soundAlert is None or isinstance(soundAlert, SoundAlert), f"malformed {soundAlert=}"
-        if not utils.isValidStr(twitchChannel):
+        if soundAlert is not None and not isinstance(soundAlert, SoundAlert):
+            raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        assert ttsEvent is None or isinstance(ttsEvent, TtsEvent), f"malformed {ttsEvent=}"
+        elif ttsEvent is not None and not isinstance(ttsEvent, TtsEvent):
+            raise TypeError(f'ttsEvent argument is malformed: \"{ttsEvent}\"')
 
         self.__soundAlert: Optional[SoundAlert] = soundAlert
         self.__twitchChannel: str = twitchChannel

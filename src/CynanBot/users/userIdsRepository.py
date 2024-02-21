@@ -31,13 +31,17 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         twitchApiService: TwitchApiServiceInterface,
         cacheSize: int = 128
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(twitchAnonymousUserIdProvider, TwitchAnonymousUserIdProviderInterface), f"malformed {twitchAnonymousUserIdProvider=}"
-        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
-        if not utils.isValidInt(cacheSize):
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchAnonymousUserIdProvider, TwitchAnonymousUserIdProviderInterface):
+            raise ValueError(f'twitchAnonymousUserIdProvider argument is malformed: \"{twitchAnonymousUserIdProvider}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not utils.isValidInt(cacheSize):
             raise ValueError(f'cacheSize argument is malformed: \"{cacheSize}\"')
-        if cacheSize < 32 or cacheSize > utils.getIntMaxSafeSize():
+        elif cacheSize < 32 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -76,7 +80,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     ) -> Optional[str]:
         if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        if twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -144,9 +148,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     ) -> Optional[str]:
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
-        if twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         userName: Optional[str] = None
@@ -317,9 +321,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def setUser(self, userId: str, userName: str):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userId == '0':
+        elif userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         connection = await self.__getDatabaseConnection()

@@ -12,10 +12,11 @@ class TwitchTokensDetails():
         accessToken: str,
         refreshToken: str
     ):
-        assert isinstance(expirationTime, datetime), f"malformed {expirationTime=}"
-        if not utils.isValidStr(accessToken):
+        if not isinstance(expirationTime, datetime):
+            raise TypeError(f'expirationTime argument is malformed: \"{expirationTime}\"')
+        elif not utils.isValidStr(accessToken):
             raise TypeError(f'accessToken argument is malformed: \"{accessToken}\"')
-        if not utils.isValidStr(refreshToken):
+        elif not utils.isValidStr(refreshToken):
             raise TypeError(f'refreshToken argument is malformed: \"{refreshToken}\"')
 
         self.__expirationTime: datetime = expirationTime

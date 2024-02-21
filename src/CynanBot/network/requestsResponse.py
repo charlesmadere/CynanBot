@@ -18,10 +18,12 @@ class RequestsResponse(NetworkResponse):
         url: str,
         timber: TimberInterface
     ):
-        assert isinstance(response, Response), f"malformed {response=}"
-        if not utils.isValidStr(url):
+        if not isinstance(response, Response):
+            raise ValueError(f'response argument is malformed: \"{response}\"')
+        elif not utils.isValidStr(url):
             raise ValueError(f'url argument is malformed: \"{url}\"')
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__response: Response = response
         self.__url: str = url

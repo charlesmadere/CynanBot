@@ -68,75 +68,92 @@ class TwitchWebsocketEvent():
     ):
         if isAnonymous is not None and not utils.isValidBool(isAnonymous):
             raise ValueError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
-        if isGift is not None and not utils.isValidBool(isGift):
+        elif isGift is not None and not utils.isValidBool(isGift):
             raise ValueError(f'isGift argument is malformed: \"{isGift}\'')
-        if bits is not None and not utils.isValidInt(bits):
+        elif bits is not None and not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
-        if cumulativeMonths is not None and not utils.isValidInt(cumulativeMonths):
+        elif cumulativeMonths is not None and not utils.isValidInt(cumulativeMonths):
             raise ValueError(f'cumulativeMonths argument is malformed: \"{cumulativeMonths}\"')
-        if total is not None and not utils.isValidInt(total):
+        elif total is not None and not utils.isValidInt(total):
             raise ValueError(f'total argument is malformed: \"{total}\"')
-        if viewers is not None and not utils.isValidInt(viewers):
+        elif viewers is not None and not utils.isValidInt(viewers):
             raise ValueError(f'viewers argument is malformed: \"{viewers}\"')
-        assert endedAt is None or isinstance(endedAt, SimpleDateTime), f"malformed {endedAt=}"
-        assert endsAt is None or isinstance(endsAt, SimpleDateTime), f"malformed {endsAt=}"
-        assert followedAt is None or isinstance(followedAt, SimpleDateTime), f"malformed {followedAt=}"
-        assert lockedAt is None or isinstance(lockedAt, SimpleDateTime), f"malformed {lockedAt=}"
-        assert locksAt is None or isinstance(locksAt, SimpleDateTime), f"malformed {locksAt=}"
-        assert redeemedAt is None or isinstance(redeemedAt, SimpleDateTime), f"malformed {redeemedAt=}"
-        assert startedAt is None or isinstance(startedAt, SimpleDateTime), f"malformed {startedAt=}"
-        if broadcasterUserId is not None and not utils.isValidStr(broadcasterUserId):
+        elif endedAt is not None and not isinstance(endedAt, SimpleDateTime):
+            raise ValueError(f'endedAt argument is malformed: \"{endedAt}\"')
+        elif endsAt is not None and not isinstance(endsAt, SimpleDateTime):
+            raise ValueError(f'endsAt argument is malformed: \"{endsAt}\"')
+        elif followedAt is not None and not isinstance(followedAt, SimpleDateTime):
+            raise ValueError(f'followedAt argument is malformed: \"{followedAt}\"')
+        elif lockedAt is not None and not isinstance(lockedAt, SimpleDateTime):
+            raise ValueError(f'lockedAt argument is malformed: \"{lockedAt}\"')
+        elif locksAt is not None and not isinstance(locksAt, SimpleDateTime):
+            raise ValueError(f'locksAt argument is malformed: \"{locksAt}\"')
+        elif redeemedAt is not None and not isinstance(redeemedAt, SimpleDateTime):
+            raise ValueError(f'redeemedAt argument is malformed: \"{redeemedAt}\"')
+        elif startedAt is not None and not isinstance(startedAt, SimpleDateTime):
+            raise ValueError(f'startedAt argument is malformed: \"{startedAt}\"')
+        elif broadcasterUserId is not None and not utils.isValidStr(broadcasterUserId):
             raise ValueError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        if broadcasterUserLogin is not None and not utils.isValidStr(broadcasterUserLogin):
+        elif broadcasterUserLogin is not None and not utils.isValidStr(broadcasterUserLogin):
             raise ValueError(f'broadcasterUserLogin argument is malformed: \"{broadcasterUserLogin}\"')
-        if broadcasterUserName is not None and not utils.isValidStr(broadcasterUserName):
+        elif broadcasterUserName is not None and not utils.isValidStr(broadcasterUserName):
             raise ValueError(f'broadcasterUserName argument is malformed: \"{broadcasterUserName}\"')
-        if categoryId is not None and not utils.isValidStr(categoryId):
+        elif categoryId is not None and not utils.isValidStr(categoryId):
             raise ValueError(f'categoryId argument is malformed: \"{categoryId}\"')
-        if categoryName is not None and not utils.isValidStr(categoryName):
+        elif categoryName is not None and not utils.isValidStr(categoryName):
             raise ValueError(f'categoryName argument is malformed: \"{categoryName}\"')
-        if eventId is not None and not utils.isValidStr(eventId):
+        elif eventId is not None and not utils.isValidStr(eventId):
             raise ValueError(f'eventId argument is malformed: \"{eventId}\"')
-        if fromBroadcasterUserId is not None and not utils.isValidStr(fromBroadcasterUserId):
+        elif fromBroadcasterUserId is not None and not utils.isValidStr(fromBroadcasterUserId):
             raise ValueError(f'fromBroadcasterUserId argument is malformed: \"{fromBroadcasterUserId}\"')
-        if fromBroadcasterUserLogin is not None and not utils.isValidStr(fromBroadcasterUserLogin):
+        elif fromBroadcasterUserLogin is not None and not utils.isValidStr(fromBroadcasterUserLogin):
             raise ValueError(f'fromBroadcasterUserLogin argument is malformed: \"{fromBroadcasterUserLogin}\"')
-        if fromBroadcasterUserName is not None and not utils.isValidStr(fromBroadcasterUserName):
+        elif fromBroadcasterUserName is not None and not utils.isValidStr(fromBroadcasterUserName):
             raise ValueError(f'fromBroadcasterUserName argument is malformed: \"{fromBroadcasterUserName}\"')
-        if message is not None and not utils.isValidStr(message):
+        elif message is not None and not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
-        if rewardId is not None and not utils.isValidStr(rewardId):
+        elif rewardId is not None and not utils.isValidStr(rewardId):
             raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
-        if text is not None and not utils.isValidStr(text):
+        elif text is not None and not utils.isValidStr(text):
             raise ValueError(f'text argument is malformed: \"{text}\"')
-        if title is not None and not utils.isValidStr(title):
+        elif title is not None and not utils.isValidStr(title):
             raise ValueError(f'title argument is malformed: \"{title}\"')
-        if toBroadcasterUserId is not None and not utils.isValidStr(toBroadcasterUserId):
+        elif toBroadcasterUserId is not None and not utils.isValidStr(toBroadcasterUserId):
             raise ValueError(f'toBroadcasterUserId argument is malformed: \"{toBroadcasterUserId}\"')
-        if toBroadcasterUserLogin is not None and not utils.isValidStr(toBroadcasterUserLogin):
+        elif toBroadcasterUserLogin is not None and not utils.isValidStr(toBroadcasterUserLogin):
             raise ValueError(f'toBroadcasterUserLogin argument is malformed: \"{toBroadcasterUserLogin}\"')
-        if toBroadcasterUserName is not None and not utils.isValidStr(toBroadcasterUserName):
+        elif toBroadcasterUserName is not None and not utils.isValidStr(toBroadcasterUserName):
             raise ValueError(f'toBroadcasterUserName argument is malformed: \"{toBroadcasterUserName}\"')
-        if userId is not None and not utils.isValidStr(userId):
+        elif userId is not None and not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if userInput is not None and not utils.isValidStr(userInput):
+        elif userInput is not None and not utils.isValidStr(userInput):
             raise ValueError(f'userInput argument is malformed: \"{userInput}\"')
-        if userLogin is not None and not utils.isValidStr(userLogin):
+        elif userLogin is not None and not utils.isValidStr(userLogin):
             raise ValueError(f'userLogin argument is malformed: \"{userLogin}\"')
-        if userName is not None and not utils.isValidStr(userName):
+        elif userName is not None and not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        if winningOutcomeId is not None and not utils.isValidStr(winningOutcomeId):
+        elif winningOutcomeId is not None and not utils.isValidStr(winningOutcomeId):
             raise ValueError(f'winningOutcomeId argument is malformed: \"{winningOutcomeId}\"')
-        assert tier is None or isinstance(tier, TwitchSubscriberTier), f"malformed {tier=}"
-        assert channelPointsVoting is None or isinstance(channelPointsVoting, TwitchChannelPointsVoting), f"malformed {channelPointsVoting=}"
-        assert choices is None or isinstance(choices, List), f"malformed {choices=}"
-        assert pollStatus is None or isinstance(pollStatus, TwitchPollStatus), f"malformed {pollStatus=}"
-        assert rewardRedemptionStatus is None or isinstance(rewardRedemptionStatus, TwitchRewardRedemptionStatus), f"malformed {rewardRedemptionStatus=}"
-        assert communitySubGift is None or isinstance(communitySubGift, TwitchCommunitySubGift), f"malformed {communitySubGift=}"
-        assert noticeType is None or isinstance(noticeType, TwitchWebsocketNoticeType), f"malformed {noticeType=}"
-        assert outcomes is None or isinstance(outcomes, List), f"malformed {outcomes=}"
-        assert reward is None or isinstance(reward, TwitchReward), f"malformed {reward=}"
-        assert subGift is None or isinstance(subGift, TwitchSubGift), f"malformed {subGift=}"
+        elif tier is not None and not isinstance(tier, TwitchSubscriberTier):
+            raise ValueError(f'tier argument is malformed: \"{tier}\"')
+        elif channelPointsVoting is not None and not isinstance(channelPointsVoting, TwitchChannelPointsVoting):
+            raise ValueError(f'channelPointsVoting argument is malformed: \"{channelPointsVoting}\"')
+        elif choices is not None and not isinstance(choices, List):
+            raise ValueError(f'choices argument is malformed: \"{choices}\"')
+        elif pollStatus is not None and not isinstance(pollStatus, TwitchPollStatus):
+            raise ValueError(f'pollStatus argument is malformed: \"{pollStatus}\"')
+        elif rewardRedemptionStatus is not None and not isinstance(rewardRedemptionStatus, TwitchRewardRedemptionStatus):
+            raise ValueError(f'rewardRedemptionStatus argument is malformed: \"{rewardRedemptionStatus}\"')
+        elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
+            raise ValueError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+        elif noticeType is not None and not isinstance(noticeType, TwitchWebsocketNoticeType):
+            raise ValueError(f'noticeType argument is malformed: \"{noticeType}\"')
+        elif outcomes is not None and not isinstance(outcomes, List):
+            raise ValueError(f'outcomes argument is malformed: \"{outcomes}\"')
+        elif reward is not None and not isinstance(reward, TwitchReward):
+            raise ValueError(f'reward argument is malformed: \"{reward}\"')
+        elif subGift is not None and not isinstance(subGift, TwitchSubGift):
+            raise ValueError(f'subGift argument is malformed: \"{subGift}\"')
 
         self.__isAnonymous: Optional[bool] = isAnonymous
         self.__isGift: Optional[bool] = isGift

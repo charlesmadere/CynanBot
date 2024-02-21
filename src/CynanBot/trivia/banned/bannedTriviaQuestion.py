@@ -13,11 +13,12 @@ class BannedTriviaQuestion():
     ):
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         self.__triviaId: str = triviaId
         self.__userId: str = userId

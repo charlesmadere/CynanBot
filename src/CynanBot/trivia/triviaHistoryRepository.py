@@ -27,10 +27,14 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         timeZone: timezone = timezone.utc
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(timeZone, timezone):
+            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -50,7 +54,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
     ) -> Optional[TriviaQuestionReference]:
         if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -123,10 +127,11 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         emote: str,
         twitchChannel: str
     ) -> TriviaContentCode:
-        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
-        if not utils.isValidStr(emote):
+        if not isinstance(question, AbsTriviaQuestion):
+            raise ValueError(f'question argument is malformed: \"{question}\"')
+        elif not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         triviaId = question.getTriviaId()

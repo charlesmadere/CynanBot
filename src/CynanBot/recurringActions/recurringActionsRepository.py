@@ -27,9 +27,12 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         recurringActionsJsonParser: RecurringActionsJsonParserInterface,
         timber: TimberInterface
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(recurringActionsJsonParser, RecurringActionsJsonParserInterface), f"malformed {recurringActionsJsonParser=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(recurringActionsJsonParser, RecurringActionsJsonParserInterface):
+            raise ValueError(f'recurringActionsJsonParser argument is malformed: \"{recurringActionsJsonParser}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__recurringActionsJsonParser: RecurringActionsJsonParserInterface = recurringActionsJsonParser
@@ -69,8 +72,9 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         actionType: RecurringActionType,
         twitchChannel: str
     ) -> Optional[List[Any]]:
-        assert isinstance(actionType, RecurringActionType), f"malformed {actionType=}"
-        if not utils.isValidStr(twitchChannel):
+        if not isinstance(actionType, RecurringActionType):
+            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -195,7 +199,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         await connection.close()
 
     async def setRecurringAction(self, action: RecurringAction):
-        assert isinstance(action, RecurringAction), f"malformed {action=}"
+        if not isinstance(action, RecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
 
         configurationJson = await self.__recurringActionsJsonParser.toJson(action)
 
@@ -211,8 +216,9 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         action: RecurringAction,
         configurationJson: str
     ):
-        assert isinstance(action, RecurringAction), f"malformed {action=}"
-        if not utils.isValidStr(configurationJson):
+        if not isinstance(action, RecurringAction):
+            raise ValueError(f'action argument is malformed: \"{action}\"')
+        elif not utils.isValidStr(configurationJson):
             raise ValueError(f'configurationJson argument is malformed: \"{configurationJson}\"')
 
         isEnabled = utils.boolToNum(action.isEnabled())

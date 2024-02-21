@@ -18,20 +18,22 @@ class TwitchSubGift():
     ):
         if cumulativeTotal is not None and not utils.isValidInt(cumulativeTotal):
             raise TypeError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
-        if cumulativeTotal is not None and (cumulativeTotal < 1 or cumulativeTotal > utils.getIntMaxSafeSize()):
+        elif cumulativeTotal is not None and (cumulativeTotal < 1 or cumulativeTotal > utils.getIntMaxSafeSize()):
             raise TypeError(f'cumulativeTotal argument is out of bounds: {cumulativeTotal}')
-        if not utils.isValidInt(durationMonths):
+        elif not utils.isValidInt(durationMonths):
             raise TypeError(f'durationMonths argument is malformed: \"{durationMonths}\"')
-        if durationMonths < 1 or durationMonths > utils.getIntMaxSafeSize():
+        elif durationMonths < 1 or durationMonths > utils.getIntMaxSafeSize():
             raise ValueError(f'durationMonths argument is out of boudns: {durationMonths}')
-        assert communityGiftId is None or isinstance(communityGiftId, str), f"malformed {communityGiftId=}"
-        if not utils.isValidStr(recipientUserId):
+        elif communityGiftId is not None and not isinstance(communityGiftId, str):
+            raise TypeError(f'communityGiftId argument is malformed: \"{communityGiftId}\"')
+        elif not utils.isValidStr(recipientUserId):
             raise TypeError(f'recipientUserId argument is malformed: \"{recipientUserId}\"')
-        if not utils.isValidStr(recipientUserLogin):
+        elif not utils.isValidStr(recipientUserLogin):
             raise TypeError(f'recipientUserLogin argument is malformed: \"{recipientUserLogin}\"')
-        if not utils.isValidStr(recipientUserName):
+        elif not utils.isValidStr(recipientUserName):
             raise TypeError(f'recipientUserName argument is malformed: \"{recipientUserName}\"')
-        assert isinstance(subTier, TwitchSubscriberTier), f"malformed {subTier=}"
+        elif not isinstance(subTier, TwitchSubscriberTier):
+            raise TypeError(f'subTier argument is malformed: \"{subTier}\"')
 
         self.__cumulativeTotal: Optional[int] = cumulativeTotal
         self.__durationMonths: int = durationMonths

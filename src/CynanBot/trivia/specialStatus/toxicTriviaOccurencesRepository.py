@@ -17,8 +17,10 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         backingDatabase: BackingDatabase,
         timeZone: timezone = timezone.utc
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timeZone, timezone):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timeZone: timezone = timeZone
@@ -32,7 +34,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -73,7 +75,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchDetails(
@@ -143,11 +145,11 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     ):
         if not utils.isValidInt(newToxicCount):
             raise TypeError(f'newToxicCount argument is malformed: \"{newToxicCount}\"')
-        if newToxicCount < 0 or newToxicCount > utils.getIntMaxSafeSize():
+        elif newToxicCount < 0 or newToxicCount > utils.getIntMaxSafeSize():
             raise ValueError(f'newToxicCount argument is out of bounds: {newToxicCount}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         nowDateTime = datetime.now(self.__timeZone)

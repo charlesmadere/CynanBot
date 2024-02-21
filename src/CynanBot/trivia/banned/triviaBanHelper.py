@@ -20,9 +20,12 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         funtoonRepository: FuntoonRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
-        assert isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface), f"malformed {bannedTriviaIdsRepository=}"
-        assert isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
-        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
+        if not isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface):
+            raise ValueError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
+        elif not isinstance(funtoonRepository, FuntoonRepositoryInterface):
+            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
+            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = bannedTriviaIdsRepository
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
@@ -36,9 +39,10 @@ class TriviaBanHelper(TriviaBanHelperInterface):
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         if triviaSource is TriviaSource.FUNTOON:
             await self.__funtoonRepository.banTriviaQuestion(triviaId)
@@ -53,7 +57,8 @@ class TriviaBanHelper(TriviaBanHelperInterface):
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         if not await self.__triviaSettingsRepository.isBanListEnabled():
             return False
@@ -70,7 +75,8 @@ class TriviaBanHelper(TriviaBanHelperInterface):
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         return await self.__bannedTriviaIdsRepository.unban(
             triviaId = triviaId,

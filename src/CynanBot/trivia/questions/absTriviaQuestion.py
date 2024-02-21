@@ -26,11 +26,14 @@ class AbsTriviaQuestion(ABC):
     ):
         if not utils.isValidStr(question):
             raise NoTriviaQuestionException(f'question argument is malformed: \"{question}\"')
-        if not utils.isValidStr(triviaId):
+        elif not utils.isValidStr(triviaId):
             raise BadTriviaIdException(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaDifficulty, TriviaDifficulty), f"malformed {triviaDifficulty=}"
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
-        assert isinstance(triviaType, TriviaQuestionType), f"malformed {triviaType=}"
+        elif not isinstance(triviaDifficulty, TriviaDifficulty):
+            raise BadTriviaDifficultyException(f'triviaDifficulty argument is malformed: \"{triviaDifficulty}\"')
+        elif not isinstance(triviaSource, TriviaSource):
+            raise BadTriviaSourceException(f'triviaSource argument is malformed: \"{triviaSource}\"')
+        elif not isinstance(triviaType, TriviaQuestionType):
+            raise BadTriviaTypeException(f'triviaType argument is malformed: \"{triviaType}\"')
 
         self.__category: Optional[str] = category
         self.__categoryId: Optional[str] = categoryId

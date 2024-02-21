@@ -20,8 +20,10 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -36,9 +38,10 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
 
@@ -73,7 +76,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     ) -> Optional[BannedTriviaQuestion]:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -135,7 +139,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(
             triviaId = triviaId,
@@ -155,7 +160,8 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        elif not isinstance(triviaSource, TriviaSource):
+            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
 

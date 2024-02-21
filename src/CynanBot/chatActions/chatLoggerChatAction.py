@@ -14,7 +14,8 @@ class ChatLoggerChatAction(AbsChatAction):
         self,
         chatLogger: ChatLoggerInterface
     ):
-        assert isinstance(chatLogger, ChatLoggerInterface), f"malformed {chatLogger=}"
+        if not isinstance(chatLogger, ChatLoggerInterface):
+            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
 
         self.__chatLogger: ChatLoggerInterface = chatLogger
 

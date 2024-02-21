@@ -15,18 +15,19 @@ class ShinyTriviaResult():
         twitchChannel: str,
         userId: str
     ):
-        assert mostRecent is None or isinstance(mostRecent, datetime), f"malformed {mostRecent=}"
-        if not utils.isValidInt(newShinyCount):
+        if mostRecent is not None and not isinstance(mostRecent, datetime):
+            raise ValueError(f'mostRecent argument is malformed: \"{mostRecent}\"')
+        elif not utils.isValidInt(newShinyCount):
             raise ValueError(f'newShinyCount argument is malformed: \"{newShinyCount}\"')
-        if newShinyCount < 0 or newShinyCount > utils.getIntMaxSafeSize():
+        elif newShinyCount < 0 or newShinyCount > utils.getIntMaxSafeSize():
             raise ValueError(f'newShinyCount argument is out of bounds: {newShinyCount}')
-        if not utils.isValidInt(oldShinyCount):
+        elif not utils.isValidInt(oldShinyCount):
             raise ValueError(f'oldShinyCount argument is malformed: \"{oldShinyCount}\"')
-        if oldShinyCount < 0 or oldShinyCount > utils.getIntMaxSafeSize():
+        elif oldShinyCount < 0 or oldShinyCount > utils.getIntMaxSafeSize():
             raise ValueError(f'oldShinyCount argument is out of bounds: {oldShinyCount}')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__mostRecent: Optional[datetime] = mostRecent

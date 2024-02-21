@@ -16,8 +16,10 @@ class CutenessUtils(CutenessUtilsInterface):
         pass
 
     def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
-        assert isinstance(result, CutenessResult), f"malformed {result=}"
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        if not isinstance(result, CutenessResult):
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         cuteness = result.getCuteness()
 
@@ -27,8 +29,10 @@ class CutenessUtils(CutenessUtilsInterface):
             return f'@{result.getUserName()} has no cuteness in {result.getCutenessDate().getHumanString()}'
 
     def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
-        assert isinstance(result, CutenessChampionsResult), f"malformed {result=}"
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        if not isinstance(result, CutenessChampionsResult):
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         champions = result.getChampions()
 
@@ -44,8 +48,10 @@ class CutenessUtils(CutenessUtilsInterface):
         return f'Cuteness Champions {championsStr} ✨'
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
-        assert isinstance(result, CutenessHistoryResult), f"malformed {result=}"
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        if not isinstance(result, CutenessHistoryResult):
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entries = result.getEntries()
 
@@ -73,7 +79,8 @@ class CutenessUtils(CutenessUtilsInterface):
     def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
         if not isinstance(entries, List) or len(entries) == 0:
             raise ValueError(f'entries argument is malformed: \"{entries}\"')
-        assert isinstance(delimiter, str), f"malformed {delimiter=}"
+        elif not isinstance(delimiter, str):
+            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entryStrings: List[str] = list()
 
@@ -88,9 +95,12 @@ class CutenessUtils(CutenessUtilsInterface):
         entryDelimiter: str,
         leaderboardDelimiter: str
     ) -> str:
-        assert isinstance(result, CutenessLeaderboardHistoryResult), f"malformed {result=}"
-        assert isinstance(entryDelimiter, str), f"malformed {entryDelimiter=}"
-        assert isinstance(leaderboardDelimiter, str), f"malformed {leaderboardDelimiter=}"
+        if not isinstance(result, CutenessLeaderboardHistoryResult):
+            raise ValueError(f'result argument is malformed: \"{result}\"')
+        elif not isinstance(entryDelimiter, str):
+            raise ValueError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
+        elif not isinstance(leaderboardDelimiter, str):
+            raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         leaderboards = result.getLeaderboards()
 
@@ -113,7 +123,8 @@ class CutenessUtils(CutenessUtilsInterface):
         return f'Cuteness Leaderboard History — {leaderboardDelimiter.join(leaderboardStrings)} ✨'
 
     def __getLeaderboardPlacementString(self, entry: CutenessLeaderboardEntry) -> str:
-        assert isinstance(entry, CutenessLeaderboardEntry), f"malformed {entry=}"
+        if not isinstance(entry, CutenessLeaderboardEntry):
+            raise ValueError(f'result argument is malformed: \"{entry}\"')
 
         rankStr = ''
 

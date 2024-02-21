@@ -11,7 +11,8 @@ from CynanBot.trivia.builder.triviaGameBuilderSettingsInterface import \
 class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
     def __init__(self, settingsJsonReader: JsonReaderInterface):
-        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
+        if not isinstance(settingsJsonReader, JsonReaderInterface):
+            raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
@@ -96,7 +97,7 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from General Settings file: \"{self.__settingsJsonReader}\"')
-        if len(jsonContents) == 0:
+        elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of General Settings file \"{self.__settingsJsonReader}\" is empty')
 
         return jsonContents
@@ -109,7 +110,7 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from General Settings file: \"{self.__settingsJsonReader}\"')
-        if len(jsonContents) == 0:
+        elif len(jsonContents) == 0:
             raise ValueError(f'JSON contents of General Settings file \"{self.__settingsJsonReader}\" is empty')
 
         return jsonContents

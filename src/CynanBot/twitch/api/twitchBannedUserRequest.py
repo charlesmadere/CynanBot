@@ -12,7 +12,8 @@ class TwitchBannedUserRequest():
     ):
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        assert requestedUserId is None or isinstance(requestedUserId, str), f"malformed {requestedUserId=}"
+        elif requestedUserId is not None and not isinstance(requestedUserId, str):
+            raise TypeError(f'requestedUserId argument is malformed: \"{requestedUserId}\"')
 
         self.__broadcasterId: str = broadcasterId
         self.__requestedUserId: Optional[str] = requestedUserId

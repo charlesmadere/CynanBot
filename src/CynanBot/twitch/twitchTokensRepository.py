@@ -31,12 +31,18 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
         timeZone: timezone = timezone.utc
     ):
-        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
-        assert seedFileReader is None or isinstance(seedFileReader, JsonReaderInterface), f"malformed {seedFileReader=}"
-        assert isinstance(tokensExpirationBuffer, timedelta), f"malformed {tokensExpirationBuffer=}"
-        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
+            raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
+        elif not isinstance(tokensExpirationBuffer, timedelta):
+            raise TypeError(f'tokensExpirationBuffer argument is malformed: \"{tokensExpirationBuffer}\"')
+        elif not isinstance(timeZone, timezone):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -53,7 +59,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
     async def addUser(self, code: str, twitchChannel: str):
         if not utils.isValidStr(code):
             raise TypeError(f'code argument is malformed: \"{code}\"')
-        if not utils.isValidStr(twitchChannel):
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__timber.log('TwitchTokensRepository', f'Adding user \"{twitchChannel}\"...')
@@ -261,8 +267,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         twitchChannel: str,
         tokensDetails: TwitchTokensDetails
     ):
-        assert isinstance(tokensDetails, TwitchTokensDetails), f"malformed {tokensDetails=}"
-        if not utils.isValidStr(twitchChannel):
+        if not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokenDetails argument is malformed: \"{tokensDetails}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__timber.log('TwitchTokensRepository', f'Refreshing Twitch tokens for \"{twitchChannel}\"...')
@@ -348,8 +355,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         expirationTime: datetime,
         twitchChannel: str
     ):
-        assert isinstance(expirationTime, datetime), f"malformed {expirationTime=}"
-        if not utils.isValidStr(twitchChannel):
+        if not isinstance(expirationTime, datetime):
+            raise TypeError(f'expirationTime argument is malformed: \"{expirationTime}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -367,7 +375,8 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__tokenExpirationTimes[twitchChannel.lower()] = expirationTime
 
     def setListener(self, listener: Optional[TwitchTokensRepositoryListener]):
-        assert listener is None or isinstance(listener, TwitchTokensRepositoryListener), f"malformed {listener=}"
+        if listener is not None and not isinstance(listener, TwitchTokensRepositoryListener):
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__twitchTokensRepositoryListener = listener
 
@@ -376,8 +385,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         tokensDetails: Optional[TwitchTokensDetails],
         twitchChannel: str
     ):
-        assert tokensDetails is None or isinstance(tokensDetails, TwitchTokensDetails), f"malformed {tokensDetails=}"
-        if not utils.isValidStr(twitchChannel):
+        if tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokenDetails argument is malformed: \"{tokensDetails}\"')
+        elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()

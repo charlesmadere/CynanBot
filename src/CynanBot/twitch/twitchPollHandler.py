@@ -22,8 +22,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface
     ):
-        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
         self.__timber: TimberInterface = timber
@@ -36,8 +38,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        assert isinstance(user, UserInterface), f"malformed {user=}"
-        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
         event = payload.getEvent()
@@ -72,10 +76,12 @@ class TwitchPollHandler(AbsTwitchPollHandler):
     ):
         if not utils.isValidStr(title):
             raise ValueError(f'title argument is malformed: \"{title}\"')
-        if not utils.isValidStr(userId):
+        elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        assert isinstance(user, UserInterface), f"malformed {user=}"
-        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
+        elif not isinstance(user, UserInterface):
+            raise ValueError(f'user argument is malformed: \"{user}\"')
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return

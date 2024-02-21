@@ -20,15 +20,17 @@ class JishoHelper(JishoHelperInterface):
         definitionsMaxSize: int = 3,
         variantsMaxSize: int = 3
     ):
-        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
-        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
-        if not utils.isValidInt(definitionsMaxSize):
+        if not isinstance(networkClientProvider, NetworkClientProvider):
+            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidInt(definitionsMaxSize):
             raise ValueError(f'definitionsMaxSize argument is malformed: \"{definitionsMaxSize}\"')
-        if definitionsMaxSize < 1 or definitionsMaxSize > 5:
+        elif definitionsMaxSize < 1 or definitionsMaxSize > 5:
             raise ValueError(f'definitionsMaxSize argument is out of bounds: \"{definitionsMaxSize}\"')
-        if not utils.isValidInt(variantsMaxSize):
+        elif not utils.isValidInt(variantsMaxSize):
             raise ValueError(f'variantsMaxSize argument is malformed: \"{variantsMaxSize}\"')
-        if variantsMaxSize < 1 or variantsMaxSize > 5:
+        elif variantsMaxSize < 1 or variantsMaxSize > 5:
             raise ValueError(f'variantsMaxSize argument is out of bounds: \"{variantsMaxSize}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -60,16 +62,16 @@ class JishoHelper(JishoHelperInterface):
 
         if not utils.hasItems(jsonResponse):
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty JSON: {jsonResponse}')
-        if 'meta' not in jsonResponse or utils.getIntFromDict(jsonResponse['meta'], 'status') != 200:
+        elif 'meta' not in jsonResponse or utils.getIntFromDict(jsonResponse['meta'], 'status') != 200:
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has an invalid \"status\": {jsonResponse}')
-        if not utils.hasItems(jsonResponse['data']):
+        elif not utils.hasItems(jsonResponse['data']):
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty \"data\": {jsonResponse}')
 
         variants: List[JishoVariant] = list()
         for variantJson in jsonResponse['data']:
             if not utils.hasItems(variantJson['japanese']):
                 raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty \"japanese\": {jsonResponse}')
-            if not utils.hasItems(variantJson['senses']):
+            elif not utils.hasItems(variantJson['senses']):
                 raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty \"senses\": {jsonResponse}')
 
             word = utils.cleanStr(variantJson['japanese'][0].get('word', ''))

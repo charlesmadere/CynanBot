@@ -5,7 +5,8 @@ from typing import Any, Coroutine, Set
 class BackgroundTaskHelper():
 
     def __init__(self, eventLoop: AbstractEventLoop):
-        assert isinstance(eventLoop, AbstractEventLoop), f"malformed {eventLoop=}"
+        if not isinstance(eventLoop, AbstractEventLoop):
+            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__backgroundTasks: Set[Any] = set()

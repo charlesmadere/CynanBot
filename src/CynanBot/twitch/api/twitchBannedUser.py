@@ -18,20 +18,23 @@ class TwitchBannedUser():
         userLogin: str,
         userName: str
     ):
-        assert isinstance(createdAt, SimpleDateTime), f"malformed {createdAt=}"
-        assert expiresAt is None or isinstance(expiresAt, SimpleDateTime), f"malformed {expiresAt=}"
-        if not utils.isValidStr(moderatorId):
+        if not isinstance(createdAt, SimpleDateTime):
+            raise TypeError(f'createdAt argument is malformed: \"{createdAt}\"')
+        elif expiresAt is not None and not isinstance(expiresAt, SimpleDateTime):
+            raise TypeError(f'expiresAt argument is malformed: \"{expiresAt}\"')
+        elif not utils.isValidStr(moderatorId):
             raise TypeError(f'moderatorId argument is malformed: \"{moderatorId}\"')
-        if not utils.isValidStr(moderatorLogin):
+        elif not utils.isValidStr(moderatorLogin):
             raise TypeError(f'moderatorLogin argument is malformed: \"{moderatorLogin}\"')
-        if not utils.isValidStr(moderatorName):
+        elif not utils.isValidStr(moderatorName):
             raise TypeError(f'moderatorName argument is malformed: \"{moderatorName}\"')
-        assert reason is None or isinstance(reason, str), f"malformed {reason=}"
-        if not utils.isValidStr(userId):
+        elif reason is not None and not isinstance(reason, str):
+            raise TypeError(f'reason argument is malformed: \"{reason}\"')
+        elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        if not utils.isValidStr(userLogin):
+        elif not utils.isValidStr(userLogin):
             raise TypeError(f'userLogin argument is malformed: \"{userLogin}\"')
-        if not utils.isValidStr(userName):
+        elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__createdAt: SimpleDateTime = createdAt

@@ -27,15 +27,20 @@ class TwitchWebsocketSubscription():
     ):
         if not utils.isValidInt(cost):
             raise ValueError(f'cost argument is malformed: \"{cost}\"')
-        assert isinstance(createdAt, SimpleDateTime), f"malformed {createdAt=}"
-        if not utils.isValidStr(subscriptionId):
+        elif not isinstance(createdAt, SimpleDateTime):
+            raise ValueError(f'createdAt argument is malformed: \"{createdAt}\"')
+        elif not utils.isValidStr(subscriptionId):
             raise ValueError(f'subscriptionId argument is malformed: \"{subscriptionId}\"')
-        if not utils.isValidStr(version):
+        elif not utils.isValidStr(version):
             raise ValueError(f'version argument is malformed: \"{version}\"')
-        assert isinstance(condition, TwitchWebsocketCondition), f"malformed {condition=}"
-        assert isinstance(status, TwitchWebsocketConnectionStatus), f"malformed {status=}"
-        assert isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
-        assert isinstance(transport, TwitchWebsocketTransport), f"malformed {transport=}"
+        elif not isinstance(condition, TwitchWebsocketCondition):
+            raise ValueError(f'condition argument is malformed: \"{condition}\"')
+        elif not isinstance(status, TwitchWebsocketConnectionStatus):
+            raise ValueError(f'status argument is malformed: \"{status}\"')
+        elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
+            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        elif not isinstance(transport, TwitchWebsocketTransport):
+            raise ValueError(f'transport argument is malformed: \"{transport}\"')
 
         self.__cost: int = cost
         self.__createdAt: SimpleDateTime = createdAt

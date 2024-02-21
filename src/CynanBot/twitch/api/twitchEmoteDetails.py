@@ -19,12 +19,14 @@ class TwitchEmoteDetails():
     ):
         if not utils.hasItems(emoteImages):
             raise ValueError(f'emoteImages argument is malformed: \"{emoteImages}\"')
-        if not utils.isValidStr(emoteId):
+        elif not utils.isValidStr(emoteId):
             raise ValueError(f'emoteId argument is malformed: \"{emoteId}\"')
-        if not utils.isValidStr(emoteName):
+        elif not utils.isValidStr(emoteName):
             raise ValueError(f'emoteName argument is malformed: \"{emoteName}\"')
-        assert isinstance(emoteType, TwitchEmoteType), f"malformed {emoteType=}"
-        assert isinstance(subscriberTier, TwitchSubscriberTier), f"malformed {subscriberTier=}"
+        elif not isinstance(emoteType, TwitchEmoteType):
+            raise ValueError(f'emoteType argument is malformed: \"{emoteType}\"')
+        elif not isinstance(subscriberTier, TwitchSubscriberTier):
+            raise ValueError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
 
         self.__emoteImages: List[TwitchEmoteImage] = emoteImages
         self.__emoteId: str = emoteId
@@ -33,7 +35,8 @@ class TwitchEmoteDetails():
         self.__subscriberTier: TwitchSubscriberTier = subscriberTier
 
     def getEmote(self, imageScale: TwitchEmoteImageScale) -> Optional[TwitchEmoteImage]:
-        assert isinstance(imageScale, TwitchEmoteImageScale), f"malformed {imageScale=}"
+        if not isinstance(imageScale, TwitchEmoteImageScale):
+            raise ValueError(f'imageScale argument is malformed: \"{imageScale}\"')
 
         for emoteImage in self.__emoteImages:
             if emoteImage.getImageScale() is imageScale:
