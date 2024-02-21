@@ -39,16 +39,11 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ):
         super().__init__(triviaSettingsRepository)
 
-        if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
-            raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
-            raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
-        elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+        assert isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface), f"malformed {additionalTriviaAnswersRepository=}"
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface), f"malformed {triviaAnswerCompiler=}"
+        assert isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface), f"malformed {triviaQuestionCompiler=}"
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -57,8 +52,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
-        if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+        assert isinstance(fetchOptions, TriviaFetchOptions), f"malformed {fetchOptions=}"
 
         self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 

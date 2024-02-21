@@ -25,12 +25,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         triviaIdGenerator: TriviaIdGeneratorInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if not isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface):
-            raise TypeError(f'triviaGameBuilderSettings argument is malformed: \"{triviaGameBuilderSettings}\"')
-        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        assert isinstance(triviaGameBuilderSettings, TriviaGameBuilderSettingsInterface), f"malformed {triviaGameBuilderSettings=}"
+        assert isinstance(triviaIdGenerator, TriviaIdGeneratorInterface), f"malformed {triviaIdGenerator=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
 
         self.__triviaGameBuilderSettings: TriviaGameBuilderSettingsInterface = triviaGameBuilderSettings
         self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
@@ -44,9 +41,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
     ) -> Optional[StartNewTriviaGameAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         if not await self.__triviaGameBuilderSettings.isTriviaGameEnabled():
@@ -97,9 +94,9 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
     ) -> Optional[StartNewSuperTriviaGameAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidInt(numberOfGames):
+        if not utils.isValidInt(numberOfGames):
             raise TypeError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
-        elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
+        if numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGames argument is out of bounds: {numberOfGames}')
 
         if not await self.__triviaGameBuilderSettings.isSuperTriviaGameEnabled():

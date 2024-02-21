@@ -14,11 +14,10 @@ class TwitchReward():
     ):
         if not utils.isValidInt(cost):
             raise TypeError(f'cost argument is malformed: \"{cost}\"')
-        elif prompt is not None and not isinstance(prompt, str):
-            raise TypeError(f'prompt argument is malformed: \"{prompt}\"')
-        elif not utils.isValidStr(rewardId):
+        assert prompt is None or isinstance(prompt, str), f"malformed {prompt=}"
+        if not utils.isValidStr(rewardId):
             raise TypeError(f'rewardId argument is malformed: \"{rewardId}\"')
-        elif not utils.isValidStr(title):
+        if not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
 
         self.__cost: int = cost

@@ -22,14 +22,12 @@ from CynanBot.users.userIdsRepositoryInterface import \
 class TwitchIoConfiguration(TwitchConfiguration):
 
     def __init__(self, userIdsRepository: UserIdsRepositoryInterface):
-        if not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     def getChannel(self, channel: Channel) -> TwitchChannel:
-        if not isinstance(channel, Channel):
-            raise ValueError(f'channel argument is malformed: \"{channel}\"')
+        assert isinstance(channel, Channel), f"malformed {channel=}"
 
         return TwitchIoChannel(
             channel = channel,
@@ -37,8 +35,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
         )
 
     def getContext(self, context: Context) -> TwitchContext:
-        if not isinstance(context, Context):
-            raise ValueError(f'context argument is malformed: \"{context}\"')
+        assert isinstance(context, Context), f"malformed {context=}"
 
         return TwitchIoContext(
             context = context,
@@ -46,8 +43,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
         )
 
     def getMessage(self, message: Message) -> TwitchMessage:
-        if not isinstance(message, Message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+        assert isinstance(message, Message), f"malformed {message=}"
 
         return TwitchIoMessage(
             message = message,

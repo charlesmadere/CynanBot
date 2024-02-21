@@ -10,8 +10,7 @@ from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 class TriviaScoreRepository(TriviaScoreRepositoryInterface):
 
     def __init__(self, backingDatabase: BackingDatabase):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
 
         self.__backingDatabase: BackingDatabase = backingDatabase
 
@@ -24,7 +23,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
@@ -79,7 +78,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
@@ -116,7 +115,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
@@ -159,7 +158,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
@@ -246,23 +245,23 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     ):
         if not utils.isValidInt(newStreak):
             raise ValueError(f'newStreak argument is malformed: \"{newStreak}\"')
-        elif newStreak < utils.getIntMinSafeSize() or newStreak > utils.getIntMaxSafeSize():
+        if newStreak < utils.getIntMinSafeSize() or newStreak > utils.getIntMaxSafeSize():
             raise ValueError(f'newStreak argument is out of boudns: {newStreak}')
-        elif not utils.isValidInt(newSuperTriviaWins):
+        if not utils.isValidInt(newSuperTriviaWins):
             raise ValueError(f'newSuperTriviaWins argument is malformed: \"{newSuperTriviaWins}\"')
-        elif newSuperTriviaWins < 0 or newSuperTriviaWins > utils.getIntMaxSafeSize():
+        if newSuperTriviaWins < 0 or newSuperTriviaWins > utils.getIntMaxSafeSize():
             raise ValueError(f'newSuperTriviaWins argument is out of bounds: {newSuperTriviaWins}')
-        elif not utils.isValidInt(newTriviaLosses):
+        if not utils.isValidInt(newTriviaLosses):
             raise ValueError(f'newTriviaLosses argument is malformed: \"{newTriviaLosses}\"')
-        elif newTriviaLosses < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
+        if newTriviaLosses < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
             raise ValueError(f'newTriviaLosses argument is out of bounds: {newTriviaLosses}')
-        elif not utils.isValidInt(newTriviaWins):
+        if not utils.isValidInt(newTriviaWins):
             raise ValueError(f'newTriviaWins argument is malformed: \"{newTriviaWins}\"')
-        elif newTriviaWins < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
+        if newTriviaWins < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
             raise ValueError(f'newTriviaWins argument is out of bounds: {newTriviaWins}')
-        elif not utils.isValidStr(twitchChannel):
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__backingDatabase.getConnection()

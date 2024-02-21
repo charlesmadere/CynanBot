@@ -22,13 +22,10 @@ class FuntoonRepository(FuntoonRepositoryInterface):
         timber: TimberInterface,
         funtoonApiUrl: str = 'https://funtoon.party/api'
     ):
-        if not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
-            raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidUrl(funtoonApiUrl):
+        assert isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface), f"malformed {funtoonTokensRepository=}"
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidUrl(funtoonApiUrl):
             raise ValueError(f'funtoonApiUrl argument is malformed: \"{funtoonApiUrl}\"')
 
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
@@ -65,9 +62,9 @@ class FuntoonRepository(FuntoonRepositoryInterface):
     ) -> bool:
         if not utils.isValidStr(event):
             raise ValueError(f'event argument is malformed: \"{event}\"')
-        elif not utils.isValidStr(funtoonToken):
+        if not utils.isValidStr(funtoonToken):
             raise ValueError(f'funtoonToken argument is malformed: \"{funtoonToken}\"')
-        elif not utils.isValidStr(twitchChannel):
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         url = f'{self.__funtoonApiUrl}/events/custom'
@@ -114,9 +111,9 @@ class FuntoonRepository(FuntoonRepositoryInterface):
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userThatRedeemed):
+        if not utils.isValidStr(userThatRedeemed):
             raise ValueError(f'userThatRedeemed argument is malformed: \"{userThatRedeemed}\"')
-        elif not utils.isValidStr(userToBattle):
+        if not utils.isValidStr(userToBattle):
             raise ValueError(f'userToBattle argument is malformed: \"{userToBattle}\"')
 
         try:
@@ -143,10 +140,9 @@ class FuntoonRepository(FuntoonRepositoryInterface):
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userThatRedeemed):
+        if not utils.isValidStr(userThatRedeemed):
             raise ValueError(f'userThatRedeemed argument is malformed: \"{userThatRedeemed}\"')
-        elif funtoonPkmnCatchType is not None and not isinstance(funtoonPkmnCatchType, FuntoonPkmnCatchType):
-            raise ValueError(f'funtoonPkmnCatchType argument is malformed: \"{funtoonPkmnCatchType}\"')
+        assert funtoonPkmnCatchType is None or isinstance(funtoonPkmnCatchType, FuntoonPkmnCatchType), f"malformed {funtoonPkmnCatchType=}"
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(twitchChannel)
@@ -177,7 +173,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userThatRedeemed):
+        if not utils.isValidStr(userThatRedeemed):
             raise ValueError(f'userThatRedeemed argument is malformed: \"{userThatRedeemed}\"')
 
         try:
@@ -200,7 +196,7 @@ class FuntoonRepository(FuntoonRepositoryInterface):
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userThatRedeemed):
+        if not utils.isValidStr(userThatRedeemed):
             raise ValueError(f'userThatRedeemed argument is malformed: \"{userThatRedeemed}\"')
 
         try:

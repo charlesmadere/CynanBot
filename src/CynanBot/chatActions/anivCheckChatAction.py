@@ -38,25 +38,17 @@ class AnivCheckChatAction(AbsChatAction):
         userIdsRepository: UserIdsRepositoryInterface,
         timeoutDurationSeconds: int = 60
     ):
-        if not isinstance(anivContentScanner, AnivContentScannerInterface):
-            raise TypeError(f'anivContentScanner argument is malformed: \"{anivContentScanner}\"')
-        elif not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not utils.isValidInt(timeoutDurationSeconds):
+        assert isinstance(anivContentScanner, AnivContentScannerInterface), f"malformed {anivContentScanner=}"
+        assert isinstance(anivUserIdProvider, AnivUserIdProviderInterface), f"malformed {anivUserIdProvider=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
+        assert isinstance(twitchHandleProvider, TwitchHandleProviderInterface), f"malformed {twitchHandleProvider=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        if not utils.isValidInt(timeoutDurationSeconds):
             raise TypeError(f'timeoutDurationSeconds argument is malformed: \"{timeoutDurationSeconds}\"')
-        elif timeoutDurationSeconds < 1 or timeoutDurationSeconds > 1209600:
+        if timeoutDurationSeconds < 1 or timeoutDurationSeconds > 1209600:
             raise ValueError(f'timeoutDurationSeconds argument is out of bounds: {timeoutDurationSeconds}')
 
         self.__anivContentScanner: AnivContentScannerInterface = anivContentScanner

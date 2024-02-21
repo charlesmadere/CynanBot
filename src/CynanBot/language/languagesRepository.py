@@ -182,8 +182,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         self,
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         wotdApiCodes: List[str] = list()
         validEntries = await self.__getLanguageEntries(hasWotdApiCode = True)
@@ -201,7 +200,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     ) -> LanguageEntry:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
-        elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
+        if hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
             raise ValueError(f'hasWotdApiCode argument is malformed: \"{hasWotdApiCode}\"')
 
         validEntries = await self.__getLanguageEntries(
@@ -218,7 +217,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     ) -> List[LanguageEntry]:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
-        elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
+        if hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
             raise ValueError(f'hasWotdApiCode argument is malformed: \"{hasWotdApiCode}\"')
 
         validEntries: List[LanguageEntry] = list()
@@ -249,9 +248,9 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     ) -> Optional[LanguageEntry]:
         if not utils.isValidStr(command):
             raise ValueError(f'command argument is malformed: \"{command}\"')
-        elif hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
+        if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
-        elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
+        if hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
             raise ValueError(f'hasWotdApiCode argumet is malformed: \"{hasWotdApiCode}\"')
 
         validEntries = await self.__getLanguageEntries(
@@ -289,9 +288,9 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     ) -> LanguageEntry:
         if not utils.isValidStr(command):
             raise ValueError(f'command argument is malformed: \"{command}\"')
-        elif hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
+        if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
-        elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
+        if hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
             raise ValueError(f'hasWotdApiCode argumet is malformed: \"{hasWotdApiCode}\"')
 
         languageEntry = await self.getLanguageForCommand(

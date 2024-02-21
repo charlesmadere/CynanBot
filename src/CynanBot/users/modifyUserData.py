@@ -10,11 +10,10 @@ class ModifyUserData():
         userId: str,
         userName: str
     ):
-        if not isinstance(actionType, ModifyUserActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
-        elif not utils.isValidStr(userId):
+        assert isinstance(actionType, ModifyUserActionType), f"malformed {actionType=}"
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__actionType: ModifyUserActionType = actionType

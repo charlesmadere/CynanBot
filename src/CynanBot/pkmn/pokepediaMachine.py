@@ -16,15 +16,13 @@ class PokepediaMachine():
     ):
         if not utils.isValidInt(machineId):
             raise ValueError(f'machineId argument is malformed: \"{machineId}\"')
-        elif not utils.isValidInt(machineNumber):
+        if not utils.isValidInt(machineNumber):
             raise ValueError(f'machineNumber argument is malformed: \"{machineNumber}\"')
-        elif not isinstance(generation, PokepediaGeneration):
-            raise ValueError(f'generation argument is malformed: \"{generation}\"')
-        elif not isinstance(machineType, PokepediaMachineType):
-            raise ValueError(f'machineType argment is malformed: \"{machineType}\"')
-        elif not utils.isValidStr(machineName):
+        assert isinstance(generation, PokepediaGeneration), f"malformed {generation=}"
+        assert isinstance(machineType, PokepediaMachineType), f"malformed {machineType=}"
+        if not utils.isValidStr(machineName):
             raise ValueError(f'machineName argument is malformed: \"{machineName}\"')
-        elif not utils.isValidStr(moveName):
+        if not utils.isValidStr(moveName):
             raise ValueError(f'moveName argument is malformed: \"{moveName}\"')
 
         self.__machineId: int = machineId

@@ -7,8 +7,7 @@ from CynanBot.twitch.configuration.channelJoinEventType import \
 class AbsChannelJoinEvent(ABC):
 
     def __init__(self, eventType: ChannelJoinEventType):
-        if not isinstance(eventType, ChannelJoinEventType):
-            raise ValueError(f'eventType argument is malformed: \"{eventType}\"')
+        assert isinstance(eventType, ChannelJoinEventType), f"malformed {eventType=}"
 
         self.__eventType: ChannelJoinEventType = eventType
 

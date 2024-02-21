@@ -24,14 +24,10 @@ class DeepLTranslationApi(TranslationApi):
         deepLAuthKey: Optional[str],
         timber: TimberInterface
     ):
-        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif deepLAuthKey is not None and not isinstance(deepLAuthKey, str):
-            raise TypeError(f'deepLAuthKey argument is malformed: \"{deepLAuthKey}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(languagesRepository, LanguagesRepositoryInterface), f"malformed {languagesRepository=}"
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert deepLAuthKey is None or isinstance(deepLAuthKey, str), f"malformed {deepLAuthKey=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -47,9 +43,8 @@ class DeepLTranslationApi(TranslationApi):
     async def translate(self, text: str, targetLanguage: LanguageEntry) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
-        elif not isinstance(targetLanguage, LanguageEntry):
-            raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
-        elif not targetLanguage.hasIso6391Code():
+        assert isinstance(targetLanguage, LanguageEntry), f"malformed {targetLanguage=}"
+        if not targetLanguage.hasIso6391Code():
             raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
         deepLAuthKey = self.__deepLAuthKey

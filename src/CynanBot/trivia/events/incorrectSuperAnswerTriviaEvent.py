@@ -27,21 +27,18 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             eventId = eventId
         )
 
-        if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
-        elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
-        elif answer is not None and not isinstance(answer, str):
-            raise ValueError(f'answer argument is malformed: \"{answer}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(triviaQuestion, AbsTriviaQuestion), f"malformed {triviaQuestion=}"
+        assert specialTriviaStatus is None or isinstance(specialTriviaStatus, SpecialTriviaStatus), f"malformed {specialTriviaStatus=}"
+        assert answer is None or isinstance(answer, str), f"malformed {answer=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not utils.isValidStr(gameId):
+        if not utils.isValidStr(gameId):
             raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
-        elif not utils.isValidStr(twitchChannel):
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion

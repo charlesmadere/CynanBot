@@ -47,14 +47,10 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ):
         super().__init__(triviaSettingsRepository)
 
-        if not isinstance(pokepediaRepository, PokepediaRepository):
-            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+        assert isinstance(pokepediaRepository, PokepediaRepository), f"malformed {pokepediaRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaIdGenerator, TriviaIdGeneratorInterface), f"malformed {triviaIdGenerator=}"
+        assert isinstance(maxGeneration, PokepediaGeneration), f"malformed {maxGeneration=}"
 
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: TimberInterface = timber
@@ -62,8 +58,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__maxGeneration: PokepediaGeneration = maxGeneration
 
     async def __createMoveContestTypeQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
-        if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+        assert isinstance(move, PokepediaMove), f"malformed {move=}"
 
         if not move.hasContestType():
             return None
@@ -82,8 +77,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         }
 
     async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
-        if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+        assert isinstance(move, PokepediaMove), f"malformed {move=}"
 
         damageClassStrs: List[str] = list()
         for damageClass in PokepediaDamageClass:
@@ -97,8 +91,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         }
 
     async def __createMoveIsAvailableAsMachineQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
-        if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+        assert isinstance(move, PokepediaMove), f"malformed {move=}"
 
         randomGeneration = await self.__selectRandomGeneration(move.getInitialGeneration())
 
@@ -115,8 +108,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         }
 
     async def __createMoveIsAvailableAsWhichMachineQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
-        if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+        assert isinstance(move, PokepediaMove), f"malformed {move=}"
 
         if not move.hasMachines():
             return None
@@ -202,11 +194,9 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         berryFlavor: Optional[PokepediaBerryFlavor],
         likeOrDislikeStr: str
     ) -> Dict[str, Any]:
-        if not isinstance(nature, PokepediaNature):
-            raise ValueError(f'nature argument is malformed: \"{nature}\"')
-        elif berryFlavor is not None and not isinstance(berryFlavor, PokepediaBerryFlavor):
-            raise ValueError(f'berryFlavor argument is malformed: \"{berryFlavor}\"')
-        elif not utils.isValidStr(likeOrDislikeStr):
+        assert isinstance(nature, PokepediaNature), f"malformed {nature=}"
+        assert berryFlavor is None or isinstance(berryFlavor, PokepediaBerryFlavor), f"malformed {berryFlavor=}"
+        if not utils.isValidStr(likeOrDislikeStr):
             raise ValueError(f'likeOrDislikeStr argument is malformed: \"{likeOrDislikeStr}\"')
 
         randomFlavors = await self.__selectRandomFalseBerryFlavors(berryFlavor)
@@ -335,8 +325,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         return triviaDict
 
     async def __createStatDecreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
-        if not isinstance(stat, PokepediaStat):
-            raise ValueError(f'stat argument is malformed: \"{stat}\"')
+        assert isinstance(stat, PokepediaStat), f"malformed {stat=}"
 
         decreasingNatures = stat.getDecreasingNatures()
         randomNature = random.choice(list(PokepediaNature))
@@ -348,8 +337,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         }
 
     async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
-        if not isinstance(stat, PokepediaStat):
-            raise ValueError(f'stat argument is malformed: \"{stat}\"')
+        assert isinstance(stat, PokepediaStat), f"malformed {stat=}"
 
         increasingNatures = stat.getIncreasingNatures()
         randomNature = random.choice(list(PokepediaNature))
@@ -361,8 +349,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         }
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
-        if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+        assert isinstance(fetchOptions, TriviaFetchOptions), f"malformed {fetchOptions=}"
 
         self.__timber.log('PkmnTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 
@@ -443,8 +430,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         actualFlavor: Optional[PokepediaBerryFlavor]
     ) -> Set[PokepediaBerryFlavor]:
-        if actualFlavor is not None and not isinstance(actualFlavor, PokepediaBerryFlavor):
-            raise ValueError(f'actualFlavor argument is malformed: \"{actualFlavor}\"')
+        assert actualFlavor is None or isinstance(actualFlavor, PokepediaBerryFlavor), f"malformed {actualFlavor=}"
 
         allFlavors: List[PokepediaBerryFlavor] = list(PokepediaBerryFlavor)
         falseFlavors: Set[PokepediaBerryFlavor] = set()
@@ -466,8 +452,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         actualType: PokepediaContestType
     ) -> Set[PokepediaContestType]:
-        if not isinstance(actualType, PokepediaContestType):
-            raise ValueError(f'actualType argument is malformed: \"{actualType}\"')
+        assert isinstance(actualType, PokepediaContestType), f"malformed {actualType=}"
 
         allTypes: List[PokepediaContestType] = list(PokepediaContestType)
         falseTypes: Set[PokepediaContestType] = set()
@@ -515,8 +500,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
     ) -> Set[int]:
         if not utils.isValidInt(actualMachineNumber):
             raise ValueError(f'actualMachineNumber argument is malformed: \"{actualMachineNumber}\"')
-        elif not isinstance(actualMachineType, PokepediaMachineType):
-            raise ValueError(f'actualMachineType argument is malformed: \"{actualMachineType}\"')
+        assert isinstance(actualMachineType, PokepediaMachineType), f"malformed {actualMachineType=}"
 
         minResponses = await self._triviaSettingsRepository.getMinMultipleChoiceResponses()
         maxResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
@@ -537,8 +521,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self,
         initialGeneration: PokepediaGeneration
     ) -> PokepediaGeneration:
-        if not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+        assert isinstance(initialGeneration, PokepediaGeneration), f"malformed {initialGeneration=}"
 
         allGenerations: List[PokepediaGeneration] = list(PokepediaGeneration)
         indexOfMax = allGenerations.index(self.__maxGeneration)

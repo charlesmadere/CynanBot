@@ -19,10 +19,8 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         bannedWordsLinesReader: LinesReaderInterface,
         timber: TimberInterface
     ):
-        if not isinstance(bannedWordsLinesReader, LinesReaderInterface):
-            raise TypeError(f'bannedWordsLinesReader argument is malformed: \"{bannedWordsLinesReader}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(bannedWordsLinesReader, LinesReaderInterface), f"malformed {bannedWordsLinesReader=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__bannedWordsLinesReader: LinesReaderInterface = bannedWordsLinesReader
         self.__timber: TimberInterface = timber
@@ -38,8 +36,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         self,
         lines: Optional[List[str]]
     ) -> Set[AbsBannedWord]:
-        if lines is not None and not isinstance(lines, List):
-            raise TypeError(f'lines argument is malformed: \"{lines}\"')
+        assert lines is None or isinstance(lines, List), f"malformed {lines=}"
 
         cleanedBannedWords: Set[AbsBannedWord] = set()
 
@@ -99,8 +96,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         return bannedWords
 
     def __processLine(self, line: Optional[str]) -> Optional[AbsBannedWord]:
-        if line is not None and not isinstance(line, str):
-            raise TypeError(f'line argument is malformed: \"{line}\"')
+        assert line is None or isinstance(line, str), f"malformed {line=}"
 
         if not utils.isValidStr(line):
             return None

@@ -29,12 +29,9 @@ class PokepediaRepository():
         pokepediaUtils: PokepediaUtilsInterface,
         timber: TimberInterface
     ):
-        if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(pokepediaUtils, PokepediaUtilsInterface):
-            raise ValueError(f'pokepediaUtils argument is malformed: \"{pokepediaUtils}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert isinstance(pokepediaUtils, PokepediaUtilsInterface), f"malformed {pokepediaUtils=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__pokepediaUtils: PokepediaUtilsInterface = pokepediaUtils
@@ -223,8 +220,7 @@ class PokepediaRepository():
         return PokepediaNature.fromInt(natureId)
 
     async def fetchRandomMove(self, maxGeneration: PokepediaGeneration) -> PokepediaMove:
-        if not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+        assert isinstance(maxGeneration, PokepediaGeneration), f"malformed {maxGeneration=}"
 
         randomMoveId = random.randint(1, maxGeneration.getMaxMoveId())
         return await self.fetchMove(randomMoveId)
@@ -235,8 +231,7 @@ class PokepediaRepository():
         return await self.fetchNature(randomNature.getNatureId())
 
     async def fetchRandomPokemon(self, maxGeneration: PokepediaGeneration) -> PokepediaPokemon:
-        if not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+        assert isinstance(maxGeneration, PokepediaGeneration), f"malformed {maxGeneration=}"
 
         randomPokemonId = random.randint(1, maxGeneration.getMaxPokedexId())
         clientSession = await self.__networkClientProvider.get()
@@ -278,8 +273,7 @@ class PokepediaRepository():
     ) -> Dict[PokepediaGeneration, List[PokepediaElementType]]:
         if jsonResponse is None:
             raise ValueError(f'jsonResponse argument is malformed: \"{jsonResponse}\"')
-        elif not isinstance(initialGeneration, PokepediaGeneration):
-            raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
+        assert isinstance(initialGeneration, PokepediaGeneration), f"malformed {initialGeneration=}"
 
         currentTypesJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('types')
         if not utils.hasItems(currentTypesJson):

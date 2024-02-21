@@ -69,16 +69,11 @@ class TwitchApiService(TwitchApiServiceInterface):
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchCredentialsProvider, TwitchCredentialsProviderInterface):
-            raise ValueError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
-        elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
-            raise ValueError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchCredentialsProvider, TwitchCredentialsProviderInterface), f"malformed {twitchCredentialsProvider=}"
+        assert isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface), f"malformed {twitchWebsocketJsonMapper=}"
+        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
@@ -94,9 +89,9 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> bool:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Adding moderator... ({broadcasterId=}) ({twitchAccessToken=}) ({userId=})')
@@ -135,8 +130,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> TwitchBanResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(banRequest, TwitchBanRequest):
-            raise ValueError(f'banRequest argument is malformed: \"{banRequest}\"')
+        assert isinstance(banRequest, TwitchBanRequest), f"malformed {banRequest=}"
 
         self.__timber.log('TwitchApiService', f'Banning user... ({twitchAccessToken=}) ({banRequest=})')
         clientSession = await self.__networkClientProvider.get()
@@ -166,7 +160,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
-        elif not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
             raise TwitchJsonException(f'Recieved a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
@@ -205,8 +199,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> TwitchEventSubResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(eventSubRequest, TwitchEventSubRequest):
-            raise ValueError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
+        assert isinstance(eventSubRequest, TwitchEventSubRequest), f"malformed {eventSubRequest=}"
 
         self.__timber.log('TwitchApiService', f'Creating EventSub subscription... ({twitchAccessToken=}) ({eventSubRequest=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
@@ -232,7 +225,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
-        elif responseStatusCode != 202:
+        if responseStatusCode != 202:
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchStatusCodeException(f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
@@ -292,8 +285,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> TwitchBannedUsersResponse:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise ValueError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
+        assert isinstance(bannedUserRequest, TwitchBannedUserRequest), f"malformed {bannedUserRequest=}"
 
         self.__timber.log('TwitchApiService', f'Fetching banned users... {bannedUserRequest=}')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
@@ -345,16 +337,13 @@ class TwitchApiService(TwitchApiServiceInterface):
         bannedUserRequest: TwitchBannedUserRequest,
         currentPagination: Optional[TwitchPaginationResponse]
     ) -> TwitchBannedUsersPageResponse:
-        if not isinstance(clientSession, NetworkHandle):
-            raise ValueError(f'clientSession argument is malformed: \"{clientSession}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        assert isinstance(clientSession, NetworkHandle), f"malformed {clientSession=}"
+        if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(twitchClientId):
+        if not utils.isValidStr(twitchClientId):
             raise ValueError(f'twitchClientId argument is malformed: \"{twitchClientId}\"')
-        elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise ValueError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
-        elif currentPagination is not None and not isinstance(currentPagination, TwitchPaginationResponse):
-            raise ValueError(f'currentPagination argument is malformed: \"{currentPagination}\"')
+        assert isinstance(bannedUserRequest, TwitchBannedUserRequest), f"malformed {bannedUserRequest=}"
+        assert currentPagination is None or isinstance(currentPagination, TwitchPaginationResponse), f"malformed {currentPagination=}"
 
         url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={bannedUserRequest.getBroadcasterId()}&first=100'
 
@@ -383,10 +372,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
+        if responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
 
@@ -468,10 +457,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
+        if responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
 
@@ -515,9 +504,9 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> Optional[TwitchFollower]:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching follower... ({broadcasterId=}) ({twitchAccessToken=}) ({userId=})')
@@ -543,10 +532,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
+        if responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
 
@@ -575,9 +564,9 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> List[TwitchLiveUserDetails]:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.areValidStrs(userNames):
+        if not utils.areValidStrs(userNames):
             raise ValueError(f'userNames argument is malformed: \"{userNames}\"')
-        elif len(userNames) > 100:
+        if len(userNames) > 100:
             raise ValueError(f'userNames argument has too many values (len is {len(userNames)}, max is 100): \"{userNames}\"')
 
         userNames.sort(key = lambda userName: userName.lower())
@@ -606,10 +595,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching live user details (userNames=\"{userNames}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details (userNames=\"{userNames}\"): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
+        if responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching live user details (userNames=\"{userNames}\"): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching live user details (userNames=\"{userNames}\"): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching live user details (userNames=\"{userNames}\"): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching live user details (userNames=\"{userNames}\"): {responseStatusCode}')
 
@@ -646,9 +635,9 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> Optional[TwitchModUser]:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
@@ -673,10 +662,10 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
+        if responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
-        elif responseStatusCode != 200:
+        if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
 
@@ -718,7 +707,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching tokens (code=\"{code}\"): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching tokens (code=\"{code}\"): {jsonResponse}')
 
@@ -749,7 +738,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> Optional[TwitchUserDetails]:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching user details... ({userId=})')
@@ -779,7 +768,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
 
@@ -815,7 +804,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> Optional[TwitchUserDetails]:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         userName = userName.lower()
@@ -846,7 +835,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details (userName=\"{userName}\"): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details (userName=\"{userName}\"): {jsonResponse}')
 
@@ -883,9 +872,9 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> Optional[TwitchUserSubscriptionDetails]:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching user subscription details... (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\")')
@@ -915,7 +904,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
 
@@ -970,7 +959,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if response.getStatusCode() == 400:
             self.__timber.log('TwitchApiService', f'Encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
             raise TwitchPasswordChangedException(f'Encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
-        elif response.getStatusCode() != 200:
+        if response.getStatusCode() != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
 
@@ -980,7 +969,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         if not utils.hasItems(jsonResponse):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
-        elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
+        if 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
 
@@ -1011,8 +1000,7 @@ class TwitchApiService(TwitchApiServiceInterface):
     ) -> bool:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not isinstance(unbanRequest, TwitchUnbanRequest):
-            raise ValueError(f'unbanRequest argument is malformed: \"{unbanRequest}\"')
+        assert isinstance(unbanRequest, TwitchUnbanRequest), f"malformed {unbanRequest=}"
 
         self.__timber.log('TwitchApiService', f'Unbanning user... ({twitchAccessToken=}) ({unbanRequest=})')
 

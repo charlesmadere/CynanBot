@@ -18,10 +18,8 @@ class TtsSubscriptionDonation(TtsDonation):
     ):
         if not utils.isValidBool(isAnonymous):
             raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
-        elif giftType is not None and not isinstance(giftType, TtsSubscriptionDonationGiftType):
-            raise TypeError(f'giftType argument is malformed: \"{giftType}\"')
-        elif not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
+        assert giftType is None or isinstance(giftType, TtsSubscriptionDonationGiftType), f"malformed {giftType=}"
+        assert isinstance(tier, TwitchSubscriberTier), f"malformed {tier=}"
 
         self.__isAnonymous: bool = isAnonymous
         self.__giftType: Optional[TtsSubscriptionDonationGiftType] = giftType

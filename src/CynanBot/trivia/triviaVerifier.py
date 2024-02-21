@@ -24,14 +24,10 @@ class TriviaVerifier(TriviaVerifierInterface):
         triviaContentScanner: TriviaContentScannerInterface,
         triviaHistoryRepository: TriviaHistoryRepositoryInterface
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaBanHelper, TriviaBanHelperInterface):
-            raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
-        elif not isinstance(triviaContentScanner, TriviaContentScannerInterface):
-            raise ValueError(f'triviaContentScanner argument is malformed: \"{triviaContentScanner}\"')
-        elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
-            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaBanHelper, TriviaBanHelperInterface), f"malformed {triviaBanHelper=}"
+        assert isinstance(triviaContentScanner, TriviaContentScannerInterface), f"malformed {triviaContentScanner=}"
+        assert isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface), f"malformed {triviaHistoryRepository=}"
 
         self.__timber: TimberInterface = timber
         self.__triviaBanHelper: TriviaBanHelperInterface = triviaBanHelper
@@ -46,10 +42,8 @@ class TriviaVerifier(TriviaVerifierInterface):
         if question is None:
             return TriviaContentCode.IS_NONE
 
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
-            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        assert isinstance(triviaFetchOptions, TriviaFetchOptions), f"malformed {triviaFetchOptions=}"
 
         if not triviaFetchOptions.areQuestionAnswerTriviaQuestionsEnabled() and question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
             self.__timber.log('TriviaVerifier', f'The given TriviaType is illegal: {question.getTriviaType()} (triviaFetchOptions: {triviaFetchOptions})')
@@ -76,12 +70,10 @@ class TriviaVerifier(TriviaVerifierInterface):
         emote: str,
         triviaFetchOptions: TriviaFetchOptions
     ) -> TriviaContentCode:
-        if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidStr(emote):
+        assert isinstance(question, AbsTriviaQuestion), f"malformed {question=}"
+        if not utils.isValidStr(emote):
             raise ValueError(f'emote argument is malformed: \"{emote}\"')
-        elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
-            raise ValueError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
+        assert isinstance(triviaFetchOptions, TriviaFetchOptions), f"malformed {triviaFetchOptions=}"
 
         contentCode = await self.__triviaHistoryRepository.verify(
             question = question, 

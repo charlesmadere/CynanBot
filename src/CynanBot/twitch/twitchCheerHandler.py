@@ -36,18 +36,12 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         triviaGameMachine: Optional[TriviaGameMachineInterface],
         twitchChannelProvider: TwitchChannelProvider
     ):
-        if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
-            raise TypeError(f'cheerActionHelper argument is malformed: \"{cheerActionHelper}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaGameBuilder is not None and not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif triviaGameMachine is not None and not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+        assert cheerActionHelper is None or isinstance(cheerActionHelper, CheerActionHelperInterface), f"malformed {cheerActionHelper=}"
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert triviaGameBuilder is None or isinstance(triviaGameBuilder, TriviaGameBuilderInterface), f"malformed {triviaGameBuilder=}"
+        assert triviaGameMachine is None or isinstance(triviaGameMachine, TriviaGameMachineInterface), f"malformed {triviaGameMachine=}"
+        assert isinstance(twitchChannelProvider, TwitchChannelProvider), f"malformed {twitchChannelProvider=}"
 
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
@@ -64,10 +58,8 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         event = dataBundle.requirePayload().getEvent()
 
@@ -119,16 +111,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     ) -> bool:
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+        if bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserLogin):
+        if not utils.isValidStr(cheerUserLogin):
             raise ValueError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
-        elif message is not None and not isinstance(message, str):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+        assert message is None or isinstance(message, str), f"malformed {message=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__cheerActionHelper is None:
             return False
@@ -150,10 +140,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     ):
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 1 or bits > utils.getIntMaxSafeSize():
+        if bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
@@ -191,16 +180,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     ):
         if not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
-        elif bits <= 0 or bits > utils.getIntMaxSafeSize():
+        if bits <= 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise ValueError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserLogin):
+        if not utils.isValidStr(cheerUserLogin):
             raise ValueError(f'cheerUserLogin argument is malformed: \"{cheerUserLogin}\"')
-        elif message is not None and not isinstance(message, str):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+        assert message is None or isinstance(message, str), f"malformed {message=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__streamAlertsManager is None:
             return

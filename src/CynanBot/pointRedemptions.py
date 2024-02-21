@@ -33,12 +33,9 @@ class CutenessRedemption(AbsChannelPointRedemption):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(cutenessRepository, CutenessRepositoryInterface), f"malformed {cutenessRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__timber: TimberInterface = timber
@@ -91,14 +88,10 @@ class PkmnBattleRedemption(AbsChannelPointRedemption):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -149,14 +142,10 @@ class PkmnCatchRedemption(AbsChannelPointRedemption):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -213,8 +202,7 @@ class PkmnCatchRedemption(AbsChannelPointRedemption):
         self,
         pkmnCatchBoosterPack: PkmnCatchBoosterPack
     ) -> FuntoonPkmnCatchType:
-        if not isinstance(pkmnCatchBoosterPack, PkmnCatchBoosterPack):
-            raise ValueError(f'pkmnCatchBoosterPack argument is malformed: \"{pkmnCatchBoosterPack}\"')
+        assert isinstance(pkmnCatchBoosterPack, PkmnCatchBoosterPack), f"malformed {pkmnCatchBoosterPack=}"
 
         if pkmnCatchBoosterPack.getCatchType() is PkmnCatchType.NORMAL:
             return FuntoonPkmnCatchType.NORMAL
@@ -235,14 +223,10 @@ class PkmnEvolveRedemption(AbsChannelPointRedemption):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -285,14 +269,10 @@ class PkmnShinyRedemption(AbsChannelPointRedemption):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface
     ):
-        if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        assert isinstance(funtoonRepository, FuntoonRepositoryInterface), f"malformed {funtoonRepository=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
@@ -334,12 +314,9 @@ class SuperTriviaGameRedemption(AbsChannelPointRedemption):
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaGameBuilder, TriviaGameBuilderInterface), f"malformed {triviaGameBuilder=}"
+        assert isinstance(triviaGameMachine, TriviaGameMachineInterface), f"malformed {triviaGameMachine=}"
 
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
@@ -371,12 +348,9 @@ class TriviaGameRedemption(AbsChannelPointRedemption):
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaGameBuilder, TriviaGameBuilderInterface), f"malformed {triviaGameBuilder=}"
+        assert isinstance(triviaGameMachine, TriviaGameMachineInterface), f"malformed {triviaGameMachine=}"
 
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder

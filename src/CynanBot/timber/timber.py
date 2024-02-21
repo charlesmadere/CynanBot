@@ -22,13 +22,12 @@ class Timber(TimberInterface):
         sleepTimeSeconds: float = 15,
         timberRootDirectory: str = 'logs/timber'
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not utils.isValidNum(sleepTimeSeconds):
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        if not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
+        if sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not utils.isValidStr(timberRootDirectory):
+        if not utils.isValidStr(timberRootDirectory):
             raise ValueError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
 
         self.__sleepTimeSeconds: float = sleepTimeSeconds
@@ -40,8 +39,7 @@ class Timber(TimberInterface):
     def __getErrorStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> Optional[str]:
         if not utils.isValidBool(ensureNewLine):
             raise ValueError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
-        elif not isinstance(timberEntry, TimberEntry):
-            raise ValueError(f'timberEntry argument is malformed: \"{timberEntry}\"')
+        assert isinstance(timberEntry, TimberEntry), f"malformed {timberEntry=}"
 
         if not timberEntry.hasException():
             return None
@@ -59,8 +57,7 @@ class Timber(TimberInterface):
     def __getLogStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> str:
         if not utils.isValidBool(ensureNewLine):
             raise ValueError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
-        elif not isinstance(timberEntry, TimberEntry):
-            raise ValueError(f'timberEntry argument is malformed: \"{timberEntry}\"')
+        assert isinstance(timberEntry, TimberEntry), f"malformed {timberEntry=}"
 
         logStatement = f'{timberEntry.getSimpleDateTime().getDateAndTimeStr(True)} — {timberEntry.getTag()} — {timberEntry.getMsg()}'.strip()
 
@@ -81,12 +78,10 @@ class Timber(TimberInterface):
     ):
         if not utils.isValidStr(tag):
             raise ValueError(f'tag argument is malformed: \"{tag}\"')
-        elif not utils.isValidStr(msg):
+        if not utils.isValidStr(msg):
             raise ValueError(f'msg argument is malformed: \"{msg}\"')
-        elif exception is not None and not isinstance(exception, Exception):
-            raise ValueError(f'exception argument is malformed: \"{exception}\"')
-        elif traceback is not None and not isinstance(traceback, str):
-            raise ValueError(f'traceback argument is malformed: \"{traceback}\"')
+        assert exception is None or isinstance(exception, Exception), f"malformed {exception=}"
+        assert traceback is None or isinstance(traceback, str), f"malformed {traceback=}"
 
         timberEntry = TimberEntry(
             tag = tag,

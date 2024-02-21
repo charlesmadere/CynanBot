@@ -25,25 +25,22 @@ class ChannelJoinHelper():
         maxChannelsToJoinIfUnverified: int = 10,
         maxChannelsToJoinIfVerified: int = 100
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
-        elif not utils.isValidBool(verified):
+        assert isinstance(backgroundTaskHelper, BackgroundTaskHelper), f"malformed {backgroundTaskHelper=}"
+        if not utils.isValidBool(verified):
             raise ValueError(f'verified argument is malformed: \"{verified}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not utils.isValidNum(sleepTimeSeconds):
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
+        if not utils.isValidNum(sleepTimeSeconds):
             raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
-        elif sleepTimeSeconds < 10 or sleepTimeSeconds > 20:
+        if sleepTimeSeconds < 10 or sleepTimeSeconds > 20:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not utils.isValidInt(maxChannelsToJoinIfUnverified):
+        if not utils.isValidInt(maxChannelsToJoinIfUnverified):
             raise ValueError(f'maxChannelsToJoinIfUnverified argument is malformed: \"{maxChannelsToJoinIfUnverified}\"')
-        elif maxChannelsToJoinIfUnverified < 5 or maxChannelsToJoinIfUnverified > 10:
+        if maxChannelsToJoinIfUnverified < 5 or maxChannelsToJoinIfUnverified > 10:
             raise ValueError(f'maxChannelsToJoinIfUnverified argument is out of bounds: {maxChannelsToJoinIfUnverified}')
-        elif not utils.isValidInt(maxChannelsToJoinIfVerified):
+        if not utils.isValidInt(maxChannelsToJoinIfVerified):
             raise ValueError(f'maxChannelsToJoinIfVerified argument is malformed: \"{maxChannelsToJoinIfVerified}\"')
-        elif maxChannelsToJoinIfVerified < 5 or maxChannelsToJoinIfVerified > 200:
+        if maxChannelsToJoinIfVerified < 5 or maxChannelsToJoinIfVerified > 200:
             raise ValueError(f'maxChannelsToJoinIfVerified argument is out of bounds: {maxChannelsToJoinIfVerified}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
@@ -124,7 +121,6 @@ class ChannelJoinHelper():
         self.__isJoiningChannels = False
 
     def setChannelJoinListener(self, listener: Optional[ChannelJoinListener]):
-        if listener is not None and not isinstance(listener, ChannelJoinListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+        assert listener is None or isinstance(listener, ChannelJoinListener), f"malformed {listener=}"
 
         self.__channelJoinListener = listener

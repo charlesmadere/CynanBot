@@ -42,32 +42,19 @@ class ChatActionsManager(ChatActionsManagerInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if anivCheckChatAction is not None and not isinstance(anivCheckChatAction, AnivCheckChatAction):
-            raise ValueError(f'anivCheckChatAction argument is malformed: \"{anivCheckChatAction}\"')
-        elif catJamChatAction is not None and not isinstance(catJamChatAction, CatJamChatAction):
-            raise ValueError(f'catJamChatAction argument is malformed: \"{catJamChatAction}\"')
-        elif chatLoggerChatAction is not None and not isinstance(chatLoggerChatAction, ChatLoggerChatAction):
-            raise ValueError(f'chatLoggerChatAction argument is malformed: \"{chatLoggerChatAction}\"')
-        elif deerForceChatAction is not None and not isinstance(deerForceChatAction, DeerForceChatAction):
-            raise ValueError(f'deerForceChatAction argument is malformed: \"{deerForceChatAction}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
-            raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif persistAllUsersChatAction is not None and not isinstance(persistAllUsersChatAction, PersistAllUsersChatAction):
-            raise ValueError(f'persistAllUsersChatAction argument is malformed: \"{persistAllUsersChatAction}\"')
-        elif schubertWalkChatAction is not None and not isinstance(schubertWalkChatAction, SchubertWalkChatAction):
-            raise ValueError(f'schubertWalkChatAction argument is malformed: \"{schubertWalkChatAction}\"')
-        elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
-            raise ValueError(f'supStreamerChatAction argument is malformed: \"{supStreamerChatAction}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        assert anivCheckChatAction is None or isinstance(anivCheckChatAction, AnivCheckChatAction), f"malformed {anivCheckChatAction=}"
+        assert catJamChatAction is None or isinstance(catJamChatAction, CatJamChatAction), f"malformed {catJamChatAction=}"
+        assert chatLoggerChatAction is None or isinstance(chatLoggerChatAction, ChatLoggerChatAction), f"malformed {chatLoggerChatAction=}"
+        assert deerForceChatAction is None or isinstance(deerForceChatAction, DeerForceChatAction), f"malformed {deerForceChatAction=}"
+        assert isinstance(generalSettingsRepository, GeneralSettingsRepository), f"malformed {generalSettingsRepository=}"
+        assert isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface), f"malformed {mostRecentChatsRepository=}"
+        assert persistAllUsersChatAction is None or isinstance(persistAllUsersChatAction, PersistAllUsersChatAction), f"malformed {persistAllUsersChatAction=}"
+        assert schubertWalkChatAction is None or isinstance(schubertWalkChatAction, SchubertWalkChatAction), f"malformed {schubertWalkChatAction=}"
+        assert supStreamerChatAction is None or isinstance(supStreamerChatAction, SupStreamerChatAction), f"malformed {supStreamerChatAction=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchUtils, TwitchUtilsInterface), f"malformed {twitchUtils=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
 
         self.__anivCheckChatAction: Optional[AbsChatAction] = anivCheckChatAction
         self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
@@ -82,8 +69,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def handleMessage(self, message: TwitchMessage):
-        if not isinstance(message, TwitchMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+        assert isinstance(message, TwitchMessage), f"malformed {message=}"
 
         mostRecentChat = await self.__mostRecentChatsRepository.get(
             chatterUserId = message.getAuthorId(),
@@ -143,12 +129,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
         message: TwitchMessage,
         user: UserInterface
     ):
-        if mostRecentChat is not None and not isinstance(mostRecentChat, MostRecentChat):
-            raise ValueError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
-        elif not isinstance(message, TwitchMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+        assert mostRecentChat is None or isinstance(mostRecentChat, MostRecentChat), f"malformed {mostRecentChat=}"
+        assert isinstance(message, TwitchMessage), f"malformed {message=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__catJamChatAction is not None and await self.__catJamChatAction.handleChat(
             mostRecentChat = mostRecentChat,

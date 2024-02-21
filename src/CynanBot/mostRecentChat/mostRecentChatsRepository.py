@@ -24,11 +24,9 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         timber: TimberInterface,
         cacheSize: int = 100
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(cacheSize):
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -44,7 +42,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
     async def get(self, chatterUserId: str, twitchChannelId: str) -> Optional[MostRecentChat]:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         cache = self.__caches[twitchChannelId]
@@ -118,7 +116,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
     async def set(self, chatterUserId: str, twitchChannelId: str):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         simpleDateTime = SimpleDateTime()

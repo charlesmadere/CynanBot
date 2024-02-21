@@ -38,24 +38,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
-        if channelPointRedemptionHandler is not None and not isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler):
-            raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
-        elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
-            raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
-        elif pollHandler is not None and not isinstance(pollHandler, AbsTwitchPollHandler):
-            raise TypeError(f'pollHandler argument is malformed: \"{pollHandler}\"')
-        elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
-            raise TypeError(f'predictionHandler argument is malformed: \"{predictionHandler}\"')
-        elif raidHandler is not None and not isinstance(raidHandler, AbsTwitchRaidHandler):
-            raise TypeError(f'raidHandler argument is malformed: \"{raidHandler}\"')
-        elif subscriptionHandler is not None and not isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler):
-            raise TypeError(f'subscriptionHandler argument is malformed: \"{subscriptionHandler}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        assert channelPointRedemptionHandler is None or isinstance(channelPointRedemptionHandler, AbsTwitchChannelPointRedemptionHandler), f"malformed {channelPointRedemptionHandler=}"
+        assert cheerHandler is None or isinstance(cheerHandler, AbsTwitchCheerHandler), f"malformed {cheerHandler=}"
+        assert pollHandler is None or isinstance(pollHandler, AbsTwitchPollHandler), f"malformed {pollHandler=}"
+        assert predictionHandler is None or isinstance(predictionHandler, AbsTwitchPredictionHandler), f"malformed {predictionHandler=}"
+        assert raidHandler is None or isinstance(raidHandler, AbsTwitchRaidHandler), f"malformed {raidHandler=}"
+        assert subscriptionHandler is None or isinstance(subscriptionHandler, AbsTwitchSubscriptionHandler), f"malformed {subscriptionHandler=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(usersRepository, UsersRepositoryInterface), f"malformed {usersRepository=}"
 
         self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
         self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
@@ -111,8 +102,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             or subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
 
     async def onNewWebsocketDataBundle(self, dataBundle: TwitchWebsocketDataBundle):
-        if not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         payload = dataBundle.getPayload()
         if payload is None:
@@ -204,8 +194,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
     async def __persistUserInfo(self, event: Optional[TwitchWebsocketEvent]):
         if event is None:
             return
-        elif not isinstance(event, TwitchWebsocketEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
+        elassert isinstance(event, TwitchWebsocketEvent), f"malformed {event=}"
 
         await self.__userIdsRepository.optionallySetUser(
             userId = event.getBroadcasterUserId(),

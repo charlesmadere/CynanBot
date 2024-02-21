@@ -20,10 +20,8 @@ class ContentScanner(ContentScannerInterface):
         bannedWordsRepository: BannedWordsRepositoryInterface,
         timber: TimberInterface
     ):
-        if not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(bannedWordsRepository, BannedWordsRepositoryInterface), f"malformed {bannedWordsRepository=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
         self.__timber: TimberInterface = timber
@@ -32,9 +30,8 @@ class ContentScanner(ContentScannerInterface):
         self.__wordRegEx: Pattern = re.compile(r'\w', re.IGNORECASE)
 
     async def scan(self, string: Optional[str]) -> ContentCode:
-        if string is not None and not isinstance(string, str):
-            raise TypeError(f'string argument is malformed: \"{string}\"')
-        elif string is None:
+        assert string is None or isinstance(string, str), f"malformed {string=}"
+        if string is None:
             return ContentCode.IS_NONE
         elif len(string) == 0:
             return ContentCode.IS_EMPTY
@@ -62,10 +59,8 @@ class ContentScanner(ContentScannerInterface):
         phrases: Set[str],
         words: Set[str]
     ) -> ContentCode:
-        if not isinstance(phrases, Set):
-            raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
-        elif not isinstance(words, Set):
-            raise TypeError(f'words argument is malformed: \"{words}\"')
+        assert isinstance(phrases, Set), f"malformed {phrases=}"
+        assert isinstance(words, Set), f"malformed {words=}"
 
         absBannedWords = await self.__bannedWordsRepository.getBannedWordsAsync()
 
@@ -93,8 +88,7 @@ class ContentScanner(ContentScannerInterface):
         phrases: Set[str],
         string: Optional[str]
     ):
-        if not isinstance(phrases, Set):
-            raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
+        assert isinstance(phrases, Set), f"malformed {phrases=}"
 
         if not utils.isValidStr(string):
             return
@@ -113,8 +107,7 @@ class ContentScanner(ContentScannerInterface):
         words: Set[str],
         string: Optional[str]
     ):
-        if not isinstance(words, Set):
-            raise TypeError(f'words argument is malformed: \"{words}\"')
+        assert isinstance(words, Set), f"malformed {words=}"
 
         if not utils.isValidStr(string):
             return

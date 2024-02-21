@@ -44,26 +44,23 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(casualGamePollRedemption, CasualGamePollRedemption) and not isinstance(casualGamePollRedemption, StubPointRedemption):
             raise TypeError(f'casualGamePollRedemption argument is malformed: \"{casualGamePollRedemption}\"')
-        elif not isinstance(cutenessRedemption, CutenessRedemption) and not isinstance(cutenessRedemption, StubPointRedemption):
+        if not isinstance(cutenessRedemption, CutenessRedemption) and not isinstance(cutenessRedemption, StubPointRedemption):
             raise TypeError(f'cutenessRedemption argument is malformed: \"{cutenessRedemption}\"')
-        elif not isinstance(pkmnBattleRedemption, PkmnBattleRedemption) and not isinstance(pkmnBattleRedemption, StubPointRedemption):
+        if not isinstance(pkmnBattleRedemption, PkmnBattleRedemption) and not isinstance(pkmnBattleRedemption, StubPointRedemption):
             raise TypeError(f'pkmnBattleRedemption argument is malformed: \"{pkmnBattleRedemption}\"')
-        elif not isinstance(pkmnCatchRedemption, PkmnCatchRedemption) and not isinstance(pkmnCatchRedemption, StubPointRedemption):
+        if not isinstance(pkmnCatchRedemption, PkmnCatchRedemption) and not isinstance(pkmnCatchRedemption, StubPointRedemption):
             raise TypeError(f'pkmnCatchRedemption argument is malformed: \"{pkmnCatchRedemption}\"')
-        elif not isinstance(pkmnEvolveRedemption, PkmnEvolveRedemption) and not isinstance(pkmnEvolveRedemption, StubPointRedemption):
+        if not isinstance(pkmnEvolveRedemption, PkmnEvolveRedemption) and not isinstance(pkmnEvolveRedemption, StubPointRedemption):
             raise TypeError(f'pkmnEvolveRedemption argument is malformed: \"{pkmnEvolveRedemption}\"')
-        elif not isinstance(pkmnShinyRedemption, PkmnShinyRedemption) and not isinstance(pkmnShinyRedemption, StubPointRedemption):
+        if not isinstance(pkmnShinyRedemption, PkmnShinyRedemption) and not isinstance(pkmnShinyRedemption, StubPointRedemption):
             raise TypeError(f'pkmnShinyRedemption argument is malformed: \"{pkmnShinyRedemption}\"')
-        elif not isinstance(superTriviaGameRedemption, SuperTriviaGameRedemption) and not isinstance(superTriviaGameRedemption, StubPointRedemption):
+        if not isinstance(superTriviaGameRedemption, SuperTriviaGameRedemption) and not isinstance(superTriviaGameRedemption, StubPointRedemption):
             raise TypeError(f'superTriviaGameRedemption argument is malformed: \"{superTriviaGameRedemption}\"')
-        elif not isinstance(triviaGameRedemption, TriviaGameRedemption) and not isinstance(triviaGameRedemption, StubPointRedemption):
+        if not isinstance(triviaGameRedemption, TriviaGameRedemption) and not isinstance(triviaGameRedemption, StubPointRedemption):
             raise TypeError(f'triviaGameRedemption argument is malformed: \"{triviaGameRedemption}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchChannelProvider, TwitchChannelProvider), f"malformed {twitchChannelProvider=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__casualGamePollRedemption: AbsChannelPointRedemption = casualGamePollRedemption
         self.__cutenessRedemption: AbsChannelPointRedemption = cutenessRedemption
@@ -85,10 +82,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         event = dataBundle.requirePayload().getEvent()
 

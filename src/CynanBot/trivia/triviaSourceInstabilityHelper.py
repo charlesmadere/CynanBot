@@ -14,12 +14,9 @@ class TriviaSourceInstabilityHelper():
         fallOffTimeDelta: timedelta = timedelta(minutes = 20),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(fallOffTimeDelta, timedelta):
-            raise ValueError(f'fallOffTimeDelta argument is malformed: \"{fallOffTimeDelta}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(fallOffTimeDelta, timedelta), f"malformed {fallOffTimeDelta=}"
+        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
 
         self.__timber: TimberInterface = timber
         self.__fallOffTimeDelta: timedelta = fallOffTimeDelta
@@ -29,8 +26,7 @@ class TriviaSourceInstabilityHelper():
         self.__values: Dict[TriviaSource, int] = defaultdict(lambda: 0)
 
     def __getitem__(self, key: TriviaSource) -> int:
-        if not isinstance(key, TriviaSource):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+        assert isinstance(key, TriviaSource), f"malformed {key=}"
 
         now = datetime.now(self.__timeZone)
         lastErrorTime = self.__times.get(key, None)
@@ -42,8 +38,7 @@ class TriviaSourceInstabilityHelper():
         return 0
 
     def incrementErrorCount(self, key: TriviaSource) -> int:
-        if not isinstance(key, TriviaSource):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+        assert isinstance(key, TriviaSource), f"malformed {key=}"
 
         now = datetime.now(self.__timeZone)
         lastErrorTime = self.__times.get(key, None)

@@ -18,16 +18,12 @@ class TwitchWebsocketMetadata():
         messageType: Optional[TwitchWebsocketMessageType],
         subscriptionType: Optional[TwitchWebsocketSubscriptionType]
     ):
-        if not isinstance(messageTimestamp, SimpleDateTime):
-            raise TypeError(f'messageTimestamp argument is malformed: \"{messageTimestamp}\"')
-        elif not utils.isValidStr(messageId):
+        assert isinstance(messageTimestamp, SimpleDateTime), f"malformed {messageTimestamp=}"
+        if not utils.isValidStr(messageId):
             raise TypeError(f'messageId argument is malformed: \"{messageId}\"')
-        elif subscriptionVersion is not None and not isinstance(subscriptionVersion, str):
-            raise TypeError(f'subscriptionVersion argument is malformed: \"{subscriptionVersion}\"')
-        elif messageType is not None and not isinstance(messageType, TwitchWebsocketMessageType):
-            raise TypeError(f'messageType argument is malformed: \"{messageType}\"')
-        elif subscriptionType is not None and not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        assert subscriptionVersion is None or isinstance(subscriptionVersion, str), f"malformed {subscriptionVersion=}"
+        assert messageType is None or isinstance(messageType, TwitchWebsocketMessageType), f"malformed {messageType=}"
+        assert subscriptionType is None or isinstance(subscriptionType, TwitchWebsocketSubscriptionType), f"malformed {subscriptionType=}"
 
         self.__messageTimestamp: SimpleDateTime = messageTimestamp
         self.__messageId: str = messageId

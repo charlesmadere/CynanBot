@@ -34,7 +34,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
         if not utils.areValidStrs(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        if not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         self.__correctAnswers: List[str] = correctAnswers
@@ -65,7 +65,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
         if not utils.hasItems(correctAnswerChars):
             raise RuntimeError(f'Couldn\'t find any correct answer chars within \"{self.__correctAnswers}\"')
-        elif len(correctAnswerChars) != len(self.__correctAnswers):
+        if len(correctAnswerChars) != len(self.__correctAnswers):
             raise RuntimeError(f'The length of correctAnswerChars \"{correctAnswerChars}\" ({len(correctAnswerChars)}) is not equal to \"{self.__correctAnswers}\" ({len(self.__correctAnswers)})')
 
         correctAnswerChars.sort()
@@ -82,15 +82,14 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
         if not utils.hasItems(ordinals):
             raise RuntimeError(f'Couldn\'t find any correct answer ordinals within \"{self.__correctAnswers}\"!')
-        elif len(ordinals) != len(self.__correctAnswers):
+        if len(ordinals) != len(self.__correctAnswers):
             raise RuntimeError(f'The length of ordinals \"{ordinals}\" ({len(ordinals)}) is not equal to \"{self.__correctAnswers}\" ({len(self.__correctAnswers)})')
 
         ordinals.sort()
         return ordinals
 
     def getPrompt(self, delimiter: str = ' ') -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         responsesList: List[str] = list()
         entryChar = 'A'

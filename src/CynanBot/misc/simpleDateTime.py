@@ -11,10 +11,8 @@ class SimpleDateTime():
         now: Optional[datetime] = None,
         timeZone: tzinfo = timezone.utc
     ):
-        if now is not None and not isinstance(now, datetime):
-            raise TypeError(f'now argument is malformed: \"{now}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert now is None or isinstance(now, datetime), f"malformed {now=}"
+        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
 
         if now is None:
             self.__now: datetime = datetime.now(timeZone)

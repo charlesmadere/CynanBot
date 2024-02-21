@@ -17,12 +17,9 @@ class ModifyUserDataHelper(Clearable):
         timeToLive: timedelta = timedelta(minutes = 2, seconds = 30),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeToLive, timedelta):
-            raise ValueError(f'timeToLive argument is malformed: \"{timeToLive}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(timeToLive, timedelta), f"malformed {timeToLive=}"
+        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
 
         self.__timber: TimberInterface = timber
         self.__timeToLive: timedelta = timeToLive
@@ -61,8 +58,7 @@ class ModifyUserDataHelper(Clearable):
         await modifyUserEventListener.onModifyUserEvent(modifyUserData)
 
     def setModifyUserEventListener(self, listener: Optional[ModifyUserEventListener]):
-        if listener is not None and not isinstance(listener, ModifyUserEventListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+        assert listener is None or isinstance(listener, ModifyUserEventListener), f"malformed {listener=}"
 
         self.__modifyUserEventListener = listener
 
@@ -72,13 +68,12 @@ class ModifyUserDataHelper(Clearable):
         userId: str,
         userName: str
     ):
-        if not isinstance(actionType, ModifyUserActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
-        elif not utils.isValidStr(userId):
+        assert isinstance(actionType, ModifyUserActionType), f"malformed {actionType=}"
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
+        if userId == '0':
             raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__setTime = datetime.now(self.__timeZone)

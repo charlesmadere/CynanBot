@@ -18,10 +18,8 @@ class AnivContentScanner(AnivContentScannerInterface):
         contentScanner: ContentScannerInterface,
         timber: TimberInterface
     ):
-        if not isinstance(contentScanner, ContentScannerInterface):
-            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(contentScanner, ContentScannerInterface), f"malformed {contentScanner=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
@@ -43,9 +41,8 @@ class AnivContentScanner(AnivContentScannerInterface):
         characterPairs: Dict[str, str],
         message: str
     ) -> bool:
-        if not isinstance(characterPairs, Dict):
-            raise ValueError(f'characterPairs argument is malformed: \"{characterPairs}\"')
-        elif not utils.isValidStr(message):
+        assert isinstance(characterPairs, Dict), f"malformed {characterPairs=}"
+        if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
@@ -67,7 +64,7 @@ class AnivContentScanner(AnivContentScannerInterface):
 
                     if not isinstance(startCharacter, str):
                         raise RuntimeError(f'Unable to find corresponding start character for end character \"{character}\"')
-                    elif stack.top() == startCharacter:
+                    if stack.top() == startCharacter:
                         stack.pop()
                     else:
                         self.__timber.log('AnivContentScanner', f'Discovered mismatching character pairs within aniv message ({message=}) ({stack=})')

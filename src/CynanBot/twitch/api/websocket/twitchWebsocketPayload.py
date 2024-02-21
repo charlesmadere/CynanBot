@@ -16,12 +16,9 @@ class TwitchWebsocketPayload():
         session: Optional[TwitchWebsocketSession] = None,
         subscription: Optional[TwitchWebsocketSubscription] = None
     ):
-        if event is not None and not isinstance(event, TwitchWebsocketEvent):
-            raise TypeError(f'event argument is malformed: \"{event}\"')
-        elif session is not None and not isinstance(session, TwitchWebsocketSession):
-            raise TypeError(f'session argument is malformed: \"{session}\"')
-        elif subscription is not None and not isinstance(subscription, TwitchWebsocketSubscription):
-            raise TypeError(f'subscription argument is malformed: \"{subscription}\"')
+        assert event is None or isinstance(event, TwitchWebsocketEvent), f"malformed {event=}"
+        assert session is None or isinstance(session, TwitchWebsocketSession), f"malformed {session=}"
+        assert subscription is None or isinstance(subscription, TwitchWebsocketSubscription), f"malformed {subscription=}"
 
         self.__event: Optional[TwitchWebsocketEvent] = event
         self.__session: Optional[TwitchWebsocketSession] = session

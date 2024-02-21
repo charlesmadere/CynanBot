@@ -16,10 +16,8 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
+        assert isinstance(timeZone, timezone), f"malformed {timeZone=}"
 
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__timeZone: timezone = timeZone

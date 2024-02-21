@@ -26,11 +26,9 @@ class UsersRepository(UsersRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface,
         usersFile: str = 'usersRepository.json'
     ):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
-        elif not utils.isValidStr(usersFile):
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(timeZoneRepository, TimeZoneRepositoryInterface), f"malformed {timeZoneRepository=}"
+        if not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
         self.__timber: TimberInterface = timber
@@ -91,8 +89,7 @@ class UsersRepository(UsersRepositoryInterface):
     def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif not isinstance(userJson, Dict):
-            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
+        assert isinstance(userJson, Dict), f"malformed {userJson=}"
 
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
@@ -315,7 +312,7 @@ class UsersRepository(UsersRepositoryInterface):
     def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif jsonContents is None:
+        if jsonContents is None:
             raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         user = self.__userCache.get(handle.lower(), None)
@@ -408,7 +405,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from users repository file: \"{self.__usersFile}\"')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
         self.__jsonCache = jsonContents
@@ -427,7 +424,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from users repository file: \"{self.__usersFile}\"')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of users repository file \"{self.__usersFile}\" is empty')
 
         self.__jsonCache = jsonContents
@@ -444,7 +441,7 @@ class UsersRepository(UsersRepositoryInterface):
     async def setUserEnabled(self, handle: str, enabled: bool):
         if not utils.isValidStr(handle):
             raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif not utils.isValidBool(enabled):
+        if not utils.isValidBool(enabled):
             raise ValueError(f'enabled argument is malformed: \"{enabled}\"')
 
         self.__timber.log('UsersRepository', f'Changing enabled status for user \"{handle}\" to \"{enabled}\"...')

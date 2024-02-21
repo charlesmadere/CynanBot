@@ -23,18 +23,13 @@ class ChatBandManager(ChatBandManagerInterface):
         eventCooldown: timedelta = timedelta(minutes = 5),
         memberCacheTimeToLive: timedelta = timedelta(minutes = 15)
     ):
-        if not isinstance(settingsJsonReader, JsonReaderInterface):
-            raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif not utils.isValidStr(websocketEventType):
+        assert isinstance(settingsJsonReader, JsonReaderInterface), f"malformed {settingsJsonReader=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(websocketConnectionServer, WebsocketConnectionServerInterface), f"malformed {websocketConnectionServer=}"
+        if not utils.isValidStr(websocketEventType):
             raise ValueError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
-        elif not isinstance(eventCooldown, timedelta):
-            raise ValueError(f'eventCooldown argument is malformed: \"{eventCooldown}\"')
-        elif not isinstance(memberCacheTimeToLive, timedelta):
-            raise ValueError(f'memberCacheTimeToLive argument is malformed: \"{memberCacheTimeToLive}\"')
+        assert isinstance(eventCooldown, timedelta), f"malformed {eventCooldown=}"
+        assert isinstance(memberCacheTimeToLive, timedelta), f"malformed {memberCacheTimeToLive=}"
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
@@ -66,9 +61,9 @@ class ChatBandManager(ChatBandManagerInterface):
     ) -> Optional[ChatBandMember]:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(author):
+        if not utils.isValidStr(author):
             raise ValueError(f'author argument is malformed: \"{author}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         isDebugLoggingEnabled = await self.__isDebugLoggingEnabled()
@@ -110,7 +105,7 @@ class ChatBandManager(ChatBandManagerInterface):
     def __getCooldownKey(self, twitchChannel: str, author: str) -> str:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(author):
+        if not utils.isValidStr(author):
             raise ValueError(f'author argument is malformed: \"{author}\"')
 
         return f'{twitchChannel.lower()}:{author.lower()}'
@@ -122,9 +117,9 @@ class ChatBandManager(ChatBandManagerInterface):
     async def playInstrumentForMessage(self, twitchChannel: str, author: str, message: str) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(author):
+        if not utils.isValidStr(author):
             raise ValueError(f'author argument is malformed: \"{author}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise ValueError(f'message argument is malformed: \"{message}\"')
 
         chatBandMember = await self.__findChatBandMember(
@@ -164,7 +159,7 @@ class ChatBandManager(ChatBandManagerInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from Chat Band file: \"{self.__settingsJsonReader}\"')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of Chat Band file \"{self.__settingsJsonReader}\" is empty')
 
         self.__jsonCache = jsonContents
@@ -188,8 +183,7 @@ class ChatBandManager(ChatBandManagerInterface):
         return None
 
     def __toEventData(self, chatBandMember: ChatBandMember) -> Dict[str, Any]:
-        if not isinstance(chatBandMember, ChatBandMember):
-            raise ValueError(f'chatBandMember argument is malformed: \"{chatBandMember}\"')
+        assert isinstance(chatBandMember, ChatBandMember), f"malformed {chatBandMember=}"
 
         return {
             'author': chatBandMember.getAuthor(),

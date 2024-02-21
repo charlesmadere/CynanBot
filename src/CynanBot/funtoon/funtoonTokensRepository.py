@@ -19,12 +19,9 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         timber: TimberInterface,
         seedFileReader: Optional[JsonReaderInterface] = None
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
-            raise ValueError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert seedFileReader is None or isinstance(seedFileReader, JsonReaderInterface), f"malformed {seedFileReader=}"
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -140,9 +137,8 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         return token
 
     async def setToken(self, token: Optional[str], twitchChannel: str):
-        if token is not None and not isinstance(token, str):
-            raise ValueError(f'token argument is malformed: \"{token}\"')
-        elif not utils.isValidStr(twitchChannel):
+        assert token is None or isinstance(token, str), f"malformed {token=}"
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()

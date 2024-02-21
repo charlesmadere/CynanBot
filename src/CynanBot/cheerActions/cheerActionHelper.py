@@ -59,30 +59,18 @@ class CheerActionHelper(CheerActionHelperInterface):
         minimumFollowDuration: timedelta = timedelta(weeks = 1),
         timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
-            raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
-        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
-        elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
-            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
-        elif not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(minimumFollowDuration, timedelta):
-            raise TypeError(f'minimumFollowDuration argument is malformed: \"{minimumFollowDuration}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        assert isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface), f"malformed {cheerActionRemodHelper=}"
+        assert isinstance(cheerActionsRepository, CheerActionsRepositoryInterface), f"malformed {cheerActionsRepository=}"
+        assert isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface), f"malformed {isLiveOnTwitchRepository=}"
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(twitchApiService, TwitchApiServiceInterface), f"malformed {twitchApiService=}"
+        assert isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface), f"malformed {twitchFollowerRepository=}"
+        assert isinstance(twitchHandleProvider, TwitchHandleProviderInterface), f"malformed {twitchHandleProvider=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
+        assert isinstance(minimumFollowDuration, timedelta), f"malformed {minimumFollowDuration=}"
+        assert isinstance(timeZone, tzinfo), f"malformed {timeZone=}"
 
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
@@ -116,16 +104,15 @@ class CheerActionHelper(CheerActionHelperInterface):
     ) -> bool:
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 0 or bits > utils.getIntMaxSafeSize():
+        if bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
+        if not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         moderatorTwitchAccessToken = await self.__getTwitchAccessToken(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
@@ -171,9 +158,9 @@ class CheerActionHelper(CheerActionHelperInterface):
     ) -> bool:
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userIdToTimeout):
+        if not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         moderatorInfo: Optional[TwitchModUser] = None
@@ -204,26 +191,24 @@ class CheerActionHelper(CheerActionHelperInterface):
     ) -> bool:
         if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif bits < 0 or bits > utils.getIntMaxSafeSize():
+        if bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not isinstance(actions, List):
-            raise TypeError(f'actions argument is malformed: \"{actions}\"')
-        elif not utils.isValidStr(broadcasterUserId):
+        assert isinstance(actions, List), f"malformed {actions=}"
+        if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
+        if not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(message):
+        if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
-        elif not utils.isValidStr(moderatorTwitchAccessToken):
+        if not utils.isValidStr(moderatorTwitchAccessToken):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
-        elif not utils.isValidStr(moderatorUserId):
+        if not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
-        elif not utils.isValidStr(userTwitchAccessToken):
+        if not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         timeoutActions: List[CheerAction] = list()
 
@@ -303,26 +288,24 @@ class CheerActionHelper(CheerActionHelperInterface):
         userTwitchAccessToken: str,
         user: UserInterface
     ) -> bool:
-        if not isinstance(action, CheerAction):
-            raise TypeError(f'action argument is malformed: \"{action}\"')
-        elif not utils.isValidInt(bits):
+        assert isinstance(action, CheerAction), f"malformed {action=}"
+        if not utils.isValidInt(bits):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
-        elif not utils.isValidStr(broadcasterUserId):
+        if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(cheerUserId):
+        if not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
-        elif not utils.isValidStr(cheerUserName):
+        if not utils.isValidStr(cheerUserName):
             raise TypeError(f'cheerUserName argument is malformed: \"{cheerUserName}\"')
-        elif not utils.isValidStr(moderatorTwitchAccessToken):
+        if not utils.isValidStr(moderatorTwitchAccessToken):
             raise TypeError(f'moderatorTwitchAccessToken argument is malformed: \"{moderatorTwitchAccessToken}\"')
-        elif not utils.isValidStr(moderatorUserId):
+        if not utils.isValidStr(moderatorUserId):
             raise TypeError(f'moderatorUserId argument is malformed: \"{moderatorUserId}\"')
-        elif not utils.isValidStr(userIdToTimeout):
+        if not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
-        elif not utils.isValidStr(userTwitchAccessToken):
+        if not utils.isValidStr(userTwitchAccessToken):
             raise TypeError(f'userTwitchAccessToken argument is malformed: \"{userTwitchAccessToken}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if not await self.__verifyUserCanBeTimedOut(
             broadcasterUserId = broadcasterUserId,
@@ -395,10 +378,8 @@ class CheerActionHelper(CheerActionHelperInterface):
         timeoutAction: CheerAction,
         user: UserInterface
     ) -> bool:
-        if not isinstance(timeoutAction, CheerAction):
-            raise TypeError(f'timeoutAction argument is malformed: \"{timeoutAction}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(timeoutAction, CheerAction), f"malformed {timeoutAction=}"
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         requirement = timeoutAction.getStreamStatusRequirement()
 
@@ -419,9 +400,9 @@ class CheerActionHelper(CheerActionHelperInterface):
     ) -> bool:
         if not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
-        elif not utils.isValidStr(twitchAccessToken):
+        if not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-        elif not utils.isValidStr(userIdToTimeout):
+        if not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         try:

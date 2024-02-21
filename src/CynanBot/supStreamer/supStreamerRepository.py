@@ -19,10 +19,8 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -124,7 +122,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
     async def update(self, chatterUserId: str, twitchChannelId: str):
         if not utils.isValidStr(chatterUserId):
             raise ValueError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         now = SimpleDateTime()

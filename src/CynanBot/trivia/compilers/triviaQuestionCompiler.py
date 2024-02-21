@@ -18,8 +18,7 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
     """
 
     def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
 
         self.__timber: TimberInterface = timber
 
@@ -39,9 +38,8 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         category: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if category is not None and not isinstance(category, str):
-            raise ValueError(f'category argument is malformed: \"{category}\"')
-        elif not utils.isValidBool(htmlUnescape):
+        assert category is None or isinstance(category, str), f"malformed {category=}"
+        if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         return await self.__compileText(
@@ -54,9 +52,8 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         question: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if question is not None and not isinstance(question, str):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
-        elif not utils.isValidBool(htmlUnescape):
+        assert question is None or isinstance(question, str), f"malformed {question=}"
+        if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         return await self.__compileText(
@@ -69,9 +66,8 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         response: Optional[str],
         htmlUnescape: bool = False
     ) -> str:
-        if response is not None and not isinstance(response, str):
-            raise ValueError(f'response argument is malformed: \"{response}\"')
-        elif not utils.isValidBool(htmlUnescape):
+        assert response is None or isinstance(response, str), f"malformed {response=}"
+        if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         return await self.__compileText(
@@ -108,9 +104,8 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         text: Optional[str],
         htmlUnescape: bool
     ) -> str:
-        if text is not None and not isinstance(text, str):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
-        elif not utils.isValidBool(htmlUnescape):
+        assert text is None or isinstance(text, str), f"malformed {text=}"
+        if not utils.isValidBool(htmlUnescape):
             raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
         if not utils.isValidStr(text):

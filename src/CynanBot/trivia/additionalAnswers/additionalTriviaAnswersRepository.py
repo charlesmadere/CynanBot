@@ -39,18 +39,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
-            raise ValueError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
-        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        assert isinstance(backingDatabase, BackingDatabase), f"malformed {backingDatabase=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface), f"malformed {triviaSettingsRepository=}"
+        assert isinstance(twitchHandleProvider, TwitchHandleProviderInterface), f"malformed {twitchHandleProvider=}"
+        assert isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface), f"malformed {twitchTokensRepository=}"
+        assert isinstance(userIdsRepository, UserIdsRepositoryInterface), f"malformed {userIdsRepository=}"
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -71,14 +65,12 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
     ) -> AdditionalTriviaAnswers:
         if not utils.isValidStr(additionalAnswer):
             raise AdditionalTriviaAnswerIsMalformedException(f'additionalAnswer argument is malformed: \"{additionalAnswer}\"')
-        elif not utils.isValidStr(triviaId):
+        if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        assert isinstance(triviaType, TriviaQuestionType), f"malformed {triviaType=}"
 
         additionalAnswerLength = len(additionalAnswer)
         maxAdditionalTriviaAnswerLength = await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswerLength()
@@ -160,14 +152,11 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
     ) -> bool:
-        if not isinstance(currentAnswers, List):
-            raise ValueError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
-        elif not utils.isValidStr(triviaId):
+        assert isinstance(currentAnswers, List), f"malformed {currentAnswers=}"
+        if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        assert isinstance(triviaType, TriviaQuestionType), f"malformed {triviaType=}"
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
@@ -189,8 +178,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
     ) -> Optional[AdditionalTriviaAnswers]:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
@@ -224,10 +212,8 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
     ) -> Optional[AdditionalTriviaAnswers]:
         if not utils.isValidStr(triviaId):
             raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
-        elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+        assert isinstance(triviaSource, TriviaSource), f"malformed {triviaSource=}"
+        assert isinstance(triviaType, TriviaQuestionType), f"malformed {triviaType=}"
 
         if not await self.__triviaSettingsRepository.areAdditionalTriviaAnswersEnabled():
             return None

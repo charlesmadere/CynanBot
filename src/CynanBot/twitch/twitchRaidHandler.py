@@ -22,10 +22,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         streamAlertsManager: Optional[StreamAlertsManagerInterface],
         timber: TimberInterface
     ):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
-            raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert streamAlertsManager is None or isinstance(streamAlertsManager, StreamAlertsManagerInterface), f"malformed {streamAlertsManager=}"
 
         self.__timber: TimberInterface = timber
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
@@ -38,10 +36,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     ):
         if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
+        assert isinstance(dataBundle, TwitchWebsocketDataBundle), f"malformed {dataBundle=}"
 
         event = dataBundle.requirePayload().getEvent()
 
@@ -79,14 +75,13 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     ):
         if not utils.isValidInt(viewers):
             raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
-        elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
+        if viewers < 0 or viewers > utils.getIntMaxSafeSize():
             raise ValueError(f'viewers argument is out of bounds: {viewers}')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(fromUserName):
+        if not utils.isValidStr(fromUserName):
             raise TypeError(f'fromUserName argument is malformed: \"{fromUserName}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        assert isinstance(user, UserInterface), f"malformed {user=}"
 
         if self.__streamAlertsManager is None:
             return

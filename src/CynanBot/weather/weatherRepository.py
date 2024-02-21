@@ -25,18 +25,15 @@ class WeatherRepository(WeatherRepositoryInterface):
         maxAlerts: int = 2,
         cacheTimeDelta: timedelta = timedelta(minutes = 15)
     ):
-        if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not utils.isValidStr(oneWeatherApiKey):
+        assert isinstance(networkClientProvider, NetworkClientProvider), f"malformed {networkClientProvider=}"
+        if not utils.isValidStr(oneWeatherApiKey):
             raise ValueError(f'oneWeatherApiKey argument is malformed: \"{oneWeatherApiKey}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(maxAlerts):
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        if not utils.isValidInt(maxAlerts):
             raise ValueError(f'maxAlerts argument is malformed: \"{maxAlerts}\"')
-        elif maxAlerts < 1:
+        if maxAlerts < 1:
             raise ValueError(f'maxAlerts argument is out of bounds: {maxAlerts}')
-        elif not isinstance(cacheTimeDelta, timedelta):
-            raise ValueError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+        assert isinstance(cacheTimeDelta, timedelta), f"malformed {cacheTimeDelta=}"
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__oneWeatherApiKey: str = oneWeatherApiKey
@@ -107,8 +104,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         return icons
 
     async def __fetchAirQualityIndex(self, location: Location) -> Optional[AirQualityIndex]:
-        if not isinstance(location, Location):
-            raise ValueError(f'location argument is malformed: \"{location}\"')
+        assert isinstance(location, Location), f"malformed {location=}"
 
         # Retrieve air quality index from: https://openweathermap.org/api/air-pollution
         # Doing this requires an API key, which you can get here: https://openweathermap.org/api
@@ -147,8 +143,7 @@ class WeatherRepository(WeatherRepositoryInterface):
             return AirQualityIndex.fromInt(airQualityIndex)
 
     async def fetchWeather(self, location: Location) -> WeatherReport:
-        if not isinstance(location, Location):
-            raise ValueError(f'location argument is malformed: \"{location}\"')
+        assert isinstance(location, Location), f"malformed {location=}"
 
         cacheValue = self.__cache[location.getLocationId()]
         if cacheValue is not None:
@@ -160,8 +155,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         return weatherReport
 
     async def __fetchWeather(self, location: Location) -> WeatherReport:
-        if not isinstance(location, Location):
-            raise ValueError(f'location argument is malformed: \"{location}\"')
+        assert isinstance(location, Location), f"malformed {location=}"
 
         self.__timber.log('WeatherRepository', f'Fetching weather for \"{location.getName()}\" ({location.getLocationId()})...')
         clientSession = await self.__networkClientProvider.get()

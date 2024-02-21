@@ -48,7 +48,7 @@ class GoogleTranslationApi(TranslationApi):
 
             if not await self.__hasGoogleApiCredentials():
                 raise RuntimeError(f'Unable to initialize a new Google translate.Client instance because the Google API credentials are missing')
-            elif not await aiofiles.ospath.exists(self.__googleServiceAccountFile):
+            if not await aiofiles.ospath.exists(self.__googleServiceAccountFile):
                 raise FileNotFoundError(f'googleServiceAccount file not found: \"{self.__googleServiceAccountFile}\"')
 
             self.__googleTranslateClient = translate.Client.from_service_account_json(self.__googleServiceAccountFile)
@@ -85,9 +85,8 @@ class GoogleTranslationApi(TranslationApi):
     async def translate(self, text: str, targetLanguage: LanguageEntry) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
-        elif not isinstance(targetLanguage, LanguageEntry):
-            raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
-        elif not targetLanguage.hasIso6391Code():
+        assert isinstance(targetLanguage, LanguageEntry), f"malformed {targetLanguage=}"
+        if not targetLanguage.hasIso6391Code():
             raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
         googleTranslateClient = await self.__getGoogleTranslateClient()

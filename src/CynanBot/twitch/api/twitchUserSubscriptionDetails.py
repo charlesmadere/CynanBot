@@ -13,12 +13,11 @@ class TwitchUserSubscriptionDetails():
     ):
         if not utils.isValidBool(isGift):
             raise ValueError(f'isGift argument is malformed: \"{isGift}\"')
-        elif not utils.isValidStr(userId):
+        if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif not utils.isValidStr(userName):
+        if not utils.isValidStr(userName):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
-        elif not isinstance(subscriberTier, TwitchSubscriberTier):
-            raise ValueError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
+        assert isinstance(subscriberTier, TwitchSubscriberTier), f"malformed {subscriberTier=}"
 
         self.__isGift: bool = isGift
         self.__userId: str = userId

@@ -15,12 +15,11 @@ class TwitchCommunitySubGift():
     ):
         if cumulativeTotal is not None and not utils.isValidInt(cumulativeTotal):
             raise TypeError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
-        elif not utils.isValidInt(total):
+        if not utils.isValidInt(total):
             raise TypeError(f'total argument is malformed: \"{total}\"')
-        elif not utils.isValidStr(communitySubGiftId):
+        if not utils.isValidStr(communitySubGiftId):
             raise TypeError(f'communitySubGiftId argument is malformed: \"{communitySubGiftId}\"')
-        elif not isinstance(subTier, TwitchSubscriberTier):
-            raise TypeError(f'subTier argument is malformed: \"{subTier}\"')
+        assert isinstance(subTier, TwitchSubscriberTier), f"malformed {subTier=}"
 
         self.__cumulativeTotal: Optional[int] = cumulativeTotal
         self.__total: int = total

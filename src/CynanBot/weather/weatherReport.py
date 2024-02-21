@@ -22,28 +22,26 @@ class WeatherReport():
         locationId: str,
         uvIndex: UvIndex
     ):
-        if airQualityIndex is not None and not isinstance(airQualityIndex, AirQualityIndex):
-            raise ValueError(f'airQualityIndex argument is malformed: \"{airQualityIndex}\"')
-        elif not utils.isValidNum(temperature):
+        assert airQualityIndex is None or isinstance(airQualityIndex, AirQualityIndex), f"malformed {airQualityIndex=}"
+        if not utils.isValidNum(temperature):
             raise ValueError(f'temperature argument is malformed: \"{temperature}\"')
-        elif temperature < utils.getIntMinSafeSize() or temperature > utils.getIntMaxSafeSize():
+        if temperature < utils.getIntMinSafeSize() or temperature > utils.getIntMaxSafeSize():
             raise ValueError(f'temperature argument is out of bounds: {temperature}')
-        elif not utils.isValidNum(tomorrowsHighTemperature):
+        if not utils.isValidNum(tomorrowsHighTemperature):
             raise ValueError(f'tomorrowsHighTemperature argument is malformed: \"{tomorrowsHighTemperature}\"')
-        elif tomorrowsHighTemperature < utils.getIntMinSafeSize() or tomorrowsHighTemperature > utils.getIntMaxSafeSize():
+        if tomorrowsHighTemperature < utils.getIntMinSafeSize() or tomorrowsHighTemperature > utils.getIntMaxSafeSize():
             raise ValueError(f'tomorrowsHighTemperature argument is out of bounds: {tomorrowsHighTemperature}')
-        elif not utils.isValidNum(tomorrowsLowTemperature):
+        if not utils.isValidNum(tomorrowsLowTemperature):
             raise ValueError(f'tomorrowsLowTemperature argument is malformed: \"{tomorrowsLowTemperature}\"')
-        elif tomorrowsLowTemperature < utils.getIntMinSafeSize() or tomorrowsLowTemperature > utils.getIntMaxSafeSize():
+        if tomorrowsLowTemperature < utils.getIntMinSafeSize() or tomorrowsLowTemperature > utils.getIntMaxSafeSize():
             raise ValueError(f'tomorrowsLowTemperature argument is out of bounds: {tomorrowsLowTemperature}')
-        elif not utils.isValidInt(humidity):
+        if not utils.isValidInt(humidity):
             raise ValueError(f'humidity argument is malformed: \"{humidity}\"')
-        elif not utils.isValidInt(pressure):
+        if not utils.isValidInt(pressure):
             raise ValueError(f'pressure argument is malformed: \"{pressure}\"')
-        elif not utils.isValidStr(locationId):
+        if not utils.isValidStr(locationId):
             raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
-        elif not isinstance(uvIndex, UvIndex):
-            raise ValueError(f'uvIndex argument is malformed: \"{uvIndex}\"')
+        assert isinstance(uvIndex, UvIndex), f"malformed {uvIndex=}"
 
         self.__airQualityIndex: Optional[AirQualityIndex] = airQualityIndex
         self.__temperature: float = temperature
@@ -136,8 +134,7 @@ class WeatherReport():
         return self.__uvIndex is not None
 
     def toStr(self, delimiter: str = ', ') -> str:
-        if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+        assert isinstance(delimiter, str), f"malformed {delimiter=}"
 
         temperature = f'🌡 Temperature is {self.getTemperatureStr()}°C ({self.getTemperatureImperialStr()}°F), '
         humidity = f'humidity is {self.getHumidity()}%, '

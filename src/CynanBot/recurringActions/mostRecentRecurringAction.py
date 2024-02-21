@@ -11,11 +11,9 @@ class MostRecentRecurringAction():
         dateTime: SimpleDateTime,
         twitchChannel: str
     ):
-        if not isinstance(actionType, RecurringActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
-        elif not isinstance(dateTime, SimpleDateTime):
-            raise ValueError(f'dateTime argument is malformed: \"{dateTime}\"')
-        elif not utils.isValidStr(twitchChannel):
+        assert isinstance(actionType, RecurringActionType), f"malformed {actionType=}"
+        assert isinstance(dateTime, SimpleDateTime), f"malformed {dateTime=}"
+        if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__actionType: RecurringActionType = actionType

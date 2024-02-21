@@ -18,12 +18,9 @@ class LocationsRepository(LocationsRepositoryInterface):
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface
     ):
-        if not isinstance(locationsJsonReader, JsonReaderInterface):
-            raise ValueError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        assert isinstance(locationsJsonReader, JsonReaderInterface), f"malformed {locationsJsonReader=}"
+        assert isinstance(timber, TimberInterface), f"malformed {timber=}"
+        assert isinstance(timeZoneRepository, TimeZoneRepositoryInterface), f"malformed {timeZoneRepository=}"
 
         self.__locationsJsonReader: JsonReaderInterface = locationsJsonReader
         self.__timber: TimberInterface = timber
@@ -70,7 +67,7 @@ class LocationsRepository(LocationsRepositoryInterface):
 
         if jsonContents is None:
             raise IOError(f'Error reading from locations file: {self.__locationsJsonReader}')
-        elif len(jsonContents) == 0:
+        if len(jsonContents) == 0:
             raise ValueError(f'JSON contents of locations file {self.__locationsJsonReader} is empty')
 
         return jsonContents
