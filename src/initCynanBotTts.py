@@ -106,6 +106,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.ttsManager import TtsManager
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
@@ -361,7 +362,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
-ttsManager: Optional[TtsManagerInterface] = DecTalkManager(
+decTalkManager: Optional[DecTalkManager] = DecTalkManager(
     decTalkCommandBuilder = DecTalkCommandBuilder(
         contentScanner = contentScanner,
         emojiHelper = emojiHelper,
@@ -376,6 +377,13 @@ ttsManager: Optional[TtsManagerInterface] = DecTalkManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+ttsManager: Optional[TtsManagerInterface] = TtsManager(
+    decTalkManager = decTalkManager,
+    googleTtsManager = None,
+    timber = timber,
+    ttsMonsterManager = None,
+    ttsSettingsRepository = ttsSettingsRepository
+)
 
 #################################################
 ## Stream Alerts Manager intialization section ##
