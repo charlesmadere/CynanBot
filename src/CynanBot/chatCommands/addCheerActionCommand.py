@@ -1,3 +1,4 @@
+import traceback
 from typing import Optional
 
 import CynanBot.misc.utils as utils
