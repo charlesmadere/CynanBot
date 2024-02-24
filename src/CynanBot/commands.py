@@ -61,8 +61,6 @@ from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.actions.checkAnswerTriviaAction import \
     CheckAnswerTriviaAction
-from CynanBot.trivia.actions.clearSuperTriviaQueueTriviaAction import \
-    ClearSuperTriviaQueueTriviaAction
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
     AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
@@ -671,61 +669,6 @@ class ClearCachesCommand(AbsCommand):
 
         await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
         self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
-class ClearSuperTriviaQueueCommand(AbsCommand):
-
-    def __init__(
-        self,
-        generalSettingsRepository: GeneralSettingsRepository,
-        timber: TimberInterface,
-        triviaGameMachine: TriviaGameMachineInterface,
-        triviaIdGenerator: TriviaIdGeneratorInterface,
-        triviaUtils: TriviaUtilsInterface,
-        usersRepository: UsersRepositoryInterface
-    ):
-        if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
-        elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-
-        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
-        self.__timber: TimberInterface = timber
-        self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__triviaIdGenerator: TriviaIdGeneratorInterface = triviaIdGenerator
-        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-    async def handleCommand(self, ctx: TwitchContext):
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-
-        if not generalSettings.isSuperTriviaGameEnabled():
-            return
-        elif not user.isSuperTriviaGameEnabled():
-            return
-        elif not await self.__triviaUtils.isPrivilegedTriviaUser(
-            twitchChannel = user.getHandle(),
-            userId = ctx.getAuthorId()
-        ):
-            return
-
-        actionId = await self.__triviaIdGenerator.generateActionId()
-
-        self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
-            actionId = actionId,
-            twitchChannel = user.getHandle()
-        ))
-
-        self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
 class CommandsCommand(AbsCommand):

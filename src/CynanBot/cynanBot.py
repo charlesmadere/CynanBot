@@ -26,6 +26,8 @@ from CynanBot.chatCommands.addBannedTriviaControllerCommand import \
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
+from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
+    ClearSuperTriviaQueueCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -40,8 +42,7 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
-                               ClearCachesCommand,
-                               ClearSuperTriviaQueueCommand, CommandsCommand,
+                               ClearCachesCommand, CommandsCommand,
                                ConfirmCommand, CutenessChampionsCommand,
                                CutenessCommand, CutenessHistoryCommand,
                                CynanSourceCommand, DeleteCheerActionCommand,
@@ -589,9 +590,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
 
         if triviaGameMachine is None or triviaIdGenerator is None or triviaUtils is None:
-            self.__clearSuperTriviaQueueCommand: AbsCommand = StubCommand()
+            self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__clearSuperTriviaQueueCommand: AbsCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
+            self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
@@ -1144,7 +1145,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'clearsupertriviaqueue')
     async def command_clearsupertriviaqueue(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__clearSuperTriviaQueueCommand.handleCommand(context)
+        await self.__clearSuperTriviaQueueCommand.handleChatCommand(context)
 
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
