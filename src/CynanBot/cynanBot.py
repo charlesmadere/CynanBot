@@ -24,6 +24,8 @@ from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.chatCommands.addBannedTriviaControllerCommand import \
     AddBannedTriviaControllerCommand
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
+from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
+    AddGlobalTriviaControllerCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -35,8 +37,7 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.commands import (AbsCommand, AddGlobalTriviaControllerCommand,
-                               AddTriviaAnswerCommand,
+from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
                                ClearCachesCommand,
@@ -515,11 +516,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__removeBannedTriviaControllerCommand: AbsCommand = RemoveBannedTriviaControllerCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
 
         if triviaGameGlobalControllersRepository is None or triviaUtils is None:
-            self.__addGlobalTriviaControllerCommand: AbsCommand = StubCommand()
+            self.__addGlobalTriviaControllerCommand: AbsChatCommand = StubChatCommand()
             self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
             self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
         else:
-            self.__addGlobalTriviaControllerCommand: AbsCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
             self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
@@ -906,21 +907,21 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):
         if not isinstance(event, SuperTriviaRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, 'Super trivia starting soon!')
 
     async def __handleWeatherRecurringActionEvent(self, event: WeatherRecurringEvent):
         if not isinstance(event, WeatherRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, event.getWeatherReport().toStr())
 
     async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
         if not isinstance(event, WordOfTheDayRecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
         await self.__twitchUtils.safeSend(twitchChannel, event.getWordOfTheDayResponse().toStr())
