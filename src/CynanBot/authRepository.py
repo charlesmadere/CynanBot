@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
 
 from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBot.google.googleProjectIdProviderInterface import \
+    GoogleProjectIdProviderInterface
 from CynanBot.misc.clearable import Clearable
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.twitch.twitchCredentialsProviderInterface import \
@@ -9,7 +11,8 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 
 
-class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
+class AuthRepository(Clearable, GoogleProjectIdProviderInterface,
+    TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
         if not isinstance(authJsonReader, JsonReaderInterface):
@@ -45,6 +48,10 @@ class AuthRepository(Clearable, TwitchCredentialsProviderInterface, TwitchHandle
         self.__cache = snapshot
 
         return snapshot
+
+    async def getGoogleProjectId(self) -> str:
+        snapshot = await self.getAllAsync()
+        return snapshot.requireGoogleProjectId()
 
     async def getTwitchClientId(self) -> str:
         snapshot = await self.getAllAsync()

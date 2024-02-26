@@ -43,6 +43,14 @@ class AuthRepositorySnapshot():
 
         return deepLAuthKey
 
+    def requireGoogleProjectId(self) -> str:
+        googleProjectId = self.__jsonContents.get('googleProjectId')
+
+        if not utils.isValidStr(googleProjectId):
+            raise ValueError(f'\"googleProjectId\" in Auth Repository file is malformed: \"{googleProjectId}\"')
+
+        return googleProjectId
+
     def requireMerriamWebsterApiKey(self) -> str:
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()
 
