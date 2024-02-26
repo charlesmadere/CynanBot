@@ -2,13 +2,6 @@ import random
 import traceback
 from typing import Optional
 
-isGoogleMissing = False
-
-try:
-    from google.cloud import translate_v2 as translate
-except:
-    isGoogleMissing = True
-
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
