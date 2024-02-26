@@ -64,7 +64,7 @@ class GoogleApiService(GoogleApiServiceInterface):
         response = await self.__googleJsonMapper.parseTranslateTextResponse(jsonResponse)
 
         if response is None:
-            self.__timber.log('GoogleApiService', f'failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
+            self.__timber.log('GoogleApiService', f'Failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
             raise GenericNetworkException(f'GoogleApiService failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
 
         return response
