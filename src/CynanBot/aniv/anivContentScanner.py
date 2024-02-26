@@ -19,9 +19,9 @@ class AnivContentScanner(AnivContentScannerInterface):
         timber: TimberInterface
     ):
         if not isinstance(contentScanner, ContentScannerInterface):
-            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+            raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
@@ -44,9 +44,9 @@ class AnivContentScanner(AnivContentScannerInterface):
         message: str
     ) -> bool:
         if not isinstance(characterPairs, Dict):
-            raise ValueError(f'characterPairs argument is malformed: \"{characterPairs}\"')
+            raise TypeError(f'characterPairs argument is malformed: \"{characterPairs}\"')
         elif not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
         keys: Set[str] = set(characterPairs.keys())
@@ -83,7 +83,7 @@ class AnivContentScanner(AnivContentScannerInterface):
 
     async def __containsMatchingStraightQuotes(self, message: str) -> bool:
         if not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
         count = message.count('\"')
 
@@ -95,7 +95,7 @@ class AnivContentScanner(AnivContentScannerInterface):
 
     async def __deepScan(self, message: str) -> AnivContentCode:
         if not utils.isValidStr(message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
         if not await self.__containsMatchingCharacterPairs(
             characterPairs = self.__parens,
