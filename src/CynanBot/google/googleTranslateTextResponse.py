@@ -10,6 +10,11 @@ class GoogleTranslateTextResponse():
         glossaryTranslations: Optional[List[GoogleTranslation]],
         translations: Optional[List[GoogleTranslation]]
     ):
+        if glossaryTranslations is not None and not isinstance(glossaryTranslations, List):
+            raise TypeError(f'glossaryTranslations argument is malformed: \"{glossaryTranslations}\"')
+        elif translations is not None and not isinstance(translations, List):
+            raise TypeError(f'translations argument is malformed: \"{translations}\"')
+
         self.__glossaryTranslations: Optional[List[GoogleTranslation]] = glossaryTranslations
         self.__translations: Optional[List[GoogleTranslation]] = translations
 
