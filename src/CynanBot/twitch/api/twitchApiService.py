@@ -113,7 +113,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when adding moderator ({broadcasterId=}) ({userId=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network when adding moderator ({broadcasterId=}) ({userId=}): {e}')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when adding moderator ({broadcasterId=}) ({userId=}): {e}')
 
         if response is None:
             self.__timber.log('TwitchApiService', f'Encountered unknown network error when adding moderator ({broadcasterId=}) ({userId=}) ({response=})')
@@ -153,14 +153,14 @@ class TwitchApiService(TwitchApiServiceInterface):
             )
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when banning user ({banRequest=}): {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchApiService encountered network when banning user ({banRequest=}): {e}')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when banning user ({banRequest=}): {e}')
 
         if response is None:
             self.__timber.log('TwitchApiService', f'Encountered unknown network error when banning user ({banRequest=}) ({response=})')
             raise GenericNetworkException(f'TwitchApiService encountered unknown network error when banning user ({banRequest=}) ({response=})')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
