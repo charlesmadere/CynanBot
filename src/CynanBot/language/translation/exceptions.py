@@ -1,3 +1,4 @@
+from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.translationApiSource import TranslationApiSource
 
 
@@ -14,6 +15,21 @@ class TranslationEngineUnavailableException(Exception):
             raise TypeError(f'translationApiSource argument is malformed: \"{translationApiSource}\"')
 
         super().__init__(message, translationApiSource)
+
+
+class TranslationLanguageHasNoIso6391Code(Exception):
+
+    def __init__(
+        self,
+        languageEntry: LanguageEntry,
+        message: str
+    ):
+        if not isinstance(languageEntry, LanguageEntry):
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+        elif not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        super().__init__(languageEntry, message)
 
 
 class TranslationException(Exception):

@@ -1,24 +1,18 @@
-import json
 import traceback
-from json.decoder import JSONDecodeError
-from typing import Any, Dict, Optional
-
-import aiofiles
-import aiofiles.ospath
-
-isGoogleMissing = False
-
-try:
-    from google.cloud import translate_v2 as translate
-except:
-    isGoogleMissing = True
+from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
+from CynanBot.google.googleCloudProjectIdProviderInterface import \
+    GoogleCloudProjectCredentialsProviderInterface
+from CynanBot.google.googleTranslateTextResponse import \
+    GoogleTranslateTextResponse
+from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
 from CynanBot.language.translation.exceptions import (
-    TranslationEngineUnavailableException, TranslationException)
+    TranslationException, TranslationLanguageHasNoIso6391Code)
 from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
@@ -29,120 +23,106 @@ class GoogleTranslationApi(TranslationApi):
 
     def __init__(
         self,
+        googleApiService: GoogleApiServiceInterface,
+        googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         languagesRepository: LanguagesRepositoryInterface,
         timber: TimberInterface,
-        googleServiceAccountFile: str = 'googleServiceAccount.json'
+        mimeType: str = 'text/plain'
     ):
+        if not isinstance(googleApiService, GoogleApiServiceInterface):
+            raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}\"')
+        elif not isinstance(googleCloudProjectCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
+            raise TypeError(f'googleCloudProjectCredentialsProvider argument is malformed: \"{googleCloudProjectCredentialsProvider}\"')
+        elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
+            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidStr(mimeType):
+            raise TypeError(f'mimeType argument is malformed: \"{mimeType}\"')
+
+        self.__googleApiService: GoogleApiServiceInterface = googleApiService
+        self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
-        self.__googleServiceAccountFile: str = googleServiceAccountFile
-
-        self.__googleTranslateClient: Optional[Any] = None
-
-    async def __getGoogleTranslateClient(self) -> Optional[Any]:
-        if isGoogleMissing:
-            return None
-
-        if self.__googleTranslateClient is None:
-            self.__timber.log('GoogleTranslationApi', f'Initializing new Google translate.Client instance...')
-
-            if not await self.__hasGoogleApiCredentials():
-                raise RuntimeError(f'Unable to initialize a new Google translate.Client instance because the Google API credentials are missing')
-            elif not await aiofiles.ospath.exists(self.__googleServiceAccountFile):
-                raise FileNotFoundError(f'googleServiceAccount file not found: \"{self.__googleServiceAccountFile}\"')
-
-            self.__googleTranslateClient = translate.Client.from_service_account_json(self.__googleServiceAccountFile)
-
-        return self.__googleTranslateClient
+        self.__mimeType: str = mimeType
 
     def getTranslationApiSource(self) -> TranslationApiSource:
         return TranslationApiSource.GOOGLE_TRANSLATE
 
-    async def __hasGoogleApiCredentials(self) -> bool:
-        if self.__googleTranslateClient is not None:
-            return True
-        elif isGoogleMissing:
-            return False
-        elif not await aiofiles.ospath.exists(self.__googleServiceAccountFile):
-            return False
-
-        jsonContents: Optional[Dict[str, Any]] = None
-        exception: Optional[JSONDecodeError] = None
-
-        async with aiofiles.open(self.__googleServiceAccountFile, mode = 'r', encoding = 'utf-8') as file:
-            data = await file.read()
-
-            try:
-                jsonContents = json.loads(data)
-            except JSONDecodeError as e:
-                exception = e
-
-        return isinstance(jsonContents, Dict) and len(jsonContents) >= 1 and exception is None
-
     async def isAvailable(self) -> bool:
-        return await self.__hasGoogleApiCredentials()
+        apiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
+        projectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
+        return utils.isValidStr(apiKey) and utils.isValidStr(projectId)
 
     async def translate(self, text: str, targetLanguage: LanguageEntry) -> TranslationResponse:
         if not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
         elif not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
-        elif not targetLanguage.hasIso6391Code():
-            raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
 
-        googleTranslateClient = await self.__getGoogleTranslateClient()
+        iso6391Code = targetLanguage.getIso6391Code()
 
-        if googleTranslateClient is None:
-            raise TranslationEngineUnavailableException(
-                message = f'Google Translation engine is currently unavailable ({text=}) ({targetLanguage=})',
-                translationApiSource = self.getTranslationApiSource()
+        if not utils.isValidStr(iso6391Code):
+            raise TranslationLanguageHasNoIso6391Code(
+                languageEntry = targetLanguage,
+                message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'
             )
 
-        self.__timber.log('GoogleTranslationApi', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=})...')
-        translationResult: Optional[Dict[str, Any]] = None
+        request = GoogleTranslationRequest(
+            glossaryConfig = None,
+            contents = list(text),
+            mimeType = self.__mimeType,
+            model = None,
+            sourceLanguageCode = None,
+            targetLanguageCode = iso6391Code
+        )
+
+        self.__timber.log('GoogleTranslationApi', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=}) ({request=})...')
+        response: Optional[GoogleTranslateTextResponse] = None
         exception: Optional[Exception] = None
 
         try:
-            translationResult = googleTranslateClient.translate(
-                text,
-                target_language = targetLanguage.requireIso6391Code()
-            )
+            response = await self.__googleApiService.translate(request)
         except Exception as e:
             exception = e
 
-        if translationResult is None or len(translationResult) == 0 or exception is not None:
-            self.__timber.log('GoogleTranslationApi', f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=})', exception, traceback.format_exc())
+        if response is None or exception is not None:
+            self.__timber.log('GoogleTranslationApi', f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=}) ({response=}): {exception}', exception, traceback.format_exc())
 
             raise TranslationException(
-                message = f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=}) ({translationResult=}) ({exception=})',
+                message = f'Encountered an error when attempting to fetch translation from Google Translate ({text=}) ({targetLanguage=}) ({response=}) ({exception=})',
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        originalText: Optional[str] = translationResult.get('input')
-        if not utils.isValidStr(originalText):
-            raise RuntimeError(f'\"input\" field is missing or malformed from translation result for \"{text}\": {translationResult}')
+        translations = response.getTranslations()
+        if translations is None or len(translations) == 0:
+            self.__timber.log('GoogleTranslationApi', f'\"translations\" field is null/empty ({translations=}) ({text=}) ({targetLanguage=}) ({response=})')
 
-        translatedText: Optional[str] = translationResult.get('translatedText')
-        if not utils.isValidStr(translatedText):
-            raise RuntimeError(f'\"translatedText\" field is missing or malformed from translation result for \"{text}\": {translationResult}')
-
-        originalLanguage: Optional[LanguageEntry] = None
-        detectedSourceLanguage: Optional[str] = translationResult.get('detectedSourceLanguage')
-        if utils.isValidStr(detectedSourceLanguage):
-            originalLanguage = await self.__languagesRepository.getLanguageForCommand(
-                command = detectedSourceLanguage,
-                hasIso6391Code = True
+            raise TranslationException(
+                message = f'GoogleTranslationApi received a null/empty \"translations\" field ({translations=}) ({text=}) ({targetLanguage=}) ({response=})',
+                translationApiSource = self.getTranslationApiSource()
             )
 
-        translatedText = utils.cleanStr(
-            s = translatedText,
-            htmlUnescape = True
+        translation = translations[0]
+        translatedText = translation.getTranslatedText()
+
+        if not utils.isValidStr(translatedText):
+            self.__timber.log('GoogleTranslationApi', f'\"translatedText\" field is null/empty ({translatedText=}) ({text=}) ({targetLanguage=}) ({response=})')
+
+            raise TranslationException(
+                message = f'GoogleTranslationApi received a null/empty \"translatedText\" field ({translatedText=}) ({text=}) ({targetLanguage=}) ({response=})',
+                translationApiSource = self.getTranslationApiSource()
+            )
+
+        originalLanguage = await self.__languagesRepository.getLanguageForCommand(
+            command = translation.getDetectedLanguageCode(),
+            hasIso6391Code = True
         )
 
         return TranslationResponse(
             originalLanguage = originalLanguage,
             translatedLanguage = targetLanguage,
-            originalText = originalText,
+            originalText = text,
             translatedText = translatedText,
             translationApiSource = self.getTranslationApiSource()
         )
