@@ -3,6 +3,8 @@ from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleTextSynthesisResponse import \
+    GoogleTextSynthesisResponse
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
@@ -23,6 +25,26 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
+
+    async def parseTextSynthesisResponse(
+        self,
+        jsonContents: Optional[Dict[str, Any]]
+    ) -> Optional[GoogleTextSynthesisResponse]:
+        if jsonContents is None or len(jsonContents) == 0:
+            return None
+
+        audioConfig = await self.parseVoiceAudioConfig(jsonContents.get('audioConfig'))
+        if audioConfig is None:
+            exception = ValueError(f'Failed to parse \"audioConfig\" element into a GoogleVoiceAudioConfig! ({jsonContents=}) ({audioConfig=})')
+            self.__timber.log('GoogleJsonMapper', f'Unable to construct a GoogleTextSynthesisResponse instance as there is no audio config ({jsonContents=}) ({audioConfig=})', exception, traceback.format_exc())
+            raise exception
+
+        audioContent = utils.getStrFromDict(jsonContents, 'audioContent')
+
+        return GoogleTextSynthesisResponse(
+            audioConfig = audioConfig,
+            audioContent = audioContent
+        )
 
     async def parseTranslateTextGlossaryConfig(
         self,
@@ -84,7 +106,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         glossaryConfig = await self.parseTranslateTextGlossaryConfig(jsonContents.get('glossaryConfig'))
         if glossaryConfig is None:
-            exception = ValueError(f'Failed to parse jsonContents into a glossary config! ({jsonContents=}) ({glossaryConfig=})')
+            exception = ValueError(f'Failed to parse \"glossaryConfig\" element into a GoogleTranslateTextGlossaryConfig! ({jsonContents=}) ({glossaryConfig=})')
             self.__timber.log('GoogleJsonMapper', f'Unable to construct a GoogleTranslation instance as there is no glossary config ({jsonContents=}) ({glossaryConfig=})', exception, traceback.format_exc())
             raise exception
 

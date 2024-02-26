@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from CynanBot.google.googleTextSynthesisResponse import \
+    GoogleTextSynthesisResponse
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
@@ -11,6 +13,13 @@ from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
 
 class GoogleJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseTextSynthesisResponse(
+        self,
+        jsonContents: Optional[Dict[str, Any]]
+    ) -> Optional[GoogleTextSynthesisResponse]:
+        pass
 
     @abstractmethod
     async def parseTranslateTextGlossaryConfig(
