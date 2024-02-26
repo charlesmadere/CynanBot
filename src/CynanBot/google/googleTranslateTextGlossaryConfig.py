@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 
@@ -8,17 +8,17 @@ class GoogleTranslateTextGlossaryConfig():
     def __init__(
         self,
         ignoreCase: bool,
-        glossary: str
+        glossary: Optional[str]
     ):
         if not utils.isValidBool(ignoreCase):
             raise TypeError(f'ignoreCase argument is malformed: \"{ignoreCase}\"')
-        elif not utils.isValidStr(glossary):
+        elif glossary is not None and not isinstance(glossary, str):
             raise TypeError(f'glossary argument is malformed: \"{glossary}\"')
 
         self.__ignoreCase: bool = ignoreCase
-        self.__glossary: str = glossary
+        self.__glossary: Optional[str] = glossary
 
-    def getGlossary(self) -> str:
+    def getGlossary(self) -> Optional[str]:
         return self.__glossary
 
     def getIgnoreCase(self) -> bool:

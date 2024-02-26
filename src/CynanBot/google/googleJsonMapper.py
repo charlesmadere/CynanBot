@@ -54,7 +54,10 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return None
 
         ignoreCase = utils.getBoolFromDict(jsonContents, 'ignoreCase')
-        glossary = utils.getStrFromDict(jsonContents, 'glossary')
+
+        glossary: Optional[str] = None
+        if 'glossary' in jsonContents and utils.isValidStr(jsonContents.get('glossary')):
+            glossary = utils.getStrFromDict(jsonContents, 'glossary')
 
         return GoogleTranslateTextGlossaryConfig(
             ignoreCase = ignoreCase,
