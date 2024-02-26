@@ -8,6 +8,8 @@ from CynanBot.google.googleTranslateTextGlossaryConfig import \
 from CynanBot.google.googleTranslateTextResponse import \
     GoogleTranslateTextResponse
 from CynanBot.google.googleTranslation import GoogleTranslation
+from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -102,3 +104,64 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             model = model,
             translatedText = translatedText
         )
+
+    async def parseVoiceAudioConfig(
+        self,
+        jsonContents: Optional[Dict[str, Any]]
+    ) -> Optional[GoogleVoiceAudioConfig]:
+        if jsonContents is None or len(jsonContents) == 0:
+            return None
+
+        pitch: Optional[float] = None
+        if 'pitch' in jsonContents and utils.isValidNum(jsonContents.get('pitch')):
+            pitch = utils.getFloatFromDict(jsonContents, 'pitch')
+
+        speakingRate: Optional[float] = None
+        if 'speakingRate' in jsonContents and utils.isValidNum(jsonContents.get('speakingRate')):
+            speakingRate = utils.getFloatFromDict(jsonContents, 'speakingRate')
+
+        volumeGainDb: Optional[float] = None
+        if 'volumeGainDb' in jsonContents and utils.isValidNum(jsonContents.get('volumeGainDb')):
+            volumeGainDb = utils.getFloatFromDict(jsonContents, 'volumeGainDb')
+
+        sampleRateHertz: Optional[int] = None
+        if 'sampleRateHertz' in jsonContents and utils.isValidNum(jsonContents.get('sampleRateHertz')):
+            sampleRateHertz = utils.getIntFromDict(jsonContents, 'sampleRateHertz')
+
+        audioEncoding = await self.parseVoiceAudioEncoding(jsonContents.get('audioEncoding'))
+        if audioEncoding is None:
+            exception = ValueError(f'Failed to parse \"audioEncoding\" field into a GoogleVoiceAudioEncoding! ({jsonContents=}) ({audioEncoding=})')
+            self.__timber.log('GoogleJsonMapper', f'Unable to construct a GoogleVoiceAudioConfig instance as there is no audio encoding ({jsonContents=}) ({audioEncoding=})', exception, traceback.format_exc())
+            raise exception
+
+        return GoogleVoiceAudioConfig(
+            pitch = pitch,
+            speakingRate = speakingRate,
+            volumeGainDb = volumeGainDb,
+            sampleRateHertz = sampleRateHertz,
+            audioEncoding = audioEncoding
+        )
+
+    async def parseVoiceAudioEncoding(
+        self,
+        jsonString: Optional[str]
+    ) -> Optional[GoogleVoiceAudioEncoding]:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        if jsonString == 'ALAW':
+            return GoogleVoiceAudioEncoding.ALAW
+        elif jsonString == 'AUDIO_ENCODING_UNSPECIFIED':
+            return GoogleVoiceAudioEncoding.UNSPECIFIED
+        elif jsonString == 'LINEAR16':
+            return GoogleVoiceAudioEncoding.LINEAR_16
+        elif jsonString == 'MP3':
+            return GoogleVoiceAudioEncoding.MP3
+        elif jsonString == 'MP3_64_KBPS':
+            return GoogleVoiceAudioEncoding.MP3_64_KBPS
+        elif jsonString == 'MULAW':
+            return GoogleVoiceAudioEncoding.MULAW
+        elif jsonString == 'OGG_OPUS':
+            return GoogleVoiceAudioEncoding.OGG_OPUS
+        else:
+            return None
