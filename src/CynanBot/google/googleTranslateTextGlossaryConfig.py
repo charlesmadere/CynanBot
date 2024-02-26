@@ -3,7 +3,7 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 
 
-class GoogleTranslateGlossaryConfig():
+class GoogleTranslateTextGlossaryConfig():
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class GoogleTranslateGlossaryConfig():
     def getGlossary(self) -> str:
         return self.__glossary
 
-    def ignoreCase(self) -> bool:
+    def getIgnoreCase(self) -> bool:
         return self.__ignoreCase
 
     def __repr__(self) -> str:
