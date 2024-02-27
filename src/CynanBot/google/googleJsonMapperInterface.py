@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesisResponse import \
     GoogleTextSynthesisResponse
+from CynanBot.google.googleTextSynthesizeRequest import \
+    GoogleTextSynthesizeRequest
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
@@ -13,6 +16,9 @@ from CynanBot.google.googleTranslation import GoogleTranslation
 from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from CynanBot.google.googleVoiceGender import GoogleVoiceGender
+from CynanBot.google.googleVoiceSelectionParams import \
+    GoogleVoiceSelectionParams
 
 
 class GoogleJsonMapperInterface(ABC):
@@ -60,9 +66,37 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def parseVoiceGender(
+        self,
+        jsonString: Optional[str]
+    ) -> Optional[GoogleVoiceGender]:
+        pass
+    
+    @abstractmethod
+    async def serializeVoiceAudioEncoding(
+        self,
+        voiceAudioEncoding: GoogleVoiceAudioEncoding
+    ) -> str:
+        pass
+
+    @abstractmethod
     async def serializeGlossaryConfig(
         self,
         glossaryConfig: GoogleTranslateTextGlossaryConfig
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeSynthesizeRequest(
+        self,
+        synthesizeRequest: GoogleTextSynthesizeRequest
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTextSynthesisInput(
+        self,
+        textSynthesisInput: GoogleTextSynthesisInput
     ) -> Dict[str, Any]:
         pass
 
@@ -77,5 +111,26 @@ class GoogleJsonMapperInterface(ABC):
     async def serializeTransliterationConfig(
         self,
         transliterationConfig: GoogleTranslateTextTransliterationConfig
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeVoiceAudioConfig(
+        self,
+        voiceAudioConfig: GoogleVoiceAudioConfig
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeVoiceGender(
+        self,
+        voiceGender: GoogleVoiceGender
+    ) -> str:
+        pass
+
+    @abstractmethod
+    async def serializeVoiceSelectionParams(
+        self,
+        voiceSelectionParams: GoogleVoiceSelectionParams
     ) -> Dict[str, Any]:
         pass

@@ -3,8 +3,11 @@ from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesisResponse import \
     GoogleTextSynthesisResponse
+from CynanBot.google.googleTextSynthesizeRequest import \
+    GoogleTextSynthesizeRequest
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
@@ -15,6 +18,9 @@ from CynanBot.google.googleTranslation import GoogleTranslation
 from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from CynanBot.google.googleVoiceGender import GoogleVoiceGender
+from CynanBot.google.googleVoiceSelectionParams import \
+    GoogleVoiceSelectionParams
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -192,6 +198,24 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         elif jsonString == 'OGG_OPUS':
             return GoogleVoiceAudioEncoding.OGG_OPUS
         else:
+            self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceAudioEncoding value: \"{jsonString}\"')
+            return None
+
+    async def parseVoiceGender(
+        self,
+        jsonString: Optional[str]
+    ) -> Optional[GoogleVoiceGender]:
+        if not utils.isValidStr(jsonString):
+            return None
+
+        if jsonString == 'FEMALE':
+            return GoogleVoiceGender.FEMALE
+        elif jsonString == 'MALE':
+            return GoogleVoiceGender.MALE
+        elif jsonString == 'SSML_VOICE_GENDER_UNSPECIFIED':
+            return GoogleVoiceGender.UNSPECIFIED
+        else:
+            self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceGender value: \"{jsonString}\"')
             return None
 
     async def serializeGlossaryConfig(
@@ -209,6 +233,30 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             dictionary['glossary'] = glossaryConfig.getGlossary()
 
         return dictionary
+
+    async def serializeSynthesizeRequest(
+        self,
+        synthesizeRequest: GoogleTextSynthesizeRequest
+    ) -> Dict[str, Any]:
+        if not isinstance(synthesizeRequest, GoogleTextSynthesizeRequest):
+            raise TypeError(f'synthesizeRequest argument is malformed: \"{synthesizeRequest}\"')
+
+        return {
+            'audioConfig': await self.serializeVoiceAudioConfig(synthesizeRequest.getAudioConfig()),
+            'input': await self.serializeTextSynthesisInput(synthesizeRequest.getInput()),
+            'voice': await self.serializeVoiceSelectionParams(synthesizeRequest.getVoice())
+        }
+
+    async def serializeTextSynthesisInput(
+        self,
+        textSynthesisInput: GoogleTextSynthesisInput
+    ) -> Dict[str, Any]:
+        if not isinstance(textSynthesisInput, GoogleTextSynthesisInput):
+            raise TypeError(f'textSynthesisInput argument is malformed: \"{textSynthesisInput}\"')
+
+        return {
+            'text': textSynthesisInput.getText()
+        }
 
     async def serializeTranslationRequest(
         self,
@@ -248,4 +296,72 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         return {
             'enableTransliteration': transliterationConfig.getEnableTransliteration()
+        }
+
+    async def serializeVoiceAudioConfig(
+        self,
+        voiceAudioConfig: GoogleVoiceAudioConfig
+    ) -> Dict[str, Any]:
+        if not isinstance(voiceAudioConfig, GoogleVoiceAudioConfig):
+            raise TypeError(f'voiceAudioConfig argument is malformed: \"{voiceAudioConfig}\"')
+
+        dictionary: Dict[str, Any] = {
+            'audioEncoding': await self.serializeVoiceAudioEncoding(voiceAudioConfig.getAudioEncoding())
+        }
+
+        # TODO
+
+        return dictionary
+
+    async def serializeVoiceAudioEncoding(
+        self,
+        voiceAudioEncoding: GoogleVoiceAudioEncoding
+    ) -> str:
+        if not isinstance(voiceAudioEncoding, GoogleVoiceAudioEncoding):
+            raise TypeError(f'voiceAudioEncoding argument is malformed: \"{voiceAudioEncoding}\"')
+
+        if voiceAudioEncoding is GoogleVoiceAudioEncoding.ALAW:
+            return 'ALAW'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.LINEAR_16:
+            return 'LINEAR16'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MP3:
+            return 'MP3'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MP3_64_KBPS:
+            return 'MP3_64_KBPS'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MULAW:
+            return 'MULAW'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.OGG_OPUS:
+            return 'OGG_OPUS'
+        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.UNSPECIFIED:
+            raise ValueError(f'The given GoogleVoiceAudioEncoding value is unsupported: \"{voiceAudioEncoding}\"')
+        else:
+            raise ValueError(f'The given GoogleVoiceAudioEncoding value is unknown: \"{voiceAudioEncoding}\"')
+
+    async def serializeVoiceGender(
+        self,
+        voiceGender: GoogleVoiceGender
+    ) -> str:
+        if not isinstance(voiceGender, GoogleVoiceGender):
+            raise TypeError(f'voiceGender argument is malformed: \"{voiceGender}\"')
+
+        if voiceGender is GoogleVoiceGender.FEMALE:
+            return 'FEMALE'
+        elif voiceGender is GoogleVoiceGender.MALE:
+            return 'MALE'
+        elif voiceGender is GoogleVoiceGender.UNSPECIFIED:
+            return 'SSML_VOICE_GENDER_UNSPECIFIED'
+        else:
+            raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
+
+    async def serializeVoiceSelectionParams(
+        self,
+        voiceSelectionParams: GoogleVoiceSelectionParams
+    ) -> Dict[str, Any]:
+        if not isinstance(voiceSelectionParams, GoogleVoiceSelectionParams):
+            raise TypeError(f'voiceSelectionParams argument is malformed: \"{voiceSelectionParams}\"')
+
+        return {
+            'languageCode': voiceSelectionParams.getLanguageCode(),
+            'name': voiceSelectionParams.getName(),
+            'ssmlGender': await self.serializeVoiceGender(voiceSelectionParams.getGender())
         }

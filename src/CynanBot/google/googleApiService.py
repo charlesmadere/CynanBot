@@ -50,7 +50,8 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://texttospeech.googleapis.com/v1/text:synthesize'
+                url = f'https://texttospeech.googleapis.com/v1/text:synthesize',
+                json = await self.__googleJsonMapper.serializeSynthesizeRequest(request)
             )
         except GenericNetworkException as e:
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=}): {e}', e, traceback.format_exc())
