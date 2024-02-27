@@ -27,8 +27,7 @@ class TranslationHelper(TranslationHelperInterface):
         deepLTranslationApi: DeepLTranslationApi,
         googleTranslationApi: GoogleTranslationApi,
         languagesRepository: LanguagesRepositoryInterface,
-        timber: TimberInterface,
-        maxAttempts: int = 3
+        timber: TimberInterface
     ):
         if not isinstance(deepLTranslationApi, DeepLTranslationApi):
             raise TypeError(f'deepLTranslationApi argument is malformed: \"{deepLTranslationApi}\"')
@@ -38,16 +37,11 @@ class TranslationHelper(TranslationHelperInterface):
             raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not utils.isValidInt(maxAttempts):
-            raise TypeError(f'maxAttempts argument is malformed: \"{maxAttempts}\"')
-        elif maxAttempts < 1 or maxAttempts > 10:
-            raise ValueError(f'maxAttempts argument is out of bounds: {maxAttempts}')
 
         self.__deepLTranslationApi: TranslationApi = deepLTranslationApi
         self.__googleTranslationApi: TranslationApi = googleTranslationApi
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
-        self.__maxAttempts: int = maxAttempts
 
     async def __getAvailableTranslationApis(self) -> List[TranslationApi]:
         translationApis: List[TranslationApi] = [
@@ -100,13 +94,14 @@ class TranslationHelper(TranslationHelperInterface):
         translationApi: Optional[TranslationApi] = None
         translationResponse: Optional[TranslationResponse] = None
 
-        while translationResponse is None or attempt < self.__maxAttempts:
+        while translationResponse is None and len(translationApis) >= 1:
             # In order to help keep us from running beyond the free usage tiers for the Google
             # Translate and DeepL translation services, let's randomly choose which translation
             # service to use. At the time of this writing, both services have a 500,000 character
             # monthly limit. So theoretically, this gives us a 1,000,000 character translation
             # capability.
 
+            attempt = attempt + 1
             translationApi = random.choice(translationApis)
 
             try:
@@ -115,9 +110,13 @@ class TranslationHelper(TranslationHelperInterface):
                     targetLanguage = targetLanguage
                 )
             except Exception as e:
+                translationApis.remove(translationApi)
                 translationApiSource = translationApi.getTranslationApiSource()
-                self.__timber.log('TranslationHelper', f'Exception occurred when translating ({text=}) ({targetLanguage=}) ({attempt=}) ({translationApiSource=})', e, traceback.format_exc())
+                self.__timber.log('TranslationHelper', f'Exception occurred when translating ({text=}) ({targetLanguage=}) ({attempt=}) ({translationApiSource=}): {e}', e, traceback.format_exc())
 
-            attempt = attempt + 1
+        if translationResponse is None or len(translationApis) == 0:
+            raise NoTranslationEnginesAvailableException(
+                message = f'Failed to translate after {attempt} attempt(s) ({text=}) ({targetLanguage=})'
+            )
 
         return translationResponse
