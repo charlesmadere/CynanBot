@@ -36,7 +36,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
 
         triviaSourcesJson: Dict[str, Any] = jsonContents['trivia_sources']
-        if not utils.hasItems(triviaSourcesJson):
+        if not isinstance(triviaSourcesJson, Dict) or len(triviaSourcesJson) == 0:
             raise RuntimeError(f'\"trivia_sources\" field is malformed: \"{triviaSourcesJson}\"')
 
         triviaSources: Dict[TriviaSource, int] = dict()
