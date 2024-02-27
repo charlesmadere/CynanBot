@@ -28,6 +28,7 @@ from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
     ClearSuperTriviaQueueCommand
+from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -42,10 +43,10 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
-                               ClearCachesCommand, CommandsCommand,
-                               ConfirmCommand, CutenessChampionsCommand,
-                               CutenessCommand, CutenessHistoryCommand,
-                               CynanSourceCommand, DeleteCheerActionCommand,
+                               ClearCachesCommand, ConfirmCommand,
+                               CutenessChampionsCommand, CutenessCommand,
+                               CutenessHistoryCommand, CynanSourceCommand,
+                               DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
                                GetBannedTriviaControllersCommand,
                                GetCheerActionsCommand,
@@ -478,7 +479,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
         self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
-        self.__commandsCommand: AbsCommand = CommandsCommand(generalSettingsRepository, timber, triviaUtils, twitchUtils, usersRepository)
+        self.__commandsCommand: AbsChatCommand = CommandsChatCommand(timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
         self.__discordCommand: AbsCommand = DiscordCommand(timber, twitchUtils, usersRepository)
@@ -1150,7 +1151,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'commands')
     async def command_commands(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__commandsCommand.handleCommand(context)
+        await self.__commandsCommand.handleChatCommand(context)
 
     @commands.command(name = 'confirm')
     async def command_confirm(self, ctx: Context):
