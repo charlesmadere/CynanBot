@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
 
 from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
+from CynanBot.deepL.deepLAuthKeyProviderInterface import \
+    DeepLAuthKeyProviderInterface
 from CynanBot.google.googleCloudProjectIdProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.misc.clearable import Clearable
@@ -11,8 +13,13 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 
 
-class AuthRepository(Clearable, GoogleCloudProjectCredentialsProviderInterface,
-    TwitchCredentialsProviderInterface, TwitchHandleProviderInterface):
+class AuthRepository(
+    Clearable,
+    DeepLAuthKeyProviderInterface,
+    GoogleCloudProjectCredentialsProviderInterface,
+    TwitchCredentialsProviderInterface,
+    TwitchHandleProviderInterface
+):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
         if not isinstance(authJsonReader, JsonReaderInterface):
@@ -49,13 +56,17 @@ class AuthRepository(Clearable, GoogleCloudProjectCredentialsProviderInterface,
 
         return snapshot
 
-    async def getGoogleCloudApiKey(self) -> str:
+    async def getDeepLAuthKey(self) -> Optional[str]:
         snapshot = await self.getAllAsync()
-        return snapshot.requireGoogleCloudApiKey()
+        return snapshot.getDeepLAuthKey()
 
-    async def getGoogleCloudProjectId(self) -> str:
+    async def getGoogleCloudApiKey(self) -> Optional[str]:
         snapshot = await self.getAllAsync()
-        return snapshot.requireGoogleCloudProjectId()
+        return snapshot.getGoogleCloudApiKey()
+
+    async def getGoogleCloudProjectId(self) -> Optional[str]:
+        snapshot = await self.getAllAsync()
+        return snapshot.getGoogleCloudProjectId()
 
     async def getTwitchClientId(self) -> str:
         snapshot = await self.getAllAsync()

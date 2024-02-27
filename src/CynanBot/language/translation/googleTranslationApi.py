@@ -8,11 +8,11 @@ from CynanBot.google.googleCloudProjectIdProviderInterface import \
 from CynanBot.google.googleTranslateTextResponse import \
     GoogleTranslateTextResponse
 from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
+from CynanBot.language.exceptions import (TranslationException,
+                                          TranslationLanguageHasNoIso6391Code)
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
-from CynanBot.language.translation.exceptions import (
-    TranslationException, TranslationLanguageHasNoIso6391Code)
 from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
@@ -118,6 +118,9 @@ class GoogleTranslationApi(TranslationApi):
             command = translation.getDetectedLanguageCode(),
             hasIso6391Code = True
         )
+
+        if originalLanguage is None:
+            self.__timber.log('GoogleTranslationApi', f'Unable to find corresponding language entry for the given detected language code \"{translation.getDetectedLanguageCode}\" ({text=}) ({targetLanguage=}) ({response=})')
 
         return TranslationResponse(
             originalLanguage = originalLanguage,

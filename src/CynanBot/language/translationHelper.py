@@ -3,6 +3,7 @@ import traceback
 from typing import Optional
 
 import CynanBot.misc.utils as utils
+from CynanBot.language.exceptions import TranslationLanguageHasNoIso6391Code
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
@@ -56,8 +57,12 @@ class TranslationHelper(TranslationHelperInterface):
             raise TypeError(f'text argument is malformed: \"{text}\"')
         elif targetLanguage is not None and not isinstance(targetLanguage, LanguageEntry):
             raise TypeError(f'targetLanguageEntry argument is malformed: \"{targetLanguage}\"')
-        elif targetLanguage is not None and not targetLanguage.hasIso6391Code():
-            raise ValueError(f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"')
+
+        if targetLanguage is not None and not targetLanguage.hasIso6391Code():
+            raise TranslationLanguageHasNoIso6391Code(
+                languageEntry = targetLanguage,
+                message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'
+            )
 
         text = utils.cleanStr(text)
 

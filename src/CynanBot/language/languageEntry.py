@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 
@@ -31,10 +31,10 @@ class LanguageEntry():
         self.__wotdApiCode: Optional[str] = wotdApiCode
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, LanguageEntry):
-            return self.__name.lower() == other.__name.lower()
-        else:
+        if not isinstance(other, LanguageEntry):
             return False
+
+        return self.__name.lower() == other.__name.lower()
 
     def getCommandNames(self) -> List[str]:
         return self.__commandNames
@@ -67,7 +67,8 @@ class LanguageEntry():
         return utils.isValidStr(self.__wotdApiCode)
 
     def __repr__(self) -> str:
-        return self.getName()
+        dictionary = self.toDictionary()
+        return str(dictionary)
 
     def requireIso6391Code(self) -> str:
         iso6391Code = self.__iso6391Code
@@ -84,3 +85,11 @@ class LanguageEntry():
             raise RuntimeError(f'This LanguageEntry ({self}) has no WOTD API code!')
 
         return wotdApiCode
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'commandNames': self.__commandNames,
+            'flag': self.__flag,
+            'name': self.__name,
+            'wotdApiCode': self.__wotdApiCode
+        }

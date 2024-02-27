@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import CynanBot.misc.utils as utils
 
@@ -6,12 +6,12 @@ import CynanBot.misc.utils as utils
 class AuthRepositorySnapshot():
 
     def __init__(self, jsonContents: Dict[str, Any]):
-        if not utils.hasItems(jsonContents):
-            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+        if not isinstance(jsonContents, Dict):
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         self.__jsonContents: Dict[str, Any] = jsonContents
 
-    def getDeepLAuthKey(self) -> str:
+    def getDeepLAuthKey(self) -> Optional[str]:
         return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', fallback = '')
 
     def getMerriamWebsterApiKey(self) -> str:
@@ -43,21 +43,11 @@ class AuthRepositorySnapshot():
 
         return deepLAuthKey
 
-    def requireGoogleCloudApiKey(self) -> str:
-        googleCloudApiKey = self.__jsonContents.get('googleCloudApiKey')
+    def getGoogleCloudApiKey(self) -> Optional[str]:
+        return utils.getStrFromDict(self.__jsonContents, 'googleCloudApiKey', fallback = '')
 
-        if not utils.isValidStr(googleCloudApiKey):
-            raise ValueError(f'\"googleCloudApiKey\" in Auth Repository file is malformed: \"{googleCloudApiKey}\"')
-
-        return googleCloudApiKey
-
-    def requireGoogleCloudProjectId(self) -> str:
-        googleCloudProjectId = self.__jsonContents.get('googleCloudProjectId')
-
-        if not utils.isValidStr(googleCloudProjectId):
-            raise ValueError(f'\"googleCloudProjectId\" in Auth Repository file is malformed: \"{googleCloudProjectId}\"')
-
-        return googleCloudProjectId
+    def getGoogleCloudProjectId(self) -> Optional[str]:
+        return utils.getStrFromDict(self.__jsonContents, 'googleCloudProjectId', fallback = '')
 
     def requireMerriamWebsterApiKey(self) -> str:
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()

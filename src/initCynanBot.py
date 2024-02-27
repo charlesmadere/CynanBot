@@ -1,6 +1,7 @@
 import asyncio
 import locale
 import logging
+from asyncio import AbstractEventLoop
 from typing import Optional
 
 from CynanBot.administratorProvider import AdministratorProvider
@@ -62,6 +63,10 @@ from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.google.googleApiService import GoogleApiService
+from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
+from CynanBot.google.googleJsonMapper import GoogleJsonMapper
+from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
@@ -311,7 +316,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Misc initialization section ##
 #################################
 
-eventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
 timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
 
@@ -470,16 +475,27 @@ wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository
     timber = timber
 )
 
-authSnapshot = authRepository.getAll()
-
 deepLTranslationApi: TranslationApi = DeepLTranslationApi(
+    deepLAuthKeyProvider = authRepository,
     languagesRepository = languagesRepository,
     networkClientProvider = networkClientProvider,
-    deepLAuthKey = authSnapshot.getDeepLAuthKey(),
+    timber = timber
+)
+
+googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+    timber = timber
+)
+
+googleApiService: GoogleApiServiceInterface = GoogleApiService(
+    googleJsonMapper = googleJsonMapper,
+    googleCloudProjectCredentialsProvider = authRepository,
+    networkClientProvider = networkClientProvider,
     timber = timber
 )
 
 googleTranslationApi: TranslationApi = GoogleTranslationApi(
+    googleApiService = googleApiService,
+    googleCloudProjectCredentialsProvider = authRepository,
     languagesRepository = languagesRepository,
     timber = timber
 )
@@ -506,6 +522,8 @@ if generalSettingsSnapshot.isEventSubEnabled():
         ),
         twitchWebsocketJsonMapper = twitchWebsocketJsonMapper
     )
+
+authSnapshot = authRepository.getAll()
 
 weatherRepository: Optional[WeatherRepositoryInterface] = None
 if authSnapshot.hasOneWeatherApiKey():

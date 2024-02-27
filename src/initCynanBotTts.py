@@ -1,6 +1,7 @@
 import asyncio
 import locale
 import logging
+from asyncio import AbstractEventLoop
 from typing import Optional
 
 from CynanBot.administratorProvider import AdministratorProvider
@@ -174,7 +175,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 ## Misc initialization section ##
 #################################
 
-eventLoop = asyncio.get_event_loop()
+eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
 timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
 
