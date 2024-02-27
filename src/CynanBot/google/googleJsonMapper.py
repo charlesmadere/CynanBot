@@ -309,7 +309,17 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             'audioEncoding': await self.serializeVoiceAudioEncoding(voiceAudioConfig.getAudioEncoding())
         }
 
-        # TODO
+        if utils.isValidNum(voiceAudioConfig.getPitch()):
+            dictionary['pitch'] = voiceAudioConfig.getPitch()
+
+        if utils.isValidInt(voiceAudioConfig.getSampleRateHertz()):
+            dictionary['sampleRateHertz'] = voiceAudioConfig.getSampleRateHertz()
+
+        if utils.isValidNum(voiceAudioConfig.getSpeakingRate()):
+            dictionary['speakingRate'] = voiceAudioConfig.getSpeakingRate()
+
+        if utils.isValidNum(voiceAudioConfig.getVolumeGainDb()):
+            dictionary['volumeGainDb'] = voiceAudioConfig.getVolumeGainDb()
 
         return dictionary
 
