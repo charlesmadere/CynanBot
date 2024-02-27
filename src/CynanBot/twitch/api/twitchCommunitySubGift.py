@@ -15,8 +15,12 @@ class TwitchCommunitySubGift():
     ):
         if cumulativeTotal is not None and not utils.isValidInt(cumulativeTotal):
             raise TypeError(f'cumulativeTotal argument is malformed: \"{cumulativeTotal}\"')
+        elif cumulativeTotal is not None and (cumulativeTotal < 0 or cumulativeTotal > utils.getLongMaxSafeSize()):
+            raise ValueError(f'cumulativeTotal argument is out of bounds: {cumulativeTotal}')
         elif not utils.isValidInt(total):
             raise TypeError(f'total argument is malformed: \"{total}\"')
+        elif total < 0 or total > utils.getLongMaxSafeSize():
+            raise ValueError(f'total argument is out of bounds: {total}')
         elif not utils.isValidStr(communitySubGiftId):
             raise TypeError(f'communitySubGiftId argument is malformed: \"{communitySubGiftId}\"')
         elif not isinstance(subTier, TwitchSubscriberTier):
