@@ -1,9 +1,11 @@
 import random
 import traceback
-from typing import Optional
+from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.language.exceptions import TranslationLanguageHasNoIso6391Code
+from CynanBot.language.exceptions import (
+    NoTranslationEnginesAvailableException,
+    TranslationLanguageHasNoIso6391Code)
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.languagesRepositoryInterface import \
     LanguagesRepositoryInterface
@@ -12,7 +14,6 @@ from CynanBot.language.translation.deepLTranslationApi import \
 from CynanBot.language.translation.googleTranslationApi import \
     GoogleTranslationApi
 from CynanBot.language.translation.translationApi import TranslationApi
-from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationHelperInterface import \
     TranslationHelperInterface
 from CynanBot.language.translationResponse import TranslationResponse
@@ -48,6 +49,24 @@ class TranslationHelper(TranslationHelperInterface):
         self.__timber: TimberInterface = timber
         self.__maxAttempts: int = maxAttempts
 
+    async def __getAvailableTranslationApis(self) -> List[TranslationApi]:
+        translationApis: List[TranslationApi] = [
+            self.__deepLTranslationApi,
+            self.__googleTranslationApi
+        ]
+
+        translationApisToRemove: List[TranslationApi] = list()
+
+        for translationApi in translationApis:
+            if not await translationApi.isAvailable():
+                translationApisToRemove.append(translationApi)
+
+        if len(translationApisToRemove) >= 1:
+            for translationApiToRemove in translationApisToRemove:
+                translationApis.remove(translationApiToRemove)
+
+        return translationApis
+
     async def translate(
         self,
         text: str,
@@ -72,27 +91,23 @@ class TranslationHelper(TranslationHelperInterface):
                 hasIso6391Code = True
             )
 
-        # In order to help keep us from running beyond the free usage tiers for the Google
-        # Translate and DeepL translation services, let's randomly choose which translation service
-        # to use. At the time of this writing, both services have a 500,000 character monthly limit.
-        # So theoretically, this gives us a 1,000,000 character translation capability.
+        translationApis = await self.__getAvailableTranslationApis()
+
+        if len(translationApis) == 0:
+            raise NoTranslationEnginesAvailableException(f'No translation engines are available! ({text=}) ({targetLanguage=})')
 
         attempt = 0
         translationApi: Optional[TranslationApi] = None
         translationResponse: Optional[TranslationResponse] = None
 
         while translationResponse is None or attempt < self.__maxAttempts:
-            translationApiSource = random.choice(list(TranslationApiSource))
+            # In order to help keep us from running beyond the free usage tiers for the Google
+            # Translate and DeepL translation services, let's randomly choose which translation
+            # service to use. At the time of this writing, both services have a 500,000 character
+            # monthly limit. So theoretically, this gives us a 1,000,000 character translation
+            # capability.
 
-            if translationApiSource is TranslationApiSource.DEEP_L:
-                translationApi = self.__deepLTranslationApi
-            elif translationApiSource is TranslationApiSource.GOOGLE_TRANSLATE:
-                translationApi = self.__googleTranslationApi
-            else:
-                raise RuntimeError(f'unknown TranslationApiSource: \"{translationApiSource}\"')
-
-            if not await translationApi.isAvailable():
-                continue
+            translationApi = random.choice(translationApis)
 
             try:
                 translationResponse = await translationApi.translate(
@@ -100,6 +115,7 @@ class TranslationHelper(TranslationHelperInterface):
                     targetLanguage = targetLanguage
                 )
             except Exception as e:
+                translationApiSource = translationApi.getTranslationApiSource()
                 self.__timber.log('TranslationHelper', f'Exception occurred when translating ({text=}) ({targetLanguage=}) ({attempt=}) ({translationApiSource=})', e, traceback.format_exc())
 
             attempt = attempt + 1

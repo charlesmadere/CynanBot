@@ -2,6 +2,15 @@ from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.translationApiSource import TranslationApiSource
 
 
+class NoTranslationEnginesAvailableException(Exception):
+
+    def __init__(self, message: str):
+        if not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        super().__init__(message)
+
+
 class TranslationEngineUnavailableException(Exception):
 
     def __init__(
