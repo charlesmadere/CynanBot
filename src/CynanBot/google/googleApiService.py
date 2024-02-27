@@ -1,5 +1,7 @@
 import traceback
 
+import CynanBot.misc.utils as utils
+from CynanBot.google.exceptions import GoogleCloudProjectIdUnavailableException
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
 from CynanBot.google.googleCloudProjectIdProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
@@ -81,6 +83,9 @@ class GoogleApiService(GoogleApiServiceInterface):
         self.__timber.log('GoogleApiService', f'Fetching translation from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
         projectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
+
+        if not utils.isValidStr(projectId):
+            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{projectId}\"')
 
         try:
             response = await clientSession.post(
