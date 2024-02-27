@@ -70,7 +70,7 @@ class GoogleTranslationApi(TranslationApi):
 
         request = GoogleTranslationRequest(
             glossaryConfig = None,
-            contents = list(text),
+            contents = [ text ],
             mimeType = self.__mimeType,
             model = None,
             sourceLanguageCode = None,
