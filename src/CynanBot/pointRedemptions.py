@@ -351,7 +351,8 @@ class SuperTriviaGameRedemption(AbsChannelPointRedemption):
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
-            twitchChannel = twitchChannel.getTwitchChannelName()
+            twitchChannel = twitchChannel.getTwitchChannelName(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId()
         )
 
         if startNewSuperTriviaGameAction is None:
@@ -389,6 +390,7 @@ class TriviaGameRedemption(AbsChannelPointRedemption):
     ) -> bool:
         startNewTriviaGameAction = await self.__triviaGameBuilder.createNewTriviaGame(
             twitchChannel = twitchChannel.getTwitchChannelName(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userId = twitchChannelPointsMessage.getUserId(),
             userName = twitchChannelPointsMessage.getUserName()
         )

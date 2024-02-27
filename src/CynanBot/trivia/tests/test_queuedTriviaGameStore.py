@@ -49,6 +49,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action1',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -69,6 +70,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action2',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -89,6 +91,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action3',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -109,6 +112,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action4',
         twitchChannel = 'stashiocat',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -252,6 +256,7 @@ class TestQueuedTriviaGameStore4():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action5',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -307,6 +312,7 @@ class TestQueuedTriviaGameStore5():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action6',
         twitchChannel = 'stashiocat',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -362,6 +368,7 @@ class TestQueuedTriviaGameStore6():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action7',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
@@ -438,6 +445,7 @@ class TestQueuedTriviaGameStore7():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action8',
         twitchChannel = 'smCharles',
+        twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED

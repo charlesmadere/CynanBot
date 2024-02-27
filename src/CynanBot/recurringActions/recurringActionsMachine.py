@@ -2,7 +2,7 @@ import asyncio
 import queue
 import random
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
 from typing import Dict, List, Optional
 
@@ -43,6 +43,8 @@ from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 from CynanBot.weather.weatherReport import WeatherReport
@@ -63,6 +65,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         usersRepository: UsersRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
@@ -70,50 +73,52 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         queueTimeoutSeconds: int = 3,
         superTriviaCountdownSeconds: int = 5,
         cooldown: timedelta = timedelta(minutes = 3),
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
-            raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
+            raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
         elif not isinstance(locationsRepository, LocationsRepositoryInterface):
-            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+            raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(mostRecentRecurringActionRepository, MostRecentRecurringActionRepositoryInterface):
-            raise ValueError(f'mostRecentRecurringActionRepository argument is malformed: \"{mostRecentRecurringActionRepository}\"')
+            raise TypeError(f'mostRecentRecurringActionRepository argument is malformed: \"{mostRecentRecurringActionRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
-            raise ValueError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
+            raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
-            raise ValueError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
+            raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
-            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+            raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
-            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
+            raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
-            raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(refreshSleepTimeSeconds):
-            raise ValueError(f'refreshSleepTimeSeconds argument is malformed: \"{refreshSleepTimeSeconds}\"')
+            raise TypeError(f'refreshSleepTimeSeconds argument is malformed: \"{refreshSleepTimeSeconds}\"')
         elif refreshSleepTimeSeconds < 30 or refreshSleepTimeSeconds > 600:
             raise ValueError(f'refreshSleepTimeSeconds argument is out of bounds: {refreshSleepTimeSeconds}')
         elif not utils.isValidInt(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidInt(superTriviaCountdownSeconds):
-            raise ValueError(f'superTriviaCountdownSeconds argument is malformed: \"{superTriviaCountdownSeconds}\"')
+            raise TypeError(f'superTriviaCountdownSeconds argument is malformed: \"{superTriviaCountdownSeconds}\"')
         elif superTriviaCountdownSeconds < 3 or superTriviaCountdownSeconds > 10:
             raise ValueError(f'superTriviaCountdownSeconds argument is out of bounds: {superTriviaCountdownSeconds}')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
@@ -124,6 +129,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
@@ -131,7 +137,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__superTriviaCountdownSeconds: int = superTriviaCountdownSeconds
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__eventListener: Optional[RecurringActionEventListener] = None
@@ -152,7 +158,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __findDueRecurringAction(self, user: UserInterface) -> Optional[RecurringAction]:
         if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         actionTypes: List[RecurringActionType] = list(RecurringActionType)
         action: Optional[RecurringAction] = None
@@ -193,9 +199,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __processRecurringAction(self, user: UserInterface, action: RecurringAction):
         if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(action, RecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         if not action.isEnabled():
             raise RuntimeError(f'Attempting to process a disabled action: \"{action}\"')
@@ -226,13 +232,13 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         action: SuperTriviaRecurringAction
     ) -> bool:
         if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(action, SuperTriviaRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         newTriviaGame = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
-            numberOfGames = 1
+            twitchChannelId = await self.__userIdsRepository.requireUserId(user.getHandle())
         )
 
         if newTriviaGame is None:
@@ -254,9 +260,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         action: WeatherRecurringAction
     ) -> bool:
         if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(action, WeatherRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         if self.__weatherRepository is None:
             return False
@@ -292,9 +298,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         action: WordOfTheDayRecurringAction
     ) -> bool:
         if not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(action, WordOfTheDayRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         languageEntry = action.getLanguageEntry()
 
@@ -358,7 +364,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     def setEventListener(self, listener: Optional[RecurringActionEventListener]):
         if listener is not None and not isinstance(listener, RecurringActionEventListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__eventListener = listener
 
@@ -395,7 +401,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __submitEvent(self, event: RecurringEvent):
         if not isinstance(event, RecurringEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)

@@ -39,11 +39,14 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
     async def createNewTriviaGame(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ) -> Optional[StartNewTriviaGameAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -85,6 +88,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             shinyMultiplier = shinyMultiplier,
             actionId = actionId,
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName,
             triviaFetchOptions = triviaFetchOptions
@@ -93,10 +97,13 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
     async def createNewSuperTriviaGame(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         numberOfGames: int = 1
     ) -> Optional[StartNewSuperTriviaGameAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidInt(numberOfGames):
             raise TypeError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
         elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
@@ -162,5 +169,6 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
             toxicTriviaPunishmentMultiplier = toxicTriviaPunishmentMultiplier,
             actionId = actionId,
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             triviaFetchOptions = triviaFetchOptions
         )

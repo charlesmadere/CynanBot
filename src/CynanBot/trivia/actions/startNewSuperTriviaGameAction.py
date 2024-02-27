@@ -24,6 +24,7 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         toxicTriviaPunishmentMultiplier: int,
         actionId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         triviaFetchOptions: TriviaFetchOptions
     ):
         super().__init__(actionId = actionId)
@@ -68,6 +69,8 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
             raise ValueError(f'toxicTriviaPunishmentMultiplier argument is out of bounds: {toxicTriviaPunishmentMultiplier}')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not isinstance(triviaFetchOptions, TriviaFetchOptions):
             raise TypeError(f'triviaFetchOptions argument is malformed: \"{triviaFetchOptions}\"')
 
@@ -83,6 +86,7 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
         self.__toxicMultiplier: int = toxicMultiplier
         self.__toxicTriviaPunishmentMultiplier: int = toxicTriviaPunishmentMultiplier
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__triviaFetchOptions: TriviaFetchOptions = triviaFetchOptions
 
         self.__creationTime = SimpleDateTime()
@@ -146,6 +150,9 @@ class StartNewSuperTriviaGameAction(AbsTriviaAction):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def isQueueActionConsumed(self) -> bool:
         return self.__isQueueActionConsumed

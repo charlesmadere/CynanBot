@@ -77,19 +77,21 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         bits = event.getBits()
         message = event.getMessage()
+        broadcasterUserId = event.getBroadcasterUserId()
         cheerUserId = event.getUserId()
         cheerUserLogin = event.getUserLogin()
         cheerUserName = event.getUserName()
 
-        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
+        if not utils.isValidInt(bits) or bits < 1 or not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(cheerUserId) or not utils.isValidStr(cheerUserLogin) or not utils.isValidStr(cheerUserName):
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
             return
 
-        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
+        self.__timber.log('TwitchCheerHandler', f'Received a cheer event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({bits=}) ({message=}) ({broadcasterUserId=}) ({cheerUserId=}) ({cheerUserLogin=}) ({cheerUserName=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
                 bits = bits,
+                broadcasterUserId = broadcasterUserId,
                 user = user
             )
 
@@ -146,14 +148,17 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
     async def __processSuperTriviaEvent(
         self,
         bits: int,
+        broadcasterUserId: str,
         user: UserInterface
     ):
         if not utils.isValidInt(bits):
-            raise ValueError(f'bits argument is malformed: \"{bits}\"')
+            raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 1 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
@@ -175,6 +180,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
 

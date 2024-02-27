@@ -3022,6 +3022,7 @@ class SuperTriviaCommand(AbsCommand):
 
         startNewSuperTriviaGameAction = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             numberOfGames = numberOfGames
         )
 

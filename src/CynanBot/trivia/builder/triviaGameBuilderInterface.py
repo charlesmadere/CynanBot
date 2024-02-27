@@ -13,6 +13,7 @@ class TriviaGameBuilderInterface(ABC):
     async def createNewTriviaGame(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ) -> Optional[StartNewTriviaGameAction]:
@@ -22,6 +23,7 @@ class TriviaGameBuilderInterface(ABC):
     async def createNewSuperTriviaGame(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         numberOfGames: int = 1
     ) -> Optional[StartNewSuperTriviaGameAction]:
         pass

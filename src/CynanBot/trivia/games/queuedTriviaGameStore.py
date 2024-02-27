@@ -104,6 +104,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                     toxicTriviaPunishmentMultiplier = action.getToxicTriviaPunishmentMultiplier(),
                     actionId = await self.__triviaIdGenerator.generateActionId(),
                     twitchChannel = action.getTwitchChannel(),
+                    twitchChannelId = action.getTwitchChannelId(),
                     triviaFetchOptions = action.getTriviaFetchOptions()
                 ))
 

@@ -95,24 +95,26 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         isGift = event.isGift()
         communitySubGift = event.getCommunitySubGift()
         message = event.getMessage()
+        broadcasterUserId = event.getBroadcasterUserId()
         eventUserId = event.getUserId()
         eventUserInput = event.getUserInput()
         eventUserLogin = event.getUserLogin()
         eventUserName = event.getUserName()
         tier = event.getTier()
 
-        if tier is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        if not utils.isValidStr(broadcasterUserId) or tier is None:
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
             return
 
-        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
+        self.__timber.log('TwitchSubscriptionHandler', f'Received a subscription event: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({subscriptionType=}) ({isAnonymous=}) ({isGift=}) ({communitySubGift=}) ({message=}) ({broadcasterUserId=}) ({eventUserId=}) ({eventUserInput=}) ({eventUserLogin=}) ({eventUserName=}) ({tier=})')
 
         if user.isSuperTriviaGameEnabled():
             await self.__processSuperTriviaEvent(
-                tier = tier,
-                user = user,
+                broadcasterUserId = broadcasterUserId,
                 communitySubGift = communitySubGift,
-                subscriptionType = subscriptionType
+                tier = tier,
+                subscriptionType = subscriptionType,
+                user = user
             )
 
         if user.isTtsEnabled():
@@ -132,19 +134,22 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     async def __processSuperTriviaEvent(
         self,
-        tier: TwitchSubscriberTier,
-        user: UserInterface,
+        broadcasterUserId: str,
         communitySubGift: Optional[TwitchCommunitySubGift],
-        subscriptionType: TwitchWebsocketSubscriptionType
+        tier: TwitchSubscriberTier,
+        subscriptionType: TwitchWebsocketSubscriptionType,
+        user: UserInterface
     ):
-        if not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
-        elif not isinstance(user, UserInterface):
-            raise TypeError(f'user argument is malformed: \"{user}\"')
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif communitySubGift is not None and not isinstance(communitySubGift, TwitchCommunitySubGift):
             raise TypeError(f'communitySubGift argument is malformed: \"{communitySubGift}\"')
+        elif not isinstance(tier, TwitchSubscriberTier):
+            raise TypeError(f'tier argument is malformed: \"{tier}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
             return
@@ -167,6 +172,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
         action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
 
