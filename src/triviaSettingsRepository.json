@@ -1,12 +1,4 @@
 {
-    "levenshtein_threshold": 0.20,
-    "max_answer_length": 80,
-    "max_multiple_choice_responses": 5,
-    "max_question_length": 350,
-    "max_phrase_answer_length": 32,
-    "max_retry_count": 8,
-    "min_days_before_repeat_question": 10,
-    "min_multiple_choice_responses": 2,
     "trivia_sources": {
         "bongo": {
             "is_enabled": true,
