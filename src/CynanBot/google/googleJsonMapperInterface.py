@@ -7,7 +7,10 @@ from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
     GoogleTranslateTextResponse
+from CynanBot.google.googleTranslateTextTransliterationConfig import \
+    GoogleTranslateTextTransliterationConfig
 from CynanBot.google.googleTranslation import GoogleTranslation
+from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 
@@ -54,4 +57,25 @@ class GoogleJsonMapperInterface(ABC):
         self,
         jsonString: Optional[str]
     ) -> Optional[GoogleVoiceAudioEncoding]:
+        pass
+
+    @abstractmethod
+    async def serializeGlossaryConfig(
+        self,
+        glossaryConfig: GoogleTranslateTextGlossaryConfig
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTranslationRequest(
+        self,
+        translationRequest: GoogleTranslationRequest
+    ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeTransliterationConfig(
+        self,
+        transliterationConfig: GoogleTranslateTextTransliterationConfig
+    ) -> Dict[str, Any]:
         pass

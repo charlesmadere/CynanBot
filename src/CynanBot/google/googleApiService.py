@@ -89,7 +89,8 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://translate.googleapis.com/v3/{projectId}:translateText'
+                url = f'https://translate.googleapis.com/v3/projects/{projectId}:translateText',
+                json = await self.__googleJsonMapper.serializeTranslationRequest(request)
             )
         except GenericNetworkException as e:
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching translation ({request=}): {e}', e, traceback.format_exc())

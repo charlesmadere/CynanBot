@@ -9,7 +9,10 @@ from CynanBot.google.googleTranslateTextGlossaryConfig import \
     GoogleTranslateTextGlossaryConfig
 from CynanBot.google.googleTranslateTextResponse import \
     GoogleTranslateTextResponse
+from CynanBot.google.googleTranslateTextTransliterationConfig import \
+    GoogleTranslateTextTransliterationConfig
 from CynanBot.google.googleTranslation import GoogleTranslation
+from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.timber.timberInterface import TimberInterface
@@ -190,3 +193,59 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return GoogleVoiceAudioEncoding.OGG_OPUS
         else:
             return None
+
+    async def serializeGlossaryConfig(
+        self,
+        glossaryConfig: GoogleTranslateTextGlossaryConfig
+    ) -> Dict[str, Any]:
+        if not isinstance(glossaryConfig, GoogleTranslateTextGlossaryConfig):
+            raise TypeError(f'glossaryConfig argument is malformed: \"{glossaryConfig}\"')
+
+        dictionary: Dict[str, Any] = {
+            'ignoreCase': glossaryConfig.getIgnoreCase()
+        }
+
+        if utils.isValidStr(glossaryConfig.getGlossary()):
+            dictionary['glossary'] = glossaryConfig.getGlossary()
+
+        return dictionary
+
+    async def serializeTranslationRequest(
+        self,
+        translationRequest: GoogleTranslationRequest
+    ) -> Dict[str, Any]:
+        if not isinstance(translationRequest, GoogleTranslationRequest):
+            raise TypeError(f'translationRequest argument is malformed: \"{translationRequest}\"')
+
+        dictionary: Dict[str, Any] = {
+            'contents': translationRequest.getContents(),
+            'mimeType': translationRequest.getMimeType(),
+            'targetLanguageCode': translationRequest.getTargetLanguageCode()
+        }
+
+        glossaryConfig = translationRequest.getGlossaryConfig()
+        if glossaryConfig is not None:
+            dictionary['glossaryConfig'] = await self.serializeGlossaryConfig(glossaryConfig)
+
+        if utils.isValidStr(translationRequest.getModel()):
+            dictionary['model'] = translationRequest.getModel()
+
+        if utils.isValidStr(translationRequest.getSourceLanguageCode()):
+            dictionary['sourceLanguageCode'] = translationRequest.getSourceLanguageCode()
+
+        transliterationConfig = translationRequest.getTransliterationConfig()
+        if transliterationConfig is not None:
+            dictionary['transliterationConfig'] = await self.serializeTransliterationConfig(transliterationConfig)
+
+        return dictionary
+
+    async def serializeTransliterationConfig(
+        self,
+        transliterationConfig: GoogleTranslateTextTransliterationConfig
+    ) -> Dict[str, Any]:
+        if not isinstance(transliterationConfig, GoogleTranslationRequest):
+            raise TypeError(f'transliterationConfig argument is malformed: \"{transliterationConfig}\"')
+
+        return {
+            'enableTransliteration': transliterationConfig.getEnableTransliteration()
+        }

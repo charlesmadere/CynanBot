@@ -74,7 +74,8 @@ class GoogleTranslationApi(TranslationApi):
             mimeType = self.__mimeType,
             model = None,
             sourceLanguageCode = None,
-            targetLanguageCode = iso6391Code
+            targetLanguageCode = iso6391Code,
+            transliterationConfig = None
         )
 
         self.__timber.log('GoogleTranslationApi', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=}) ({request=})...')
