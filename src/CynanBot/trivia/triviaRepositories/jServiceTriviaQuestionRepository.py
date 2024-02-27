@@ -64,20 +64,19 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('JServiceTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
-
+        self.__timber.log('JServiceTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
         clientSession = await self.__networkClientProvider.get()
 
         try:
             response = await clientSession.get(f'https://jservice.io/api/random?count=1')
         except GenericNetworkException as e:
-            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered network error: {e}', e, traceback.format_exc())
+            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered network error ({fetchOptions=}): {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
 
         if response.getStatusCode() != 200:
-            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\"')
+            self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\" ({response=}) ({fetchOptions=})')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
         jsonResponse: Optional[List[Dict[str, Any]]] = await response.json()
