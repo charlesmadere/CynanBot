@@ -1,5 +1,4 @@
 import asyncio
-import traceback
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
