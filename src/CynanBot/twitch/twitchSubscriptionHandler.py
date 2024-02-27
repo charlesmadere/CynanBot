@@ -244,15 +244,13 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                     twitchChannel = user.getHandle()
                 )
 
-                actualUserId = await self.__userIdsRepository.requireAnonymousUserId(
-                    twitchAccessToken = twitchAccessToken
-                )
+                actualUserId = await self.__userIdsRepository.requireAnonymousUserId()
 
                 actualUserName = await self.__userIdsRepository.requireAnonymousUserName(
                     twitchAccessToken = twitchAccessToken
                 )
             else:
-                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=})')
+                self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=}) ({communitySubGift=}) ({subscriptionType=})')
                 return
 
         giftType: Optional[TtsSubscriptionDonationGiftType] = None

@@ -56,17 +56,14 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__cache.clear()
         self.__timber.log('UserIdsRepository', 'Caches cleared')
 
-    async def fetchAnonymousUserId(self, twitchAccessToken: str) -> str:
-        if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
+    async def fetchAnonymousUserId(self) -> str:
         return await self.__twitchAnonymousUserIdProvider.getTwitchAnonymousUserId()
 
     async def fetchAnonymousUserName(self, twitchAccessToken: str) -> Optional[str]:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        anonymousUserId = await self.fetchAnonymousUserId(twitchAccessToken)
+        anonymousUserId = await self.fetchAnonymousUserId()
 
         return await self.fetchUserName(
             userId = anonymousUserId,
@@ -243,11 +240,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         if utils.isValidStr(userId) and utils.isValidStr(userName):
             await self.setUser(userId = userId, userName = userName)
 
-    async def requireAnonymousUserId(self, twitchAccessToken: str) -> str:
-        if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
-
-        anonymousUserId = await self.fetchAnonymousUserId(twitchAccessToken)
+    async def requireAnonymousUserId(self) -> str:
+        anonymousUserId = await self.fetchAnonymousUserId()
 
         if not utils.isValidStr(anonymousUserId):
             raise NoSuchUserException(f'Unable to fetch Twitch user ID for anonymous user')

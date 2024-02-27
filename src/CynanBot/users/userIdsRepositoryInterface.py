@@ -7,7 +7,7 @@ from CynanBot.misc.clearable import Clearable
 class UserIdsRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def fetchAnonymousUserId(self, twitchAccessToken: str) -> str:
+    async def fetchAnonymousUserId(self) -> str:
         pass
 
     @abstractmethod
@@ -43,7 +43,7 @@ class UserIdsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def requireAnonymousUserId(self, twitchAccessToken: str) -> str:
+    async def requireAnonymousUserId(self) -> str:
         pass
 
     @abstractmethod
