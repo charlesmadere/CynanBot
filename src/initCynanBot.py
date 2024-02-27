@@ -797,6 +797,7 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
     timber = timber,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
+    userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
     weatherRepository = weatherRepository,
     wordOfTheDayRepository = wordOfTheDayRepository

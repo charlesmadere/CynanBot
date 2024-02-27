@@ -64,8 +64,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         timber: TimberInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
-        usersRepository: UsersRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
+        usersRepository: UsersRepositoryInterface,
         weatherRepository: Optional[WeatherRepositoryInterface],
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
@@ -91,10 +91,10 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
             raise TypeError(f'triviaGameMachine argument is malformed: \"{triviaGameMachine}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
@@ -128,8 +128,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__timber: TimberInterface = timber
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
         self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
