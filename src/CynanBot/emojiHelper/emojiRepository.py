@@ -17,9 +17,9 @@ class EmojiRepository(EmojiRepositoryInterface):
         timber: TimberInterface
     ):
         if not isinstance(emojiJsonReader, JsonReaderInterface):
-            raise ValueError(f'emojiJsonReader argument is malformed: \"{emojiJsonReader}\"')
+            raise TypeError(f'emojiJsonReader argument is malformed: \"{emojiJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__emojiJsonReader: JsonReaderInterface = emojiJsonReader
         self.__timber: TimberInterface = timber
@@ -31,7 +31,7 @@ class EmojiRepository(EmojiRepositoryInterface):
         if emoji is None:
             return None
         elif not isinstance(emoji, str):
-            raise ValueError(f'emoji argument is malformed: \"{emoji}\"')
+            raise TypeError(f'emoji argument is malformed: \"{emoji}\"')
         elif not utils.isValidStr(emoji):
             return None
 

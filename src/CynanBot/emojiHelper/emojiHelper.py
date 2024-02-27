@@ -15,7 +15,7 @@ class EmojiHelper(EmojiHelperInterface):
         emojiRepository: EmojiRepositoryInterface
     ):
         if not isinstance(emojiRepository, EmojiRepositoryInterface):
-            raise ValueError(f'emojiRepository argument is malformed: \"{emojiRepository}\"')
+            raise TypeError(f'emojiRepository argument is malformed: \"{emojiRepository}\"')
 
         self.__emojiRepository: EmojiRepositoryInterface = emojiRepository
 
@@ -32,7 +32,7 @@ class EmojiHelper(EmojiHelperInterface):
 
     async def replaceEmojisWithHumanNames(self, text: str) -> str:
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         splits = utils.getCleanedSplits(text)
 
