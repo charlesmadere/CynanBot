@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesisResponse import \
     GoogleTextSynthesisResponse
@@ -233,6 +234,20 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             dictionary['glossary'] = glossaryConfig.getGlossary()
 
         return dictionary
+
+    async def serializeScope(
+        self,
+        scope: GoogleScope
+    ) -> str:
+        if not isinstance(scope, GoogleScope):
+            raise TypeError(f'scope argument is malformed: \"{scope}\"')
+
+        if scope is GoogleScope.CLOUD_TEXT_TO_SPEECH:
+            return 'https://www.googleapis.com/auth/cloud-platform'
+        elif scope is GoogleScope.CLOUD_TRANSLATION:
+            return 'https://www.googleapis.com/auth/cloud-translation'
+        else:
+            raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
 
     async def serializeSynthesizeRequest(
         self,

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional
 
+from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesisResponse import \
     GoogleTextSynthesisResponse
@@ -71,13 +72,6 @@ class GoogleJsonMapperInterface(ABC):
         jsonString: Optional[str]
     ) -> Optional[GoogleVoiceGender]:
         pass
-    
-    @abstractmethod
-    async def serializeVoiceAudioEncoding(
-        self,
-        voiceAudioEncoding: GoogleVoiceAudioEncoding
-    ) -> str:
-        pass
 
     @abstractmethod
     async def serializeGlossaryConfig(
@@ -91,6 +85,13 @@ class GoogleJsonMapperInterface(ABC):
         self,
         synthesizeRequest: GoogleTextSynthesizeRequest
     ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeScope(
+        self,
+        scope: GoogleScope
+    ) -> str:
         pass
 
     @abstractmethod
@@ -119,6 +120,13 @@ class GoogleJsonMapperInterface(ABC):
         self,
         voiceAudioConfig: GoogleVoiceAudioConfig
     ) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    async def serializeVoiceAudioEncoding(
+        self,
+        voiceAudioEncoding: GoogleVoiceAudioEncoding
+    ) -> str:
         pass
 
     @abstractmethod
