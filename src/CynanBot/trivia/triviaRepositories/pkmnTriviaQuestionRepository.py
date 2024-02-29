@@ -48,13 +48,13 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(pokepediaRepository, PokepediaRepository):
-            raise ValueError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+            raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(maxGeneration, PokepediaGeneration):
-            raise ValueError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
+            raise TypeError(f'maxGeneration argument is malformed: \"{maxGeneration}\"')
 
         self.__pokepediaRepository: PokepediaRepository = pokepediaRepository
         self.__timber: TimberInterface = timber
@@ -467,7 +467,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         actualType: PokepediaContestType
     ) -> Set[PokepediaContestType]:
         if not isinstance(actualType, PokepediaContestType):
-            raise ValueError(f'actualType argument is malformed: \"{actualType}\"')
+            raise TypeError(f'actualType argument is malformed: \"{actualType}\"')
 
         allTypes: List[PokepediaContestType] = list(PokepediaContestType)
         falseTypes: Set[PokepediaContestType] = set()

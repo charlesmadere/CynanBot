@@ -16,7 +16,7 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         if not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self._triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
