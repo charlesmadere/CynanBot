@@ -4,7 +4,7 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 
 
-class GoogleGenerateAccessTokenResponse():
+class GoogleAccessToken():
 
     def __init__(
         self,
