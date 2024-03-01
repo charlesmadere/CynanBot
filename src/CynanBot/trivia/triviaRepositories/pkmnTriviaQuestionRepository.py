@@ -63,19 +63,20 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createMoveContestTypeQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
         if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+            raise TypeError(f'move argument is malformed: \"{move}\"')
 
-        if not move.hasContestType():
+        contestType = move.getContestType()
+        if contestType is None:
             return None
 
-        falseContestTypes = await self.__selectRandomFalseContestTypes(move.getContestType())
+        falseContestTypes = await self.__selectRandomFalseContestTypes(contestType)
 
         falseContestTypeStrs: List[str] = list()
         for falseContestType in falseContestTypes:
             falseContestTypeStrs.append(falseContestType.toStr())
 
         return {
-            'correctAnswer': move.getContestType().toStr(),
+            'correctAnswer': contestType.toStr(),
             'incorrectAnswers': falseContestTypeStrs,
             'question': f'In Pokémon, what is the contest type of {move.getName()}?',
             'triviaType': TriviaQuestionType.MULTIPLE_CHOICE
@@ -83,7 +84,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createMoveDamageClassQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
         if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+            raise TypeError(f'move argument is malformed: \"{move}\"')
 
         damageClassStrs: List[str] = list()
         for damageClass in PokepediaDamageClass:
@@ -98,7 +99,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createMoveIsAvailableAsMachineQuestion(self, move: PokepediaMove) -> Dict[str, Any]:
         if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+            raise TypeError(f'move argument is malformed: \"{move}\"')
 
         randomGeneration = await self.__selectRandomGeneration(move.getInitialGeneration())
 
@@ -116,7 +117,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createMoveIsAvailableAsWhichMachineQuestion(self, move: PokepediaMove) -> Optional[Dict[str, Any]]:
         if not isinstance(move, PokepediaMove):
-            raise ValueError(f'move argument is malformed: \"{move}\"')
+            raise TypeError(f'move argument is malformed: \"{move}\"')
 
         if not move.hasMachines():
             return None
@@ -203,11 +204,11 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         likeOrDislikeStr: str
     ) -> Dict[str, Any]:
         if not isinstance(nature, PokepediaNature):
-            raise ValueError(f'nature argument is malformed: \"{nature}\"')
+            raise TypeError(f'nature argument is malformed: \"{nature}\"')
         elif berryFlavor is not None and not isinstance(berryFlavor, PokepediaBerryFlavor):
-            raise ValueError(f'berryFlavor argument is malformed: \"{berryFlavor}\"')
+            raise TypeError(f'berryFlavor argument is malformed: \"{berryFlavor}\"')
         elif not utils.isValidStr(likeOrDislikeStr):
-            raise ValueError(f'likeOrDislikeStr argument is malformed: \"{likeOrDislikeStr}\"')
+            raise TypeError(f'likeOrDislikeStr argument is malformed: \"{likeOrDislikeStr}\"')
 
         randomFlavors = await self.__selectRandomFalseBerryFlavors(berryFlavor)
 
@@ -336,7 +337,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createStatDecreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
         if not isinstance(stat, PokepediaStat):
-            raise ValueError(f'stat argument is malformed: \"{stat}\"')
+            raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
         decreasingNatures = stat.getDecreasingNatures()
         randomNature = random.choice(list(PokepediaNature))
@@ -349,7 +350,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def __createStatIncreasingNaturesQuestion(self, stat: PokepediaStat) -> Dict[str, Any]:
         if not isinstance(stat, PokepediaStat):
-            raise ValueError(f'stat argument is malformed: \"{stat}\"')
+            raise TypeError(f'stat argument is malformed: \"{stat}\"')
 
         increasingNatures = stat.getIncreasingNatures()
         randomNature = random.choice(list(PokepediaNature))
@@ -362,7 +363,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         self.__timber.log('PkmnTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 
@@ -395,17 +396,17 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         )
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
-            correctAnswers: List[str] = list()
-            correctAnswers.append(utils.getStrFromDict(triviaDict, 'correctAnswer'))
+            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings.append(utils.getStrFromDict(triviaDict, 'correctAnswer'))
             incorrectAnswers: List[str] = triviaDict['incorrectAnswers']
 
             multipleChoiceResponses = await self._buildMultipleChoiceResponsesList(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = incorrectAnswers
             )
 
             return MultipleChoiceTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerStrings,
                 multipleChoiceResponses = multipleChoiceResponses,
                 category = category,
                 categoryId = None,
@@ -415,11 +416,11 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 triviaSource = TriviaSource.POKE_API
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
-            correctAnswers: List[bool] = list()
-            correctAnswers.append(utils.getBoolFromDict(triviaDict, 'correctAnswer'))
+            correctAnswerBools: List[bool] = list()
+            correctAnswerBools.append(utils.getBoolFromDict(triviaDict, 'correctAnswer'))
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswers,
+                correctAnswers = correctAnswerBools,
                 category = category,
                 categoryId = None,
                 question = question,
