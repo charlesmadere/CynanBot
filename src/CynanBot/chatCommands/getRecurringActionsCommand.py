@@ -54,7 +54,7 @@ class GetRecurringActionsCommand(AbsChatCommand):
 
         recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(user.getHandle())
         await self.__twitchUtils.safeSend(ctx, await self.__toStr(recurringActions))
-        self.__timber.log('GetRecurringActionsCommand', f'Handled !recurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
     async def __toStr(self, recurringActions: List[RecurringAction]) -> str:
         if not isinstance(recurringActions, List):
