@@ -9,7 +9,7 @@ class RecurringEvent(ABC):
 
     def __init__(self, twitchChannel: str):
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         self.__twitchChannel: str = twitchChannel
 

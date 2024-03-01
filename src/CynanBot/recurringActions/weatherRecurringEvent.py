@@ -15,9 +15,9 @@ class WeatherRecurringEvent(RecurringEvent):
         super().__init__(twitchChannel = twitchChannel)
 
         if not utils.isValidBool(alertsOnly):
-            raise ValueError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
+            raise TypeError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
         elif not isinstance(weatherReport, WeatherReport):
-            raise ValueError(f'weatherReport argument is malformed: \"{weatherReport}\"')
+            raise TypeError(f'weatherReport argument is malformed: \"{weatherReport}\"')
 
         self.__alertsOnly: bool = alertsOnly
         self.__weatherReport: WeatherReport = weatherReport

@@ -23,13 +23,13 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
     def __init__(self, userIdsRepository: UserIdsRepositoryInterface):
         if not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     def getChannel(self, channel: Channel) -> TwitchChannel:
         if not isinstance(channel, Channel):
-            raise ValueError(f'channel argument is malformed: \"{channel}\"')
+            raise TypeError(f'channel argument is malformed: \"{channel}\"')
 
         return TwitchIoChannel(
             channel = channel,
@@ -38,7 +38,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
     def getContext(self, context: Context) -> TwitchContext:
         if not isinstance(context, Context):
-            raise ValueError(f'context argument is malformed: \"{context}\"')
+            raise TypeError(f'context argument is malformed: \"{context}\"')
 
         return TwitchIoContext(
             context = context,
@@ -47,7 +47,7 @@ class TwitchIoConfiguration(TwitchConfiguration):
 
     def getMessage(self, message: Message) -> TwitchMessage:
         if not isinstance(message, Message):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
         return TwitchIoMessage(
             message = message,
