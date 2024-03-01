@@ -1904,17 +1904,17 @@ class RecurringActionCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+            raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
@@ -1923,91 +1923,6 @@ class RecurringActionCommand(AbsCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
-    async def __disableRecurringAction(
-        self,
-        ctx: TwitchContext,
-        user: UserInterface,
-        actionType: RecurringActionType
-    ):
-        if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-        elif not isinstance(actionType, RecurringActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
-
-        if actionType is RecurringActionType.SUPER_TRIVIA:
-            await self.__disableSuperTriviaRecurringAction(
-                ctx = ctx,
-                user = user
-            )
-        elif actionType is RecurringActionType.WEATHER:
-            await self.__disableWeatherRecurringAction(
-                ctx = ctx,
-                user = user
-            )
-        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-            await self.__disableWordOfTheDayRecurringAction(
-                ctx = ctx,
-                user = user
-            )
-        else:
-            raise RuntimeError(f'actionType is unknown: \"{actionType}\"')
-
-    async def __disableSuperTriviaRecurringAction(
-        self,
-        ctx: TwitchContext,
-        user: UserInterface
-    ):
-        if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        recurringAction = SuperTriviaRecurringAction(
-            enabled = False,
-            twitchChannel = user.getHandle()
-        )
-
-        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Super Trivia action')
-
-    async def __disableWeatherRecurringAction(
-        self,
-        ctx: TwitchContext,
-        user: UserInterface
-    ):
-        if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        recurringAction = WeatherRecurringAction(
-            enabled = False,
-            twitchChannel = user.getHandle()
-        )
-
-        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Weather action')
-
-    async def __disableWordOfTheDayRecurringAction(
-        self,
-        ctx: TwitchContext,
-        user: UserInterface
-    ):
-        if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
-        elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
-
-        recurringAction = WordOfTheDayRecurringAction(
-            enabled = False,
-            twitchChannel = user.getHandle()
-        )
-
-        await self.__recurringActionsRepository.setRecurringAction(recurringAction)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Disabled recurring Word Of The Day action')
-
     async def __enableSuperTriviaRecurringAction(
         self,
         ctx: TwitchContext,
@@ -2015,11 +1930,11 @@ class RecurringActionCommand(AbsCommand):
         splits: List[str]
     ):
         if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+            raise TypeError(f'ctx argument is malformed: \"{ctx}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+            raise TypeError(f'splits argument is malformed: \"{splits}\"')
 
         minutesBetween = await self.__parseMinutesBetween(
             actionType = RecurringActionType.SUPER_TRIVIA,
@@ -2042,11 +1957,11 @@ class RecurringActionCommand(AbsCommand):
         splits: List[str]
     ):
         if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+            raise TypeError(f'ctx argument is malformed: \"{ctx}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+            raise TypeError(f'splits argument is malformed: \"{splits}\"')
 
         minutesBetween = await self.__parseMinutesBetween(
             actionType = RecurringActionType.WEATHER,
@@ -2069,11 +1984,11 @@ class RecurringActionCommand(AbsCommand):
         splits: List[str]
     ):
         if not isinstance(ctx, TwitchContext):
-            raise ValueError(f'ctx argument is malformed: \"{ctx}\"')
+            raise TypeError(f'ctx argument is malformed: \"{ctx}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+            raise TypeError(f'splits argument is malformed: \"{splits}\"')
 
         minutesBetween = await self.__parseMinutesBetween(
             actionType = RecurringActionType.WORD_OF_THE_DAY,
@@ -2130,14 +2045,6 @@ class RecurringActionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to configure recurring action as an invalid recurring action type was given. Example: !recurringaction {self.__randomRecurringActionType().toStr()}')
             return
 
-        if await self.__parseIsDisabling(splits):
-            await self.__disableRecurringAction(
-                ctx = ctx,
-                user = user,
-                actionType = actionType
-            )
-            return
-
         if actionType is RecurringActionType.SUPER_TRIVIA:
             await self.__enableSuperTriviaRecurringAction(
                 ctx = ctx,
@@ -2161,21 +2068,11 @@ class RecurringActionCommand(AbsCommand):
 
         self.__timber.log('RecurringActionCommand', f'Handled !recurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-    async def __parseIsDisabling(self, splits: List[str]) -> bool:
-        if not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
-
-        if len(splits) >= 3 and utils.isValidStr(splits[2]):
-            thirdArgument = splits[2]
-            return thirdArgument in ('disable', 'off', '0')
-
-        return False
-
     async def __parseMinutesBetween(self, actionType: RecurringActionType, splits: List[str]) -> int:
         if not isinstance(actionType, RecurringActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+            raise TypeError(f'splits argument is malformed: \"{splits}\"')
 
         if len(splits) < 3:
             return actionType.getDefaultRecurringActionTimingMinutes()

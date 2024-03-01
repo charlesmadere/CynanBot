@@ -32,6 +32,12 @@ from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
+from CynanBot.chatCommands.removeSuperTriviaRecurringActionCommand import \
+    RemoveSuperTriviaRecurringActionCommand
+from CynanBot.chatCommands.removeWeatherRecurringActionCommand import \
+    RemoveWeatherRecurringActionCommand
+from CynanBot.chatCommands.removeWordOfTheDayRecurringAction import \
+    RemoveWordOfTheDayRecurringActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -505,9 +511,15 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if recurringActionsMachine is None or recurringActionsRepository is None:
             self.__recurringActionCommand: AbsCommand = StubCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
+            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = StubChatCommand()
+            self.__removeWeatherRecurringActionCommand: AbsChatCommand = StubChatCommand()
+            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProvider, languagesRepository, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = RemoveWordOfTheDayRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
@@ -1284,10 +1296,25 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
 
+    @commands.command(name = 'removesupertriviarecurringaction', aliases = [ 'removetriviarecurringaction' ])
+    async def command_removesupertriviarecurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeSuperTriviaRecurringActionCommand.handleChatCommand(context)
+
     @commands.command(name = 'removetriviacontroller')
     async def command_removetriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerCommand.handleCommand(context)
+
+    @commands.command(name = 'removeweatherrecurringaction')
+    async def command_removeweatherrecurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeWeatherRecurringActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'removewordofthedayrecurringaction', aliases = [ 'removewotdrecurringaction' ])
+    async def command_removewordofthedayrecurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeWordOfTheDayRecurringActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
