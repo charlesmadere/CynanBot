@@ -31,6 +31,7 @@ from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
+from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -54,8 +55,7 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                GetCheerActionsCommand,
                                GetGlobalTriviaControllersCommand,
                                GetTriviaAnswersCommand,
-                               GetTriviaControllersCommand,
-                               GiveCutenessCommand, JishoCommand,
+                               GetTriviaControllersCommand, JishoCommand,
                                LoremIpsumCommand, MyCutenessHistoryCommand,
                                PbsCommand, PkMonCommand, PkMoveCommand,
                                RaceCommand, RecurringActionCommand,
@@ -546,13 +546,13 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__cutenessCommand: AbsCommand = StubCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__cutenessHistoryCommand: AbsCommand = StubCommand()
-            self.__giveCutenessCommand: AbsCommand = StubCommand()
+            self.__giveCutenessCommand: AbsChatCommand = StubChatCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
             self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
             self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
-            self.__giveCutenessCommand: AbsCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__giveCutenessCommand: AbsChatCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__myCutenessHistoryCommand: AbsCommand = MyCutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if funtoonTokensRepository is None:
@@ -1227,7 +1227,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'givecuteness')
     async def command_givecuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__giveCutenessCommand.handleCommand(context)
+        await self.__giveCutenessCommand.handleChatCommand(context)
 
     @commands.command(name = 'jisho')
     async def command_jisho(self, ctx: Context):
