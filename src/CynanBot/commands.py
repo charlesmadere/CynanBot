@@ -2288,61 +2288,6 @@ class RecurringActionCommand(AbsCommand):
         return random.choice(recurringActions)
 
 
-class RecurringActionsCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        recurringActionsRepository: RecurringActionsRepositoryInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
-        usersRepository: UsersRepositoryInterface,
-        delimiter: str = ', '
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
-            raise ValueError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__delimiter: str = delimiter
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():
-            self.__timber.log('RecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
-            return
-
-        recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(user.getHandle())
-
-        if utils.hasItems(recurringActions):
-            recurringActionsStrs: List[str] = list()
-
-            for recurringAction in recurringActions:
-                recurringActionsStrs.append(recurringAction.getActionType().toReadableStr())
-
-            recurringActionsStr = self.__delimiter.join(recurringActionsStrs)
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Your channel\'s recurring action(s): {recurringActionsStr}')
-        else:
-            await self.__twitchUtils.safeSend(ctx, 'ⓘ Your channel has no recurring actions')
-
-        self.__timber.log('RecurringActionsCommand', f'Handled !recurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
 class RemoveBannedTriviaControllerCommand(AbsCommand):
 
     def __init__(
