@@ -104,6 +104,10 @@ from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
+from CynanBot.recurringActions.recurringActionsHelper import \
+    RecurringActionsHelper
+from CynanBot.recurringActions.recurringActionsHelperInterface import \
+    RecurringActionsHelperInterface
 from CynanBot.recurringActions.recurringActionsJsonParser import \
     RecurringActionsJsonParser
 from CynanBot.recurringActions.recurringActionsMachine import \
@@ -812,6 +816,10 @@ recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMach
     wordOfTheDayRepository = wordOfTheDayRepository
 )
 
+recurringActionsHelper: RecurringActionsHelperInterface = RecurringActionsHelper(
+    recurringActionsRepository = recurringActionsRepository,
+    timber = timber
+)
 
 #########################################
 ## Sound Player initialization section ##
@@ -1023,6 +1031,7 @@ cynanBot = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,
+    recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
     sentMessageLogger = sentMessageLogger,

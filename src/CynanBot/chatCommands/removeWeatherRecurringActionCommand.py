@@ -1,10 +1,10 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.recurringActions.recurringActionsHelperInterface import \
+    RecurringActionsHelperInterface
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from CynanBot.recurringActions.weatherRecurringAction import \
-    WeatherRecurringAction
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -16,6 +16,7 @@ class RemoveWeatherRecurringActionCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        recurringActionsHelper: RecurringActionsHelperInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -23,6 +24,8 @@ class RemoveWeatherRecurringActionCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
+            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -33,6 +36,7 @@ class RemoveWeatherRecurringActionCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__recurringActionsHelper: RecurringActionsHelperInterface = recurringActionsHelper
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -56,12 +60,6 @@ class RemoveWeatherRecurringActionCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring weather action is already disabled')
             return
 
-        await self.__recurringActionsRepository.setRecurringAction(WeatherRecurringAction(
-            enabled = False,
-            twitchChannel = user.getHandle(),
-            alertsOnly = recurringAction.isAlertsOnly(),
-            minutesBetween = recurringAction.getMinutesBetween()
-        ))
-
+        await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring weather action has been disabled')
         self.__timber.log('RemoveWeatherRecurringActionCommand', f'Handled !removeweatherrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

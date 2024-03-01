@@ -532,6 +532,7 @@ cynanBot = CynanBot(
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseTriviaQuestionRepository = None,
     pokepediaRepository = None,
+    recurringActionsHelper = None,
     recurringActionsMachine = None,
     recurringActionsRepository = None,
     sentMessageLogger = sentMessageLogger,

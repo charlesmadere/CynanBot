@@ -108,6 +108,8 @@ from CynanBot.pointRedemptions import (CutenessRedemption,
                                        TriviaGameRedemption)
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
+from CynanBot.recurringActions.recurringActionsHelperInterface import \
+    RecurringActionsHelperInterface
 from CynanBot.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
@@ -280,6 +282,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
         openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
         pokepediaRepository: Optional[PokepediaRepository],
+        recurringActionsHelper: Optional[RecurringActionsHelperInterface],
         recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
         sentMessageLogger: SentMessageLoggerInterface,
@@ -382,6 +385,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
         elif pokepediaRepository is not None and not isinstance(pokepediaRepository, PokepediaRepository):
             raise TypeError(f'pokepediaRepository argument is malformed: \"{pokepediaRepository}\"')
+        elif recurringActionsHelper is not None and not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
+            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
         elif recurringActionsMachine is not None and not isinstance(recurringActionsMachine, RecurringActionsMachineInterface):
             raise TypeError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
         elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
@@ -508,7 +513,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
-        if recurringActionsMachine is None or recurringActionsRepository is None:
+        if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None:
             self.__recurringActionCommand: AbsCommand = StubCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
             self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = StubChatCommand()
@@ -517,9 +522,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         else:
             self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProvider, languagesRepository, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = RemoveWordOfTheDayRecurringActionCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = RemoveWordOfTheDayRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()

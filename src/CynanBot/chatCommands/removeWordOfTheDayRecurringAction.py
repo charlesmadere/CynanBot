@@ -1,10 +1,10 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.recurringActions.recurringActionsHelperInterface import \
+    RecurringActionsHelperInterface
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
-from CynanBot.recurringActions.wordOfTheDayRecurringAction import \
-    WordOfTheDayRecurringAction
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -16,6 +16,7 @@ class RemoveWordOfTheDayRecurringActionCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        recurringActionsHelper: RecurringActionsHelperInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -23,6 +24,8 @@ class RemoveWordOfTheDayRecurringActionCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(recurringActionsHelper, RecurringActionsHelperInterface):
+            raise TypeError(f'recurringActionsHelper argument is malformed: \"{recurringActionsHelper}\"')
         elif not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
@@ -33,6 +36,7 @@ class RemoveWordOfTheDayRecurringActionCommand(AbsChatCommand):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__recurringActionsHelper: RecurringActionsHelperInterface = recurringActionsHelper
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -56,12 +60,6 @@ class RemoveWordOfTheDayRecurringActionCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring word of the day action is already disabled')
             return
 
-        await self.__recurringActionsRepository.setRecurringAction(WordOfTheDayRecurringAction(
-            enabled = False,
-            twitchChannel = user.getHandle(),
-            minutesBetween = recurringAction.getMinutesBetween(),
-            languageEntry = recurringAction.getLanguageEntry()
-        ))
-
+        await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring word of the day action has been disabled')
         self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'Handled !removewordofthedayrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
