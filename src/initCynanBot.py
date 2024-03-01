@@ -63,6 +63,10 @@ from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.google.googleApiAccessTokenStorage import \
+    GoogleApiAccessTokenStorage
+from CynanBot.google.googleApiAccessTokenStorageInterface import \
+    GoogleApiAccessTokenStorageInterface
 from CynanBot.google.googleApiService import GoogleApiService
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
 from CynanBot.google.googleJsonMapper import GoogleJsonMapper
@@ -482,11 +486,16 @@ deepLTranslationApi: TranslationApi = DeepLTranslationApi(
     timber = timber
 )
 
+googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+    timber = timber
+)
+
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber
 )
 
 googleApiService: GoogleApiServiceInterface = GoogleApiService(
+    googleApiAccessTokenStorage = googleApiAccessTokenStorage,
     googleJsonMapper = googleJsonMapper,
     googleCloudProjectCredentialsProvider = authRepository,
     networkClientProvider = networkClientProvider,

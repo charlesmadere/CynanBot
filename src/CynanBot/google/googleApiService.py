@@ -2,6 +2,9 @@ import traceback
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.exceptions import GoogleCloudProjectIdUnavailableException
+from CynanBot.google.googleAccessToken import GoogleAccessToken
+from CynanBot.google.googleApiAccessTokenStorageInterface import \
+    GoogleApiAccessTokenStorageInterface
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
 from CynanBot.google.googleCloudProjectIdProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
@@ -22,12 +25,15 @@ class GoogleApiService(GoogleApiServiceInterface):
 
     def __init__(
         self,
+        googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface,
         googleJsonMapper: GoogleJsonMapperInterface,
         googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface
     ):
-        if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
+        if not isinstance(googleApiAccessTokenStorage, GoogleApiAccessTokenStorageInterface):
+            raise TypeError(f'googleApiAccessTokenStorage argument is malformed: \"{googleApiAccessTokenStorage}\"')
+        elif not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
         elif not isinstance(googleCloudProjectCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
             raise TypeError(f'googleCloudProjectCredentialsProvider argument is malformed: \"{googleCloudProjectCredentialsProvider}\"')
@@ -36,10 +42,20 @@ class GoogleApiService(GoogleApiServiceInterface):
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = googleApiAccessTokenStorage
         self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
+
+    async def __fetchAccessToken(self) -> GoogleAccessToken:
+        accessToken = await self.__googleApiAccessTokenStorage.getAccessToken()
+
+        if accessToken is not None:
+            return accessToken
+
+        # TODO
+        raise RuntimeError('this method is not yet implemented!')
 
     async def textToSpeech(self, request: GoogleTextSynthesizeRequest) -> GoogleTextSynthesisResponse:
         if not isinstance(request, GoogleTextSynthesizeRequest):
