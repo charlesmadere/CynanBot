@@ -69,11 +69,23 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         if existingStep is not None:
             self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, but an existing step was found: \"{existingStep}\"')
 
-        await self.__startNewWizard(
-            recurringActionType = recurringActionType,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        )
+        if recurringActionType is RecurringActionType.SUPER_TRIVIA:
+            await self.__startNewSuperTriviaWizard(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+        elif recurringActionType is RecurringActionType.WEATHER:
+            await self.__startNewWeatherWizard(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+        elif recurringActionType is RecurringActionType.WORD_OF_THE_DAY:
+            await self.__startNewWordOfTheDayWizard(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
+        else:
+            raise RuntimeError(f'unknown RecurringActionType: \"{recurringActionType}\"')
 
     async def __startNewSuperTriviaWizard(
         self,
@@ -98,37 +110,6 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         self.__wizards[twitchChannelId] = WeatherWizard()
-
-    async def __startNewWizard(
-        self,
-        recurringActionType: RecurringActionType,
-        twitchChannel: str,
-        twitchChannelId: str
-    ):
-        if not isinstance(recurringActionType, RecurringActionType):
-            raise TypeError(f'recurringActionType argument is malformed: \"{recurringActionType}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
-            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
-
-        if recurringActionType is RecurringActionType.SUPER_TRIVIA:
-            await self.__startNewSuperTriviaWizard(
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
-        elif recurringActionType is RecurringActionType.WEATHER:
-            await self.__startNewWeatherWizard(
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
-        elif recurringActionType is RecurringActionType.WORD_OF_THE_DAY:
-            await self.__startNewWordOfTheDayWizard(
-                twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId
-            )
-        else:
-            raise RuntimeError(f'unknown RecurringActionType: \"{recurringActionType}\"')
 
     async def __startNewWordOfTheDayWizard(
         self,
