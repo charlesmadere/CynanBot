@@ -66,7 +66,7 @@ class TimedDict():
         else:
             return False
 
-    def __setitem__(self, key: str, value):
+    def __setitem__(self, key: str, value: Optional[Any]):
         if not utils.isValidStr(key):
             raise ValueError(f'key argument is malformed: \"{key}\"')
 
