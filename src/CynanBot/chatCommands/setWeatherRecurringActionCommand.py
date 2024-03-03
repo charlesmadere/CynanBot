@@ -56,7 +56,8 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
 
         await self.__recurringActionsWizard.start(
             recurringActionType = RecurringActionType.WEATHER,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
