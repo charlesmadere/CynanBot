@@ -6,15 +6,13 @@ from CynanBot.misc.timedDict import TimedDict
 from CynanBot.recurringActions.recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.wizards.absWizard import AbsWizard
 from CynanBot.recurringActions.wizards.superTriviaWizard import \
     SuperTriviaWizard
 from CynanBot.recurringActions.wizards.weatherWizard import WeatherWizard
 from CynanBot.recurringActions.wizards.wordOfTheDayWizard import \
     WordOfTheDayWizard
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.configuration.twitchChannelProvider import \
-    TwitchChannelProvider
-from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class RecurringActionsWizard(RecurringActionsWizardInterface):
@@ -22,35 +20,34 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
     def __init__(
         self,
         timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface,
         timePerStep: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(timePerStep, timedelta):
             raise TypeError(f'timePerStep argument is malformed: \"{timePerStep}\"')
 
         self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__timePerStep: timedelta = timePerStep
-
         self.__wizards: TimedDict = TimedDict(timePerStep)
-        self.__twitchChannelProvider: Optional[TwitchChannelProvider] = None
 
-    def setTwitchChannelProvider(self, twitchChannelProvider: Optional[TwitchChannelProvider]):
-        if twitchChannelProvider is not None and not isinstance(twitchChannelProvider, TwitchChannelProvider):
-            raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
+    async def complete(self, twitchChannelId: str):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__twitchChannelProvider = twitchChannelProvider
+        del self.__wizards[twitchChannelId]
+
+    async def get(self, twitchChannelId: str) -> Optional[AbsWizard]:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        return self.__wizards[twitchChannelId]
 
     async def start(
         self,
         recurringActionType: RecurringActionType,
         twitchChannel: str,
         twitchChannelId: str
-    ):
+    ) -> AbsWizard:
         if not isinstance(recurringActionType, RecurringActionType):
             raise TypeError(f'recurringActionType argument is malformed: \"{recurringActionType}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -58,29 +55,23 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchChannelProvider = self.__twitchChannelProvider
+        existingWizard = self.__wizards[twitchChannelId]
 
-        if twitchChannelProvider is None:
-            self.__timber.log('RecurringActionsWizard', f'Attempted to start, but twitchChannelProvider is None ({recurringActionType=}) ({twitchChannel=}) ({twitchChannelId=}) ({twitchChannelProvider=})')
-            return
-
-        existingStep = self.__wizards[twitchChannelId]
-
-        if existingStep is not None:
-            self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, but an existing step was found: \"{existingStep}\"')
+        if existingWizard is not None:
+            self.__timber.log('RecurringActionsWizard', f'Starting a new \"{recurringActionType}\" wizard for {twitchChannel}:{twitchChannelId}, which will clobber an existing wizard: \"{existingWizard}\"')
 
         if recurringActionType is RecurringActionType.SUPER_TRIVIA:
-            await self.__startNewSuperTriviaWizard(
+            return await self.__startNewSuperTriviaWizard(
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         elif recurringActionType is RecurringActionType.WEATHER:
-            await self.__startNewWeatherWizard(
+            return await self.__startNewWeatherWizard(
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         elif recurringActionType is RecurringActionType.WORD_OF_THE_DAY:
-            await self.__startNewWordOfTheDayWizard(
+            return await self.__startNewWordOfTheDayWizard(
                 twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
@@ -91,25 +82,33 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ):
+    ) -> SuperTriviaWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__wizards[twitchChannelId] = SuperTriviaWizard()
+        wizard = SuperTriviaWizard()
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('RecurringActionsWizard', f'Started new Super Trivia wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
 
     async def __startNewWeatherWizard(
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ):
+    ) -> WeatherWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__wizards[twitchChannelId] = WeatherWizard()
+        wizard = WeatherWizard()
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('RecurringActionsWizard', f'Started new Weather wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
 
     async def __startNewWordOfTheDayWizard(
         self,
@@ -121,4 +120,8 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__wizards[twitchChannelId] = WordOfTheDayWizard()
+        wizard = WordOfTheDayWizard()
+        self.__wizards[twitchChannelId] = wizard
+        self.__timber.log('RecurringActionsWizard', f'Started new Word Of The Day wizard for {twitchChannel}:{twitchChannelId}')
+
+        return wizard
