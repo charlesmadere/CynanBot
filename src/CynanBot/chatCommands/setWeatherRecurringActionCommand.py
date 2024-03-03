@@ -51,7 +51,7 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         elif wizard.getSteps().getStep() is WeatherStep.MINUTES_BETWEEN:
             await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
         else:
-            self.__timber.log('SetWeatherRecurringActionCommand', f'Received invalid wizard step: \"{wizard}\" ({ctx.getAuthorName()=}) ({ctx.getAuthorId()}) ({ctx.getTwitchChannelName()})')
+            self.__timber.log('SetWeatherRecurringActionCommand', f'Received invalid wizard step ({wizard=}) ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
@@ -70,7 +70,7 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
 
         if not isinstance(wizard, WeatherWizard):
             # this should be impossible, I'm mostly just using this for a type check
-            self.__timber.log('SetWeatherRecurringActionCommand', f'Received incorrect wizard instance: \"{wizard}\" ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')
+            self.__timber.log('SetWeatherRecurringActionCommand', f'Received incorrect wizard instance: ({wizard=}) ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')
             return
 
         await self.__beginWizardGuidance(
