@@ -920,6 +920,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         generalSettingsRepository = generalSettingsRepository,
         userIdsRepository = userIdsRepository
     ),
+    recurringActionsWizardChatAction = None,
     schubertWalkChatAction = SchubertWalkChatAction(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,

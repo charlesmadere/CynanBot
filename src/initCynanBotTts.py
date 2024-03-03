@@ -425,6 +425,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         generalSettingsRepository = generalSettingsRepository,
         userIdsRepository = userIdsRepository
     ),
+    recurringActionsWizardChatAction = None,
     schubertWalkChatAction = None,
     supStreamerChatAction = supStreamerChatAction,
     timber = timber,
