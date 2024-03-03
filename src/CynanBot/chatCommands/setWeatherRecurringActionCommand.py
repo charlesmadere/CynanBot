@@ -6,6 +6,7 @@ from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
 from CynanBot.recurringActions.recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
+from CynanBot.recurringActions.wizards.weatherStep import WeatherStep
 from CynanBot.recurringActions.wizards.weatherWizard import WeatherWizard
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
@@ -44,6 +45,14 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
+    async def __beginWizardGuidance(self, ctx: TwitchContext, wizard: WeatherWizard):
+        if wizard.getSteps().getStep() is WeatherStep.ALERTS_ONLY:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify if weather reports should only show if your region has a critical alert or warning')
+        elif wizard.getSteps().getStep() is WeatherStep.MINUTES_BETWEEN:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
+        else:
+            self.__timber.log('SetWeatherRecurringActionCommand', f'Received invalid wizard step: \"{wizard}\" ({ctx.getAuthorName()=}) ({ctx.getAuthorId()}) ({ctx.getTwitchChannelName()})')
+
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         userId = await ctx.getTwitchChannelId()
@@ -61,12 +70,10 @@ class SetWeatherRecurringActionCommand(AbsChatCommand):
 
         if not isinstance(wizard, WeatherWizard):
             # this should be impossible, I'm mostly just using this for a type check
-            self.__timber.log('SetWeatherRecurringActionCommand', f'Received incorrect wizard instance: \"{wizard}\" ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({user.getHandle()=})')
+            self.__timber.log('SetWeatherRecurringActionCommand', f'Received incorrect wizard instance: \"{wizard}\" ({ctx.getAuthorName()=}) ({ctx.getAuthorId()=}) ({ctx.getTwitchChannelName()=})')
             return
 
-        # TODO
-
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Please specify the number of minutes between each weather report')
-
-        # TODO
-        pass
+        await self.__beginWizardGuidance(
+            ctx = ctx,
+            wizard = wizard
+        )
