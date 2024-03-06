@@ -62,6 +62,14 @@ class TestAnivContentScanner():
         assert result is AnivContentCode.OPEN_PAREN
 
     @pytest.mark.asyncio
+    async def test_scan_withBadTwitchEmojiParens1(self):
+        result = await self.anivContentScanner.scan('b)')
+        assert result is AnivContentCode.OPEN_PAREN
+
+        result = await self.anivContentScanner.scan('b-)')
+        assert result is AnivContentCode.OPEN_PAREN
+
+    @pytest.mark.asyncio
     async def test_scan_withBadQuotes(self):
         result = await self.anivContentScanner.scan('\"insanefirebat')
         assert result is AnivContentCode.OPEN_QUOTES
@@ -112,8 +120,36 @@ class TestAnivContentScanner():
         assert result is AnivContentCode.OK
 
     @pytest.mark.asyncio
+    async def test_scan_withGoodParens4(self):
+        result = await self.anivContentScanner.scan('[](insanefirebat)[] :) Hello!')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
     async def test_scan_withGoodQuotes(self):
         result = await self.anivContentScanner.scan('\"insanefirebat\"')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodTwitchEmojiParen1(self):
+        result = await self.anivContentScanner.scan('B)')
+        assert result is AnivContentCode.OK
+
+        result = await self.anivContentScanner.scan('B-)')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodTwitchEmojiParen2(self):
+        result = await self.anivContentScanner.scan('B) :) ;-) ')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodTwitchEmojiParen3(self):
+        result = await self.anivContentScanner.scan(':|')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withGoodTwitchEmojiParen4(self):
+        result = await self.anivContentScanner.scan(':-D')
         assert result is AnivContentCode.OK
 
     @pytest.mark.asyncio

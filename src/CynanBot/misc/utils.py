@@ -107,10 +107,10 @@ def containsUrl(s: Optional[str]) -> TypeGuard[str]:
 
     return False
 
-def copyList(l: List[Any]) -> List:
+def copyList(l: Optional[List[Any]]) -> List:
     newList = list()
 
-    if hasItems(l):
+    if l is not None and len(l) >= 1:
         newList.extend(l)
 
     return newList
@@ -170,12 +170,12 @@ def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bo
     return value
 
 def getCleanedSplits(s: Optional[str]) -> List[str]:
-    splits: List[str] = list()
+    words: List[str] = list()
 
     if not isValidStr(s):
-        return splits
+        return words
 
-    words = s.split()
+    splits = s.split()
 
     if splits is None or len(splits) == 0:
         return words
@@ -224,10 +224,10 @@ def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[f
     value: Optional[float] = None
 
     if not hasItems(d):
-        if fallback is None:
-            raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
-        else:
+        if isValidNum(fallback):
             value = fallback
+        else:
+            raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
     elif key in d and d[key] is not None:
         value = d[key]
     elif fallback is not None:
@@ -235,7 +235,7 @@ def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[f
     else:
         raise KeyError(f'there is no fallback and key \"{key}\" doesn\'t exist in d: \"{d}\"')
 
-    if not isinstance(value, float):
+    if value is not None and not isinstance(value, float):
         value = float(value)
 
     if not isValidNum(value):
@@ -249,21 +249,21 @@ def getIntFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[int
     elif fallback is not None and not isValidNum(fallback):
         raise ValueError(f'fallback argument is malformed: \"{fallback}\"')
 
-    value: Optional[int] = None
+    value: Optional[float] = None
 
     if not hasItems(d):
-        if fallback is None:
-            raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
-        else:
+        if isValidNum(fallback):
             value = fallback
+        else:
+            raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
     elif key in d and d[key] is not None:
         value = d[key]
-    elif fallback is not None:
+    elif isValidNum(fallback):
         value = fallback
     else:
         raise KeyError(f'there is no fallback and key \"{key}\" doesn\'t exist in d: \"{d}\"')
 
-    if not isinstance(value, int):
+    if value is not None and not isinstance(value, int):
         value = int(value)
 
     if not isValidInt(value):
@@ -397,6 +397,7 @@ def randomBool() -> bool:
 @overload
 def removePreceedingAt(s: None) -> None:
     ...
+
 @overload
 def removePreceedingAt(s: str) -> str:
     ...
@@ -404,9 +405,19 @@ def removePreceedingAt(s: str) -> str:
 def removePreceedingAt(s: Optional[str]) -> Optional[str]:
     if s is None:
         return s
-    if s.startswith("@"):
+    elif s.startswith('@'):
         return s[1:]
-    return s
+    else:
+        return s
+
+def safeStrToInt(s: Optional[str]) -> Optional[int]:
+    if not isValidStr(s):
+        return None
+
+    try:
+        return int(s)
+    except:
+        return None
 
 def splitLongStringIntoMessages(
     maxMessages: int,

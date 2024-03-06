@@ -4,6 +4,7 @@
     },
     "editor.wordWrapColumn": 120,
     "files.autoSave": "afterDelay",
+    "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "basic",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"

@@ -29,7 +29,8 @@ class GoogleApiService(GoogleApiServiceInterface):
         googleJsonMapper: GoogleJsonMapperInterface,
         googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
         networkClientProvider: NetworkClientProvider,
-        timber: TimberInterface
+        timber: TimberInterface,
+        contentType: str = 'application/json; charset=utf-8'
     ):
         if not isinstance(googleApiAccessTokenStorage, GoogleApiAccessTokenStorageInterface):
             raise TypeError(f'googleApiAccessTokenStorage argument is malformed: \"{googleApiAccessTokenStorage}\"')
@@ -41,14 +42,17 @@ class GoogleApiService(GoogleApiServiceInterface):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not utils.isValidStr(contentType):
+            raise TypeError(f'contentType argument is malformed: \"{contentType}\"')
 
         self.__googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = googleApiAccessTokenStorage
         self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
+        self.__contentType: str = contentType
 
-    async def __fetchAccessToken(self) -> GoogleAccessToken:
+    async def __fetchGoogleAccessToken(self) -> GoogleAccessToken:
         accessToken = await self.__googleApiAccessTokenStorage.getAccessToken()
 
         if accessToken is not None:
@@ -63,11 +67,18 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         self.__timber.log('GoogleApiService', f'Fetching text-to-speech from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
+        googleAccessToken = await self.__fetchGoogleAccessToken()
+        googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
 
         try:
             response = await clientSession.post(
                 url = f'https://texttospeech.googleapis.com/v1/text:synthesize',
-                json = await self.__googleJsonMapper.serializeSynthesizeRequest(request)
+                headers = {
+                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
+                    'x-goog-user-project': googleProjectId,
+                    'Content-Type': self.__contentType
+                },
+                json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
             )
         except GenericNetworkException as e:
             self.__timber.log('GoogleApiService', f'Encountered network error when fetching text-to-speech ({request=}): {e}', e, traceback.format_exc())

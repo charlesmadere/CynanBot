@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Set, Tuple
+import re
+from typing import Dict, List, Optional, Pattern, Set, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -37,6 +38,29 @@ class AnivContentScanner(AnivContentScannerInterface):
             '“': '”',
             '「': '」'
         }
+
+        self.__twitchEmojis: Pattern = re.compile(r'^[B:;]-?[\)]$')
+
+    async def __cleanTwitchEmojisFromString(self, message: str) -> str:
+        if not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        splits = utils.getCleanedSplits(message)
+        indexesToBlank: List[int] = list()
+
+        for index, split in enumerate(splits):
+            emojiMatch = self.__twitchEmojis.fullmatch(split)
+
+            if emojiMatch is not None:
+                indexesToBlank.append(index)
+
+        if len(indexesToBlank) == 0:
+            return message
+
+        for indexToBlank in indexesToBlank:
+            splits[indexToBlank] = ''
+
+        return ' '.join(splits).strip()
 
     async def __containsMatchingCharacterPairs(
         self,
@@ -97,9 +121,16 @@ class AnivContentScanner(AnivContentScannerInterface):
         if not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
+        emojiCleanedMessage = await self.__cleanTwitchEmojisFromString(message)
+
+        if not utils.isValidStr(emojiCleanedMessage):
+            # This case means that the message was only basic Twitch emojis, and after those were
+            # removed from the string, the message is now blank. So let's consider this message OK.
+            return AnivContentCode.OK
+
         if not await self.__containsMatchingCharacterPairs(
             characterPairs = self.__parens,
-            message = message
+            message = emojiCleanedMessage
         ):
             return AnivContentCode.OPEN_PAREN
 
@@ -134,4 +165,5 @@ class AnivContentScanner(AnivContentScannerInterface):
             self.__timber.log('AnivContentScanner', f'Message from aniv returned a ContentCode that we\'re not properly supporting ({contentCode=}) ({message=})')
             return AnivContentCode.CONTAINS_BANNED_CONTENT
         else:
+            # perform aniv-specific additional message scanning
             return await self.__deepScan(message)

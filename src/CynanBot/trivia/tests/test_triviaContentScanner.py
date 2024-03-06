@@ -80,7 +80,7 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withGnarlyTriviaQuestion2(self):
-        correctAnswers: List[bool] = list()
+        correctAnswers: List[str] = list()
         correctAnswers.append('two')
 
         multipleChoiceResponses: List[str] = list()

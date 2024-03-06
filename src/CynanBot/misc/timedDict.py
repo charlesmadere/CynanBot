@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Any, Dict, Optional
+from typing import Dict, Generic, Optional, TypeVar
 
 import CynanBot.misc.utils as utils
 
+T = TypeVar('T')
 
-class TimedDict():
+class TimedDict(Generic[T]):
 
     def __init__(
         self,
@@ -20,7 +21,7 @@ class TimedDict():
         self.__timeZone: tzinfo = timeZone
 
         self.__times: Dict[str, Optional[datetime]] = dict()
-        self.__values: Dict[str, Optional[Any]] = dict()
+        self.__values: Dict[str, Optional[T]] = dict()
 
     def clear(self):
         self.__times.clear()
@@ -28,14 +29,14 @@ class TimedDict():
 
     def __delitem__(self, key: str):
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         self.__times.pop(key, None)
         self.__values.pop(key, None)
 
-    def __getitem__(self, key: str) -> Optional[Any]:
+    def __getitem__(self, key: str) -> Optional[T]:
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         cachedTime = self.__times.get(key, None)
         cachedValue = self.__values.get(key, None)
@@ -52,13 +53,13 @@ class TimedDict():
 
     def isReady(self, key: str) -> bool:
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         return self[key] is None
 
     def isReadyAndUpdate(self, key: str) -> bool:
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         if self.isReady(key):
             self.update(key)
@@ -66,17 +67,15 @@ class TimedDict():
         else:
             return False
 
-    def __setitem__(self, key: str, value: Optional[Any]):
+    def __setitem__(self, key: str, value: Optional[T]):
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
         self.__times[key] = datetime.now(self.__timeZone) + self.__cacheTimeToLive
         self.__values[key] = value
 
     def update(self, key: str):
         if not utils.isValidStr(key):
-            raise ValueError(f'key argument is malformed: \"{key}\"')
+            raise TypeError(f'key argument is malformed: \"{key}\"')
 
-        newCachedTime = datetime.now(self.__timeZone) + self.__cacheTimeToLive
-        self.__times[key] = newCachedTime
-        self.__values[key] = newCachedTime
+        self.__times[key] = datetime.now(self.__timeZone) + self.__cacheTimeToLive

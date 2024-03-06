@@ -12,6 +12,9 @@ class SuperTriviaWizard(AbsWizard):
         self.__steps = SuperTriviaSteps()
         self.__minutesBetween: Optional[int] = None
 
+    def getMinutesBetween(self) -> Optional[int]:
+        return self.__minutesBetween
+
     def getRecurringActionType(self) -> RecurringActionType:
         return RecurringActionType.SUPER_TRIVIA
 
@@ -21,5 +24,7 @@ class SuperTriviaWizard(AbsWizard):
     def setMinutesBetween(self, minutesBetween: int):
         if not utils.isValidInt(minutesBetween):
             raise TypeError(f'minutesBetween argument is malformed: \"{minutesBetween}\"')
+        elif minutesBetween < 1 or minutesBetween > utils.getIntMaxSafeSize():
+            raise ValueError(f'minutesBetween argument is out of bounds: {minutesBetween}')
 
         self.__minutesBetween = minutesBetween

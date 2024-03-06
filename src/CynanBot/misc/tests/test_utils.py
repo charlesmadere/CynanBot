@@ -8,8 +8,8 @@ import CynanBot.misc.utils as utils
 class TestUtils():
 
     def test_areAllStrsInts_withEmptyList(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
+        exception: Optional[Exception] = None
 
         try:
             result = utils.areAllStrsInts(list())
@@ -220,7 +220,7 @@ class TestUtils():
         assert result[1] == 'World!'
 
     def test_getCleanedSplits_withNone(self):
-        original: str = None
+        original: Optional[str] = None
         result: List[str] = utils.getCleanedSplits(original)
         assert result is not None
         assert len(result) == 0
@@ -567,6 +567,61 @@ class TestUtils():
         result = utils.removePreceedingAt(' ')
         assert result == ' '
 
+    def test_safeStrToInt_withEmptyString(self):
+        result = utils.safeStrToInt('')
+        assert result is None
+
+    def test_safeStrToInt_withIntMaxSafeSizeString(self):
+        result = utils.safeStrToInt(str(utils.getIntMaxSafeSize()))
+        assert isinstance(result, int)
+        assert result == utils.getIntMaxSafeSize()
+
+    def test_safeStrToInt_withIntMinSafeSizeString(self):
+        result = utils.safeStrToInt(str(utils.getIntMinSafeSize()))
+        assert isinstance(result, int)
+        assert result == utils.getIntMinSafeSize()
+
+    def test_safeStrToInt_withLongMaxSafeSizeString(self):
+        result = utils.safeStrToInt(str(utils.getLongMaxSafeSize()))
+        assert isinstance(result, int)
+        assert result == utils.getLongMaxSafeSize()
+
+    def test_safeStrToInt_withLongMinSafeSizeString(self):
+        result = utils.safeStrToInt(str(utils.getLongMinSafeSize()))
+        assert isinstance(result, int)
+        assert result == utils.getLongMinSafeSize()
+
+    def test_safeStrToInt_withNegativeOneString(self):
+        result = utils.safeStrToInt('-1')
+        assert isinstance(result, int)
+        assert result == -1
+
+    def test_safeStrToInt_withNone(self):
+        result = utils.safeStrToInt(None)
+        assert result is None
+
+    def test_safeStrToInt_withNonsenseString1(self):
+        result = utils.safeStrToInt('af9-d`7u;2npmFYO4_:/')
+        assert result is None
+
+    def test_safeStrToInt_withNonsenseString2(self):
+        result = utils.safeStrToInt('X4W(MdKCP($-t04;\3UT')
+        assert result is None
+
+    def test_safeStrToInt_withOneString(self):
+        result = utils.safeStrToInt('1')
+        assert isinstance(result, int)
+        assert result == 1
+
+    def test_safeStrToInt_withWhitespaceString(self):
+        result = utils.safeStrToInt(' ')
+        assert result is None
+
+    def test_safeStrToInt_withZeroString(self):
+        result = utils.safeStrToInt('0')
+        assert isinstance(result, int)
+        assert result == 0
+
     def test_splitLongStringIntoMessages_withEmptyMessage(self):
         result = utils.splitLongStringIntoMessages(
             maxMessages = 50,
@@ -676,8 +731,8 @@ class TestUtils():
         assert result is False
 
     def test_strictStrToBool_withEmptyString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
+        exception: Optional[Exception] = None
 
         try:
             result = utils.strictStrToBool('')
@@ -688,16 +743,16 @@ class TestUtils():
         assert isinstance(exception, ValueError)
 
     def test_strictStrToBool_withF(self):
-        result: bool = utils.strictStrToBool('f')
+        result = utils.strictStrToBool('f')
         assert result is False
 
     def test_strictStrToBool_withFalse(self):
-        result: bool = utils.strictStrToBool('false')
+        result = utils.strictStrToBool('false')
         assert result is False
 
     def test_strictStrToBool_withNewLineString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
+        exception: Optional[Exception] = None
 
         try:
             result = utils.strictStrToBool('\n')
@@ -708,8 +763,8 @@ class TestUtils():
         assert isinstance(exception, ValueError)
 
     def test_strictStrToBool_withNone(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
+        exception: Optional[Exception] = None
 
         try:
             result = utils.strictStrToBool(None)
@@ -728,8 +783,8 @@ class TestUtils():
         assert result is True
 
     def test_strictStrToBool_withWhitespaceString(self):
-        result: bool = None
-        exception: Exception = None
+        result: Optional[bool] = None
+        exception: Optional[Exception] = None
 
         try:
             result = utils.strictStrToBool(' ')
