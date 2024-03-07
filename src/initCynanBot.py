@@ -290,6 +290,8 @@ from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.trivia.scraper.triviaScraper import TriviaScraper
+from CynanBot.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
 from CynanBot.twitch.websocket.twitchWebsocketClient import \
@@ -538,13 +540,11 @@ if generalSettingsSnapshot.isEventSubEnabled():
 
 authSnapshot = authRepository.getAll()
 
-weatherRepository: Optional[WeatherRepositoryInterface] = None
-if authSnapshot.hasOneWeatherApiKey():
-    weatherRepository = WeatherRepository(
-        networkClientProvider = networkClientProvider,
-        oneWeatherApiKey = authSnapshot.requireOneWeatherApiKey(),
-        timber = timber
-    )
+weatherRepository: Optional[WeatherRepositoryInterface] = WeatherRepository(
+    networkClientProvider = networkClientProvider,
+    oneWeatherApiKeyProvider = authRepository,
+    timber = timber
+)
 
 
 ###################################
@@ -668,6 +668,11 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+triviaScraper: TriviaScraperInterface = TriviaScraper(
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     backgroundTaskHelper = backgroundTaskHelper,
     bongoTriviaQuestionRepository = BongoTriviaQuestionRepository(
@@ -730,10 +735,11 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    triviaScraper = triviaScraper,
+    triviaSettingsRepository = triviaSettingsRepository,
     triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
         timber = timber
     ),
-    triviaSettingsRepository = triviaSettingsRepository,
     triviaVerifier = TriviaVerifier(
         timber = timber,
         triviaBanHelper = triviaBanHelper,

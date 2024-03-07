@@ -28,24 +28,24 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         if not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
+            raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(contentScanner, ContentScannerInterface):
-            raise ValueError(f'contentScanner argument is malformed: \"{contentScanner}\"')
+            raise TypeError(f'contentScanner argument is malformed: \"{contentScanner}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__bannedWordsRepository: BannedWordsRepositoryInterface = bannedWordsRepository
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
-    async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> Set[Optional[str]]:
+    async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> Set[str]:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        phrases: Set[Optional[str]] = set()
+        phrases: Set[str] = set()
         await self.__contentScanner.updatePhrasesContent(phrases, question.getQuestion())
         await self.__contentScanner.updatePhrasesContent(phrases, question.getPrompt())
 
@@ -60,11 +60,11 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
         return phrases
 
-    async def __getAllWordsFromQuestion(self, question: AbsTriviaQuestion) -> Set[Optional[str]]:
+    async def __getAllWordsFromQuestion(self, question: AbsTriviaQuestion) -> Set[str]:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        words: Set[Optional[str]] = set()
+        words: Set[str] = set()
         await self.__contentScanner.updateWordsContent(words, question.getQuestion())
         await self.__contentScanner.updateWordsContent(words, question.getPrompt())
 
@@ -84,7 +84,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             return TriviaContentCode.IS_NONE
 
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         coreContentCode = await self.__verifyQuestionCoreContent(question)
         if coreContentCode is not TriviaContentCode.OK:
@@ -144,13 +144,13 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         absBannedWords = await self.__bannedWordsRepository.getBannedWordsAsync()
 
         for absBannedWord in absBannedWords:
-            if absBannedWord.getType() is BannedWordType.EXACT_WORD:
+            if isinstance(absBannedWord, BannedWord):
                 bannedWord: BannedWord = absBannedWord
 
                 if bannedWord.getWord() in words:
                     self.__timber.log('TriviaContentScanner', f'Trivia content contains a banned word ({absBannedWord}): \"{bannedWord.getWord()}\"')
                     return TriviaContentCode.CONTAINS_BANNED_CONTENT
-            elif absBannedWord.getType() is BannedWordType.PHRASE:
+            elif isinstance(absBannedWord, BannedPhrase):
                 bannedPhrase: BannedPhrase = absBannedWord
 
                 for phrase in phrases:

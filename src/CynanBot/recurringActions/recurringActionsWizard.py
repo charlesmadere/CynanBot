@@ -28,7 +28,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
             raise TypeError(f'timePerStep argument is malformed: \"{timePerStep}\"')
 
         self.__timber: TimberInterface = timber
-        self.__wizards: TimedDict = TimedDict(timePerStep)
+        self.__wizards: TimedDict[AbsWizard] = TimedDict(timePerStep)
 
     async def complete(self, twitchChannelId: str):
         if not utils.isValidStr(twitchChannelId):
@@ -114,7 +114,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         self,
         twitchChannel: str,
         twitchChannelId: str
-    ):
+    ) -> WordOfTheDayWizard:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):

@@ -169,6 +169,10 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'debug_logging_enabled', True)
 
+    async def isScraperEnabled(self) -> bool:
+        jsonContents = await self.__readJson()
+        return utils.getBoolFromDict(jsonContents, 'scraper_enabled', True)
+
     async def __readJson(self) -> Dict[str, Any]:
         if self.__cache is not None:
             return self.__cache

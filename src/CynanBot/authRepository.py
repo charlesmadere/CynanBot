@@ -11,6 +11,7 @@ from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
+from CynanBot.weather.oneWeatherApiKeyProvider import OneWeatherApiKeyProvider
 
 
 class AuthRepository(
@@ -18,15 +19,15 @@ class AuthRepository(
     DeepLAuthKeyProviderInterface,
     GoogleCloudProjectCredentialsProviderInterface,
     TwitchCredentialsProviderInterface,
-    TwitchHandleProviderInterface
+    TwitchHandleProviderInterface,
+    OneWeatherApiKeyProvider
 ):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
         if not isinstance(authJsonReader, JsonReaderInterface):
-            raise ValueError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
+            raise TypeError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
 
         self.__authJsonReader: JsonReaderInterface = authJsonReader
-
         self.__cache: Optional[AuthRepositorySnapshot] = None
 
     async def clearCaches(self):
@@ -67,6 +68,10 @@ class AuthRepository(
     async def getGoogleCloudProjectId(self) -> Optional[str]:
         snapshot = await self.getAllAsync()
         return snapshot.getGoogleCloudProjectId()
+
+    async def getOneWeatherApiKey(self) -> Optional[str]:
+        snapshot = await self.getAllAsync()
+        return snapshot.getOneWeatherApiKey()
 
     async def getTwitchClientId(self) -> str:
         snapshot = await self.getAllAsync()

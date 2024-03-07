@@ -41,7 +41,7 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
 
-        self.__cache: TimedDict = TimedDict(cacheTimeDelta)
+        self.__cache: TimedDict[bool] = TimedDict(cacheTimeDelta)
 
     async def clearCaches(self):
         self.__cache.clear()

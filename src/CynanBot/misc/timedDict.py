@@ -41,7 +41,7 @@ class TimedDict(Generic[T]):
         cachedTime = self.__times.get(key, None)
         cachedValue = self.__values.get(key, None)
 
-        if cachedTime is None or cachedValue is None:
+        if cachedTime is None:
             return None
 
         nowDateTime = datetime.now(self.__timeZone)

@@ -106,3 +106,7 @@ class TriviaSettingsRepositoryInterface(Clearable):
     @abstractmethod
     async def isDebugLoggingEnabled(self) -> bool:
         pass
+
+    @abstractmethod
+    async def isScraperEnabled(self) -> bool:
+        pass

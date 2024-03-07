@@ -32,10 +32,10 @@ class ContentScanner(ContentScannerInterface):
         self.__wordRegEx: Pattern = re.compile(r'\w', re.IGNORECASE)
 
     async def scan(self, string: Optional[str]) -> ContentCode:
-        if string is not None and not isinstance(string, str):
-            raise TypeError(f'string argument is malformed: \"{string}\"')
-        elif string is None:
+        if string is None:
             return ContentCode.IS_NONE
+        elif not isinstance(string, str):
+            raise TypeError(f'string argument is malformed: \"{string}\"')
         elif len(string) == 0:
             return ContentCode.IS_EMPTY
         elif string.isspace():

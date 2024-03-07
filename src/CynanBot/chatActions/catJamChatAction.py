@@ -23,15 +23,15 @@ class CatJamChatAction(AbsChatAction):
         cooldown: timedelta = timedelta(minutes = 20)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not utils.isValidStr(catJamMessage):
-            raise ValueError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
+            raise TypeError(f'catJamMessage argument is malformed: \"{catJamMessage}\"')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber

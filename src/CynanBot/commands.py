@@ -9,6 +9,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
+from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
@@ -3325,6 +3326,8 @@ class WeatherCommand(AbsCommand):
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
             await self.__twitchUtils.safeSend(ctx, weatherReport.toStr())
+        except OneWeatherApiKeyUnavailableException as e:
+            self.__timber.log('WeatherCommand', f'Unable to fetch weather as no One Weather API key is available: {e}', e, traceback.format_exc())
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{locationId}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')

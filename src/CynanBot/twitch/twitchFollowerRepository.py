@@ -38,7 +38,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-        self.__cache: Dict[str, TimedDict] = defaultdict(lambda: TimedDict(cacheTimeDelta))
+        self.__cache: Dict[str, TimedDict[TwitchFollower]] = defaultdict(lambda: TimedDict(cacheTimeDelta))
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -57,7 +57,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        follower: Optional[TwitchFollower] = self.__cache[twitchChannelId][userId]
+        follower = self.__cache[twitchChannelId][userId]
 
         if follower is not None:
             return follower
