@@ -38,24 +38,22 @@ class TimedDict(Generic[T]):
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 
-        cachedTime = self.__times.get(key, None)
-        cachedValue = self.__values.get(key, None)
-
-        if cachedTime is None:
+        if self.isReady(key):
             return None
-
-        nowDateTime = datetime.now(self.__timeZone)
-
-        if nowDateTime > cachedTime:
-            return None
-
-        return cachedValue
+        else:
+            return self.__values.get(key, None)
 
     def isReady(self, key: str) -> bool:
         if not utils.isValidStr(key):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 
-        return self[key] is None
+        cachedTime = self.__times.get(key, None)
+
+        if cachedTime is None:
+            return True
+
+        nowDateTime = datetime.now(self.__timeZone)
+        return nowDateTime > cachedTime
 
     def isReadyAndUpdate(self, key: str) -> bool:
         if not utils.isValidStr(key):
