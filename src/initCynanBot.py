@@ -192,6 +192,9 @@ from CynanBot.trivia.games.triviaGameStore import TriviaGameStore
 from CynanBot.trivia.score.triviaScoreRepository import TriviaScoreRepository
 from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
+from CynanBot.trivia.scraper.triviaScraper import TriviaScraper
+from CynanBot.trivia.scraper.triviaScraperInterface import \
+    TriviaScraperInterface
 from CynanBot.trivia.specialStatus.shinyTriviaHelper import ShinyTriviaHelper
 from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepository import \
     ShinyTriviaOccurencesRepository
@@ -220,6 +223,10 @@ from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
+from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepository import \
+    GlacialTriviaQuestionRepository
+from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
+    GlacialTriviaQuestionRepositoryInterface
 from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -290,8 +297,6 @@ from CynanBot.twitch.twitchTokensUtilsInterface import \
     TwitchTokensUtilsInterface
 from CynanBot.twitch.twitchUtils import TwitchUtils
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.trivia.scraper.triviaScraper import TriviaScraper
-from CynanBot.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
 from CynanBot.twitch.websocket.twitchWebsocketAllowedUsersRepository import \
     TwitchWebsocketAllowedUsersRepository
 from CynanBot.twitch.websocket.twitchWebsocketClient import \
@@ -668,7 +673,13 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
+    timber = timber,
+    triviaSettingsRepository = triviaSettingsRepository
+)
+
 triviaScraper: TriviaScraperInterface = TriviaScraper(
+    glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
@@ -690,6 +701,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaQuestionCompiler = triviaQuestionCompiler,
         triviaSettingsRepository = triviaSettingsRepository
     ),
+    glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     jServiceTriviaQuestionRepository = JServiceTriviaQuestionRepository(
         additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
         networkClientProvider = networkClientProvider,

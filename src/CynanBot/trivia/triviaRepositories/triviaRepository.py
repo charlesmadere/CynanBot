@@ -16,6 +16,8 @@ from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
+from CynanBot.trivia.scraper.triviaScraperInterface import \
+    TriviaScraperInterface
 from CynanBot.trivia.triviaExceptions import (
     GenericTriviaNetworkException, MalformedTriviaJsonException,
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException,
@@ -25,6 +27,8 @@ from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
     FuntoonTriviaQuestionRepository
+from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
+    GlacialTriviaQuestionRepositoryInterface
 from CynanBot.trivia.triviaRepositories.jServiceTriviaQuestionRepository import \
     JServiceTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.lotrTriviaQuestionsRepository import \
@@ -58,7 +62,6 @@ from CynanBot.trivia.triviaSourceInstabilityHelper import \
 from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
 
 
 class TriviaRepository(TriviaRepositoryInterface):
@@ -68,6 +71,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         bongoTriviaQuestionRepository: BongoTriviaQuestionRepository,
         funtoonTriviaQuestionRepository: FuntoonTriviaQuestionRepository,
+        glacialTriviaQuestionRepository: Optional[GlacialTriviaQuestionRepositoryInterface],
         jServiceTriviaQuestionRepository: Optional[JServiceTriviaQuestionRepository],
         lotrTriviaQuestionRepository: Optional[LotrTriviaQuestionRepository],
         millionaireTriviaQuestionRepository: MillionaireTriviaQuestionRepository,
@@ -78,7 +82,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         timber: TimberInterface,
         triviaDatabaseTriviaQuestionRepository: TriviaDatabaseTriviaQuestionRepository,
         triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionCompanyTriviaQuestionRepository,
-        triviaScraper: TriviaScraperInterface,
+        triviaScraper: Optional[TriviaScraperInterface],
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper,
         triviaVerifier: TriviaVerifierInterface,
@@ -94,6 +98,8 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'bongoTriviaQuestionRepository argument is malformed: \"{bongoTriviaQuestionRepository}\"')
         elif not isinstance(funtoonTriviaQuestionRepository, FuntoonTriviaQuestionRepository):
             raise TypeError(f'funtoonTriviaQuestionRepository argument is malformed: \"{funtoonTriviaQuestionRepository}\"')
+        elif glacialTriviaQuestionRepository is not None and not isinstance(glacialTriviaQuestionRepository, GlacialTriviaQuestionRepositoryInterface):
+            raise TypeError(f'glacialTriviaQuestionRepository argument is malformed: \"{glacialTriviaQuestionRepository}\"')
         elif jServiceTriviaQuestionRepository is not None and not isinstance(jServiceTriviaQuestionRepository, JServiceTriviaQuestionRepository):
             raise TypeError(f'jServiceTriviaQuestionRepository argument is malformed \"{jServiceTriviaQuestionRepository}\"')
         elif lotrTriviaQuestionRepository is not None and not isinstance(lotrTriviaQuestionRepository, LotrTriviaQuestionRepository):
@@ -114,7 +120,7 @@ class TriviaRepository(TriviaRepositoryInterface):
             raise TypeError(f'triviaDatabaseTriviaQuestionRepository argument is malformed: \"{triviaDatabaseTriviaQuestionRepository}\"')
         elif not isinstance(triviaQuestionCompanyTriviaQuestionRepository, TriviaQuestionCompanyTriviaQuestionRepository):
             raise TypeError(f'triviaQuestionCompanyTriviaQuestionRepository argument is malformed: \"{triviaQuestionCompanyTriviaQuestionRepository}\"')
-        elif not isinstance(triviaScraper, TriviaScraperInterface):
+        elif triviaScraper is not None and not isinstance(triviaScraper, TriviaScraperInterface):
             raise TypeError(f'triviaScraper argument is malformed: \"{triviaScraper}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
@@ -140,6 +146,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__bongoTriviaQuestionRepository: TriviaQuestionRepositoryInterface = bongoTriviaQuestionRepository
         self.__funtoonTriviaQuestionRepository: TriviaQuestionRepositoryInterface = funtoonTriviaQuestionRepository
+        self.__glacialTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = glacialTriviaQuestionRepository
         self.__jServiceTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = jServiceTriviaQuestionRepository
         self.__lotrTriviaQuestionRepository: Optional[TriviaQuestionRepositoryInterface] = lotrTriviaQuestionRepository
         self.__millionaireTriviaQuestionRepository: TriviaQuestionRepositoryInterface = millionaireTriviaQuestionRepository
@@ -150,7 +157,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         self.__timber: TimberInterface = timber
         self.__triviaDatabaseTriviaQuestionRepository: TriviaQuestionRepositoryInterface = triviaDatabaseTriviaQuestionRepository
         self.__triviaQuestionCompanyTriviaQuestionRepository: TriviaQuestionRepositoryInterface = triviaQuestionCompanyTriviaQuestionRepository
-        self.__triviaScraper: TriviaScraperInterface = triviaScraper
+        self.__triviaScraper: Optional[TriviaScraperInterface] = triviaScraper
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = triviaSourceInstabilityHelper
         self.__triviaVerifier: TriviaVerifierInterface = triviaVerifier
@@ -208,6 +215,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         triviaSourceToRepositoryMap: Dict[TriviaSource, Optional[TriviaQuestionRepositoryInterface]] = {
             TriviaSource.BONGO: self.__bongoTriviaQuestionRepository,
             TriviaSource.FUNTOON: self.__funtoonTriviaQuestionRepository,
+            TriviaSource.GLACIAL: self.__glacialTriviaQuestionRepository,
             TriviaSource.J_SERVICE: self.__jServiceTriviaQuestionRepository,
             TriviaSource.LORD_OF_THE_RINGS: self.__lotrTriviaQuestionRepository,
             TriviaSource.MILLIONAIRE: self.__millionaireTriviaQuestionRepository,
@@ -303,6 +311,9 @@ class TriviaRepository(TriviaRepositoryInterface):
                 if TriviaQuestionType.QUESTION_ANSWER not in triviaQuestionRepository.getSupportedTriviaTypes():
                     currentlyInvalidTriviaSources.add(triviaSource)
 
+        if not await self.__isGlacialTriviaQuestionRepositoryAvailable():
+            currentlyInvalidTriviaSources.add(TriviaSource.GLACIAL)
+
         if not await self.__isJServiceTriviaQuestionRepositoryAvailable():
             currentlyInvalidTriviaSources.add(TriviaSource.J_SERVICE)
 
@@ -326,6 +337,9 @@ class TriviaRepository(TriviaRepositoryInterface):
                 unstableTriviaSources.add(triviaSource)
 
         return unstableTriviaSources
+
+    async def __isGlacialTriviaQuestionRepositoryAvailable(self) -> bool:
+        return self.__glacialTriviaQuestionRepository is not None
 
     async def __isJServiceTriviaQuestionRepositoryAvailable(self) -> bool:
         return self.__jServiceTriviaQuestionRepository is not None
@@ -369,7 +383,10 @@ class TriviaRepository(TriviaRepositoryInterface):
         if not await self.__triviaSettingsRepository.isScraperEnabled():
             return
 
-        await self.__triviaScraper.store(question)
+        triviaScraper = self.__triviaScraper
+
+        if triviaScraper is not None:
+            await triviaScraper.store(question)
 
     async def __spoolNewSuperTriviaQuestion(self):
         if self.__superTriviaQuestionSpool.qsize() >= await self.__triviaSettingsRepository.getMaxSuperTriviaQuestionSpoolSize():

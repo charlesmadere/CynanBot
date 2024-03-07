@@ -10,6 +10,7 @@ class TriviaSource(EnumWithToFromStr):
 
     BONGO = auto()
     FUNTOON = auto()
+    GLACIAL = auto()
     J_SERVICE = auto()
     LORD_OF_THE_RINGS = auto()
     MILLIONAIRE = auto()
@@ -41,6 +42,8 @@ class TriviaSource(EnumWithToFromStr):
             return False
         elif self is TriviaSource.FUNTOON:
             return False
+        elif self is TriviaSource.GLACIAL:
+            return True
         elif self is TriviaSource.J_SERVICE:
             return False
         elif self is TriviaSource.LORD_OF_THE_RINGS:
