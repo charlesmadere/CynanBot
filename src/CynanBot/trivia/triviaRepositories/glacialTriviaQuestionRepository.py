@@ -1,21 +1,28 @@
-from typing import Optional, Set
 import traceback
+from typing import List, Set
+
 import aiofiles
 import aiofiles.ospath
-from CynanBot.trivia.questionAnswerTriviaConditions import QuestionAnswerTriviaConditions
-from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import MultipleChoiceTriviaQuestion
-from CynanBot.trivia.questions.trueFalseTriviaQuestion import TrueFalseTriviaQuestion
-from CynanBot.trivia.triviaExceptions import BadTriviaTypeException, NoTriviaCorrectAnswersException
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 import aiosqlite
+from aiosqlite import Connection
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.questionAnswerTriviaConditions import \
+    QuestionAnswerTriviaConditions
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
+from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
+    MultipleChoiceTriviaQuestion
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
+from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
+    TrueFalseTriviaQuestion
+from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
+from CynanBot.trivia.triviaExceptions import (
+    BadTriviaTypeException, NoTriviaCorrectAnswersException,
+    NoTriviaMultipleChoiceResponsesException)
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
@@ -23,6 +30,8 @@ from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface
     GlacialTriviaQuestionRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 
 
 class GlacialTriviaQuestionRepository(
@@ -51,12 +60,12 @@ class GlacialTriviaQuestionRepository(
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
         self.__areTablesCreated: bool = False
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def __checkIfQuestionIsAlreadyStored(
         self,
         question: AbsTriviaQuestion,
-        connection
+        connection: Connection
     ):
         cursor = await connection.execute(
             '''
@@ -69,17 +78,20 @@ class GlacialTriviaQuestionRepository(
             question.getTriviaSource().toStr(), question.getTriviaId()
         )
 
-        alreadyStored = cursor is not None and len(cursor) >= 1
+        row = await cursor.fetchone()
         await cursor.close()
-        return alreadyStored
 
-    async def __createTablesIfNotExists(self, connection):
+        return row is not None and len(row) >= 1
+
+    async def __createTablesIfNotExists(self, connection: Connection):
         if self.__areTablesCreated:
             return
 
         cursor = await connection.execute(
             '''
                 CREATE TABLE IF NOT EXISTS glacialQuestions (
+                    category TEXT DEFAULT NULL COLLATE NOCASE,
+                    categoryId TEXT DEFAULT NULL COLLATE NOCASE,
                     originalTriviaSource TEXT NOT NULL COLLATE NOCASE,
                     question TEXT NOT NULL COLLATE NOCASE,
                     triviaDifficulty TEXT NOT NULL COLLATE NOCASE,
@@ -118,7 +130,7 @@ class GlacialTriviaQuestionRepository(
     async def __fetchAnyTriviaQuestion(
         self,
         fetchOptions: TriviaFetchOptions
-    ) -> Optional[AbsTriviaQuestion]:
+    ) -> AbsTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
@@ -131,15 +143,16 @@ class GlacialTriviaQuestionRepository(
             '''
         )
 
-        if cursor is None or len(cursor) == 0:
-            await cursor.close()
+        row = await cursor.fetchone()
+        await cursor.close()
+
+        if row is None or len(row) == 0:
             await connection.close()
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any trivia question in the database! ({fetchOptions=})')
             return None
 
         # TODO
 
-        await cursor.close()
         await connection.close()
 
         raise RuntimeError('not implemented')
@@ -147,7 +160,7 @@ class GlacialTriviaQuestionRepository(
     async def __fetchMultipleChoiceOrTrueFalseTriviaQuestion(
         self,
         fetchOptions: TriviaFetchOptions
-    ) -> Optional[AbsTriviaQuestion]:
+    ) -> AbsTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
@@ -162,15 +175,16 @@ class GlacialTriviaQuestionRepository(
             TriviaQuestionType.MULTIPLE_CHOICE.toStr(), TriviaQuestionType.TRUE_FALSE.toStr()
         )
 
-        if cursor is None or len(cursor) == 0:
-            await cursor.close()
+        row = await cursor.fetchone()
+        await cursor.close()
+
+        if row is None or len(row) == 0:
             await connection.close()
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.MULTIPLE_CHOICE} or {TriviaQuestionType.TRUE_FALSE} question in the database! ({fetchOptions=})')
             return None
 
         # TODO
 
-        await cursor.close()
         await connection.close()
 
         raise RuntimeError('not implemented')
@@ -178,14 +192,14 @@ class GlacialTriviaQuestionRepository(
     async def __fetchQuestionAnswerTriviaQuestion(
         self,
         fetchOptions: TriviaFetchOptions
-    ) -> Optional[QuestionAnswerTriviaQuestion]:
+    ) -> QuestionAnswerTriviaQuestion | None:
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         connection = await aiosqlite.connect(self.__triviaDatabaseFile)
         cursor = await connection.execute(
             '''
-                SELECT correctAnswer, question, triviaDifficulty, triviaId FROM glacialQuestions
+                SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId FROM glacialQuestions
                 WHERE triviaType = $1
                 ORDER BY RANDOM()
                 LIMIT 1
@@ -193,18 +207,39 @@ class GlacialTriviaQuestionRepository(
             TriviaQuestionType.QUESTION_ANSWER.toStr()
         )
 
-        if cursor is None or len(cursor) == 0:
-            await cursor.close()
+        row = await cursor.fetchone()
+        await cursor.close()
+
+        if row is None or len(row) == 0:
             await connection.close()
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.QUESTION_ANSWER} question in the database! ({fetchOptions=})')
             return None
 
-        # TODO
+        category: str | None = row[0]
+        categoryId: str | None = row[1]
+        originalTriviaSource = TriviaSource.fromStr(row[2])
+        question: str = row[3]
+        triviaDifficulty = TriviaDifficulty.fromStr(row[4])
+        triviaId: str = row[5]
 
-        await cursor.close()
+        answers = await self.__fetchTriviaQuestionAnswers(
+            connection = connection,
+            triviaId = triviaId,
+            originalTriviaSource = originalTriviaSource
+        )
+
         await connection.close()
 
-        raise RuntimeError('not implemented')
+        return QuestionAnswerTriviaQuestion(
+            correctAnswers = answers,
+            cleanedCorrectAnswers = answers,
+            category = category,
+            categoryId = categoryId,
+            question = question,
+            triviaId = triviaId,
+            triviaDifficulty = triviaDifficulty,
+            triviaSource = TriviaSource.GLACIAL
+        )
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -213,7 +248,7 @@ class GlacialTriviaQuestionRepository(
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'Glacial trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
-        question: Optional[AbsTriviaQuestion] = None
+        question: AbsTriviaQuestion | None = None
 
         if fetchOptions.requireQuestionAnswerTriviaQuestion():
             question = await self.__fetchQuestionAnswerTriviaQuestion(fetchOptions)
@@ -229,10 +264,10 @@ class GlacialTriviaQuestionRepository(
 
     async def __fetchTriviaQuestionAnswers(
         self,
-        connection,
+        connection: Connection,
         triviaId: str,
         originalTriviaSource: TriviaSource
-    ) -> Set[str]:
+    ) -> List[str]:
         cursor = await connection.execute(
             '''
                 SELECT answer FROM glacialAnswers
@@ -241,31 +276,49 @@ class GlacialTriviaQuestionRepository(
             originalTriviaSource.toStr(), triviaId
         )
 
-        if cursor is None or len(cursor) == 0:
-            await cursor.close()
+        rows = await cursor.fetchall()
+        await cursor.close()
+
+        if rows is None or len(rows) == 0:
             exception = NoTriviaCorrectAnswersException(f'No trivia answers found! ({triviaId=}) ({originalTriviaSource=})')
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any trivia answers for {triviaId=} and {originalTriviaSource=}: {exception}', exception, traceback.format_exc())
             raise exception
 
         responses: Set[str] = set()
 
-        for answer in cursor:
-            responses.add(answer)
+        for row in rows:
+            responses.add(row[0])
 
-        await cursor.close()
-        return responses
+        return list(responses)
 
     async def __fetchTriviaQuestionResponses(
         self,
-        connection,
+        connection: Connection,
         triviaId: str,
         originalTriviaSource: TriviaSource
-    ) -> Set[str]:
+    ) -> List[str]:
+        cursor = await connection.execute(
+            '''
+                SELECT response FROM glacialResponses
+                WHERE originalTriviaSource = $1 AND triviaId = $2
+            ''',
+            originalTriviaSource.toStr(), triviaId
+        )
+
+        rows = await cursor.fetchall()
+        await cursor.close()
+
+        if rows is None or len(rows) == 0:
+            exception = NoTriviaMultipleChoiceResponsesException(f'No trivia responses found! ({triviaId=}) ({originalTriviaSource=})')
+            self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any trivia responses for {triviaId=} and {originalTriviaSource=}: {exception}', exception, traceback.format_exc())
+            raise exception
+
         responses: Set[str] = set()
 
-        # TODO
+        for row in rows:
+            responses.add(row[0])
 
-        return responses
+        return list(responses)
 
     async def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
         return {
@@ -344,7 +397,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __storeMultipleChoiceTriviaQuestion(
         self,
-        connection,
+        connection: Connection,
         question: MultipleChoiceTriviaQuestion
     ):
         if not isinstance(question, MultipleChoiceTriviaQuestion):
@@ -356,7 +409,7 @@ class GlacialTriviaQuestionRepository(
 
     async def __storeQuestionAnswerTriviaQuestion(
         self,
-        connection,
+        connection: Connection,
         question: QuestionAnswerTriviaQuestion
     ):
         if not isinstance(question, QuestionAnswerTriviaQuestion):
@@ -364,11 +417,12 @@ class GlacialTriviaQuestionRepository(
         elif question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
+        # TODO
         pass
 
     async def __storeTrueFalseTriviaQuestion(
         self,
-        connection,
+        connection: Connection,
         question: TrueFalseTriviaQuestion
     ):
         if not isinstance(question, TrueFalseTriviaQuestion):
@@ -378,10 +432,10 @@ class GlacialTriviaQuestionRepository(
 
         await connection.execute(
             '''
-                INSERT INTO glacialQuestions (originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
+                INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
                 VALUES ($1, $2)
             ''',
-            question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), TriviaQuestionType.TRUE_FALSE.toStr()
+            question.getCategory(), question.getCategoryId(), question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), TriviaQuestionType.TRUE_FALSE.toStr()
         )
 
         for answer in question.getCorrectAnswerBools():
