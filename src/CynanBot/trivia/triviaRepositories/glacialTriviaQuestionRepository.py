@@ -22,7 +22,7 @@ from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
 from CynanBot.trivia.triviaExceptions import (
     BadTriviaTypeException, NoTriviaCorrectAnswersException,
-    NoTriviaMultipleChoiceResponsesException)
+    NoTriviaMultipleChoiceResponsesException, UnsupportedTriviaTypeException)
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaRepositories.absTriviaQuestionRepository import \
     AbsTriviaQuestionRepository
@@ -167,7 +167,7 @@ class GlacialTriviaQuestionRepository(
         connection = await aiosqlite.connect(self.__triviaDatabaseFile)
         cursor = await connection.execute(
             '''
-                SELECT answerA, answerB, answerC, answerD, answerE, answerF, correctAnswer, question, triviaDifficulty, triviaId, triviaType FROM glacialQuestions
+                SELECT category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType FROM glacialQuestions
                 WHERE triviaType = $1 OR triviaType = $2
                 ORDER BY RANDOM()
                 LIMIT 1
@@ -183,11 +183,53 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.MULTIPLE_CHOICE} or {TriviaQuestionType.TRUE_FALSE} question in the database! ({fetchOptions=})')
             return None
 
-        # TODO
+        category: str | None = row[0]
+        categoryId: str | None = row[1]
+        originalTriviaSource = TriviaSource.fromStr(row[2])
+        question: str = row[3]
+        triviaDifficulty = TriviaDifficulty.fromStr(row[4])
+        triviaId: str = row[5]
+        triviaType = TriviaQuestionType.fromStr(row[6])
+
+        answers = await self.__fetchTriviaQuestionAnswers(
+            connection = connection,
+            triviaId = triviaId,
+            originalTriviaSource = originalTriviaSource
+        )
+
+        responses = await self.__fetchTriviaQuestionResponses(
+            connection = connection,
+            triviaId = triviaId,
+            originalTriviaSource = originalTriviaSource
+        )
 
         await connection.close()
 
-        raise RuntimeError('not implemented')
+        if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
+            return MultipleChoiceTriviaQuestion(
+                correctAnswers = answers,
+                multipleChoiceResponses = responses,
+                category = category,
+                categoryId = categoryId,
+                question = question,
+                triviaId = triviaId,
+                triviaDifficulty = triviaDifficulty,
+                triviaSource = self.getTriviaSource()
+            )
+        elif triviaType is TriviaQuestionType.TRUE_FALSE:
+            return TrueFalseTriviaQuestion(
+                correctAnswers = answeers,
+                category = category,
+                categoryId = categoryId,
+                question = question,
+                triviaId = triviaId,
+                triviaDifficulty = triviaDifficulty,
+                triviaSource = self.getTriviaSource()
+            )
+        else:
+            exception = UnsupportedTriviaTypeException(f'Received an invalid trivia question type! ({triviaType=}) ({fetchOptions=}) ({row=})')
+            self.__timber.log('GlacialTriviaQuestionRepository', f'Received an invalid trivia question type when fetching a trivia question ({triviaType=}) ({fetchOptions=}) ({row=}): {exception}', exception, traceback.format_exc())
+            raise exception
 
     async def __fetchQuestionAnswerTriviaQuestion(
         self,
@@ -238,7 +280,7 @@ class GlacialTriviaQuestionRepository(
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
-            triviaSource = TriviaSource.GLACIAL
+            triviaSource = self.getTriviaSource()
         )
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
@@ -327,7 +369,7 @@ class GlacialTriviaQuestionRepository(
             TriviaQuestionType.TRUE_FALSE
         }
 
-    async def getTriviaSource(self) -> TriviaSource:
+    def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.GLACIAL
 
     async def hasQuestionSetAvailable(self) -> bool:
