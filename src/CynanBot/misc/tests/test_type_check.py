@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from collections import abc
 from enum import Enum
 import typing
@@ -237,3 +238,44 @@ def test_with_mixed_arg_kwarg() -> None:
 
     with pytest.raises(TypeError):
         f(x=b"False", y="8")  # type: ignore
+
+
+def test_interface() -> None:
+    class B(ABC):
+        pass
+
+    class C(B):
+        pass
+
+    class D:
+        pass
+
+    @type_check
+    def f(b: B) -> frozenset[str]:
+        return frozenset()
+
+    c = C()
+    f(c)
+
+    d = D()
+    with pytest.raises(TypeError):
+        f(d)  # type: ignore
+
+
+def test_interface_method() -> None:
+
+    class B(ABC):
+        @abstractmethod
+        def f(self, x: bytes | None) -> int:
+            """ interface method definition """
+
+    class C(B):
+        @type_check
+        def f(self, x: bytes | None) -> int:
+            return 0
+
+    b: B = C()
+    b.f(b"f")
+
+    with pytest.raises(TypeError):
+        b.f("f")  # type: ignore
