@@ -1,4 +1,4 @@
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 import logging
 from types import GenericAlias, UnionType
 from typing import Callable, NoReturn, ParamSpec, TypeGuard, TypeVar
@@ -40,8 +40,10 @@ def _check_type(name: str, expected_type: _Checkable, value: object) -> None:
         type_vars = expected_type.__args__
         if len(type_vars) == 1:
             assert isinstance(value, Iterable), f"not iterable {name=} {value=} {expected_type=}"
-            for each_value in value:
-                _check_type(f"item in {name}", type_vars[0], each_value)
+            # if this is an Iterator, we don't want to check the values inside, because it can consume them
+            if not isinstance(value, Iterator):
+                for each_value in value:
+                    _check_type(f"item in {name}", type_vars[0], each_value)
         else:
             assert len(type_vars) == 2, f"{name=} {value=} {expected_type=}"
             assert isinstance(value, Mapping), f"not mapping {name=} {value=} {expected_type=}"

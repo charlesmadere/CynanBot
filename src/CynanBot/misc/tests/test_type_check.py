@@ -354,3 +354,23 @@ def test_interface_method() -> None:
 
     with pytest.raises(TypeError):
         b.f("f")  # type: ignore
+
+
+def test_consumable_iterable() -> None:
+    """ make sure the type checker doesn't consume the consumable iterable """
+
+    def iterator() -> abc.Iterator[int]:
+        yield 5
+
+    @type_check
+    def f(x: abc.Iterable[int]) -> bytearray:
+        return bytearray()
+
+    it = iterator()
+
+    f(it)
+
+    count = 0
+    for _ in it:
+        count += 1
+    assert count == 1, f"{count=}"
