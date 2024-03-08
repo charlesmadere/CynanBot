@@ -218,7 +218,7 @@ class GlacialTriviaQuestionRepository(
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             return TrueFalseTriviaQuestion(
-                correctAnswers = answeers,
+                correctAnswers = answers,
                 category = category,
                 categoryId = categoryId,
                 question = question,
