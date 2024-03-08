@@ -1,4 +1,5 @@
 import re
+from re import Match
 from typing import Dict, List, Optional, Pattern, Set, Tuple
 
 import CynanBot.misc.utils as utils
@@ -39,7 +40,11 @@ class AnivContentScanner(AnivContentScannerInterface):
             '「': '」'
         }
 
-        self.__twitchEmojis: Pattern = re.compile(r'^[B:;]-?[\)]$')
+        self.__twitchEmojiPatterns: List[Pattern] = [
+            re.compile(r'^[BR:;]-?[\)]$'),
+            re.compile(r'^[:>]\($'),
+            re.compile(r'^<3$')
+        ]
 
     async def __cleanTwitchEmojisFromString(self, message: str) -> str:
         if not utils.isValidStr(message):
@@ -49,7 +54,13 @@ class AnivContentScanner(AnivContentScannerInterface):
         indexesToBlank: List[int] = list()
 
         for index, split in enumerate(splits):
-            emojiMatch = self.__twitchEmojis.fullmatch(split)
+            emojiMatch: Match | None = None
+
+            for emojiPattern in self.__twitchEmojiPatterns:
+                emojiMatch = emojiPattern.fullmatch(split)
+
+                if emojiMatch is not None:
+                    break
 
             if emojiMatch is not None:
                 indexesToBlank.append(index)
