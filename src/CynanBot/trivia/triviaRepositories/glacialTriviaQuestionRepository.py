@@ -400,7 +400,9 @@ class GlacialTriviaQuestionRepository(
         connection: Connection,
         question: MultipleChoiceTriviaQuestion
     ):
-        if not isinstance(question, MultipleChoiceTriviaQuestion):
+        if not isinstance(connection, Connection):
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
+        elif not isinstance(question, MultipleChoiceTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
@@ -412,7 +414,9 @@ class GlacialTriviaQuestionRepository(
         connection: Connection,
         question: QuestionAnswerTriviaQuestion
     ):
-        if not isinstance(question, QuestionAnswerTriviaQuestion):
+        if not isinstance(connection, Connection):
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
+        elif not isinstance(question, QuestionAnswerTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
@@ -425,7 +429,9 @@ class GlacialTriviaQuestionRepository(
         connection: Connection,
         question: TrueFalseTriviaQuestion
     ):
-        if not isinstance(question, TrueFalseTriviaQuestion):
+        if not isinstance(connection, Connection):
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
+        elif not isinstance(question, TrueFalseTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
         elif question.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
