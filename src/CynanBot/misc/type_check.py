@@ -1,13 +1,21 @@
+from collections.abc import Iterable, Mapping
 import logging
-from types import UnionType
-from typing import Callable, NoReturn, ParamSpec, TypeGuard, TypeVar, assert_type
+from types import GenericAlias, UnionType
+from typing import Callable, NoReturn, ParamSpec, TypeGuard, TypeVar
+import typing
 from inspect import signature
 
-_Checkable = type | UnionType | None
+_Checkable = type | UnionType | GenericAlias | None
 
-# TODO: implement generics
-# uncheckable annotation name='x' ann=collections.abc.Iterable[str] type(ann)=<class 'types.GenericAlias'>
-# (shows same "collections.abc" for typing.Iterable)
+
+def _is_generic_alias(obj: object) -> TypeGuard[GenericAlias]:
+    """
+    `typing._GenericAlias` is undocumented, so it could break with Python update.
+
+    It doesn't have everything that `types.GenericAlias` has, but it has what we need.
+    """
+    # TypeGuard could change to PEP 742 when available
+    return isinstance(obj, GenericAlias) or isinstance(obj, getattr(typing, "_GenericAlias"))
 
 
 def _check_type(name: str, expected_type: _Checkable, value: object) -> None:
@@ -26,8 +34,24 @@ def _check_type(name: str, expected_type: _Checkable, value: object) -> None:
         else:
             if not isinstance(value, expected_type):
                 error()
+    elif _is_generic_alias(expected_type):
+        if not isinstance(value, expected_type.__origin__):
+            error()
+        type_vars = expected_type.__args__
+        if len(type_vars) == 1:
+            assert isinstance(value, Iterable), f"not iterable {name=} {value=} {expected_type=}"
+            for each_value in value:
+                _check_type(f"item in {name}", type_vars[0], each_value)
+        else:
+            assert len(type_vars) == 2, f"{name=} {value=} {expected_type=}"
+            assert isinstance(value, Mapping), f"not mapping {name=} {value=} {expected_type=}"
+            for key in value:
+                each_value = value[key]
+                _check_type(f"key in {name}", type_vars[0], key)
+                _check_type(f"value in {name}", type_vars[1], each_value)
     else:
-        assert_type(expected_type, UnionType)
+        # assert_type(expected_type, UnionType)  # need pep 742 for _is_generic_alias
+        assert isinstance(expected_type, UnionType)
         found_valid = False
         for u_type in expected_type.__args__:
             got_type_error = False
@@ -49,12 +73,12 @@ _names_that_dont_need_annotations = frozenset([
 
 def _is_checkable(annotations: dict[str, object]) -> TypeGuard[dict[str, _Checkable]]:
     """
-    raise RuntimeError if there's some annotation that can't be checked
+    raise TypeError if there's some annotation that can't be checked
 
     return True otherwise (never returns False)
     """
 
-    def _individual(name: str, ann: object) -> TypeGuard[_Checkable]:
+    def individual(name: str, ann: object) -> TypeGuard[_Checkable]:
         if ann is None:
             return True
         if isinstance(ann, str):
@@ -65,12 +89,29 @@ def _is_checkable(annotations: dict[str, object]) -> TypeGuard[dict[str, _Checka
         if isinstance(ann, type):
             # recursion base case
             return True
-        if isinstance(ann, UnionType) and all(_individual(name, a) for a in ann.__args__):
+        if isinstance(ann, UnionType) and all(individual(name, a) for a in ann.__args__):
             return True
+        if _is_generic_alias(ann):
+            if len(ann.__args__) == 1:  # 1 type var
+                if (
+                    isinstance(ann.__origin__, type) and
+                    issubclass(ann.__origin__, Iterable) and
+                    individual(f"type var of {name}", ann.__args__[0])
+                ):
+                    return True
+            elif len(ann.__args__) == 2:  # 2 type vars
+                if (
+                    isinstance(ann.__origin__, type) and
+                    issubclass(ann.__origin__, Mapping) and
+                    individual(f"key type of {name}", ann.__args__[0]) and
+                    individual(f"value type of {name}", ann.__args__[1])
+                ):
+                    return True
+            # fall through to raise
         raise TypeError(f"uncheckable annotation {name=} {ann=} {type(ann)=}")
 
     return all(
-        _individual(name, ann)
+        individual(name, ann)
         for name, ann in annotations.items()
         if name not in _names_that_dont_need_annotations
     )

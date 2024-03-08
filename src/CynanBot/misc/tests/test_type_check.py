@@ -113,28 +113,103 @@ def test_none_alone() -> None:
 def test_typing_generic() -> None:
     """ non-builtin generics not supported (yet?) """
 
+    @type_check
+    def f(x: typing.Iterable[str]) -> str | None:
+        return "abc"
+
+    f("abc")  # This is still a headache.
+    f(frozenset({"a", "b", "c"}))
+    f({"x": 3, "y": 4, "z": None})
+    f(list())
+
     with pytest.raises(TypeError):
-        @type_check
-        def f(x: typing.Iterable[str]) -> str | None:
-            return "abc"
+        # checks every item to make sure it's str
+        f(["a", "b", b"c"])  # type: ignore
+
+    with pytest.raises(TypeError):
+        # iterable but not giving str
+        f(b"abc")  # type: ignore
 
 
 def test_abc_generic() -> None:
     """ non-builtin generics not supported (yet?) """
 
+    @type_check
+    def f(x: abc.Sequence[float]) -> str | None:
+        return "abc"
+
+    f([1.0, 2.0, 3.0])
+    f(())
+    f((3,))
+    f(b"abc")
+
     with pytest.raises(TypeError):
-        @type_check
-        def f(x: abc.Iterable[str]) -> str | None:
-            return "abc"
+        f("abc")  # type: ignore
+
+    with pytest.raises(TypeError):
+        f(8.3)  # type: ignore
 
 
 def test_builtin_generic() -> None:
     """ builtin generics also not supported (yet?) """
 
+    @type_check
+    def f(x: dict[str, dict[bytes, int | None]]) -> str | None:
+        return "abc"
+
+    f({})
+    f({
+        "a": {
+            b"x": 5,
+            b"y": 8,
+            b"z": None
+        },
+        "b": {}
+    })
+
+    with pytest.raises(TypeError):
+        f(3)  # type: ignore
+
+    with pytest.raises(TypeError):
+        f({"a"})  # type: ignore
+
+    with pytest.raises(TypeError):
+        f({
+            "a": {
+                b"x": 5,
+                b"y": 8.2,  # type: ignore
+                b"z": None
+            },
+            "b": {}
+        })
+
+    with pytest.raises(TypeError):
+        f({
+            "a": {
+                b"x": 5,
+                b"y": 8,
+                "z": None  # type: ignore
+            },
+            "b": {}
+        })
+
+
+def test_non_iterable_generic() -> None:
+    """ only implementations of `Iterable` and `Mapping` work """
+
     with pytest.raises(TypeError):
         @type_check
-        def f(x: list[str]) -> str | None:
-            return "abc"
+        def f(y: abc.Container[str]) -> typing.Literal["f"]:
+            return "f"
+
+
+def test_literal() -> None:
+    """ This could probably be implemented. But it doesn't work for now. """
+
+    with pytest.raises(TypeError):
+        @type_check
+        def f(y: typing.Literal["g"] | None = None) -> int | None:
+            return 3
 
 
 def test_custom_class() -> None:
