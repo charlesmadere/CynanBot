@@ -675,7 +675,8 @@ openTriviaDatabaseTriviaQuestionRepository = OpenTriviaDatabaseTriviaQuestionRep
 
 glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = GlacialTriviaQuestionRepository(
     timber = timber,
-    triviaSettingsRepository = triviaSettingsRepository
+    triviaSettingsRepository = triviaSettingsRepository,
+    twitchHandleProvider = authRepository
 )
 
 triviaScraper: TriviaScraperInterface = TriviaScraper(

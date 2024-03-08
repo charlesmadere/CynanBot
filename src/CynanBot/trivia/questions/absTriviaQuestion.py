@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -81,3 +81,18 @@ class AbsTriviaQuestion(ABC):
 
     def hasCategoryId(self) -> bool:
         return utils.isValidStr(self.__categoryId)
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'category': self.__category,
+            'categoryId': self.__categoryId,
+            'question': self.__question,
+            'triviaDifficulty': self.__triviaDifficulty,
+            'triviaId': self.__triviaId,
+            'triviaSource': self.__triviaSource,
+            'triviaType': self.__triviaType
+        }
