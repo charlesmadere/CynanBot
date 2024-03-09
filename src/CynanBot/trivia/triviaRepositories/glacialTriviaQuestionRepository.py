@@ -415,6 +415,11 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'The given question already exists in the glacial trivia question database ({question=})')
             return False
 
+        await self.__storeBaseTriviaQuestionData(
+            connection = connection,
+            question = question
+        )
+
         if question.getTriviaType() is TriviaQuestionType.MULTIPLE_CHOICE and isinstance(question, MultipleChoiceTriviaQuestion):
             await self.__storeMultipleChoiceTriviaQuestion(
                 connection = connection,
@@ -437,6 +442,24 @@ class GlacialTriviaQuestionRepository(
         self.__timber.log('GlacialTriviaQuestionRepository', f'Added a new question into the glacial trivia question database ({question=})')
         return True
 
+    async def __storeBaseTriviaQuestionData(
+        self,
+        connection: Connection,
+        question: AbsTriviaQuestion
+    ):
+        if not isinstance(connection, Connection):
+            raise TypeError(f'connection argument is malformed: \"{connection}\"')
+        elif not isinstance(question, AbsTriviaQuestion):
+            raise TypeError(f'question argument is malformed: \"{question}\"')
+
+        await connection.execute(
+            '''
+                INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
+                VALUES ($1, $2)
+            ''',
+            question.getCategory(), question.getCategoryId(), question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), question.getTriviaType().toStr()
+        )
+
     async def __storeMultipleChoiceTriviaQuestion(
         self,
         connection: Connection,
@@ -449,7 +472,23 @@ class GlacialTriviaQuestionRepository(
         elif question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
-        pass
+        for answer in question.getUndecoratedCorrectAnswers():
+            await connection.execute(
+                '''
+                    INSERT INTO glacialAnswers(answer, originalTriviaSource, triviaId)
+                    VALUES ($1, $2, $3)
+                ''',
+                answer, question.getTriviaSource().toStr(), question.getTriviaId()
+            )
+
+        for response in question.getResponses():
+            await connection.execute(
+                '''
+                    INSERT INTO glacialResponses (response, originalTriviaSource, triviaId)
+                    VALUES ($1, $2, $3)
+                ''',
+                response, question.getTriviaSource().toStr(), question.getTriviaId()
+            )
 
     async def __storeQuestionAnswerTriviaQuestion(
         self,
@@ -463,8 +502,14 @@ class GlacialTriviaQuestionRepository(
         elif question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
-        # TODO
-        pass
+        for answer in question.getCorrectAnswers():
+            await connection.execute(
+                '''
+                    INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
+                    VALUES ($1, $2, $3)
+                ''',
+                answer, question.getTriviaSource().toStr(), question.getTriviaId()
+            )
 
     async def __storeTrueFalseTriviaQuestion(
         self,
@@ -478,14 +523,11 @@ class GlacialTriviaQuestionRepository(
         elif question.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
-        await connection.execute(
-            '''
-                INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
-                VALUES ($1, $2)
-            ''',
-            question.getCategory(), question.getCategoryId(), question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), TriviaQuestionType.TRUE_FALSE.toStr()
-        )
-
         for answer in question.getCorrectAnswerBools():
-            # TODO write bools to glacialAnswers
-            pass
+            await connection.execute(
+                '''
+                    INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
+                    VALUES ($1, $2, $3)
+                ''',
+                str(answer), question.getTriviaSource().toStr(), question.getTriviaId()
+            )
