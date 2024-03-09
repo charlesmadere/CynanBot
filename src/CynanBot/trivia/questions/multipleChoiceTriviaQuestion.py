@@ -49,12 +49,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         return answerOrdinals
 
     def getCorrectAnswers(self) -> List[str]:
-        answerStrings: List[str] = list()
-
-        for index, correctAnswerChar in enumerate(self.getCorrectAnswerChars()):
-            answerStrings.append(f'[{correctAnswerChar}] {self.__correctAnswers[index]}')
-
-        return answerStrings
+        return self.getDecoratedCorrectAnswers()
 
     def getCorrectAnswerChars(self) -> List[str]:
         correctAnswerOrdinals = self.getCorrectAnswerOrdinals()
@@ -88,6 +83,14 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         ordinals.sort()
         return ordinals
 
+    def getDecoratedCorrectAnswers(self) -> List[str]:
+        answerStrings: List[str] = list()
+
+        for index, correctAnswerChar in enumerate(self.getCorrectAnswerChars()):
+            answerStrings.append(f'[{correctAnswerChar}] {self.__correctAnswers[index]}')
+
+        return answerStrings
+
     def getPrompt(self, delimiter: str = ' ') -> str:
         if not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -104,3 +107,6 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
     def getResponses(self) -> List[str]:
         return utils.copyList(self.__multipleChoiceResponses)
+
+    def getUndecoratedCorrectAnswers(self) -> List[str]:
+        return utils.copyList(self.__correctAnswers)
