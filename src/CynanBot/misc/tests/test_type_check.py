@@ -111,7 +111,6 @@ def test_none_alone() -> None:
 
 
 def test_typing_generic() -> None:
-    """ non-builtin generics not supported (yet?) """
 
     @type_check
     def f(x: typing.Iterable[str]) -> str | None:
@@ -132,7 +131,6 @@ def test_typing_generic() -> None:
 
 
 def test_abc_generic() -> None:
-    """ non-builtin generics not supported (yet?) """
 
     @type_check
     def f(x: abc.Sequence[float]) -> str | None:
@@ -151,7 +149,6 @@ def test_abc_generic() -> None:
 
 
 def test_builtin_generic() -> None:
-    """ builtin generics also not supported (yet?) """
 
     @type_check
     def f(x: dict[str, dict[bytes, int | None]]) -> str | None:
