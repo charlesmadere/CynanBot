@@ -149,12 +149,20 @@ class TestAnivContentScanner():
 
     @pytest.mark.asyncio
     async def test_scan_withGoodTwitchEmojiParen4(self):
-        result = await self.anivContentScanner.scan(':-D')
+        result = await self.anivContentScanner.scan(':-D :(')
         assert result is AnivContentCode.OK
 
     @pytest.mark.asyncio
     async def test_scan_withHelloWorld(self):
         result = await self.anivContentScanner.scan('Hello, World!')
+        assert result is AnivContentCode.OK
+
+    @pytest.mark.asyncio
+    async def test_scan_withLessThanThree(self):
+        result = await self.anivContentScanner.scan('<3')
+        assert result is AnivContentCode.OK
+
+        result = await self.anivContentScanner.scan('GL!! <3')
         assert result is AnivContentCode.OK
 
     @pytest.mark.asyncio
