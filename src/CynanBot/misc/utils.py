@@ -4,8 +4,8 @@ import os
 import random
 import re
 from datetime import datetime
-from typing import (Any, Dict, Generator, List, Optional, Pattern, Sized,
-                    TypeVar, overload)
+from typing import (Any, Dict, Generator, List, Optional, Pattern, Set,
+                    Sized, TypeVar, overload)
 from urllib.parse import urlparse
 
 from typing_extensions import TypeGuard
@@ -522,12 +522,12 @@ def strToBool(s: Optional[str]) -> bool:
         return False
 
 def strsToBools(l: Optional[List[Optional[str]]]) -> List[bool]:
-    newList: List[bool] = list()
+    bools: List[bool] = list()
 
     if not hasItems(l):
-        return newList
+        return bools
 
     for s in l:
-        newList.append(strToBool(s))
+        bools.append(strToBool(s))
 
-    return newList
+    return bools

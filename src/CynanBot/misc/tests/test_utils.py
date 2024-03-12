@@ -825,3 +825,37 @@ class TestUtils():
     def test_strToBool_withWhitespaceString(self):
         result: bool = utils.strToBool(' ')
         assert result is True
+
+    def test_strToBools_withEmptyList(self):
+        result = utils.strsToBools(list())
+        assert result is List
+        assert len(result) == 0
+
+    def test_strToBools_withFalse(self):
+        result = utils.strsToBools([ 'false' ])
+        assert result is List
+        assert len(result) == 1
+        assert result[0] is False
+
+    def test_strToBools_withMixedList(self):
+        result = utils.strsToBools([ 'false', 'f', 'true', 'FALSE', 'T', 'true', 'f' ])
+        assert result is List
+        assert len(result) == 7
+        assert result[0] is False
+        assert result[1] is False
+        assert result[2] is True
+        assert result[3] is False
+        assert result[4] is True
+        assert result[5] is True
+        assert result[6] is False
+
+    def test_strToBools_withNone(self):
+        result = utils.strsToBools(None)
+        assert result is List
+        assert len(result) == 0
+
+    def test_strToBools_withTrue(self):
+        result = utils.strsToBools([ 'true' ])
+        assert result is List
+        assert len(result) == 1
+        assert result[0] is True
