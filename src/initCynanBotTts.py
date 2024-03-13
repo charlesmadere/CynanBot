@@ -321,7 +321,8 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     sentMessageLogger = sentMessageLogger,
-    timber = timber
+    timber = timber,
+    twitchApiService = twitchApiService
 )
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None

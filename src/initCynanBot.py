@@ -483,7 +483,8 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     sentMessageLogger = sentMessageLogger,
-    timber = timber
+    timber = timber,
+    twitchApiService = twitchApiService
 )
 wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository(
     networkClientProvider = networkClientProvider,

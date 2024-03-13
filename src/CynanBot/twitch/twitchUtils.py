@@ -10,6 +10,7 @@ from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.outboundMessage import OutboundMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -22,6 +23,7 @@ class TwitchUtils(TwitchUtilsInterface):
         backgroundTaskHelper: BackgroundTaskHelper,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
+        twitchApiService: TwitchApiServiceInterface,
         queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
@@ -34,6 +36,8 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchApiService, TwitchApiServiceInterface):
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
@@ -56,6 +60,7 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
+        self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
