@@ -549,6 +549,7 @@ class GlacialTriviaQuestionRepository(
             raise exception
 
         await connection.close()
+        self.__hasQuestionSetAvailable = None
         self.__timber.log('GlacialTriviaQuestionRepository', f'Added a new question into the glacial trivia question database ({question=})')
         return True
 
