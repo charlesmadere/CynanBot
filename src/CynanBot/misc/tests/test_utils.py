@@ -828,18 +828,18 @@ class TestUtils():
 
     def test_strToBools_withEmptyList(self):
         result = utils.strsToBools(list())
-        assert result is List
+        assert isinstance(result, List)
         assert len(result) == 0
 
     def test_strToBools_withFalse(self):
         result = utils.strsToBools([ 'false' ])
-        assert result is List
+        assert isinstance(result, List)
         assert len(result) == 1
         assert result[0] is False
 
     def test_strToBools_withMixedList(self):
         result = utils.strsToBools([ 'false', 'f', 'true', 'FALSE', 'T', 'true', 'f' ])
-        assert result is List
+        assert isinstance(result, List)
         assert len(result) == 7
         assert result[0] is False
         assert result[1] is False
@@ -851,11 +851,11 @@ class TestUtils():
 
     def test_strToBools_withNone(self):
         result = utils.strsToBools(None)
-        assert result is List
+        assert isinstance(result, List)
         assert len(result) == 0
 
     def test_strToBools_withTrue(self):
         result = utils.strsToBools([ 'true' ])
-        assert result is List
+        assert isinstance(result, List)
         assert len(result) == 1
         assert result[0] is True
