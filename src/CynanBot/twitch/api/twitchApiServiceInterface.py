@@ -13,11 +13,13 @@ from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
 from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.api.twitchSendChatMessageRequest import \
+    TwitchSendChatMessageRequest
+from CynanBot.twitch.api.twitchSendChatMessageResponse import \
+    TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
-from CynanBot.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
-from CynanBot.twitch.api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 

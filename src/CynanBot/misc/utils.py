@@ -4,8 +4,8 @@ import os
 import random
 import re
 from datetime import datetime
-from typing import (Any, Dict, Generator, List, Optional, Pattern, Set,
-                    Sized, TypeVar, overload)
+from typing import (Any, Dict, Generator, List, Optional, Pattern, Set, Sized,
+                    TypeVar, overload)
 from urllib.parse import urlparse
 
 from typing_extensions import TypeGuard

@@ -8,6 +8,12 @@ from aiosqlite import Connection
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import \
+    AdditionalTriviaAnswersRepositoryInterface
+from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import \
+    TriviaAnswerCompilerInterface
+from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
+    TriviaQuestionCompilerInterface
 from CynanBot.trivia.questionAnswerTriviaConditions import \
     QuestionAnswerTriviaConditions
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
@@ -16,9 +22,6 @@ from CynanBot.trivia.questions.multipleChoiceTriviaQuestion import \
 from CynanBot.trivia.questions.questionAnswerTriviaQuestion import \
     QuestionAnswerTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
-from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswerCompilerInterface
-from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import TriviaQuestionCompilerInterface
-from CynanBot.trivia.additionalAnswers.additionalTriviaAnswersRepositoryInterface import AdditionalTriviaAnswersRepositoryInterface
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 from CynanBot.trivia.questions.trueFalseTriviaQuestion import \
     TrueFalseTriviaQuestion

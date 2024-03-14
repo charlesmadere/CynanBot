@@ -6,19 +6,25 @@ from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchApiServiceInterface import \
+    TwitchApiServiceInterface
+from CynanBot.twitch.api.twitchSendChatMessageRequest import \
+    TwitchSendChatMessageRequest
+from CynanBot.twitch.api.twitchSendChatMessageResponse import \
+    TwitchSendChatMessageResponse
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.outboundMessage import OutboundMessage
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.twitch.api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
-from CynanBot.generalSettingsRepository import GeneralSettingsRepository
-from CynanBot.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from CynanBot.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TwitchUtils(TwitchUtilsInterface):
@@ -165,7 +171,10 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        if await self.__safeSendViaTwitchChatApi(
+        generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
+        isTwitchChatApiEnabled = generalSettingsSnapshot.isTwitchChatApiEnabled()
+
+        if isTwitchChatApiEnabled and await self.__safeSendViaTwitchChatApi(
             messageable = messageable,
             message = message
         ):
@@ -180,7 +189,7 @@ class TwitchUtils(TwitchUtilsInterface):
                 await messageable.send(message)
                 successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({len(message)=}) \"{message}\": {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({isTwitchChatApiEnabled=}) ({len(message)=}) ({message=}): {e}', e, traceback.format_exc())
                 numberOfRetries = numberOfRetries + 1
 
                 if exceptions is None:
@@ -198,7 +207,7 @@ class TwitchUtils(TwitchUtilsInterface):
         )
 
         if not successfullySent:
-            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries ({messageable.getTwitchChannelName()=}) ({len(message)=}) \"{message}\"')
+            self.__timber.log('TwitchUtils', f'Failed to send message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({isTwitchChatApiEnabled=}) ({len(message)=}) ({message=})')
 
     async def __safeSendViaTwitchChatApi(
         self,
