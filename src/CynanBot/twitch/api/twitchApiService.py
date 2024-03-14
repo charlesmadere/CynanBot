@@ -1,5 +1,6 @@
+from http.client import responses
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
@@ -20,6 +21,7 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBanResponse import TwitchBanResponse
 from CynanBot.twitch.api.twitchBroadcasterType import TwitchBroadcasterType
+from CynanBot.twitch.api.twitchChatDropReason import TwitchChatDropReason
 from CynanBot.twitch.api.twitchEmoteDetails import TwitchEmoteDetails
 from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
 from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -29,6 +31,8 @@ from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
 from CynanBot.twitch.api.twitchLiveUserDetails import TwitchLiveUserDetails
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from CynanBot.twitch.api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchStreamType import TwitchStreamType
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
@@ -67,7 +71,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         timber: TimberInterface,
         twitchCredentialsProvider: TwitchCredentialsProviderInterface,
         twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
@@ -77,14 +81,14 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise ValueError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
         elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
             raise ValueError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
-        elif not isinstance(timeZone, timezone):
+        elif not isinstance(timeZone, tzinfo):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__twitchCredentialsProvider: TwitchCredentialsProviderInterface = twitchCredentialsProvider
         self.__twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = twitchWebsocketJsonMapper
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
     async def addModerator(
         self,
@@ -1002,6 +1006,76 @@ class TwitchApiService(TwitchApiServiceInterface):
             expirationTime = expirationTime,
             accessToken = accessToken,
             refreshToken = refreshToken
+        )
+
+    async def sendChatMessage(
+        self,
+        twitchAccessToken: str,
+        chatRequest: TwitchSendChatMessageRequest
+    ) -> TwitchSendChatMessageResponse:
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not isinstance(chatRequest, TwitchSendChatMessageRequest):
+            raise TypeError(f'chatRequest argument is malformed: \"{chatRequest}\"')
+
+        clientSession = await self.__networkClientProvider.get()
+        twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
+
+        try:
+            response = await clientSession.post(
+                url = f'https://api.twitch.tv/helix/chat/messages',
+                headers = {
+                    'Authorization': f'Bearer {twitchAccessToken}',
+                    'Client-Id': twitchClientId,
+                    'Content-Type': 'application/json'
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('TwitchApiService', f'Encountered network error when sending chat message: {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}): {e}')
+
+        if response is None:
+            self.__timber.log('TwitchApiService', f'Encountered unknown network error when sending chat message ({chatRequest=}) ({response=})')
+            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}) ({response=})')
+
+        responseStatusCode = response.getStatusCode()
+
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=})')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=})')
+
+        jsonResponse = await response.json()
+        await response.close()
+
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            self.__timber.log('TwitchApiService', f'Encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+
+        dataJson: list[dict[str, Any]] | None = jsonResponse.get('data')
+        if not isinstance(dataJson, list) or len(dataJson) == 0 or not isinstance(dataJson[0], dict) or len(dataJson[0]) == 0:
+            self.__timber.log('TwitchApiService', f'Encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+
+        chatResponseJson: dict[str, Any] = dataJson[0]
+        isSent = utils.getBoolFromDict(chatResponseJson, 'is_sent')
+        messageId = utils.getStrFromDict(chatResponseJson, 'message_id')
+
+        dropReasonJson: dict[str, Any] | None = chatResponseJson.get('drop_reason')
+        dropReason: TwitchChatDropReason | None = None
+        if isinstance(dropReasonJson, dict) and len(dropReasonJson) >= 1:
+            message: str | None = None
+            if 'message' in dropReasonJson and utils.isValidStr(dropReasonJson.get('message')):
+                message = utils.getStrFromDict(dropReasonJson, 'message')
+
+            dropReason = TwitchChatDropReason(
+                code = utils.getStrFromDict(dropReasonJson, 'code'),
+                message = message
+            )
+
+        return TwitchSendChatMessageResponse(
+            isSent = isSent,
+            messageId = messageId,
+            dropReason = dropReason
         )
 
     async def unbanUser(

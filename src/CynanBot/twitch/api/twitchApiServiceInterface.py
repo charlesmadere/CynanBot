@@ -16,6 +16,8 @@ from CynanBot.twitch.api.twitchModUser import TwitchModUser
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.api.twitchUnbanRequest import TwitchUnbanRequest
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
+from CynanBot.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from CynanBot.twitch.api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
 from CynanBot.twitch.api.twitchUserSubscriptionDetails import \
     TwitchUserSubscriptionDetails
 
@@ -120,6 +122,14 @@ class TwitchApiServiceInterface(ABC):
 
     @abstractmethod
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:
+        pass
+
+    @abstractmethod
+    async def sendChatMessage(
+        self,
+        twitchAccessToken: str,
+        chatRequest: TwitchSendChatMessageRequest
+    ) -> TwitchSendChatMessageResponse:
         pass
 
     @abstractmethod

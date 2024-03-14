@@ -3,7 +3,6 @@ import queue
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
-from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -14,6 +13,12 @@ from CynanBot.twitch.api.twitchApiServiceInterface import TwitchApiServiceInterf
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 from CynanBot.twitch.outboundMessage import OutboundMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.twitch.api.twitchSendChatMessageResponse import TwitchSendChatMessageResponse
+from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.twitch.api.twitchSendChatMessageRequest import TwitchSendChatMessageRequest
+from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
 
 
 class TwitchUtils(TwitchUtilsInterface):
@@ -21,9 +26,13 @@ class TwitchUtils(TwitchUtilsInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
+        generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
@@ -32,12 +41,20 @@ class TwitchUtils(TwitchUtilsInterface):
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
             raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
@@ -58,9 +75,13 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
@@ -69,19 +90,38 @@ class TwitchUtils(TwitchUtilsInterface):
 
         self.__isStarted: bool = False
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
+        self.__senderId: str | None = None
 
     def getMaxMessageSize(self) -> int:
         return 494
 
+    async def __getSenderId(self) -> str:
+        senderId = self.__senderId
+
+        if senderId is not None:
+            return senderId
+
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        senderId = await self.__userIdsRepository.requireUserId(userName = twitchHandle)
+        self.__senderId = senderId
+
+        return senderId
+
+    async def __getTwitchAccessToken(self) -> str:
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel = twitchHandle)
+
     async def safeSend(
         self,
         messageable: TwitchMessageable,
-        message: Optional[str],
+        message: str | None,
         maxMessages: int = 3,
         perMessageMaxSize: int = 494
     ):
         if not isinstance(messageable, TwitchMessageable):
             raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
+        elif message is not None and not isinstance(message, str):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidInt(maxMessages):
             raise TypeError(f'maxMessages argument is malformed: \"{maxMessages}\"')
         elif maxMessages < 1 or maxMessages > 5:
@@ -125,16 +165,22 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
+        if await self.__safeSendViaTwitchChatApi(
+            messageable = messageable,
+            message = message
+        ):
+            return
+
         successfullySent = False
         numberOfRetries = 0
-        exceptions: Optional[List[Exception]] = None
+        exceptions: list[Exception] | None = None
 
         while not successfullySent and numberOfRetries < self.__maxRetries:
             try:
                 await messageable.send(message)
                 successfullySent = True
             except Exception as e:
-                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message (twitchChannel={messageable.getTwitchChannelName()}) (retry={numberOfRetries}) (len={len(message)}) \"{message}\": {e}', e, traceback.format_exc())
+                self.__timber.log('TwitchUtils', f'Encountered error when trying to send outbound message ({messageable.getTwitchChannelName()=}) ({numberOfRetries=}) ({len(message)=}) \"{message}\": {e}', e, traceback.format_exc())
                 numberOfRetries = numberOfRetries + 1
 
                 if exceptions is None:
@@ -152,7 +198,56 @@ class TwitchUtils(TwitchUtilsInterface):
         )
 
         if not successfullySent:
-            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries (twitchChannel={messageable.getTwitchChannelName()}) (len={len(message)}) \"{message}\"')
+            self.__timber.log('TwitchUtils', f'Failed to send message after {numberOfRetries} retries ({messageable.getTwitchChannelName()=}) ({len(message)=}) \"{message}\"')
+
+    async def __safeSendViaTwitchChatApi(
+        self,
+        messageable: TwitchMessageable,
+        message: str
+    ) -> bool:
+        if not isinstance(messageable, TwitchMessageable):
+            raise TypeError(f'messageable argument is malformed: \"{messageable}\"')
+        elif not utils.isValidStr(message):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+
+        generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
+
+        if not generalSettingsSnapshot.isTwitchChatApiEnabled():
+            return False
+
+        twitchAccessToken = await self.__getTwitchAccessToken()
+        twitchChannelId = await messageable.getTwitchChannelId()
+        senderId = await self.__getSenderId()
+
+        response: TwitchSendChatMessageResponse | None = None
+        exception: Exception | None = None
+
+        try:
+            response = await self.__twitchApiService.sendChatMessage(
+                twitchAccessToken = twitchAccessToken,
+                chatRequest = TwitchSendChatMessageRequest(
+                    broadcasterId = twitchChannelId,
+                    message = message,
+                    replyParentMessageId = None,
+                    senderId = senderId
+                )
+            )
+        except Exception as e:
+            exception = e
+
+        if response is None or not response.isSent() or exception is not None:
+            self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}): {exception}', exception, traceback.format_exc())
+            return False
+
+        self.__sentMessageLogger.log(
+            successfullySent = True,
+            numberOfRetries = 0,
+            exceptions = None,
+            msg = message,
+            twitchChannel = messageable.getTwitchChannelName()
+        )
+
+        return True
 
     async def __sendOutboundMessage(self, outboundMessage: OutboundMessage):
         if not isinstance(outboundMessage, OutboundMessage):
@@ -170,12 +265,11 @@ class TwitchUtils(TwitchUtilsInterface):
 
         self.__isStarted = True
         self.__timber.log('TwitchUtils', 'Starting TwitchUtils...')
-
         self.__backgroundTaskHelper.createTask(self.__startOutboundMessageLoop())
 
     async def __startOutboundMessageLoop(self):
         while True:
-            outboundMessages: List[OutboundMessage] = list()
+            outboundMessages: list[OutboundMessage] = list()
 
             try:
                 while not self.__messageQueue.empty():

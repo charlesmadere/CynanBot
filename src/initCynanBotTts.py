@@ -320,9 +320,13 @@ sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
 )
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
+    generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
-    twitchApiService = twitchApiService
+    twitchApiService = twitchApiService,
+    twitchHandleProvider = authRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
 )
 
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
