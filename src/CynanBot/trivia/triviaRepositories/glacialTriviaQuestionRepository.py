@@ -472,7 +472,7 @@ class GlacialTriviaQuestionRepository(
 
         return await self.__triviaQuestionCompiler.compileResponses(multipleChoiceResponses)
 
-    async def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
         return {
             TriviaQuestionType.MULTIPLE_CHOICE,
             TriviaQuestionType.QUESTION_ANSWER,
