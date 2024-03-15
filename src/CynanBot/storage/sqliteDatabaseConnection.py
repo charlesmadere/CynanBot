@@ -1,3 +1,4 @@
+import sqlite3
 from typing import Any, List, Optional
 
 import aiosqlite
@@ -5,7 +6,7 @@ import aiosqlite
 import CynanBot.misc.utils as utils
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.storage.exceptions import DatabaseConnectionIsClosedException
+from CynanBot.storage.exceptions import DatabaseConnectionIsClosedException, DatabaseOperationalError
 
 
 class SqliteDatabaseConnection(DatabaseConnection):
@@ -47,10 +48,15 @@ class SqliteDatabaseConnection(DatabaseConnection):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
-        cursor = await self.__connection.execute(query, args)
+
+        try:
+            cursor = await self.__connection.execute(query, args)
+        except sqlite3.OperationalError as e:
+            raise DatabaseOperationalError(f'Encountered sqlite3 OperationalError when calling `fetchRow()`: {e}')
+
         row = await cursor.fetchone()
 
-        if not utils.hasItems(row):
+        if row is None or len(row) == 0:
             await cursor.close()
             return None
 
@@ -65,10 +71,15 @@ class SqliteDatabaseConnection(DatabaseConnection):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
         self.__requireNotClosed()
-        cursor = await self.__connection.execute(query, args)
+
+        try:
+            cursor = await self.__connection.execute(query, args)
+        except sqlite3.OperationalError as e:
+            raise DatabaseOperationalError(f'Encountered sqlite3 OperationalError when calling `fetchRows()`: {e}')
+
         rows = await cursor.fetchall()
 
-        if not utils.hasItems(rows):
+        if rows is None:
             await cursor.close()
             return None
 
