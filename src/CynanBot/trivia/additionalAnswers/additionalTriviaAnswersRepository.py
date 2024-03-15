@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import Any, List, Optional
+import traceback
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -26,6 +27,7 @@ from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
+from CynanBot.storage.exceptions import DatabaseOperationalError
 
 
 class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterface):
@@ -233,19 +235,24 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             return None
 
         connection = await self.__getDatabaseConnection()
-        records = await connection.fetchRows(
-            '''
-                SELECT additionaltriviaanswers.additionalanswer, additionaltriviaanswers.userid, userids.username FROM additionaltriviaanswers
-                INNER JOIN userids ON additionaltriviaanswers.userid = userids.userid
-                WHERE additionaltriviaanswers.triviaid = $1 AND additionaltriviaanswers.triviasource = $2 AND additionaltriviaanswers.triviatype = $3
-                ORDER BY additionaltriviaanswers.additionalanswer ASC
-            ''',
-            triviaId, triviaSource.toStr(), triviaType.toStr()
-        )
+        records: Optional[List[List[Any]]] = None
+
+        try:
+            records = await connection.fetchRows(
+                '''
+                    SELECT additionaltriviaanswers.additionalanswer, additionaltriviaanswers.userid, userids.username FROM additionaltriviaanswers
+                    INNER JOIN userids ON additionaltriviaanswers.userid = userids.userid
+                    WHERE additionaltriviaanswers.triviaid = $1 AND additionaltriviaanswers.triviasource = $2 AND additionaltriviaanswers.triviatype = $3
+                    ORDER BY additionaltriviaanswers.additionalanswer ASC
+                ''',
+                triviaId, triviaSource.toStr(), triviaType.toStr()
+            )
+        except DatabaseOperationalError as e:
+            self.__timber.log('AdditionalTriviaAnswersRepository', f'Encountered a database operational error when trying to retrieve additional trivia answers ({triviaId=}) ({triviaSource=}) ({triviaType=}): {e}', e, traceback.format_exc())
 
         await connection.close()
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             return None
 
         additionalAnswers: List[AdditionalTriviaAnswer] = list()
