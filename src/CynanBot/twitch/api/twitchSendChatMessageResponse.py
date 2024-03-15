@@ -1,6 +1,8 @@
-import CynanBot.misc.utils as utils
 from typing import Any
+
+import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchChatDropReason import TwitchChatDropReason
+
 
 class TwitchSendChatMessageResponse():
 

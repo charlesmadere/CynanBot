@@ -1,5 +1,6 @@
-import CynanBot.misc.utils as utils
 from typing import Any
+
+import CynanBot.misc.utils as utils
 
 
 class TwitchChatDropReason():

@@ -1,6 +1,5 @@
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
-from http.client import responses
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
