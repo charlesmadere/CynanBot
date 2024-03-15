@@ -31,8 +31,7 @@ class AnivContentScanner(AnivContentScannerInterface):
         self.__parens: Dict[str, str] = {
             '[': ']',
             '(': ')',
-            '{': '}',
-            '<': '>'
+            '{': '}'
         }
 
         self.__quotes: Dict[str, str] = {
