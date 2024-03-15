@@ -450,13 +450,13 @@ class AnswerCommand(AbsCommand):
         if len(splits) < 2:
             return
 
-        actionId = await self.__triviaIdGenerator.generateActionId()
         answer = ' '.join(splits[1:])
 
         self.__triviaGameMachine.submitAction(CheckAnswerTriviaAction(
-            actionId = actionId,
+            actionId = await self.__triviaIdGenerator.generateActionId(),
             answer = answer,
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName()
         ))

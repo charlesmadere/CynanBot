@@ -58,6 +58,7 @@ class SuperAnswerChatCommand(AbsChatCommand):
             actionId = await self.__triviaIdGenerator.generateActionId(),
             answer = answer,
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId(),
             userName = ctx.getAuthorName()
         ))

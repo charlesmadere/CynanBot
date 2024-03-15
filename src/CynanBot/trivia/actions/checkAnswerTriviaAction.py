@@ -12,6 +12,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
         actionId: str,
         answer: Optional[str],
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
@@ -21,6 +22,8 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
             raise ValueError(f'answer argument is malformed: \"{answer}\"')
         elif not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -28,6 +31,7 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
 
         self.__answer: Optional[str] = answer
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
 
@@ -39,6 +43,9 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId
