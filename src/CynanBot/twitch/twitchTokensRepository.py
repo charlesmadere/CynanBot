@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any, Dict, List, Optional, Set
 
 import CynanBot.misc.utils as utils
@@ -29,7 +29,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         twitchApiService: TwitchApiServiceInterface,
         seedFileReader: Optional[JsonReaderInterface] = None,
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -41,7 +41,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
         elif not isinstance(tokensExpirationBuffer, timedelta):
             raise TypeError(f'tokensExpirationBuffer argument is malformed: \"{tokensExpirationBuffer}\"')
-        elif not isinstance(timeZone, timezone):
+        elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -49,7 +49,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__seedFileReader: Optional[JsonReaderInterface] = seedFileReader
         self.__tokensExpirationBuffer: timedelta = tokensExpirationBuffer
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
         self.__cache: Dict[str, TwitchTokensDetails] = dict()
