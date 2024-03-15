@@ -105,13 +105,13 @@ class GlacialTriviaQuestionRepository(
                     LIMIT 1
                 )
             ''',
-            question.getTriviaSource().toStr(), question.getTriviaId()
+            (question.getTriviaSource().toStr(), question.getTriviaId(), )
         )
 
         row = await cursor.fetchone()
         await cursor.close()
 
-        return row is not None and len(row) >= 1
+        return row is not None and len(row) >= 1 and row[0] == 1
 
     async def __createTablesIfNotExists(self, connection: Connection):
         if self.__areTablesCreated:
@@ -263,7 +263,7 @@ class GlacialTriviaQuestionRepository(
                 ORDER BY RANDOM()
                 LIMIT 1
             ''',
-            TriviaQuestionType.MULTIPLE_CHOICE.toStr(), TriviaQuestionType.TRUE_FALSE.toStr()
+            (TriviaQuestionType.MULTIPLE_CHOICE.toStr(), TriviaQuestionType.TRUE_FALSE.toStr(), )
         )
 
         row = await cursor.fetchone()
@@ -341,7 +341,7 @@ class GlacialTriviaQuestionRepository(
                 ORDER BY RANDOM()
                 LIMIT 1
             ''',
-            TriviaQuestionType.QUESTION_ANSWER.toStr()
+            (TriviaQuestionType.QUESTION_ANSWER.toStr(), )
         )
 
         row = await cursor.fetchone()
@@ -413,7 +413,7 @@ class GlacialTriviaQuestionRepository(
                 SELECT answer FROM glacialAnswers
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            originalTriviaSource.toStr(), triviaId
+            (originalTriviaSource.toStr(), triviaId, )
         )
 
         rows = await cursor.fetchall()
@@ -453,7 +453,7 @@ class GlacialTriviaQuestionRepository(
                 SELECT response FROM glacialResponses
                 WHERE originalTriviaSource = $1 AND triviaId = $2
             ''',
-            originalTriviaSource.toStr(), triviaId
+            (originalTriviaSource.toStr(), triviaId, )
         )
 
         rows = await cursor.fetchall()
@@ -551,6 +551,7 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Attempted to store a trivia question, but it seems to be a broken trivia type ({question=}): {exception}', exception, traceback.format_exc())
             raise exception
 
+        await connection.commit()
         await connection.close()
         self.__hasQuestionSetAvailable = None
         self.__timber.log('GlacialTriviaQuestionRepository', f'Added a new question into the glacial trivia question database ({question=})')
@@ -566,12 +567,12 @@ class GlacialTriviaQuestionRepository(
         elif not isinstance(connection, Connection):
             raise TypeError(f'connection argument is malformed: \"{connection}\"')
 
-        await connection.execute(
+        await connection.execute_insert(
             '''
                 INSERT INTO glacialQuestions (category, categoryId, originalTriviaSource, question, triviaDifficulty, triviaId, triviaType)
-                VALUES ($1, $2)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
-            question.getCategory(), question.getCategoryId(), question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), question.getTriviaType().toStr()
+            (question.getCategory(), question.getCategoryId(), question.getTriviaSource().toStr(), question.getQuestion(), question.getTriviaDifficulty().toStr(), question.getTriviaId(), question.getTriviaType().toStr(), )
         )
 
     async def __storeMultipleChoiceTriviaQuestion(
@@ -587,21 +588,21 @@ class GlacialTriviaQuestionRepository(
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
         for answer in question.getUndecoratedCorrectAnswers():
-            await connection.execute(
+            await connection.execute_insert(
                 '''
-                    INSERT INTO glacialAnswers(answer, originalTriviaSource, triviaId)
+                    INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                answer, question.getTriviaSource().toStr(), question.getTriviaId()
+                (answer, question.getTriviaSource().toStr(), question.getTriviaId(), )
             )
 
         for response in question.getResponses():
-            await connection.execute(
+            await connection.execute_insert(
                 '''
                     INSERT INTO glacialResponses (response, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                response, question.getTriviaSource().toStr(), question.getTriviaId()
+                (response, question.getTriviaSource().toStr(), question.getTriviaId(), )
             )
 
     async def __storeQuestionAnswerTriviaQuestion(
@@ -617,12 +618,12 @@ class GlacialTriviaQuestionRepository(
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
         for answer in question.getCorrectAnswers():
-            await connection.execute(
+            await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                answer, question.getTriviaSource().toStr(), question.getTriviaId()
+                (answer, question.getTriviaSource().toStr(), question.getTriviaId(), )
             )
 
     async def __storeTrueFalseTriviaQuestion(
@@ -638,10 +639,10 @@ class GlacialTriviaQuestionRepository(
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
         for answer in question.getCorrectAnswerBools():
-            await connection.execute(
+            await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
                     VALUES ($1, $2, $3)
                 ''',
-                str(answer), question.getTriviaSource().toStr(), question.getTriviaId()
+                (str(answer), question.getTriviaSource().toStr(), question.getTriviaId(), )
             )
