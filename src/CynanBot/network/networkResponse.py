@@ -33,3 +33,11 @@ class NetworkResponse(ABC):
     @abstractmethod
     async def read(self) -> bytes:
         pass
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    @abstractmethod
+    def toDictionary(self) -> Dict[str, Any]:
+        pass

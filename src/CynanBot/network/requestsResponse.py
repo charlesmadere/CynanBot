@@ -65,5 +65,12 @@ class RequestsResponse(NetworkResponse):
         return self.__response.content
 
     def __requireNotClosed(self):
-        if self.isClosed():
+        if self.__isClosed:
             raise NetworkResponseIsClosedException(f'This response has already been closed! ({self.getNetworkClientType()})')
+
+    def toDictionary(self) -> Dict[str, Any]:
+        return {
+            'isClosed': self.__isClosed,
+            'response': self.__response,
+            'url': self.__url
+        }
