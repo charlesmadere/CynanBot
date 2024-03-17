@@ -267,12 +267,13 @@ class TwitchUtils(TwitchUtilsInterface):
 
             if not successfullySent:
                 self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({attempt=}): {exception}', exception, traceback.format_exc())
-                attempt = attempt + 1
+
+            attempt = attempt + 1
 
         if successfullySent:
             self.__sentMessageLogger.log(
                 successfullySent = True,
-                numberOfRetries = 0,
+                numberOfRetries = attempt,
                 exceptions = None,
                 msg = message,
                 twitchChannel = messageable.getTwitchChannelName()
