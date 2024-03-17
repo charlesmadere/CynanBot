@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+
 import requests
 
 # This file is meant to be run separately from the others in this repository. It retrieves some
