@@ -245,7 +245,7 @@ class TwitchUtils(TwitchUtilsInterface):
         while attempt < 2 and not successfullySent:
             twitchAccessToken = await self.__getTwitchAccessToken(
                 refresh = attempt == 1,
-                twitchChannelId = twitchChannelId,
+                twitchChannelId = twitchChannelId
             )
 
             response: TwitchSendChatMessageResponse | None = None
