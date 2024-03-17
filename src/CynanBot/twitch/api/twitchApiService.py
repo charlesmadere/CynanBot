@@ -1029,6 +1029,11 @@ class TwitchApiService(TwitchApiServiceInterface):
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
                     'Content-Type': 'application/json'
+                },
+                json = {
+                    'broadcaster_id': chatRequest.getBroadcasterId(),
+                    'message': chatRequest.getMessage(),
+                    'sender_id': chatRequest.getSenderId()
                 }
             )
         except GenericNetworkException as e:
