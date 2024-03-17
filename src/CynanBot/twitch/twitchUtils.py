@@ -123,8 +123,8 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
-        # twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
+        # twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
+        twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
 
         if refresh:
             await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
