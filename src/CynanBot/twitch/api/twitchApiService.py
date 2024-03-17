@@ -1045,15 +1045,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}) ({response=})')
 
         responseStatusCode = response.getStatusCode()
-
-        if responseStatusCode != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=})')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=})')
-
         jsonResponse = await response.json()
         await response.close()
 
-        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+        if responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse})')
+        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
