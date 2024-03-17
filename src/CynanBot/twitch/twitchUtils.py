@@ -113,9 +113,12 @@ class TwitchUtils(TwitchUtilsInterface):
 
         return senderId
 
-    async def __getTwitchAccessToken(self) -> str:
-        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel = twitchHandle)
+    async def __getTwitchAccessToken(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
+        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel = twitchChannel)
 
     async def safeSend(
         self,
@@ -224,8 +227,8 @@ class TwitchUtils(TwitchUtilsInterface):
         if not generalSettingsSnapshot.isTwitchChatApiEnabled():
             return False
 
-        twitchAccessToken = await self.__getTwitchAccessToken()
         twitchChannelId = await messageable.getTwitchChannelId()
+        twitchAccessToken = await self.__getTwitchAccessToken(twitchChannelId)
         senderId = await self.__getSenderId()
 
         response: TwitchSendChatMessageResponse | None = None
