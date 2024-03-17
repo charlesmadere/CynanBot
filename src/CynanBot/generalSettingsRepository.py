@@ -81,6 +81,10 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
         snapshot = await self.getAllAsync()
         return snapshot.getWaitForTriviaAnswerDelay()
 
+    async def isCommandsChatCommandEnabled(self) -> bool:
+        snapshot = await self.getAllAsync()
+        return snapshot.isCommandsChatCommandEnabled()
+
     async def isSuperTriviaGameEnabled(self) -> bool:
         snapshot = await self.getAllAsync()
         return snapshot.isSuperTriviaGameEnabled()

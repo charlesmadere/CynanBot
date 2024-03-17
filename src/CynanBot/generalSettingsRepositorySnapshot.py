@@ -63,6 +63,9 @@ class GeneralSettingsRepositorySnapshot():
     def isChatBandEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'chatBandEnabled', False)
 
+    def isCommandsChatCommandEnabled(self) -> bool:
+        return utils.getBoolFromDict(self.__jsonContents, 'commandsChatCommandEnabled', True)
+
     def isDebugLoggingEnabled(self) -> bool:
         return utils.getBoolFromDict(self.__jsonContents, 'debugLoggingEnabled', True)
 
