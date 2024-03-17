@@ -104,7 +104,7 @@ class TwitchUtils(TwitchUtilsInterface):
     async def __getSenderId(self) -> str:
         senderId = self.__senderId
 
-        if senderId is not None:
+        if isinstance(senderId, str):
             return senderId
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
