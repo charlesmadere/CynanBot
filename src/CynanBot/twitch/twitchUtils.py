@@ -113,12 +113,22 @@ class TwitchUtils(TwitchUtilsInterface):
 
         return senderId
 
-    async def __getTwitchAccessToken(self, twitchChannelId: str) -> str:
-        if not utils.isValidStr(twitchChannelId):
+    async def __getTwitchAccessToken(
+        self,
+        refresh: bool,
+        twitchChannelId: str
+    ) -> str:
+        if not utils.isValidBool(refresh):
+            raise TypeError(f'refresh argument is malformed: \"{refresh}\"')
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
-        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel = twitchChannel)
+
+        if refresh:
+            await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
+
+        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel)
 
     async def safeSend(
         self,
@@ -223,43 +233,54 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         generalSettingsSnapshot = await self.__generalSettingsRepository.getAllAsync()
-
         if not generalSettingsSnapshot.isTwitchChatApiEnabled():
             return False
 
         twitchChannelId = await messageable.getTwitchChannelId()
-        twitchAccessToken = await self.__getTwitchAccessToken(twitchChannelId)
         senderId = await self.__getSenderId()
+        attempt = 0
+        successfullySent = False
 
-        response: TwitchSendChatMessageResponse | None = None
-        exception: Exception | None = None
-
-        try:
-            response = await self.__twitchApiService.sendChatMessage(
-                twitchAccessToken = twitchAccessToken,
-                chatRequest = TwitchSendChatMessageRequest(
-                    broadcasterId = twitchChannelId,
-                    message = message,
-                    replyParentMessageId = None,
-                    senderId = senderId
-                )
+        while attempt < 2 and not successfullySent:
+            twitchAccessToken = await self.__getTwitchAccessToken(
+                refresh = attempt == 1,
+                twitchChannelId = twitchChannelId,
             )
-        except Exception as e:
-            exception = e
 
-        if response is None or not response.isSent() or exception is not None:
-            self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}): {exception}', exception, traceback.format_exc())
+            response: TwitchSendChatMessageResponse | None = None
+            exception: Exception | None = None
+
+            try:
+                response = await self.__twitchApiService.sendChatMessage(
+                    twitchAccessToken = twitchAccessToken,
+                    chatRequest = TwitchSendChatMessageRequest(
+                        broadcasterId = twitchChannelId,
+                        message = message,
+                        replyParentMessageId = None,
+                        senderId = senderId
+                    )
+                )
+            except Exception as e:
+                exception = e
+
+            successfullySent = response is not None and response.isSent() and exception is None
+
+            if not successfullySent:
+                self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({attempt=}): {exception}', exception, traceback.format_exc())
+                attempt = attempt + 1
+
+        if successfullySent:
+            self.__sentMessageLogger.log(
+                successfullySent = True,
+                numberOfRetries = 0,
+                exceptions = None,
+                msg = message,
+                twitchChannel = messageable.getTwitchChannelName()
+            )
+
+            return True
+        else:
             return False
-
-        self.__sentMessageLogger.log(
-            successfullySent = True,
-            numberOfRetries = 0,
-            exceptions = None,
-            msg = message,
-            twitchChannel = messageable.getTwitchChannelName()
-        )
-
-        return True
 
     async def __sendOutboundMessage(self, outboundMessage: OutboundMessage):
         if not isinstance(outboundMessage, OutboundMessage):
