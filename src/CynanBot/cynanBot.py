@@ -81,8 +81,6 @@ from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
 from CynanBot.dependencyHolder import DependencyHolder
-from CynanBot.events import (AbsEvent, RaidLogEvent, RaidThankEvent, StubEvent,
-                             SubGiftThankingEvent)
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
 from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
@@ -639,18 +637,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         else:
             self.__wordCommand: AbsCommand = WordCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayRepository)
 
-        #############################################
-        ## Initialization of event handler objects ##
-        #############################################
-
-        if chatLogger is None:
-            self.__raidLogEvent: AbsEvent = StubEvent()
-        else:
-            self.__raidLogEvent: AbsEvent = RaidLogEvent(chatLogger, timber)
-
-        self.__raidThankEvent: AbsEvent = RaidThankEvent(generalSettingsRepository, timber, twitchUtils)
-        self.__subGiftThankingEvent: AbsEvent = SubGiftThankingEvent(generalSettingsRepository, timber, authRepository, twitchUtils)
-
         ########################################################
         ## Initialization of point redemption handler objects ##
         ########################################################
@@ -716,39 +702,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             await self.__chatActionsManager.handleMessage(twitchMessage)
 
         await self.handle_commands(message)
-
-    async def event_raw_usernotice(self, channel: Channel, tags: Dict[str, Any]):
-        twitchChannel = self.__twitchConfiguration.getChannel(channel)
-        generalSettings = await self.__generalSettingsRepository.getAllAsync()
-
-        if generalSettings.isDebugLoggingEnabled():
-            self.__timber.log('CynanBot', f'event_raw_usernotice(): (channel=\"{twitchChannel}\") (tags=\"{tags}\")')
-
-        msgId = utils.getStrFromDict(tags, 'msg-id', fallback = '')
-
-        if not utils.isValidStr(msgId):
-            return
-
-        twitchUser = await self.__usersRepository.getUserAsync(channel.name)
-
-        if msgId == 'raid':
-            await self.__raidLogEvent.handleEvent(
-                channel = twitchChannel,
-                user = twitchUser,
-                tags = tags
-            )
-
-            await self.__raidThankEvent.handleEvent(
-                channel = twitchChannel,
-                user = twitchUser,
-                tags = tags
-            )
-        elif msgId == 'subgift' or msgId == 'anonsubgift':
-            await self.__subGiftThankingEvent.handleEvent(
-                channel = twitchChannel,
-                user = twitchUser,
-                tags = tags
-            )
 
     async def event_ready(self):
         await self.wait_for_ready()
