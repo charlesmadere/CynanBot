@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.generalSettingsRepositorySnapshot import \
     GeneralSettingsRepositorySnapshot
@@ -16,7 +16,7 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__cache: Optional[GeneralSettingsRepositorySnapshot] = None
+        self.__cache: GeneralSettingsRepositorySnapshot | None = None
 
     async def clearCaches(self):
         self.__cache = None
@@ -93,7 +93,7 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
         snapshot = await self.getAllAsync()
         return snapshot.isTriviaGameEnabled()
 
-    def __readJson(self) -> Dict[str, Any]:
+    def __readJson(self) -> dict[str, Any]:
         if not self.__settingsJsonReader.fileExists():
             raise FileNotFoundError(f'General Settings file not found: \"{self.__settingsJsonReader}\"')
 
@@ -106,7 +106,7 @@ class GeneralSettingsRepository(Clearable, TriviaGameBuilderSettingsInterface):
 
         return jsonContents
 
-    async def __readJsonAsync(self) -> Dict[str, Any]:
+    async def __readJsonAsync(self) -> dict[str, Any]:
         if not await self.__settingsJsonReader.fileExistsAsync():
             raise FileNotFoundError(f'General Settings file not found: \"{self.__settingsJsonReader}\"')
 

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import List, Optional
 
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBannedUsersResponse import \
@@ -64,7 +63,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         broadcasterId: str,
         twitchAccessToken: str
-    ) -> List[TwitchEmoteDetails]:
+    ) -> list[TwitchEmoteDetails]:
         pass
 
     @abstractmethod
@@ -73,15 +72,15 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchFollower]:
+    ) -> TwitchFollower | None:
         pass
 
     @abstractmethod
     async def fetchLiveUserDetails(
         self,
         twitchAccessToken: str,
-        userNames: List[str]
-    ) -> List[TwitchLiveUserDetails]:
+        userNames: list[str]
+    ) -> list[TwitchLiveUserDetails]:
         pass
 
     @abstractmethod
@@ -90,7 +89,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchModUser]:
+    ) -> TwitchModUser | None:
         pass
 
     @abstractmethod
@@ -102,7 +101,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchUserDetails]:
+    ) -> TwitchUserDetails | None:
         pass
 
     @abstractmethod
@@ -110,7 +109,7 @@ class TwitchApiServiceInterface(ABC):
         self,
         twitchAccessToken: str,
         userName: str
-    ) -> Optional[TwitchUserDetails]:
+    ) -> TwitchUserDetails | None:
         pass
 
     @abstractmethod
@@ -119,7 +118,7 @@ class TwitchApiServiceInterface(ABC):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchUserSubscriptionDetails]:
+    ) -> TwitchUserSubscriptionDetails | None:
         pass
 
     @abstractmethod
@@ -143,5 +142,5 @@ class TwitchApiServiceInterface(ABC):
         pass
 
     @abstractmethod
-    async def validateTokens(self, twitchAccessToken: str) -> Optional[datetime]:
+    async def validateTokens(self, twitchAccessToken: str) -> datetime | None:
         pass

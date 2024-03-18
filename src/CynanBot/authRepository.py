@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
@@ -85,7 +85,7 @@ class AuthRepository(
         snapshot = await self.getAllAsync()
         return snapshot.requireTwitchHandle()
 
-    def __readJson(self) -> Dict[str, Any]:
+    def __readJson(self) -> dict[str, Any]:
         if not self.__authJsonReader.fileExists():
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
 
@@ -98,7 +98,7 @@ class AuthRepository(
 
         return jsonContents
 
-    async def __readJsonAsync(self) -> Dict[str, Any]:
+    async def __readJsonAsync(self) -> dict[str, Any]:
         if not await self.__authJsonReader.fileExistsAsync():
             raise FileNotFoundError(f'Auth Repository file not found: \"{self.__authJsonReader}\"')
 

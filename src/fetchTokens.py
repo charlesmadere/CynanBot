@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 
@@ -11,21 +11,21 @@ import requests
 # users.py files.
 
 # taken from "Client ID" at https://dev.twitch.tv/console/apps/
-TWITCH_CLIENT_ID: Optional[str] = None
+TWITCH_CLIENT_ID: str | None = None
 
 # taken from "Client Secret" at https://dev.twitch.tv/console/apps/
-TWITCH_CLIENT_SECRET: Optional[str] = None
+TWITCH_CLIENT_SECRET: str | None = None
 
 # This code is derived from clicking this URL and then authenticating:
 # https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=CLIENT_ID_HERE&redirect_uri=http://localhost&scope=channel:bot+chat:read+user:read:chat+user:bot+user:write:chat+chat:edit+channel:moderate+whispers:read+whispers:edit+channel_editor+channel:read:redemptions+channel:manage:redemptions+channel:read:subscriptions+channel:read:polls+channel:read:predictions+channel:manage:predictions+moderator:read:chatters+user:read:chat+bits:read+moderator:read:followers+moderation:read+moderator:manage:banned_users+channel:manage:moderators+moderation:read
-TWITCH_CODE_SECRET: Optional[str] = None
+TWITCH_CODE_SECRET: str | None = None
 
 if not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CLIENT_SECRET, str) or not isinstance(TWITCH_CODE_SECRET, str):
     raise ValueError(f'All variables must be set: {TWITCH_CLIENT_ID=}, {TWITCH_CLIENT_SECRET=}, {TWITCH_CODE_SECRET=}')
 
 url = f'https://id.twitch.tv/oauth2/token?client_id={TWITCH_CLIENT_ID}&client_secret={TWITCH_CLIENT_SECRET}&code={TWITCH_CODE_SECRET}&grant_type=authorization_code&redirect_uri=http://localhost'
 
-jsonResponse: Optional[Dict[str, Any]] = None
+jsonResponse: dict[str, Any] | None = None
 
 try:
     rawResponse = requests.post(url)

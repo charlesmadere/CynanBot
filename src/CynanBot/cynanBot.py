@@ -1,6 +1,6 @@
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from twitchio import Channel, Message
 from twitchio.ext import commands
@@ -748,11 +748,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         await self.wait_for_ready()
 
         if event.getActionType() is ModifyUserActionType.ADD:
-            channels: List[str] = list()
+            channels: list[str] = list()
             channels.append(event.getUserName())
             await self.join_channels(channels)
         elif event.getActionType() is ModifyUserActionType.REMOVE:
-            channels: List[str] = list()
+            channels: list[str] = list()
             channels.append(event.getUserName())
             await self.part_channels(channels)
         else:

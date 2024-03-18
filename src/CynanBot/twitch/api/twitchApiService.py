@@ -817,7 +817,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         twitchAccessToken: str,
         userName: str
-    ) -> Optional[TwitchUserDetails]:
+    ) -> TwitchUserDetails | None:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userName):
@@ -845,7 +845,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | None = await response.json()
         await response.close()
 
         if not utils.hasItems(jsonResponse):
@@ -855,13 +855,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details (userName=\"{userName}\"): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details (userName=\"{userName}\"): {jsonResponse}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
             return None
 
-        entry: Optional[Dict[str, Any]] = None
+        entry: dict[str, Any] | None = None
 
         for dataEntry in data:
             if utils.getStrFromDict(dataEntry, 'login').lower() == userName:
@@ -1061,7 +1061,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService encountered empty or malformed JSON response when sending chat message ({chatRequest=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         chatResponseJson: dict[str, Any] = dataJson[0]
-        isSent = utils.getBoolFromDict(chatResponseJson, 'is_sent')
+        isSent = utils.getBoolFromDict(chatResponseJson, 'is_sent', fallback = False)
         messageId = utils.getStrFromDict(chatResponseJson, 'message_id')
 
         dropReasonJson: dict[str, Any] | None = chatResponseJson.get('drop_reason')
@@ -1127,14 +1127,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         self.__timber.log('TwitchApiService', f'Encountered network error when unbanning user ({unbanRequest=}) ({response=}): {responseStatusCode}')
         raise GenericNetworkException(f'TwitchApiService encountered network error when unbanning user ({unbanRequest=}) ({response=}): {responseStatusCode}')
 
-    async def validateTokens(self, twitchAccessToken: str) -> Optional[datetime]:
+    async def validateTokens(self, twitchAccessToken: str) -> datetime | None:
         if not utils.isValidStr(twitchAccessToken):
             raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         self.__timber.log('TwitchApiService', f'Validating tokens... ({twitchAccessToken=})')
 
         clientSession = await self.__networkClientProvider.get()
-        response: Optional[NetworkResponse] = None
+        response: NetworkResponse | None = None
 
         try:
             response = await clientSession.get(
@@ -1148,14 +1148,14 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when refreshing tokens ({twitchAccessToken=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | None = await response.json()
         await response.close()
 
-        clientId: Optional[str] = None
+        clientId: str | None = None
         if jsonResponse is not None and utils.isValidStr(jsonResponse.get('client_id')):
             clientId = utils.getStrFromDict(jsonResponse, 'client_id')
 
-        expiresInSeconds: Optional[int] = None
+        expiresInSeconds: int | None = None
         if jsonResponse is not None and utils.isValidInt(jsonResponse.get('expires_in')):
             expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in')
 

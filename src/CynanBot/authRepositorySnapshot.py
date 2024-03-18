@@ -1,17 +1,17 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
 
 class AuthRepositorySnapshot():
 
-    def __init__(self, jsonContents: Dict[str, Any]):
-        if not isinstance(jsonContents, Dict):
+    def __init__(self, jsonContents: dict[str, Any]):
+        if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        self.__jsonContents: Dict[str, Any] = jsonContents
+        self.__jsonContents: dict[str, Any] = jsonContents
 
-    def getDeepLAuthKey(self) -> Optional[str]:
+    def getDeepLAuthKey(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'deepLAuthKey', fallback = '')
 
     def getMerriamWebsterApiKey(self) -> str:
@@ -43,10 +43,10 @@ class AuthRepositorySnapshot():
 
         return deepLAuthKey
 
-    def getGoogleCloudApiKey(self) -> Optional[str]:
+    def getGoogleCloudApiKey(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'googleCloudApiKey', fallback = '')
 
-    def getGoogleCloudProjectId(self) -> Optional[str]:
+    def getGoogleCloudProjectId(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'googleCloudProjectId', fallback = '')
 
     def requireMerriamWebsterApiKey(self) -> str:
