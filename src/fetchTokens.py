@@ -35,8 +35,10 @@ except Exception as e:
 
 print(f'All Twitch JSON: {jsonResponse}')
 
-if jsonResponse is not None:    
-    accessToken: Optional[str] = jsonResponse.get('access_token')
-    refreshToken: Optional[str] = jsonResponse.get('refresh_token')
+if isinstance(jsonResponse, dict):
+    accessToken: str | None = jsonResponse.get('access_token')
+    refreshToken: str | None = jsonResponse.get('refresh_token')
     print(f'Twitch accessToken: \"{accessToken}\"')
     print(f'Twitch refreshToken: \"{refreshToken}\"')
+else:
+    print(f'jsonResponse is unknown type: \"{jsonResponse}\"')
