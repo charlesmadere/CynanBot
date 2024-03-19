@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -18,7 +18,7 @@ class GoogleTextSynthesisInput():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'text': self.__text
         }

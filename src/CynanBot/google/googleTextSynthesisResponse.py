@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
@@ -29,7 +29,7 @@ class GoogleTextSynthesisResponse():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'audioConfig': self.__audioConfig,
             'audioContent': self.__audioContent

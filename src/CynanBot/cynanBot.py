@@ -2,7 +2,7 @@ import traceback
 from asyncio import AbstractEventLoop
 from typing import Optional
 
-from twitchio import Channel, Message
+from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound

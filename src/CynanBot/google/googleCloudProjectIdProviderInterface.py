@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class GoogleCloudProjectCredentialsProviderInterface(ABC):
 
     @abstractmethod
-    async def getGoogleCloudApiKey(self) -> Optional[str]:
+    async def getGoogleCloudApiKey(self) -> str:
         pass
 
     @abstractmethod
-    async def getGoogleCloudProjectId(self) -> Optional[str]:
+    async def getGoogleCloudProjectId(self) -> str:
         pass

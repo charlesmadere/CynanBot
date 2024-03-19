@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
@@ -32,7 +30,7 @@ class TestGoogleVoiceAudioEncoding():
         assert result == 'OGG_OPUS'
 
     def test_toStr_withUnspecified(self):
-        result: Optional[str] = None
+        result: str | None = None
 
         with pytest.raises(Exception):
             result = GoogleVoiceAudioEncoding.UNSPECIFIED.toStr()

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
@@ -27,64 +27,64 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: Optional[Dict[str, Any]]
-    ) -> Optional[GoogleTextSynthesisResponse]:
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleTextSynthesisResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextGlossaryConfig(
         self,
-        jsonContents: Optional[Dict[str, Any]]
-    ) -> Optional[GoogleTranslateTextGlossaryConfig]:
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleTranslateTextGlossaryConfig | None:
         pass
 
     @abstractmethod
     async def parseTranslateTextResponse(
         self,
-        jsonContents: Optional[Dict[str, Any]]
-    ) -> Optional[GoogleTranslateTextResponse]:
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleTranslateTextResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslation(
         self,
-        jsonContents: Optional[Dict[str, Any]]
-    ) -> Optional[GoogleTranslation]:
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleTranslation | None:
         pass
 
     @abstractmethod
     async def parseVoiceAudioConfig(
         self,
-        jsonContents: Optional[Dict[str, Any]]
-    ) -> Optional[GoogleVoiceAudioConfig]:
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleVoiceAudioConfig | None:
         pass
 
     @abstractmethod
     async def parseVoiceAudioEncoding(
         self,
-        jsonString: Optional[str]
-    ) -> Optional[GoogleVoiceAudioEncoding]:
+        jsonString: str | None
+    ) -> GoogleVoiceAudioEncoding | None:
         pass
 
     @abstractmethod
     async def parseVoiceGender(
         self,
-        jsonString: Optional[str]
-    ) -> Optional[GoogleVoiceGender]:
+        jsonString: str | None
+    ) -> GoogleVoiceGender | None:
         pass
 
     @abstractmethod
     async def serializeGlossaryConfig(
         self,
         glossaryConfig: GoogleTranslateTextGlossaryConfig
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeSynthesizeRequest(
         self,
         synthesizeRequest: GoogleTextSynthesizeRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -98,28 +98,28 @@ class GoogleJsonMapperInterface(ABC):
     async def serializeTextSynthesisInput(
         self,
         textSynthesisInput: GoogleTextSynthesisInput
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeTranslationRequest(
         self,
         translationRequest: GoogleTranslationRequest
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeTransliterationConfig(
         self,
         transliterationConfig: GoogleTranslateTextTransliterationConfig
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
     async def serializeVoiceAudioConfig(
         self,
         voiceAudioConfig: GoogleVoiceAudioConfig
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -140,5 +140,5 @@ class GoogleJsonMapperInterface(ABC):
     async def serializeVoiceSelectionParams(
         self,
         voiceSelectionParams: GoogleVoiceSelectionParams
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         pass

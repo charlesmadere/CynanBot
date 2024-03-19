@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Optional
 
 from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
@@ -26,9 +25,9 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         self.__expireTimeBuffer: timedelta = expireTimeBuffer
         self.__timeZone: tzinfo = timeZone
 
-        self.__accessToken: Optional[GoogleAccessToken] = None
+        self.__accessToken: GoogleAccessToken | None = None
 
-    async def getAccessToken(self) -> Optional[GoogleAccessToken]:
+    async def getAccessToken(self) -> GoogleAccessToken | None:
         accessToken = self.__accessToken
 
         if accessToken is None:
@@ -42,7 +41,7 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         else:
             return accessToken
 
-    async def setAccessToken(self, accessToken: Optional[GoogleAccessToken]):
+    async def setAccessToken(self, accessToken: GoogleAccessToken | None):
         if accessToken is not None and not isinstance(accessToken, GoogleAccessToken):
             raise TypeError(f'accessToken argument is malformed: \"{accessToken}\"')
 

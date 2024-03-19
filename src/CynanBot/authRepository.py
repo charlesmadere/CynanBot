@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
@@ -28,7 +28,7 @@ class AuthRepository(
             raise TypeError(f'authJsonReader argument is malformed: \"{authJsonReader}\"')
 
         self.__authJsonReader: JsonReaderInterface = authJsonReader
-        self.__cache: Optional[AuthRepositorySnapshot] = None
+        self.__cache: AuthRepositorySnapshot | None = None
 
     async def clearCaches(self):
         self.__cache = None
@@ -57,19 +57,19 @@ class AuthRepository(
 
         return snapshot
 
-    async def getDeepLAuthKey(self) -> Optional[str]:
+    async def getDeepLAuthKey(self) -> str | None:
         snapshot = await self.getAllAsync()
         return snapshot.getDeepLAuthKey()
 
-    async def getGoogleCloudApiKey(self) -> Optional[str]:
+    async def getGoogleCloudApiKey(self) -> str | None:
         snapshot = await self.getAllAsync()
         return snapshot.getGoogleCloudApiKey()
 
-    async def getGoogleCloudProjectId(self) -> Optional[str]:
+    async def getGoogleCloudProjectId(self) -> str | None:
         snapshot = await self.getAllAsync()
         return snapshot.getGoogleCloudProjectId()
 
-    async def getOneWeatherApiKey(self) -> Optional[str]:
+    async def getOneWeatherApiKey(self) -> str | None:
         snapshot = await self.getAllAsync()
         return snapshot.getOneWeatherApiKey()
 

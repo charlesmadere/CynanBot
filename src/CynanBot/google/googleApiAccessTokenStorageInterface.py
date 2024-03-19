@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.google.googleAccessToken import GoogleAccessToken
 
@@ -7,9 +6,9 @@ from CynanBot.google.googleAccessToken import GoogleAccessToken
 class GoogleApiAccessTokenStorageInterface(ABC):
 
     @abstractmethod
-    async def getAccessToken(self) -> Optional[GoogleAccessToken]:
+    async def getAccessToken(self) -> GoogleAccessToken | None:
         pass
 
     @abstractmethod
-    async def setAccessToken(self, accessToken: Optional[GoogleAccessToken]):
+    async def setAccessToken(self, accessToken: GoogleAccessToken | None):
         pass
