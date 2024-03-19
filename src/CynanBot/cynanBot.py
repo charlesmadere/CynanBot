@@ -845,7 +845,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     pkmnEvolveRedemption = self.__pkmnEvolvePointRedemption,
                     pkmnShinyRedemption = self.__pkmnShinyPointRedemption,
                     superTriviaGameRedemption = self.__superTriviaGamePointRedemption,
-                    triviaGameRedemption = self.__triviaGamePointRedemption,
+                    triviaGamePointRedemption = self.__triviaGamePointRedemption,
                     timber = self.__timber,
                     twitchChannelProvider = self,
                     userIdsRepository = self.__userIdsRepository

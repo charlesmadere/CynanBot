@@ -5,13 +5,14 @@ from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
+from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
+    TriviaGamePointRedemption
 from CynanBot.pointRedemptions import (CutenessRedemption,
                                        PkmnBattleRedemption,
                                        PkmnCatchRedemption,
                                        PkmnEvolveRedemption,
                                        PkmnShinyRedemption,
-                                       SuperTriviaGameRedemption,
-                                       TriviaGameRedemption)
+                                       SuperTriviaGameRedemption)
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
@@ -37,7 +38,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         pkmnEvolveRedemption: AbsChannelPointRedemption,
         pkmnShinyRedemption: AbsChannelPointRedemption,
         superTriviaGameRedemption: AbsChannelPointRedemption,
-        triviaGameRedemption: AbsChannelPointRedemption,
+        triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
         twitchChannelProvider: TwitchChannelProvider,
         userIdsRepository: UserIdsRepositoryInterface
@@ -56,8 +57,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnShinyRedemption argument is malformed: \"{pkmnShinyRedemption}\"')
         elif not isinstance(superTriviaGameRedemption, SuperTriviaGameRedemption) and not isinstance(superTriviaGameRedemption, StubPointRedemption):
             raise TypeError(f'superTriviaGameRedemption argument is malformed: \"{superTriviaGameRedemption}\"')
-        elif not isinstance(triviaGameRedemption, TriviaGameRedemption) and not isinstance(triviaGameRedemption, StubPointRedemption):
-            raise TypeError(f'triviaGameRedemption argument is malformed: \"{triviaGameRedemption}\"')
+        elif not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption) and not isinstance(triviaGamePointRedemption, StubPointRedemption):
+            raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
@@ -72,7 +73,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__pkmnEvolveRedemption: AbsChannelPointRedemption = pkmnEvolveRedemption
         self.__pkmnShinyRedemption: AbsChannelPointRedemption = pkmnShinyRedemption
         self.__superTriviaGameRedemption: AbsChannelPointRedemption = superTriviaGameRedemption
-        self.__triviaGameRedemption: AbsChannelPointRedemption = triviaGameRedemption
+        self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -168,7 +169,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                     return
 
         if user.isTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getTriviaGameRewardId():
-            if await self.__triviaGameRedemption.handlePointRedemption(
+            if await self.__triviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
