@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
 
@@ -14,7 +13,7 @@ class TwitchUtilsInterface(ABC):
     async def safeSend(
         self,
         messageable: TwitchMessageable,
-        message: Optional[str],
+        message: str | None,
         maxMessages: int = 3,
         perMessageMaxSize: int = 494
     ):
