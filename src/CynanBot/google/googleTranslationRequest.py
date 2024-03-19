@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
@@ -11,19 +11,19 @@ class GoogleTranslationRequest():
 
     def __init__(
         self,
-        glossaryConfig: Optional[GoogleTranslateTextGlossaryConfig],
-        transliterationConfig: Optional[GoogleTranslateTextTransliterationConfig],
-        contents: List[str],
+        glossaryConfig: GoogleTranslateTextGlossaryConfig | None,
+        transliterationConfig: GoogleTranslateTextTransliterationConfig | None,
+        contents: list[str],
         mimeType: str,
-        model: Optional[str],
-        sourceLanguageCode: Optional[str],
+        model: str | None,
+        sourceLanguageCode: str | None,
         targetLanguageCode: str,
     ):
         if glossaryConfig is not None and not isinstance(glossaryConfig, GoogleTranslateTextGlossaryConfig):
             raise TypeError(f'glossaryConfig argument is malformed: \"{glossaryConfig}\"')
         elif transliterationConfig is not None and not isinstance(transliterationConfig, GoogleTranslateTextTransliterationConfig):
             raise TypeError(f'transliterationConfig argument is malformed: \"{transliterationConfig}\"')
-        elif not isinstance(contents, List):
+        elif not isinstance(contents, list):
             raise TypeError(f'contents argument is malformed: \"{contents}\"')
         elif not utils.isValidStr(mimeType):
             raise TypeError(f'mimeType argument is malformed: \"{mimeType}\"')
@@ -34,40 +34,40 @@ class GoogleTranslationRequest():
         elif not utils.isValidStr(targetLanguageCode):
             raise TypeError(f'targetLanguageCode argument is malformed: \"{targetLanguageCode}\"')
 
-        self.__glossaryConfig: Optional[GoogleTranslateTextGlossaryConfig] = glossaryConfig
-        self.__transliterationConfig: Optional[GoogleTranslateTextTransliterationConfig] = transliterationConfig
-        self.__contents: List[str] = contents
+        self.__glossaryConfig: GoogleTranslateTextGlossaryConfig | None = glossaryConfig
+        self.__transliterationConfig: GoogleTranslateTextTransliterationConfig | None = transliterationConfig
+        self.__contents: list[str] = contents
         self.__mimeType: str = mimeType
-        self.__model: Optional[str] = model
-        self.__sourceLanguageCode: Optional[str] = sourceLanguageCode
+        self.__model: str | None = model
+        self.__sourceLanguageCode: str | None = sourceLanguageCode
         self.__targetLanguageCode: str = targetLanguageCode
 
-    def getContents(self) -> List[str]:
+    def getContents(self) -> list[str]:
         return self.__contents
 
-    def getGlossaryConfig(self) -> Optional[GoogleTranslateTextGlossaryConfig]:
+    def getGlossaryConfig(self) -> GoogleTranslateTextGlossaryConfig | None:
         return self.__glossaryConfig
 
     def getMimeType(self) -> str:
         return self.__mimeType
 
-    def getModel(self) -> Optional[str]:
+    def getModel(self) -> str | None:
         return self.__model
 
-    def getSourceLanguageCode(self) -> Optional[str]:
+    def getSourceLanguageCode(self) -> str | None:
         return self.__sourceLanguageCode
 
     def getTargetLanguageCode(self) -> str:
         return self.__targetLanguageCode
 
-    def getTransliterationConfig(self) -> Optional[GoogleTranslateTextTransliterationConfig]:
+    def getTransliterationConfig(self) -> GoogleTranslateTextTransliterationConfig | None:
         return self.__transliterationConfig
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'contents': self.__contents,
             'glossaryConfig': self.__glossaryConfig,

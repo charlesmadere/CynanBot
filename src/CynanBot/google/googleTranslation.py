@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleTranslateTextGlossaryConfig import \
@@ -11,8 +11,8 @@ class GoogleTranslation():
         self,
         glossaryConfig: GoogleTranslateTextGlossaryConfig,
         detectedLanguageCode: str,
-        model: Optional[str],
-        translatedText: Optional[str]
+        model: str | None,
+        translatedText: str | None
     ):
         if not isinstance(glossaryConfig, GoogleTranslateTextGlossaryConfig):
             raise TypeError(f'glossaryConfig argument is malformed: \"{glossaryConfig}\"')
@@ -25,8 +25,8 @@ class GoogleTranslation():
 
         self.__glossaryConfig: GoogleTranslateTextGlossaryConfig = glossaryConfig
         self.__detectedLanguageCode: str = detectedLanguageCode
-        self.__model: Optional[str] = model
-        self.__translatedText: Optional[str] = translatedText
+        self.__model: str | None = model
+        self.__translatedText: str | None = translatedText
 
     def getDetectedLanguageCode(self) -> str:
         return self.__detectedLanguageCode
@@ -34,17 +34,17 @@ class GoogleTranslation():
     def getGlossaryConfig(self) -> GoogleTranslateTextGlossaryConfig:
         return self.__glossaryConfig
 
-    def getModel(self) -> Optional[str]:
+    def getModel(self) -> str | None:
         return self.__model
 
-    def getTranslatedText(self) -> Optional[str]:
+    def getTranslatedText(self) -> str | None:
         return self.__translatedText
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'glossaryConfig': self.__glossaryConfig,
             'detectedLanguageCode': self.__detectedLanguageCode,

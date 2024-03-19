@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from CynanBot.google.googleTranslation import GoogleTranslation
 
@@ -7,28 +7,28 @@ class GoogleTranslateTextResponse():
 
     def __init__(
         self,
-        glossaryTranslations: Optional[List[GoogleTranslation]],
-        translations: Optional[List[GoogleTranslation]]
+        glossaryTranslations: list[GoogleTranslation] | None = None,
+        translations: list[GoogleTranslation] | None = None
     ):
-        if glossaryTranslations is not None and not isinstance(glossaryTranslations, List):
+        if glossaryTranslations is not None and not isinstance(glossaryTranslations, list):
             raise TypeError(f'glossaryTranslations argument is malformed: \"{glossaryTranslations}\"')
-        elif translations is not None and not isinstance(translations, List):
+        elif translations is not None and not isinstance(translations, list):
             raise TypeError(f'translations argument is malformed: \"{translations}\"')
 
-        self.__glossaryTranslations: Optional[List[GoogleTranslation]] = glossaryTranslations
-        self.__translations: Optional[List[GoogleTranslation]] = translations
+        self.__glossaryTranslations: list[GoogleTranslation] | None = glossaryTranslations
+        self.__translations: list[GoogleTranslation] | None = translations
 
-    def getGlossaryTranslations(self) -> Optional[List[GoogleTranslation]]:
+    def getGlossaryTranslations(self) -> list[GoogleTranslation] | None:
         return self.__glossaryTranslations
 
-    def getTranslations(self) -> Optional[List[GoogleTranslation]]:
+    def getTranslations(self) -> list[GoogleTranslation] | None:
         return self.__translations
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'glossaryTranslations': self.__glossaryTranslations,
             'translations': self.__translations
