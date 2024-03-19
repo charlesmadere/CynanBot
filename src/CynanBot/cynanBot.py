@@ -1082,7 +1082,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'addglobaltriviacontroller')
     async def command_addglobaltriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addGlobalTriviaControllerCommand.handleCommand(context)
+        await self.__addGlobalTriviaControllerCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):
