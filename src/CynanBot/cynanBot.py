@@ -18,6 +18,8 @@ from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
+from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
+    TriviaGamePointRedemption
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
@@ -102,8 +104,7 @@ from CynanBot.pointRedemptions import (CutenessRedemption,
                                        PkmnCatchRedemption,
                                        PkmnEvolveRedemption,
                                        PkmnShinyRedemption,
-                                       SuperTriviaGameRedemption,
-                                       TriviaGameRedemption)
+                                       SuperTriviaGameRedemption)
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
@@ -664,7 +665,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = SuperTriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
-            self.__triviaGamePointRedemption: AbsChannelPointRedemption = TriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
+            self.__triviaGamePointRedemption: AbsChannelPointRedemption = TriviaGamePointRedemption(timber, triviaGameBuilder, triviaGameMachine)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
 
