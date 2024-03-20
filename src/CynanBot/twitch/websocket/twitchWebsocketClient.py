@@ -62,7 +62,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
-            TwitchWebsocketSubscriptionType.CHANNEL_UPDATE,
             TwitchWebsocketSubscriptionType.CHEER,
             TwitchWebsocketSubscriptionType.RAID,
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
