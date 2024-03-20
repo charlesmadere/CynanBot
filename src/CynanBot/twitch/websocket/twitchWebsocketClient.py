@@ -4,7 +4,7 @@ import traceback
 from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import websockets
 
@@ -53,7 +53,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         queueTimeoutSeconds: float = 3,
         websocketCreationDelayTimeSeconds: float = 0.25,
         websocketSleepTimeSeconds: float = 3,
-        subscriptionTypes: Set[TwitchWebsocketSubscriptionType] = {
+        subscriptionTypes: set[TwitchWebsocketSubscriptionType] = {
             TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN,
             TwitchWebsocketSubscriptionType.CHANNEL_POLL_END,
@@ -73,41 +73,41 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchWebsocketAllowedUsersRepository, TwitchWebsocketAllowedUsersRepositoryInterface):
-            raise ValueError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
+            raise TypeError(f'twitchWebsocketAllowedUsersRepository argument is malformed: \"{twitchWebsocketAllowedUsersRepository}\"')
         elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
-            raise ValueError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
+            raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
         elif not utils.isValidNum(queueSleepTimeSeconds):
-            raise ValueError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
+            raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 15:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
         elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(websocketCreationDelayTimeSeconds):
-            raise ValueError(f'websocketCreationDelayTimeSeconds argument is malformed: \"{websocketCreationDelayTimeSeconds}\"')
+            raise TypeError(f'websocketCreationDelayTimeSeconds argument is malformed: \"{websocketCreationDelayTimeSeconds}\"')
         elif websocketCreationDelayTimeSeconds < 0.1 or websocketCreationDelayTimeSeconds > 8:
             raise ValueError(f'websocketCreationDelayTimeSeconds argument is out of bounds: {websocketCreationDelayTimeSeconds}')
         elif not utils.isValidNum(websocketSleepTimeSeconds):
-            raise ValueError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
+            raise TypeError(f'websocketSleepTimeSeconds argument is malformed: \"{websocketSleepTimeSeconds}\"')
         elif websocketSleepTimeSeconds < 3 or websocketSleepTimeSeconds > 15:
             raise ValueError(f'websocketSleepTimeSeconds argument is out of bounds: {websocketSleepTimeSeconds}')
-        elif not isinstance(subscriptionTypes, Set):
-            raise ValueError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
+        elif not isinstance(subscriptionTypes, set):
+            raise TypeError(f'subscriptionTypes argument is malformed: \"{subscriptionTypes}\"')
         elif not utils.isValidUrl(twitchWebsocketUrl):
-            raise ValueError(f'twitchWebsocketUrl argument is malformed: \"{twitchWebsocketUrl}\"')
+            raise TypeError(f'twitchWebsocketUrl argument is malformed: \"{twitchWebsocketUrl}\"')
         elif not isinstance(maxMessageAge, timedelta):
-            raise ValueError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -119,24 +119,24 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__websocketCreationDelayTimeSeconds: float = websocketCreationDelayTimeSeconds
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
-        self.__subscriptionTypes: Set[TwitchWebsocketSubscriptionType] = subscriptionTypes
+        self.__subscriptionTypes: set[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
         self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
-        self.__badSubscriptionTypesFor: Dict[TwitchWebsocketUser, Set[TwitchWebsocketSubscriptionType]] = defaultdict(lambda: set())
-        self.__jsonBuilderFor: Dict[TwitchWebsocketUser, IncrementalJsonBuilder] = defaultdict(lambda: IncrementalJsonBuilder())
-        self.__sessionIdFor: Dict[TwitchWebsocketUser, Optional[str]] = defaultdict(lambda: '')
-        self.__twitchWebsocketUrlFor: Dict[TwitchWebsocketUser, str] = defaultdict(lambda: twitchWebsocketUrl)
+        self.__badSubscriptionTypesFor: dict[TwitchWebsocketUser, set[TwitchWebsocketSubscriptionType]] = defaultdict(lambda: set())
+        self.__jsonBuilderFor: dict[TwitchWebsocketUser, IncrementalJsonBuilder] = defaultdict(lambda: IncrementalJsonBuilder())
+        self.__sessionIdFor: dict[TwitchWebsocketUser, str | None] = defaultdict(lambda: '')
+        self.__twitchWebsocketUrlFor: dict[TwitchWebsocketUser, str] = defaultdict(lambda: twitchWebsocketUrl)
         self.__messageIdCache: LruCache = LruCache(128)
         self.__dataBundleQueue: SimpleQueue[TwitchWebsocketDataBundle] = SimpleQueue()
-        self.__dataBundleListener: Optional[TwitchWebsocketDataBundleListener] = None
+        self.__dataBundleListener: TwitchWebsocketDataBundleListener | None = None
 
     async def __createEventSubSubscription(self, sessionId: str, user: TwitchWebsocketUser):
         if not utils.isValidStr(sessionId):
-            raise ValueError(f'sessionId argument is malformed: \"{sessionId}\"')
+            raise TypeError(f'sessionId argument is malformed: \"{sessionId}\"')
         elif not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         transport = TwitchWebsocketTransport(
             sessionId = sessionId,
@@ -145,7 +145,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getUserName())
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.getUserName())
-        results: Dict[TwitchWebsocketSubscriptionType, Optional[Exception]] = OrderedDict()
+        results: dict[TwitchWebsocketSubscriptionType, Exception | None] = OrderedDict()
 
         for subscriptionType in self.__subscriptionTypes:
             if subscriptionType in self.__badSubscriptionTypesFor[user]:
@@ -163,7 +163,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 transport = transport
             )
 
-            exception: Optional[Exception] = None
+            exception: Exception | None = None
 
             try:
                 await self.__twitchApiService.createEventSubSubscription(
@@ -186,9 +186,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         subscriptionType: TwitchWebsocketSubscriptionType
     ) -> TwitchWebsocketCondition:
         if not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
         if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
             return TwitchWebsocketCondition(
@@ -239,9 +239,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         dataBundle: TwitchWebsocketDataBundle
     ):
         if not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.getPayload()
 
@@ -276,15 +276,15 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
     async def __handleNewSessionIdFor(
         self,
         newSessionId: str,
-        oldSessionId: Optional[str],
+        oldSessionId: str | None,
         user: TwitchWebsocketUser
     ):
         if not utils.isValidStr(newSessionId):
-            raise ValueError(f'newSessionId argument is malformed: \"{newSessionId}\"')
+            raise TypeError(f'newSessionId argument is malformed: \"{newSessionId}\"')
         elif oldSessionId is not None and not isinstance(oldSessionId, str):
-            raise ValueError(f'oldSessionId argument is malformed: \"{oldSessionId}\"')
+            raise TypeError(f'oldSessionId argument is malformed: \"{oldSessionId}\"')
         elif not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         self.__sessionIdFor[user] = newSessionId
         self.__timber.log('TwitchWebsocketClient', f'Session ID for \"{user}\" has been changed to \"{newSessionId}\" from \"{oldSessionId}\". Creating EventSub subscription(s)...')
@@ -301,18 +301,18 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         user: TwitchWebsocketUser
     ):
         if not utils.isValidUrl(newTwitchWebsocketUrl):
-            raise ValueError(f'newTwitchWebsocketUrl argument is malformed: \"{newTwitchWebsocketUrl}\"')
+            raise TypeError(f'newTwitchWebsocketUrl argument is malformed: \"{newTwitchWebsocketUrl}\"')
         elif not utils.isValidUrl(oldTwitchWebsocketUrl):
-            raise ValueError(f'oldTwitchWebsocketUrl argument is malformed: \"{oldTwitchWebsocketUrl}\"')
+            raise TypeError(f'oldTwitchWebsocketUrl argument is malformed: \"{oldTwitchWebsocketUrl}\"')
         elif not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         self.__twitchWebsocketUrlFor[user] = newTwitchWebsocketUrl
         self.__timber.log('TwitchWebsocketClient', f'Twitch websocket URL for \"{user}\" has been changed to \"{newTwitchWebsocketUrl}\" from \"{oldTwitchWebsocketUrl}\"')
 
     async def __isValidMessage(self, dataBundle: TwitchWebsocketDataBundle) -> bool:
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         # ensure that this isn't a message we've seen before
         if self.__messageIdCache.contains(dataBundle.getMetadata().getMessageId()):
@@ -333,11 +333,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __parseMessageToDataBundlesFor(
         self,
-        message: Optional[Any],
+        message: Any | None,
         user: TwitchWebsocketUser
-    ) -> Optional[List[TwitchWebsocketDataBundle]]:
+    ) -> list[TwitchWebsocketDataBundle] | None:
         if not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         if message is None:
             self.__timber.log('TwitchWebsocketClient', f'Received message object that is None: \"{message}\"')
@@ -352,11 +352,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if not utils.hasItems(dictionaries):
             return None
 
-        dataBundles: List[TwitchWebsocketDataBundle] = list()
+        dataBundles: list[TwitchWebsocketDataBundle] = list()
 
         for index, dictionary in enumerate(dictionaries):
-            dataBundle: Optional[TwitchWebsocketDataBundle] = None
-            exception: Optional[Exception] = None
+            dataBundle: TwitchWebsocketDataBundle | None = None
+            exception: Exception | None = None
 
             try:
                 dataBundle = await self.__twitchWebsocketJsonMapper.parseWebsocketDataBundle(dictionary)
@@ -377,9 +377,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         else:
             return None
 
-    def setDataBundleListener(self, listener: Optional[TwitchWebsocketDataBundleListener]):
+    def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
         if listener is not None and not isinstance(listener, TwitchWebsocketDataBundleListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__dataBundleListener = listener
 
@@ -390,7 +390,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         self.__isStarted = True
         self.__timber.log('TwitchWebsocketClient', 'Starting TwitchWebsocketClient...')
-
         self.__backgroundTaskHelper.createTask(self.__startWebsocketConnections())
         self.__backgroundTaskHelper.createTask(self.__startDataBundleLoop())
 
@@ -399,7 +398,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             dataBundleListener = self.__dataBundleListener
 
             if dataBundleListener is not None:
-                dataBundles: List[TwitchWebsocketDataBundle] = list()
+                dataBundles: list[TwitchWebsocketDataBundle] = list()
 
                 try:
                     while not self.__dataBundleQueue.empty():
@@ -420,7 +419,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __startWebsocketConnectionFor(self, user: TwitchWebsocketUser):
         if not isinstance(user, TwitchWebsocketUser):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
 
         while True:
             twitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
@@ -455,7 +454,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     async def __submitDataBundle(self, dataBundle: TwitchWebsocketDataBundle):
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         try:
             self.__dataBundleQueue.put(dataBundle, block = True, timeout = self.__queueTimeoutSeconds)
