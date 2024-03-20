@@ -18,7 +18,7 @@ class CommandsChatCommand(AbsChatCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
-        commandsUrl: str = 'https://cynanbot.io/',
+        commandsUrl: str = 'https://cynanbot.io',
         cooldown: timedelta = timedelta(minutes = 1),
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
