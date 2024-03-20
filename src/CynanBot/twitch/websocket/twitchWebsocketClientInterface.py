@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
     TwitchWebsocketDataBundleListener
@@ -8,7 +7,7 @@ from CynanBot.twitch.websocket.twitchWebsocketDataBundleListener import \
 class TwitchWebsocketClientInterface(ABC):
 
     @abstractmethod
-    def setDataBundleListener(self, listener: Optional[TwitchWebsocketDataBundleListener]):
+    def setDataBundleListener(self, listener: TwitchWebsocketDataBundleListener | None):
         pass
 
     @abstractmethod
