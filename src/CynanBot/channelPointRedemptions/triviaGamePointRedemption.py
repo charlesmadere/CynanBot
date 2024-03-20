@@ -45,6 +45,5 @@ class TriviaGamePointRedemption(AbsChannelPointRedemption):
             return False
 
         self.__triviaGameMachine.submitAction(startNewTriviaGameAction)
-
         self.__timber.log('TriviaGameRedemption', f'Redeemed trivia game for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchChannel.getTwitchChannelName()}')
         return True

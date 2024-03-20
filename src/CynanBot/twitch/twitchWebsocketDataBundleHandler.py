@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
@@ -28,12 +26,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     def __init__(
         self,
-        channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler],
-        cheerHandler: Optional[AbsTwitchCheerHandler],
-        pollHandler: Optional[AbsTwitchPollHandler],
-        predictionHandler: Optional[AbsTwitchPredictionHandler],
-        raidHandler: Optional[AbsTwitchRaidHandler],
-        subscriptionHandler: Optional[AbsTwitchSubscriptionHandler],
+        channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
+        cheerHandler: AbsTwitchCheerHandler | None,
+        pollHandler: AbsTwitchPollHandler | None,
+        predictionHandler: AbsTwitchPredictionHandler | None,
+        raidHandler: AbsTwitchRaidHandler | None,
+        subscriptionHandler: AbsTwitchSubscriptionHandler | None,
         timber: TimberInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -57,31 +55,31 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__channelPointRedemptionHandler: Optional[AbsTwitchChannelPointRedemptionHandler] = channelPointRedemptionHandler
-        self.__cheerHandler: Optional[AbsTwitchCheerHandler] = cheerHandler
-        self.__pollHandler: Optional[AbsTwitchPollHandler] = pollHandler
-        self.__predictionHandler: Optional[AbsTwitchPredictionHandler] = predictionHandler
-        self.__raidHandler: Optional[AbsTwitchRaidHandler] = raidHandler
-        self.__subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = subscriptionHandler
+        self.__channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = channelPointRedemptionHandler
+        self.__cheerHandler: AbsTwitchCheerHandler | None = cheerHandler
+        self.__pollHandler: AbsTwitchPollHandler | None = pollHandler
+        self.__predictionHandler: AbsTwitchPredictionHandler | None = predictionHandler
+        self.__raidHandler: AbsTwitchRaidHandler | None = raidHandler
+        self.__subscriptionHandler: AbsTwitchSubscriptionHandler | None = subscriptionHandler
         self.__timber: TimberInterface = timber
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def __isChannelPointsRedemptionType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
 
     async def __isCheerType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHEER
 
     async def __isPollType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END \
@@ -89,7 +87,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isPredictionType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN \
             or subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END \
@@ -98,13 +96,13 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
     async def __isRaidType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.RAID
 
     async def __isSubscriptionType(
         self,
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType]
+        subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIBE \
             or subscriptionType is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT \
@@ -201,7 +199,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         else:
             self.__timber.log('TwitchWebsocketDataBundleHandler', f'Received unhandled data bundle: \"{dataBundle}\"')
 
-    async def __persistUserInfo(self, event: Optional[TwitchWebsocketEvent]):
+    async def __persistUserInfo(self, event: TwitchWebsocketEvent | None):
         if event is None:
             return
         elif not isinstance(event, TwitchWebsocketEvent):
