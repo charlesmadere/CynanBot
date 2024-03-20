@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
@@ -10,8 +10,8 @@ class TriviaAnswerCheckerInterface(ABC):
     @abstractmethod
     async def checkAnswer(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: AbsTriviaQuestion,
-        extras: Optional[Dict[str, Any]] = None
+        extras: dict[str, Any] | None = None
     ) -> TriviaAnswerCheckResult:
         pass

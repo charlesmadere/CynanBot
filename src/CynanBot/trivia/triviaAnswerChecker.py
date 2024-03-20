@@ -1,7 +1,7 @@
 import math
 import re
 import traceback
-from typing import Any, Dict, Generator, List, Optional, Pattern, Set
+from typing import Any, Generator, Pattern
 
 import polyleven
 
@@ -47,7 +47,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
         self.__whitespacePattern: Pattern = re.compile(r'\s\s+', re.IGNORECASE)
 
-        self.__irregularNouns: Dict[str, Set[str]] = {
+        self.__irregularNouns: dict[str, set[str]] = {
             'addendum': { 'addenda', 'addendums' },
             'alumna': { 'alumnae' },
             'bacterium': { 'bacteria' },
@@ -73,7 +73,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             'woman': { 'women' }
         }
 
-        self.__stopWords: Set[str] = {
+        self.__stopWords: set[str] = {
             'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',  'what',
             'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been',
             'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if',
@@ -86,12 +86,12 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
     async def checkAnswer(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: AbsTriviaQuestion,
-        extras: Optional[Dict[str, Any]] = None
+        extras: dict[str, Any] | None = None
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
 
         if not utils.isValidStr(answer):
             return TriviaAnswerCheckResult.INVALID_INPUT
@@ -107,7 +107,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
     async def __checkAnswerMultipleChoice(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: MultipleChoiceTriviaQuestion
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
@@ -115,7 +115,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
 
-        answerOrdinal: Optional[int] = None
+        answerOrdinal: int | None = None
         try:
             answerOrdinal = await self.__triviaAnswerCompiler.compileMultipleChoiceAnswer(answer)
         except BadTriviaAnswerException as e:
@@ -143,9 +143,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
     async def __checkAnswerQuestionAnswer(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: QuestionAnswerTriviaQuestion,
-        extras: Optional[Dict[str, Any]] = None
+        extras: dict[str, Any] | None = None
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
             raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
@@ -192,7 +192,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
 
     async def __checkAnswerTrueFalse(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: TrueFalseTriviaQuestion
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
@@ -200,7 +200,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
 
-        answerBool: Optional[bool] = None
+        answerBool: bool | None = None
         try:
             answerBool = await self.__triviaAnswerCompiler.compileBoolAnswer(answer)
         except BadTriviaAnswerException as e:
@@ -215,7 +215,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     # generates all possible groupings of the given words such that the resulting word count is target_length
     # example: words = ["a", "b", "c", "d"], target_length = 2
     #          generates ["abc", "d"], ["ab", "cd"], ["a", "bcd"]
-    def __mergeWords(self, wordList: List[str], target_length: int) -> Generator[List[str], None, None]:
+    def __mergeWords(
+        self,
+        wordList: list[str],
+        target_length: int
+    ) -> Generator[list[str], None, None]:
         if target_length == 1:
             yield [''.join(wordList)]
         elif len(wordList) <= target_length:
@@ -228,6 +232,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
     # compare two individual words, returns true if any valid variants match between the two words
     async def __compareWords(self, word1: str, word2: str) -> bool:
         thresholdGrowthRate = await self.__triviaSettingsRepository.getLevenshteinThresholdGrowthRate()
+
         for w1 in self.__genVariantPossibilities(word1):
             for w2 in self.__genVariantPossibilities(word2):
                 # calculate threshold based on shorter word length
@@ -235,6 +240,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
                 dist = polyleven.levenshtein(w1, w2, threshold + 1)
                 if dist <= threshold:
                     return True
+
         return False
 
     def __genVariantPossibilities(self, word: str) -> Generator[str, None, None]:
