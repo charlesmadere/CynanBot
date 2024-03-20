@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 
 class SentMessageLoggerInterface(ABC):
@@ -8,8 +7,9 @@ class SentMessageLoggerInterface(ABC):
     def log(
         self,
         successfullySent: bool,
+        usedTwitchApi: bool,
         numberOfRetries: int,
-        exceptions: Optional[List[Exception]],
+        exceptions: list[Exception] | None,
         msg: str,
         twitchChannel: str
     ):

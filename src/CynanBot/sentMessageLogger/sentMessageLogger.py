@@ -2,7 +2,6 @@ import asyncio
 import queue
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Dict, List, Optional
 
 import aiofiles
 import aiofiles.os
@@ -26,15 +25,15 @@ class SentMessageLogger(SentMessageLoggerInterface):
         logRootDirectory: str = 'logs/sentMessageLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidStr(logRootDirectory):
-            raise ValueError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
+            raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -46,11 +45,17 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
     def __getLogStatement(self, message: SentMessage) -> str:
         if not isinstance(message, SentMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
         prefix = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} — '
-        error = ''
 
+        method: str
+        if message.usedTwitchApi():
+            method = 'via Twitch API — '
+        else:
+            method = 'via IRC — '
+
+        error = ''
         if not message.wasSuccessfullySent():
             error = f'message failed to send after {message.getNumberOfRetries()} attempt(s) — '
         elif message.getNumberOfRetries() >= 1:
@@ -58,28 +63,32 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         suffix = f'{message.getMsg()}'
 
-        logStatement = f'{prefix}{error}{suffix}'.strip()
+        logStatement = f'{prefix}{method}{error}{suffix}'.strip()
         return f'{logStatement}\n'
 
     def log(
         self,
         successfullySent: bool,
+        usedTwitchApi: bool,
         numberOfRetries: int,
-        exceptions: Optional[List[Exception]],
+        exceptions: list[Exception] | None,
         msg: str,
         twitchChannel: str
     ):
         if not utils.isValidBool(successfullySent):
-            raise ValueError(f'successfullySent argument is malformed: \"{successfullySent}\"')
+            raise TypeError(f'successfullySent argument is malformed: \"{successfullySent}\"')
+        elif not utils.isValidBool(usedTwitchApi):
+            raise TypeError(f'usedTwitchApi argument is malformed: \"{usedTwitchApi}\"')
         elif not utils.isValidInt(numberOfRetries):
-            raise ValueError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
+            raise TypeError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
         elif not utils.isValidStr(msg):
-            raise ValueError(f'msg argument is malformed: \"{msg}\"')
+            raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         sentMessage = SentMessage(
             successfullySent = successfullySent,
+            usedTwitchApi = usedTwitchApi,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
             msg = msg,
@@ -99,7 +108,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
     async def __startMessageLoop(self):
         while True:
-            messages: List[SentMessage] = list()
+            messages: list[SentMessage] = list()
 
             try:
                 while not self.__messageQueue.empty():
@@ -111,14 +120,14 @@ class SentMessageLogger(SentMessageLoggerInterface):
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, messages: List[SentMessage]):
+    async def __writeToLogFiles(self, messages: list[SentMessage]):
         if len(messages) == 0:
             return
 
         # The below logic is kind of intense, however, there is a very similar/nearly identical
         # flow within the Timber class. Check that out for more information and context.
 
-        structure: Dict[str, Dict[str, List[SentMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
+        structure: dict[str, dict[str, list[SentMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for message in messages:
             twitchChannel = message.getTwitchChannel().lower()

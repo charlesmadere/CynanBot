@@ -214,6 +214,7 @@ class TwitchUtils(TwitchUtilsInterface):
 
         self.__sentMessageLogger.log(
             successfullySent = successfullySent,
+            usedTwitchApi = False,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
             msg = message,
@@ -274,6 +275,7 @@ class TwitchUtils(TwitchUtilsInterface):
         if successfullySent:
             self.__sentMessageLogger.log(
                 successfullySent = True,
+                usedTwitchApi = True,
                 numberOfRetries = attempt,
                 exceptions = None,
                 msg = message,
