@@ -18,6 +18,8 @@ from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
+from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
+    SuperTriviaGamePointRedemption
 from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
     TriviaGamePointRedemption
 from CynanBot.chatActions.chatActionsManagerInterface import \
@@ -103,8 +105,7 @@ from CynanBot.pointRedemptions import (CutenessRedemption,
                                        PkmnBattleRedemption,
                                        PkmnCatchRedemption,
                                        PkmnEvolveRedemption,
-                                       PkmnShinyRedemption,
-                                       SuperTriviaGameRedemption)
+                                       PkmnShinyRedemption)
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
@@ -664,7 +665,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = SuperTriviaGameRedemption(timber, triviaGameBuilder, triviaGameMachine)
+            self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = SuperTriviaGamePointRedemption(timber, triviaGameBuilder, triviaGameMachine)
             self.__triviaGamePointRedemption: AbsChannelPointRedemption = TriviaGamePointRedemption(timber, triviaGameBuilder, triviaGameMachine)
 
         self.__timber.log('CynanBot', f'Finished initialization of {self.__authRepository.getAll().requireTwitchHandle()}')
@@ -844,7 +845,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                     pkmnCatchRedemption = self.__pkmnCatchPointRedemption,
                     pkmnEvolveRedemption = self.__pkmnEvolvePointRedemption,
                     pkmnShinyRedemption = self.__pkmnShinyPointRedemption,
-                    superTriviaGameRedemption = self.__superTriviaGamePointRedemption,
+                    superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
                     triviaGamePointRedemption = self.__triviaGamePointRedemption,
                     timber = self.__timber,
                     twitchChannelProvider = self,

@@ -5,14 +5,15 @@ from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
+from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
+    SuperTriviaGamePointRedemption
 from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
     TriviaGamePointRedemption
 from CynanBot.pointRedemptions import (CutenessRedemption,
                                        PkmnBattleRedemption,
                                        PkmnCatchRedemption,
                                        PkmnEvolveRedemption,
-                                       PkmnShinyRedemption,
-                                       SuperTriviaGameRedemption)
+                                       PkmnShinyRedemption)
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
@@ -37,7 +38,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         pkmnCatchRedemption: AbsChannelPointRedemption,
         pkmnEvolveRedemption: AbsChannelPointRedemption,
         pkmnShinyRedemption: AbsChannelPointRedemption,
-        superTriviaGameRedemption: AbsChannelPointRedemption,
+        superTriviaGamePointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
         twitchChannelProvider: TwitchChannelProvider,
@@ -55,8 +56,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnEvolveRedemption argument is malformed: \"{pkmnEvolveRedemption}\"')
         elif not isinstance(pkmnShinyRedemption, PkmnShinyRedemption) and not isinstance(pkmnShinyRedemption, StubPointRedemption):
             raise TypeError(f'pkmnShinyRedemption argument is malformed: \"{pkmnShinyRedemption}\"')
-        elif not isinstance(superTriviaGameRedemption, SuperTriviaGameRedemption) and not isinstance(superTriviaGameRedemption, StubPointRedemption):
-            raise TypeError(f'superTriviaGameRedemption argument is malformed: \"{superTriviaGameRedemption}\"')
+        elif not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption) and not isinstance(superTriviaGamePointRedemption, StubPointRedemption):
+            raise TypeError(f'superTriviaGamePointRedemption argument is malformed: \"{superTriviaGamePointRedemption}\"')
         elif not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption) and not isinstance(triviaGamePointRedemption, StubPointRedemption):
             raise TypeError(f'triviaGamePointRedemption argument is malformed: \"{triviaGamePointRedemption}\"')
         elif not isinstance(timber, TimberInterface):
@@ -72,7 +73,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         self.__pkmnCatchRedemption: AbsChannelPointRedemption = pkmnCatchRedemption
         self.__pkmnEvolveRedemption: AbsChannelPointRedemption = pkmnEvolveRedemption
         self.__pkmnShinyRedemption: AbsChannelPointRedemption = pkmnShinyRedemption
-        self.__superTriviaGameRedemption: AbsChannelPointRedemption = superTriviaGameRedemption
+        self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
@@ -176,7 +177,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 return
 
         if user.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getSuperTriviaGameRewardId():
-            if await self.__superTriviaGameRedemption.handlePointRedemption(
+            if await self.__superTriviaGamePointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
