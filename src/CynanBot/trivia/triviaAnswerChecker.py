@@ -301,7 +301,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         # common names
         if word == 'al':
             yield 'alan'
-        if word in ('alberta', 'bert', 'bertie'):
+            yield 'allen'
+        if word in ('alberta', 'bert', 'berta', 'bertie'):
             yield 'albert'
         if word in ('aron', 'aaron', 'aaryn', 'eryn'):
             yield 'erin'
@@ -317,7 +318,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'christopher'
         if word == 'delanor':
             yield 'delano'
-        if word in ('dick', 'rick'):
+        if word in ('dick', 'rick', 'ricky'):
             yield 'richard'
         if word in ('ed', 'eddie', 'eddy'):
             yield 'edward'
@@ -342,11 +343,13 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'michael'
         if word in ('rob', 'robbie'):
             yield 'robert'
-        if word in ('ron', 'ronnie'):
+        if word in ('ron', 'ronaldo', 'ronnie'):
             yield 'ronald'
         if word in ('sadie', 'sally', 'sara'):
             yield 'sarah'
-        if word in ('tom', 'tony'):
+        if word in ('steph', 'stephan', 'steven'):
+            yield 'steve'
+        if word in ('tom', 'tommy', 'tony'):
             yield 'thomas'
         if word == 'toni':
             yield 'tony'
@@ -709,6 +712,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'random access memory'
         if word == 'rgb':
             yield 'red green blue'
+        if word == 'rgbs':
+            yield 'red green blue sync'
         if word == 'sftp':
             yield 'secure file transfer protocol'
         if word == 'sp':
@@ -716,6 +721,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'scale independent pixels'
         if word == 'ssd':
             yield 'solid state drive'
+        if word == 'txt':
+            yield 'text'
         if word == 'uri':
             yield 'uniform resource identifier'
         if word == 'url':
@@ -926,6 +933,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'ocd':
             yield 'obsessive compulsive disorder'
         if word == 'parcel':
+            yield 'delivery'
             yield 'mail'
             yield 'package'
         if word in ('phone', 'tel'):
