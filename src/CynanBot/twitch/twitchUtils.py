@@ -123,7 +123,6 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # twitchChannel = await self.__userIdsRepository.requireUserName(userId = twitchChannelId)
         twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
 
         if refresh:
@@ -240,12 +239,12 @@ class TwitchUtils(TwitchUtilsInterface):
 
         twitchChannelId = await messageable.getTwitchChannelId()
         senderId = await self.__getSenderId()
-        attempt = 0
+        numberOfRetries = 0
         successfullySent = False
 
-        while attempt < 2 and not successfullySent:
+        while numberOfRetries <= 1 and not successfullySent:
             twitchAccessToken = await self.__getTwitchAccessToken(
-                refresh = attempt == 1,
+                refresh = numberOfRetries == 1,
                 twitchChannelId = twitchChannelId
             )
 
@@ -268,15 +267,14 @@ class TwitchUtils(TwitchUtilsInterface):
             successfullySent = response is not None and response.isSent() and exception is None
 
             if not successfullySent:
-                self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({attempt=}): {exception}', exception, traceback.format_exc())
-
-            attempt = attempt + 1
+                self.__timber.log('TwitchUtils', f'Failed to send chat message via Twitch Chat API ({messageable=}) ({message=}) ({response=}) ({numberOfRetries=}): {exception}', exception, traceback.format_exc())
+                numberOfRetries = numberOfRetries + 1
 
         if successfullySent:
             self.__sentMessageLogger.log(
                 successfullySent = True,
                 usedTwitchApi = True,
-                numberOfRetries = attempt,
+                numberOfRetries = numberOfRetries,
                 exceptions = None,
                 msg = message,
                 twitchChannel = messageable.getTwitchChannelName()
