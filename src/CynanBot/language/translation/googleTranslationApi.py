@@ -1,5 +1,4 @@
 import traceback
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
@@ -79,8 +78,8 @@ class GoogleTranslationApi(TranslationApi):
         )
 
         self.__timber.log('GoogleTranslationApi', f'Fetching translation from Google Translate ({text=}) ({targetLanguage=}) ({request=})...')
-        response: Optional[GoogleTranslateTextResponse] = None
-        exception: Optional[Exception] = None
+        response: GoogleTranslateTextResponse | None = None
+        exception: Exception | None = None
 
         try:
             response = await self.__googleApiService.translate(request)

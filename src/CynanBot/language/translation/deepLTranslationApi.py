@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
@@ -100,16 +100,16 @@ class DeepLTranslationApi(TranslationApi):
             self.__timber.log('DeepLTranslationApi', f'DeepL\'s JSON response is null/empty for \"{text}\": {jsonResponse}')
             raise ValueError(f'DeepL\'s JSON response is null/empty for \"{text}\": {jsonResponse}')
 
-        translationsJson: Optional[List[Dict[str, Any]]] = jsonResponse.get('translations')
+        translationsJson: list[dict[str, Any]] | None = jsonResponse.get('translations')
         if not utils.hasItems(translationsJson):
             raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" field: {jsonResponse}')
 
-        translationJson: Optional[Dict[str, Any]] = translationsJson[0]
+        translationJson: dict[str, Any] | None = translationsJson[0]
         if not utils.hasItems(translationJson):
             raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" list entry: {jsonResponse}')
 
-        originalLanguage: Optional[LanguageEntry] = None
-        detectedSourceLanguage: Optional[str] = translationJson.get('detected_source_language')
+        originalLanguage: LanguageEntry | None = None
+        detectedSourceLanguage: str | None = translationJson.get('detected_source_language')
         if utils.isValidStr(detectedSourceLanguage):
             originalLanguage = await self.__languagesRepository.getLanguageForCommand(
                 command = detectedSourceLanguage,
