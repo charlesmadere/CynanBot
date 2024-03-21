@@ -7,6 +7,7 @@ from queue import SimpleQueue
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.sentMessageLogger.messageMethod import MessageMethod
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -213,9 +214,9 @@ class TwitchUtils(TwitchUtilsInterface):
 
         self.__sentMessageLogger.log(
             successfullySent = successfullySent,
-            usedTwitchApi = False,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
+            messageMethod = MessageMethod.IRC,
             msg = message,
             twitchChannel = messageable.getTwitchChannelName()
         )
@@ -273,9 +274,9 @@ class TwitchUtils(TwitchUtilsInterface):
         if successfullySent:
             self.__sentMessageLogger.log(
                 successfullySent = True,
-                usedTwitchApi = True,
                 numberOfRetries = numberOfRetries,
                 exceptions = None,
+                messageMethod = MessageMethod.TWITCH_API,
                 msg = message,
                 twitchChannel = messageable.getTwitchChannelName()
             )

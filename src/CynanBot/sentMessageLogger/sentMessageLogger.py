@@ -1,6 +1,7 @@
 import asyncio
 import queue
 from collections import defaultdict
+from mailbox import Message
 from queue import SimpleQueue
 
 import aiofiles
@@ -9,6 +10,7 @@ import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.sentMessageLogger.messageMethod import MessageMethod
 from CynanBot.sentMessageLogger.sentMessage import SentMessage
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
@@ -47,13 +49,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         if not isinstance(message, SentMessage):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        prefix = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} — '
-
-        method: str
-        if message.usedTwitchApi():
-            method = 'via Twitch API — '
-        else:
-            method = 'via IRC — '
+        prefix = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} — {message.getMessageMethod().toStr()} — '
 
         error = ''
         if not message.wasSuccessfullySent():
@@ -63,24 +59,28 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         suffix = f'{message.getMsg()}'
 
-        logStatement = f'{prefix}{method}{error}{suffix}'.strip()
+        logStatement = f'{prefix}{error}{suffix}'.strip()
         return f'{logStatement}\n'
 
     def log(
         self,
         successfullySent: bool,
-        usedTwitchApi: bool,
         numberOfRetries: int,
         exceptions: list[Exception] | None,
+        messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str
     ):
         if not utils.isValidBool(successfullySent):
             raise TypeError(f'successfullySent argument is malformed: \"{successfullySent}\"')
-        elif not utils.isValidBool(usedTwitchApi):
-            raise TypeError(f'usedTwitchApi argument is malformed: \"{usedTwitchApi}\"')
         elif not utils.isValidInt(numberOfRetries):
             raise TypeError(f'numberOfRetries argument is malformed: \"{numberOfRetries}\"')
+        elif numberOfRetries < 0 or numberOfRetries > utils.getIntMaxSafeSize():
+            raise ValueError(f'numberOfRetries argument is out of bounds: {numberOfRetries}')
+        elif exceptions is not None and not isinstance(exceptions, list):
+            raise TypeError(f'exceptions argument is malformed: \"{exceptions}\"')
+        elif not isinstance(messageMethod, MessageMethod):
+            raise TypeError(f'messageMethod argument is malformed: \"{messageMethod}\"')
         elif not utils.isValidStr(msg):
             raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
@@ -88,9 +88,9 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
         sentMessage = SentMessage(
             successfullySent = successfullySent,
-            usedTwitchApi = usedTwitchApi,
             numberOfRetries = numberOfRetries,
             exceptions = exceptions,
+            messageMethod = messageMethod,
             msg = msg,
             twitchChannel = twitchChannel
         )

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from CynanBot.sentMessageLogger.messageMethod import MessageMethod
+
 
 class SentMessageLoggerInterface(ABC):
 
@@ -7,9 +9,9 @@ class SentMessageLoggerInterface(ABC):
     def log(
         self,
         successfullySent: bool,
-        usedTwitchApi: bool,
         numberOfRetries: int,
         exceptions: list[Exception] | None,
+        messageMethod: MessageMethod,
         msg: str,
         twitchChannel: str
     ):
