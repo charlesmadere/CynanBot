@@ -89,20 +89,20 @@ class GoogleApiService(GoogleApiServiceInterface):
             raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching text-to-speech ({request=}) ({response=})')
 
         responseStatusCode = response.getStatusCode()
+        jsonResponse = await response.json()
         await response.close()
 
         if responseStatusCode != 200:
-            self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=})')
+            self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching text-to-speech ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
 
-        jsonResponse = await response.json()
-        response = await self.__googleJsonMapper.parseTextSynthesisResponse(jsonResponse)
+        synthesisResponse = await self.__googleJsonMapper.parseTextSynthesisResponse(jsonResponse)
 
-        if response is None:
-            self.__timber.log('GoogleApiService', f'Failed to parse JSON response into GoogleTextSynthesizeRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService failed to parse JSON response into GoogleTextSynthesizeRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
+        if synthesisResponse is None:
+            self.__timber.log('GoogleApiService', f'Failed to parse JSON response into GoogleTextSynthesizeRequest instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({synthesisResponse=})')
+            raise GenericNetworkException(f'GoogleApiService failed to parse JSON response into GoogleTextSynthesizeRequest instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({synthesisResponse=})')
 
-        return response
+        return synthesisResponse
 
     async def translate(self, request: GoogleTranslationRequest) -> GoogleTranslateTextResponse:
         if not isinstance(request, GoogleTranslationRequest):
