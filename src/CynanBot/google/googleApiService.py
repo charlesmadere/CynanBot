@@ -1,7 +1,9 @@
 import traceback
 
 import CynanBot.misc.utils as utils
-from CynanBot.google.exceptions import GoogleCloudProjectIdUnavailableException
+from CynanBot.google.exceptions import (
+    GoogleCloudProjectApiKeyUnavailableException,
+    GoogleCloudProjectIdUnavailableException)
 from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface
@@ -67,16 +69,23 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         self.__timber.log('GoogleApiService', f'Fetching text-to-speech from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
-        googleAccessToken = await self.__fetchGoogleAccessToken()
+
+        googleApiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
+        if not utils.isValidStr(googleApiKey):
+            raise GoogleCloudProjectApiKeyUnavailableException(f'No Google Cloud API Key is available: \"{googleApiKey}\"')
+
         googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
+        if not utils.isValidStr(googleProjectId):
+            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
 
         try:
             response = await clientSession.post(
                 url = f'https://texttospeech.googleapis.com/v1/text:synthesize',
                 headers = {
-                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
-                    'x-goog-user-project': googleProjectId,
-                    'Content-Type': self.__contentType
+                    # 'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
+                    'Content-Type': self.__contentType,
+                    'x-goog-api-key': googleApiKey,
+                    'x-goog-user-project': googleProjectId
                 },
                 json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
             )
@@ -110,14 +119,23 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         self.__timber.log('GoogleApiService', f'Fetching translation from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
-        projectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
 
-        if not utils.isValidStr(projectId):
-            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{projectId}\"')
+        googleApiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
+        if not utils.isValidStr(googleApiKey):
+            raise GoogleCloudProjectApiKeyUnavailableException(f'No Google Cloud API Key is available: \"{googleApiKey}\"')
+
+        googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
+        if not utils.isValidStr(googleProjectId):
+            raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
 
         try:
             response = await clientSession.post(
-                url = f'https://translate.googleapis.com/v3/projects/{projectId}:translateText',
+                url = f'https://translate.googleapis.com/v3/projects/{googleProjectId}:translateText',
+                headers = {
+                    'Content-Type': self.__contentType,
+                    'x-goog-api-key': googleApiKey,
+                    'x-goog-user-project': googleProjectId,
+                },
                 json = await self.__googleJsonMapper.serializeTranslationRequest(request)
             )
         except GenericNetworkException as e:
@@ -130,16 +148,16 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         responseStatusCode = response.getStatusCode()
         await response.close()
+        jsonResponse = await response.json()
 
         if responseStatusCode != 200:
-            self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=})')
+            self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
 
-        jsonResponse = await response.json()
-        response = await self.__googleJsonMapper.parseTranslateTextResponse(jsonResponse)
+        translateResponse = await self.__googleJsonMapper.parseTranslateTextResponse(jsonResponse)
 
-        if response is None:
-            self.__timber.log('GoogleApiService', f'Failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
-            raise GenericNetworkException(f'GoogleApiService failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({jsonResponse=}) ({response=})')
+        if translateResponse is None:
+            self.__timber.log('GoogleApiService', f'Failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({translateResponse=})')
+            raise GenericNetworkException(f'GoogleApiService failed to parse JSON response into GoogleTranslationRequest instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({translateResponse=})')
 
-        return response
+        return translateResponse
