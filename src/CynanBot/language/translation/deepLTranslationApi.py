@@ -55,7 +55,6 @@ class DeepLTranslationApi(TranslationApi):
             raise TypeError(f'targetLanguage argument is malformed: \"{targetLanguage}\"')
 
         iso6391Code = targetLanguage.getIso6391Code()
-
         if not utils.isValidStr(iso6391Code):
             raise TranslationLanguageHasNoIso6391Code(
                 languageEntry = targetLanguage,
@@ -63,7 +62,6 @@ class DeepLTranslationApi(TranslationApi):
             )
 
         deepLAuthKey = await self.__deepLAuthKeyProvider.getDeepLAuthKey()
-
         if not utils.isValidStr(deepLAuthKey):
             raise TranslationEngineUnavailableException(
                 message = f'DeepL Translation engine is currently unavailable ({text=}) ({targetLanguage=}) ({deepLAuthKey=})',

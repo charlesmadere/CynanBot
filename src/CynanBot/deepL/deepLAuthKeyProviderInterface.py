@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class DeepLAuthKeyProviderInterface(ABC):
 
     @abstractmethod
-    async def getDeepLAuthKey(self) -> Optional[str]:
+    async def getDeepLAuthKey(self) -> str | None:
         pass
