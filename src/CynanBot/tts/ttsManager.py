@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
@@ -15,10 +15,10 @@ class TtsManager(TtsManagerInterface):
 
     def __init__(
         self,
-        decTalkManager: Optional[DecTalkManager],
-        googleTtsManager: Optional[GoogleTtsManager],
+        decTalkManager: DecTalkManager | None,
+        googleTtsManager: GoogleTtsManager | None,
         timber: TimberInterface,
-        ttsMonsterManager: Optional[TtsMonsterManager],
+        ttsMonsterManager: TtsMonsterManager | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
         if decTalkManager is not None and not isinstance(decTalkManager, DecTalkManager):
@@ -32,13 +32,13 @@ class TtsManager(TtsManagerInterface):
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
-        self.__decTalkManager: Optional[TtsManagerInterface] = decTalkManager
-        self.__googleTtsManager: Optional[TtsManagerInterface] = googleTtsManager
+        self.__decTalkManager: TtsManagerInterface | None = decTalkManager
+        self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__timber: TimberInterface = timber
-        self.__ttsMonsterManager: Optional[TtsMonsterManager] = ttsMonsterManager
+        self.__ttsMonsterManager: TtsMonsterManager | None = ttsMonsterManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__currentTtsManager: Optional[TtsManagerInterface] = None
+        self.__currentTtsManager: TtsManagerInterface | None = None
 
     async def isPlaying(self) -> bool:
         currentTtsManager = self.__currentTtsManager
@@ -79,7 +79,7 @@ class TtsManager(TtsManagerInterface):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'currentTtsManager': self.__currentTtsManager
         }
