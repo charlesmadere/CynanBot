@@ -147,8 +147,8 @@ class GoogleApiService(GoogleApiServiceInterface):
             raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching translation ({request=}) ({response=})')
 
         responseStatusCode = response.getStatusCode()
-        await response.close()
         jsonResponse = await response.json()
+        await response.close()
 
         if responseStatusCode != 200:
             self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
