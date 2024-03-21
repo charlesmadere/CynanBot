@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.networkClientType import NetworkClientType
@@ -7,11 +7,11 @@ from CynanBot.storage.databaseType import DatabaseType
 
 class GeneralSettingsRepositorySnapshot():
 
-    def __init__(self, jsonContents: Dict[str, Any]):
-        if not utils.hasItems(jsonContents):
+    def __init__(self, jsonContents: dict[str, Any]):
+        if not isinstance(jsonContents, dict):
             raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        self.__jsonContents: Dict[str, Any] = jsonContents
+        self.__jsonContents: dict[str, Any] = jsonContents
 
     def getEventSubPort(self) -> int:
         return utils.getIntFromDict(self.__jsonContents, 'eventSubPort', 33239)

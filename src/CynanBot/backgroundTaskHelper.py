@@ -1,5 +1,5 @@
 from asyncio import AbstractEventLoop, Task
-from typing import Any, Coroutine, Set
+from typing import Coroutine
 
 
 class BackgroundTaskHelper():
@@ -9,7 +9,7 @@ class BackgroundTaskHelper():
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
-        self.__backgroundTasks: Set[Task] = set()
+        self.__backgroundTasks: set[Task] = set()
 
     def createTask(self, coro: Coroutine):
         if not isinstance(coro, Coroutine):

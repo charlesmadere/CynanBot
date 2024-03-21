@@ -1,5 +1,3 @@
-from typing import Optional
-
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
@@ -28,7 +26,7 @@ class AdministratorProvider(AdministratorProviderInterface):
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-        self.__administratorUserId: Optional[str] = None
+        self.__administratorUserId: str | None = None
 
     async def clearCaches(self):
         self.__administratorUserId = None

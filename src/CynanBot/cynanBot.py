@@ -16,6 +16,16 @@ from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
 from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
+from CynanBot.channelPointRedemptions.cutenessPointRedemption import \
+    CutenessPointRedemption
+from CynanBot.channelPointRedemptions.pkmnBattlePointRedemption import \
+    PkmnBattlePointRedemption
+from CynanBot.channelPointRedemptions.pkmnCatchPointRedemption import \
+    PkmnCatchPointRedemption
+from CynanBot.channelPointRedemptions.pkmnEvolvePointRedemption import \
+    PkmnEvolvePointRedemption
+from CynanBot.channelPointRedemptions.pkmnShinyPointRedemption import \
+    PkmnShinyPointRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
 from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
@@ -101,11 +111,6 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
-from CynanBot.pointRedemptions import (CutenessRedemption,
-                                       PkmnBattleRedemption,
-                                       PkmnCatchRedemption,
-                                       PkmnEvolveRedemption,
-                                       PkmnShinyRedemption)
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
@@ -648,7 +653,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if cutenessRepository is None:
             self.__cutenessPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__cutenessPointRedemption: AbsChannelPointRedemption = CutenessRedemption(cutenessRepository, timber, twitchUtils)
+            self.__cutenessPointRedemption: AbsChannelPointRedemption = CutenessPointRedemption(cutenessRepository, timber, twitchUtils)
 
         if funtoonRepository is None:
             self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -656,10 +661,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = PkmnBattleRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = PkmnCatchRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolveRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
-            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = PkmnBattlePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = PkmnCatchPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
+            self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -840,11 +845,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
                 channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
                     casualGamePollRedemption = self.__casualGamePollPointRedemption,
-                    cutenessRedemption = self.__cutenessPointRedemption,
-                    pkmnBattleRedemption = self.__pkmnBattlePointRedemption,
-                    pkmnCatchRedemption = self.__pkmnCatchPointRedemption,
-                    pkmnEvolveRedemption = self.__pkmnEvolvePointRedemption,
-                    pkmnShinyRedemption = self.__pkmnShinyPointRedemption,
+                    cutenessPointRedemption = self.__cutenessPointRedemption,
+                    pkmnBattlePointRedemption = self.__pkmnBattlePointRedemption,
+                    pkmnCatchPointRedemption = self.__pkmnCatchPointRedemption,
+                    pkmnEvolvePointRedemption = self.__pkmnEvolvePointRedemption,
+                    pkmnShinyPointRedemption = self.__pkmnShinyPointRedemption,
                     superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
                     triviaGamePointRedemption = self.__triviaGamePointRedemption,
                     timber = self.__timber,

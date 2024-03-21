@@ -3,17 +3,22 @@ from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
 from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
     CasualGamePollRedemption
+from CynanBot.channelPointRedemptions.cutenessPointRedemption import \
+    CutenessPointRedemption
+from CynanBot.channelPointRedemptions.pkmnBattlePointRedemption import \
+    PkmnBattlePointRedemption
+from CynanBot.channelPointRedemptions.pkmnCatchPointRedemption import \
+    PkmnCatchPointRedemption
+from CynanBot.channelPointRedemptions.pkmnEvolvePointRedemption import \
+    PkmnEvolvePointRedemption
+from CynanBot.channelPointRedemptions.pkmnShinyPointRedemption import \
+    PkmnShinyPointRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
 from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
     SuperTriviaGamePointRedemption
 from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
     TriviaGamePointRedemption
-from CynanBot.pointRedemptions import (CutenessRedemption,
-                                       PkmnBattleRedemption,
-                                       PkmnCatchRedemption,
-                                       PkmnEvolveRedemption,
-                                       PkmnShinyRedemption)
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
@@ -33,11 +38,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     def __init__(
         self,
         casualGamePollRedemption: AbsChannelPointRedemption,
-        cutenessRedemption: AbsChannelPointRedemption,
-        pkmnBattleRedemption: AbsChannelPointRedemption,
-        pkmnCatchRedemption: AbsChannelPointRedemption,
-        pkmnEvolveRedemption: AbsChannelPointRedemption,
-        pkmnShinyRedemption: AbsChannelPointRedemption,
+        cutenessPointRedemption: AbsChannelPointRedemption,
+        pkmnBattlePointRedemption: AbsChannelPointRedemption,
+        pkmnCatchPointRedemption: AbsChannelPointRedemption,
+        pkmnEvolvePointRedemption: AbsChannelPointRedemption,
+        pkmnShinyPointRedemption: AbsChannelPointRedemption,
         superTriviaGamePointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
@@ -46,16 +51,16 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
     ):
         if not isinstance(casualGamePollRedemption, CasualGamePollRedemption) and not isinstance(casualGamePollRedemption, StubPointRedemption):
             raise TypeError(f'casualGamePollRedemption argument is malformed: \"{casualGamePollRedemption}\"')
-        elif not isinstance(cutenessRedemption, CutenessRedemption) and not isinstance(cutenessRedemption, StubPointRedemption):
-            raise TypeError(f'cutenessRedemption argument is malformed: \"{cutenessRedemption}\"')
-        elif not isinstance(pkmnBattleRedemption, PkmnBattleRedemption) and not isinstance(pkmnBattleRedemption, StubPointRedemption):
-            raise TypeError(f'pkmnBattleRedemption argument is malformed: \"{pkmnBattleRedemption}\"')
-        elif not isinstance(pkmnCatchRedemption, PkmnCatchRedemption) and not isinstance(pkmnCatchRedemption, StubPointRedemption):
-            raise TypeError(f'pkmnCatchRedemption argument is malformed: \"{pkmnCatchRedemption}\"')
-        elif not isinstance(pkmnEvolveRedemption, PkmnEvolveRedemption) and not isinstance(pkmnEvolveRedemption, StubPointRedemption):
-            raise TypeError(f'pkmnEvolveRedemption argument is malformed: \"{pkmnEvolveRedemption}\"')
-        elif not isinstance(pkmnShinyRedemption, PkmnShinyRedemption) and not isinstance(pkmnShinyRedemption, StubPointRedemption):
-            raise TypeError(f'pkmnShinyRedemption argument is malformed: \"{pkmnShinyRedemption}\"')
+        elif not isinstance(cutenessPointRedemption, CutenessPointRedemption) and not isinstance(cutenessPointRedemption, StubPointRedemption):
+            raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
+        elif not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption) and not isinstance(pkmnBattlePointRedemption, StubPointRedemption):
+            raise TypeError(f'pkmnBattlePointRedemption argument is malformed: \"{pkmnBattlePointRedemption}\"')
+        elif not isinstance(pkmnCatchPointRedemption, PkmnCatchPointRedemption) and not isinstance(pkmnCatchPointRedemption, StubPointRedemption):
+            raise TypeError(f'pkmnCatchPointRedemption argument is malformed: \"{pkmnCatchPointRedemption}\"')
+        elif not isinstance(pkmnEvolvePointRedemption, PkmnEvolvePointRedemption) and not isinstance(pkmnEvolvePointRedemption, StubPointRedemption):
+            raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
+        elif not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption) and not isinstance(pkmnShinyPointRedemption, StubPointRedemption):
+            raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
         elif not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption) and not isinstance(superTriviaGamePointRedemption, StubPointRedemption):
             raise TypeError(f'superTriviaGamePointRedemption argument is malformed: \"{superTriviaGamePointRedemption}\"')
         elif not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption) and not isinstance(triviaGamePointRedemption, StubPointRedemption):
@@ -68,11 +73,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__casualGamePollRedemption: AbsChannelPointRedemption = casualGamePollRedemption
-        self.__cutenessRedemption: AbsChannelPointRedemption = cutenessRedemption
-        self.__pkmnBattleRedemption: AbsChannelPointRedemption = pkmnBattleRedemption
-        self.__pkmnCatchRedemption: AbsChannelPointRedemption = pkmnCatchRedemption
-        self.__pkmnEvolveRedemption: AbsChannelPointRedemption = pkmnEvolveRedemption
-        self.__pkmnShinyRedemption: AbsChannelPointRedemption = pkmnShinyRedemption
+        self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
+        self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
+        self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
+        self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
+        self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
@@ -134,7 +139,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
                 return
 
         if user.isCutenessEnabled() and user.hasCutenessBoosterPacks():
-            if await self.__cutenessRedemption.handlePointRedemption(
+            if await self.__cutenessPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
@@ -142,28 +147,28 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isPkmnEnabled():
             if channelPointsMessage.getRewardId() == user.getPkmnBattleRewardId():
-                if await self.__pkmnBattleRedemption.handlePointRedemption(
+                if await self.__pkmnBattlePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
             if user.hasPkmnCatchBoosterPacks():
-                if await self.__pkmnCatchRedemption.handlePointRedemption(
+                if await self.__pkmnCatchPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
             if channelPointsMessage.getRewardId() == user.getPkmnEvolveRewardId():
-                if await self.__pkmnEvolveRedemption.handlePointRedemption(
+                if await self.__pkmnEvolvePointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
                     return
 
             if channelPointsMessage.getRewardId() == user.getPkmnShinyRewardId():
-                if await self.__pkmnShinyRedemption.handlePointRedemption(
+                if await self.__pkmnShinyPointRedemption.handlePointRedemption(
                     twitchChannel = twitchChannel,
                     twitchChannelPointsMessage = channelPointsMessage
                 ):
