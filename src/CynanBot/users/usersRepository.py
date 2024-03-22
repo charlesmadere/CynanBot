@@ -96,6 +96,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
+        areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
@@ -220,6 +221,7 @@ class UsersRepository(UsersRepositoryInterface):
         user = User(
             areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
+            areSoundAlertsEnabled = areSoundAlertsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isCasualGamePollEnabled = isCasualGamePollEnabled,

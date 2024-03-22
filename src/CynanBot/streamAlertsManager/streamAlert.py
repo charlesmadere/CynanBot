@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
@@ -9,9 +9,9 @@ class StreamAlert():
 
     def __init__(
         self,
-        soundAlert: Optional[SoundAlert],
+        soundAlert: SoundAlert | None,
         twitchChannel: str,
-        ttsEvent: Optional[TtsEvent]
+        ttsEvent: TtsEvent | None
     ):
         if soundAlert is not None and not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
@@ -20,14 +20,14 @@ class StreamAlert():
         elif ttsEvent is not None and not isinstance(ttsEvent, TtsEvent):
             raise TypeError(f'ttsEvent argument is malformed: \"{ttsEvent}\"')
 
-        self.__soundAlert: Optional[SoundAlert] = soundAlert
+        self.__soundAlert: SoundAlert | None = soundAlert
         self.__twitchChannel: str = twitchChannel
-        self.__ttsEvent: Optional[TtsEvent] = ttsEvent
+        self.__ttsEvent: TtsEvent | None = ttsEvent
 
-    def getSoundAlert(self) -> Optional[SoundAlert]:
+    def getSoundAlert(self) -> SoundAlert | None:
         return self.__soundAlert
 
-    def getTtsEvent(self) -> Optional[TtsEvent]:
+    def getTtsEvent(self) -> TtsEvent | None:
         return self.__ttsEvent
 
     def getTwitchChannel(self) -> str:
@@ -37,7 +37,7 @@ class StreamAlert():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'soundAlert': self.__soundAlert,
             'ttsEvent': self.__ttsEvent,

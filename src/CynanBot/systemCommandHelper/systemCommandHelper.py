@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import ByteString, Optional, Tuple
+from typing import ByteString, Tuple
 
 import psutil
 
@@ -29,9 +29,9 @@ class SystemCommandHelper(SystemCommandHelperInterface):
         elif timeoutSeconds < 3 or timeoutSeconds > utils.getIntMaxSafeSize():
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
-        process: Optional[Process] = None
-        outputTuple: Optional[Tuple[ByteString, ByteString]] = None
-        exception: Optional[BaseException] = None
+        process: Process | None = None
+        outputTuple: Tuple[ByteString, ByteString] | None = None
+        exception: BaseException | None = None
 
         try:
             process = await asyncio.create_subprocess_shell(
@@ -50,18 +50,18 @@ class SystemCommandHelper(SystemCommandHelperInterface):
         if isinstance(exception, AsyncioTimeoutError) or isinstance(exception, AsyncioCancelledError) or isinstance(exception, TimeoutError):
             await self.__killProcess(process)
 
-        outputString: Optional[str] = None
+        outputString: str | None = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
 
         self.__timber.log('SystemCommandHelper', f'Ran system command ({command}) ({outputString=}) ({exception=})')
 
-    async def __killProcess(self, process: Optional[Process]):
+    async def __killProcess(self, process: Process | None):
         if process is None:
             return
         elif not isinstance(process, Process):
-            raise ValueError(f'process argument is malformed: \"{process}\"')
+            raise TypeError(f'process argument is malformed: \"{process}\"')
         elif process.returncode is not None:
             return
 

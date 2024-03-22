@@ -1,8 +1,8 @@
 import CynanBot.misc.utils as utils
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
-from CynanBot.channelPointRedemptions.casualGamePollRedemption import \
-    CasualGamePollRedemption
+from CynanBot.channelPointRedemptions.casualGamePollPointRedemption import \
+    CasualGamePollPointRedemption
 from CynanBot.channelPointRedemptions.cutenessPointRedemption import \
     CutenessPointRedemption
 from CynanBot.channelPointRedemptions.pkmnBattlePointRedemption import \
@@ -31,26 +31,28 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
+from CynanBot.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 
 
 class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler):
 
     def __init__(
         self,
-        casualGamePollRedemption: AbsChannelPointRedemption,
+        casualGamePollPointRedemption: AbsChannelPointRedemption,
         cutenessPointRedemption: AbsChannelPointRedemption,
         pkmnBattlePointRedemption: AbsChannelPointRedemption,
         pkmnCatchPointRedemption: AbsChannelPointRedemption,
         pkmnEvolvePointRedemption: AbsChannelPointRedemption,
         pkmnShinyPointRedemption: AbsChannelPointRedemption,
+        soundAlertPointRedemption: AbsChannelPointRedemption,
         superTriviaGamePointRedemption: AbsChannelPointRedemption,
         triviaGamePointRedemption: AbsChannelPointRedemption,
         timber: TimberInterface,
         twitchChannelProvider: TwitchChannelProvider,
         userIdsRepository: UserIdsRepositoryInterface
     ):
-        if not isinstance(casualGamePollRedemption, CasualGamePollRedemption) and not isinstance(casualGamePollRedemption, StubPointRedemption):
-            raise TypeError(f'casualGamePollRedemption argument is malformed: \"{casualGamePollRedemption}\"')
+        if not isinstance(casualGamePollPointRedemption, CasualGamePollPointRedemption) and not isinstance(casualGamePollPointRedemption, StubPointRedemption):
+            raise TypeError(f'casualGamePollPointRedemption argument is malformed: \"{casualGamePollPointRedemption}\"')
         elif not isinstance(cutenessPointRedemption, CutenessPointRedemption) and not isinstance(cutenessPointRedemption, StubPointRedemption):
             raise TypeError(f'cutenessPointRedemption argument is malformed: \"{cutenessPointRedemption}\"')
         elif not isinstance(pkmnBattlePointRedemption, PkmnBattlePointRedemption) and not isinstance(pkmnBattlePointRedemption, StubPointRedemption):
@@ -61,6 +63,8 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             raise TypeError(f'pkmnEvolvePointRedemption argument is malformed: \"{pkmnEvolvePointRedemption}\"')
         elif not isinstance(pkmnShinyPointRedemption, PkmnShinyPointRedemption) and not isinstance(pkmnShinyPointRedemption, StubPointRedemption):
             raise TypeError(f'pkmnShinyPointRedemption argument is malformed: \"{pkmnShinyPointRedemption}\"')
+        elif not isinstance(soundAlertPointRedemption, SoundAlertPointRedemption) and not isinstance(soundAlertPointRedemption, StubPointRedemption):
+            raise TypeError(f'soundAlertPointRedemption argument is malformed: \"{soundAlertPointRedemption}\"')
         elif not isinstance(superTriviaGamePointRedemption, SuperTriviaGamePointRedemption) and not isinstance(superTriviaGamePointRedemption, StubPointRedemption):
             raise TypeError(f'superTriviaGamePointRedemption argument is malformed: \"{superTriviaGamePointRedemption}\"')
         elif not isinstance(triviaGamePointRedemption, TriviaGamePointRedemption) and not isinstance(triviaGamePointRedemption, StubPointRedemption):
@@ -72,12 +76,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__casualGamePollRedemption: AbsChannelPointRedemption = casualGamePollRedemption
+        self.__casualGamePollPointRedemption: AbsChannelPointRedemption = casualGamePollPointRedemption
         self.__cutenessPointRedemption: AbsChannelPointRedemption = cutenessPointRedemption
         self.__pkmnBattlePointRedemption: AbsChannelPointRedemption = pkmnBattlePointRedemption
         self.__pkmnCatchPointRedemption: AbsChannelPointRedemption = pkmnCatchPointRedemption
         self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = pkmnEvolvePointRedemption
         self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = pkmnShinyPointRedemption
+        self.__soundAlertPointRedemption: AbsChannelPointRedemption = soundAlertPointRedemption
         self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = superTriviaGamePointRedemption
         self.__triviaGamePointRedemption: AbsChannelPointRedemption = triviaGamePointRedemption
         self.__timber: TimberInterface = timber
@@ -132,7 +137,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         )
 
         if user.isCasualGamePollEnabled() and channelPointsMessage.getRewardId() == user.getCasualGamePollRewardId():
-            if await self.__casualGamePollRedemption.handlePointRedemption(
+            if await self.__casualGamePollPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):
@@ -183,6 +188,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
 
         if user.isSuperTriviaGameEnabled() and channelPointsMessage.getRewardId() == user.getSuperTriviaGameRewardId():
             if await self.__superTriviaGamePointRedemption.handlePointRedemption(
+                twitchChannel = twitchChannel,
+                twitchChannelPointsMessage = channelPointsMessage
+            ):
+                return
+
+        if user.areSoundAlertsEnabled():
+            if await self.__soundAlertPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage
             ):

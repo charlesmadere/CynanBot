@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
@@ -14,7 +14,7 @@ class StreamAlertsSettingsRepository(StreamAlertsSettingsRepositoryInterface):
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__settingsCache: Optional[Dict[str, Any]] = None
+        self.__settingsCache: dict[str, Any] | None = None
 
     async def clearCaches(self):
         self.__settingsCache = None
@@ -33,11 +33,11 @@ class StreamAlertsSettingsRepository(StreamAlertsSettingsRepositoryInterface):
 
         return alertsDelayBetweenSeconds
 
-    async def __readJson(self) -> Dict[str, Any]:
+    async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:
             return self.__settingsCache
 
-        jsonContents: Optional[Dict[str, Any]] = None
+        jsonContents: dict[str, Any] | None = None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()

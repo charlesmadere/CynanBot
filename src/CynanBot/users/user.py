@@ -13,6 +13,7 @@ class User(UserInterface):
         self,
         areCheerActionsEnabled: bool,
         areRecurringActionsEnabled: bool,
+        areSoundAlertsEnabled: bool,
         isAnivContentScanningEnabled: bool,
         isCatJamMessageEnabled: bool,
         isCasualGamePollEnabled: bool,
@@ -90,6 +91,8 @@ class User(UserInterface):
             raise TypeError(f'areCheerActionsEnabled argument is malformed: \"{areCheerActionsEnabled}\"')
         elif not utils.isValidBool(areRecurringActionsEnabled):
             raise TypeError(f'areRecurringActionsEnabled argument is malformed: \"{areRecurringActionsEnabled}\"')
+        elif not utils.isValidBool(areSoundAlertsEnabled):
+            raise TypeError(f'areSoundAlertsEnabled argument is malformed: \"{areSoundAlertsEnabled}\"')
         elif not utils.isValidBool(isAnivContentScanningEnabled):
             raise TypeError(f'isAnivContentScanningEnabled argument is malformed: \"{isAnivContentScanningEnabled}\"')
         elif not utils.isValidBool(isCasualGamePollEnabled):
@@ -227,6 +230,7 @@ class User(UserInterface):
 
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
+        self.__areSoundAlertsEnabled: bool = areSoundAlertsEnabled
         self.__isAnivContentScanningEnabled: bool = isAnivContentScanningEnabled
         self.__isCasualGamePollEnabled: bool = isCasualGamePollEnabled
         self.__isCatJamMessageEnabled: bool = isCatJamMessageEnabled
@@ -305,6 +309,9 @@ class User(UserInterface):
 
     def areRecurringActionsEnabled(self) -> bool:
         return self.__areRecurringActionsEnabled
+
+    def areSoundAlertsEnabled(self) -> bool:
+        return self.__areSoundAlertsEnabled
 
     def getCasualGamePollRewardId(self) -> Optional[str]:
         return self.__casualGamePollRewardId

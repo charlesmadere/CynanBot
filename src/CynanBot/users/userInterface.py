@@ -16,6 +16,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def areSoundAlertsEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
     def getCasualGamePollRewardId(self) -> Optional[str]:
         pass
 

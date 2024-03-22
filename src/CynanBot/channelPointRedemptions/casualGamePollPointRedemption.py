@@ -11,7 +11,7 @@ from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
-class CasualGamePollRedemption(AbsChannelPointRedemption):
+class CasualGamePollPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
@@ -46,5 +46,5 @@ class CasualGamePollRedemption(AbsChannelPointRedemption):
             return False
 
         await self.__twitchUtils.safeSend(twitchChannel, casualGamePollUrl)
-        self.__timber.log('CasualGamePollRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
+        self.__timber.log('CasualGamePollPointRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return True

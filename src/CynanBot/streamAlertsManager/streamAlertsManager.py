@@ -2,7 +2,6 @@ import asyncio
 import queue
 import traceback
 from queue import SimpleQueue
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -24,10 +23,10 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
     def __init__(
         self,
         backgroundTaskHelper: BackgroundTaskHelper,
-        soundPlayerManager: Optional[SoundPlayerManagerInterface],
+        soundPlayerManager: SoundPlayerManagerInterface | None,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
-        ttsManager: Optional[TtsManagerInterface],
+        ttsManager: TtsManagerInterface | None,
         queueSleepTimeSeconds: float = 0.2,
         queueTimeoutSeconds: float = 3
     ):
@@ -51,15 +50,15 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
-        self.__soundPlayerManager: Optional[SoundPlayerManagerInterface] = soundPlayerManager
+        self.__soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManager
         self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
         self.__timber: TimberInterface = timber
-        self.__ttsManager: Optional[TtsManagerInterface] = ttsManager
+        self.__ttsManager: TtsManagerInterface | None = ttsManager
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
         self.__isStarted: bool = False
-        self.__currentAlert: Optional[CurrentStreamAlert] = None
+        self.__currentAlert: CurrentStreamAlert | None = None
         self.__alertQueue: SimpleQueue[StreamAlert] = SimpleQueue()
 
     async def __processCurrentAlert(self) -> bool:
@@ -114,7 +113,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
                 await asyncio.sleep(self.__queueSleepTimeSeconds)
                 continue
 
-            newAlert: Optional[StreamAlert] = None
+            newAlert: StreamAlert | None = None
 
             if not self.__alertQueue.empty():
                 try:
