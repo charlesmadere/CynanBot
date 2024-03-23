@@ -2,7 +2,7 @@ import traceback
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
-from CynanBot.google.googleCloudProjectIdProviderInterface import \
+from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.google.googleTranslateTextResponse import \
     GoogleTranslateTextResponse

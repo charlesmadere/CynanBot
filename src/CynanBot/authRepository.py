@@ -3,7 +3,7 @@ from typing import Any
 from CynanBot.authRepositorySnapshot import AuthRepositorySnapshot
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
     DeepLAuthKeyProviderInterface
-from CynanBot.google.googleCloudProjectIdProviderInterface import \
+from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.misc.clearable import Clearable
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface

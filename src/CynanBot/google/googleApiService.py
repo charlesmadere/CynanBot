@@ -8,7 +8,7 @@ from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
-from CynanBot.google.googleCloudProjectIdProviderInterface import \
+from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleTextSynthesisResponse import \
