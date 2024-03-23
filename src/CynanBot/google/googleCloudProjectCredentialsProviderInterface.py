@@ -8,6 +8,10 @@ class GoogleCloudProjectCredentialsProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getGoogleCloudProjectKeyId(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getGoogleCloudProjectId(self) -> str | None:
         pass
 

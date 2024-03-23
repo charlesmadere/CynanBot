@@ -11,6 +11,7 @@ from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
 from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from CynanBot.google.googleTextSynthesisResponse import \
     GoogleTextSynthesisResponse
 from CynanBot.google.googleTextSynthesizeRequest import \
@@ -28,18 +29,21 @@ class GoogleApiService(GoogleApiServiceInterface):
     def __init__(
         self,
         googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface,
-        googleJsonMapper: GoogleJsonMapperInterface,
         googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface,
+        googleJsonMapper: GoogleJsonMapperInterface,
+        googleJwtBuilder: GoogleJwtBuilderInterface,
         networkClientProvider: NetworkClientProvider,
         timber: TimberInterface,
         contentType: str = 'application/json; charset=utf-8'
     ):
         if not isinstance(googleApiAccessTokenStorage, GoogleApiAccessTokenStorageInterface):
             raise TypeError(f'googleApiAccessTokenStorage argument is malformed: \"{googleApiAccessTokenStorage}\"')
-        elif not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
-            raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
         elif not isinstance(googleCloudProjectCredentialsProvider, GoogleCloudProjectCredentialsProviderInterface):
             raise TypeError(f'googleCloudProjectCredentialsProvider argument is malformed: \"{googleCloudProjectCredentialsProvider}\"')
+        elif not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
+            raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
+        elif not isinstance(googleJwtBuilder, GoogleJwtBuilderInterface):
+            raise TypeError(f'googleJwtBuilder argument is malformed: \"{googleJwtBuilder}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
@@ -48,8 +52,9 @@ class GoogleApiService(GoogleApiServiceInterface):
             raise TypeError(f'contentType argument is malformed: \"{contentType}\"')
 
         self.__googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = googleApiAccessTokenStorage
-        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = googleCloudProjectCredentialsProvider
+        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
+        self.__googleJwtBuilder: GoogleJwtBuilderInterface = googleJwtBuilder
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
         self.__contentType: str = contentType
@@ -67,6 +72,7 @@ class GoogleApiService(GoogleApiServiceInterface):
             response = await clientSession.post(
                 url = 'https://oauth2.googleapis.com/token',
                 json = {
+                    'assertion': await self.__googleJwtBuilder.buildJwt(),
                     'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
                 }
             )
