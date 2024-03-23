@@ -14,13 +14,13 @@ class GoogleVoiceAudioConfig():
         sampleRateHertz: int | None,
         audioEncoding: GoogleVoiceAudioEncoding
     ):
-        if not utils.isValidNum(pitch):
+        if pitch is not None and not utils.isValidNum(pitch):
             raise TypeError(f'pitch argument is malformed: \"{pitch}\"')
-        elif not utils.isValidNum(speakingRate):
+        elif speakingRate is not None and not utils.isValidNum(speakingRate):
             raise TypeError(f'speakingRate argument is malformed: \"{speakingRate}\"')
-        elif not utils.isValidNum(volumeGainDb):
+        elif volumeGainDb is not None and not utils.isValidNum(volumeGainDb):
             raise TypeError(f'volumeGainDb argument is malformed: \"{volumeGainDb}\"')
-        elif not utils.isValidInt(sampleRateHertz):
+        elif sampleRateHertz is not None and not utils.isValidInt(sampleRateHertz):
             raise TypeError(f'sampleRateHertz argument is malformed: \"{sampleRateHertz}\"')
         elif not isinstance(audioEncoding, GoogleVoiceAudioEncoding):
             raise TypeError(f'audioEncoding argument is malformed: \"{audioEncoding}\"')
