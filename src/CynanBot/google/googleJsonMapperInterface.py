@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesisResponse import \
@@ -23,6 +24,13 @@ from CynanBot.google.googleVoiceSelectionParams import \
 
 
 class GoogleJsonMapperInterface(ABC):
+
+    @abstractmethod
+    async def parseAccessToken(
+        self,
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleAccessToken | None:
+        pass
 
     @abstractmethod
     async def parseTextSynthesisResponse(

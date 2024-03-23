@@ -1,7 +1,9 @@
 import traceback
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any
 
 import CynanBot.misc.utils as utils
+from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.google.googleScope import GoogleScope
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
@@ -29,12 +31,32 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     def __init__(
         self,
-        timber: TimberInterface
+        timber: TimberInterface,
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeZone: tzinfo = timeZone
+
+    async def parseAccessToken(
+        self,
+        jsonContents: dict[str, Any] | None
+    ) -> GoogleAccessToken | None:
+        if jsonContents is None or len(jsonContents) == 0:
+            return None
+
+        now = datetime.now(self.__timeZone)
+        expiresIn = utils.getIntFromDict(jsonContents, 'expires_in')
+        expireTime = now + timedelta(seconds = expiresIn)
+
+        return GoogleAccessToken(
+            expireTime = expireTime,
+            accessToken = utils.getStrFromDict(jsonContents, 'access_token')
+        )
 
     async def parseTextSynthesisResponse(
         self,

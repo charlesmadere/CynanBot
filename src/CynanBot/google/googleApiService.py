@@ -92,8 +92,14 @@ class GoogleApiService(GoogleApiServiceInterface):
             self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
             raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
 
-        # TODO
-        raise RuntimeError('this method is not yet implemented!')
+        accessToken = await self.__googleJsonMapper.parseAccessToken(jsonResponse)
+        await self.__googleApiAccessTokenStorage.setAccessToken(accessToken)
+
+        if accessToken is None:
+            self.__timber.log('GoogleApiService', f'Unable to process server response into access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'GoogleApiService unable to process server response into access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+
+        return accessToken
 
     async def textToSpeech(self, request: GoogleTextSynthesizeRequest) -> GoogleTextSynthesisResponse:
         if not isinstance(request, GoogleTextSynthesizeRequest):
