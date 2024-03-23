@@ -11,6 +11,8 @@ from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
+from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
@@ -59,10 +61,16 @@ networkClientProvider: NetworkClientProvider = AioHttpClientProvider(
     timber = timber
 )
 
+googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+    googleCloudCredentialsProvider = googleCloudProjectCredentialsProvider,
+    googleJsonMapper = googleJsonMapper
+)
+
 googleApiService: GoogleApiServiceInterface = GoogleApiService(
     googleApiAccessTokenStorage = googleApiAccessTokenStorage,
-    googleJsonMapper = googleJsonMapper,
     googleCloudProjectCredentialsProvider = googleCloudProjectCredentialsProvider,
+    googleJsonMapper = googleJsonMapper,
+    googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
     timber = timber
 )
