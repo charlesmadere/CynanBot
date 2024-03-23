@@ -84,9 +84,12 @@ class GoogleTtsManager(TtsManagerInterface):
             self.__isLoading = False
             return False
 
-        # TODO
-        pass
-        return False
+        self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.getTwitchChannel()}\" from \"{fileName}\"...')
+        await self.__soundPlayerManager.playSoundFile(fileName)
+        await self.__googleTtsFileManager.deleteFile(fileName)
+        self.__isLoading = False
+
+        return True
 
     async def __processTtsEvent(self, event: TtsEvent) -> str | None:
         if not isinstance(event, TtsEvent):
@@ -130,3 +133,12 @@ class GoogleTtsManager(TtsManagerInterface):
         return await self.__googleTtsFileManager.writeBase64CommandToNewFile(
             base64Command = response.getAudioContent()
         )
+
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> dict[str, object]:
+        return {
+            'isLoading': self.__isLoading
+        }
