@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -18,13 +18,13 @@ class CurrentStreamAlert():
     def getAlertState(self) -> StreamAlertState:
         return self.__alertState
 
-    def getSoundAlert(self) -> Optional[SoundAlert]:
+    def getSoundAlert(self) -> SoundAlert | None:
         return self.__streamAlert.getSoundAlert()
 
     def getStreamAlert(self) -> StreamAlert:
         return self.__streamAlert
 
-    def getTtsEvent(self) -> Optional[TtsEvent]:
+    def getTtsEvent(self) -> TtsEvent | None:
         return self.__streamAlert.getTtsEvent()
 
     def getTwitchChannel(self) -> str:
@@ -40,7 +40,7 @@ class CurrentStreamAlert():
 
         self.__alertState = state
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'alertState': self.__alertState,
             'streamAlert': self.__streamAlert
