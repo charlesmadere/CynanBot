@@ -11,6 +11,15 @@ from CynanBot.google.googleCloudProjectIdProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
+from CynanBot.google.googleTextSynthesizeRequest import \
+    GoogleTextSynthesizeRequest
+from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
+from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
+from CynanBot.google.googleVoiceGender import GoogleVoiceGender
+from CynanBot.google.googleVoiceSelectionParams import \
+    GoogleVoiceSelectionParams
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
@@ -33,9 +42,7 @@ googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAcc
     timber = timber
 )
 
-googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = GoogleCloudProjectCredentialsProvider(
-    
-)
+googleCloudProjectCredentialsProvider: GoogleCloudProjectCredentialsProviderInterface = GoogleCloudProjectCredentialsProvider()
 
 googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber
@@ -54,4 +61,41 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber
 )
 
+async def main():
+    pass
 
+    translationResult = await googleApiService.translate(GoogleTranslationRequest(
+        glossaryConfig = None,
+        transliterationConfig = None,
+        contents = [ 'Hello, World!' ],
+        mimeType = 'text/plain',
+        model = None,
+        sourceLanguageCode = 'ja',
+        targetLanguageCode = 'en-us'
+    ))
+
+    print(f'translation result: {translationResult}')
+
+    textToSpeechResult = await googleApiService.textToSpeech(GoogleTextSynthesizeRequest(
+        input = GoogleTextSynthesisInput(
+            text = 'Hello, World!'
+        ),
+        voice = GoogleVoiceSelectionParams(
+            gender = None,
+            languageCode = 'en-us',
+            name = None
+        ),
+        audioConfig = GoogleVoiceAudioConfig(
+            pitch = None,
+            speakingRate = None,
+            volumeGainDb = None,
+            sampleRateHertz = None,
+            audioEncoding = GoogleVoiceAudioEncoding.MP3
+        )
+    ))
+
+    print(f'text to speech result: {textToSpeechResult}')
+
+    pass
+
+eventLoop.run_until_complete(main())
