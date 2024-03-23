@@ -69,6 +69,10 @@ class AuthRepository(
         snapshot = await self.getAllAsync()
         return snapshot.getGoogleCloudProjectId()
 
+    async def getGoogleCloudServiceAccountEmail(self) -> str | None:
+        snapshot = await self.getAllAsync()
+        return snapshot.getGoogleCloudServiceAccountEmail()
+
     async def getOneWeatherApiKey(self) -> str | None:
         snapshot = await self.getAllAsync()
         return snapshot.getOneWeatherApiKey()

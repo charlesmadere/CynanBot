@@ -34,6 +34,9 @@ class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProvide
     async def getGoogleCloudProjectId(self) -> str | None:
         raise RuntimeError('Not implemented')
 
+    async def getGoogleCloudServiceAccountEmail(self) -> str | None:
+        raise RuntimeError('Not implemented')
+
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
 timber: TimberInterface = TimberStub()

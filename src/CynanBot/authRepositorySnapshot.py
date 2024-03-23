@@ -49,6 +49,9 @@ class AuthRepositorySnapshot():
     def getGoogleCloudProjectId(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'googleCloudProjectId', fallback = '')
 
+    def getGoogleCloudServiceAccountEmail(self) -> str | None:
+        return utils.getStrFromDict(self.__jsonContents, 'googleCloudServiceAccountEmail', fallback = '')
+
     def requireMerriamWebsterApiKey(self) -> str:
         merriamWebsterApiKey = self.getMerriamWebsterApiKey()
 
