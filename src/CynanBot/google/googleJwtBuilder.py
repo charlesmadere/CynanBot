@@ -6,6 +6,7 @@ import jwt
 import CynanBot.misc.utils as utils
 from CynanBot.google.exceptions import (
     GoogleCloudProjectKeyIdUnavailableException,
+    GoogleCloudProjectPrivateKeyUnavailableException,
     GoogleCloudServiceAccountEmailUnavailableException)
 from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
@@ -87,8 +88,13 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
             'typ': self.__googleTokenTypeValue
         }
 
+        privateKey = await self.__googleCloudCredentialsProvider.getGoogleCloudProjectPrivateKey()
+        if not utils.isValidStr(privateKey):
+            raise GoogleCloudProjectPrivateKeyUnavailableException(f'No Google Cloud Project Private Key is available: \"{privateKey}\"')
+
         return jwt.encode(
             algorithm = self.__googleAlgorithmValue,
+            key = privateKey,
             headers = headers,
             payload = payload
         )

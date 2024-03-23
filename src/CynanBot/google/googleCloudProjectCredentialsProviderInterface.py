@@ -16,5 +16,9 @@ class GoogleCloudProjectCredentialsProviderInterface(ABC):
         pass
 
     @abstractmethod
+    async def getGoogleCloudProjectPrivateKey(self) -> str | None:
+        pass
+
+    @abstractmethod
     async def getGoogleCloudServiceAccountEmail(self) -> str | None:
         pass

@@ -52,6 +52,9 @@ class AuthRepositorySnapshot():
     def getGoogleCloudProjectId(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'googleCloudProjectId', fallback = '')
 
+    def getGoogleCloudProjectPrivateKey(self) -> str | None:
+        return utils.getStrFromDict(self.__jsonContents, 'googleCloudProjectPrivateKey', fallback = '')
+
     def getGoogleCloudServiceAccountEmail(self) -> str | None:
         return utils.getStrFromDict(self.__jsonContents, 'googleCloudServiceAccountEmail', fallback = '')
 
