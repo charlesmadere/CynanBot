@@ -122,7 +122,6 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
                     'Content-Type': self.__contentType,
-                    # 'x-goog-api-key': googleApiKey,
                     'x-goog-user-project': googleProjectId
                 },
                 json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
@@ -171,7 +170,6 @@ class GoogleApiService(GoogleApiServiceInterface):
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
                     'Content-Type': self.__contentType,
-                    # 'x-goog-api-key': googleApiKey,
                     'x-goog-user-project': googleProjectId,
                 },
                 json = await self.__googleJsonMapper.serializeTranslationRequest(request)
