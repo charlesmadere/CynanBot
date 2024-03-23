@@ -39,6 +39,9 @@ class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProvide
     async def getGoogleCloudProjectId(self) -> str | None:
         raise RuntimeError('Not implemented')
 
+    async def getGoogleCloudProjectPrivateKey(self) -> str | None:
+        raise RuntimeError('Not implemented')
+
     async def getGoogleCloudServiceAccountEmail(self) -> str | None:
         raise RuntimeError('Not implemented')
 
