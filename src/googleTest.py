@@ -84,8 +84,8 @@ async def main():
         contents = [ 'Hello, World!' ],
         mimeType = 'text/plain',
         model = None,
-        sourceLanguageCode = 'ja',
-        targetLanguageCode = 'en-us'
+        sourceLanguageCode = 'en-us',
+        targetLanguageCode = 'ja'
     ))
 
     print(f'translation result: {translationResult}')
