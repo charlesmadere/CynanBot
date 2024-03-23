@@ -4,10 +4,6 @@ from abc import ABC, abstractmethod
 class GoogleCloudProjectCredentialsProviderInterface(ABC):
 
     @abstractmethod
-    async def getGoogleCloudApiKey(self) -> str | None:
-        pass
-
-    @abstractmethod
     async def getGoogleCloudProjectKeyId(self) -> str | None:
         pass
 

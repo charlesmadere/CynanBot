@@ -29,9 +29,6 @@ from CynanBot.timber.timberStub import TimberStub
 
 class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
 
-    async def getGoogleCloudApiKey(self) -> str | None:
-        raise RuntimeError('Not implemented')
-
     async def getGoogleCloudProjectKeyId(self) -> str | None:
         raise RuntimeError('Not implemented')
 

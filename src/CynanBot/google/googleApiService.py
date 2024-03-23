@@ -109,10 +109,6 @@ class GoogleApiService(GoogleApiServiceInterface):
         self.__timber.log('GoogleApiService', f'Fetching text-to-speech from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
 
-        googleApiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
-        if not utils.isValidStr(googleApiKey):
-            raise GoogleCloudProjectApiKeyUnavailableException(f'No Google Cloud API Key is available: \"{googleApiKey}\"')
-
         googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
         if not utils.isValidStr(googleProjectId):
             raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
@@ -161,10 +157,6 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         self.__timber.log('GoogleApiService', f'Fetching translation from Google... ({request=})')
         clientSession = await self.__networkClientProvider.get()
-
-        googleApiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
-        if not utils.isValidStr(googleApiKey):
-            raise GoogleCloudProjectApiKeyUnavailableException(f'No Google Cloud API Key is available: \"{googleApiKey}\"')
 
         googleProjectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
         if not utils.isValidStr(googleProjectId):

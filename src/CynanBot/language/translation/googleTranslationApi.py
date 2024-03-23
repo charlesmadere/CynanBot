@@ -49,9 +49,15 @@ class GoogleTranslationApi(TranslationApi):
         return TranslationApiSource.GOOGLE_TRANSLATE
 
     async def isAvailable(self) -> bool:
-        apiKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudApiKey()
         projectId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectId()
-        return utils.isValidStr(apiKey) and utils.isValidStr(projectId)
+        keyId = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectKeyId()
+        privateKey = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudProjectPrivateKey()
+        serviceAccountEmail = await self.__googleCloudProjectCredentialsProvider.getGoogleCloudServiceAccountEmail()
+
+        return utils.isValidStr(projectId) \
+            and utils.isValidStr(keyId) \
+            and utils.isValidStr(privateKey) \
+            and utils.isValidStr(serviceAccountEmail)
 
     async def translate(self, text: str, targetLanguage: LanguageEntry) -> TranslationResponse:
         if not utils.isValidStr(text):
