@@ -1,3 +1,4 @@
+import random
 import traceback
 
 import CynanBot.misc.utils as utils
@@ -14,6 +15,7 @@ from CynanBot.google.googleVoiceSelectionParams import \
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.google.googleTtsChoice import GoogleTtsChoice
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -100,22 +102,14 @@ class GoogleTtsManager(TtsManagerInterface):
         if not utils.isValidStr(message):
             return None
 
+        ttsChoice = await self.__randomlyChooseTts()
+
         request = GoogleTextSynthesizeRequest(
             input = GoogleTextSynthesisInput(
                 text = message
             ),
-            voice = GoogleVoiceSelectionParams(
-                gender = None,
-                languageCode = 'en-us',
-                name = None
-            ),
-            audioConfig = GoogleVoiceAudioConfig(
-                pitch = None,
-                speakingRate = None,
-                volumeGainDb = None,
-                sampleRateHertz = None,
-                audioEncoding = GoogleVoiceAudioEncoding.MP3
-            )
+            voice = ttsChoice.getSelectionParams(),
+            audioConfig = ttsChoice.getAudioConfig()
         )
 
         response: GoogleTextSynthesisResponse | None = None
@@ -132,6 +126,45 @@ class GoogleTtsManager(TtsManagerInterface):
 
         return await self.__googleTtsFileManager.writeBase64CommandToNewFile(
             base64Command = response.getAudioContent()
+        )
+
+    async def __randomlyChooseTts(self) -> GoogleTtsChoice:
+        audioConfig = GoogleVoiceAudioConfig(
+            pitch = None,
+            speakingRate = None,
+            volumeGainDb = await self.__ttsSettingsRepository.getGoogleVolumeGainDb(),
+            sampleRateHertz = None,
+            audioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
+        )
+
+        languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'ja-JP' ]
+        languageCode = random.choice(languageCodes)
+
+        names: list[str] | None = None
+
+        if languageCode == 'en-AU':
+            names = [ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' ]
+        elif languageCode == 'en-GB':
+            names = [ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' ]
+        elif languageCode == 'en-US':
+            names = [ 'en-US-Journey-D', 'en-US-Journey-F' ]
+        elif languageCode == 'ja-JP':
+            names = [ 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' ]
+
+        name: str | None = None
+
+        if names is not None and len(names) >= 1:
+            name = random.choice(names)
+
+        selectionParams = GoogleVoiceSelectionParams(
+            gender = None,
+            languageCode = languageCode,
+            name = name
+        )
+
+        return GoogleTtsChoice(
+            audioConfig = audioConfig,
+            selectionParams = selectionParams
         )
 
     def __repr__(self) -> str:

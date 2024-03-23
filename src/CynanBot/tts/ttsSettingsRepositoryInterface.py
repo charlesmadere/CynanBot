@@ -6,6 +6,10 @@ from CynanBot.misc.clearable import Clearable
 class TtsSettingsRepositoryInterface(Clearable):
 
     @abstractmethod
+    async def getGoogleVolumeGainDb(self) -> float | None:
+        pass
+
+    @abstractmethod
     async def getMaximumMessageSize(self) -> int:
         pass
 
