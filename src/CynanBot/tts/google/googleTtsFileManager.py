@@ -40,8 +40,10 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
     async def __decodeBase64Command(self, base64Command: str | None) -> bytes | None:
         if base64Command is None:
             return None
-        elif not utils.isValidStr(base64Command):
+        elif not isinstance(base64Command, str):
             raise TypeError(f'base64Command argument is malformed: \"{base64Command}\"')
+        elif not utils.isValidStr(base64Command):
+            return None
 
         decoded = base64.b64decode(
             s = base64Command,
