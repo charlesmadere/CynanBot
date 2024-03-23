@@ -53,9 +53,11 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         expiresIn = utils.getIntFromDict(jsonContents, 'expires_in')
         expireTime = now + timedelta(seconds = expiresIn)
 
+        accessToken = utils.getStrFromDict(jsonContents, 'access_token')
+
         return GoogleAccessToken(
             expireTime = expireTime,
-            accessToken = utils.getStrFromDict(jsonContents, 'access_token')
+            accessToken = accessToken
         )
 
     async def parseTextSynthesisResponse(
@@ -140,11 +142,6 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return None
 
         glossaryConfig = await self.parseTranslateTextGlossaryConfig(jsonContents.get('glossaryConfig'))
-        if glossaryConfig is None:
-            exception = ValueError(f'Failed to parse \"glossaryConfig\" element into a GoogleTranslateTextGlossaryConfig! ({jsonContents=}) ({glossaryConfig=})')
-            self.__timber.log('GoogleJsonMapper', f'Unable to construct a GoogleTranslation instance as there is no glossary config ({jsonContents=}) ({glossaryConfig=})', exception, traceback.format_exc())
-            raise exception
-
         detectedLanguageCode = utils.getStrFromDict(jsonContents, 'detectedLangaugeCode')
 
         model: str | None = None

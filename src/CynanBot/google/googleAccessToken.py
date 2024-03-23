@@ -13,7 +13,7 @@ class GoogleAccessToken():
     ):
         if not isinstance(expireTime, datetime):
             raise TypeError(f'expireTime argument is malformed: \"{expireTime}\"')
-        elif utils.isValidStr(accessToken):
+        elif not utils.isValidStr(accessToken):
             raise TypeError(f'accessToken argument is malformed: \"{accessToken}\"')
 
         self.__expireTime: datetime = expireTime

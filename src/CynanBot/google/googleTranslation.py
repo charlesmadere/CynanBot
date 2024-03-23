@@ -9,12 +9,12 @@ class GoogleTranslation():
 
     def __init__(
         self,
-        glossaryConfig: GoogleTranslateTextGlossaryConfig,
+        glossaryConfig: GoogleTranslateTextGlossaryConfig | None,
         detectedLanguageCode: str,
         model: str | None,
         translatedText: str | None
     ):
-        if not isinstance(glossaryConfig, GoogleTranslateTextGlossaryConfig):
+        if glossaryConfig is not None and not isinstance(glossaryConfig, GoogleTranslateTextGlossaryConfig):
             raise TypeError(f'glossaryConfig argument is malformed: \"{glossaryConfig}\"')
         elif not utils.isValidStr(detectedLanguageCode):
             raise TypeError(f'detectedLanguageCode argument is malformed: \"{detectedLanguageCode}\"')
@@ -23,7 +23,7 @@ class GoogleTranslation():
         elif translatedText is not None and not isinstance(translatedText, str):
             raise TypeError(f'translatedText argument is malformed: \"{translatedText}\"')
 
-        self.__glossaryConfig: GoogleTranslateTextGlossaryConfig = glossaryConfig
+        self.__glossaryConfig: GoogleTranslateTextGlossaryConfig | None = glossaryConfig
         self.__detectedLanguageCode: str = detectedLanguageCode
         self.__model: str | None = model
         self.__translatedText: str | None = translatedText
@@ -31,7 +31,7 @@ class GoogleTranslation():
     def getDetectedLanguageCode(self) -> str:
         return self.__detectedLanguageCode
 
-    def getGlossaryConfig(self) -> GoogleTranslateTextGlossaryConfig:
+    def getGlossaryConfig(self) -> GoogleTranslateTextGlossaryConfig | None:
         return self.__glossaryConfig
 
     def getModel(self) -> str | None:

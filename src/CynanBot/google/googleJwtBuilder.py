@@ -1,6 +1,5 @@
 import calendar
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Any
 
 import jwt
 
@@ -67,15 +66,15 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         return calendar.timegm(now.timetuple())
 
     async def buildJwt(self) -> str:
-        iss = await self.__googleCloudCredentialsProvider.getGoogleCloudServiceAccountEmail()
-        if not utils.isValidStr(iss):
-            raise GoogleCloudServiceAccountEmailUnavailableException(f'No Google Cloud Service Account Email is available: \"{iss}\"')
+        serviceAccountEmail = await self.__googleCloudCredentialsProvider.getGoogleCloudServiceAccountEmail()
+        if not utils.isValidStr(serviceAccountEmail):
+            raise GoogleCloudServiceAccountEmailUnavailableException(f'No Google Cloud Service Account Email is available: \"{serviceAccountEmail}\"')
 
-        payload: dict[str, Any] = {
+        payload: dict[str, object] = {
             'aud': self.__googleAssertionTarget,
             'exp': await self.__buildExpirationTime(),
             'iat': await self.__buildIssuedTime(),
-            'iss': iss,
+            'iss': serviceAccountEmail,
             'scope': await self.__buildScopesString()
         }
 
@@ -83,9 +82,14 @@ class GoogleJwtBuilder(GoogleJwtBuilderInterface):
         if not utils.isValidStr(keyId):
             raise GoogleCloudProjectKeyIdUnavailableException(f'No Google Cloud Project Key ID is available: \"{keyId}\"')
 
+        headers: dict[str, object] = {
+            'kid': keyId,
+            'typ': self.__googleTokenTypeValue
+        }
+
         return jwt.encode(
             algorithm = self.__googleAlgorithmValue,
-            key = keyId,
+            headers = headers,
             payload = payload
         )
 

@@ -67,12 +67,13 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         self.__timber.log('GoogleApiService', 'Fetching access token from Google...')
         clientSession = await self.__networkClientProvider.get()
+        assertion = await self.__googleJwtBuilder.buildJwt()
 
         try:
             response = await clientSession.post(
                 url = 'https://oauth2.googleapis.com/token',
                 json = {
-                    'assertion': await self.__googleJwtBuilder.buildJwt(),
+                    'assertion': assertion,
                     'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
                 }
             )
