@@ -19,7 +19,6 @@ from CynanBot.google.googleTextSynthesizeRequest import \
 from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
-from CynanBot.google.googleVoiceGender import GoogleVoiceGender
 from CynanBot.google.googleVoiceSelectionParams import \
     GoogleVoiceSelectionParams
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
