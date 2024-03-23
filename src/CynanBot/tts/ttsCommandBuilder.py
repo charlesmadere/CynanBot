@@ -1,5 +1,5 @@
 import re
-from typing import List, Optional, Pattern
+from typing import Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.contentScanner.contentCode import ContentCode
@@ -9,9 +9,9 @@ from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsCheerDonation import TtsCheerDonation
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
-from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsDonationType import TtsDonationType
 from CynanBot.tts.ttsEvent import TtsEvent
+from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.tts.ttsSubscriptionDonation import TtsSubscriptionDonation
@@ -19,7 +19,7 @@ from CynanBot.tts.ttsSubscriptionDonationGiftType import \
     TtsSubscriptionDonationGiftType
 
 
-class DecTalkCommandBuilder(TtsCommandBuilderInterface):
+class TtsCommandBuilder(TtsCommandBuilderInterface):
 
     def __init__(
         self,
@@ -42,12 +42,12 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         self.__timber: TimberInterface = timber
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
-        self.__cheerRegExes: List[Pattern] = self.__buildCheerStrings()
-        self.__inlineCommandRegExes: List[Pattern] = self.__buildInlineCommandStrings()
-        self.__inputFlagRegExes: List[Pattern] = self.__buildInputFlagStrings()
+        self.__cheerRegExes: list[Pattern] = self.__buildCheerStrings()
+        self.__inlineCommandRegExes: list[Pattern] = self.__buildInlineCommandStrings()
+        self.__inputFlagRegExes: list[Pattern] = self.__buildInputFlagStrings()
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
-    async def buildAndCleanEvent(self, event: Optional[TtsEvent]) -> Optional[str]:
+    async def buildAndCleanEvent(self, event: TtsEvent | None) -> str | None:
         if event is not None and not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
@@ -58,7 +58,10 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         message = event.getMessage()
 
         if utils.isValidStr(message):
-            message = await self.buildAndCleanMessage(message)
+            message = await self.buildAndCleanMessage(
+                provider = event.getProvider(),
+                message = message
+            )
 
         if utils.isValidStr(prefix) and utils.isValidStr(message):
             return f'{prefix} {message}'
@@ -69,13 +72,19 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         else:
             return None
 
-    async def buildAndCleanMessage(self, message: Optional[str]) -> Optional[str]:
-        if not utils.isValidStr(message):
+    async def buildAndCleanMessage(
+        self,
+        provider: TtsProvider,
+        message: str | None
+    ) -> str | None:
+        if not isinstance(provider, TtsProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+        elif not utils.isValidStr(message):
             return None
 
         contentCode = await self.__contentScanner.scan(message)
         if contentCode is not ContentCode.OK:
-            self.__timber.log('DecTalkCommandBuilder', f'TTS command \"{message}\" returned a bad content code: \"{contentCode}\"')
+            self.__timber.log('TtsCommandBuilder', f'TTS command \"{message}\" returned a bad content code: \"{contentCode}\"')
             return None
 
         message = await self.__purgeInputFlags(message)
@@ -106,8 +115,8 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         # DECTalk requires Windows-1252 encoding
         return message.encode().decode('windows-1252')
 
-    def __buildCheerStrings(self) -> List[Pattern]:
-        cheerStrings: List[Pattern] = list()
+    def __buildCheerStrings(self) -> list[Pattern]:
+        cheerStrings: list[Pattern] = list()
 
         # purge "cheer100"
         cheerStrings.append(re.compile(r'(^|\s+)cheer\d+(\s+|$)', re.IGNORECASE))
@@ -117,8 +126,8 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return cheerStrings
 
-    def __buildInlineCommandStrings(self) -> List[Pattern]:
-        inlineCommandStrings: List[Pattern] = list()
+    def __buildInlineCommandStrings(self) -> list[Pattern]:
+        inlineCommandStrings: list[Pattern] = list()
 
         # purge comma pause inline command
         inlineCommandStrings.append(re.compile(r'\[\s*\:\s*(comm|cp).*?\]', re.IGNORECASE))
@@ -161,8 +170,8 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return inlineCommandStrings
 
-    def __buildInputFlagStrings(self) -> List[Pattern]:
-        inputFlagStrings: List[Pattern] = list()
+    def __buildInputFlagStrings(self) -> list[Pattern]:
+        inputFlagStrings: list[Pattern] = list()
 
         # purge potentially dangerous/tricky characters
         inputFlagStrings.append(re.compile(r'\&|\%|\;|\=|\'|\"|\||\^|\~', re.IGNORECASE))
@@ -194,14 +203,14 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return inputFlagStrings
 
-    async def __cropMessageIfNecessary(self, message: Optional[str]) -> Optional[str]:
+    async def __cropMessageIfNecessary(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
             return None
 
         maxMessageSize = await self.__ttsSettingsRepository.getMaximumMessageSize()
 
         if len(message) > maxMessageSize:
-            self.__timber.log('DecTalkCommandBuilder', f'Chopping down TTS command \"{message}\" as it is too long (len={len(message)}) ({maxMessageSize=}) ({message})')
+            self.__timber.log('TtsCommandBuilder', f'Chopping down TTS command \"{message}\" as it is too long (len={len(message)}) ({maxMessageSize=}) ({message})')
             message = message[:maxMessageSize].strip()
 
         if not utils.isValidStr(message):
@@ -213,7 +222,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         self,
         event: TtsEvent,
         donation: TtsCheerDonation
-    ) -> Optional[str]:
+    ) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsCheerDonation):
@@ -223,11 +232,11 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return f'{event.getUserName()} cheered {donation.getBits()}!'
 
-    async def __processDonationPrefix(self, event: TtsEvent) -> Optional[str]:
+    async def __processDonationPrefix(self, event: TtsEvent) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        donation: Optional[TtsDonation] = event.getDonation()
+        donation = event.getDonation()
 
         if donation is None:
             return None
@@ -271,7 +280,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
         else:
             return f'{event.getUserName()} subscribed!'
 
-    async def __purgeCheers(self, message: Optional[str]) -> Optional[str]:
+    async def __purgeCheers(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
             return None
 
@@ -286,7 +295,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return message.strip()
 
-    async def __purgeInlineCommands(self, message: Optional[str]) -> Optional[str]:
+    async def __purgeInlineCommands(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
             return None
 
@@ -311,7 +320,7 @@ class DecTalkCommandBuilder(TtsCommandBuilderInterface):
 
         return message.strip()
 
-    async def __purgeInputFlags(self, message: Optional[str]) -> Optional[str]:
+    async def __purgeInputFlags(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):
             return None
 

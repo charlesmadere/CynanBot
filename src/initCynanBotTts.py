@@ -104,9 +104,9 @@ from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
     SystemCommandHelperInterface
 from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.ttsCommandBuilder import TtsCommandBuilder
 from CynanBot.tts.ttsManager import TtsManager
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -369,7 +369,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 )
 
 decTalkManager: Optional[DecTalkManager] = DecTalkManager(
-    decTalkCommandBuilder = DecTalkCommandBuilder(
+    ttsCommandBuilder = TtsCommandBuilder(
         contentScanner = contentScanner,
         emojiHelper = emojiHelper,
         timber = timber,

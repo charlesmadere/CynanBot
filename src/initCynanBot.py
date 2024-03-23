@@ -71,6 +71,8 @@ from CynanBot.google.googleApiService import GoogleApiService
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
 from CynanBot.google.googleJsonMapper import GoogleJsonMapper
 from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
+from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
@@ -261,9 +263,9 @@ from CynanBot.trivia.triviaSourceInstabilityHelper import \
 from CynanBot.trivia.triviaUtils import TriviaUtils
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
-from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.ttsCommandBuilder import TtsCommandBuilder
 from CynanBot.tts.ttsManager import TtsManager
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -511,10 +513,16 @@ googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
     timber = timber
 )
 
+googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+    googleCloudCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper
+)
+
 googleApiService: GoogleApiServiceInterface = GoogleApiService(
     googleApiAccessTokenStorage = googleApiAccessTokenStorage,
-    googleJsonMapper = googleJsonMapper,
     googleCloudProjectCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper,
+    googleJwtBuilder = googleJwtBuilder,
     networkClientProvider = networkClientProvider,
     timber = timber
 )
@@ -872,7 +880,7 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
 )
 
 decTalkManager: Optional[DecTalkManager] = DecTalkManager(
-    decTalkCommandBuilder = DecTalkCommandBuilder(
+    ttsCommandBuilder = TtsCommandBuilder(
         contentScanner = contentScanner,
         emojiHelper = emojiHelper,
         timber = timber,

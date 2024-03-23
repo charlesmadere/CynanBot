@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
+from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.google.googleApiAccessTokenStorage import \
     GoogleApiAccessTokenStorage
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
@@ -25,6 +26,9 @@ from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
+from CynanBot.tts.google.googleTtsFileManagerInterface import \
+    GoogleTtsFileManagerInterface
 
 
 class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
@@ -42,6 +46,10 @@ class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProvide
         raise RuntimeError('Not implemented')
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
+
+backgroundTaskHelper = BackgroundTaskHelper(
+    eventLoop = eventLoop
+)
 
 timber: TimberInterface = TimberStub()
 
@@ -74,20 +82,25 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber
 )
 
+googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
+    eventLoop = eventLoop,
+    timber = timber
+)
+
 async def main():
     pass
 
-    translationResult = await googleApiService.translate(GoogleTranslationRequest(
-        glossaryConfig = None,
-        transliterationConfig = None,
-        contents = [ 'Hello, World!' ],
-        mimeType = 'text/plain',
-        model = None,
-        sourceLanguageCode = 'en-us',
-        targetLanguageCode = 'ja'
-    ))
+    # translationResult = await googleApiService.translate(GoogleTranslationRequest(
+    #     glossaryConfig = None,
+    #     transliterationConfig = None,
+    #     contents = [ 'Hello, World!' ],
+    #     mimeType = 'text/plain',
+    #     model = None,
+    #     sourceLanguageCode = 'en-us',
+    #     targetLanguageCode = 'ja'
+    # ))
 
-    print(f'translation result: {translationResult}')
+    # print(f'translation result: {translationResult}')
 
     textToSpeechResult = await googleApiService.textToSpeech(GoogleTextSynthesizeRequest(
         input = GoogleTextSynthesisInput(
@@ -108,6 +121,9 @@ async def main():
     ))
 
     print(f'text to speech result: {textToSpeechResult}')
+
+    fileName = await googleTtsFileManager.writeBase64CommandToNewFile(textToSpeechResult.getAudioContent())
+    print(f'{fileName=}')
 
     pass
 

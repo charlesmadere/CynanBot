@@ -8,7 +8,6 @@ import psutil
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.tts.decTalk.decTalkCommandBuilder import DecTalkCommandBuilder
 from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
     DecTalkFileManagerInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -22,23 +21,23 @@ class DecTalkManager(TtsManagerInterface):
 
     def __init__(
         self,
-        decTalkCommandBuilder: DecTalkCommandBuilder,
         decTalkFileManager: DecTalkFileManagerInterface,
         timber: TimberInterface,
+        ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface
     ):
-        if not isinstance(decTalkCommandBuilder, DecTalkCommandBuilder):
-            raise TypeError(f'decTalkCommandBuilder argument is malformed: \"{decTalkCommandBuilder}\"')
-        elif not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
+        if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
+            raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
         self.__timber: TimberInterface = timber
-        self.__decTalkCommandBuilder: TtsCommandBuilderInterface = decTalkCommandBuilder
+        self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
 
         self.__isPlaying: bool = False
@@ -118,7 +117,7 @@ class DecTalkManager(TtsManagerInterface):
             self.__timber.log('DecTalkManager', f'There is already an ongoing Dec Talk event!')
             return False
 
-        command = await self.__decTalkCommandBuilder.buildAndCleanEvent(event)
+        command = await self.__ttsCommandBuilder.buildAndCleanEvent(event)
 
         if not utils.isValidStr(command):
             self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a valid command: \"{event}\"')
