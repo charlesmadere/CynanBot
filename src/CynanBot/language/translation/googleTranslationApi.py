@@ -114,10 +114,14 @@ class GoogleTranslationApi(TranslationApi):
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        originalLanguage = await self.__languagesRepository.getLanguageForCommand(
-            command = translation.getDetectedLanguageCode(),
-            hasIso6391Code = True
-        )
+        detectedLanguageCode = translation.getDetectedLanguageCode()
+        originalLanguage: LanguageEntry | None = None
+
+        if utils.isValidStr(detectedLanguageCode):
+            originalLanguage = await self.__languagesRepository.getLanguageForCommand(
+                command = detectedLanguageCode,
+                hasIso6391Code = True
+            )
 
         if originalLanguage is None:
             self.__timber.log('GoogleTranslationApi', f'Unable to find corresponding language entry for the given detected language code \"{translation.getDetectedLanguageCode}\" ({text=}) ({targetLanguage=}) ({response=})')
