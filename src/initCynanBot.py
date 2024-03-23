@@ -265,7 +265,12 @@ from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
+from CynanBot.tts.google.googleTtsFileManagerInterface import \
+    GoogleTtsFileManagerInterface
+from CynanBot.tts.google.googleTtsManager import GoogleTtsManager
 from CynanBot.tts.ttsCommandBuilder import TtsCommandBuilder
+from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from CynanBot.tts.ttsManager import TtsManager
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -879,24 +884,40 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
+ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
+    contentScanner = contentScanner,
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 decTalkManager: Optional[DecTalkManager] = DecTalkManager(
-    ttsCommandBuilder = TtsCommandBuilder(
-        contentScanner = contentScanner,
-        emojiHelper = emojiHelper,
-        timber = timber,
-        ttsSettingsRepository = ttsSettingsRepository
-    ),
     decTalkFileManager = DecTalkFileManager(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
     ),
     timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
+googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
+    eventLoop = eventLoop,
+    timber = timber
+)
+
+googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
+    googleApiService = googleApiService,
+    googleTtsFileManager = googleTtsFileManager,
+    soundPlayerManager = soundPlayerManager,
+    timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
 ttsManager: Optional[TtsManagerInterface] = TtsManager(
     decTalkManager = decTalkManager,
-    googleTtsManager = None,
+    googleTtsManager = googleTtsManager,
     timber = timber,
     ttsMonsterManager = None,
     ttsSettingsRepository = ttsSettingsRepository

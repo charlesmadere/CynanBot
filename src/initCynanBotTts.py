@@ -54,6 +54,16 @@ from CynanBot.funtoon.funtoonTokensRepository import FuntoonTokensRepository
 from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
     FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.google.googleApiAccessTokenStorage import \
+    GoogleApiAccessTokenStorage
+from CynanBot.google.googleApiAccessTokenStorageInterface import \
+    GoogleApiAccessTokenStorageInterface
+from CynanBot.google.googleApiService import GoogleApiService
+from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
+from CynanBot.google.googleJsonMapper import GoogleJsonMapper
+from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleJwtBuilder import GoogleJwtBuilder
+from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from CynanBot.language.jishoHelper import JishoHelper
 from CynanBot.language.languagesRepository import LanguagesRepository
 from CynanBot.language.languagesRepositoryInterface import \
@@ -106,7 +116,12 @@ from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
+from CynanBot.tts.google.googleTtsFileManagerInterface import \
+    GoogleTtsFileManagerInterface
+from CynanBot.tts.google.googleTtsManager import GoogleTtsManager
 from CynanBot.tts.ttsCommandBuilder import TtsCommandBuilder
+from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from CynanBot.tts.ttsManager import TtsManager
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
@@ -329,6 +344,28 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     userIdsRepository = userIdsRepository
 )
 
+googleApiAccessTokenStorage: GoogleApiAccessTokenStorageInterface = GoogleApiAccessTokenStorage(
+    timber = timber
+)
+
+googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+    timber = timber
+)
+
+googleJwtBuilder: GoogleJwtBuilderInterface = GoogleJwtBuilder(
+    googleCloudCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper
+)
+
+googleApiService: GoogleApiServiceInterface = GoogleApiService(
+    googleApiAccessTokenStorage = googleApiAccessTokenStorage,
+    googleCloudProjectCredentialsProvider = authRepository,
+    googleJsonMapper = googleJsonMapper,
+    googleJwtBuilder = googleJwtBuilder,
+    networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
 twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
@@ -368,24 +405,40 @@ ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
+ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
+    contentScanner = contentScanner,
+    emojiHelper = emojiHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
 decTalkManager: Optional[DecTalkManager] = DecTalkManager(
-    ttsCommandBuilder = TtsCommandBuilder(
-        contentScanner = contentScanner,
-        emojiHelper = emojiHelper,
-        timber = timber,
-        ttsSettingsRepository = ttsSettingsRepository
-    ),
     decTalkFileManager = DecTalkFileManager(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
     ),
     timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
+    ttsSettingsRepository = ttsSettingsRepository
+)
+
+googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
+    eventLoop = eventLoop,
+    timber = timber
+)
+
+googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
+    googleApiService = googleApiService,
+    googleTtsFileManager = googleTtsFileManager,
+    soundPlayerManager = soundPlayerManager,
+    timber = timber,
+    ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository
 )
 
 ttsManager: Optional[TtsManagerInterface] = TtsManager(
     decTalkManager = decTalkManager,
-    googleTtsManager = None,
+    googleTtsManager = googleTtsManager,
     timber = timber,
     ttsMonsterManager = None,
     ttsSettingsRepository = ttsSettingsRepository
