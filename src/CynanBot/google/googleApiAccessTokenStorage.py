@@ -36,10 +36,12 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
         now = datetime.now(self.__timeZone)
         expireTime = accessToken.getExpireTime()
 
-        if (now + self.__expireTimeBuffer) >= expireTime:
-            return None
-        else:
+        if (now + self.__expireTimeBuffer) < expireTime:
             return accessToken
+
+        self.__timber.log('GoogleApiAccessTokenStorage', f'Erasing persisted access token, as it is now too old to use')
+        self.__accessToken = None
+        return None
 
     async def setAccessToken(self, accessToken: GoogleAccessToken | None):
         if accessToken is not None and not isinstance(accessToken, GoogleAccessToken):
