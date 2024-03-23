@@ -60,6 +60,32 @@ class GoogleApiService(GoogleApiServiceInterface):
         if accessToken is not None:
             return accessToken
 
+        self.__timber.log('GoogleApiService', 'Fetching access token from Google...')
+        clientSession = await self.__networkClientProvider.get()
+
+        try:
+            response = await clientSession.post(
+                url = 'https://oauth2.googleapis.com/token',
+                json = {
+                    'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer'
+                }
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('GoogleApiService', f'Encountered network error when fetching access token: {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'Encountered network error when fetching access token: {e}')
+
+        if response is None:
+            self.__timber.log('GoogleApiService', f'Encountered unknown network error when fetching access token ({response=})')
+            raise GenericNetworkException(f'GoogleApiService encountered unknown network error when fetching access token ({response=})')
+
+        responseStatusCode = response.getStatusCode()
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('GoogleApiService', f'Encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'GoogleApiService encountered non-200 HTTP status code when fetching access token ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+
         # TODO
         raise RuntimeError('this method is not yet implemented!')
 
@@ -78,13 +104,16 @@ class GoogleApiService(GoogleApiServiceInterface):
         if not utils.isValidStr(googleProjectId):
             raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
 
+        googleAccessToken = await self.__fetchGoogleAccessToken()
+
         try:
             response = await clientSession.post(
                 url = f'https://texttospeech.googleapis.com/v1/text:synthesize',
                 headers = {
-                    # 'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
+                    'Accept': self.__contentType,
+                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
                     'Content-Type': self.__contentType,
-                    'x-goog-api-key': googleApiKey,
+                    # 'x-goog-api-key': googleApiKey,
                     'x-goog-user-project': googleProjectId
                 },
                 json = await self.__googleJsonMapper.serializeSynthesizeRequest(request),
@@ -128,12 +157,16 @@ class GoogleApiService(GoogleApiServiceInterface):
         if not utils.isValidStr(googleProjectId):
             raise GoogleCloudProjectIdUnavailableException(f'No Google Cloud Project ID is available: \"{googleProjectId}\"')
 
+        googleAccessToken = await self.__fetchGoogleAccessToken()
+
         try:
             response = await clientSession.post(
                 url = f'https://translate.googleapis.com/v3/projects/{googleProjectId}:translateText',
                 headers = {
+                    'Accept': self.__contentType,
+                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
                     'Content-Type': self.__contentType,
-                    'x-goog-api-key': googleApiKey,
+                    # 'x-goog-api-key': googleApiKey,
                     'x-goog-user-project': googleProjectId,
                 },
                 json = await self.__googleJsonMapper.serializeTranslationRequest(request)
