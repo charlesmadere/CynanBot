@@ -385,8 +385,16 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(voiceSelectionParams, GoogleVoiceSelectionParams):
             raise TypeError(f'voiceSelectionParams argument is malformed: \"{voiceSelectionParams}\"')
 
-        return {
-            'languageCode': voiceSelectionParams.getLanguageCode(),
-            'name': voiceSelectionParams.getName(),
-            'ssmlGender': await self.serializeVoiceGender(voiceSelectionParams.getGender())
+        result: dict[str, Any] = {
+            'languageCode': voiceSelectionParams.getLanguageCode()
         }
+
+        name = voiceSelectionParams.getName()
+        if utils.isValidStr(name):
+            result['name'] = name
+
+        gender = voiceSelectionParams.getGender()
+        if gender is not None:
+            result['ssmlGender'] = await self.serializeVoiceGender(gender)
+
+        return result

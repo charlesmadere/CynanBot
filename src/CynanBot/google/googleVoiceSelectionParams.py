@@ -8,28 +8,28 @@ class GoogleVoiceSelectionParams():
 
     def __init__(
         self,
-        gender: GoogleVoiceGender,
+        gender: GoogleVoiceGender | None,
         languageCode: str,
-        name: str
+        name: str | None
     ):
-        if not isinstance(gender, GoogleVoiceGender):
+        if gender is not None and not isinstance(gender, GoogleVoiceGender):
             raise TypeError(f'gender argument is malformed: \"{gender}\"')
         elif not utils.isValidStr(languageCode):
             raise TypeError(f'languageCode argument is malformed: \"{languageCode}\"')
-        elif not utils.isValidStr(name):
+        elif name is not None and not utils.isValidStr(name):
             raise TypeError(f'name argument is malformed: \"{name}\"')
 
-        self.__gender: GoogleVoiceGender = gender
+        self.__gender: GoogleVoiceGender | None = gender
         self.__languageCode: str = languageCode
-        self.__name: str = name
+        self.__name: str | None = name
 
-    def getGender(self) -> GoogleVoiceGender:
+    def getGender(self) -> GoogleVoiceGender | None:
         return self.__gender
 
     def getLanguageCode(self) -> str:
         return self.__languageCode
 
-    def getName(self) -> str:
+    def getName(self) -> str | None:
         return self.__name
 
     def __repr__(self) -> str:
