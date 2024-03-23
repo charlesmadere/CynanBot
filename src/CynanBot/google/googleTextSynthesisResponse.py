@@ -8,18 +8,18 @@ class GoogleTextSynthesisResponse():
 
     def __init__(
         self,
-        audioConfig: GoogleVoiceAudioConfig,
+        audioConfig: GoogleVoiceAudioConfig | None,
         audioContent: str
     ):
-        if not isinstance(audioConfig, GoogleVoiceAudioConfig):
+        if audioConfig is not None and not isinstance(audioConfig, GoogleVoiceAudioConfig):
             raise TypeError(f'audioConfig argument is malformed: \"{audioConfig}\"')
         elif not utils.isValidStr(audioContent):
             raise TypeError(f'audioContent argument is malformed: \"{audioContent}\"')
 
-        self.__audioConfig: GoogleVoiceAudioConfig = audioConfig
+        self.__audioConfig: GoogleVoiceAudioConfig | None = audioConfig
         self.__audioContent: str = audioContent
 
-    def getAudioConfig(self) -> GoogleVoiceAudioConfig:
+    def getAudioConfig(self) -> GoogleVoiceAudioConfig | None:
         return self.__audioConfig
 
     def getAudioContent(self) -> str:

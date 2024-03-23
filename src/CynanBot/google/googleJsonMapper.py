@@ -68,11 +68,6 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return None
 
         audioConfig = await self.parseVoiceAudioConfig(jsonContents.get('audioConfig'))
-        if audioConfig is None:
-            exception = ValueError(f'Failed to parse \"audioConfig\" element into a GoogleVoiceAudioConfig! ({jsonContents=}) ({audioConfig=})')
-            self.__timber.log('GoogleJsonMapper', f'Unable to construct a GoogleTextSynthesisResponse instance as there is no audio config ({jsonContents=}) ({audioConfig=})', exception, traceback.format_exc())
-            raise exception
-
         audioContent = utils.getStrFromDict(jsonContents, 'audioContent')
 
         return GoogleTextSynthesisResponse(
@@ -142,7 +137,10 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return None
 
         glossaryConfig = await self.parseTranslateTextGlossaryConfig(jsonContents.get('glossaryConfig'))
-        detectedLanguageCode = utils.getStrFromDict(jsonContents, 'detectedLangaugeCode')
+
+        detectedLanguageCode: str | None = None
+        if 'detectedLanguageCode' in jsonContents and utils.isValidStr(jsonContents.get('detectedLanguageCode')):
+            detectedLanguageCode = utils.getStrFromDict(jsonContents, 'detectedLangaugeCode')
 
         model: str | None = None
         if 'model' in jsonContents and utils.isValidStr(jsonContents.get('model')):
