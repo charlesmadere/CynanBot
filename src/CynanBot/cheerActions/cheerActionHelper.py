@@ -4,6 +4,8 @@ from datetime import datetime, timedelta, timezone, tzinfo
 from typing import List, Optional, Pattern
 
 import CynanBot.misc.utils as utils
+from CynanBot.aniv.anivUserIdProviderInterface import \
+    AnivUserIdProviderInterface
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
@@ -29,6 +31,8 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchFollowerRepositoryInterface import \
@@ -37,6 +41,7 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -46,6 +51,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
+        anivUserIdProvider: AnivUserIdProviderInterface,
         cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
@@ -55,10 +61,13 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchFollowerRepository: TwitchFollowerRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         minimumFollowDuration: timedelta = timedelta(weeks = 1),
         timeZone: tzinfo = timezone.utc
     ):
+        if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
+            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
         if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
             raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
@@ -77,6 +86,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(minimumFollowDuration, timedelta):
@@ -84,6 +95,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
+        self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
@@ -93,11 +105,13 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__minimumFollowDuration: timedelta = minimumFollowDuration
         self.__timeZone: tzinfo = timeZone
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
+        self.__twitchChannelProvider: Optional[TwitchChannelProvider] = None
 
     async def __getTwitchAccessToken(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
@@ -290,6 +304,12 @@ class CheerActionHelper(CheerActionHelperInterface):
             user = user
         )
 
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
+        if provider is not None and not isinstance(provider, TwitchChannelProvider):
+            raise TypeError(f'provider argument is malformed: \"{provider}\"')
+
+        self.__twitchChannelProvider = provider
+
     async def __timeoutUser(
         self,
         action: CheerAction,
@@ -371,17 +391,30 @@ class CheerActionHelper(CheerActionHelperInterface):
                 userId = userIdToTimeout
             ))
 
-        if user.isTtsEnabled() and self.__streamAlertsManager is not None:
-            self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager = self.__streamAlertsManager
+        twitchChannelProvider = self.__twitchChannelProvider
+
+        if user.isTtsEnabled() and streamAlertsManager is not None:
+            message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds!'
+            anivUserId = await self.__anivUserIdProvider.getAnivUserId()
+
+            if userIdToTimeout == anivUserId:
+                message = f'{message} RIPBOZO'
+
+                if twitchChannelProvider is not None:
+                    twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+                    await self.__twitchUtils.safeSend(twitchChannel, 'RIPBOZO')
+
+            streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,
                 twitchChannel = user.getHandle(),
                 ttsEvent = TtsEvent(
-                    message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds!',
+                    message = message,
                     twitchChannel = user.getHandle(),
                     userId = cheerUserId,
                     userName = cheerUserName,
                     donation = None,
-                    provider = TtsProvider.DEC_TALK,
+                    provider = TtsProvider.GOOGLE,
                     raidInfo = None
                 )
             ))

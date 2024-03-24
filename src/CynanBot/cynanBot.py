@@ -7,7 +7,6 @@ from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from twitchio.ext.commands.errors import CommandNotFound
 
-from CynanBot.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -27,6 +26,8 @@ from CynanBot.channelPointRedemptions.pkmnEvolvePointRedemption import \
     PkmnEvolvePointRedemption
 from CynanBot.channelPointRedemptions.pkmnShinyPointRedemption import \
     PkmnShinyPointRedemption
+from CynanBot.channelPointRedemptions.soundAlertPointRedemption import \
+    SoundAlertPointRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
 from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
@@ -791,6 +792,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
         if self.__streamAlertsManager is not None:
             self.__streamAlertsManager.start()
+
+        if self.__cheerActionHelper is not None:
+            self.__cheerActionHelper.setTwitchChannelProvider(self)
 
         if self.__cheerActionRemodHelper is not None:
             self.__cheerActionRemodHelper.start()

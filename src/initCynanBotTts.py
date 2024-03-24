@@ -7,6 +7,9 @@ from typing import Optional
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
+from CynanBot.aniv.anivUserIdProviderInterface import \
+    AnivUserIdProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.absChatAction import AbsChatAction
@@ -272,6 +275,7 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
@@ -519,6 +523,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    anivUserIdProvider = anivUserIdProvider,
     cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -528,6 +533,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
 )
 

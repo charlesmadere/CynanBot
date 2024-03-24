@@ -9,6 +9,8 @@ from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
+from CynanBot.aniv.anivUserIdProviderInterface import \
+    AnivUserIdProviderInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
@@ -415,6 +417,7 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
@@ -950,7 +953,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
             contentScanner = contentScanner,
             timber = timber
         ),
-        anivUserIdProvider = AnivUserIdProvider(),
+        anivUserIdProvider = anivUserIdProvider,
         timber = timber,
         twitchApiService = twitchApiService,
         twitchHandleProvider = authRepository,
@@ -1017,6 +1020,7 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
+    anivUserIdProvider = anivUserIdProvider,
     cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
@@ -1026,6 +1030,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
+    twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
 )
 
