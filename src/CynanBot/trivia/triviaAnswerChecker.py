@@ -692,6 +692,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'global positioning system'
         if word == 'gpu':
             yield 'graphics processing unit'
+        if word == 'hd':
+            yield 'high definition'
         if word in ('hd', 'hdd'):
             yield 'hard disk drive'
             yield 'hard drive'
@@ -720,6 +722,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'red green blue'
         if word == 'rgbs':
             yield 'red green blue sync'
+        if word == 'sd':
+            yield 'standard definition'
         if word == 'sftp':
             yield 'secure file transfer protocol'
         if word == 'sp':
@@ -890,6 +894,68 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'travelling':
             yield 'traveling'
 
+        # commonly misspelled words
+        if word in ('absense', 'abcense', 'abcence'):
+            yield 'absence'
+        if word == 'accidently':
+            yield 'accidentally'
+        if word in ('accomodate', 'acommodate', 'accommadate'):
+            yield 'accommodate'
+        if word in ('acheive', 'acheeve'):
+            yield 'achieve'
+        if word == 'basicly':
+            yield 'basically'
+        if word in ('brocolli', 'broccolli'):
+            yield 'broccoli'
+        if word in ('cemetary', 'cematery', 'cematary'):
+            yield 'cemetery'
+        if word in ('comittee', 'commitee'):
+            yield 'committee'
+        if word == 'concensus':
+            yield 'consensus'
+        if word in ('definate', 'definately'):
+            yield 'definite'
+            yield 'definitely'
+        if word in ('gage', 'guage'):
+            yield 'gauge'
+        if word in ('itinary', 'itinery'):
+            yield 'itinerary'
+        if word == 'lisence':
+            yield 'licence'
+        if word in ('manoover', 'menoover', 'meneuver'):
+            yield 'maneuver'
+        if word == 'mispell':
+            yield 'misspell'
+        if word in ('ocassion', 'occassion'):
+            yield 'occasion'
+        if word in ('plagarism', 'plagarize'):
+            yield 'plagiarism'
+            yield 'plagiarize'
+        if word in ('separate', 'seprate', 'seperet'):
+            yield 'separate'
+        if word in ('temperture', 'tempreture', 'temprature', 'temparature'):
+            yield 'temperature'
+        if word == 'tommorrow':
+            yield 'tomorrow'
+        if word in ('vaccum', 'vaccuum', 'vaccuumm'):
+            yield 'vacuum'
+        if word == 'withold':
+            yield 'withhold'
+        if word in ('zuccini', 'zuchinni', 'zuccinni'):
+            yield 'zucchini'
+
+        # cutesy alternative spellings
+        if word == 'alt':
+            yield 'alternative'
+        if word == 'hi':
+            yield 'high'
+        if word == 'lite':
+            yield 'light'
+        if word == 'lo':
+            yield 'low'
+        if word == 'pow':
+            yield 'power'
+
         # other
         if word == 'ac':
             yield 'air conditioner'
@@ -897,6 +963,9 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'alternating current'
         if word == 'alright':
             yield 'all right'
+        if word == 'anime':
+            yield 'animated'
+            yield 'animation'
         if word == 'bday':
             yield 'birthday'
         if word == 'bunny':
@@ -913,6 +982,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'capitol'
         if word == 'dc':
             yield 'direct current'
+        if word == 'deg':
+            yield 'degrees'
         if word in ('dpt', 'dept'):
             yield 'department'
         if word == 'espn':
@@ -946,7 +1017,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'telephone'
         if word == 'precedent':
             yield 'president'
+        if word == 'raised':
+            yield 'rose'
         if word in ('temp', 'tmp'):
+            yield 'temperature'
             yield 'temporary'
         if word == 'tv':
             yield 'television'
