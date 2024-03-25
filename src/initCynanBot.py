@@ -617,11 +617,6 @@ toxicTriviaHelper = ToxicTriviaHelper(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
-triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
-    bannedTriviaIdsRepository = bannedTriviaIdsRepository,
-    funtoonRepository = funtoonRepository,
-    triviaSettingsRepository = triviaSettingsRepository
-)
 triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     bannedWordsRepository = bannedWordsRepository,
     contentScanner = contentScanner,
@@ -702,6 +697,13 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     triviaQuestionCompiler = triviaQuestionCompiler,
     triviaSettingsRepository = triviaSettingsRepository,
     twitchHandleProvider = authRepository
+)
+
+triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
+    bannedTriviaIdsRepository = bannedTriviaIdsRepository,
+    funtoonRepository = funtoonRepository,
+    glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
+    triviaSettingsRepository = triviaSettingsRepository
 )
 
 triviaScraper: TriviaScraperInterface = TriviaScraper(

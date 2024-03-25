@@ -8,6 +8,7 @@ from CynanBot.trivia.banned.banTriviaQuestionResult import \
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.questions.triviaSource import TriviaSource
+from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
@@ -18,31 +19,44 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         self,
         bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface,
         funtoonRepository: FuntoonRepositoryInterface,
+        glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface
     ):
         if not isinstance(bannedTriviaIdsRepository, BannedTriviaIdsRepositoryInterface):
-            raise ValueError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
+            raise TypeError(f'bannedTriviaIdsRepository argument is malformed: \"{bannedTriviaIdsRepository}\"')
         elif not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+        elif not isinstance(glacialTriviaQuestionRepository, GlacialTriviaQuestionRepositoryInterface):
+            raise TypeError(f'glacialTriviaQuestionRepository argument is malformed: \"{glacialTriviaQuestionRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__bannedTriviaIdsRepository: BannedTriviaIdsRepositoryInterface = bannedTriviaIdsRepository
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
+        self.__glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = glacialTriviaQuestionRepository
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
     async def ban(
         self,
         triviaId: str,
         userId: str,
+        originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif originalTriviaSource is not None and not isinstance(originalTriviaSource, TriviaSource):
+            raise TypeError(f'originalTriviaSource argument is malformed: \"{originalTriviaSource}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+
+        if originalTriviaSource is not None:
+            await self.__glacialTriviaQuestionRepository.remove(
+                triviaId = triviaId,
+                originalTriviaSource = originalTriviaSource
+            )
 
         if triviaSource is TriviaSource.FUNTOON:
             await self.__funtoonRepository.banTriviaQuestion(triviaId)
@@ -56,9 +70,9 @@ class TriviaBanHelper(TriviaBanHelperInterface):
 
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         if not await self.__triviaSettingsRepository.isBanListEnabled():
             return False
@@ -74,9 +88,9 @@ class TriviaBanHelper(TriviaBanHelperInterface):
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         return await self.__bannedTriviaIdsRepository.unban(
             triviaId = triviaId,

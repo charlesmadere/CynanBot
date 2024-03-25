@@ -12,6 +12,7 @@ class TriviaBanHelperInterface(ABC):
         self,
         triviaId: str,
         userId: str,
+        originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         pass

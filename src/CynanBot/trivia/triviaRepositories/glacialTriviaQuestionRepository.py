@@ -507,6 +507,27 @@ class GlacialTriviaQuestionRepository(
 
         return hasQuestionSetAvailable
 
+    async def remove(self, triviaId: str, originalTriviaSource: TriviaSource):
+        if not utils.isValidStr(triviaId):
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
+        elif not isinstance(originalTriviaSource, TriviaSource):
+            raise TypeError(f'originalTriviaSource argument is malformed: \"{originalTriviaSource}\"')
+
+        connection = await aiosqlite.connect(self.__triviaDatabaseFile)
+        cursor = await connection.execute(
+            '''
+                DELETE FROM glacialResponses
+                WHERE originalTriviaSource = $1 AND triviaId = $2
+            ''',
+            (originalTriviaSource.toStr(), triviaId, )
+        )
+
+        await cursor.close()
+        await connection.commit()
+        await connection.close()
+
+        self.__timber.log('GlacialTriviaQuestionRepository', f'Removed trivia question ({triviaId=}) ({originalTriviaSource=})')
+
     async def store(self, question: AbsTriviaQuestion) -> bool:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
