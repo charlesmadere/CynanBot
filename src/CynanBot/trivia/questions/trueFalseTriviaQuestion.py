@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -12,12 +10,13 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
-        correctAnswers: List[bool],
-        category: Optional[str],
-        categoryId: Optional[str],
+        correctAnswers: list[bool],
+        category: str | None,
+        categoryId: str | None,
         question: str,
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
+        originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ):
         super().__init__(
@@ -26,6 +25,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
+            originalTriviaSource = originalTriviaSource,
             triviaSource = triviaSource,
             triviaType = TriviaQuestionType.TRUE_FALSE
         )
@@ -33,21 +33,24 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
         if not utils.areValidBools(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
 
-        self.__correctAnswers: List[bool] = correctAnswers
+        self.__correctAnswers: list[bool] = correctAnswers
 
-    def getCorrectAnswers(self) -> List[str]:
-        correctAnswers: List[str] = list()
+    def getCorrectAnswers(self) -> list[str]:
+        correctAnswers: list[str] = list()
 
         for correctAnswer in self.__correctAnswers:
             correctAnswers.append(str(correctAnswer).lower())
 
         return correctAnswers
 
-    def getCorrectAnswerBools(self) -> List[bool]:
-        return self.__correctAnswers
+    def getCorrectAnswerBools(self) -> list[bool]:
+        return utils.copyList(self.__correctAnswers)
 
     def getPrompt(self, delimiter: str = ' ') -> str:
+        if not isinstance(delimiter, str):
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
+
         return f'True or false! {self.getQuestion()}'
 
-    def getResponses(self) -> List[str]:
+    def getResponses(self) -> list[str]:
         return [ str(True).lower(), str(False).lower() ]

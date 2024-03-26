@@ -1,5 +1,4 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -40,13 +39,13 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+            raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
@@ -55,7 +54,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         self.__timber.log('BongoTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 
@@ -71,18 +70,18 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('BongoTriviaQuestionRepository', f'Encountered non-200 HTTP status code: {response.getStatusCode()}')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: Optional[List[Dict[str, Any]]] = await response.json()
+        jsonResponse: list[dict[str, object]] | None = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
             self.__timber.log('BongoTriviaQuestionRepository', f'{jsonResponse}')
 
-        if not utils.hasItems(jsonResponse):
+        if not isinstance(jsonResponse, list) or len(jsonResponse) == 0:
             self.__timber.log('BongoTriviaQuestionRepository', f'Rejecting JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Bongo\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: Dict[str, Any] = jsonResponse[0]
-        if not utils.hasItems(triviaJson):
+        triviaJson: dict[str, object] | None = jsonResponse[0]
+        if not isinstance(triviaJson, dict) or len(triviaJson) == 0:
             self.__timber.log('BongoTriviaQuestionRepository', f'Rejecting JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Bongo\'s JSON data due to null/empty contents: {jsonResponse}')
 
@@ -112,7 +111,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
             )
-            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings: list[str] = list()
             correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
@@ -137,6 +136,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     question = question,
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = None,
                     triviaSource = TriviaSource.BONGO
                 )
             else:
@@ -145,7 +145,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswerBools: List[bool] = list()
+            correctAnswerBools: list[bool] = list()
             correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
@@ -155,12 +155,13 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = None,
                 triviaSource = TriviaSource.BONGO
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Bongo: {jsonResponse}')
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:

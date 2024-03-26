@@ -413,6 +413,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = None,
                 triviaSource = TriviaSource.POKE_API
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
@@ -426,6 +427,7 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = None,
                 triviaSource = TriviaSource.POKE_API
             )
 

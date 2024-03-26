@@ -1,5 +1,3 @@
-from typing import List
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.triviaExceptions import (
     NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException)
@@ -22,15 +20,15 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
 
     async def _buildMultipleChoiceResponsesList(
         self,
-        correctAnswers: List[str],
-        multipleChoiceResponses: List[str]
-    ) -> List[str]:
+        correctAnswers: list[str],
+        multipleChoiceResponses: list[str]
+    ) -> list[str]:
         if not utils.hasItems(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
         elif not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
-        filteredMultipleChoiceResponses: List[str] = utils.copyList(correctAnswers)
+        filteredMultipleChoiceResponses: list[str] = utils.copyList(correctAnswers)
         maxMultipleChoiceResponses = await self._triviaSettingsRepository.getMaxMultipleChoiceResponses()
 
         # Annoyingly, I've encountered a few situations where we can have a question with more
@@ -69,8 +67,8 @@ class AbsTriviaQuestionRepository(TriviaQuestionRepositoryInterface):
 
     async def _verifyIsActuallyMultipleChoiceQuestion(
         self,
-        correctAnswers: List[str],
-        multipleChoiceResponses: List[str]
+        correctAnswers: list[str],
+        multipleChoiceResponses: list[str]
     ) -> bool:
         if not utils.hasItems(correctAnswers):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')

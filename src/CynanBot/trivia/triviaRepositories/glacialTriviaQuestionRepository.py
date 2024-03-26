@@ -1,5 +1,4 @@
 import traceback
-from typing import List, Set
 
 import aiofiles
 import aiofiles.ospath
@@ -82,11 +81,11 @@ class GlacialTriviaQuestionRepository(
 
     async def __buildCleanedCorrectAnswersForQuestionAnswerTrivia(
         self,
-        correctAnswers: List[str]
-    ) -> List[str]:
+        correctAnswers: list[str]
+    ) -> list[str]:
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-        expandedCleanedCorrectAnswers: Set[str] = set()
+        expandedCleanedCorrectAnswers: set[str] = set()
         for answer in cleanedCorrectAnswers:
             expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
@@ -196,7 +195,7 @@ class GlacialTriviaQuestionRepository(
             originalTriviaSource = originalTriviaSource,
         )
 
-        multipleChoiceResponses: List[str] | None = None
+        multipleChoiceResponses: list[str] | None = None
 
         if triviaType is TriviaQuestionType.MULTIPLE_CHOICE:
             multipleChoiceResponses = await self.__fetchTriviaQuestionMultipleChoiceResponses(
@@ -215,6 +214,7 @@ class GlacialTriviaQuestionRepository(
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
                 triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.QUESTION_ANSWER:
@@ -229,6 +229,7 @@ class GlacialTriviaQuestionRepository(
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
                 triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
@@ -241,6 +242,7 @@ class GlacialTriviaQuestionRepository(
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
                 triviaSource = self.getTriviaSource()
             )
         else:
@@ -306,6 +308,7 @@ class GlacialTriviaQuestionRepository(
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
                 triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
@@ -318,6 +321,7 @@ class GlacialTriviaQuestionRepository(
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = originalTriviaSource,
                 triviaSource = self.getTriviaSource()
             )
         else:
@@ -377,6 +381,7 @@ class GlacialTriviaQuestionRepository(
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
+            originalTriviaSource = originalTriviaSource,
             triviaSource = self.getTriviaSource()
         )
 
@@ -407,7 +412,7 @@ class GlacialTriviaQuestionRepository(
         triviaId: str,
         triviaType: TriviaQuestionType,
         originalTriviaSource: TriviaSource
-    ) -> List[str]:
+    ) -> list[str]:
         cursor = await connection.execute(
             '''
                 SELECT answer FROM glacialAnswers
@@ -418,7 +423,7 @@ class GlacialTriviaQuestionRepository(
 
         rows = await cursor.fetchall()
         await cursor.close()
-        correctAnswersSet: Set[str] = set()
+        correctAnswersSet: set[str] = set()
 
         if rows is not None:
             for row in rows:
@@ -447,7 +452,7 @@ class GlacialTriviaQuestionRepository(
         connection: Connection,
         triviaId: str,
         originalTriviaSource: TriviaSource
-    ) -> List[str]:
+    ) -> list[str]:
         cursor = await connection.execute(
             '''
                 SELECT response FROM glacialResponses
@@ -458,7 +463,7 @@ class GlacialTriviaQuestionRepository(
 
         rows = await cursor.fetchall()
         await cursor.close()
-        multipleChoiceResponses: Set[str] = set()
+        multipleChoiceResponses: set[str] = set()
 
         if rows is not None:
             for row in rows:
@@ -472,7 +477,7 @@ class GlacialTriviaQuestionRepository(
 
         return await self.__triviaQuestionCompiler.compileResponses(multipleChoiceResponses)
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return {
             TriviaQuestionType.MULTIPLE_CHOICE,
             TriviaQuestionType.QUESTION_ANSWER,

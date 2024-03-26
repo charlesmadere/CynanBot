@@ -26,6 +26,7 @@ class TriviaGameStoreTests():
         question = 'What team is stashiocat a member of?',
         triviaId = 'abc123',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
         triviaSource = TriviaSource.WILL_FRY_TRIVIA
     )
 
@@ -36,6 +37,7 @@ class TriviaGameStoreTests():
         question = 'Is stashiocat a member of the Chicago Bullies?',
         triviaId = 'def456',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
         triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE
     )
 
@@ -47,6 +49,7 @@ class TriviaGameStoreTests():
         question = 'Which company made the SNES?',
         triviaId = 'xyz321',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
         triviaSource = TriviaSource.MILLIONAIRE
     )
 
@@ -58,6 +61,7 @@ class TriviaGameStoreTests():
         question = 'One of this team\'s members is stashiocat.',
         triviaId = 'ghi789',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
         triviaSource = TriviaSource.FUNTOON
     )
 
@@ -69,6 +73,7 @@ class TriviaGameStoreTests():
         question = 'This player forgot to fight Phantoon in a randomizer match.',
         triviaId = 'jkl012',
         triviaDifficulty = TriviaDifficulty.UNKNOWN,
+        originalTriviaSource = None,
         triviaSource = TriviaSource.J_SERVICE
     )
 

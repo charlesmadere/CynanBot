@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -13,13 +11,14 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
-        correctAnswers: List[str],
-        multipleChoiceResponses: List[str],
-        category: Optional[str],
-        categoryId: Optional[str],
+        correctAnswers: list[str],
+        multipleChoiceResponses: list[str],
+        category: str | None,
+        categoryId: str | None,
         question: str,
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
+        originalTriviaSource: TriviaSource | None,
         triviaSource: TriviaSource
     ):
         super().__init__(
@@ -28,6 +27,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
+            originalTriviaSource = originalTriviaSource,
             triviaSource = triviaSource,
             triviaType = TriviaQuestionType.MULTIPLE_CHOICE,
         )
@@ -37,23 +37,23 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         elif not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
-        self.__correctAnswers: List[str] = correctAnswers
-        self.__multipleChoiceResponses: List[str] = multipleChoiceResponses
+        self.__correctAnswers: list[str] = correctAnswers
+        self.__multipleChoiceResponses: list[str] = multipleChoiceResponses
 
-    def getAnswerOrdinals(self) -> List[int]:
-        answerOrdinals: List[int] = list()
+    def getAnswerOrdinals(self) -> list[int]:
+        answerOrdinals: list[int] = list()
 
         for index in range(0, len(self.__multipleChoiceResponses)):
             answerOrdinals.append(index)
 
         return answerOrdinals
 
-    def getCorrectAnswers(self) -> List[str]:
+    def getCorrectAnswers(self) -> list[str]:
         return self.getDecoratedCorrectAnswers()
 
-    def getCorrectAnswerChars(self) -> List[str]:
+    def getCorrectAnswerChars(self) -> list[str]:
         correctAnswerOrdinals = self.getCorrectAnswerOrdinals()
-        correctAnswerChars: List[str] = list()
+        correctAnswerChars: list[str] = list()
 
         for ordinal in correctAnswerOrdinals:
             correctAnswerChars.append(chr(ord('A') + ordinal))
@@ -66,8 +66,8 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         correctAnswerChars.sort()
         return correctAnswerChars
 
-    def getCorrectAnswerOrdinals(self) -> List[int]:
-        ordinals: List[int] = list()
+    def getCorrectAnswerOrdinals(self) -> list[int]:
+        ordinals: list[int] = list()
 
         for index, multipleChoiceResponse in enumerate(self.__multipleChoiceResponses):
             for correctAnswer in self.__correctAnswers:
@@ -83,8 +83,8 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         ordinals.sort()
         return ordinals
 
-    def getDecoratedCorrectAnswers(self) -> List[str]:
-        answerStrings: List[str] = list()
+    def getDecoratedCorrectAnswers(self) -> list[str]:
+        answerStrings: list[str] = list()
 
         for index, correctAnswerChar in enumerate(self.getCorrectAnswerChars()):
             answerStrings.append(f'[{correctAnswerChar}] {self.__correctAnswers[index]}')
@@ -93,9 +93,9 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
     def getPrompt(self, delimiter: str = ' ') -> str:
         if not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        responsesList: List[str] = list()
+        responsesList: list[str] = list()
         entryChar = 'A'
 
         for response in self.__multipleChoiceResponses:
@@ -105,8 +105,8 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         responsesStr = delimiter.join(responsesList)
         return f'{self.getQuestion()} {responsesStr}'
 
-    def getResponses(self) -> List[str]:
+    def getResponses(self) -> list[str]:
         return utils.copyList(self.__multipleChoiceResponses)
 
-    def getUndecoratedCorrectAnswers(self) -> List[str]:
+    def getUndecoratedCorrectAnswers(self) -> list[str]:
         return utils.copyList(self.__correctAnswers)

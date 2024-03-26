@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import datetime, timedelta, timezone, tzinfo
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -25,21 +24,21 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
 
@@ -51,17 +50,17 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         self,
         emote: str,
         twitchChannel: str
-    ) -> Optional[TriviaQuestionReference]:
+    ) -> TriviaQuestionReference | None:
         if not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT emote, triviaid, triviasource, triviatype FROM triviahistory
-                WHERE emote IS NOT NULL AND emote = $1 AND twitchchannel = $2
+                SELECT emote, originaltriviasource, triviaid, triviasource, triviatype FROM triviahistory
+                WHERE emote IS NOT NULL AND emote = $1 AND twitchchannelid = $2
                 ORDER BY datetime DESC
                 LIMIT 1
             ''',
@@ -73,12 +72,19 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         if not utils.hasItems(record):
             return None
 
+        originalTriviaSourceStr = record[1]
+        originalTriviaSource: TriviaSource | None = None
+
+        if utils.isValidStr(originalTriviaSourceStr):
+            originalTriviaSource = TriviaSource.fromStr(originalTriviaSourceStr)
+
         return TriviaQuestionReference(
             emote = record[0],
-            triviaId = record[1],
+            triviaId = record[2],
             twitchChannel = twitchChannel,
-            triviaSource = TriviaSource.fromStr(record[2]),
-            triviaType = TriviaQuestionType.fromStr(record[3])
+            originalTriviaSource = originalTriviaSource,
+            triviaSource = TriviaSource.fromStr(record[3]),
+            triviaType = TriviaQuestionType.fromStr(record[4])
         )
 
     async def __initDatabaseTable(self):
@@ -94,6 +100,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS triviahistory (
                         datetime text NOT NULL,
                         emote text NOT NULL,
+                        originaltriviasource public.citext DEFAULT NULL,
                         triviaid public.citext NOT NULL,
                         triviasource public.citext NOT NULL,
                         triviatype public.citext NOT NULL,
@@ -108,6 +115,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS triviahistory (
                         datetime TEXT NOT NULL,
                         emote TEXT NOT NULL,
+                        originaltriviasource TEXT DEFAULT NULL COLLATE NOCASE,
                         triviaid TEXT NOT NULL COLLATE NOCASE,
                         triviasource TEXT NOT NULL COLLATE NOCASE,
                         triviatype TEXT NOT NULL COLLATE NOCASE,
@@ -128,11 +136,11 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         twitchChannel: str
     ) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         triviaId = question.getTriviaId()
         triviaSource = question.getTriviaSource().toStr()
@@ -151,13 +159,19 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         nowDateTime = datetime.now(self.__timeZone)
         nowDateTimeStr = nowDateTime.isoformat()
 
+        originalTriviaSource = question.getOriginalTriviaSource()
+        originalTriviaSourceStr: str | None = None
+
+        if originalTriviaSource is not None:
+            originalTriviaSourceStr = originalTriviaSource.toStr()
+
         if not utils.hasItems(record):
             await connection.execute(
                 '''
-                    INSERT INTO triviahistory (datetime, emote, triviaid, triviasource, triviatype, twitchchannel)
-                    VALUES ($1, $2, $3, $4, $5, $6)
+                    INSERT INTO triviahistory (datetime, emote, originaltriviasource, triviaid, triviasource, triviatype, twitchchannel)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
                 ''',
-                nowDateTimeStr, emote, triviaId, triviaSource, triviaType, twitchChannel
+                nowDateTimeStr, emote, originalTriviaSourceStr, triviaId, triviaSource, triviaType, twitchChannel
             )
 
             await connection.close()
@@ -169,7 +183,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
 
         if questionDateTime + minimumTimeDelta >= nowDateTime:
             await connection.close()
-            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat (now=\"{nowDateTimeStr}\" db=\"{questionDateTimeStr}\" triviaId=\"{triviaId}\" triviaSource=\"{triviaSource}\" twitchChannel=\"{twitchChannel}\"')
+            self.__timber.log('TriviaHistoryRepository', f'Encountered duplicate triviaHistory entry that is within the window of being a repeat ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({triviaId=}) ({triviaSource=}) ({triviaType=}) ({twitchChannel=})')
             return TriviaContentCode.REPEAT
 
         await connection.execute(
@@ -182,6 +196,6 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry to {nowDateTimeStr} from {questionDateTimeStr} (triviaId=\"{triviaId}\" triviaSource=\"{triviaSource}\" triviaType=\"{triviaType}\" twitchChannel=\"{twitchChannel}\")')
+        self.__timber.log('TriviaHistoryRepository', f'Updated triviaHistory entry ({nowDateTimeStr=}) ({questionDateTimeStr=}) ({emote=}) ({originalTriviaSource=}) ({triviaId=}) ({triviaSource=}) ({triviaType=}) ({twitchChannel=})')
 
         return TriviaContentCode.OK

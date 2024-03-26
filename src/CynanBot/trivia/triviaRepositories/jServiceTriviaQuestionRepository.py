@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -79,19 +79,19 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\" ({response=}) ({fetchOptions=})')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: Optional[List[Dict[str, Any]]] = await response.json()
+        jsonResponse: list[dict[str, Any]] | None = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
             self.__timber.log('JServiceTriviaQuestionRepository', f'{jsonResponse}')
 
-        if not utils.hasItems(jsonResponse):
+        if not isinstance(jsonResponse, list) or len(jsonResponse) == 0:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: Optional[Dict[str, Any]] = jsonResponse[0]
+        triviaJson: dict[str, Any] | None = jsonResponse[0]
 
-        if not utils.hasItems(triviaJson) or 'category' not in triviaJson:
+        if not isinstance(triviaJson, dict) or len(triviaJson) == 0 or 'category' not in triviaJson:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting jService\'s JSON data due to null/empty contents: {jsonResponse}')
 
@@ -109,7 +109,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 category = category
             )
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
 
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
@@ -122,7 +122,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
-        cleanedCorrectAnswers: List[str] = list()
+        cleanedCorrectAnswers: list[str] = list()
         cleanedCorrectAnswers.append(utils.getStrFromDict(triviaJson, 'answer').encode('latin1').decode('utf-8'))
 
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
@@ -134,7 +134,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
 
-        expandedCleanedCorrectAnswers: Set[str] = set()
+        expandedCleanedCorrectAnswers: set[str] = set()
         for answer in cleanedCorrectAnswers:
             expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
@@ -146,10 +146,11 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
-            triviaSource = TriviaSource.J_SERVICE
+            originalTriviaSource = None,
+            triviaSource = self.getTriviaSource()
         )
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.QUESTION_ANSWER }
 
     def getTriviaSource(self) -> TriviaSource:

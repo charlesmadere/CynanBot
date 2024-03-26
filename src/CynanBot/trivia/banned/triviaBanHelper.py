@@ -58,14 +58,20 @@ class TriviaBanHelper(TriviaBanHelperInterface):
                 originalTriviaSource = originalTriviaSource
             )
 
-        if triviaSource is TriviaSource.FUNTOON:
+        workingTriviaSource: TriviaSource
+        if originalTriviaSource is None:
+            workingTriviaSource = triviaSource
+        else:
+            workingTriviaSource = originalTriviaSource
+
+        if workingTriviaSource is TriviaSource.FUNTOON:
             await self.__funtoonRepository.banTriviaQuestion(triviaId)
             return BanTriviaQuestionResult.BANNED
         else:
             return await self.__bannedTriviaIdsRepository.ban(
                 triviaId = triviaId,
                 userId = userId,
-                triviaSource = triviaSource
+                triviaSource = workingTriviaSource
             )
 
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:

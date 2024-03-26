@@ -90,7 +90,8 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
-                triviaSource = TriviaSource.OPEN_TRIVIA_QA
+                originalTriviaSource = None,
+                triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
@@ -104,7 +105,8 @@ class OpenTriviaQaTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = TriviaDifficulty.UNKNOWN,
-                triviaSource = TriviaSource.OPEN_TRIVIA_QA
+                originalTriviaSource = None,
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for OpenTriviaQaTriviaQuestionRepository: {triviaDict}')

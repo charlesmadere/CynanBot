@@ -148,6 +148,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     question = question,
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
+                    originalTriviaSource = None,
                     triviaSource = TriviaSource.QUIZ_API
                 )
             else:
@@ -162,6 +163,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
+                originalTriviaSource = None,
                 triviaSource = TriviaSource.QUIZ_API
             )
 

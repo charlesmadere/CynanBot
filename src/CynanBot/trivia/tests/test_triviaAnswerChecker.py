@@ -62,6 +62,7 @@ class TestTriviaAnswerChecker():
             question = 'Which of these Super Metroid players is a bully?',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.BONGO
         )
 
@@ -89,6 +90,7 @@ class TestTriviaAnswerChecker():
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.BONGO
         )
 
@@ -110,6 +112,7 @@ class TestTriviaAnswerChecker():
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.BONGO
         )
 
@@ -131,6 +134,7 @@ class TestTriviaAnswerChecker():
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.BONGO
         )
 
@@ -158,6 +162,7 @@ class TestTriviaAnswerChecker():
             question = 'The Super Metroid player stashiocat is a Chicago Bully.',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.BONGO
         )
 
@@ -179,14 +184,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='The Korean country farthest north.',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'The Korean country farthest north.',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('north korea', question)
@@ -219,14 +225,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='That one weird author guy',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'That one weird author guy',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('kurt vonnegut', question)
@@ -259,14 +266,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='In what decade did that one thing come out?',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'In what decade did that one thing come out?',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('1850', question)
@@ -425,14 +433,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Shakespeare wrote a play about him once or something...',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Shakespeare wrote a play about him once or something...',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('richard the third', question)
@@ -471,14 +480,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Shakespeare wrote a play about him once or something...',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Shakespeare wrote a play about him once or something...',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('beach ball', question)
@@ -523,14 +533,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='What year is that one year people say a lot when talking about fascism and whatnot?',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'What year is that one year people say a lot when talking about fascism and whatnot?',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('1984', question)
@@ -555,12 +566,13 @@ class TestTriviaAnswerChecker():
                 'twenty fifth',
                 'the twenty fifth',
             ],
-            category='Test Category',
-            categoryId=None,
-            question='Christmas is on which day of the month of December?',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Christmas is on which day of the month of December?',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('the twenty fifth', question)
@@ -590,14 +602,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Name a food coloring',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Name a food coloring',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('red dye #5', question)
@@ -624,14 +637,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Name a food coloring',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Name a food coloring',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('x=5', question)
@@ -667,14 +681,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about homophones',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about homophones',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('groan/grown', question)
@@ -701,14 +716,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about math',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE,
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about math',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE,
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('new math', question)
@@ -747,14 +763,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about Nintendo',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about Nintendo',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('miyamoto san', question)
@@ -784,14 +801,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about toys',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('mr potato head', question)
@@ -841,14 +859,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about toys',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('things that are pinched', question)
@@ -872,14 +891,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about toys',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('things that are hello 123', question)
@@ -903,14 +923,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about toys',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('50000', question)
@@ -934,14 +955,15 @@ class TestTriviaAnswerChecker():
             expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
-            correctAnswers=correctAnswers,
-            cleanedCorrectAnswers=list(expandedCleanedCorrectAnswers),
-            category='Test Category',
-            categoryId=None,
-            question='Something about toys',
-            triviaId='abc123',
-            triviaDifficulty=TriviaDifficulty.UNKNOWN,
-            triviaSource=TriviaSource.J_SERVICE
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
         )
 
         result = await self.triviaAnswerChecker.checkAnswer('123456.78', question)

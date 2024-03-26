@@ -72,6 +72,7 @@ class TestTriviaContentScanner():
             question = 'QAnon is Trump fighting the deep state and it\'s real.',
             triviaId = 'asdfasdfasdf',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.OPEN_TRIVIA_QA
         )
 
@@ -98,6 +99,7 @@ class TestTriviaContentScanner():
                                    # so this question should end up banned.
             triviaId = 'asdfasdfasdf',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.J_SERVICE
         )
 
@@ -121,6 +123,7 @@ class TestTriviaContentScanner():
             question = 'This instrument is made from brass.', 
             triviaId = 'asdfasdfasdf',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.FUNTOON
         )
 
@@ -144,6 +147,7 @@ class TestTriviaContentScanner():
             question = 'What is?',
             triviaId = 'abc123',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.TRIVIA_DATABASE
         )
 
@@ -162,6 +166,7 @@ class TestTriviaContentScanner():
             question = 'Blah blah question here?',
             triviaId = 'abc456',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.J_SERVICE
         )
 
@@ -186,6 +191,7 @@ class TestTriviaContentScanner():
             question = 'What is \"N64\" an abbreviation for?',
             triviaId = 'qwerty',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE
         )
 
@@ -208,6 +214,7 @@ class TestTriviaContentScanner():
             question = 'Who was a king from way back?',
             triviaId = 'azerty',
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE
         )
 

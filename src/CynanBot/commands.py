@@ -523,7 +523,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to ban trivia question as no emote argument was given. Example: !bantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: Optional[str] = splits[1]
+        emote = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -544,6 +544,7 @@ class BanTriviaQuestionCommand(AbsCommand):
         await self.__triviaBanHelper.ban(
             triviaId = reference.getTriviaId(),
             userId = ctx.getAuthorId(),
+            originalTriviaSource = reference.getOriginalTriviaSource(),
             triviaSource = reference.getTriviaSource()
         )
 

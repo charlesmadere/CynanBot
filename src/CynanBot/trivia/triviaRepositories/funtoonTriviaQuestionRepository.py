@@ -1,5 +1,4 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -40,15 +39,15 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
         super().__init__(triviaSettingsRepository)
 
         if not isinstance(additionalTriviaAnswersRepository, AdditionalTriviaAnswersRepositoryInterface):
-            raise ValueError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
+            raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
-            raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
+            raise TypeError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
         elif not isinstance(triviaQuestionCompiler, TriviaQuestionCompilerInterface):
-            raise ValueError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
+            raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
 
         self.__additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = additionalTriviaAnswersRepository
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
@@ -58,7 +57,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
         self.__timber.log('FuntoonTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
 
@@ -74,13 +73,13 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: Optional[List[Dict[str, Any]]] = await response.json()
+        jsonResponse: dict[str, object] | None = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
             self.__timber.log('FuntoonTriviaQuestionRepository', f'{jsonResponse}')
 
-        if not utils.hasItems(jsonResponse):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Rejecting Funtoon\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Funtoon\'s JSON data due to null/empty contents: {jsonResponse}')
 
@@ -94,7 +93,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         triviaId = utils.getStrFromDict(jsonResponse, 'id')
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
 
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
@@ -107,7 +106,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
-        cleanedCorrectAnswers: List[str] = list()
+        cleanedCorrectAnswers: list[str] = list()
         cleanedCorrectAnswers.append(utils.getStrFromDict(jsonResponse, 'answer'))
 
         await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
@@ -119,7 +118,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(cleanedCorrectAnswers)
 
-        expandedCleanedCorrectAnswers: Set[str] = set()
+        expandedCleanedCorrectAnswers: set[str] = set()
         for answer in cleanedCorrectAnswers:
             expandedCleanedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
@@ -134,10 +133,11 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
             triviaSource = TriviaSource.FUNTOON
         )
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.QUESTION_ANSWER }
 
     def getTriviaSource(self) -> TriviaSource:

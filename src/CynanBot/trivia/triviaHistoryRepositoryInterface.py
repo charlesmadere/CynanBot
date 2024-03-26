@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
@@ -14,7 +13,7 @@ class TriviaHistoryRepositoryInterface(ABC):
         self,
         emote: str,
         twitchChannel: str
-    ) -> Optional[TriviaQuestionReference]:
+    ) -> TriviaQuestionReference | None:
         pass
 
     @abstractmethod

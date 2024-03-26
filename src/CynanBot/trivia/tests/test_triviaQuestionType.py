@@ -1,13 +1,11 @@
-from typing import List
-
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 
 
 class TestTriviaQuestionType():
 
     def test_fromStr_withEmptyString(self):
-        result: TriviaQuestionType = None
-        exception: Exception = None
+        result: TriviaQuestionType | None = None
+        exception: Exception | None = None
 
         try:
             result = TriviaQuestionType.fromStr('')
@@ -19,15 +17,15 @@ class TestTriviaQuestionType():
         assert isinstance(exception, ValueError)
 
     def test_fromStr_withMultipleChoiceStrings(self):
-        strings: List[str] = [ 'multiple', 'multiple choice', 'multiple-choice', 'multiple_choice' ]
+        strings: list[str] = [ 'multiple', 'multiple choice', 'multiple-choice', 'multiple_choice' ]
 
         for string in strings:
             result = TriviaQuestionType.fromStr(string)
             assert result is TriviaQuestionType.MULTIPLE_CHOICE
 
     def test_fromStr_withNone(self):
-        result: TriviaQuestionType = None
-        exception: Exception = None
+        result: TriviaQuestionType | None = None
+        exception: Exception | None = None
 
         try:
             result = TriviaQuestionType.fromStr(None)
@@ -39,22 +37,22 @@ class TestTriviaQuestionType():
         assert isinstance(exception, ValueError)
 
     def test_fromStr_withQuestionAnswerStrings(self):
-        strings: List[str] = [ 'question answer', 'question-answer', 'question_answer' ]
+        strings: list[str] = [ 'question answer', 'question-answer', 'question_answer' ]
 
         for string in strings:
             result = TriviaQuestionType.fromStr(string)
             assert result is TriviaQuestionType.QUESTION_ANSWER
 
     def test_fromStr_withTrueFalseStrings(self):
-        strings: List[str] = [ 'bool', 'boolean', 'true false', 'true-false', 'true_false' ]
+        strings: list[str] = [ 'bool', 'boolean', 'true false', 'true-false', 'true_false' ]
 
         for string in strings:
             result = TriviaQuestionType.fromStr(string)
             assert result is TriviaQuestionType.TRUE_FALSE
 
     def test_fromStr_withWhitespaceString(self):
-        result: TriviaQuestionType = None
-        exception: Exception = None
+        result: TriviaQuestionType | None = None
+        exception: Exception | None = None
 
         try:
             result = TriviaQuestionType.fromStr(' ')
