@@ -69,7 +69,6 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
             ) as file:
                 await file.write(command)
                 await file.flush()
-                os.sync()
         except Exception as e:
             self.__timber.log('DecTalkFileManager', f'Encountered exception when trying to write command to TTS file (\"{fileName}\"): {e}', e, traceback.format_exc())
             fileName = None
