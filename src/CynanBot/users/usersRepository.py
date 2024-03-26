@@ -57,6 +57,7 @@ class UsersRepository(UsersRepositoryInterface):
         async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
             await file.write(jsonString)
+            await file.flush()
 
         # be sure to clear caches, as JSON file contents have now been updated
         await self.clearCaches()
@@ -467,6 +468,7 @@ class UsersRepository(UsersRepositoryInterface):
         async with aiofiles.open(self.__usersFile, mode = 'w', encoding = 'utf-8') as file:
             jsonString = json.dumps(jsonContents, indent = 4, sort_keys = True)
             await file.write(jsonString)
+            await file.flush()
 
         # be sure to clear caches, as JSON file contents have now been updated
         await self.clearCaches()

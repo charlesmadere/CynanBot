@@ -93,6 +93,8 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
                 loop = self.__eventLoop
             ) as file:
                 await file.write(decoded)
+                await file.flush()
+                os.sync()
         except Exception as e:
             self.__timber.log('GoogleTtsFileManager', f'Encountered exception when trying to write command to TTS file (\"{fileName}\"): {e}', e, traceback.format_exc())
             fileName = None

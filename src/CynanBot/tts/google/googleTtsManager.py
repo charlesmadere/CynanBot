@@ -1,5 +1,6 @@
 import random
 import traceback
+import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
 from CynanBot.google.googleApiServiceInterface import GoogleApiServiceInterface
@@ -82,7 +83,8 @@ class GoogleTtsManager(TtsManagerInterface):
         self.__isLoading = True
         fileName = await self.__processTtsEvent(event)
 
-        if not utils.isValidStr(fileName):
+        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
+            self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to a temporary file ({event=}) ({fileName=})')
             self.__isLoading = False
             return False
 

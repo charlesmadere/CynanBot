@@ -1,4 +1,5 @@
 import asyncio
+import aiofiles.ospath
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
@@ -120,13 +121,13 @@ class DecTalkManager(TtsManagerInterface):
         command = await self.__ttsCommandBuilder.buildAndCleanEvent(event)
 
         if not utils.isValidStr(command):
-            self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a valid command: \"{event}\"')
+            self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a command ({event=})')
             return False
 
         fileName = await self.__decTalkFileManager.writeCommandToNewFile(command)
 
-        if not utils.isValidStr(fileName):
-            self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to temporary file ({command=})')
+        if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
+            self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to temporary file ({event=}) ({command=}) ({fileName=})')
             return False
 
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
