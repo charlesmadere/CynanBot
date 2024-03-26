@@ -112,8 +112,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if not utils.isValidStr(message):
             return None
 
-        # DECTalk requires Windows-1252 encoding
-        return message.encode().decode('windows-1252')
+        if provider is TtsProvider.DEC_TALK:
+            # DECTalk requires Windows-1252 encoding
+            message = message.encode().decode('windows-1252')
+
+        return message
 
     def __buildCheerStrings(self) -> list[Pattern]:
         cheerStrings: list[Pattern] = list()
