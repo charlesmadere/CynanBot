@@ -196,7 +196,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                     question = question,
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
-                    triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE
+                    originalTriviaSource = None,
+                    triviaSource = self.getTriviaSource()
                 )
             else:
                 self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -214,7 +215,8 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
-                triviaSource = TriviaSource.OPEN_TRIVIA_DATABASE
+                originalTriviaSource = None,
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Open Trivia Database: {jsonResponse}')

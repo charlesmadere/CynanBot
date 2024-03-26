@@ -89,7 +89,8 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
-                triviaSource = TriviaSource.TRIVIA_DATABASE
+                originalTriviaSource = None,
+                triviaSource = self.getTriviaSource()
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
@@ -103,7 +104,8 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
-                triviaSource = TriviaSource.TRIVIA_DATABASE
+                originalTriviaSource = None,
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Trivia Database: {triviaDict}')

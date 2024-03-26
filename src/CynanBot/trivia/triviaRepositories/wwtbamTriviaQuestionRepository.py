@@ -101,7 +101,8 @@ class WwtbamTriviaQuestionRepository(AbsTriviaQuestionRepository):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
-            triviaSource = TriviaSource.WWTBAM
+            originalTriviaSource = None,
+            triviaSource = self.getTriviaSource()
         )
 
     async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:

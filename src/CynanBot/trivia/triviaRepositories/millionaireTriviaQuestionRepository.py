@@ -81,7 +81,8 @@ class MillionaireTriviaQuestionRepository(AbsTriviaQuestionRepository):
             question = question,
             triviaId = triviaId,
             triviaDifficulty = TriviaDifficulty.UNKNOWN,
-            triviaSource = TriviaSource.MILLIONAIRE
+            originalTriviaSource = None,
+            triviaSource = self.getTriviaSource()
         )
 
     async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
