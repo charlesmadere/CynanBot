@@ -8,7 +8,8 @@ from CynanBot.trivia.banned.banTriviaQuestionResult import \
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.questions.triviaSource import TriviaSource
-from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
+from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import \
+    GlacialTriviaQuestionRepositoryInterface
 from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 
