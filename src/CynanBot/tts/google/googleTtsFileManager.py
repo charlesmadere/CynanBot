@@ -33,7 +33,7 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
 
         self.__eventLoop: AbstractEventLoop = eventLoop
         self.__timber: TimberInterface = timber
-        self.__directory: str = utils.cleanStr(directory)
+        self.__directory: str = utils.cleanPath(directory)
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
