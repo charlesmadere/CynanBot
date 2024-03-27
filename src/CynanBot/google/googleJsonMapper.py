@@ -264,6 +264,22 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         else:
             raise ValueError(f'The given GoogleScope value is unknown: \"{scope}\"')
 
+    async def serializeScopes(
+        self,
+        scopes: list[GoogleScope]
+    ) -> str:
+        if not isinstance(scopes, list):
+            raise TypeError(f'scopes argument is malformed: \"{scopes}\"')
+        elif len(scopes) == 0:
+            raise ValueError(f'scopes argument is empty: \"{scopes}\"')
+
+        scopeStrings: list[str] = list()
+
+        for scope in scopes:
+            scopeStrings.append(await self.serializeScope(scope))
+
+        return ' '.join(scopeStrings)
+
     async def serializeSynthesizeRequest(
         self,
         synthesizeRequest: GoogleTextSynthesizeRequest

@@ -103,6 +103,13 @@ class GoogleJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
+    async def serializeScopes(
+        self,
+        scopes: list[GoogleScope]
+    ) -> str:
+        pass
+
+    @abstractmethod
     async def serializeTextSynthesisInput(
         self,
         textSynthesisInput: GoogleTextSynthesisInput
