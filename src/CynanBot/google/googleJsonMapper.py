@@ -382,8 +382,6 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             return 'LINEAR16'
         elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MP3:
             return 'MP3'
-        elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MP3_64_KBPS:
-            return 'MP3_64_KBPS'
         elif voiceAudioEncoding is GoogleVoiceAudioEncoding.MULAW:
             return 'MULAW'
         elif voiceAudioEncoding is GoogleVoiceAudioEncoding.OGG_OPUS:
