@@ -109,7 +109,7 @@ class TriviaQuestionCompanyTriviaQuestionRepository(AbsTriviaQuestionRepository)
         if not utils.hasItems(row) or len(row) != 10:
             raise RuntimeError(f'Received malformed data from {self.getTriviaSource()} database: {row}')
 
-        questionDict: dict[str, object] = {
+        questionDict: dict[str, Any] = {
             'category': row[0],
             'correctAnswerIndex': row[1],
             'difficulty': row[2],

@@ -1,4 +1,5 @@
 import traceback
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -70,7 +71,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('BongoTriviaQuestionRepository', f'Encountered non-200 HTTP status code: {response.getStatusCode()}')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: list[dict[str, object]] | None = await response.json()
+        jsonResponse: list[dict[str, Any]] | None = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
@@ -80,7 +81,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('BongoTriviaQuestionRepository', f'Rejecting JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Bongo\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: dict[str, object] | None = jsonResponse[0]
+        triviaJson: dict[str, Any] | None = jsonResponse[0]
         if not isinstance(triviaJson, dict) or len(triviaJson) == 0:
             self.__timber.log('BongoTriviaQuestionRepository', f'Rejecting JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Bongo\'s JSON data due to null/empty contents: {jsonResponse}')

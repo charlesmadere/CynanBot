@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -92,7 +93,7 @@ class AbsTriviaQuestion(ABC):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> dict[str, object]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'category': self.__category,
             'categoryId': self.__categoryId,

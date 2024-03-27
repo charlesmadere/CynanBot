@@ -1,3 +1,5 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
@@ -56,7 +58,7 @@ class TriviaQuestionReference():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> dict[str, object]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'emote': self.__emote,
             'originalTriviaSource': self.__originalTriviaSource,

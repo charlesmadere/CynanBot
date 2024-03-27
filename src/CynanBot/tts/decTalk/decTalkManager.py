@@ -1,10 +1,10 @@
 import asyncio
-import aiofiles.ospath
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
 from typing import Any, ByteString, Dict, Optional, Tuple
 
+import aiofiles.ospath
 import psutil
 
 import CynanBot.misc.utils as utils

@@ -1,5 +1,7 @@
 import random
 import traceback
+from typing import Any
+
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
@@ -173,7 +175,7 @@ class GoogleTtsManager(TtsManagerInterface):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> dict[str, object]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'isLoading': self.__isLoading
         }
