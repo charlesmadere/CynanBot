@@ -1,10 +1,11 @@
-from typing import Any, List, Optional
 import traceback
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
+from CynanBot.storage.exceptions import DatabaseOperationalError
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswer import \
     AdditionalTriviaAnswer
@@ -27,7 +28,6 @@ from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
-from CynanBot.storage.exceptions import DatabaseOperationalError
 
 
 class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterface):
@@ -74,13 +74,13 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         if not utils.isValidStr(additionalAnswer):
             raise AdditionalTriviaAnswerIsMalformedException(f'additionalAnswer argument is malformed: \"{additionalAnswer}\"')
         elif not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
         elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         additionalAnswerLength = len(additionalAnswer)
         maxAdditionalTriviaAnswerLength = await self.__triviaSettingsRepository.getMaxAdditionalTriviaAnswerLength()
@@ -101,7 +101,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
             triviaType = triviaType
         )
 
-        additionalAnswersList: List[AdditionalTriviaAnswer] = list()
+        additionalAnswersList: list[AdditionalTriviaAnswer] = list()
 
         if reference is not None:
             additionalAnswersList.extend(reference.getAdditionalAnswers())
@@ -157,19 +157,19 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
 
     async def addAdditionalTriviaAnswers(
         self,
-        currentAnswers: List[str],
+        currentAnswers: list[str],
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
     ) -> bool:
-        if not isinstance(currentAnswers, List):
-            raise ValueError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
+        if not isinstance(currentAnswers, list):
+            raise TypeError(f'currentAnswers argument is malformed: \"{currentAnswers}\"')
         elif not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
         elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
@@ -188,11 +188,11 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
-    ) -> Optional[AdditionalTriviaAnswers]:
+    ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         reference = await self.getAdditionalTriviaAnswers(
             triviaId = triviaId,
@@ -223,19 +223,19 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
-    ) -> Optional[AdditionalTriviaAnswers]:
+    ) -> AdditionalTriviaAnswers | None:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
         elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
         if not await self.__triviaSettingsRepository.areAdditionalTriviaAnswersEnabled():
             return None
 
         connection = await self.__getDatabaseConnection()
-        records: Optional[List[List[Any]]] = None
+        records: list[list[Any]] | None = None
 
         try:
             records = await connection.fetchRows(
@@ -255,7 +255,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
         if records is None or len(records) == 0:
             return None
 
-        additionalAnswers: List[AdditionalTriviaAnswer] = list()
+        additionalAnswers: list[AdditionalTriviaAnswer] = list()
 
         for record in records:
             additionalAnswers.append(AdditionalTriviaAnswer(

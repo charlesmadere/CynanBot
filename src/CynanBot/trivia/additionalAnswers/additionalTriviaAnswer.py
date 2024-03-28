@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -30,7 +30,7 @@ class AdditionalTriviaAnswer():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'additionalAnswer': self.__additionalTriviaAnswer,
             'userId': self.__userId,

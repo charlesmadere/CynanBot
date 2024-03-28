@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswers import \
     AdditionalTriviaAnswers
@@ -23,7 +22,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
     @abstractmethod
     async def addAdditionalTriviaAnswers(
         self,
-        currentAnswers: List[str],
+        currentAnswers: list[str],
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
@@ -36,7 +35,7 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
-    ) -> Optional[AdditionalTriviaAnswers]:
+    ) -> AdditionalTriviaAnswers | None:
         pass
 
     @abstractmethod
@@ -45,5 +44,5 @@ class AdditionalTriviaAnswersRepositoryInterface(ABC):
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
-    ) -> Optional[AdditionalTriviaAnswers]:
+    ) -> AdditionalTriviaAnswers | None:
         pass

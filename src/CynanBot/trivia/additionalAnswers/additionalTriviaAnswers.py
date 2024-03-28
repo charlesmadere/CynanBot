@@ -1,5 +1,3 @@
-from typing import List
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.additionalAnswers.additionalTriviaAnswer import \
     AdditionalTriviaAnswer
@@ -11,30 +9,32 @@ class AdditionalTriviaAnswers():
 
     def __init__(
         self,
-        additionalAnswers: List[AdditionalTriviaAnswer],
+        additionalAnswers: list[AdditionalTriviaAnswer],
         triviaId: str,
         triviaSource: TriviaSource,
         triviaType: TriviaQuestionType
     ):
-        if not utils.hasItems(additionalAnswers):
-            raise ValueError(f'additionalAnswers argument is malformed: \"{additionalAnswers}\"')
+        if not isinstance(additionalAnswers, list):
+            raise TypeError(f'additionalAnswers argument is malformed: \"{additionalAnswers}\"')
+        elif len(additionalAnswers) == 0:
+            raise ValueError(f'additionAnswers argument is empty: \"{additionalAnswers}\"')
         elif not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
         elif not isinstance(triviaType, TriviaQuestionType):
-            raise ValueError(f'triviaType argument is malformed: \"{triviaType}\"')
+            raise TypeError(f'triviaType argument is malformed: \"{triviaType}\"')
 
-        self.__additionalAnswers: List[AdditionalTriviaAnswer] = additionalAnswers
+        self.__additionalAnswers: list[AdditionalTriviaAnswer] = additionalAnswers
         self.__triviaId: str = triviaId
         self.__triviaSource: TriviaSource = triviaSource
         self.__triviaType: TriviaQuestionType = triviaType
 
-    def getAdditionalAnswers(self) -> List[AdditionalTriviaAnswer]:
+    def getAdditionalAnswers(self) -> list[AdditionalTriviaAnswer]:
         return self.__additionalAnswers
 
-    def getAdditionalAnswersStrs(self) -> List[str]:
-        additionalAnswersStrs: List[str] = list()
+    def getAdditionalAnswersStrs(self) -> list[str]:
+        additionalAnswersStrs: list[str] = list()
 
         for additionalAnswer in self.__additionalAnswers:
             additionalAnswersStrs.append(additionalAnswer.getAdditionalAnswer())
