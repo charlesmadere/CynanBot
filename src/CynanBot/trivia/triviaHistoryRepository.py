@@ -60,7 +60,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT emote, originaltriviasource, triviaid, triviasource, triviatype FROM triviahistory
-                WHERE emote IS NOT NULL AND emote = $1 AND twitchchannelid = $2
+                WHERE emote IS NOT NULL AND emote = $1
                 ORDER BY datetime DESC
                 LIMIT 1
             ''',
