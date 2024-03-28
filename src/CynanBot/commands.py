@@ -9,7 +9,6 @@ import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
@@ -125,6 +124,7 @@ from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
