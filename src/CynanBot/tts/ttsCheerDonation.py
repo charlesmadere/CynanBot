@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
@@ -25,7 +25,7 @@ class TtsCheerDonation(TtsDonation):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'bits': self.__bits,
             'type': self.getType()

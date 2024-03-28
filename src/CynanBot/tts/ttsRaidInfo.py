@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -20,7 +20,7 @@ class TtsRaidInfo():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'viewers': self.__viewers
         }

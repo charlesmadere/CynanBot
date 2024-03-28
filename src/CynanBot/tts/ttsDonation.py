@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from CynanBot.tts.ttsDonationType import TtsDonationType
 
@@ -11,5 +11,5 @@ class TtsDonation(ABC):
         pass
 
     @abstractmethod
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         pass

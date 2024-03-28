@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
@@ -10,13 +10,13 @@ class TtsEvent():
 
     def __init__(
         self,
-        message: Optional[str],
+        message: str | None,
         twitchChannel: str,
         userId: str,
         userName: str,
-        donation: Optional[TtsDonation],
+        donation: TtsDonation | None,
         provider: TtsProvider,
-        raidInfo: Optional[TtsRaidInfo]
+        raidInfo: TtsRaidInfo | None
     ):
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
@@ -33,24 +33,24 @@ class TtsEvent():
         elif raidInfo is not None and not isinstance(raidInfo, TtsRaidInfo):
             raise TypeError(f'raidInfo argument is malformed: \"{raidInfo}\"')
 
-        self.__message: Optional[str] = message
+        self.__message: str | None = message
         self.__twitchChannel: str = twitchChannel
         self.__userId: str = userId
         self.__userName: str = userName
-        self.__donation: Optional[TtsDonation] = donation
+        self.__donation: TtsDonation | None = donation
         self.__provider: TtsProvider = provider
-        self.__raidInfo: Optional[TtsRaidInfo] = raidInfo
+        self.__raidInfo: TtsRaidInfo | None = raidInfo
 
-    def getDonation(self) -> Optional[TtsDonation]:
+    def getDonation(self) -> TtsDonation | None:
         return self.__donation
 
-    def getMessage(self) -> Optional[str]:
+    def getMessage(self) -> str | None:
         return self.__message
 
     def getProvider(self) -> TtsProvider:
         return self.__provider
 
-    def getRaidInfo(self) -> Optional[TtsRaidInfo]:
+    def getRaidInfo(self) -> TtsRaidInfo | None:
         return self.__raidInfo
 
     def getTwitchChannel(self) -> str:
@@ -66,7 +66,7 @@ class TtsEvent():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'donation': self.__donation,
             'message': self.__message,
