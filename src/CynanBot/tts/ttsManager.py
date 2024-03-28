@@ -3,6 +3,8 @@ from typing import Any
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
 from CynanBot.tts.google.googleTtsManager import GoogleTtsManager
+from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
+    TtsTempFileHelperInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
 from CynanBot.tts.ttsMonster.ttsMonsterManager import TtsMonsterManager
@@ -19,7 +21,8 @@ class TtsManager(TtsManagerInterface):
         googleTtsManager: GoogleTtsManager | None,
         timber: TimberInterface,
         ttsMonsterManager: TtsMonsterManager | None,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        ttsTempFileHelper: TtsTempFileHelperInterface
     ):
         if decTalkManager is not None and not isinstance(decTalkManager, DecTalkManager):
             raise TypeError(f'decTalkManager argument is malformed: \"{decTalkManager}\"')
@@ -31,12 +34,15 @@ class TtsManager(TtsManagerInterface):
             raise TypeError(f'ttsMonsterManager argument is malformed: \"{googleTtsManager}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
+            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__decTalkManager: TtsManagerInterface | None = decTalkManager
         self.__googleTtsManager: TtsManagerInterface | None = googleTtsManager
         self.__timber: TimberInterface = timber
         self.__ttsMonsterManager: TtsMonsterManager | None = ttsMonsterManager
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__currentTtsManager: TtsManagerInterface | None = None
 
@@ -58,22 +64,27 @@ class TtsManager(TtsManagerInterface):
         decTalkManager = self.__decTalkManager
         googleTtsManager = self.__googleTtsManager
         ttsMonsterManager = self.__ttsMonsterManager
+        proceed = False
 
         if provider is TtsProvider.DEC_TALK and decTalkManager is not None:
             if await decTalkManager.playTtsEvent(event):
                 self.__currentTtsManager = decTalkManager
-                return True
+                proceed = True
         elif provider is TtsProvider.GOOGLE and googleTtsManager is not None:
             if await googleTtsManager.playTtsEvent(event):
                 self.__currentTtsManager = googleTtsManager
-                return True
+                proceed = True
         elif provider is TtsProvider.TTS_MONSTER and ttsMonsterManager is not None:
             if await ttsMonsterManager.playTtsEvent(event):
                 self.__currentTtsManager = ttsMonsterManager
-                return True
+                proceed = True
 
-        self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({provider=})')
-        return False
+        if proceed:
+            await self.__ttsTempFileHelper.deleteOldTempFiles()
+            return True
+        else:
+            self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({provider=})')
+            return False
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

@@ -1,5 +1,4 @@
 import base64
-import os
 import re
 import traceback
 import uuid
@@ -55,17 +54,6 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
             return None
 
         return decoded
-
-    async def deleteFile(self, fileName: str | None):
-        if not utils.isValidStr(fileName):
-            return
-        elif not await aiofiles.ospath.exists(fileName):
-            return
-
-        try:
-            os.remove(fileName)
-        except Exception as e:
-            self.__timber.log('GoogleTtsFileManager', f'Unable to delete TTS file (\"{fileName}\"): {e}', e, traceback.format_exc())
 
     async def writeBase64CommandToNewFile(self, base64Command: str) -> str | None:
         if not utils.isValidStr(base64Command):

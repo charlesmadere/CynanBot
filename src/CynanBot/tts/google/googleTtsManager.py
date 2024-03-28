@@ -21,6 +21,8 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.google.googleTtsChoice import GoogleTtsChoice
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
+from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
+    TtsTempFileHelperInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
@@ -37,7 +39,8 @@ class GoogleTtsManager(TtsManagerInterface):
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        ttsTempFileHelper: TtsTempFileHelperInterface
     ):
         if not isinstance(googleApiService, GoogleApiServiceInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
@@ -51,6 +54,8 @@ class GoogleTtsManager(TtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
+            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
@@ -58,6 +63,7 @@ class GoogleTtsManager(TtsManagerInterface):
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isLoading: bool = False
 
@@ -92,7 +98,7 @@ class GoogleTtsManager(TtsManagerInterface):
 
         self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.getTwitchChannel()}\" from \"{fileName}\"...')
         await self.__soundPlayerManager.playSoundFile(fileName)
-        await self.__googleTtsFileManager.deleteFile(fileName)
+        await self.__ttsTempFileHelper.registerTempFile(fileName)
         self.__isLoading = False
 
         return True

@@ -271,6 +271,9 @@ from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
 from CynanBot.tts.google.googleTtsManager import GoogleTtsManager
+from CynanBot.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
+from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
+    TtsTempFileHelperInterface
 from CynanBot.tts.ttsCommandBuilder import TtsCommandBuilder
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from CynanBot.tts.ttsManager import TtsManager
@@ -896,6 +899,10 @@ ttsCommandBuilder: TtsCommandBuilderInterface = TtsCommandBuilder(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
+    timber = timber
+)
+
 decTalkManager: Optional[DecTalkManager] = DecTalkManager(
     decTalkFileManager = DecTalkFileManager(
         backgroundTaskHelper = backgroundTaskHelper,
@@ -903,7 +910,8 @@ decTalkManager: Optional[DecTalkManager] = DecTalkManager(
     ),
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsTempFileHelper = ttsTempFileHelper
 )
 
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
@@ -917,7 +925,8 @@ googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
     soundPlayerManager = soundPlayerManager,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsTempFileHelper = ttsTempFileHelper
 )
 
 ttsManager: Optional[TtsManagerInterface] = TtsManager(
@@ -925,7 +934,8 @@ ttsManager: Optional[TtsManagerInterface] = TtsManager(
     googleTtsManager = googleTtsManager,
     timber = timber,
     ttsMonsterManager = None,
-    ttsSettingsRepository = ttsSettingsRepository
+    ttsSettingsRepository = ttsSettingsRepository,
+    ttsTempFileHelper = ttsTempFileHelper
 )
 
 #################################################

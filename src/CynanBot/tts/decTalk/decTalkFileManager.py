@@ -1,8 +1,7 @@
-import os
 import re
 import traceback
 import uuid
-from typing import Optional, Pattern
+from typing import Pattern
 
 import aiofiles
 import aiofiles.os
@@ -24,11 +23,11 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
         directory: str = 'temp'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidStr(directory):
-            raise ValueError(f'directory argument is malformed: \"{directory}\"')
+            raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -36,25 +35,14 @@ class DecTalkFileManager(DecTalkFileManagerInterface):
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
-    async def deleteFile(self, fileName: Optional[str]):
-        if not utils.isValidStr(fileName):
-            return
-        elif not await aiofiles.ospath.exists(fileName):
-            return
-
-        try:
-            os.remove(fileName)
-        except Exception as e:
-            self.__timber.log('DecTalkFileManager', f'Unable to delete TTS file (\"{fileName}\"): {e}', e, traceback.format_exc())
-
-    async def writeCommandToNewFile(self, command: str) -> Optional[str]:
+    async def writeCommandToNewFile(self, command: str) -> str | None:
         if not utils.isValidStr(command):
-            raise ValueError(f'command argument is malformed: \"{command}\"')
+            raise TypeError(f'command argument is malformed: \"{command}\"')
 
         if not await aiofiles.ospath.exists(self.__directory):
             await aiofiles.os.makedirs(self.__directory)
 
-        fileName: Optional[str] = None
+        fileName: str | None = None
 
         while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
             randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))

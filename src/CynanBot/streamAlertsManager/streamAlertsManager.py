@@ -104,7 +104,6 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
         self.__isStarted = True
         self.__timber.log('StreamAlertsManager', 'Starting StreamAlertsManager...')
-
         self.__backgroundTaskHelper.createTask(self.__startAlertLoop())
 
     async def __startAlertLoop(self):

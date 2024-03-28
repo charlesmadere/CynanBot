@@ -2,7 +2,7 @@ import asyncio
 from asyncio import CancelledError as AsyncioCancelledError
 from asyncio import TimeoutError as AsyncioTimeoutError
 from asyncio.subprocess import Process
-from typing import Any, ByteString, Dict, Optional, Tuple
+from typing import Any, ByteString, Tuple
 
 import aiofiles.ospath
 import psutil
@@ -11,6 +11,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
     DecTalkFileManagerInterface
+from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
+    TtsTempFileHelperInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsManagerInterface import TtsManagerInterface
@@ -25,7 +27,8 @@ class DecTalkManager(TtsManagerInterface):
         decTalkFileManager: DecTalkFileManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
-        ttsSettingsRepository: TtsSettingsRepositoryInterface
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
+        ttsTempFileHelper: TtsTempFileHelperInterface
     ):
         if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
@@ -35,11 +38,14 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'ttsCommandBuilder argument is malformed: \"{ttsCommandBuilder}\"')
         elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
+        elif not isinstance(ttsTempFileHelper, TtsTempFileHelperInterface):
+            raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
+        self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isPlaying: bool = False
 
@@ -54,9 +60,9 @@ class DecTalkManager(TtsManagerInterface):
         self.__isPlaying = True
         timeoutSeconds = await self.__ttsSettingsRepository.getTtsTimeoutSeconds()
 
-        process: Optional[Process] = None
-        outputTuple: Optional[Tuple[ByteString, ByteString]] = None
-        exception: Optional[BaseException] = None
+        process: Process | None = None
+        outputTuple: Tuple[ByteString, ByteString] | None = None
+        exception: BaseException | None = None
 
         try:
             process = await asyncio.create_subprocess_shell(
@@ -76,7 +82,7 @@ class DecTalkManager(TtsManagerInterface):
             await self.__killDecTalkProcess(process)
 
         process = None
-        outputString: Optional[str] = None
+        outputString: str | None = None
 
         if outputTuple is not None and len(outputTuple) >= 2:
             outputString = outputTuple[1].decode('utf-8').strip()
@@ -84,7 +90,7 @@ class DecTalkManager(TtsManagerInterface):
         self.__timber.log('DecTalkManager', f'Ran Dec Talk system command ({command}) ({outputString=}) ({exception=})')
         self.__isPlaying = False
 
-    async def __killDecTalkProcess(self, process: Optional[Process]):
+    async def __killDecTalkProcess(self, process: Process | None):
         if process is None:
             self.__timber.log('DecTalkManager', f'Went to kill the Dec Talk process, but the process is None: \"{process}\"')
             return
@@ -133,7 +139,7 @@ class DecTalkManager(TtsManagerInterface):
         self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
-        await self.__decTalkFileManager.deleteFile(fileName)
+        await self.__ttsTempFileHelper.registerTempFile(fileName)
 
         return True
 
@@ -141,7 +147,7 @@ class DecTalkManager(TtsManagerInterface):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'isPlaying': self.__isPlaying
         }
