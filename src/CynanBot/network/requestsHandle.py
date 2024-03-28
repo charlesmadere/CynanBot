@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import requests
 from requests.models import Response
@@ -20,9 +20,9 @@ class RequestsHandle(NetworkHandle):
         timeoutSeconds: int = 8
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(timeoutSeconds):
-            raise ValueError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
+            raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif timeoutSeconds < 3 or timeoutSeconds > 16:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
@@ -32,9 +32,9 @@ class RequestsHandle(NetworkHandle):
     async def delete(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[Response] = None
+        response: Response | None = None
 
         try:
             response = requests.delete(
@@ -59,9 +59,9 @@ class RequestsHandle(NetworkHandle):
     async def get(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[Response] = None
+        response: Response | None = None
 
         try:
             response = requests.get(
@@ -89,10 +89,10 @@ class RequestsHandle(NetworkHandle):
     async def post(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[Response] = None
+        response: Response | None = None
 
         try:
             response = requests.post(

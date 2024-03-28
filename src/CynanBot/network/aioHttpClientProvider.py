@@ -1,5 +1,4 @@
 from asyncio import AbstractEventLoop
-from typing import Optional
 
 import aiohttp
 
@@ -20,11 +19,11 @@ class AioHttpClientProvider(NetworkClientProvider):
         timeoutSeconds: int = 8
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
-            raise ValueError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+            raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(timeoutSeconds):
-            raise ValueError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
+            raise TypeError(f'timeoutSeconds argument is malformed: \"{timeoutSeconds}\"')
         elif timeoutSeconds < 3 or timeoutSeconds > 16:
             raise ValueError(f'timeoutSeconds argument is out of bounds: {timeoutSeconds}')
 
@@ -32,7 +31,7 @@ class AioHttpClientProvider(NetworkClientProvider):
         self.__timber: TimberInterface = timber
         self.__timeoutSeconds: int = timeoutSeconds
 
-        self.__clientSession: Optional[aiohttp.ClientSession] = None
+        self.__clientSession: aiohttp.ClientSession | None = None
 
     async def get(self) -> NetworkHandle:
         clientSession = self.__clientSession

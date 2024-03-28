@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import List, Optional, Pattern, Set
+from typing import Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.contentScanner.absBannedWord import AbsBannedWord
@@ -28,7 +28,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__exactWordRegEx: Pattern = re.compile(r'^\"(.+)\"$', re.IGNORECASE)
-        self.__cache: Optional[Set[AbsBannedWord]] = None
+        self.__cache: set[AbsBannedWord] | None = None
 
     async def clearCaches(self):
         self.__cache = None
@@ -36,12 +36,12 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
     def __createCleanedBannedWordsSetFromLines(
         self,
-        lines: Optional[List[str]]
-    ) -> Set[AbsBannedWord]:
-        if lines is not None and not isinstance(lines, List):
+        lines: list[str] | None
+    ) -> set[AbsBannedWord]:
+        if lines is not None and not isinstance(lines, list):
             raise TypeError(f'lines argument is malformed: \"{lines}\"')
 
-        cleanedBannedWords: Set[AbsBannedWord] = set()
+        cleanedBannedWords: set[AbsBannedWord] = set()
 
         if lines is None or len(lines) == 0:
             return cleanedBannedWords
@@ -54,8 +54,8 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return cleanedBannedWords
 
-    def __fetchBannedWords(self) -> Set[AbsBannedWord]:
-        lines: Optional[List[str]] = None
+    def __fetchBannedWords(self) -> set[AbsBannedWord]:
+        lines: list[str] | None = None
 
         try:
             lines = self.__bannedWordsLinesReader.readLines()
@@ -65,8 +65,8 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
-    async def __fetchBannedWordsAsync(self) -> Set[AbsBannedWord]:
-        lines: Optional[List[str]] = None
+    async def __fetchBannedWordsAsync(self) -> set[AbsBannedWord]:
+        lines: list[str] | None = None
 
         try:
             lines = await self.__bannedWordsLinesReader.readLinesAsync()
@@ -76,7 +76,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return self.__createCleanedBannedWordsSetFromLines(lines)
 
-    def getBannedWords(self) -> Set[AbsBannedWord]:
+    def getBannedWords(self) -> set[AbsBannedWord]:
         cache = self.__cache
         if cache is not None:
             return cache
@@ -87,7 +87,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return bannedWords
 
-    async def getBannedWordsAsync(self) -> Set[AbsBannedWord]:
+    async def getBannedWordsAsync(self) -> set[AbsBannedWord]:
         cache = self.__cache
         if cache is not None:
             return cache
@@ -98,7 +98,7 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
 
         return bannedWords
 
-    def __processLine(self, line: Optional[str]) -> Optional[AbsBannedWord]:
+    def __processLine(self, line: str | None) -> AbsBannedWord | None:
         if line is not None and not isinstance(line, str):
             raise TypeError(f'line argument is malformed: \"{line}\"')
 

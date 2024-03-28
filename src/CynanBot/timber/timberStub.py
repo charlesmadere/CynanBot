@@ -1,5 +1,3 @@
-from typing import Optional
-
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -12,7 +10,7 @@ class TimberStub(TimberInterface):
         self,
         tag: str,
         msg: str,
-        exception: Optional[Exception] = None,
-        traceback: Optional[str] = None
+        exception: Exception | None = None,
+        traceback: str | None = None
     ):
         print(f'{tag} — {msg}')

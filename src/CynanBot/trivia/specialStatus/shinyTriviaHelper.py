@@ -1,6 +1,5 @@
 import random
-from datetime import datetime, timedelta, timezone
-from typing import Dict, Optional
+from datetime import datetime, timedelta, timezone, tzinfo
 
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessRepositoryInterface import \
@@ -21,61 +20,57 @@ class ShinyTriviaHelper():
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         cooldown: timedelta = timedelta(hours = 3),
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
-            raise ValueError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
+            raise TypeError(f'shinyTriviaOccurencesRepository argument is malformed: \"{shinyTriviaOccurencesRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = shinyTriviaOccurencesRepository
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
-        self.__rankToProbabilityDict: Dict[int, float] = self.__createRankToProbabilityDict()
-
-    def __createRankToProbabilityDict(self) -> Dict[int, float]:
-        values: Dict[int, float] = dict()
-        values[1]  = 0.500
-        values[2]  = 0.550
-        values[3]  = 0.600
-        values[4]  = 0.650
-        values[5]  = 0.700
-        values[6]  = 0.750
-        values[7]  = 0.800
-        values[8]  = 0.850
-        values[9]  = 0.900
-        values[10] = 0.950
-
-        return values
+        self.__rankToProbabilityDict: dict[int, float] = {
+            1: 0.500,
+            2: 0.550,
+            3: 0.600,
+            4: 0.650,
+            5: 0.700,
+            6: 0.750,
+            7: 0.800,
+            8: 0.850,
+            9: 0.900,
+            10: 0.950
+        }
 
     async def __getUserPlacementOnLeaderboard(
         self,
         twitchChannel: str,
         userId: str
-    ) -> Optional[int]:
+    ) -> int | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         cutenessLeaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
             twitchChannel = twitchChannel
         )
 
         entries = cutenessLeaderboard.getEntries()
-        if not utils.hasItems(entries):
+        if entries is None or len(entries) == 0:
             return None
 
         userId = userId.lower()
@@ -93,11 +88,11 @@ class ShinyTriviaHelper():
         userName: str
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         if not await self.__triviaSettingsRepository.areShinyTriviasEnabled():
             return False
@@ -140,7 +135,7 @@ class ShinyTriviaHelper():
 
     async def isShinySuperTriviaQuestion(self, twitchChannel: str) -> bool:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         if not await self.__triviaSettingsRepository.areShinyTriviasEnabled():
             return False
@@ -161,11 +156,11 @@ class ShinyTriviaHelper():
         userName: str
     ):
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
             twitchChannel = twitchChannel,

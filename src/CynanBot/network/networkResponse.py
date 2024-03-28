@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.network.networkClientType import NetworkClientType
 
@@ -27,7 +27,7 @@ class NetworkResponse(ABC):
         pass
 
     @abstractmethod
-    async def json(self) -> Optional[Dict[str, Any]]:
+    async def json(self) -> dict[str, Any] | None:
         pass
 
     @abstractmethod
@@ -39,5 +39,5 @@ class NetworkResponse(ABC):
         return str(dictionary)
 
     @abstractmethod
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         pass

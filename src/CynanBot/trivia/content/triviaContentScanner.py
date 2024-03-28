@@ -1,11 +1,8 @@
-from typing import Optional, Set
-
 import CynanBot.misc.utils as utils
 from CynanBot.contentScanner.bannedPhrase import BannedPhrase
 from CynanBot.contentScanner.bannedWord import BannedWord
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBot.contentScanner.bannedWordType import BannedWordType
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -41,11 +38,11 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
-    async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> Set[str]:
+    async def __getAllPhrasesFromQuestion(self, question: AbsTriviaQuestion) -> set[str]:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        phrases: Set[str] = set()
+        phrases: set[str] = set()
         await self.__contentScanner.updatePhrasesContent(phrases, question.getQuestion())
         await self.__contentScanner.updatePhrasesContent(phrases, question.getPrompt())
 
@@ -60,11 +57,11 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
         return phrases
 
-    async def __getAllWordsFromQuestion(self, question: AbsTriviaQuestion) -> Set[str]:
+    async def __getAllWordsFromQuestion(self, question: AbsTriviaQuestion) -> set[str]:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        words: Set[str] = set()
+        words: set[str] = set()
         await self.__contentScanner.updateWordsContent(words, question.getQuestion())
         await self.__contentScanner.updateWordsContent(words, question.getPrompt())
 
@@ -79,11 +76,10 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
         return words
 
-    async def verify(self, question: Optional[AbsTriviaQuestion]) -> TriviaContentCode:
+    async def verify(self, question: AbsTriviaQuestion | None) -> TriviaContentCode:
         if question is None:
             return TriviaContentCode.IS_NONE
-
-        if not isinstance(question, AbsTriviaQuestion):
+        elif not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
         coreContentCode = await self.__verifyQuestionCoreContent(question)
@@ -110,7 +106,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
     async def __verifyQuestionContentLengths(self, question: AbsTriviaQuestion) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         maxQuestionLength = await self.__triviaSettingsRepository.getMaxQuestionLength()
 
@@ -137,7 +133,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
     async def __verifyQuestionContentProfanity(self, question: AbsTriviaQuestion) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         phrases = await self.__getAllPhrasesFromQuestion(question)
         words = await self.__getAllWordsFromQuestion(question)
@@ -164,7 +160,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
     async def __verifyQuestionCoreContent(self, question: AbsTriviaQuestion) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         if not utils.isValidStr(question.getQuestion()):
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.getQuestion()}\"')
@@ -185,7 +181,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
     async def __verifyQuestionDoesNotContainUrl(self, question: AbsTriviaQuestion):
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         if utils.containsUrl(question.getQuestion()):
             self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) question contains a URL: \"{question.getQuestion()}\"')
@@ -204,7 +200,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
     async def __verifyQuestionResponseCount(self, question: AbsTriviaQuestion) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
 
         if question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             return TriviaContentCode.OK

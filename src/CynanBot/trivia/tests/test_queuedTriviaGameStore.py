@@ -52,6 +52,7 @@ class TestQueuedTriviaGameStore1():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -73,6 +74,7 @@ class TestQueuedTriviaGameStore1():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -94,6 +96,7 @@ class TestQueuedTriviaGameStore1():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -115,6 +118,7 @@ class TestQueuedTriviaGameStore1():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
+            twitchChannelId = 's',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -259,6 +263,7 @@ class TestQueuedTriviaGameStore4():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -315,6 +320,7 @@ class TestQueuedTriviaGameStore5():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
+            twitchChannelId = 's',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -371,6 +377,7 @@ class TestQueuedTriviaGameStore6():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )
@@ -448,6 +455,7 @@ class TestQueuedTriviaGameStore7():
         twitchChannelId = 'abc123',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
     )

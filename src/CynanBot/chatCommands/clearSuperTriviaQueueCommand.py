@@ -58,10 +58,12 @@ class ClearSuperTriviaQueueCommand(AbsChatCommand):
             return
 
         actionId = await self.__triviaIdGenerator.generateActionId()
+        twitchChannelId = await ctx.getTwitchChannelId()
 
         self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
             actionId = actionId,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
         ))
 
         self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

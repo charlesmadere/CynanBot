@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Collection, List, Optional
+from typing import Collection
 
 
 class TriviaQuestionCompilerInterface(ABC):
@@ -7,7 +7,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileCategory(
         self,
-        category: Optional[str],
+        category: str | None,
         htmlUnescape: bool = False
     ) -> str:
         pass
@@ -15,7 +15,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileQuestion(
         self,
-        question: Optional[str],
+        question: str | None,
         htmlUnescape: bool = False
     ) -> str:
         pass
@@ -23,7 +23,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileResponse(
         self,
-        response: Optional[str],
+        response: str | None,
         htmlUnescape: bool = False
     ) -> str:
         pass
@@ -31,7 +31,7 @@ class TriviaQuestionCompilerInterface(ABC):
     @abstractmethod
     async def compileResponses(
         self,
-        responses: Optional[Collection[Optional[str]]],
+        responses: Collection[str | None] | None,
         htmlUnescape: bool = False
-    ) -> List[str]:
+    ) -> list[str]:
         pass

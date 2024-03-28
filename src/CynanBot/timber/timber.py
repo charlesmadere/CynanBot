@@ -2,7 +2,6 @@ import asyncio
 import queue
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Dict, List, Optional
 
 import aiofiles
 import aiofiles.os
@@ -23,13 +22,13 @@ class Timber(TimberInterface):
         timberRootDirectory: str = 'logs/timber'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidStr(timberRootDirectory):
-            raise ValueError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
+            raise TypeError(f'timberRootDirectory argument is malformed: \"{timberRootDirectory}\"')
 
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__timberRootDirectory: str = timberRootDirectory
@@ -37,19 +36,21 @@ class Timber(TimberInterface):
         self.__entryQueue: SimpleQueue[TimberEntry] = SimpleQueue()
         backgroundTaskHelper.createTask(self.__startEventLoop())
 
-    def __getErrorStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> Optional[str]:
+    def __getErrorStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> str | None:
         if not utils.isValidBool(ensureNewLine):
-            raise ValueError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
+            raise TypeError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
         elif not isinstance(timberEntry, TimberEntry):
-            raise ValueError(f'timberEntry argument is malformed: \"{timberEntry}\"')
+            raise TypeError(f'timberEntry argument is malformed: \"{timberEntry}\"')
 
-        if not timberEntry.hasException():
+        exception = timberEntry.getException()
+        if exception is None:
             return None
 
-        errorStatement = f'{timberEntry.getException()}'
+        errorStatement = str(exception)
 
-        if timberEntry.hasTraceback():
-            errorStatement = f'{errorStatement}\n{timberEntry.getTraceback()}'.strip()
+        traceback = timberEntry.getTraceback()
+        if utils.isValidStr(traceback):
+            errorStatement = f'{errorStatement}\n{traceback}'.strip()
 
         if ensureNewLine:
             errorStatement = f'{errorStatement}\n'
@@ -58,14 +59,15 @@ class Timber(TimberInterface):
 
     def __getLogStatement(self, ensureNewLine: bool, timberEntry: TimberEntry) -> str:
         if not utils.isValidBool(ensureNewLine):
-            raise ValueError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
+            raise TypeError(f'ensureNewLine argument is malformed: \"{ensureNewLine}\"')
         elif not isinstance(timberEntry, TimberEntry):
-            raise ValueError(f'timberEntry argument is malformed: \"{timberEntry}\"')
+            raise TypeError(f'timberEntry argument is malformed: \"{timberEntry}\"')
 
         logStatement = f'{timberEntry.getSimpleDateTime().getDateAndTimeStr(True)} — {timberEntry.getTag()} — {timberEntry.getMsg()}'.strip()
 
-        if timberEntry.hasTraceback():
-            logStatement = f'{logStatement}\n{timberEntry.getTraceback()}'.strip()
+        traceback = timberEntry.getTraceback()
+        if utils.isValidStr(traceback):
+            logStatement = f'{logStatement}\n{traceback}'.strip()
 
         if ensureNewLine:
             logStatement = f'{logStatement}\n'
@@ -76,17 +78,17 @@ class Timber(TimberInterface):
         self,
         tag: str,
         msg: str,
-        exception: Optional[Exception] = None,
-        traceback: Optional[str] = None
+        exception: Exception | None = None,
+        traceback: str | None = None
     ):
         if not utils.isValidStr(tag):
-            raise ValueError(f'tag argument is malformed: \"{tag}\"')
+            raise TypeError(f'tag argument is malformed: \"{tag}\"')
         elif not utils.isValidStr(msg):
-            raise ValueError(f'msg argument is malformed: \"{msg}\"')
+            raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif exception is not None and not isinstance(exception, Exception):
-            raise ValueError(f'exception argument is malformed: \"{exception}\"')
+            raise TypeError(f'exception argument is malformed: \"{exception}\"')
         elif traceback is not None and not isinstance(traceback, str):
-            raise ValueError(f'traceback argument is malformed: \"{traceback}\"')
+            raise TypeError(f'traceback argument is malformed: \"{traceback}\"')
 
         timberEntry = TimberEntry(
             tag = tag,
@@ -100,7 +102,7 @@ class Timber(TimberInterface):
 
     async def __startEventLoop(self):
         while True:
-            entries: List[TimberEntry] = list()
+            entries: list[TimberEntry] = list()
 
             try:
                 while not self.__entryQueue.empty():
@@ -112,7 +114,7 @@ class Timber(TimberInterface):
             await self.__writeToLogFiles(entries)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, entries: List[TimberEntry]):
+    async def __writeToLogFiles(self, entries: list[TimberEntry]):
         if len(entries) == 0:
             return
 
@@ -123,12 +125,12 @@ class Timber(TimberInterface):
         # This dictionary stores a directory, and then a list of files, and then the contents to
         # write into the files themselves. This dictionary does not make any attempt at handling
         # error logging.
-        structure: Dict[str, Dict[str, List[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
+        structure: dict[str, dict[str, list[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         # This dictionary is used for error logging, and just like the dictionary above, stores
         # a directory, and then a list of files, and then the contents to write into the files
         # themselves.
-        errorStructure: Dict[str, Dict[str, List[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
+        errorStructure: dict[str, dict[str, list[TimberEntry]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for entry in entries:
             simpleDateTime = entry.getSimpleDateTime()
@@ -136,7 +138,8 @@ class Timber(TimberInterface):
             timberFile = f'{timberDirectory}/{simpleDateTime.getDayStr()}.log'
             structure[timberDirectory][timberFile].append(entry)
 
-            if entry.hasException():
+            exception = entry.getException()
+            if exception is not None:
                 timberErrorDirectory = f'{timberDirectory}/errors'
                 timberErrorFile = f'{timberErrorDirectory}/{simpleDateTime.getDayStr()}.log'
                 errorStructure[timberErrorDirectory][timberErrorFile].append(entry)

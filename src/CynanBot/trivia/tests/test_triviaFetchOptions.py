@@ -8,6 +8,7 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -16,6 +17,7 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsNotAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'imyt',
+            twitchChannelId = 'i',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -24,6 +26,7 @@ class TestTriviaFetchOptions():
     def test_areQuestionAnswerTriviaQuestionsEnabled_withQuestionAnswerTriviaConditionsRequired(self):
         options = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
+            twitchChannelId = 's',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -32,6 +35,7 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'zoasty',
+            twitchChannelId = 'z',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.ALLOWED
         )
 
@@ -40,6 +44,7 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsNotAllowed(self):
         options = TriviaFetchOptions(
             twitchChannel = 'behemoth87',
+            twitchChannelId = 'b',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -48,6 +53,7 @@ class TestTriviaFetchOptions():
     def test_requireQuestionAnswerTriviaQuestion_withQuestionAnswerTriviaConditionsRequired(self):
         options = TriviaFetchOptions(
             twitchChannel = 'Oatsngoats',
+            twitchChannelId = 'o',
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 

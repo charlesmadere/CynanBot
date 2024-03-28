@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
@@ -42,7 +40,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         twitchChannelId: str,
         userId: str,
         userName: str
-    ) -> Optional[StartNewTriviaGameAction]:
+    ) -> StartNewTriviaGameAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -78,6 +76,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
         )
 
@@ -99,7 +98,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
         twitchChannel: str,
         twitchChannelId: str,
         numberOfGames: int = 1
-    ) -> Optional[StartNewSuperTriviaGameAction]:
+    ) -> StartNewSuperTriviaGameAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -152,6 +151,7 @@ class TriviaGameBuilder(TriviaGameBuilderInterface):
 
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
         )
 

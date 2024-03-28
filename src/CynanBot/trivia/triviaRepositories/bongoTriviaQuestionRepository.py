@@ -57,8 +57,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('BongoTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
-
+        self.__timber.log('BongoTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
         clientSession = await self.__networkClientProvider.get()
 
         try:

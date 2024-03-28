@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
@@ -13,9 +13,9 @@ class AbsTriviaEvent(ABC):
         eventId: str
     ):
         if not utils.isValidStr(actionId):
-            raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
+            raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
         elif not utils.isValidStr(eventId):
-            raise ValueError(f'eventId argument is malformed: \"{eventId}\"')
+            raise TypeError(f'eventId argument is malformed: \"{eventId}\"')
 
         self.__actionId: str = actionId
         self.__eventId: str = eventId
@@ -34,7 +34,7 @@ class AbsTriviaEvent(ABC):
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'actionId': self.__actionId,
             'eventId': self.__eventId,

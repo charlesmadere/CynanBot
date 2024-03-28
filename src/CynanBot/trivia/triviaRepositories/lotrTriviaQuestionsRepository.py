@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -55,7 +55,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -73,7 +73,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         triviaId = utils.getStrFromDict(triviaDict, 'triviaId')
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.extend(triviaDict['correctAnswers'])
 
         if await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswers(
@@ -86,10 +86,10 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         correctAnswers = await self.__triviaQuestionCompiler.compileResponses(correctAnswers)
 
-        cleanedCorrectAnswers: List[str] = list()
+        cleanedCorrectAnswers: list[str] = list()
         cleanedCorrectAnswers = await self.__triviaAnswerCompiler.compileTextAnswersList(correctAnswers)
 
-        expandedCorrectAnswers: Set[str] = set()
+        expandedCorrectAnswers: set[str] = set()
         for answer in cleanedCorrectAnswers:
             expandedCorrectAnswers.update(await self.__triviaAnswerCompiler.expandNumerals(answer))
 
@@ -105,7 +105,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
             triviaSource = self.getTriviaSource()
         )
 
-    async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
+    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'LOTR trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
@@ -122,7 +122,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(row) or len(row) != 6:
             raise RuntimeError(f'Received malformed data from LOTR database: {row}')
 
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         self.__selectiveAppend(correctAnswers, row[0])
         self.__selectiveAppend(correctAnswers, row[1])
         self.__selectiveAppend(correctAnswers, row[2])
@@ -131,7 +131,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(correctAnswers):
             raise RuntimeError(f'Received malformed correct answer data from LOTR database: {row}')
 
-        triviaQuestionDict: Dict[str, Any] = {
+        triviaQuestionDict: dict[str, Any] = {
             'correctAnswers': correctAnswers,
             'question': row[4],
             'triviaId': row[5]
@@ -141,7 +141,7 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.QUESTION_ANSWER }
 
     def getTriviaSource(self) -> TriviaSource:
@@ -156,9 +156,9 @@ class LotrTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         return hasQuestionSetAvailable
 
-    def __selectiveAppend(self, correctAnswers: List[str], correctAnswer: Optional[str]):
-        if correctAnswers is None:
-            raise ValueError(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
+    def __selectiveAppend(self, correctAnswers: list[str], correctAnswer: str | None):
+        if not isinstance(correctAnswers, list):
+            raise TypeError(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
 
         if utils.isValidStr(correctAnswer):
             correctAnswers.append(correctAnswer)

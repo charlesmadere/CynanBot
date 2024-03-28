@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiohttp
 
@@ -18,9 +18,9 @@ class AioHttpHandle(NetworkHandle):
         timber: TimberInterface
     ):
         if not isinstance(clientSession, aiohttp.ClientSession):
-            raise ValueError(f'clientSession argument is malformed: \"{clientSession}\"')
+            raise TypeError(f'clientSession argument is malformed: \"{clientSession}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__clientSession: aiohttp.ClientSession = clientSession
         self.__timber: TimberInterface = timber
@@ -28,9 +28,9 @@ class AioHttpHandle(NetworkHandle):
     async def delete(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[aiohttp.ClientResponse] = None
+        response: aiohttp.ClientResponse | None = None
 
         try:
             response = await self.__clientSession.delete(
@@ -54,9 +54,9 @@ class AioHttpHandle(NetworkHandle):
     async def get(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[aiohttp.ClientResponse] = None
+        response: aiohttp.ClientResponse | None = None
 
         try:
             response = await self.__clientSession.get(
@@ -83,10 +83,10 @@ class AioHttpHandle(NetworkHandle):
     async def post(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None
     ) -> NetworkResponse:
-        response: Optional[aiohttp.ClientResponse] = None
+        response: aiohttp.ClientResponse | None = None
 
         try:
             response = await self.__clientSession.post(

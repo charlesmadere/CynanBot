@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.networkResponse import NetworkResponse
@@ -11,7 +11,7 @@ class NetworkHandle(ABC):
     async def delete(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
         pass
 
@@ -19,7 +19,7 @@ class NetworkHandle(ABC):
     async def get(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None
     ) -> NetworkResponse:
         pass
 
@@ -31,7 +31,7 @@ class NetworkHandle(ABC):
     async def post(
         self,
         url: str,
-        headers: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None
     ) -> NetworkResponse:
         pass

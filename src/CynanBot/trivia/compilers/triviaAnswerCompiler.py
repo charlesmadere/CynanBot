@@ -17,7 +17,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
 

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
     StartNewSuperTriviaGameAction
@@ -16,7 +15,7 @@ class TriviaGameBuilderInterface(ABC):
         twitchChannelId: str,
         userId: str,
         userName: str
-    ) -> Optional[StartNewTriviaGameAction]:
+    ) -> StartNewTriviaGameAction | None:
         pass
 
     @abstractmethod
@@ -25,5 +24,5 @@ class TriviaGameBuilderInterface(ABC):
         twitchChannel: str,
         twitchChannelId: str,
         numberOfGames: int = 1
-    ) -> Optional[StartNewSuperTriviaGameAction]:
+    ) -> StartNewSuperTriviaGameAction | None:
         pass

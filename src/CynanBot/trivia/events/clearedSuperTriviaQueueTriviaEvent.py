@@ -13,7 +13,8 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         previousQueueSize: int,
         actionId: str,
         eventId: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ):
         super().__init__(
             actionId = actionId,
@@ -21,19 +22,22 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
         )
 
         if not utils.isValidInt(numberOfGamesRemoved):
-            raise ValueError(f'numberOfGamesRemoved argument is malformed: \"{numberOfGamesRemoved}\"')
+            raise TypeError(f'numberOfGamesRemoved argument is malformed: \"{numberOfGamesRemoved}\"')
         elif numberOfGamesRemoved < 0 or numberOfGamesRemoved > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGamesRemoved argument is out of bounds: {numberOfGamesRemoved}')
         elif not utils.isValidInt(previousQueueSize):
-            raise ValueError(f'previousQueueSize argument is malformed: \"{previousQueueSize}\"')
+            raise TypeError(f'previousQueueSize argument is malformed: \"{previousQueueSize}\"')
         elif previousQueueSize < 0 or previousQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'previousQueueSize argument is malformed: \"{previousQueueSize}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         self.__numberOfGamesRemoved: int = numberOfGamesRemoved
         self.__previousQueueSize: int = previousQueueSize
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
 
     def getNumberOfGamesRemoved(self) -> int:
         return self.__numberOfGamesRemoved
@@ -52,3 +56,6 @@ class ClearedSuperTriviaQueueTriviaEvent(AbsTriviaEvent):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId

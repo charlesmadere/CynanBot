@@ -1,33 +1,25 @@
+import pytest
+
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 
 
 class TestTriviaSource():
 
     def test_fromStr_withEmptyString(self):
-        result: TriviaSource = None
-        exception: Exception = None
+        result: TriviaSource | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = TriviaSource.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withNone(self):
-        result: TriviaSource = None
-        exception: Exception = None
+        result: TriviaSource | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = TriviaSource.fromStr(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withBongoString(self):
         result = TriviaSource.fromStr('bongo')
@@ -80,6 +72,7 @@ class TestTriviaSource():
         result = TriviaSource.fromStr('will_fry_trivia')
         assert result is TriviaSource.WILL_FRY_TRIVIA
 
+    def test_fromStr_withWillFryTriviaApiString(self):
         result = TriviaSource.fromStr('will_fry_trivia_api')
         assert result is TriviaSource.WILL_FRY_TRIVIA
 
@@ -88,17 +81,12 @@ class TestTriviaSource():
         assert result is TriviaSource.WWTBAM
 
     def test_fromStr_withWhitespaceString(self):
-        result: TriviaSource = None
-        exception: Exception = None
+        result: TriviaSource | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = TriviaSource.fromStr(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_toStr_withBongo(self):
         result = TriviaSource.BONGO.toStr()

@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
 from typing import Any, Dict, List, Optional, Set
 
@@ -121,50 +121,50 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         queueTimeoutSeconds: int = 3,
         sleepTimeSeconds: float = 0.5,
-        timeZone: timezone = timezone.utc
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(cutenessRepository, CutenessRepositoryInterface):
-            raise ValueError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
+            raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif not isinstance(queuedTriviaGameStore, QueuedTriviaGameStoreInterface):
-            raise ValueError(f'queuedTriviaGameStore argument is malformed: \"{queuedTriviaGameStore}\"')
+            raise TypeError(f'queuedTriviaGameStore argument is malformed: \"{queuedTriviaGameStore}\"')
         elif not isinstance(shinyTriviaHelper, ShinyTriviaHelper):
-            raise ValueError(f'shinyTriviaHelper argument is malformed: \"{shinyTriviaHelper}\"')
+            raise TypeError(f'shinyTriviaHelper argument is malformed: \"{shinyTriviaHelper}\"')
         elif not isinstance(superTriviaCooldownHelper, SuperTriviaCooldownHelperInterface):
-            raise ValueError(f'superTriviaCooldownHelper argument is malformed: \"{superTriviaCooldownHelper}\"')
+            raise TypeError(f'superTriviaCooldownHelper argument is malformed: \"{superTriviaCooldownHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(toxicTriviaHelper, ToxicTriviaHelper):
-            raise ValueError(f'toxicTriviaHelper argument is malformed: \"{toxicTriviaHelper}\"')
+            raise TypeError(f'toxicTriviaHelper argument is malformed: \"{toxicTriviaHelper}\"')
         elif not isinstance(triviaAnswerChecker, TriviaAnswerCheckerInterface):
-            raise ValueError(f'triviaAnswerChecker argument is malformed: \"{triviaAnswerChecker}\"')
+            raise TypeError(f'triviaAnswerChecker argument is malformed: \"{triviaAnswerChecker}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
-            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+            raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaGameStore, TriviaGameStoreInterface):
-            raise ValueError(f'triviaGameStore argument is malformed: \"{triviaGameStore}\"')
+            raise TypeError(f'triviaGameStore argument is malformed: \"{triviaGameStore}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaRepository, TriviaRepositoryInterface):
-            raise ValueError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
+            raise TypeError(f'triviaRepository argument is malformed: \"{triviaRepository}\"')
         elif not isinstance(triviaScoreRepository, TriviaScoreRepositoryInterface):
-            raise ValueError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
+            raise TypeError(f'triviaScoreRepository argument is malformed: \"{triviaScoreRepository}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
@@ -184,7 +184,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__timeZone: timezone = timeZone
+        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__eventListener: Optional[TriviaEventListener] = None
@@ -197,9 +197,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         state: SuperTriviaGameState
     ) -> Optional[ToxicTriviaPunishmentResult]:
         if action is not None and not isinstance(action, CheckSuperAnswerTriviaAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not isinstance(state, SuperTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         if not state.isToxic():
             return None
@@ -521,7 +521,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __handleActionClearSuperTriviaQueue(self, action: ClearSuperTriviaQueueTriviaAction):
         if not isinstance(action, ClearSuperTriviaQueueTriviaAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif action.getTriviaActionType() is not TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE}: \"{action.getTriviaActionType()}\"')
 
@@ -536,12 +536,13 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             previousQueueSize = result.getOldQueueSize(),
             actionId = action.getActionId(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
-            twitchChannel = action.getTwitchChannel()
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
         ))
 
     async def __handleActionStartNewTriviaGame(self, action: StartNewTriviaGameAction):
         if not isinstance(action, StartNewTriviaGameAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif action.getTriviaActionType() is not TriviaActionType.START_NEW_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_GAME}: \"{action.getTriviaActionType()}\"')
 
@@ -624,7 +625,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __handleActionStartNewSuperTriviaGame(self, action: StartNewSuperTriviaGameAction):
         if not isinstance(action, StartNewSuperTriviaGameAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif action.getTriviaActionType() is not TriviaActionType.START_NEW_SUPER_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.getTriviaActionType()}\"')
 
@@ -755,7 +756,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __removeDeadNormalTriviaGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         await self.__removeNormalTriviaGame(
             twitchChannel = state.getTwitchChannel(),
@@ -783,7 +784,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __removeDeadSuperTriviaGame(self, state: SuperTriviaGameState):
         if not isinstance(state, SuperTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         await self.__removeSuperTriviaGame(state.getTwitchChannel())
         toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult] = None
@@ -817,9 +818,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __removeNormalTriviaGame(self, twitchChannel: str, userId: str):
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         await self.__triviaGameStore.removeNormalGame(
             twitchChannel = twitchChannel,
@@ -828,14 +829,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __removeSuperTriviaGame(self, twitchChannel: str):
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         await self.__triviaGameStore.removeSuperGame(twitchChannel)
         await self.__superTriviaCooldownHelper.update(twitchChannel)
 
     def setEventListener(self, listener: Optional[TriviaEventListener]):
         if listener is not None and not isinstance(listener, TriviaEventListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__eventListener = listener
 
@@ -909,7 +910,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     def submitAction(self, action: AbsTriviaAction):
         if not isinstance(action, AbsTriviaAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         try:
             self.__actionQueue.put(action, block = True, timeout = self.__queueTimeoutSeconds)
@@ -918,7 +919,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __submitEvent(self, event: AbsTriviaEvent):
         if not isinstance(event, AbsTriviaEvent):
-            raise ValueError(f'event argument is malformed: \"{event}\"')
+            raise TypeError(f'event argument is malformed: \"{event}\"')
 
         try:
             self.__eventQueue.put(event, block = True, timeout = self.__queueTimeoutSeconds)

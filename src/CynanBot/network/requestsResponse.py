@@ -1,5 +1,5 @@
 from json import JSONDecodeError
-from typing import Any, Dict, Optional
+from typing import Any
 
 from requests.models import Response
 
@@ -19,11 +19,11 @@ class RequestsResponse(NetworkResponse):
         timber: TimberInterface
     ):
         if not isinstance(response, Response):
-            raise ValueError(f'response argument is malformed: \"{response}\"')
+            raise TypeError(f'response argument is malformed: \"{response}\"')
         elif not utils.isValidStr(url):
-            raise ValueError(f'url argument is malformed: \"{url}\"')
+            raise TypeError(f'url argument is malformed: \"{url}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__response: Response = response
         self.__url: str = url
@@ -51,7 +51,7 @@ class RequestsResponse(NetworkResponse):
     def isClosed(self) -> bool:
         return self.__isClosed
 
-    async def json(self) -> Optional[Dict[str, Any]]:
+    async def json(self) -> dict[str, Any] | None:
         self.__requireNotClosed()
 
         try:
@@ -68,7 +68,7 @@ class RequestsResponse(NetworkResponse):
         if self.__isClosed:
             raise NetworkResponseIsClosedException(f'This response has already been closed! ({self.getNetworkClientType()})')
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'isClosed': self.__isClosed,
             'response': self.__response,

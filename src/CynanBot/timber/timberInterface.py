@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class TimberInterface(ABC):
@@ -9,7 +8,7 @@ class TimberInterface(ABC):
         self,
         tag: str,
         msg: str,
-        exception: Optional[Exception] = None,
-        traceback: Optional[str] = None
+        exception: Exception | None = None,
+        traceback: str | None = None
     ):
         pass
