@@ -72,7 +72,7 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
 
         while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
             randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-            fileName = utils.cleanPath(f'{self.__directory}/google-{randomUuid}.ogg')
+            fileName = utils.cleanPath(f'{self.__directory}/google-{randomUuid}.mp3')
 
         try:
             async with aiofiles.open(

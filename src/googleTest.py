@@ -139,7 +139,7 @@ async def main():
             speakingRate = None,
             volumeGainDb = -3.75,
             sampleRateHertz = None,
-            audioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
+            audioEncoding = GoogleVoiceAudioEncoding.MP3
         )
     ))
 
