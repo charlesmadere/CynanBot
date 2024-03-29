@@ -37,6 +37,8 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
     TriviaSettingsRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class GlacialTriviaQuestionRepository(
@@ -52,6 +54,7 @@ class GlacialTriviaQuestionRepository(
         triviaQuestionCompiler: TriviaQuestionCompilerInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         triviaDatabaseFile: str = 'glacialTriviaQuestionsDatabase.sqlite'
     ):
         super().__init__(triviaSettingsRepository)
@@ -66,6 +69,8 @@ class GlacialTriviaQuestionRepository(
             raise TypeError(f'triviaQuestionCompiler argument is malformed: \"{triviaQuestionCompiler}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidStr(triviaDatabaseFile):
             raise TypeError(f'triviaDatabaseFile argument is malformed: \"{triviaDatabaseFile}\"')
 
@@ -74,10 +79,12 @@ class GlacialTriviaQuestionRepository(
         self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
         self.__areTablesCreated: bool = False
         self.__hasQuestionSetAvailable: bool | None = None
+        self.__twitchChannelId: str | None = None
 
     async def __buildCleanedCorrectAnswersForQuestionAnswerTrivia(
         self,
@@ -487,6 +494,18 @@ class GlacialTriviaQuestionRepository(
     def getTriviaSource(self) -> TriviaSource:
         return TriviaSource.GLACIAL
 
+    async def __getTwitchChannelId(self) -> str:
+        twitchChannelId = self.__twitchChannelId
+
+        if twitchChannelId is not None:
+            return twitchChannelId
+
+        twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+        twitchChannelId = await self.__userIdsRepository.requireUserId(twitchHandle)
+        self.__twitchChannelId = twitchChannelId
+
+        return twitchChannelId
+
     async def hasQuestionSetAvailable(self) -> bool:
         hasQuestionSetAvailable = self.__hasQuestionSetAvailable
 
@@ -495,14 +514,17 @@ class GlacialTriviaQuestionRepository(
 
             if hasQuestionSetAvailable:
                 twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
+                twitchChannelId = await self.__getTwitchChannelId()
 
                 multipleChoiceOrTrueFalse = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(TriviaFetchOptions(
                     twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId,
                     questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
                 ))
 
                 questionAnswer = await self.__fetchQuestionAnswerTriviaQuestion(TriviaFetchOptions(
                     twitchChannel = twitchChannel,
+                    twitchChannelId = twitchChannelId,
                     questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
                 ))
 

@@ -699,7 +699,8 @@ glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface = Glac
     triviaAnswerCompiler = triviaAnswerCompiler,
     triviaQuestionCompiler = triviaQuestionCompiler,
     triviaSettingsRepository = triviaSettingsRepository,
-    twitchHandleProvider = authRepository
+    twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository
 )
 
 triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
