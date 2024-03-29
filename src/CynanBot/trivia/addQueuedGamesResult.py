@@ -7,15 +7,15 @@ class AddQueuedGamesResult():
 
     def __init__(self, amountAdded: int, newQueueSize: int, oldQueueSize: int):
         if not utils.isValidInt(amountAdded):
-            raise ValueError(f'amountAdded argument is malformed: \"{amountAdded}\"')
+            raise TypeError(f'amountAdded argument is malformed: \"{amountAdded}\"')
         elif amountAdded < 0 or amountAdded > utils.getIntMaxSafeSize():
             raise ValueError(f'amountAdded argument is out of bounds: {amountAdded}')
         elif not utils.isValidInt(newQueueSize):
-            raise ValueError(f'newQueueSize argument is malformed: \"{newQueueSize}\"')
+            raise TypeError(f'newQueueSize argument is malformed: \"{newQueueSize}\"')
         elif newQueueSize < 0 or newQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'newQueueSize argument is out of bounds: {newQueueSize}')
         elif not utils.isValidInt(oldQueueSize):
-            raise ValueError(f'oldQueueSize argument is malformed: \"{oldQueueSize}\"')
+            raise TypeError(f'oldQueueSize argument is malformed: \"{oldQueueSize}\"')
         elif oldQueueSize < 0 or oldQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'oldQueueSize argument is out of bounds: {oldQueueSize}')
 

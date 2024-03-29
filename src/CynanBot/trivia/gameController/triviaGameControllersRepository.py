@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
@@ -29,13 +27,13 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
@@ -50,9 +48,9 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         userName: str
     ) -> AddTriviaGameControllerResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchChannel)
 
@@ -75,7 +73,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
             twitchChannel, userId
         )
 
-        count: Optional[int] = None
+        count: int | None = None
         if utils.hasItems(record):
             count = record[0]
 
@@ -98,9 +96,9 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         return AddTriviaGameControllerResult.ADDED
 
-    async def getControllers(self, twitchChannel: str) -> List[TriviaGameController]:
+    async def getControllers(self, twitchChannel: str) -> list[TriviaGameController]:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -114,7 +112,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
-        controllers: List[TriviaGameController] = list()
+        controllers: list[TriviaGameController] = list()
 
         if not utils.hasItems(records):
             return controllers
@@ -171,9 +169,9 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         userName: str
     ) -> RemoveTriviaGameControllerResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         userId = await self.__userIdsRepository.fetchUserId(userName = userName)
 

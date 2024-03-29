@@ -18,8 +18,16 @@ class TtsTempFile():
         self.__creationDateTime: datetime = creationDateTime
         self.__fileName: str = fileName
 
+        self.__deletionAttempts: int = 0
+
     def getCreationDateTime(self) -> datetime:
         return self.__creationDateTime
 
+    def getDeletionAttempts(self) -> int:
+        return self.__deletionAttempts
+
     def getFileName(self) -> str:
         return self.__fileName
+
+    def incrementDeletionAttempts(self):
+        self.__deletionAttempts = self.__deletionAttempts + 1

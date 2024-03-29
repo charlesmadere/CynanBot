@@ -1,5 +1,3 @@
-from typing import Optional
-
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 
@@ -69,7 +67,7 @@ class GenericTriviaNetworkException(Exception):
     def __init__(
         self,
         triviaSource: TriviaSource,
-        exception: Optional[Exception] = None
+        exception: Exception | None = None
     ):
         super().__init__(triviaSource, exception)
 

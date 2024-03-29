@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -12,7 +11,7 @@ class TriviaDifficulty(Enum):
     UNKNOWN = auto()
 
     @classmethod
-    def fromInt(cls, number: Optional[int]):
+    def fromInt(cls, number: int | None):
         if not utils.isValidInt(number):
             return TriviaDifficulty.UNKNOWN
 
@@ -26,7 +25,7 @@ class TriviaDifficulty(Enum):
             return TriviaDifficulty.UNKNOWN
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: str | None):
         if not utils.isValidStr(text):
             return TriviaDifficulty.UNKNOWN
 

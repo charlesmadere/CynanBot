@@ -1,5 +1,4 @@
 import random
-from typing import Dict, List, Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -18,25 +17,25 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         timber: TimberInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber arguent is malformed: \"{timber}\"')
+            raise TypeError(f'timber arguent is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__emotesDict: Dict[str, Optional[Set[str]]] = self.__createEmotesDict()
-        self.__emotesList: List[str] = list(self.__emotesDict)
+        self.__emotesDict: dict[str, set[str] | None] = self.__createEmotesDict()
+        self.__emotesList: list[str] = list(self.__emotesDict)
 
-    def __createEmotesDict(self) -> Dict[str, Optional[Set[str]]]:
+    def __createEmotesDict(self) -> dict[str, set[str] | None]:
         # Creates and returns a dictionary of emojis, with a set of emojis that should be
         # considered equivalent. For example: 👨‍🔬 (man scientist) and 👩‍🔬 (woman scientist)
         # should both be considered equivalents of the primary "root" 🧑‍🔬 (scientist) emoji.
         #
         # If a set is either None or empty, then the given emoji has no equivalent.
 
-        emotesDict: Dict[str, Optional[Set[str]]] = dict()
+        emotesDict: dict[str, set[str] | None] = dict()
         emotesDict['🧮'] = None
         emotesDict['👽'] = None
         emotesDict['👾'] = None
@@ -125,7 +124,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
     async def getCurrentEmoteFor(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
 
@@ -137,7 +136,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
     async def __getCurrentEmoteIndexFor(self, twitchChannel: str) -> int:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -149,7 +148,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
             twitchChannel
         )
 
-        emoteIndex: Optional[int] = None
+        emoteIndex: int | None = None
         if utils.hasItems(record):
             emoteIndex = record[0]
 
@@ -166,7 +165,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
     async def getNextEmoteFor(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
         emoteIndex = (emoteIndex + 1) % len(self.__emotesList)
@@ -187,7 +186,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
     def getRandomEmote(self) -> str:
         return random.choice(self.__emotesList)
 
-    async def getValidatedAndNormalizedEmote(self, emote: Optional[str]) -> Optional[str]:
+    async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
         if not utils.isValidStr(emote):
             return None
 

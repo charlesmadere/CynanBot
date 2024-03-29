@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class TriviaEmoteGeneratorInterface(ABC):
@@ -17,5 +16,5 @@ class TriviaEmoteGeneratorInterface(ABC):
         pass
 
     @abstractmethod
-    async def getValidatedAndNormalizedEmote(self, emote: Optional[str]) -> Optional[str]:
+    async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
         pass

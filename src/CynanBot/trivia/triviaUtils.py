@@ -650,22 +650,21 @@ class TriviaUtils(TriviaUtilsInterface):
 
         return f'{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
 
-    async def isPrivilegedTriviaUser(self, twitchChannel: str, userId: str) -> bool:
+    async def isPrivilegedTriviaUser(
+        self,
+        twitchChannel: str,
+        userId: str
+    ) -> bool:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-
-        twitchUser: Optional[UserInterface] = None
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         try:
             twitchUser = await self.__usersRepository.getUserAsync(twitchChannel)
         except NoSuchUserException as e:
             # this exception should be impossible here, but let's just be safe
             self.__timber.log('TriviaUtils', f'Encountered an invalid Twitch user \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions', e, traceback.format_exc())
-
-        if twitchUser is None:
-            self.__timber.log('TriviaUtils', f'No Twitch user instance available for \"{twitchChannel}\" when trying to check userId \"{userId}\" for privileged trivia permissions')
             return False
 
         bannedGameControllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()

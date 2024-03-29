@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -8,15 +8,15 @@ class SupStreamerChatter():
 
     def __init__(
         self,
-        mostRecentSup: Optional[SimpleDateTime],
+        mostRecentSup: SimpleDateTime | None,
         userId: str
     ):
         if mostRecentSup is not None and not isinstance(mostRecentSup, SimpleDateTime):
-            raise ValueError(f'mostRecentSup argument is malformed: \"{mostRecentSup}\"')
+            raise TypeError(f'mostRecentSup argument is malformed: \"{mostRecentSup}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        self.__mostRecentSup: Optional[SimpleDateTime] = mostRecentSup
+        self.__mostRecentSup: SimpleDateTime | None = mostRecentSup
         self.__userId: str = userId
 
     def __eq__(self, value: Any) -> bool:
@@ -25,7 +25,7 @@ class SupStreamerChatter():
         else:
             return False
 
-    def getMostRecentSup(self) -> Optional[SimpleDateTime]:
+    def getMostRecentSup(self) -> SimpleDateTime | None:
         return self.__mostRecentSup
 
     def getUserId(self) -> str:
@@ -38,7 +38,7 @@ class SupStreamerChatter():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'mostRecentSup': self.__mostRecentSup,
             'userId': self.__userId

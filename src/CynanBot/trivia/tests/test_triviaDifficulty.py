@@ -12,16 +12,8 @@ class TestTriviaDifficulty():
         assert result is TriviaDifficulty.UNKNOWN
 
     def test_fromInt_withNone(self):
-        result: TriviaDifficulty = None
-        exception: Exception = None
-
-        try:
-            result = TriviaDifficulty.fromInt(None)
-        except Exception as e:
-            exception = e
-
+        result = TriviaDifficulty.fromInt(None)
         assert result is TriviaDifficulty.UNKNOWN
-        assert exception is None
 
     def test_fromInt_withOne(self):
         result = TriviaDifficulty.fromInt(1)
@@ -40,16 +32,8 @@ class TestTriviaDifficulty():
         assert result is TriviaDifficulty.UNKNOWN
 
     def test_fromStr_withEmptyString(self):
-        result: TriviaDifficulty = None
-        exception: Exception = None
-
-        try:
-            result = TriviaDifficulty.fromStr('')
-        except Exception as e:
-            exception = e
-
+        result = TriviaDifficulty.fromStr('')
         assert result is TriviaDifficulty.UNKNOWN
-        assert exception is None
 
     def test_fromStr_withEasyString(self):
         result = TriviaDifficulty.fromStr('easy')
@@ -64,28 +48,12 @@ class TestTriviaDifficulty():
         assert result is TriviaDifficulty.MEDIUM
 
     def test_fromStr_withNone(self):
-        result: TriviaDifficulty = None
-        exception: Exception = None
-
-        try:
-            result = TriviaDifficulty.fromStr(None)
-        except Exception as e:
-            exception = e
-
+        result = TriviaDifficulty.fromStr(None)
         assert result is TriviaDifficulty.UNKNOWN
-        assert exception is None
 
     def test_fromStr_withWhitespaceString(self):
-        result: TriviaDifficulty = None
-        exception: Exception = None
-
-        try:
-            result = TriviaDifficulty.fromStr(' ')
-        except Exception as e:
-            exception = e
-
+        result = TriviaDifficulty.fromStr(' ')
         assert result is TriviaDifficulty.UNKNOWN
-        assert exception is None
 
     def test_toInt_withEasy(self):
         result = TriviaDifficulty.EASY.toInt()

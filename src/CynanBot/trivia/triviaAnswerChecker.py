@@ -35,11 +35,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaSettingsRepository: TriviaSettingsRepositoryInterface,
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaAnswerCompiler, TriviaAnswerCompilerInterface):
-            raise ValueError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
+            raise TypeError(f'triviaAnswerCompiler argument is malformed: \"{triviaAnswerCompiler}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
 
         self.__timber: TimberInterface = timber
         self.__triviaAnswerCompiler: TriviaAnswerCompilerInterface = triviaAnswerCompiler
@@ -903,10 +903,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'accommodate'
         if word in ('acheive', 'acheeve'):
             yield 'achieve'
+        if word == 'aquire':
+            yield 'acquire'
         if word == 'basicly':
             yield 'basically'
         if word in ('brocolli', 'broccolli'):
             yield 'broccoli'
+        if word == 'calender':
+            yield 'calendar'
         if word in ('cemetary', 'cematery', 'cematary'):
             yield 'cemetery'
         if word in ('comittee', 'commitee'):
@@ -920,8 +924,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'gauge'
         if word in ('itinary', 'itinery'):
             yield 'itinerary'
-        if word == 'lisence':
-            yield 'licence'
+        if word == 'layed':
+            yield 'laid'
         if word in ('manoover', 'menoover', 'meneuver'):
             yield 'maneuver'
         if word == 'mispell':
@@ -931,12 +935,18 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word in ('plagarism', 'plagarize'):
             yield 'plagiarism'
             yield 'plagiarize'
+        if word == 'publically':
+            yield 'publicly'
+        if word == 'recieve':
+            yield 'receive'
         if word in ('separate', 'seprate', 'seperet'):
             yield 'separate'
         if word in ('temperture', 'tempreture', 'temprature', 'temparature'):
             yield 'temperature'
         if word == 'tommorrow':
             yield 'tomorrow'
+        if word == 'untill':
+            yield 'until'
         if word in ('vaccum', 'vaccuum', 'vaccuumm'):
             yield 'vacuum'
         if word == 'withold':
@@ -953,6 +963,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'light'
         if word == 'lo':
             yield 'low'
+        if word == 'mid':
+            yield 'middle'
         if word == 'pow':
             yield 'power'
 

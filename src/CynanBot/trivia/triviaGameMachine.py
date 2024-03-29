@@ -3,7 +3,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -187,15 +187,15 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
-        self.__eventListener: Optional[TriviaEventListener] = None
+        self.__eventListener: TriviaEventListener | None = None
         self.__actionQueue: SimpleQueue[AbsTriviaAction] = SimpleQueue()
         self.__eventQueue: SimpleQueue[AbsTriviaEvent] = SimpleQueue()
 
     async def __applyToxicSuperTriviaPunishment(
         self,
-        action: Optional[CheckSuperAnswerTriviaAction],
+        action: CheckSuperAnswerTriviaAction | None,
         state: SuperTriviaGameState
-    ) -> Optional[ToxicTriviaPunishmentResult]:
+    ) -> ToxicTriviaPunishmentResult | None:
         if action is not None and not isinstance(action, CheckSuperAnswerTriviaAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not isinstance(state, SuperTriviaGameState):
@@ -215,7 +215,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             del answeredUserIds[action.getUserId()]
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(state.getTwitchChannel())
-        toxicTriviaPunishments: List[ToxicTriviaPunishment] = list()
+        toxicTriviaPunishments: list[ToxicTriviaPunishment] = list()
         totalPointsStolen = 0
 
         for userId, answerCount in answeredUserIds.items():
@@ -255,7 +255,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
     async def __beginQueuedTriviaGames(self):
-        activeChannelsSet: Set[str] = set()
+        activeChannelsSet: set[str] = set()
         activeChannelsSet.update(await self.__triviaGameStore.getTwitchChannelsWithActiveSuperGames())
         activeChannelsSet.update(await self.__superTriviaCooldownHelper.getTwitchChannelsInCooldown())
 
@@ -271,18 +271,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __checkAnswer(
         self,
-        answer: Optional[str],
+        answer: str | None,
         triviaQuestion: AbsTriviaQuestion,
-        extras: Optional[Dict[str, Any]] = None
+        extras: dict[str, Any] | None = None
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
 
         return await self.__triviaAnswerChecker.checkAnswer(answer, triviaQuestion, extras)
 
     async def __handleActionCheckAnswer(self, action: CheckAnswerTriviaAction):
         if not isinstance(action, CheckAnswerTriviaAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif action.getTriviaActionType() is not TriviaActionType.CHECK_ANSWER:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_ANSWER}: \"{action.getTriviaActionType()}\"')
 
@@ -411,7 +411,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __handleActionCheckSuperAnswer(self, action: CheckSuperAnswerTriviaAction):
         if not isinstance(action, CheckSuperAnswerTriviaAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif action.getTriviaActionType() is not TriviaActionType.CHECK_SUPER_ANSWER:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_SUPER_ANSWER}: \"{action.getTriviaActionType()}\"')
 
@@ -461,7 +461,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         await self.__removeSuperTriviaGame(action.getTwitchChannel())
-        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult] = None
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
         pointsForWinning = state.getPointsForWinning()
 
         if state.isShiny():
@@ -564,7 +564,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         emote = await self.__triviaEmoteGenerator.getNextEmoteFor(action.getTwitchChannel())
-        triviaQuestion: Optional[AbsTriviaQuestion] = None
+        triviaQuestion: AbsTriviaQuestion | None = None
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
                 emote = emote,
@@ -583,7 +583,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             ))
             return
 
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None
         pointsForWinning = action.getPointsForWinning()
 
         if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinyTriviaQuestion(
@@ -674,7 +674,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         emote = await self.__triviaEmoteGenerator.getNextEmoteFor(action.getTwitchChannel())
-        triviaQuestion: Optional[AbsTriviaQuestion] = None
+        triviaQuestion: AbsTriviaQuestion | None = None
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
                 emote = emote,
@@ -691,7 +691,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             ))
             return
 
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None
         pointsForWinning = action.getPointsForWinning()
 
         if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinySuperTriviaQuestion(
@@ -740,7 +740,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
     async def __removeDeadTriviaGames(self):
         now = datetime.now(self.__timeZone)
         gameStates = await self.__triviaGameStore.getAll()
-        gameStatesToRemove: List[AbsTriviaGameState] = list()
+        gameStatesToRemove: list[AbsTriviaGameState] = list()
 
         for state in gameStates:
             if state.getEndTime() < now:
@@ -787,7 +787,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
         await self.__removeSuperTriviaGame(state.getTwitchChannel())
-        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult] = None
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
         pointsForWinning = state.getPointsForWinning()
 
         if state.isToxic():
@@ -834,7 +834,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__triviaGameStore.removeSuperGame(twitchChannel)
         await self.__superTriviaCooldownHelper.update(twitchChannel)
 
-    def setEventListener(self, listener: Optional[TriviaEventListener]):
+    def setEventListener(self, listener: TriviaEventListener | None):
         if listener is not None and not isinstance(listener, TriviaEventListener):
             raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
@@ -842,7 +842,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     async def __startActionLoop(self):
         while True:
-            actions: List[AbsTriviaAction] = list()
+            actions: list[AbsTriviaAction] = list()
 
             try:
                 while not self.__actionQueue.empty():
@@ -881,7 +881,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             eventListener = self.__eventListener
 
             if eventListener is not None:
-                events: List[AbsTriviaEvent] = list()
+                events: list[AbsTriviaEvent] = list()
 
                 try:
                     while not self.__eventQueue.empty():
@@ -904,7 +904,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         self.__isStarted = True
         self.__timber.log('TriviaGameMachine', 'Starting TriviaGameMachine...')
-
         self.__backgroundTaskHelper.createTask(self.__startActionLoop())
         self.__backgroundTaskHelper.createTask(self.__startEventLoop())
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
@@ -15,7 +15,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__cache: Optional[Dict[str, Any]] = None
+        self.__cache: dict[str, Any] | None = None
 
     async def areAdditionalTriviaAnswersEnabled(self) -> bool:
         jsonContents = await self.__readJson()
@@ -32,14 +32,14 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
     async def clearCaches(self):
         self.__cache = None
 
-    async def getAvailableTriviaSourcesAndWeights(self) -> Dict[TriviaSource, int]:
+    async def getAvailableTriviaSourcesAndWeights(self) -> dict[TriviaSource, int]:
         jsonContents = await self.__readJson()
 
-        triviaSourcesJson: Dict[str, Any] = jsonContents['trivia_sources']
-        if not isinstance(triviaSourcesJson, Dict) or len(triviaSourcesJson) == 0:
+        triviaSourcesJson: dict[str, Any] = jsonContents['trivia_sources']
+        if not isinstance(triviaSourcesJson, dict) or len(triviaSourcesJson) == 0:
             raise RuntimeError(f'\"trivia_sources\" field is malformed: \"{triviaSourcesJson}\"')
 
-        triviaSources: Dict[TriviaSource, int] = dict()
+        triviaSources: dict[TriviaSource, int] = dict()
 
         for key, triviaSourceJson in triviaSourcesJson.items():
             triviaSource = TriviaSource.fromStr(key)
@@ -173,11 +173,11 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'scraper_enabled', True)
 
-    async def __readJson(self) -> Dict[str, Any]:
+    async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: Optional[Dict[str, Any]] = None
+        jsonContents: dict[str, Any] | None = None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
@@ -16,7 +15,7 @@ class TriviaGameGlobalControllersRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getControllers(self) -> List[TriviaGameGlobalController]:
+    async def getControllers(self) -> list[TriviaGameGlobalController]:
         pass
 
     @abstractmethod

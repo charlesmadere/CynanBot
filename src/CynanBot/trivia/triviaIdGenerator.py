@@ -1,7 +1,7 @@
 import hashlib
 import re
 import uuid
-from typing import Optional, Pattern
+from typing import Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.triviaIdGeneratorInterface import \
@@ -14,26 +14,26 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
         self.__idRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 
     async def generateActionId(self) -> str:
-        return await self.__generateRandomId()
+        return await self.__generateRandomUuid()
 
     async def generateEventId(self) -> str:
-        return await self.__generateRandomId()
+        return await self.__generateRandomUuid()
 
     async def generateGameId(self) -> str:
-        return await self.__generateRandomId()
+        return await self.__generateRandomUuid()
 
     async def generateQuestionId(
         self,
         question: str,
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None
+        category: str | None = None,
+        difficulty: str | None = None
     ) -> str:
         if not utils.isValidStr(question):
-            raise ValueError(f'question argument is malformed: \"{question}\"')
+            raise TypeError(f'question argument is malformed: \"{question}\"')
         elif category is not None and not isinstance(category, str):
-            raise ValueError(f'category argument is malformed: \"{category}\"')
+            raise TypeError(f'category argument is malformed: \"{category}\"')
         elif difficulty is not None and not isinstance(difficulty, str):
-            raise ValueError(f'difficulty argument is malformed: \"{difficulty}\"')
+            raise TypeError(f'difficulty argument is malformed: \"{difficulty}\"')
 
         string = f'{question}'
 
@@ -46,6 +46,6 @@ class TriviaIdGenerator(TriviaIdGeneratorInterface):
         encodedString = string.encode('utf-8')
         return hashlib.sha256(encodedString).hexdigest()
 
-    async def __generateRandomId(self) -> str:
+    async def __generateRandomUuid(self) -> str:
         triviaId = str(uuid.uuid4())
         return self.__idRegEx.sub('', triviaId)

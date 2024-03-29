@@ -66,12 +66,10 @@ class SystemCommandHelper(SystemCommandHelperInterface):
             return
 
         self.__timber.log('SystemCommandHelper', f'Killing process \"{process}\"...')
-
         parent = psutil.Process(process.pid)
 
         for child in parent.children(recursive = True):
             child.terminate()
 
         parent.terminate()
-
         self.__timber.log('SystemCommandHelper', f'Finished killing process \"{process}\"')

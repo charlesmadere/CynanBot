@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Dict
 
 from CynanBot.misc.clearable import Clearable
 from CynanBot.trivia.questions.triviaSource import TriviaSource
@@ -20,7 +19,7 @@ class TriviaSettingsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def getAvailableTriviaSourcesAndWeights(self) -> Dict[TriviaSource, int]:
+    async def getAvailableTriviaSourcesAndWeights(self) -> dict[TriviaSource, int]:
         pass
 
     @abstractmethod

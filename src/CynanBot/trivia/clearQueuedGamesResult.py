@@ -7,11 +7,11 @@ class ClearQueuedGamesResult():
 
     def __init__(self, amountRemoved: int, oldQueueSize: int):
         if not utils.isValidInt(amountRemoved):
-            raise ValueError(f'amountRemoved argument is malformed: \"{amountRemoved}\"')
+            raise TypeError(f'amountRemoved argument is malformed: \"{amountRemoved}\"')
         elif amountRemoved < 0 or amountRemoved > utils.getIntMaxSafeSize():
             raise ValueError(f'amountRemoved argument is out of bounds: {amountRemoved}')
         elif not utils.isValidInt(oldQueueSize):
-            raise ValueError(f'oldQueueSize argument is malformed: \"{oldQueueSize}\"')
+            raise TypeError(f'oldQueueSize argument is malformed: \"{oldQueueSize}\"')
         elif oldQueueSize < 0 or oldQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'oldQueueSize argument is out of bounds: {oldQueueSize}')
 

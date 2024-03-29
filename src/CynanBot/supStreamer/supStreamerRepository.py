@@ -1,5 +1,3 @@
-from typing import Dict, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -20,23 +18,23 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         timber: TimberInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
 
-        self.__cache: Dict[str, Optional[SupStreamerAction]] = dict()
+        self.__cache: dict[str, SupStreamerAction | None] = dict()
         self.__isDatabaseReady: bool = False
 
     async def clearCaches(self):
         self.__cache.clear()
         self.__timber.log('SupStreamerRepository', 'Caches cleared')
 
-    async def get(self, twitchChannelId: str) -> Optional[SupStreamerAction]:
+    async def get(self, twitchChannelId: str) -> SupStreamerAction | None:
         if not utils.isValidStr(twitchChannelId):
-            raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if twitchChannelId in self.__cache:
             return self.__cache[twitchChannelId]
@@ -53,12 +51,12 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         )
 
         await connection.close()
-        twitchChannelName: Optional[str] = None
-        chatters: Dict[str, Optional[SupStreamerChatter]] = dict()
+        twitchChannelName: str | None = None
+        chatters: dict[str, SupStreamerChatter | None] = dict()
 
         if utils.hasItems(records):
             for record in records:
-                mostRecentSup: Optional[SimpleDateTime] = None
+                mostRecentSup: SimpleDateTime | None = None
 
                 if utils.isValidStr(record[0]):
                     mostRecentSup = SimpleDateTime(utils.getDateTimeFromStr(mostRecentSup))
@@ -73,7 +71,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 if not utils.isValidStr(twitchChannelName):
                     twitchChannelName = record[2]
 
-        action: Optional[SupStreamerAction] = None
+        action: SupStreamerAction | None = None
 
         if utils.isValidStr(twitchChannelName):
             action = SupStreamerAction(
@@ -123,9 +121,9 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
 
     async def update(self, chatterUserId: str, twitchChannelId: str):
         if not utils.isValidStr(chatterUserId):
-            raise ValueError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
-            raise ValueError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         now = SimpleDateTime()
 

@@ -790,6 +790,7 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
         triviaHistoryRepository = triviaHistoryRepository
     ),
     twitchHandleProvider = authRepository,
+    userIdsRepository = userIdsRepository,
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
         timber = timber,

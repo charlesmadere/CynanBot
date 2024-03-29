@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
@@ -11,7 +10,7 @@ class TriviaVerifierInterface(ABC):
     @abstractmethod
     async def checkContent(
         self,
-        question: Optional[AbsTriviaQuestion],
+        question: AbsTriviaQuestion | None,
         triviaFetchOptions: TriviaFetchOptions
     ) -> TriviaContentCode:
         pass

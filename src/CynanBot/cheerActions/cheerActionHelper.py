@@ -1,7 +1,7 @@
 import re
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import List, Optional, Pattern
+from typing import Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivUserIdProviderInterface import \
@@ -55,7 +55,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchFollowerRepository: TwitchFollowerRepositoryInterface,
@@ -99,7 +99,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
@@ -111,7 +111,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__timeZone: tzinfo = timeZone
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
-        self.__twitchChannelProvider: Optional[TwitchChannelProvider] = None
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __getTwitchAccessToken(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
@@ -190,7 +190,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
-        moderatorInfo: Optional[TwitchModUser] = None
+        moderatorInfo: TwitchModUser | None = None
 
         try:
             moderatorInfo = await self.__twitchApiService.fetchModerator(
@@ -206,7 +206,7 @@ class CheerActionHelper(CheerActionHelperInterface):
     async def __processTimeoutActions(
         self,
         bits: int,
-        actions: List[CheerAction],
+        actions: list[CheerAction],
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
@@ -220,7 +220,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
-        elif not isinstance(actions, List):
+        elif not isinstance(actions, list):
             raise TypeError(f'actions argument is malformed: \"{actions}\"')
         elif not utils.isValidStr(broadcasterUserId):
             raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
@@ -239,7 +239,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        timeoutActions: List[CheerAction] = list()
+        timeoutActions: list[CheerAction] = list()
 
         for action in actions:
             if action.getActionType() is CheerActionType.TIMEOUT:
@@ -249,7 +249,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             return False
 
         timeoutActions.sort(key = lambda action: action.getAmount(), reverse = True)
-        timeoutAction: Optional[CheerAction] = None
+        timeoutAction: CheerAction | None = None
 
         for action in timeoutActions:
             if action.getBitRequirement() is CheerActionBitRequirement.EXACT and bits == action.getAmount():
@@ -395,15 +395,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchChannelProvider = self.__twitchChannelProvider
 
         if user.isTtsEnabled() and streamAlertsManager is not None:
-            message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds!'
-            anivUserId = await self.__anivUserIdProvider.getAnivUserId()
+            message = f'{cheerUserName} timed out {userNameToTimeout} for {action.getDurationSeconds()} seconds! rip bozo!'
 
-            if userIdToTimeout == anivUserId:
-                message = f'{message} RIPBOZO'
-
-                if twitchChannelProvider is not None:
-                    twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
-                    await self.__twitchUtils.safeSend(twitchChannel, 'RIPBOZO')
+            if twitchChannelProvider is not None:
+                twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
+                await self.__twitchUtils.safeSend(twitchChannel, 'RIPBOZO')
 
             streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,

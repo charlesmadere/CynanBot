@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.actions.absTriviaAction import AbsTriviaAction
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
@@ -8,7 +7,7 @@ from CynanBot.trivia.triviaEventListener import TriviaEventListener
 class TriviaGameMachineInterface(ABC):
 
     @abstractmethod
-    def setEventListener(self, listener: Optional[TriviaEventListener]):
+    def setEventListener(self, listener: TriviaEventListener | None):
         pass
 
     @abstractmethod

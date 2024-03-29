@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Set
 
 
 class SuperTriviaCooldownHelperInterface(ABC):
 
     @abstractmethod
-    async def getTwitchChannelsInCooldown(self) -> Set[str]:
+    async def getTwitchChannelsInCooldown(self) -> set[str]:
         pass
 
     @abstractmethod

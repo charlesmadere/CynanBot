@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class TriviaIdGeneratorInterface(ABC):
@@ -20,7 +19,7 @@ class TriviaIdGeneratorInterface(ABC):
     async def generateQuestionId(
         self,
         question: str,
-        category: Optional[str] = None,
-        difficulty: Optional[str] = None
+        category: str | None = None,
+        difficulty: str | None = None
     ) -> str:
         pass

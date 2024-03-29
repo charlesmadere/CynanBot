@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -32,15 +30,15 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__backingDatabase: BackingDatabase = backingDatabase
@@ -52,7 +50,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
 
     async def addController(self, userName: str) -> AddTriviaGameControllerResult:
         if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         administrator = await self.__administratorProvider.getAdministratorUserName()
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(administrator)
@@ -76,7 +74,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
             userId
         )
 
-        count: Optional[int] = None
+        count: int | None = None
         if utils.hasItems(record):
             count = record[0]
 
@@ -98,7 +96,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         self.__timber.log('TriviaGameGlobalControllersRepository', f'Added userName=\"{userName}\" userId=\"{userId}\" as a trivia game global controller')
         return AddTriviaGameControllerResult.ADDED
 
-    async def getControllers(self) -> List[TriviaGameGlobalController]:
+    async def getControllers(self) -> list[TriviaGameGlobalController]:
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
@@ -109,7 +107,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
         )
 
         await connection.close()
-        controllers: List[TriviaGameGlobalController] = list()
+        controllers: list[TriviaGameGlobalController] = list()
 
         if not utils.hasItems(records):
             return controllers
