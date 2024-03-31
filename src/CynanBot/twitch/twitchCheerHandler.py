@@ -1,5 +1,4 @@
 import math
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -29,11 +28,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
 
     def __init__(
         self,
-        cheerActionHelper: Optional[CheerActionHelperInterface],
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        cheerActionHelper: CheerActionHelperInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
-        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
-        triviaGameMachine: Optional[TriviaGameMachineInterface],
+        triviaGameBuilder: TriviaGameBuilderInterface | None,
+        triviaGameMachine: TriviaGameMachineInterface | None,
         twitchChannelProvider: TwitchChannelProvider
     ):
         if cheerActionHelper is not None and not isinstance(cheerActionHelper, CheerActionHelperInterface):
@@ -49,11 +48,11 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
 
-        self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
-        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
+        self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
+        self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
 
     async def onNewCheer(
@@ -119,7 +118,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserLogin: str,
-        message: Optional[str],
+        message: str | None,
         user: UserInterface
     ) -> bool:
         if not utils.isValidInt(bits):
@@ -137,17 +136,17 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__cheerActionHelper is None:
-            return False
-        if not utils.isValidStr(message):
+        cheerActionHelper = self.__cheerActionHelper
+
+        if cheerActionHelper is None or not utils.isValidStr(message):
             return False
 
-        return await self.__cheerActionHelper.handleCheerAction(
+        return await cheerActionHelper.handleCheerAction(
             bits = bits,
+            broadcasterUserId = broadcasterUserId,
             cheerUserId = cheerUserId,
             cheerUserName = cheerUserLogin,
             message = message,
-            userId = broadcasterUserId,
             user =  user
         )
 
@@ -166,7 +165,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
+        triviaGameBuilder = self.__triviaGameBuilder
+        triviaGameMachine = self.__triviaGameMachine
+
+        if triviaGameBuilder is None or triviaGameMachine is None:
             return
         elif not user.isSuperTriviaGameEnabled():
             return
@@ -184,14 +186,14 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif utils.isValidInt(superTriviaCheerTriggerMaximum) and numberOfGames > superTriviaCheerTriggerMaximum:
             numberOfGames = superTriviaCheerTriggerMaximum
 
-        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+        action = await triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
 
         if action is not None:
-            self.__triviaGameMachine.submitAction(action)
+            triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(
         self,
@@ -199,7 +201,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         broadcasterUserId: str,
         cheerUserId: str,
         cheerUserLogin: str,
-        message: Optional[str],
+        message: str | None,
         user: UserInterface
     ):
         if not utils.isValidInt(bits):
@@ -217,9 +219,9 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__streamAlertsManager is None:
-            return
-        elif not user.isTtsEnabled():
+        streamAlertsManager = self.__streamAlertsManager
+
+        if streamAlertsManager is None or not user.isTtsEnabled():
             return
 
         maximumTtsCheerAmount = user.getMaximumTtsCheerAmount()
@@ -238,7 +240,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         if utils.isValidInt(minimumTtsCheerAmount) and bits >= int(round(minimumTtsCheerAmount * 1.5)):
             provider = TtsProvider.GOOGLE
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.CHEER,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,

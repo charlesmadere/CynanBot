@@ -134,7 +134,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
         elif not utils.isValidStr(broadcasterUserId):
-            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+            raise TypeError(f'userId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -159,7 +159,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         actions = await self.__cheerActionsRepository.getActions(broadcasterUserId)
 
-        if not utils.hasItems(actions):
+        if actions is None or len(actions) == 0:
             return False
 
         return await self.__processTimeoutActions(
