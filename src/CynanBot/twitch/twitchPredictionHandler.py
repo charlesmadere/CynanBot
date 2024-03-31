@@ -14,10 +14,10 @@ from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
     TwitchWebsocketDataBundle
 from CynanBot.twitch.api.websocket.twitchWebsocketEvent import \
     TwitchWebsocketEvent
-from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
-    TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
+from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
+    TwitchPredictionWebsocketUtilsInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
     WebsocketConnectionServerInterface
@@ -70,17 +70,19 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
+        broadcasterUserId = event.getBroadcasterUserId()
         title = event.getTitle()
         outcomes = event.getOutcomes()
 
-        if not utils.isValidStr(title) or not isinstance(outcomes, List):
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({title=}) ({outcomes=})')
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, List):
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
         subscriptionType = payload.requireSubscription().getSubscriptionType()
         self.__timber.log('TwitchPredictionHandler', f'\"{user.getHandle()}\" received prediction event ({title=}) ({outcomes=}) ({subscriptionType=})')
 
         await self.__processTtsEvent(
+            broadcasterUserId = broadcasterUserId,
             title = title,
             userId = userId,
             user = user,
@@ -97,12 +99,15 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     async def __processTtsEvent(
         self,
+        broadcasterUserId: str,
         title: str,
         userId: str,
         user: UserInterface,
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
-        if not utils.isValidStr(title):
+        if not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
+        elif not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
@@ -121,6 +126,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'A new prediction has begun! \"{title}\"',
                 twitchChannel = user.getHandle(),

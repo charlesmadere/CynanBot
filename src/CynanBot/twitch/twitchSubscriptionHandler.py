@@ -121,6 +121,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             await self.__processTtsEvent(
                 isAnonymous = isAnonymous,
                 isGift = isGift,
+                broadcasterUserId = broadcasterUserId,
                 message = message,
                 userId = eventUserId,
                 userInput = eventUserInput,
@@ -183,6 +184,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self,
         isAnonymous: Optional[bool],
         isGift: Optional[bool],
+        broadcasterUserId: str,
         message: Optional[str],
         userId: Optional[str],
         userInput: Optional[str],
@@ -197,6 +199,8 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
         elif isGift is not None and not utils.isValidBool(isGift):
             raise TypeError(f'isGift argument is malformed: \"{isGift}\"')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif userId is not None and not utils.isValidStr(userId):
@@ -279,5 +283,6 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             ttsEvent = ttsEvent
         ))

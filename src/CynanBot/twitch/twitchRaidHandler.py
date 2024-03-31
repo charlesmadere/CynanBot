@@ -65,6 +65,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         await self.__processTtsEvent(
             viewers = viewers,
+            broadcasterUserId = toUserId,
             userId = fromUserId,
             fromUserName = fromUserName,
             user = user
@@ -73,6 +74,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
     async def __processTtsEvent(
         self,
         viewers: int,
+        broadcasterUserId: str,
         userId: str,
         fromUserName: str,
         user: UserInterface
@@ -81,6 +83,8 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             raise TypeError(f'viewers argument is malformed: \"{viewers}\"')
         elif viewers < 0 or viewers > utils.getIntMaxSafeSize():
             raise ValueError(f'viewers argument is out of bounds: {viewers}')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(fromUserName):
@@ -100,6 +104,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
                 twitchChannel = user.getHandle(),

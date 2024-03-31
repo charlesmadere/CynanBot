@@ -11,17 +11,21 @@ class StreamAlert():
         self,
         soundAlert: SoundAlert | None,
         twitchChannel: str,
+        twitchChannelId: str,
         ttsEvent: TtsEvent | None
     ):
         if soundAlert is not None and not isinstance(soundAlert, SoundAlert):
             raise TypeError(f'soundAlert argument is malformed: \"{soundAlert}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif ttsEvent is not None and not isinstance(ttsEvent, TtsEvent):
             raise TypeError(f'ttsEvent argument is malformed: \"{ttsEvent}\"')
 
         self.__soundAlert: SoundAlert | None = soundAlert
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__ttsEvent: TtsEvent | None = ttsEvent
 
     def getSoundAlert(self) -> SoundAlert | None:
@@ -33,6 +37,9 @@ class StreamAlert():
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
+
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
@@ -41,5 +48,6 @@ class StreamAlert():
         return {
             'soundAlert': self.__soundAlert,
             'ttsEvent': self.__ttsEvent,
-            'twitchChannel': self.__twitchChannel
+            'twitchChannel': self.__twitchChannel,
+            'twitchChannelId': self.__twitchChannelId
         }

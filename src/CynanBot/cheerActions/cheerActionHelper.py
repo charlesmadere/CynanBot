@@ -123,6 +123,7 @@ class CheerActionHelper(CheerActionHelperInterface):
     async def handleCheerAction(
         self,
         bits: int,
+        broadcasterUserId: str,
         cheerUserId: str,
         cheerUserName: str,
         message: str,
@@ -132,6 +133,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'bits argument is malformed: \"{bits}\"')
         elif bits < 0 or bits > utils.getIntMaxSafeSize():
             raise ValueError(f'bits argument is out of bounds: {bits}')
+        elif not utils.isValidStr(broadcasterUserId):
+            raise TypeError(f'broadcasterUserId argument is malformed: \"{broadcasterUserId}\"')
         elif not utils.isValidStr(cheerUserId):
             raise TypeError(f'cheerUserId argument is malformed: \"{cheerUserId}\"')
         elif not utils.isValidStr(cheerUserName):
@@ -147,11 +150,6 @@ class CheerActionHelper(CheerActionHelperInterface):
 
         userTwitchAccessToken = await self.__getTwitchAccessToken(
             twitchChannel = user.getHandle()
-        )
-
-        broadcasterUserId = await self.__userIdsRepository.requireUserId(
-            userName = user.getHandle(),
-            twitchAccessToken = userTwitchAccessToken
         )
 
         moderatorUserId = await self.__userIdsRepository.requireUserId(
@@ -404,6 +402,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,
                 twitchChannel = user.getHandle(),
+                twitchChannelId = broadcasterUserId,
                 ttsEvent = TtsEvent(
                     message = message,
                     twitchChannel = user.getHandle(),

@@ -65,6 +65,7 @@ class SupStreamerChatAction(AbsChatAction):
             self.__streamAlertsManager.submitAlert(StreamAlert(
                 soundAlert = None,
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await message.getTwitchChannelId(),
                 ttsEvent = TtsEvent(
                     message = f'{message.getAuthorName()} sup',
                     twitchChannel = user.getHandle(),

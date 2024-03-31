@@ -3042,6 +3042,7 @@ class TtsCommand(AbsCommand):
         self.__streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = await self.__chooseRandomSoundAlert(),
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             ttsEvent = TtsEvent(
                 message = message,
                 twitchChannel = user.getHandle(),
