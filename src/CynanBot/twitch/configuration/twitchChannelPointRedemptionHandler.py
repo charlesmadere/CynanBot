@@ -13,6 +13,8 @@ from CynanBot.channelPointRedemptions.pkmnEvolvePointRedemption import \
     PkmnEvolvePointRedemption
 from CynanBot.channelPointRedemptions.pkmnShinyPointRedemption import \
     PkmnShinyPointRedemption
+from CynanBot.channelPointRedemptions.soundAlertPointRedemption import \
+    SoundAlertPointRedemption
 from CynanBot.channelPointRedemptions.stubChannelPointRedemption import \
     StubPointRedemption
 from CynanBot.channelPointRedemptions.superTriviaGamePointRedemption import \
@@ -31,7 +33,6 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
-from CynanBot.channelPointRedemptions.soundAlertPointRedemption import SoundAlertPointRedemption
 
 
 class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler):
