@@ -53,6 +53,8 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
                 userName = self.getTwitchChannelName()
             )
 
+            self.__twitchChannelId = twitchChannelId
+
         return twitchChannelId
 
     def getTwitchChannelName(self) -> str:
