@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import List
 
 from CynanBot.misc.clearable import Clearable
 from CynanBot.users.userInterface import UserInterface
@@ -28,11 +27,11 @@ class UsersRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    def getUsers(self) -> List[UserInterface]:
+    def getUsers(self) -> list[UserInterface]:
         pass
 
     @abstractmethod
-    async def getUsersAsync(self) -> List[UserInterface]:
+    async def getUsersAsync(self) -> list[UserInterface]:
         pass
 
     @abstractmethod

@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiofiles.ospath
 import vlc
@@ -28,7 +28,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
         self.__soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = soundPlayerSettingsRepository
         self.__timber: TimberInterface = timber
 
-        self.__mediaPlayer: Optional[vlc.MediaPlayer] = None
+        self.__mediaPlayer: vlc.MediaPlayer | None = None
 
     async def isPlaying(self) -> bool:
         mediaPlayer = self.__mediaPlayer
@@ -52,7 +52,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         return await self.playSoundFile(filePath)
 
-    async def playSoundFile(self, filePath: Optional[str]) -> bool:
+    async def playSoundFile(self, filePath: str | None) -> bool:
         if not utils.isValidStr(filePath):
             self.__timber.log('VlcSoundPlayerManager', f'filePath argument is malformed: \"{filePath}\"')
             return False
@@ -68,8 +68,8 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             self.__timber.log('VlcSoundPlayerManager', f'The given file path is not a file ({filePath=})')
             return False
 
-        media: Optional[vlc.Media] = None
-        exception: Optional[Exception] = None
+        media: vlc.Media | None = None
+        exception: Exception | None = None
 
         try:
             media = vlc.Media(filePath)
@@ -81,7 +81,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
             return False
 
         mediaPlayer = await self.__retrieveMediaPlayer()
-        playbackResult: Optional[int] = None
+        playbackResult: int | None = None
 
         try:
             mediaPlayer.set_media(media)
@@ -117,7 +117,7 @@ class VlcSoundPlayerManager(SoundPlayerManagerInterface):
 
         return mediaPlayer
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'mediaPlayer': self.__mediaPlayer
         }

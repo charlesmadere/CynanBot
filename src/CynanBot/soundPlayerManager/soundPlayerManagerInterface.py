@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 
@@ -15,5 +14,5 @@ class SoundPlayerManagerInterface(ABC):
         pass
 
     @abstractmethod
-    async def playSoundFile(self, filePath: Optional[str]) -> bool:
+    async def playSoundFile(self, filePath: str | None) -> bool:
         pass

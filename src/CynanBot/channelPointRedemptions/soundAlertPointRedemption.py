@@ -1,11 +1,12 @@
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
+from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
+    StreamAlertsManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.streamAlertsManager.streamAlertsManagerInterface import StreamAlertsManagerInterface
 
 
 class SoundAlertPointRedemption(AbsChannelPointRedemption):
@@ -32,4 +33,9 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         twitchChannel: TwitchChannel,
         twitchChannelPointsMessage: TwitchChannelPointsMessage
     ) -> bool:
+        user = twitchChannelPointsMessage.getTwitchUser()
+
+        if not user.areSoundAlertsEnabled():
+            return False
+
         return False

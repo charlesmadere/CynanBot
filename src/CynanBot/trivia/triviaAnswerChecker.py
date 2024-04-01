@@ -636,6 +636,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         # corporation things
         if word == 'asst':
             yield 'assistant'
+        if word == 'ceo':
+            yield 'chief executive officer'
+        if word == 'coo':
+            yield 'chief operating officer'
         if word == 'corp':
             yield 'corporation'
         if word == 'inc':
@@ -813,6 +817,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if word == 'm':
             yield 'meter'
             yield 'minute'
+        if word == 'max':
+            yield 'maximum'
         if word == 'mb':
             yield 'megabyte'
             yield 'megabytes'
@@ -823,6 +829,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'mile'
             yield 'miles'
         if word == 'min':
+            yield 'minimum'
             yield 'minute'
             yield 'minutes'
         if word == 'ml':
@@ -992,6 +999,10 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'estimate'
         if word == 'capital':
             yield 'capitol'
+        if word == 'co':
+            yield 'commanding officer'
+        if word in ('csar', 'tsar', 'tzar'):
+            yield 'czar'
         if word == 'dc':
             yield 'direct current'
         if word == 'deg':

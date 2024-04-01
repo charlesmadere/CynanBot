@@ -1,5 +1,3 @@
-from typing import Optional
-
 from twitchio.channel import Channel
 
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
@@ -18,12 +16,12 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(channel, Channel):
-            raise ValueError(f'channel argument is malformed: \"{channel}\"')
+            raise TypeError(f'channel argument is malformed: \"{channel}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__channel: Channel = channel
-        self.__twitchChannelId: Optional[str] = None
+        self.__twitchChannelId: str | None = None
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     async def getTwitchChannelId(self) -> str:

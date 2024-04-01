@@ -1,5 +1,3 @@
-from typing import Optional
-
 from twitchio.ext.commands import Context
 
 from CynanBot.twitch.configuration.twitchAuthor import TwitchAuthor
@@ -21,12 +19,12 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(context, Context):
-            raise ValueError(f'context argument is malformed: \"{context}\"')
+            raise TypeError(f'context argument is malformed: \"{context}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__context: Context = context
-        self.__twitchChannelId: Optional[str] = None
+        self.__twitchChannelId: str | None = None
         self.__author: TwitchAuthor = TwitchIoAuthor(context.author)
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
@@ -42,7 +40,7 @@ class TwitchIoContext(TwitchContext, TwitchMessageable):
     def getAuthorName(self) -> str:
         return self.__author.getName()
 
-    def getMessageContent(self) -> Optional[str]:
+    def getMessageContent(self) -> str | None:
         return self.__context.message.content
 
     async def getTwitchChannelId(self) -> str:

@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.emojiHelper.emojiInfo import EmojiInfo
@@ -25,9 +25,9 @@ class EmojiRepository(EmojiRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isLoaded: bool = False
-        self.__emojiInfoData: Dict[str, Optional[EmojiInfo]] = dict()
+        self.__emojiInfoData: dict[str, EmojiInfo | None] = dict()
 
-    async def fetchEmojiInfo(self, emoji: Optional[str]) -> Optional[EmojiInfo]:
+    async def fetchEmojiInfo(self, emoji: str | None) -> EmojiInfo | None:
         if emoji is None:
             return None
         elif not isinstance(emoji, str):
@@ -40,12 +40,13 @@ class EmojiRepository(EmojiRepositoryInterface):
 
     async def __parseDictToEmojiInfo(
         self,
-        emojiDict: Optional[Dict[str, Any]]
-    ) -> Optional[EmojiInfo]:
-        if not isinstance(emojiDict, Dict) or len(emojiDict) == 0:
+        emojiDict: dict[str, Any] | None
+    ) -> EmojiInfo | None:
+        if not isinstance(emojiDict, dict) or len(emojiDict) == 0:
             return None
 
-        codes: Set[str] = set()
+        codes: set[str] = set()
+
         for code in emojiDict['code']:
             codes.add(code)
 
@@ -70,22 +71,22 @@ class EmojiRepository(EmojiRepositoryInterface):
         self.__timber.log('EmojiRepository', f'Reading in emoji info data...')
         jsonContents = await self.__emojiJsonReader.readJsonAsync()
 
-        if jsonContents is None or not utils.hasItems(jsonContents):
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             self.__timber.log('EmojiRepository', f'Read in no data from emojiJsonReader: \"{jsonContents}\"')
             return
         elif 'emojis' not in jsonContents:
             self.__timber.log('EmojiRepository', f'\"emojis\" field not in jsonContents!')
             return
 
-        emojisList: Optional[List[Dict[str, Any]]] = jsonContents.get('emojis')
+        emojisList: list[dict[str, Any]] | None = jsonContents.get('emojis')
 
-        if not isinstance(emojisList, List) or len(emojisList) == 0:
+        if not isinstance(emojisList, list) or len(emojisList) == 0:
             self.__timber.log('EmojiRepository', f'\"emojis\" field is either malformed or empty!')
             return
 
         for index, emojiDict in enumerate(emojisList):
-            emojiInfo: Optional[EmojiInfo] = None
-            exception: Optional[Exception] = None
+            emojiInfo: EmojiInfo | None = None
+            exception: Exception | None = None
 
             try:
                 emojiInfo = await self.__parseDictToEmojiInfo(emojiDict)

@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import tzinfo
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -37,12 +37,12 @@ class UsersRepository(UsersRepositoryInterface):
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__usersFile: str = usersFile
 
-        self.__jsonCache: Optional[Dict[str, Any]] = None
-        self.__userCache: Dict[str, Optional[User]] = dict()
+        self.__jsonCache: dict[str, Any] | None = None
+        self.__userCache: dict[str, User | None] = dict()
 
     async def addUser(self, handle: str):
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         self.__timber.log('UsersRepository', f'Adding user \"{handle}\"...')
         jsonContents = await self.__readJsonAsync()
@@ -71,7 +71,7 @@ class UsersRepository(UsersRepositoryInterface):
 
     def containsUser(self, handle: str) -> bool:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         try:
             self.getUser(handle)
@@ -81,7 +81,7 @@ class UsersRepository(UsersRepositoryInterface):
 
     async def containsUserAsync(self, handle: str) -> bool:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         try:
             await self.getUserAsync(handle)
@@ -89,11 +89,11 @@ class UsersRepository(UsersRepositoryInterface):
         except NoSuchUserException:
             return False
 
-    def __createUser(self, handle: str, userJson: Dict[str, Any]) -> User:
+    def __createUser(self, handle: str, userJson: dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
-        elif not isinstance(userJson, Dict):
-            raise ValueError(f'userJson argument is malformed: \"{userJson}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
+        elif not isinstance(userJson, dict):
+            raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
         areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
@@ -144,8 +144,8 @@ class UsersRepository(UsersRepositoryInterface):
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
 
-        maximumTtsCheerAmount: Optional[int] = None
-        minimumTtsCheerAmount: Optional[int] = None
+        maximumTtsCheerAmount: int | None = None
+        minimumTtsCheerAmount: int | None = None
         if isTtsEnabled:
             if 'maximumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('maximumTtsCheerAmount')):
                 maximumTtsCheerAmount = utils.getIntFromDict(userJson, 'maximumTtsCheerAmount')
@@ -153,36 +153,36 @@ class UsersRepository(UsersRepositoryInterface):
             if 'minimumTtsCheerAmount' in userJson and utils.isValidInt(userJson.get('minimumTtsCheerAmount')):
                 minimumTtsCheerAmount = utils.getIntFromDict(userJson, 'minimumTtsCheerAmount')
 
-        timeZones: Optional[List[tzinfo]] = None
+        timeZones: list[tzinfo] | None = None
         if 'timeZones' in userJson:
             timeZones = self.__timeZoneRepository.getTimeZones(userJson['timeZones'])
         elif 'timeZone' in userJson:
             timeZones = list()
             timeZones.append(self.__timeZoneRepository.getTimeZone(userJson['timeZone']))
 
-        cutenessBoosterPacks: Optional[List[CutenessBoosterPack]] = None
+        cutenessBoosterPacks: list[CutenessBoosterPack] | None = None
         if isCutenessEnabled:
-            cutenessBoosterPacksJson: Optional[List[Dict[str, Any]]] = userJson.get('cutenessBoosterPacks')
+            cutenessBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('cutenessBoosterPacks')
             cutenessBoosterPacks = self.__parseCutenessBoosterPacksFromJson(cutenessBoosterPacksJson)
 
         isShinyTriviaEnabled: bool = isTriviaGameEnabled
         isToxicTriviaEnabled: bool = isTriviaGameEnabled
         isSuperTriviaGameEnabled: bool = isTriviaGameEnabled
-        superTriviaCheerTriggerAmount: Optional[float] = None
-        superTriviaSubscribeTriggerAmount: Optional[float] = None
-        superTriviaCheerTriggerMaximum: Optional[int] = None
-        superTriviaGamePoints: Optional[int] = None
-        superTriviaGameRewardId: Optional[str] = None
-        superTriviaGameShinyMultiplier: Optional[int] = None
-        superTriviaGameToxicMultiplier: Optional[int] = None
-        superTriviaGameToxicPunishmentMultiplier: Optional[int] = None
-        superTriviaPerUserAttempts: Optional[int] = None
-        superTriviaSubscribeTriggerMaximum: Optional[int] = None
-        triviaGamePoints: Optional[int] = None
-        triviaGameShinyMultiplier: Optional[int] = None
-        triviaGameRewardId: Optional[str] = None
-        waitForSuperTriviaAnswerDelay: Optional[int] = None
-        waitForTriviaAnswerDelay: Optional[int] = None
+        superTriviaCheerTriggerAmount: float | None = None
+        superTriviaSubscribeTriggerAmount: float | None = None
+        superTriviaCheerTriggerMaximum: int | None = None
+        superTriviaGamePoints: int | None = None
+        superTriviaGameRewardId: str | None = None
+        superTriviaGameShinyMultiplier: int | None = None
+        superTriviaGameToxicMultiplier: int | None = None
+        superTriviaGameToxicPunishmentMultiplier: int | None = None
+        superTriviaPerUserAttempts: int | None = None
+        superTriviaSubscribeTriggerMaximum: int | None = None
+        triviaGamePoints: int | None = None
+        triviaGameShinyMultiplier: int | None = None
+        triviaGameRewardId: str | None = None
+        waitForSuperTriviaAnswerDelay: int | None = None
+        waitForTriviaAnswerDelay: int | None = None
         if isTriviaGameEnabled:
             isShinyTriviaEnabled = utils.getBoolFromDict(userJson, 'shinyTriviaEnabled', isShinyTriviaEnabled)
             isToxicTriviaEnabled = utils.getBoolFromDict(userJson, 'toxicTriviaEnabled', isToxicTriviaEnabled)
@@ -208,15 +208,15 @@ class UsersRepository(UsersRepositoryInterface):
             waitForSuperTriviaAnswerDelay = userJson.get('waitForSuperTriviaAnswerDelay')
             waitForTriviaAnswerDelay = userJson.get('waitForTriviaAnswerDelay')
 
-        pkmnBattleRewardId: Optional[str] = None
-        pkmnEvolveRewardId: Optional[str] = None
-        pkmnShinyRewardId: Optional[str] = None
-        pkmnCatchBoosterPacks: Optional[List[PkmnCatchBoosterPack]] = None
+        pkmnBattleRewardId: str | None = None
+        pkmnEvolveRewardId: str | None = None
+        pkmnShinyRewardId: str | None = None
+        pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None = None
         if isPkmnEnabled:
             pkmnBattleRewardId = userJson.get('pkmnBattleRewardId')
             pkmnEvolveRewardId = userJson.get('pkmnEvolveRewardId')
             pkmnShinyRewardId = userJson.get('pkmnShinyRewardId')
-            pkmnCatchBoosterPacksJson: Optional[List[Dict[str, Any]]] = userJson.get('pkmnCatchBoosterPacks')
+            pkmnCatchBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
         user = User(
@@ -300,11 +300,11 @@ class UsersRepository(UsersRepositoryInterface):
         self.__userCache[handle.lower()] = user
         return user
 
-    def __createUsers(self, jsonContents: Dict[str, Any]) -> List[User]:
+    def __createUsers(self, jsonContents: dict[str, Any]) -> list[User]:
         if not utils.hasItems(jsonContents):
-            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
-        users: List[User] = list()
+        users: list[User] = list()
         for key, userJson in jsonContents.items():
             user = self.__createUser(key, userJson)
             users.append(user)
@@ -315,11 +315,11 @@ class UsersRepository(UsersRepositoryInterface):
         users.sort(key = lambda user: user.getHandle().lower())
         return users
 
-    def __findAndCreateUser(self, handle: str, jsonContents: Dict[str, Any]) -> User:
+    def __findAndCreateUser(self, handle: str, jsonContents: dict[str, Any]) -> User:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif jsonContents is None:
-            raise ValueError(f'jsonContents argument is malformed: \"{jsonContents}\"')
+            raise TypeError(f'jsonContents argument is malformed: \"{jsonContents}\"')
 
         user = self.__userCache.get(handle.lower(), None)
 
@@ -334,34 +334,34 @@ class UsersRepository(UsersRepositoryInterface):
 
     def getUser(self, handle: str) -> User:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         jsonContents = self.__readJson()
         return self.__findAndCreateUser(handle, jsonContents)
 
     async def getUserAsync(self, handle: str) -> User:
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         jsonContents = await self.__readJsonAsync()
         return self.__findAndCreateUser(handle, jsonContents)
 
-    def getUsers(self) -> List[User]:
+    def getUsers(self) -> list[User]:
         jsonContents = self.__readJson()
         return self.__createUsers(jsonContents)
 
-    async def getUsersAsync(self) -> List[User]:
+    async def getUsersAsync(self) -> list[User]:
         jsonContents = await self.__readJsonAsync()
         return self.__createUsers(jsonContents)
 
     def __parseCutenessBoosterPacksFromJson(
         self,
-        jsonList: Optional[List[Dict]]
-    ) -> Optional[List[CutenessBoosterPack]]:
+        jsonList: list[dict[str, Any]] | None
+    ) -> list[CutenessBoosterPack] | None:
         if not utils.hasItems(jsonList):
             return None
 
-        cutenessBoosterPacks: List[CutenessBoosterPack] = list()
+        cutenessBoosterPacks: list[CutenessBoosterPack] = list()
 
         for cutenessBoosterPackJson in jsonList:
             cutenessBoosterPacks.append(CutenessBoosterPack(
@@ -374,12 +374,12 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __parsePkmnCatchBoosterPacksFromJson(
         self,
-        jsonList: Optional[List[Dict[str, Any]]]
-    ) -> Optional[List[PkmnCatchBoosterPack]]:
+        jsonList: list[dict[str, Any]] | None
+    ) -> list[PkmnCatchBoosterPack] | None:
         if not utils.hasItems(jsonList):
             return None
 
-        pkmnCatchBoosterPacks: List[PkmnCatchBoosterPack] = list()
+        pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] = list()
 
         for pkmnCatchBoosterPackJson in jsonList:
             pkmnCatchTypeStr = utils.getStrFromDict(
@@ -388,7 +388,7 @@ class UsersRepository(UsersRepositoryInterface):
                 fallback = ''
             )
 
-            pkmnCatchType: Optional[PkmnCatchType] = None
+            pkmnCatchType: PkmnCatchType | None = None
             if utils.isValidStr(pkmnCatchTypeStr):
                 pkmnCatchType = PkmnCatchType.fromStr(pkmnCatchTypeStr)
 
@@ -399,7 +399,7 @@ class UsersRepository(UsersRepositoryInterface):
 
         return pkmnCatchBoosterPacks
 
-    def __readJson(self) -> Dict[str, Any]:
+    def __readJson(self) -> dict[str, Any]:
         if self.__jsonCache is not None:
             return self.__jsonCache
 
@@ -417,7 +417,7 @@ class UsersRepository(UsersRepositoryInterface):
         self.__jsonCache = jsonContents
         return jsonContents
 
-    async def __readJsonAsync(self) -> Dict[str, Any]:
+    async def __readJsonAsync(self) -> dict[str, Any]:
         if self.__jsonCache is not None:
             return self.__jsonCache
 
@@ -438,7 +438,7 @@ class UsersRepository(UsersRepositoryInterface):
 
     async def removeUser(self, handle: str):
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
 
         self.__timber.log('UsersRepository', f'Removing user \"{handle}\"...')
         await self.setUserEnabled(handle, False)
@@ -446,13 +446,13 @@ class UsersRepository(UsersRepositoryInterface):
 
     async def setUserEnabled(self, handle: str, enabled: bool):
         if not utils.isValidStr(handle):
-            raise ValueError(f'handle argument is malformed: \"{handle}\"')
+            raise TypeError(f'handle argument is malformed: \"{handle}\"')
         elif not utils.isValidBool(enabled):
-            raise ValueError(f'enabled argument is malformed: \"{enabled}\"')
+            raise TypeError(f'enabled argument is malformed: \"{enabled}\"')
 
         self.__timber.log('UsersRepository', f'Changing enabled status for user \"{handle}\" to \"{enabled}\"...')
         jsonContents = await self.__readJsonAsync()
-        preExistingHandle: Optional[str] = None
+        preExistingHandle: str | None = None
 
         for key in jsonContents.keys():
             if key.lower() == handle.lower():

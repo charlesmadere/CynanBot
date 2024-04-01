@@ -11,7 +11,7 @@ class TwitchIoAuthor(TwitchAuthor):
 
     def __init__(self, author: Union[Chatter, PartialChatter]):
         if not isinstance(author, Chatter) and not isinstance(author, PartialChatter):
-            raise ValueError(f'author argument is malformed: \"{author}\"')
+            raise TypeError(f'author argument is malformed: \"{author}\"')
 
         self.__author: Union[Chatter, PartialChatter] = author
 
