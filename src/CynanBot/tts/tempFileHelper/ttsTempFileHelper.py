@@ -72,7 +72,7 @@ class TtsTempFileHelper(TtsTempFileHelperInterface):
         for tempFile in self.__tempFiles:
             if tempFile.getDeletionAttempts() > self.__maxDeletionAttempts:
                 tempFilesToDrop.append(tempFile)
-            elif (tempFile.getCreationDateTime() + self.__timeToLive) >= now:
+            elif (tempFile.getCreationDateTime() + self.__timeToLive) <= now:
                 tempFilesToDelete.append(tempFile)
 
         for tempFileToDrop in tempFilesToDrop:
