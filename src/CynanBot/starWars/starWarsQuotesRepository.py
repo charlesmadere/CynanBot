@@ -1,6 +1,6 @@
 import random
 import re
-from typing import Any, Dict, List, Optional, Pattern
+from typing import Any, Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -12,25 +12,25 @@ class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
 
     def __init__(self, quotesJsonReader: JsonReaderInterface):
         if not isinstance(quotesJsonReader, JsonReaderInterface):
-            raise ValueError(f'quotesJsonReader argument is malformed: \"{quotesJsonReader}\"')
+            raise TypeError(f'quotesJsonReader argument is malformed: \"{quotesJsonReader}\"')
 
         self.__quotesJsonReader: JsonReaderInterface = quotesJsonReader
 
-        self.__cache: Optional[Dict[str, Any]] = None
+        self.__cache: dict[str, Any] | None = None
         self.__quoteInputRegEx: Pattern = re.compile(r'\$\((.*)\)', re.IGNORECASE)
 
     async def clearCaches(self):
-        self.__cache.clear()
+        self.__cache = None
 
-    async def fetchRandomQuote(self, trilogy: Optional[str] = None) -> str:
+    async def fetchRandomQuote(self, trilogy: str | None = None) -> str:
         jsonContents = await self.__getQuotes(trilogy)
         quote = random.choice(jsonContents)
         return self.__processQuote(quote)
 
-    async def __getQuotes(self, trilogy: str = None) -> List[str]:
+    async def __getQuotes(self, trilogy: str | None = None) -> list[str]:
         trilogy = utils.cleanStr(trilogy)
         jsonContents = await self.__readJson()
-        quotes: Optional[Dict[str, List[str]]] = jsonContents.get('quotes')
+        quotes: dict[str, list[str]] | None = jsonContents.get('quotes')
 
         if not utils.hasItems(quotes):
             raise RuntimeError(f'No quotes are available: \"{jsonContents}\"')
@@ -42,7 +42,7 @@ class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
 
         return result
 
-    def __processQuote(self, quote: str, input: str = None) -> str:
+    def __processQuote(self, quote: str, input: str | None = None) -> str:
         result = self.__quoteInputRegEx.search(quote)
         if not result:
             return quote
@@ -53,11 +53,11 @@ class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
 
         return quote.replace(result.group(0), value)
 
-    async def __readJson(self) -> Dict[str, Any]:
+    async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: Optional[Dict[str, Any]] = None
+        jsonContents: dict[str, Any] | None = None
 
         if await self.__quotesJsonReader.fileExistsAsync():
             jsonContents = await self.__quotesJsonReader.readJsonAsync()
@@ -70,9 +70,9 @@ class StarWarsQuotesRepository(StarWarsQuotesRepositoryInterface):
         self.__cache = jsonContents
         return jsonContents
 
-    async def searchQuote(self, query: str, input: Optional[str] = None) -> str:
+    async def searchQuote(self, query: str, input: str | None = None) -> str | None:
         if not utils.isValidStr(query):
-            raise ValueError(f'query argument is malformed: \"{query}\"')
+            raise TypeError(f'query argument is malformed: \"{query}\"')
 
         query = utils.cleanStr(query)
         jsonContents = await self.__getQuotes()
