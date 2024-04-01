@@ -11,6 +11,8 @@ from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
 from CynanBot.emojiHelper.emojiRepositoryInterface import \
     EmojiRepositoryInterface
+from CynanBot.google.googleJsonMapper import GoogleJsonMapper
+from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.storage.linesStaticReader import LinesStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
@@ -81,7 +83,12 @@ class TestTtsCommandBuilder():
         emojiRepository = emojiRepository
     )
 
+    googleJsonMapper: GoogleJsonMapperInterface = GoogleJsonMapper(
+        timber = timber
+    )
+
     ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+        googleJsonMapper = googleJsonMapper,
         settingsJsonReader = JsonStaticReader(
             jsonContents = {
                 'isEnabled': True

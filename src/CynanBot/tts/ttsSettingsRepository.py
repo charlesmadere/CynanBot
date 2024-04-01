@@ -1,6 +1,8 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
+from CynanBot.google.googleJsonMapperInterface import GoogleJsonMapperInterface
+from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
@@ -8,16 +10,45 @@ from CynanBot.tts.ttsSettingsRepositoryInterface import \
 
 class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
-    def __init__(self, settingsJsonReader: JsonReaderInterface):
-        if not isinstance(settingsJsonReader, JsonReaderInterface):
+    def __init__(
+        self,
+        googleJsonMapper: GoogleJsonMapperInterface,
+        settingsJsonReader: JsonReaderInterface
+    ):
+        if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
+            raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
+        elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
 
+        self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
 
-        self.__settingsCache: Optional[Dict[str, Any]] = None
+        self.__settingsCache: dict[str, Any] | None = None
 
     async def clearCaches(self):
         self.__settingsCache = None
+
+    async def getGoogleVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
+        jsonContents = await self.__readJson()
+
+        defaultAudioEncoding = await self.__googleJsonMapper.serializeVoiceAudioEncoding(
+            voiceAudioEncoding = GoogleVoiceAudioEncoding.MP3
+        )
+
+        audioEncodingString = utils.getStrFromDict(
+            d = jsonContents,
+            key = 'googleVoiceAudioEncoding',
+            fallback = defaultAudioEncoding
+        )
+
+        audioEncoding = await self.__googleJsonMapper.parseVoiceAudioEncoding(
+            jsonString = audioEncodingString
+        )
+
+        if audioEncoding is None:
+            return GoogleVoiceAudioEncoding.MP3
+        else:
+            return audioEncoding
 
     async def getGoogleVolumeGainDb(self) -> float | None:
         jsonContents = await self.__readJson()
@@ -59,11 +90,11 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'isEnabled', fallback = False)
 
-    async def __readJson(self) -> Dict[str, Any]:
+    async def __readJson(self) -> dict[str, Any]:
         if self.__settingsCache is not None:
             return self.__settingsCache
 
-        jsonContents: Optional[Dict[str, Any]] = None
+        jsonContents: dict[str, Any] | None = None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()

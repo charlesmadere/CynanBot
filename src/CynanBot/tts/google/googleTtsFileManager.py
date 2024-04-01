@@ -11,8 +11,12 @@ import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.tts.google.googleFileExtensionHelperInterface import \
+    GoogleFileExtensionHelperInterface
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 
 
 class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
@@ -20,18 +24,26 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
     def __init__(
         self,
         eventLoop: AbstractEventLoop,
+        googleFileExtensionHelper: GoogleFileExtensionHelperInterface,
         timber: TimberInterface,
+        ttsSettingsRepository: TtsSettingsRepositoryInterface,
         directory: str = 'temp'
     ):
         if not isinstance(eventLoop, AbstractEventLoop):
             raise TypeError(f'eventLoop argument is malformed: \"{eventLoop}\"')
+        elif not isinstance(googleFileExtensionHelper, GoogleFileExtensionHelperInterface):
+            raise TypeError(f'googleFileExtensionHelper argument is malformed: \"{googleFileExtensionHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
+            raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not utils.isValidStr(directory):
             raise TypeError(f'directory argument is malformed: \"{directory}\"')
 
         self.__eventLoop: AbstractEventLoop = eventLoop
+        self.__googleFileExtensionHelper: GoogleFileExtensionHelperInterface = googleFileExtensionHelper
         self.__timber: TimberInterface = timber
+        self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__directory: str = utils.cleanPath(directory)
 
         self.__fileNameRegEx: Pattern = re.compile(r'[^a-z0-9]', re.IGNORECASE)
@@ -55,6 +67,10 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
 
         return decoded
 
+    async def __getGoogleFileExtension(self) -> str:
+        audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
+        return await self.__googleFileExtensionHelper.getFileExtension(audioEncoding)
+
     async def writeBase64CommandToNewFile(self, base64Command: str) -> str | None:
         if not utils.isValidStr(base64Command):
             raise TypeError(f'base64Command argument is malformed: \"{base64Command}\"')
@@ -69,10 +85,11 @@ class GoogleTtsFileManager(GoogleTtsFileManagerInterface):
             await aiofiles.os.makedirs(self.__directory)
 
         fileName: str | None = None
+        fileExtension = await self.__getGoogleFileExtension()
 
         while not utils.isValidStr(fileName) or await aiofiles.ospath.exists(fileName):
             randomUuid = self.__fileNameRegEx.sub('', str(uuid.uuid4()))
-            fileName = utils.cleanPath(f'{self.__directory}/google-{randomUuid}.mp3')
+            fileName = utils.cleanPath(f'{self.__directory}/google-{randomUuid}.{fileExtension}')
 
         try:
             async with aiofiles.open(

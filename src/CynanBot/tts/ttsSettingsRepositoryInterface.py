@@ -1,9 +1,14 @@
 from abc import abstractmethod
 
+from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.misc.clearable import Clearable
 
 
 class TtsSettingsRepositoryInterface(Clearable):
+
+    @abstractmethod
+    async def getGoogleVoiceAudioEncoding(self) -> GoogleVoiceAudioEncoding:
+        pass
 
     @abstractmethod
     async def getGoogleVolumeGainDb(self) -> float | None:

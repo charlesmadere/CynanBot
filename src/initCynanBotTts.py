@@ -119,6 +119,10 @@ from CynanBot.timber.timber import Timber
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.google.googleFileExtensionHelper import \
+    GoogleFileExtensionHelper
+from CynanBot.tts.google.googleFileExtensionHelperInterface import \
+    GoogleFileExtensionHelperInterface
 from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
@@ -409,6 +413,7 @@ soundPlayerManager: Optional[SoundPlayerManagerInterface] = VlcSoundPlayerManage
 ################################
 
 ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+    googleJsonMapper = googleJsonMapper,
     settingsJsonReader = JsonFileReader('ttsSettingsRepository.json')
 )
 
@@ -434,9 +439,13 @@ decTalkManager: Optional[DecTalkManager] = DecTalkManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
+
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
-    timber = timber
+    googleFileExtensionHelper = googleFileExtensionHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
