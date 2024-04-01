@@ -144,7 +144,7 @@ class GoogleTtsManager(TtsManagerInterface):
             speakingRate = None,
             volumeGainDb = await self.__ttsSettingsRepository.getGoogleVolumeGainDb(),
             sampleRateHertz = None,
-            audioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
+            audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
         )
 
         languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'ja-JP' ]
