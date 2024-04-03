@@ -1,6 +1,6 @@
 import re
 import traceback
-from typing import Collection, List, Optional, Pattern, Set
+from typing import Collection, Pattern
 
 import roman
 from num2words import num2words
@@ -15,6 +15,19 @@ from CynanBot.trivia.triviaExceptions import BadTriviaAnswerException
 
 class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
+    """_summary_
+
+    This class is used for improving answer handling. Trivia answers often take an assortment of
+    different common forms, many of which can be parsed/interpreted to remove unnecessary chunks,
+    or to improve answer handling.
+
+    For example, the answer "to run" has a pretty important word at the beginning (to). This class
+    will scan for that string, and convert it into just "run". Another example, if an answer is
+    "President George Washington", this class will convert it into "(President) George Washington".
+
+    There are many other simple conversions that this class performs, but those are some key examples.
+    """
+
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -26,7 +39,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__equationRegEx: Pattern = re.compile(r'([a-z])\s*=\s*(-?(?:\d*\.)?\d+)', re.IGNORECASE)
         self.__firstMiddleLastNameRegEx: Pattern = re.compile(r'^\w+\s+(\w\.?)\s+\w+(\s+(i{0,3}|iv|vi{0,3}|i?x|jr\.?|junior|senior|sr\.?)\.?)?$', re.IGNORECASE)
         self.__hashRegEx: Pattern = re.compile(r'(#)')
-        self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|priest|president|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|warden)\s+', re.IGNORECASE)
+        self.__honoraryPrefixRegEx: Pattern = re.compile(r'^(bishop|brother|captain|chancellor|chief|colonel|corporal|csar|czar|dean|director|doctor|dr\.?|duke|earl|esq|esquire|executive|father|general|judge|king|lady|lieutenant|lord|madam|madame|master|minister|miss|missus|mister|mistress|mother|mr\.?|mrs\.?|ms\.?|mx\.?|officer|president|priest|prime minister|principal|private|professor|queen|rabbi|representative|reverend|saint|secretary|senator|senior|sister|sir|sire|teacher|tsar|tzar|warden)\s+', re.IGNORECASE)
         self.__japaneseHonorarySuffixRegEx: Pattern = re.compile(r'(\s|-)(chan|kohai|kouhai|kun|sama|san|senpai|sensei|tan)$', re.IGNORECASE)
         self.__multipleChoiceAnswerRegEx: Pattern = re.compile(r'^[a-z]$', re.IGNORECASE)
         self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\[([a-z])\]$', re.IGNORECASE)
@@ -35,6 +48,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9 ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
         self.__prefixRegEx: Pattern = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
+        self.__simpleDaysMonthsYearsRegEx: Pattern = re.compile(r'^(\d+)\s+(day|month|year)s?(\s+old)?$', re.IGNORECASE)
         self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
         self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
         self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
@@ -42,7 +56,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s\s*', re.IGNORECASE)
         self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
-        self.__yearsRegEx: Pattern = re.compile(r'^(\d+)\s+years?(\s+old)?$', re.IGNORECASE)
 
         # RegEx pattern for arabic and roman numerals, returning only one capturing group
         self.__numeralRegEx: Pattern = re.compile(r'\b(\d+(?:st|nd|rd|th)?|[IVXLCDM]+(?:st|nd|rd|th)?)\b', re.IGNORECASE)
@@ -84,7 +97,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             re.VERBOSE | re.IGNORECASE
         )
 
-    async def compileBoolAnswer(self, answer: Optional[str]) -> bool:
+    async def compileBoolAnswer(self, answer: str | None) -> bool:
+        if answer is not None and not isinstance(answer, str):
+            raise TypeError(f'answer argument is malformed: \"{answer}\"')
+
         cleanedAnswer = await self.compileTextAnswer(answer)
 
         try:
@@ -92,12 +108,12 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         except ValueError as e:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool (answer=\"{answer}\") (cleanedAnswer=\"{cleanedAnswer}\"): {e}')
 
-    async def compileMultipleChoiceAnswer(self, answer: Optional[str]) -> int:
+    async def compileMultipleChoiceAnswer(self, answer: str | None) -> int:
         if not utils.isValidStr(answer):
             raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal (answer=\"{answer}\")')
 
         answer = answer.strip()
-        cleanedAnswer: Optional[str] = None
+        cleanedAnswer: str | None = None
 
         # check if the answer is just an alphabetical character from A to Z
         if self.__multipleChoiceAnswerRegEx.fullmatch(answer) is not None:
@@ -116,7 +132,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # this converts the answer 'A' into 0, 'B' into 1, 'C' into 2, and so on...
         return ord(cleanedAnswer.upper()) % 65
 
-    async def compileTextAnswer(self, answer: Optional[str]) -> str:
+    async def compileTextAnswer(self, answer: str | None) -> str:
+        if answer is not None and not isinstance(answer, str):
+            raise TypeError(f'answer argument is malformed: \"{answer}\"')
+
         if not utils.isValidStr(answer):
             return ''
 
@@ -144,16 +163,16 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     async def compileTextAnswersList(
         self,
-        answers: Optional[Collection[Optional[str]]],
+        answers: Collection[str | None] | None,
         expandParentheses: bool = True
-    ) -> List[str]:
+    ) -> list[str]:
         if not utils.isValidBool(expandParentheses):
-            raise ValueError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
+            raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
 
         if not utils.hasItems(answers):
             return list()
 
-        cleanedAnswers: Set[str] = set()
+        cleanedAnswers: set[str] = set()
 
         for answer in answers:
             if not utils.isValidStr(answer):
@@ -173,7 +192,27 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return list(answer for answer in cleanedAnswers if utils.isValidStr(answer))
 
-    async def __expandSpecialCases(self, answer: str) -> List[str]:
+    # returns text answers with all arabic and roman numerals expanded into possible full-word forms
+    async def expandNumerals(self, answer: str) -> list[str]:
+        if answer is not None and not isinstance(answer, str):
+            raise TypeError(f'answer argument is malformed: \"{answer}\"')
+
+        split = self.__numeralRegEx.split(answer)
+
+        for i in range(1, len(split), 2):
+            match = self.__groupedNumeralRegEx.fullmatch(split[i])
+            if not match:
+                raise BadTriviaAnswerException(f'numbers cannot be expanded properly in trivia answer: \"{answer}\"')
+            if not match.group(1):
+                # roman numerals
+                split[i] = await self.__getRomanNumeralSubstitutes(match.group(2))
+            else:
+                # arabic numerals
+                split[i] = await self.__getArabicNumeralSubstitutes(match.group(1))
+
+        return list(set(''.join(item) for item in utils.permuteSubArrays(split)))
+
+    async def __expandSpecialCases(self, answer: str) -> list[str]:
         specialCases = await self.__expandSpecialCasesDecade(answer)
         if utils.hasItems(specialCases):
             return specialCases
@@ -190,7 +229,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if utils.hasItems(specialCases):
             return specialCases
 
-        specialCases = await self.__expandSpecialCasesYears(answer)
+        specialCases = await self.__expandSpecialCasesSimpleDaysMonthsYears(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
@@ -205,7 +244,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         return list()
 
     # Transforms "in the 1990's", "the 1990's", or just "1990's" to ['1990']
-    async def __expandSpecialCasesDecade(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesDecade(self, answer: str) -> list[str] | None:
         match = self.__decadeRegEx.fullmatch(answer)
         if match is None:
             return None
@@ -217,7 +256,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         return [ yearString ]
 
     # Expands 'X=5' to ['5', 'X = 5', 'X is 5', 'X equals 5']
-    async def __expandSpecialCasesEquation(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesEquation(self, answer: str) -> list[str] | None:
         match = self.__equationRegEx.search(answer)
         if match is None:
             return None
@@ -230,7 +269,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         ]
 
     # Expands 'he is a vampire' to ['he is a vampire', 'vampire']
-    async def __expandSpecialCasesThingIsPhrase(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesThingIsPhrase(self, answer: str) -> list[str] | None:
         match = self.__thingIsPhraseRegEx.fullmatch(answer)
         if match is None:
             return None
@@ -246,7 +285,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         return [ thingIsPhrase, phraseAnswer ]
 
     # Expands '$50,000.00 USD' to ['$50,000,000 (USD)', '50000000']
-    async def __expandSpecialCasesUsDollar(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesUsDollar(self, answer: str) -> list[str] | None:
         match = self.__usDollarRegEx.fullmatch(answer)
         if match is None:
             return None
@@ -258,7 +297,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # strip any comma characters from the dollar amount
         usDollarAmount = usDollarAmount.replace(',', '')
 
-        usDollarFloat: Optional[float] = None
+        usDollarFloat: float | None = None
 
         try:
             usDollarFloat = float(usDollarAmount)
@@ -280,7 +319,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     # Expands 'groan/grown' into ['groan/grown', 'groan', 'grown'], or 'hello/world/123' into
     # ['hello/world/123', 'hello', 'world', '123']
-    async def __expandSpecialCasesWordSlashWord(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesWordSlashWord(self, answer: str) -> list[str] | None:
         match = self.__wordSlashWordRegEx.fullmatch(answer)
         if match is None:
             return None
@@ -292,9 +331,9 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if not utils.isValidStr(allWords) or not utils.isValidStr(firstWord) or not utils.isValidStr(secondWord):
             return None
 
-        thirdWord: Optional[str] = match.group(3)
+        thirdWord: str | None = match.group(3)
 
-        specialCases: List[str] = [
+        specialCases: list[str] = [
             match.group(),
             match.group(1),
             match.group(2)
@@ -306,58 +345,55 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         return specialCases
 
     # Expands 'mambo #5' to ['mambo #5', 'mambo number 5']
-    async def __expandSpecialCasesWordThenNumber(self, answer: str) -> Optional[List[str]]:
+    async def __expandSpecialCasesWordThenNumber(self, answer: str) -> list[str] | None:
         split = self.__hashRegEx.split(answer)
         for i in range(1, len(split), 2):
             split[i] = [ 'number ', '#' ]
 
         return [ ''.join(item) for item in utils.permuteSubArrays(split) ]
 
-    # Expands '50 years old' into ['50 (years old)']
-    async def __expandSpecialCasesYears(self, answer: str) -> Optional[List[str]]:
-        match = self.__yearsRegEx.fullmatch(answer)
+    # Expands '1 day old' into [ '1 day old', '1' ], '3 months old' into [ '3 months old', '3' ],
+    # and '50 years old' into [ '50 years old', '50' ].
+    async def __expandSpecialCasesSimpleDaysMonthsYears(self, answer: str) -> list[str] | None:
+        match = self.__simpleDaysMonthsYearsRegEx.fullmatch(answer)
         if match is None:
             return None
 
         allWords = match.group()
-        year = match.group(1)
+        timeUnit = match.group(1)
 
-        if not utils.isValidStr(allWords) or not utils.isValidStr(year):
+        if not utils.isValidStr(allWords) or not utils.isValidStr(timeUnit):
             return None
 
-        return [ allWords, year ]
+        return [ allWords, timeUnit ]
 
-    # returns text answers with all arabic and roman numerals expanded into possible full-word forms
-    async def expandNumerals(self, answer: str) -> List[str]:
-        split = self.__numeralRegEx.split(answer)
+    async def __fancyToLatin(self, text: str) -> str:
+        if not isinstance(text, str):
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
-        for i in range(1, len(split), 2):
-            match = self.__groupedNumeralRegEx.fullmatch(split[i])
-            if not match:
-                raise BadTriviaAnswerException(f'numbers cannot be expanded properly in trivia answer: \"{answer}\"')
-            if not match.group(1):
-                # roman numerals
-                split[i] = await self.__getRomanNumeralSubstitutes(match.group(2))
-            else:
-                # arabic numerals
-                split[i] = await self.__getArabicNumeralSubstitutes(match.group(1))
+        text = ''.join(
+            self.__specialCharsRegEx.sub(
+                lambda m: {k: v for k, v in m.groupdict().items() if v}.popitem()[0],
+                char,
+            ) for char in text
+        )
 
-        return list(set(''.join(item) for item in utils.permuteSubArrays(split)))
+        return self.__combiningDiacriticsRegEx.sub('', text).strip()
 
-    async def __getArabicNumeralSubstitutes(self, arabicNumerals: str) -> List[str]:
+    async def __getArabicNumeralSubstitutes(self, arabicNumerals: str) -> list[str]:
         individualDigits = ' '.join([num2words(int(digit)) for digit in arabicNumerals])
         n = int(arabicNumerals)
 
         return [
-                num2words(n, to='ordinal').replace('-', ' ').replace(',', ''),
-                'the ' + num2words(n, to='ordinal').replace('-', ' ').replace(',', ''),
+                num2words(n, to = 'ordinal').replace('-', ' ').replace(',', ''),
+                'the ' + num2words(n, to = 'ordinal').replace('-', ' ').replace(',', ''),
                 num2words(n).replace('-', ' ').replace(',', ''),
-                num2words(n, to='year').replace('-', ' ').replace(',', ''),
+                num2words(n, to = 'year').replace('-', ' ').replace(',', ''),
                 individualDigits,
             ]
 
-    async def __getRomanNumeralSubstitutes(self, romanNumerals: str) -> List[str]:
-        n: Optional[int] = None
+    async def __getRomanNumeralSubstitutes(self, romanNumerals: str) -> list[str]:
+        n: int | None = None
 
         try:
             n = roman.fromRoman(romanNumerals.upper())
@@ -369,14 +405,14 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         return [
             romanNumerals.lower(),
-            num2words(n, to='ordinal').replace('-', ' ').replace(',', ''),
-            'the ' + num2words(n, to='ordinal').replace('-', ' ').replace(',', ''),
+            num2words(n, to = 'ordinal').replace('-', ' ').replace(',', ''),
+            'the ' + num2words(n, to = 'ordinal').replace('-', ' ').replace(',', ''),
             num2words(n).replace('-', ' ').replace(',', ''),
-            num2words(n, to='year').replace('-', ' ').replace(',', ''),
+            num2words(n, to = 'year').replace('-', ' ').replace(',', ''),
         ]
 
     # Returns all possibilities with parenthesized phrases both included and excluded
-    async def __getParentheticalPossibilities(self, answer: str) -> List[str]:
+    async def __getParentheticalPossibilities(self, answer: str) -> list[str]:
         answer = await self.__patchAnswerFirstMiddleLastName(answer)
         answer = await self.__patchAnswerHonoraryPrefixes(answer)
         answer = await self.__patchAnswerJapaneseHonorarySuffixes(answer)
@@ -385,10 +421,35 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         answer = await self.__patchAnswerWordTheWord(answer)
 
         # Split the uncleaned answer with this regex to find all parentheticals
-        splitPossibilities: List[str] = self.__parenGroupRegEx.split(answer)
+        splitPossibilities: list[str] = self.__parenGroupRegEx.split(answer)
 
         # join the split possibilities back to strings and substitute multiple whitespaces back to a single space.
         return [ self.__whiteSpaceRegEx.sub(' ', ''.join(p).strip()) for p in await self.__getSubPossibilities(splitPossibilities) ]
+
+    # Recursively resolves the possibilities for each word in the answer.
+    async def __getSubPossibilities(self, splitAnswer: str) -> list[str]:
+        # early exit on trivial cases
+        if not len(splitAnswer):
+            return [ ]
+        if len(splitAnswer) == 1:
+            return [ splitAnswer ]
+
+        # get all "future" possible variants starting with the next word
+        futurePossible = await self.__getSubPossibilities(splitAnswer[1:])
+
+        # switch on open paren
+        if splitAnswer[0].startswith('('):
+            res = [ ]
+            for possible in futurePossible:
+                # add a version including this word but without the parentheses
+                res.append([ splitAnswer[0][1:-1], *possible ])
+                # also keep the version not including this word at all
+                res.append(possible)
+            # return all possibilities, with and without this word
+            return res
+        else:
+            # return all future possibilities with this current word mapped onto it as well.
+            return [ [ splitAnswer[0], *possible ] for possible in futurePossible ]
 
     # This method checks to see if an answer appears to be a first name, middle initial, and last
     # name (with optional suffix), such as "George H. Richard III". This method would then transform
@@ -481,38 +542,3 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return answer
 
         return f'{match.group(1)} ({match.group(2)}) {match.group(3)}'
-
-    # Recursively resolves the possibilities for each word in the answer.
-    async def __getSubPossibilities(self, splitAnswer: str) -> List[str]:
-        # early exit on trivial cases
-        if not len(splitAnswer):
-            return [ ]
-        if len(splitAnswer) == 1:
-            return [ splitAnswer ]
-
-        # get all "future" possible variants starting with the next word
-        futurePossible = await self.__getSubPossibilities(splitAnswer[1:])
-
-        # switch on open paren
-        if splitAnswer[0].startswith('('):
-            res = [ ]
-            for possible in futurePossible:
-                # add a version including this word but without the parentheses
-                res.append([ splitAnswer[0][1:-1], *possible ])
-                # also keep the version not including this word at all
-                res.append(possible)
-            # return all possibilities, with and without this word
-            return res
-        else:
-            # return all future possibilities with this current word mapped onto it as well.
-            return [ [ splitAnswer[0], *possible ] for possible in futurePossible ]
-
-    async def __fancyToLatin(self, text: str) -> str:
-        text = ''.join(
-            self.__specialCharsRegEx.sub(
-                lambda m: {k: v for k, v in m.groupdict().items() if v}.popitem()[0],
-                char,
-            ) for char in text
-        )
-
-        return self.__combiningDiacriticsRegEx.sub('', text).strip()

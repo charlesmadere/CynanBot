@@ -1,29 +1,29 @@
 from abc import ABC, abstractmethod
-from typing import Collection, List, Optional
+from typing import Collection
 
 
 class TriviaAnswerCompilerInterface(ABC):
 
     @abstractmethod
-    async def compileBoolAnswer(self, answer: Optional[str]) -> bool:
+    async def compileBoolAnswer(self, answer: str | None) -> bool:
         pass
 
     @abstractmethod
-    async def compileMultipleChoiceAnswer(self, answer: Optional[str]) -> int:
+    async def compileMultipleChoiceAnswer(self, answer: str | None) -> int:
         pass
 
     @abstractmethod
-    async def compileTextAnswer(self, answer: Optional[str]) -> str:
+    async def compileTextAnswer(self, answer: str | None) -> str:
         pass
 
     @abstractmethod
     async def compileTextAnswersList(
         self,
-        answers: Optional[Collection[Optional[str]]],
+        answers: Collection[str | None] | None,
         expandParentheses: bool = True
-    ) -> List[str]:
+    ) -> list[str]:
         pass
 
     @abstractmethod
-    async def expandNumerals(self, answer: str) -> List[str]:
+    async def expandNumerals(self, answer: str) -> list[str]:
         pass
