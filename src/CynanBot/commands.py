@@ -191,6 +191,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -513,6 +514,7 @@ class BanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -1145,6 +1147,7 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -1430,6 +1433,7 @@ class GetTriviaAnswersCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -2563,6 +2567,7 @@ class SuperTriviaCommand(AbsCommand):
 
         if not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -2837,6 +2842,7 @@ class TriviaInfoCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return
@@ -3201,21 +3207,21 @@ class UnbanTriviaQuestionCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaBanHelper, TriviaBanHelperInterface):
-            raise ValueError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
+            raise TypeError(f'triviaBanHelper argument is malformed: \"{triviaBanHelper}\"')
         elif not isinstance(triviaEmoteGenerator, TriviaEmoteGeneratorInterface):
-            raise ValueError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
+            raise TypeError(f'triviaEmoteGenerator argument is malformed: \"{triviaEmoteGenerator}\"')
         elif not isinstance(triviaHistoryRepository, TriviaHistoryRepositoryInterface):
-            raise ValueError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
+            raise TypeError(f'triviaHistoryRepository argument is malformed: \"{triviaHistoryRepository}\"')
         elif not isinstance(triviaUtils, TriviaUtilsInterface):
-            raise ValueError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
+            raise TypeError(f'triviaUtils argument is malformed: \"{triviaUtils}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__timber: TimberInterface = timber
@@ -3236,6 +3242,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = ctx.getAuthorId()
         ):
             return

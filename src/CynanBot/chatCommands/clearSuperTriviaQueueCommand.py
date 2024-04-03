@@ -46,6 +46,7 @@ class ClearSuperTriviaQueueCommand(AbsChatCommand):
     async def handleChatCommand(self, ctx: TwitchContext):
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        twitchChannelId = await ctx.getTwitchChannelId()
 
         if not generalSettings.isSuperTriviaGameEnabled():
             return
@@ -53,12 +54,12 @@ class ClearSuperTriviaQueueCommand(AbsChatCommand):
             return
         elif not await self.__triviaUtils.isPrivilegedTriviaUser(
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             userId = ctx.getAuthorId()
         ):
             return
 
         actionId = await self.__triviaIdGenerator.generateActionId()
-        twitchChannelId = await ctx.getTwitchChannelId()
 
         self.__triviaGameMachine.submitAction(ClearSuperTriviaQueueTriviaAction(
             actionId = actionId,
