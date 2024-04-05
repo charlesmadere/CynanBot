@@ -609,29 +609,32 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not isinstance(triviaResult, TriviaScoreResult):
             raise TypeError(f'triviaResult argument is malformed: \"{triviaResult}\"')
 
+        if triviaResult.getTotal() == 0 and triviaResult.getSuperTriviaWins() == 0:
+            return f'{utils.getRandomSadEmoji()} @{userName} has not played any trivia games…'
+
+        introStr = f'ⓘ @{userName} has'
+
         triviaStr = ''
         if triviaResult.getTotal() >= 1:
             winLossStr = f'{triviaResult.getTriviaWinsStr()}-{triviaResult.getTriviaLossesStr()}'
             winsRatioStr = f'{triviaResult.getWinPercentStr()} wins'
 
             if triviaResult.getTotal() == 1:
-                triviaStr = f'@{userName} has played {triviaResult.getTotalStr()} trivia game ({winLossStr}, {winsRatioStr})'
+                triviaStr = f' played {triviaResult.getTotalStr()} trivia game ({winLossStr}, {winsRatioStr})'
             else:
-                triviaStr = f'@{userName} has played {triviaResult.getTotalStr()} trivia games ({winLossStr}, {winsRatioStr})'
+                triviaStr = f' played {triviaResult.getTotalStr()} trivia games ({winLossStr}, {winsRatioStr})'
 
             if triviaResult.getStreak() >= 3:
                 triviaStr = f'{triviaStr}, and is on a {triviaResult.getAbsStreakStr()} game winning streak 😸'
             elif triviaResult.getStreak() <= -3:
                 triviaStr = f'{triviaStr}, and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
-        else:
-            triviaStr = f'@{userName} hasn\'t played any trivia games 😿'
 
         superTriviaStr = ''
         if triviaResult.getSuperTriviaWins() >= 1:
             if triviaResult.getSuperTriviaWins() == 1:
-                superTriviaStr = f'; {triviaResult.getSuperTriviaWinsStr()} super trivia win'
+                superTriviaStr = f' {triviaResult.getSuperTriviaWinsStr()} super trivia win'
             else:
-                superTriviaStr = f'; {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
+                superTriviaStr = f' {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
 
         shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
@@ -647,7 +650,7 @@ class TriviaUtils(TriviaUtilsInterface):
             else:
                 toxicStr = f'; {toxicResult.getNewToxicCountStr()} toxics'
 
-        return f'{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
+        return f'{introStr}{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
 
     async def isPrivilegedTriviaUser(
         self,

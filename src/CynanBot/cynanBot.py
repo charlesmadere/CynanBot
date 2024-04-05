@@ -56,6 +56,7 @@ from CynanBot.chatCommands.removeWordOfTheDayRecurringAction import \
     RemoveWordOfTheDayRecurringActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
+from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -87,8 +88,8 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
                                StubCommand, SuperTriviaCommand, SwQuoteCommand,
                                TimeCommand, TranslateCommand,
-                               TriviaInfoCommand, TriviaScoreCommand,
-                               TtsCommand, TwitchInfoCommand, TwitterCommand,
+                               TriviaInfoCommand, TtsCommand,
+                               TwitchInfoCommand, TwitterCommand,
                                UnbanTriviaQuestionCommand, WeatherCommand,
                                WordCommand)
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
@@ -623,12 +624,12 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
             self.__triviaInfoCommand: AbsCommand = StubCommand()
-            self.__triviaScoreCommand: AbsCommand = StubCommand()
+            self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
             self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__triviaScoreCommand: AbsCommand = TriviaScoreCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if streamAlertsManager is None:
@@ -1335,7 +1336,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'triviascore')
     async def command_triviascore(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__triviaScoreCommand.handleCommand(context)
+        await self.__triviaScoreCommand.handleChatCommand(context)
 
     @commands.command(name = 'tts', aliases = [ 'TTS' ])
     async def command_tts(self, ctx: Context):
