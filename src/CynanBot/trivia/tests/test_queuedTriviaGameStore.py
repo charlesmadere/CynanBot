@@ -49,7 +49,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action1',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -71,7 +71,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action2',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -93,7 +93,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action3',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -115,7 +115,7 @@ class TestQueuedTriviaGameStore1():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action4',
         twitchChannel = 'stashiocat',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 's',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             twitchChannelId = 's',
@@ -260,7 +260,7 @@ class TestQueuedTriviaGameStore4():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action5',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -317,7 +317,7 @@ class TestQueuedTriviaGameStore5():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action6',
         twitchChannel = 'stashiocat',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 's',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'stashiocat',
             twitchChannelId = 's',
@@ -374,7 +374,7 @@ class TestQueuedTriviaGameStore6():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action7',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -452,7 +452,7 @@ class TestQueuedTriviaGameStore7():
         toxicTriviaPunishmentMultiplier = 0,
         actionId = 'action8',
         twitchChannel = 'smCharles',
-        twitchChannelId = 'abc123',
+        twitchChannelId = 'c',
         triviaFetchOptions = TriviaFetchOptions(
             twitchChannel = 'smCharles',
             twitchChannelId = 'c',
@@ -464,7 +464,7 @@ class TestQueuedTriviaGameStore7():
     async def test_clearQueuedSuperGames_isCaseInsensitive(self):
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
 
-        clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('smCharles')
+        clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('c')
         assert clearResult.getAmountRemoved() == 0
         assert clearResult.getOldQueueSize() == 0
 
@@ -476,17 +476,17 @@ class TestQueuedTriviaGameStore7():
         assert addResult.getNewQueueSize() == 1
         assert addResult.getOldQueueSize() == 0
 
-        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('smCharles')
+        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('c')
         assert queueSize == 1
 
-        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('smcharles')
+        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('c')
         assert queueSize == 1
 
-        clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('smCharles')
+        clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames('c')
         assert clearResult.getAmountRemoved() == 1
         assert clearResult.getOldQueueSize() == 1
 
-        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('smcharles')
+        queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize('c')
         assert queueSize == 0
 
     def test_sanity(self):
