@@ -52,7 +52,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
 
     async def getGoogleVolumeGainDb(self) -> float | None:
         jsonContents = await self.__readJson()
-        return utils.getFloatFromDict(jsonContents, 'googleVolumeGainDb', fallback = -6)
+        return utils.getFloatFromDict(jsonContents, 'googleVolumeGainDb', fallback = -5)
 
     async def getMaximumMessageSize(self) -> int:
         jsonContents = await self.__readJson()
