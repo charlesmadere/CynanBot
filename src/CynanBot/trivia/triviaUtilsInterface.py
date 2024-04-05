@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from CynanBot.cuteness.cutenessResult import CutenessResult
 from CynanBot.trivia.banned.bannedTriviaGameController import \
@@ -33,7 +32,7 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         pass
@@ -44,7 +43,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         pass
@@ -55,7 +54,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None
     ) -> str:
         pass
 
@@ -65,7 +64,7 @@ class TriviaUtilsInterface(ABC):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         pass
@@ -79,13 +78,13 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         userName: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         pass
 
     @abstractmethod
-    async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
+    async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str | None:
         pass
 
     @abstractmethod
@@ -93,7 +92,7 @@ class TriviaUtilsInterface(ABC):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         pass
@@ -106,7 +105,7 @@ class TriviaUtilsInterface(ABC):
         points: int,
         emote: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = ' '
     ) -> str:
         pass
@@ -114,18 +113,18 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult],
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         emote: str,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
-    ) -> Optional[str]:
+    ) -> str | None:
         pass
 
     @abstractmethod
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: Optional[List[BannedTriviaGameController]],
+        bannedControllers: list[BannedTriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         pass
@@ -133,7 +132,7 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameControllers(
         self,
-        gameControllers: Optional[List[TriviaGameController]],
+        gameControllers: list[TriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         pass
@@ -141,7 +140,7 @@ class TriviaUtilsInterface(ABC):
     @abstractmethod
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Optional[List[TriviaGameGlobalController]],
+        gameControllers: list[TriviaGameGlobalController] | None,
         delimiter: str = ', '
     ) -> str:
         pass
@@ -155,7 +154,7 @@ class TriviaUtilsInterface(ABC):
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = ' '
     ) -> str:
         pass

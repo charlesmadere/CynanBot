@@ -1,7 +1,6 @@
 import locale
 import traceback
 from collections import defaultdict
-from typing import Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -94,7 +93,7 @@ class TriviaUtils(TriviaUtilsInterface):
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
@@ -137,7 +136,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
@@ -171,7 +170,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None
+        specialTriviaStatus: SpecialTriviaStatus | None = None
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -216,18 +215,18 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
+        punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
         for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
             punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
 
-        sortedKeys: List[int] = list(punishmentAmountToUserNames.keys())
+        sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
 
-        buckets: List[str] = list()
+        buckets: list[str] = list()
 
         for punishmentAmount in sortedKeys:
-            userNames: List[str] = list()
+            userNames: list[str] = list()
 
             for userName in punishmentAmountToUserNames[punishmentAmount]:
                 userNames.append(userName)
@@ -243,7 +242,7 @@ class TriviaUtils(TriviaUtilsInterface):
         question: AbsTriviaQuestion,
         emote: str,
         userNameThatRedeemed: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
@@ -285,15 +284,15 @@ class TriviaUtils(TriviaUtilsInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        punishmentAmountToUserNames: Dict[int, List[str]] = defaultdict(lambda: list())
+        punishmentAmountToUserNames: dict[int, list[str]] = defaultdict(lambda: list())
 
         for punishment in toxicTriviaPunishmentResult.getToxicTriviaPunishments():
             punishmentAmountToUserNames[punishment.getPunishedByPoints()].append(punishment.getUserName())
 
-        sortedKeys: List[int] = list(punishmentAmountToUserNames.keys())
+        sortedKeys: list[int] = list(punishmentAmountToUserNames.keys())
         sortedKeys.sort(key = lambda punishmentAmount: punishmentAmount)
 
-        buckets: List[str] = list()
+        buckets: list[str] = list()
 
         for punishmentAmount in sortedKeys:
             numberPunished = len(punishmentAmountToUserNames[punishmentAmount])
@@ -315,7 +314,7 @@ class TriviaUtils(TriviaUtilsInterface):
         emote: str,
         userName: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
@@ -356,7 +355,7 @@ class TriviaUtils(TriviaUtilsInterface):
             correctAnswersStr = delimiter.join(correctAnswers)
             return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
 
-    async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> Optional[str]:
+    async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str | None:
         if not utils.isValidInt(remainingQueueSize):
             raise TypeError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
 
@@ -372,7 +371,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = '; '
     ) -> str:
         if not isinstance(question, AbsTriviaQuestion):
@@ -406,7 +405,7 @@ class TriviaUtils(TriviaUtilsInterface):
         points: int,
         emote: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = ' '
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
@@ -451,12 +450,12 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getToxicTriviaPunishmentMessage(
         self,
-        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult],
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         emote: str,
         twitchUser: UserInterface,
         bucketDelimiter: str = '; ',
         delimiter: str = ', '
-    ) -> Optional[str]:
+    ) -> str | None:
         if toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
             raise TypeError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not utils.isValidStr(emote):
@@ -489,7 +488,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameBannedControllers(
         self,
-        bannedControllers: Optional[List[BannedTriviaGameController]],
+        bannedControllers: list[BannedTriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         if not isinstance(delimiter, str):
@@ -498,7 +497,7 @@ class TriviaUtils(TriviaUtilsInterface):
         if not utils.hasItems(bannedControllers):
             return f'ⓘ There are no banned trivia game controllers.'
 
-        bannedControllersNames: List[str] = list()
+        bannedControllersNames: list[str] = list()
         for bannedController in bannedControllers:
             bannedControllersNames.append(bannedController.getUserName())
 
@@ -507,7 +506,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameControllers(
         self,
-        gameControllers: Optional[List[TriviaGameController]],
+        gameControllers: list[TriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
         if not isinstance(delimiter, str):
@@ -516,7 +515,7 @@ class TriviaUtils(TriviaUtilsInterface):
         if not utils.hasItems(gameControllers):
             return f'ⓘ Your channel has no trivia game controllers.'
 
-        gameControllersNames: List[str] = list()
+        gameControllersNames: list[str] = list()
         for gameController in gameControllers:
             gameControllersNames.append(gameController.getUserName())
 
@@ -525,7 +524,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
     async def getTriviaGameGlobalControllers(
         self,
-        gameControllers: Optional[List[TriviaGameGlobalController]],
+        gameControllers: list[TriviaGameGlobalController] | None,
         delimiter: str = ', '
     ) -> str:
         if not isinstance(delimiter, str):
@@ -534,7 +533,7 @@ class TriviaUtils(TriviaUtilsInterface):
         if not utils.hasItems(gameControllers):
             return f'ⓘ There are no global trivia game controllers.'
 
-        gameControllersNames: List[str] = list()
+        gameControllersNames: list[str] = list()
         for gameController in gameControllers:
             gameControllersNames.append(gameController.getUserName())
 
@@ -549,7 +548,7 @@ class TriviaUtils(TriviaUtilsInterface):
         emote: str,
         userNameThatRedeemed: str,
         twitchUser: UserInterface,
-        specialTriviaStatus: Optional[SpecialTriviaStatus] = None,
+        specialTriviaStatus: SpecialTriviaStatus | None = None,
         delimiter: str = ' '
     ) -> str:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):

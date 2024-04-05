@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
@@ -12,9 +10,9 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
-        answer: Optional[str],
+        answer: str,
         emote: str,
         eventId: str,
         gameId: str,
@@ -45,15 +43,15 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
             raise ValueError(f'userName argument is malformed: \"{userName}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__specialTriviaStatus: Optional[SpecialTriviaStatus] = specialTriviaStatus
-        self.__answer: Optional[str] = answer
+        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
+        self.__answer: str | None = answer
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getAnswer(self) -> Optional[str]:
+    def getAnswer(self) -> str | None:
         return self.__answer
 
     def getEmote(self) -> str:
@@ -62,7 +60,7 @@ class IncorrectSuperAnswerTriviaEvent(AbsTriviaEvent):
     def getGameId(self) -> str:
         return self.__gameId
 
-    def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
+    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
     def getTriviaEventType(self) -> TriviaEventType:

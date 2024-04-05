@@ -1,3 +1,5 @@
+import traceback
+
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
@@ -45,22 +47,25 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
     async def addController(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userName: str
     ) -> AddTriviaGameControllerResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchChannel)
 
-        userId = await self.__userIdsRepository.fetchUserId(
-            userName = userName,
-            twitchAccessToken = twitchAccessToken
-        )
-
-        if not utils.isValidStr(userId):
-            self.__timber.log('TriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to add \"{userName}\" as a trivia game controller for \"{twitchChannel}\": \"{userId}\"')
+        try:
+            userId = await self.__userIdsRepository.requireUserId(
+                userName = userName,
+                twitchAccessToken = twitchAccessToken
+            )
+        except Exception as e:
+            self.__timber.log('TriviaGameControllersRepository', f'Unable to find userId for \"{userName}\" when trying to add this user as a trivia game controller for \"{twitchChannel}\"', e, traceback.format_exc())
             return AddTriviaGameControllerResult.ERROR
 
         connection = await self.__getDatabaseConnection()
@@ -79,7 +84,7 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         if utils.isValidInt(count) and count >= 1:
             await connection.close()
-            self.__timber.log('TriviaGameControllersRepository', f'Tried to add userName=\"{userName}\" userId=\"{userId}\" as a trivia game controller for \"{twitchChannel}\", but this user has already been added as one')
+            self.__timber.log('TriviaGameControllersRepository', f'Tried to add {userName}:{userId} as a trivia game controller for \"{twitchChannel}\", but they\'ve already been added as one')
             return AddTriviaGameControllerResult.ALREADY_EXISTS
 
         await connection.execute(
@@ -92,13 +97,14 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameControllersRepository', f'Added userName=\"{userName}\" userId=\"{userId}\" as a trivia game controller for \"{twitchChannel}\"')
-
+        self.__timber.log('TriviaGameControllersRepository', f'Added {userName}:{userId} as a trivia game controller for \"{twitchChannel}\"')
         return AddTriviaGameControllerResult.ADDED
 
-    async def getControllers(self, twitchChannel: str) -> list[TriviaGameController]:
+    async def getControllers(self, twitchChannel: str, twitchChannelId: str) -> list[TriviaGameController]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
@@ -166,20 +172,37 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
     async def removeController(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userName: str
     ) -> RemoveTriviaGameControllerResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        userId = await self.__userIdsRepository.fetchUserId(userName = userName)
-
-        if not utils.isValidStr(userId):
-            self.__timber.log('TriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to remove \"{userName}\" as a trivia game controller for \"{twitchChannel}\"')
+        try:
+            userId = await self.__userIdsRepository.requireUserId(userName = userName)
+        except Exception as e:
+            self.__timber.log('TriviaGameControllersRepository', f'Unable to find userId for \"{userName}\" when trying to remove this user as a trivia game controller for \"{twitchChannel}\"', e, traceback.format_exc())
             return RemoveTriviaGameControllerResult.ERROR
 
         connection = await self.__backingDatabase.getConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT COUNT(1) FROM triviagamecontrollers
+                WHERE twitchchannel = $1 AND userid = $2
+                LIMIT 1
+            ''',
+            twitchChannel, userId
+        )
+
+        if record is None or len(record) < 1:
+            await connection.close()
+            self.__timber.log('TriviaGameControllersRepository', f'Tried to remove {userName}:{userId} as a trivia game controller from \"{twitchChannel}\", but they\'re not already added')
+            return RemoveTriviaGameControllerResult.DOES_NOT_EXIST
+
         await connection.execute(
             '''
                 DELETE FROM triviagamecontrollers
@@ -189,6 +212,5 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
         )
 
         await connection.close()
-        self.__timber.log('TriviaGameControllersRepository', f'Removed userName=\"{userName}\" userId=\"{userId}\" as a trivia game controller for \"{twitchChannel}\"')
-
+        self.__timber.log('TriviaGameControllersRepository', f'Removed {userName}:{userId} as a trivia game controller from \"{twitchChannel}\"')
         return RemoveTriviaGameControllerResult.REMOVED

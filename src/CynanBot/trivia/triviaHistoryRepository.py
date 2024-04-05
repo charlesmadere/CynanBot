@@ -49,12 +49,15 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
     async def getMostRecentTriviaQuestionDetails(
         self,
         emote: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ) -> TriviaQuestionReference | None:
         if not utils.isValidStr(emote):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -133,7 +136,8 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ) -> TriviaContentCode:
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
@@ -141,6 +145,8 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         triviaId = question.getTriviaId()
         triviaSource = question.getTriviaSource().toStr()

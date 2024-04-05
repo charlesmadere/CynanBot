@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
@@ -10,9 +8,10 @@ class GameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         actionId: str,
-        answer: Optional[str],
+        answer: str | None,
         eventId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
@@ -22,20 +21,23 @@ class GameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
         )
 
         if answer is not None and not isinstance(answer, str):
-            raise ValueError(f'answer argument is malformed: \"{answer}\"')
+            raise TypeError(f'answer argument is malformed: \"{answer}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__answer: Optional[str] = answer
+        self.__answer: str | None = answer
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
 
-    def getAnswer(self) -> Optional[str]:
+    def getAnswer(self) -> str | None:
         return self.__answer
 
     def getTriviaEventType(self) -> TriviaEventType:
@@ -43,6 +45,9 @@ class GameNotReadyCheckAnswerTriviaEvent(AbsTriviaEvent):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId

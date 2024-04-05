@@ -85,8 +85,10 @@ class TriviaGameStoreTests():
         specialTriviaStatus = None,
         actionId = 'abc123',
         emote = '🍔',
+        gameId = 'fdsdsavfdsaf',
         twitchChannel = 'smCharles',
-        userId = '111111',
+        twitchChannelId = 'c',
+        userId = 'e',
         userName = 'Eddie'
     )
 
@@ -98,8 +100,10 @@ class TriviaGameStoreTests():
         specialTriviaStatus = None,
         actionId = 'abc123',
         emote = '🍔',
+        gameId = 'qwefsafsa',
         twitchChannel = 'smCharles',
-        userId = '222222',
+        twitchChannelId = 'c',
+        userId = 's',
         userName = 'stashiocat'
     )
 
@@ -111,8 +115,10 @@ class TriviaGameStoreTests():
         specialTriviaStatus = None,
         actionId = 'abc123',
         emote = '🍔',
+        gameId = 'fdsadsa',
         twitchChannel = 'Imyt',
-        userId = '222222',
+        twitchChannelId = 'i',
+        userId = 's',
         userName = 'stashiocat'
     )
 
@@ -127,7 +133,9 @@ class TriviaGameStoreTests():
         specialTriviaStatus = None,
         actionId = 'abc123',
         emote = '🍔',
-        twitchChannel = 'smCharles'
+        gameId = 'fdsafdsafsafdsafasz',
+        twitchChannel = 'smCharles',
+        twitchChannelId = 'c'
     )
 
     game5 = SuperTriviaGameState(
@@ -141,7 +149,9 @@ class TriviaGameStoreTests():
         specialTriviaStatus = None,
         actionId = 'abc123',
         emote = '🍔',
-        twitchChannel = 'Imyt'
+        gameId = 'fdsafdsfdere',
+        twitchChannel = 'imyt',
+        twitchChannelId = 'i'
     )
 
     triviaGameStore: TriviaGameStoreInterface = TriviaGameStore()
@@ -187,8 +197,8 @@ class TriviaGameStoreTests():
     @pytest.mark.asyncio
     async def test_getNormalGame_isNone(self):
         game = await self.triviaGameStore.getNormalGame(
-            twitchChannel = 'smCharles',
-            userId = '222222'
+            twitchChannelId = 'c',
+            userId = 'e'
         )
 
         assert game is None
@@ -201,7 +211,7 @@ class TriviaGameStoreTests():
     @pytest.mark.asyncio
     async def test_getSuperGame_withEmptyTriviaGameStore_returnsNone(self):
         game = await self.triviaGameStore.getSuperGame(
-            twitchChannel = 'smCharles'
+            twitchChannelId = 'c'
         )
 
         assert game is None
@@ -215,7 +225,7 @@ class TriviaGameStoreTests():
     async def test_remove(self):
         # removing a game from an empty TriviaGameStore should do nothing
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game1.getTwitchChannel(),
+            twitchChannelId = self.game1.getTwitchChannelId(),
             userId = self.game1.getUserId()
         )
         assert result is False
@@ -232,7 +242,7 @@ class TriviaGameStoreTests():
 
         # try removing a game that does not exist
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game2.getTwitchChannel(),
+            twitchChannelId = self.game2.getTwitchChannelId(),
             userId = self.game1.getUserId()
         )
         assert result is False
@@ -245,7 +255,7 @@ class TriviaGameStoreTests():
 
         # remove a game that does exist
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game2.getTwitchChannel(),
+            twitchChannelId = self.game2.getTwitchChannelId(),
             userId = self.game2.getUserId()
         )
         assert result is True
@@ -257,7 +267,7 @@ class TriviaGameStoreTests():
 
         # remove another game that does exist
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game1.getTwitchChannel(),
+            twitchChannelId = self.game1.getTwitchChannelId(),
             userId = self.game1.getUserId()
         )
         assert result is True
@@ -268,7 +278,7 @@ class TriviaGameStoreTests():
 
         # try one more time to remove the same game that was just removed
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game1.getTwitchChannel(),
+            twitchChannelId = self.game1.getTwitchChannelId(),
             userId = self.game1.getUserId()
         )
         assert result is False
@@ -279,7 +289,7 @@ class TriviaGameStoreTests():
 
         # try removing an super trivia game that does not exist
         result = await self.triviaGameStore.removeSuperGame(
-            twitchChannel = self.game5.getTwitchChannel()
+            twitchChannelId = self.game5.getTwitchChannelId()
         )
         assert result is False
 
@@ -289,7 +299,7 @@ class TriviaGameStoreTests():
 
         # remove the final super trivia game
         result = await self.triviaGameStore.removeSuperGame(
-            twitchChannel = self.game4.getTwitchChannel()
+            twitchChannelId = self.game4.getTwitchChannelId()
         )
         assert result is True
 
@@ -299,7 +309,7 @@ class TriviaGameStoreTests():
     @pytest.mark.asyncio
     async def test_removeNormalGame_withEmptyTriviaGameStore_returnsFalse(self):
         result = await self.triviaGameStore.removeNormalGame(
-            twitchChannel = self.game3.getTwitchChannel(),
+            twitchChannelId = self.game3.getTwitchChannelId(),
             userId = self.game3.getUserId()
         )
 
@@ -308,11 +318,11 @@ class TriviaGameStoreTests():
     @pytest.mark.asyncio
     async def test_removeSuperGame_withEmptyTriviaGameStore_returnsFalse(self):
         result = await self.triviaGameStore.removeSuperGame(
-            twitchChannel = self.game5.getTwitchChannel()
+            twitchChannelId = self.game5.getTwitchChannelId()
         )
 
         assert result is False
 
     def test_sanity(self):
         assert self.triviaGameStore is not None
-        assert isinstance(self.triviaGameStore, TriviaGameStore)
+        assert isinstance(self.triviaGameStore, TriviaGameStoreInterface)

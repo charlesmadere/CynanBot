@@ -1,5 +1,4 @@
 from datetime import datetime, timezone, tzinfo
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -30,10 +29,13 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     async def fetchDetails(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -47,10 +49,10 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             twitchChannel, userId
         )
 
-        toxicCount: int = 0
-        mostRecent: Optional[datetime] = None
+        toxicCount = 0
+        mostRecent: datetime | None = None
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             toxicCount = record[0]
             mostRecent = utils.getDateTimeFromStr(record[1])
 
@@ -61,6 +63,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             newToxicCount = toxicCount,
             oldToxicCount = toxicCount,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -71,31 +74,37 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     async def incrementToxicCount(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ToxicTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchDetails(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-        newToxicCount: int = result.getOldToxicCount() + 1
+        newToxicCount = result.getOldToxicCount() + 1
 
         newResult = ToxicTriviaResult(
             mostRecent = datetime.now(self.__timeZone),
             newToxicCount = newToxicCount,
             oldToxicCount = result.getOldToxicCount(),
             twitchChannel = result.getTwitchChannel(),
+            twitchChannelId = result.getTwitchChannelId(),
             userId = result.getUserId()
         )
 
         await self.__updateToxicCount(
             newToxicCount = newResult.getNewToxicCount(),
             twitchChannel = newResult.getTwitchChannel(),
+            twitchChannelId = newResult.getTwitchChannelId(),
             userId = newResult.getUserId()
         )
 
@@ -141,6 +150,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         self,
         newToxicCount: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ):
         if not utils.isValidInt(newToxicCount):
@@ -149,6 +159,8 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
             raise ValueError(f'newToxicCount argument is out of bounds: {newToxicCount}')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 

@@ -9,6 +9,7 @@ class TriviaScoreRepositoryInterface(ABC):
     async def fetchTriviaScore(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         pass
@@ -17,6 +18,7 @@ class TriviaScoreRepositoryInterface(ABC):
     async def incrementSuperTriviaWins(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         pass
@@ -25,6 +27,7 @@ class TriviaScoreRepositoryInterface(ABC):
     async def incrementTriviaLosses(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         pass
@@ -33,6 +36,7 @@ class TriviaScoreRepositoryInterface(ABC):
     async def incrementTriviaWins(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         pass

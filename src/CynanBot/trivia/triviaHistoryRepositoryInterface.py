@@ -12,7 +12,8 @@ class TriviaHistoryRepositoryInterface(ABC):
     async def getMostRecentTriviaQuestionDetails(
         self,
         emote: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ) -> TriviaQuestionReference | None:
         pass
 
@@ -21,6 +22,7 @@ class TriviaHistoryRepositoryInterface(ABC):
         self,
         question: AbsTriviaQuestion,
         emote: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ) -> TriviaContentCode:
         pass

@@ -1,3 +1,5 @@
+import pytest
+
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
 
 
@@ -25,16 +27,11 @@ class TestTriviaQuestionType():
 
     def test_fromStr_withNone(self):
         result: TriviaQuestionType | None = None
-        exception: Exception | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = TriviaQuestionType.fromStr(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withQuestionAnswerStrings(self):
         strings: list[str] = [ 'question answer', 'question-answer', 'question_answer' ]

@@ -48,7 +48,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9 ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
         self.__prefixRegEx: Pattern = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
-        self.__simpleDaysMonthsYearsRegEx: Pattern = re.compile(r'^(\d+)\s+(day|month|year)s?(\s+old)?$', re.IGNORECASE)
+        self.__simpleTimeDurationRegEx: Pattern = re.compile(r'^((\d+)\s+(second|minute|hour|day|month|year)s?)(\s+old)?$', re.IGNORECASE)
         self.__tagRemovalRegEx: Pattern = re.compile(r'[<\[]\/?\w+[>\]]', re.IGNORECASE)
         self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
         self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
@@ -99,14 +99,14 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     async def compileBoolAnswer(self, answer: str | None) -> bool:
         if answer is not None and not isinstance(answer, str):
-            raise TypeError(f'answer argument is malformed: \"{answer}\"')
+            raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=})')
 
         cleanedAnswer = await self.compileTextAnswer(answer)
 
         try:
             return utils.strictStrToBool(cleanedAnswer)
         except ValueError as e:
-            raise BadTriviaAnswerException(f'answer can\'t be compiled to bool (answer=\"{answer}\") (cleanedAnswer=\"{cleanedAnswer}\"): {e}')
+            raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=}) ({cleanedAnswer=}): {e}')
 
     async def compileMultipleChoiceAnswer(self, answer: str | None) -> int:
         if not utils.isValidStr(answer):
@@ -229,7 +229,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if utils.hasItems(specialCases):
             return specialCases
 
-        specialCases = await self.__expandSpecialCasesSimpleDaysMonthsYears(answer)
+        specialCases = await self.__expandSpecialCasesSimpleTimeDuration(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
@@ -354,18 +354,24 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     # Expands '1 day old' into [ '1 day old', '1' ], '3 months old' into [ '3 months old', '3' ],
     # and '50 years old' into [ '50 years old', '50' ].
-    async def __expandSpecialCasesSimpleDaysMonthsYears(self, answer: str) -> list[str] | None:
-        match = self.__simpleDaysMonthsYearsRegEx.fullmatch(answer)
+    async def __expandSpecialCasesSimpleTimeDuration(self, answer: str) -> list[str] | None:
+        match = self.__simpleTimeDurationRegEx.fullmatch(answer)
         if match is None:
             return None
 
-        allWords = match.group()
-        timeUnit = match.group(1)
+        fullAnswer: str | None = match.group()
+        timeOnly: str | None = match.group(2)
+        timeAndUnit: str | None = match.group(1)
 
-        if not utils.isValidStr(allWords) or not utils.isValidStr(timeUnit):
+        if not utils.isValidStr(fullAnswer) or not utils.isValidStr(timeOnly) or not utils.isValidStr(timeAndUnit):
             return None
 
-        return [ allWords, timeUnit ]
+        specialCases: list[str] = [ timeOnly, timeAndUnit ]
+
+        if fullAnswer not in specialCases:
+            specialCases.append(fullAnswer)
+
+        return specialCases
 
     async def __fancyToLatin(self, text: str) -> str:
         if not isinstance(text, str):

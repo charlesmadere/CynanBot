@@ -1,5 +1,3 @@
-from typing import Optional
-
 import emoji
 
 import CynanBot.misc.utils as utils
@@ -19,7 +17,7 @@ class EmojiHelper(EmojiHelperInterface):
 
         self.__emojiRepository: EmojiRepositoryInterface = emojiRepository
 
-    async def getHumanNameForEmoji(self, emoji: Optional[str]) -> Optional[str]:
+    async def getHumanNameForEmoji(self, emoji: str | None) -> str | None:
         if not utils.isValidStr(emoji):
             return None
 

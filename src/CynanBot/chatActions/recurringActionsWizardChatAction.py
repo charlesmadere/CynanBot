@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
@@ -46,7 +44,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
-        self.__twitchChannelProvider: Optional[TwitchChannelProvider] = None
+        self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
     async def __configureSuperTriviaWizard(
         self,
@@ -61,7 +59,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         if step is not SuperTriviaStep.MINUTES_BETWEEN:
             # this situation should be impossible for super trivia
             self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard is at an invalid step: ({content=}) ({step=}) ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-            await self.__twitchUtils.safeSend(channel, f'⚠ The Sup9er Trivia wizard is in an invalid state, please try again')
+            await self.__twitchUtils.safeSend(channel, f'⚠ The Super Trivia wizard is in an invalid state, please try again')
             await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
             return True
 
@@ -99,6 +97,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         message: TwitchMessage,
         wizard: WeatherWizard
     ) -> bool:
+        # TODO
         return False
 
     async def __configureWordOfTheDayWizard(
@@ -108,11 +107,12 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         message: TwitchMessage,
         wizard: WordOfTheDayWizard
     ) -> bool:
+        # TODO
         return False
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
@@ -151,7 +151,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
             self.__timber.log('RecurringActionsWizardChatAction', f'Received unknown AbsWizard type: \"{wizard}\" ({message.getAuthorName()=}) ({message.getAuthorName()=}) ({twitchChannelId=}) ({message.getTwitchChannelName()=})')
             return False
 
-    def setTwitchChannelProvider(self, provider: Optional[TwitchChannelProvider]):
+    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
         if provider is not None and not isinstance(provider, TwitchChannelProvider):
             raise TypeError(f'provider argument is malformed: \"{provider}\"')
 

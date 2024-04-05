@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
 from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
@@ -16,19 +15,25 @@ class CutenessRepositoryInterface(ABC):
     async def fetchCuteness(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str,
     ) -> CutenessResult:
         pass
 
     @abstractmethod
-    async def fetchCutenessChampions(self, twitchChannel: str) -> CutenessChampionsResult:
+    async def fetchCutenessChampions(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessChampionsResult:
         pass
 
     @abstractmethod
     async def fetchCutenessHistory(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ) -> CutenessHistoryResult:
@@ -39,6 +44,7 @@ class CutenessRepositoryInterface(ABC):
         self,
         incrementAmount: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ) -> CutenessResult:
@@ -48,11 +54,16 @@ class CutenessRepositoryInterface(ABC):
     async def fetchCutenessLeaderboard(
         self,
         twitchChannel: str,
-        specificLookupUserId: Optional[str] = None,
-        specificLookupUserName: Optional[str] = None
+        twitchChannelId: str,
+        specificLookupUserId: str | None = None,
+        specificLookupUserName: str | None = None
     ) -> CutenessLeaderboardResult:
         pass
 
     @abstractmethod
-    async def fetchCutenessLeaderboardHistory(self, twitchChannel: str) -> CutenessLeaderboardHistoryResult:
+    async def fetchCutenessLeaderboardHistory(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> CutenessLeaderboardHistoryResult:
         pass

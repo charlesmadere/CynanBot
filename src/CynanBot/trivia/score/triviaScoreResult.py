@@ -12,32 +12,36 @@ class TriviaScoreResult():
         triviaLosses: int,
         triviaWins: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ):
         if not utils.isValidInt(streak):
-            raise ValueError(f'streak argument is malformed: \"{streak}\"')
+            raise TypeError(f'streak argument is malformed: \"{streak}\"')
         elif not utils.isValidInt(superTriviaWins):
-            raise ValueError(f'superTriviaWins argument is malformed: \"{superTriviaWins}\"')
+            raise TypeError(f'superTriviaWins argument is malformed: \"{superTriviaWins}\"')
         elif superTriviaWins < 0 or superTriviaWins > utils.getIntMaxSafeSize():
             raise ValueError(f'superTriviaWins argument is out of bounds: {superTriviaWins}')
         elif not utils.isValidInt(triviaLosses):
-            raise ValueError(f'triviaLosses argument is malformed: \"{triviaLosses}\"')
+            raise TypeError(f'triviaLosses argument is malformed: \"{triviaLosses}\"')
         elif triviaLosses < 0 or triviaLosses > utils.getIntMaxSafeSize():
             raise ValueError(f'triviaLosses argument is out of bounds: {triviaLosses}')
         elif not utils.isValidInt(triviaWins):
-            raise ValueError(f'triviaWins argument is malformed: \"{triviaWins}\"')
+            raise TypeError(f'triviaWins argument is malformed: \"{triviaWins}\"')
         elif triviaWins < 0 or triviaWins > utils.getIntMaxSafeSize():
             raise ValueError(f'triviaWins argument is out of bounds: {triviaWins}')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__streak: int = streak
         self.__superTriviaWins: int = superTriviaWins
         self.__triviaLosses: int = triviaLosses
         self.__triviaWins: int = triviaWins
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
 
     def getAbsStreak(self) -> int:
@@ -78,6 +82,9 @@ class TriviaScoreResult():
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId

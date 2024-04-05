@@ -123,9 +123,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         return emotesDict
 
-    async def getCurrentEmoteFor(self, twitchChannel: str) -> str:
+    async def getCurrentEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
 
@@ -150,7 +152,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         )
 
         emoteIndex: int | None = None
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             emoteIndex = record[0]
 
         await connection.close()
@@ -164,9 +166,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getNextEmoteFor(self, twitchChannel: str) -> str:
+    async def getNextEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
         emoteIndex = (emoteIndex + 1) % len(self.__emotesList)
@@ -195,7 +199,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
             return emote
 
         for emoteKey, equivalentEmotes in self.__emotesDict.items():
-            if utils.hasItems(equivalentEmotes):
+            if equivalentEmotes is not None and len(equivalentEmotes) >= 1:
                 if emote in equivalentEmotes:
                     return emoteKey
 

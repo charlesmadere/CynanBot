@@ -50,3 +50,11 @@ class CheckAnswerTriviaAction(AbsTriviaAction):
 
     def getUserName(self) -> str:
         return self.__userName
+
+    def requireAnswer(self) -> str:
+        answer = self.__answer
+
+        if not utils.isValidStr(answer):
+            raise ValueError(f'no answer value is available: \"{answer}\"')
+
+        return answer

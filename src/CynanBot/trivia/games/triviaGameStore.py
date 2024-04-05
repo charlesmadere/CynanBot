@@ -1,5 +1,3 @@
-from typing import List, Optional, Set
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.games.absTriviaGameState import AbsTriviaGameState
 from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
@@ -13,12 +11,12 @@ from CynanBot.trivia.triviaExceptions import UnknownTriviaGameTypeException
 class TriviaGameStore(TriviaGameStoreInterface):
 
     def __init__(self):
-        self.__normalGameStates: List[TriviaGameState] = list()
-        self.__superGameStates: List[SuperTriviaGameState] = list()
+        self.__normalGameStates: list[TriviaGameState] = list()
+        self.__superGameStates: list[SuperTriviaGameState] = list()
 
     async def add(self, state: AbsTriviaGameState):
         if not isinstance(state, AbsTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         if state.getTriviaGameType() is TriviaGameType.NORMAL:
             await self.__addNormalGame(state)
@@ -29,96 +27,98 @@ class TriviaGameStore(TriviaGameStoreInterface):
 
     async def __addNormalGame(self, state: TriviaGameState):
         if not isinstance(state, TriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         self.__normalGameStates.append(state)
 
     async def __addSuperGame(self, state: SuperTriviaGameState):
         if not isinstance(state, SuperTriviaGameState):
-            raise ValueError(f'state argument is malformed: \"{state}\"')
+            raise TypeError(f'state argument is malformed: \"{state}\"')
 
         self.__superGameStates.append(state)
 
-    async def getAll(self) -> List[AbsTriviaGameState]:
+    async def getAll(self) -> list[AbsTriviaGameState]:
         normalGames = await self.getNormalGames()
         superGames = await self.getSuperGames()
 
-        allGames: List[AbsTriviaGameState] = list()
+        allGames: list[AbsTriviaGameState] = list()
         allGames.extend(normalGames)
         allGames.extend(superGames)
 
         return allGames
 
-    async def getNormalGame(self, twitchChannel: str, userId: str) -> Optional[TriviaGameState]:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def getNormalGame(
+        self,
+        twitchChannelId: str,
+        userId: str
+    ) -> TriviaGameState | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         normalGames = await self.getNormalGames()
-        twitchChannel = twitchChannel.lower()
-        userId = userId.lower()
 
         for state in normalGames:
-            if twitchChannel == state.getTwitchChannel().lower() and userId == state.getUserId().lower():
+            if twitchChannelId == state.getTwitchChannelId() and userId == state.getUserId():
                 return state
 
         return None
 
-    async def getNormalGames(self) -> List[TriviaGameState]:
+    async def getNormalGames(self) -> list[TriviaGameState]:
         return utils.copyList(self.__normalGameStates)
 
-    async def getSuperGame(self, twitchChannel: str) -> Optional[SuperTriviaGameState]:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def getSuperGame(self, twitchChannelId: str) -> SuperTriviaGameState | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         superGames = await self.getSuperGames()
-        twitchChannel = twitchChannel.lower()
 
         for state in superGames:
-            if twitchChannel == state.getTwitchChannel().lower():
+            if twitchChannelId == state.getTwitchChannelId():
                 return state
 
         return None
 
-    async def getSuperGames(self) -> List[SuperTriviaGameState]:
+    async def getSuperGames(self) -> list[SuperTriviaGameState]:
         return utils.copyList(self.__superGameStates)
 
-    async def getTwitchChannelsWithActiveSuperGames(self) -> List[str]:
+    async def getTwitchChannelIdsWithActiveSuperGames(self) -> list[str]:
         superGames = await self.getSuperGames()
-        twitchChannels: Set[str] = set()
+        twitchChannelIds: set[str] = set()
 
         for state in superGames:
-            twitchChannels.add(state.getTwitchChannel().lower())
+            twitchChannelIds.add(state.getTwitchChannelId())
 
-        return list(twitchChannels)
+        return list(twitchChannelIds)
 
-    async def removeNormalGame(self, twitchChannel: str, userId: str) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def removeNormalGame(
+        self,
+        twitchChannelId: str,
+        userId: str
+    ) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         normalGames = await self.getNormalGames()
-        twitchChannel = twitchChannel.lower()
-        userId = userId.lower()
 
         for index, state in enumerate(normalGames):
-            if twitchChannel == state.getTwitchChannel().lower() and userId == state.getUserId().lower():
+            if twitchChannelId == state.getTwitchChannelId() and userId == state.getUserId():
                 del self.__normalGameStates[index]
                 return True
 
         return False
 
-    async def removeSuperGame(self, twitchChannel: str) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def removeSuperGame(self, twitchChannelId: str) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         superGames = await self.getSuperGames()
-        twitchChannel = twitchChannel.lower()
 
         for index, state in enumerate(superGames):
-            if twitchChannel == state.getTwitchChannel().lower():
+            if twitchChannelId == state.getTwitchChannelId():
                 del self.__superGameStates[index]
                 return True
 

@@ -387,7 +387,7 @@ class TestQueuedTriviaGameStore6():
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed() is False
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames(
-            twitchChannel = self.startNewSuperTriviaGameAction.getTwitchChannel()
+            twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
         assert clearResult.getAmountRemoved() == 0
         assert clearResult.getOldQueueSize() == 0
@@ -402,18 +402,18 @@ class TestQueuedTriviaGameStore6():
         assert self.startNewSuperTriviaGameAction.isQueueActionConsumed()
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize(
-            twitchChannel = self.startNewSuperTriviaGameAction.getTwitchChannel()
+            twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
         assert queueSize == 2
 
         clearResult = await self.queuedTriviaGameStore.clearQueuedSuperGames(
-            twitchChannel = self.startNewSuperTriviaGameAction.getTwitchChannel()
+            twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
         assert clearResult.getAmountRemoved() == 2
         assert clearResult.getOldQueueSize() == 2
 
         queueSize = await self.queuedTriviaGameStore.getQueuedSuperGamesSize(
-            twitchChannel = self.startNewSuperTriviaGameAction.getTwitchChannel()
+            twitchChannelId = self.startNewSuperTriviaGameAction.getTwitchChannelId()
         )
         assert queueSize == 0
 

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
@@ -37,11 +35,11 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
 
@@ -73,11 +71,11 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         self,
         triviaId: str,
         triviaSource: TriviaSource
-    ) -> Optional[BannedTriviaQuestion]:
+    ) -> BannedTriviaQuestion | None:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -138,9 +136,9 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
     async def isBanned(self, triviaId: str, triviaSource: TriviaSource) -> bool:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(
             triviaId = triviaId,
@@ -159,9 +157,9 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
         triviaSource: TriviaSource
     ) -> BanTriviaQuestionResult:
         if not utils.isValidStr(triviaId):
-            raise ValueError(f'triviaId argument is malformed: \"{triviaId}\"')
+            raise TypeError(f'triviaId argument is malformed: \"{triviaId}\"')
         elif not isinstance(triviaSource, TriviaSource):
-            raise ValueError(f'triviaSource argument is malformed: \"{triviaSource}\"')
+            raise TypeError(f'triviaSource argument is malformed: \"{triviaSource}\"')
 
         info = await self.getInfo(triviaId = triviaId, triviaSource = triviaSource)
 
@@ -182,5 +180,4 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         await connection.close()
         self.__timber.log('BannedTriviaIdsRepository', f'Unbanned trivia question (triviaId=\"{triviaId}\", triviaSource=\"{triviaSource}\")')
-
         return BanTriviaQuestionResult.UNBANNED

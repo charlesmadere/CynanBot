@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 class TriviaEmoteGeneratorInterface(ABC):
 
     @abstractmethod
-    async def getCurrentEmoteFor(self, twitchChannel: str) -> str:
+    async def getCurrentEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
         pass
 
     @abstractmethod
-    async def getNextEmoteFor(self, twitchChannel: str) -> str:
+    async def getNextEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
         pass
 
     @abstractmethod

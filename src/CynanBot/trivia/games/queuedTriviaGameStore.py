@@ -1,7 +1,6 @@
 import queue
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Dict, List, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
@@ -27,13 +26,13 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         queueTimeoutSeconds: float = 3
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaIdGenerator, TriviaIdGeneratorInterface):
-            raise ValueError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
+            raise TypeError(f'triviaIdGenerator argument is malformed: \"{triviaIdGenerator}\"')
         elif not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
+            raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif not utils.isValidNum(queueTimeoutSeconds):
-            raise ValueError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
+            raise TypeError(f'queueTimeoutSeconds argument is malformed: \"{queueTimeoutSeconds}\"')
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 5:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
@@ -42,7 +41,7 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
 
-        self.__queuedSuperGames: Dict[str, SimpleQueue[StartNewSuperTriviaGameAction]] = defaultdict(lambda: SimpleQueue())
+        self.__queuedSuperGames: dict[str, SimpleQueue[StartNewSuperTriviaGameAction]] = defaultdict(lambda: SimpleQueue())
 
     async def addSuperGames(
         self,
@@ -50,11 +49,11 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
         action: StartNewSuperTriviaGameAction
     ) -> AddQueuedGamesResult:
         if not utils.isValidBool(isSuperTriviaGameCurrentlyInProgress):
-            raise ValueError(f'isSuperTriviaGameCurrentlyInProgress argument is malformed: \"{isSuperTriviaGameCurrentlyInProgress}\"')
+            raise TypeError(f'isSuperTriviaGameCurrentlyInProgress argument is malformed: \"{isSuperTriviaGameCurrentlyInProgress}\"')
         elif not isinstance(action, StartNewSuperTriviaGameAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        queuedSuperGames = self.__queuedSuperGames[action.getTwitchChannel().lower()]
+        queuedSuperGames = self.__queuedSuperGames[action.getTwitchChannelId()]
         oldQueueSize = queuedSuperGames.qsize()
 
         if action.isQueueActionConsumed():
@@ -118,11 +117,11 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             oldQueueSize = oldQueueSize
         )
 
-    async def clearQueuedSuperGames(self, twitchChannel: str) -> ClearQueuedGamesResult:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def clearQueuedSuperGames(self, twitchChannelId: str) -> ClearQueuedGamesResult:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        queuedSuperGames = self.__queuedSuperGames[twitchChannel.lower()]
+        queuedSuperGames = self.__queuedSuperGames[twitchChannelId]
         oldQueueSize = queuedSuperGames.qsize()
         amountRemoved = 0
 
@@ -131,29 +130,27 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
                 queuedSuperGames.get(block = True, timeout = self.__queueTimeoutSeconds)
                 amountRemoved = amountRemoved + 1
         except queue.Empty as e:
-            self.__timber.log('QueuedTriviaGameStore', f'Unable to clear all queued super games for \"{twitchChannel}\" (queue size: {queuedSuperGames.qsize()}) (oldQueueSize: {oldQueueSize}): {e}', e)
+            self.__timber.log('QueuedTriviaGameStore', f'Unable to clear all queued super games for \"{twitchChannelId}\" (queue size: {queuedSuperGames.qsize()}) (oldQueueSize: {oldQueueSize}): {e}', e)
 
         return ClearQueuedGamesResult(
             amountRemoved = amountRemoved,
             oldQueueSize = oldQueueSize
         )
 
-    async def getQueuedSuperGamesSize(self, twitchChannel: str) -> int:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def getQueuedSuperGamesSize(self, twitchChannelId: str) -> int:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        twitchChannel = twitchChannel.lower()
-
-        if twitchChannel in self.__queuedSuperGames:
-            return self.__queuedSuperGames[twitchChannel].qsize()
+        if twitchChannelId in self.__queuedSuperGames:
+            return self.__queuedSuperGames[twitchChannelId].qsize()
         else:
             return 0
 
-    async def popQueuedSuperGames(self, activeChannels: Set[str]) -> List[StartNewSuperTriviaGameAction]:
-        superGames: List[StartNewSuperTriviaGameAction] = list()
+    async def popQueuedSuperGames(self, activeChannelIds: set[str]) -> list[StartNewSuperTriviaGameAction]:
+        superGames: list[StartNewSuperTriviaGameAction] = list()
 
-        for twitchChannel, queuedSuperGames in self.__queuedSuperGames.items():
-            if twitchChannel.lower() in activeChannels:
+        for twitchChannelId, queuedSuperGames in self.__queuedSuperGames.items():
+            if twitchChannelId in activeChannelIds:
                 continue
             elif queuedSuperGames.empty():
                 continue
@@ -161,6 +158,6 @@ class QueuedTriviaGameStore(QueuedTriviaGameStoreInterface):
             try:
                 superGames.append(queuedSuperGames.get(block = True, timeout = self.__queueTimeoutSeconds))
             except queue.Empty as e:
-                self.__timber.log('QueuedTriviaGameStore', f'Unable to get queued super game for \"{twitchChannel}\" (queue size: {queuedSuperGames.qsize()}): {e}', e)
+                self.__timber.log('QueuedTriviaGameStore', f'Unable to get queued super game for \"{twitchChannelId}\" (queue size: {queuedSuperGames.qsize()}): {e}', e)
 
         return superGames

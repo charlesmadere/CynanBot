@@ -12,6 +12,7 @@ class ShinyTriviaResult():
         newShinyCount: int,
         oldShinyCount: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ):
         if mostRecent is not None and not isinstance(mostRecent, datetime):
@@ -26,6 +27,8 @@ class ShinyTriviaResult():
             raise ValueError(f'oldShinyCount argument is out of bounds: {oldShinyCount}')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -33,6 +36,7 @@ class ShinyTriviaResult():
         self.__newShinyCount: int = newShinyCount
         self.__oldShinyCount: int = oldShinyCount
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
 
     def getMostRecent(self) -> datetime | None:
@@ -52,6 +56,9 @@ class ShinyTriviaResult():
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId

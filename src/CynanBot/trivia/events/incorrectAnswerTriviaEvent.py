@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
@@ -13,13 +11,14 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
     def __init__(
         self,
         triviaQuestion: AbsTriviaQuestion,
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
-        answer: Optional[str],
+        answer: str | None,
         emote: str,
         eventId: str,
         gameId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str,
         triviaScoreResult: TriviaScoreResult
@@ -30,35 +29,38 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+            raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif answer is not None and not isinstance(answer, str):
-            raise ValueError(f'answer argument is malformed: \"{answer}\"')
+            raise TypeError(f'answer argument is malformed: \"{answer}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
-            raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
+            raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(triviaScoreResult, TriviaScoreResult):
-            raise ValueError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
+            raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__specialTriviaStatus: Optional[SpecialTriviaStatus] = specialTriviaStatus
-        self.__answer: Optional[str] = answer
+        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
+        self.__answer: str | None = answer
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
 
-    def getAnswer(self) -> Optional[str]:
+    def getAnswer(self) -> str | None:
         return self.__answer
 
     def getEmote(self) -> str:
@@ -67,7 +69,7 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
     def getGameId(self) -> str:
         return self.__gameId
 
-    def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
+    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
     def getTriviaEventType(self) -> TriviaEventType:
@@ -81,6 +83,9 @@ class IncorrectAnswerTriviaEvent(AbsTriviaEvent):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId

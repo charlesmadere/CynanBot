@@ -11,7 +11,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
 
     def __init__(self, backingDatabase: BackingDatabase):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
 
@@ -20,12 +20,15 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     async def fetchTriviaScore(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -37,13 +40,14 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             twitchChannel, userId
         )
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             result = TriviaScoreResult(
                 streak = record[0],
                 superTriviaWins = record[1],
                 triviaLosses = record[2],
                 triviaWins = record[3],
                 twitchChannel = record[4],
+                twitchChannelId = twitchChannelId,
                 userId = record[5]
             )
 
@@ -59,12 +63,14 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         )
 
         await connection.close()
+
         return TriviaScoreResult(
             streak = 0,
             superTriviaWins = 0,
             triviaLosses = 0,
             triviaWins = 0,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -75,19 +81,23 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     async def incrementSuperTriviaWins(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-        newSuperTriviaWins: int = result.getSuperTriviaWins() + 1
+        newSuperTriviaWins = result.getSuperTriviaWins() + 1
 
         newResult = TriviaScoreResult(
             streak = result.getStreak(),
@@ -95,6 +105,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaLosses = result.getTriviaLosses(),
             triviaWins = result.getTriviaWins(),
             twitchChannel = result.getTwitchChannel(),
+            twitchChannelId = result.getTwitchChannelId(),
             userId = result.getUserId()
         )
 
@@ -104,6 +115,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaLosses = newResult.getTriviaLosses(),
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
+            twitchChannelId = newResult.getTwitchChannelId(),
             userId = newResult.getUserId()
         )
 
@@ -112,19 +124,23 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     async def incrementTriviaLosses(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-        newStreak: int = 0
+        newStreak: int
         if result.getStreak() <= -1:
             newStreak = result.getStreak() - 1
         else:
@@ -138,6 +154,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaLosses = newTriviaLosses,
             triviaWins = result.getTriviaWins(),
             twitchChannel = result.getTwitchChannel(),
+            twitchChannelId = result.getTwitchChannelId(),
             userId = result.getUserId()
         )
 
@@ -147,6 +164,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaLosses = newResult.getTriviaLosses(),
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
+            twitchChannelId = newResult.getTwitchChannelId(),
             userId = newResult.getUserId()
         )
 
@@ -155,25 +173,29 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
     async def incrementTriviaWins(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> TriviaScoreResult:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchTriviaScore(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-        newStreak: int = 0
+        newStreak: int
         if result.getStreak() >= 1:
             newStreak = result.getStreak() + 1
         else:
             newStreak = 1
 
-        newTriviaWins: int = result.getTriviaWins() + 1
+        newTriviaWins = result.getTriviaWins() + 1
 
         newResult = TriviaScoreResult(
             streak = newStreak,
@@ -181,6 +203,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             triviaLosses = result.getTriviaLosses(),
             triviaWins = newTriviaWins,
             twitchChannel = result.getTwitchChannel(),
+            twitchChannelId = result.getTwitchChannelId(),
             userId = result.getUserId()
         )
 
@@ -190,6 +213,7 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
             newTriviaLosses = newResult.getTriviaLosses(),
             newTriviaWins = newResult.getTriviaWins(),
             twitchChannel = newResult.getTwitchChannel(),
+            twitchChannelId = newResult.getTwitchChannelId(),
             userId = newResult.getUserId()
         )
 
@@ -242,28 +266,31 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         newTriviaLosses: int,
         newTriviaWins: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ):
         if not utils.isValidInt(newStreak):
-            raise ValueError(f'newStreak argument is malformed: \"{newStreak}\"')
+            raise TypeError(f'newStreak argument is malformed: \"{newStreak}\"')
         elif newStreak < utils.getIntMinSafeSize() or newStreak > utils.getIntMaxSafeSize():
             raise ValueError(f'newStreak argument is out of boudns: {newStreak}')
         elif not utils.isValidInt(newSuperTriviaWins):
-            raise ValueError(f'newSuperTriviaWins argument is malformed: \"{newSuperTriviaWins}\"')
+            raise TypeError(f'newSuperTriviaWins argument is malformed: \"{newSuperTriviaWins}\"')
         elif newSuperTriviaWins < 0 or newSuperTriviaWins > utils.getIntMaxSafeSize():
             raise ValueError(f'newSuperTriviaWins argument is out of bounds: {newSuperTriviaWins}')
         elif not utils.isValidInt(newTriviaLosses):
-            raise ValueError(f'newTriviaLosses argument is malformed: \"{newTriviaLosses}\"')
+            raise TypeError(f'newTriviaLosses argument is malformed: \"{newTriviaLosses}\"')
         elif newTriviaLosses < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
             raise ValueError(f'newTriviaLosses argument is out of bounds: {newTriviaLosses}')
         elif not utils.isValidInt(newTriviaWins):
-            raise ValueError(f'newTriviaWins argument is malformed: \"{newTriviaWins}\"')
+            raise TypeError(f'newTriviaWins argument is malformed: \"{newTriviaWins}\"')
         elif newTriviaWins < 0 or newTriviaLosses > utils.getIntMaxSafeSize():
             raise ValueError(f'newTriviaWins argument is out of bounds: {newTriviaWins}')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__backingDatabase.getConnection()
         await connection.execute(

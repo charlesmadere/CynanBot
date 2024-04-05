@@ -13,7 +13,8 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         shinyMultiplier: int,
         actionId: str,
         eventId: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ):
         super().__init__(
             actionId = actionId,
@@ -21,29 +22,32 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
         )
 
         if not utils.isValidInt(numberOfGames):
-            raise ValueError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
+            raise TypeError(f'numberOfGames argument is malformed: \"{numberOfGames}\"')
         elif numberOfGames < 1 or numberOfGames > utils.getIntMaxSafeSize():
             raise ValueError(f'numberOfGames argument is out of bounds: {numberOfGames}')
         elif not utils.isValidInt(pointsForWinning):
-            raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
+            raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or numberOfGames > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
         elif not utils.isValidInt(secondsToLive):
-            raise ValueError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
+            raise TypeError(f'secondsToLive argument is malformed: \"{secondsToLive}\"')
         elif secondsToLive < 1 or secondsToLive > utils.getIntMaxSafeSize():
             raise ValueError(f'secondsToLive argument is out of bounds: {secondsToLive}')
         elif not utils.isValidInt(shinyMultiplier):
-            raise ValueError(f'shinyMultiplier argument is malformed: \"{shinyMultiplier}\"')
+            raise TypeError(f'shinyMultiplier argument is malformed: \"{shinyMultiplier}\"')
         elif shinyMultiplier < 1 or shinyMultiplier > utils.getIntMaxSafeSize():
             raise ValueError(f'shinyMultiplier argument is out of bounds: {shinyMultiplier}')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         self.__numberOfGames: int = numberOfGames
         self.__pointsForWinning: int = pointsForWinning
         self.__secondsToLive: int = secondsToLive
         self.__shinyMultiplier: int = shinyMultiplier
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
 
     def getNumberOfGames(self) -> int:
         return self.__numberOfGames
@@ -62,3 +66,6 @@ class NewQueuedSuperTriviaGameEvent(AbsTriviaEvent):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId

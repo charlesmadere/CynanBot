@@ -1,5 +1,4 @@
 import traceback
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
@@ -63,13 +62,13 @@ class GiveCutenessCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username and amount is necessary for the !givecuteness command. Example: !givecuteness {user.getHandle()} 5')
             return
 
-        userName: Optional[str] = splits[1]
+        userName: str | None = splits[1]
         if not utils.isValidStr(userName) or not utils.strContainsAlphanumericCharacters(userName):
             self.__timber.log('GiveCutenessCommand', f'Username given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Username argument is malformed. Example: !givecuteness {user.getHandle()} 5')
             return
 
-        incrementAmountStr: Optional[str] = splits[2]
+        incrementAmountStr: str | None = splits[2]
         if not utils.isValidStr(incrementAmountStr):
             self.__timber.log('GiveCutenessCommand', f'Increment amount given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} is malformed: \"{incrementAmountStr}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Increment amount argument is malformed. Example: !givecuteness {userName} 5')
@@ -93,6 +92,7 @@ class GiveCutenessCommand(AbsChatCommand):
             result = await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 userId = userId,
                 userName = userName
             )

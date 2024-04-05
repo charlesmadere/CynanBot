@@ -58,25 +58,27 @@ class ShinyTriviaHelper():
     async def __getUserPlacementOnLeaderboard(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> int | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         cutenessLeaderboard = await self.__cutenessRepository.fetchCutenessLeaderboard(
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         entries = cutenessLeaderboard.getEntries()
         if entries is None or len(entries) == 0:
             return None
 
-        userId = userId.lower()
-
         for entry in entries:
-            if entry.getUserId().lower() == userId:
+            if entry.getUserId() == userId:
                 return entry.getRank()
 
         return None
@@ -84,11 +86,14 @@ class ShinyTriviaHelper():
     async def isShinyTriviaQuestion(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ) -> bool:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -99,6 +104,7 @@ class ShinyTriviaHelper():
 
         userPlacementOnLeaderboard = await self.__getUserPlacementOnLeaderboard(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -112,6 +118,7 @@ class ShinyTriviaHelper():
 
         details = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -126,6 +133,7 @@ class ShinyTriviaHelper():
 
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -133,9 +141,9 @@ class ShinyTriviaHelper():
 
         return True
 
-    async def isShinySuperTriviaQuestion(self, twitchChannel: str) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def isShinySuperTriviaQuestion(self, twitchChannelId: str) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if not await self.__triviaSettingsRepository.areShinyTriviasEnabled():
             return False
@@ -146,17 +154,20 @@ class ShinyTriviaHelper():
         if randomNumber > probability:
             return False
 
-        self.__timber.log('ShinyTriviaHelper', f'A shiny super trivia question was encountered in {twitchChannel}!')
+        self.__timber.log('ShinyTriviaHelper', f'A shiny super trivia question was encountered in {twitchChannelId}!')
         return True
 
     async def shinyTriviaWin(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -164,6 +175,7 @@ class ShinyTriviaHelper():
 
         result = await self.__shinyTriviaOccurencesRepository.incrementShinyCount(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 

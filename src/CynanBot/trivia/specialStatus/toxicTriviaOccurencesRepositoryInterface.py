@@ -9,6 +9,7 @@ class ToxicTriviaOccurencesRepositoryInterface(ABC):
     async def fetchDetails(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ToxicTriviaResult:
         pass
@@ -17,6 +18,7 @@ class ToxicTriviaOccurencesRepositoryInterface(ABC):
     async def incrementToxicCount(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ToxicTriviaResult:
         pass

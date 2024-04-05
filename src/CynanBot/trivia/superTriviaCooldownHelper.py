@@ -25,29 +25,29 @@ class SuperTriviaCooldownHelper(SuperTriviaCooldownHelperInterface):
 
         self.__values: dict[str, datetime] = defaultdict(lambda: datetime.now(timeZone) - timedelta(days = 1))
 
-    async def getTwitchChannelsInCooldown(self) -> set[str]:
-        twitchChannels: set[str] = set()
+    async def getTwitchChannelIdsInCooldown(self) -> set[str]:
+        twitchChannelIds: set[str] = set()
         now = datetime.now(self.__timeZone)
 
-        for twitchChannel, cooldown in self.__values.items():
+        for twitchChannelId, cooldown in self.__values.items():
             if cooldown > now:
-                twitchChannels.add(twitchChannel.lower())
+                twitchChannelIds.add(twitchChannelId)
 
-        return twitchChannels
+        return twitchChannelIds
 
-    def isTwitchChannelInCooldown(self, twitchChannel: str) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    def isTwitchChannelInCooldown(self, twitchChannelId: str) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         now = datetime.now(self.__timeZone)
-        return now <= self.__values[twitchChannel.lower()]
+        return now <= self.__values[twitchChannelId]
 
-    async def update(self, twitchChannel: str):
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def update(self, twitchChannelId: str):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         cooldownSeconds = await self.__triviaSettingsRepository.getSuperTriviaCooldownSeconds()
         cooldown = timedelta(seconds = cooldownSeconds)
         now = datetime.now(self.__timeZone)
 
-        self.__values[twitchChannel.lower()] = now + cooldown
+        self.__values[twitchChannelId] = now + cooldown

@@ -230,6 +230,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = punishedByPoints,
                 twitchChannel = state.getTwitchChannel(),
+                twitchChannelId = state.getTwitchChannelId(),
                 userId = userId,
                 userName = userName
             )
@@ -255,15 +256,15 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         )
 
     async def __beginQueuedTriviaGames(self):
-        activeChannelsSet: set[str] = set()
-        activeChannelsSet.update(await self.__triviaGameStore.getTwitchChannelsWithActiveSuperGames())
-        activeChannelsSet.update(await self.__superTriviaCooldownHelper.getTwitchChannelsInCooldown())
+        activeChannelIdsSet: set[str] = set()
+        activeChannelIdsSet.update(await self.__triviaGameStore.getTwitchChannelIdsWithActiveSuperGames())
+        activeChannelIdsSet.update(await self.__superTriviaCooldownHelper.getTwitchChannelIdsInCooldown())
 
-        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(activeChannelsSet)
+        queuedSuperGames = await self.__queuedTriviaGameStore.popQueuedSuperGames(activeChannelIdsSet)
 
         for queuedSuperGame in queuedSuperGames:
             remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
-                twitchChannel = queuedSuperGame.getTwitchChannel()
+                twitchChannelId = queuedSuperGame.getTwitchChannelId()
             )
 
             self.__timber.log('TriviaGameMachine', f'Starting new queued super trivia game for \"{queuedSuperGame.getTwitchChannel()}\", with {remainingQueueSize} game(s) remaining in their queue (actionId=\"{queuedSuperGame.getActionId()}\")')
@@ -278,7 +279,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
             raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
 
-        return await self.__triviaAnswerChecker.checkAnswer(answer, triviaQuestion, extras)
+        return await self.__triviaAnswerChecker.checkAnswer(
+            answer = answer,
+            triviaQuestion = triviaQuestion,
+            extras = extras
+        )
 
     async def __handleActionCheckAnswer(self, action: CheckAnswerTriviaAction):
         if not isinstance(action, CheckAnswerTriviaAction):
@@ -287,7 +292,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_ANSWER}: \"{action.getTriviaActionType()}\"')
 
         state = await self.__triviaGameStore.getNormalGame(
-            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
         )
 
@@ -297,6 +302,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 answer = action.getAnswer(),
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 twitchChannel = action.getTwitchChannel(),
+                twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName()
             ))
@@ -311,6 +317,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.getGameId(),
                 twitchChannel = action.getTwitchChannel(),
+                twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName()
             ))
@@ -322,6 +329,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             extras = {
                 'actionId': action.getActionId(),
                 'twitchChannel': action.getTwitchChannel(),
+                'twitchChannelId': action.getTwitchChannelId(),
                 'userId': action.getUserId(),
                 'userName': action.getUserName()
             }
@@ -343,13 +351,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         await self.__removeNormalTriviaGame(
-            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
         )
 
         if checkResult is TriviaAnswerCheckResult.INCORRECT:
             triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
                 twitchChannel = action.getTwitchChannel(),
+                twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId()
             )
 
@@ -362,6 +371,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.getGameId(),
                 twitchChannel = action.getTwitchChannel(),
+                twitchChannelId = action.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName(),
                 triviaScoreResult = triviaScoreResult
@@ -371,12 +381,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if state.isShiny():
             await self.__shinyTriviaHelper.shinyTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
+                twitchChannelId = state.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName()
             )
         elif state.isToxic():
             await self.__toxicTriviaHelper.toxicTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
+                twitchChannelId = state.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName()
             )
@@ -384,12 +396,14 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
             incrementAmount = state.getPointsForWinning(),
             twitchChannel = state.getTwitchChannel(),
+            twitchChannelId = state.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName()
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaWins(
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
         )
 
@@ -399,11 +413,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             pointsForWinning = state.getPointsForWinning(),
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.getActionId(),
-            answer = action.getAnswer(),
+            answer = action.requireAnswer(),
             emote = state.getEmote(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName(),
             triviaScoreResult = triviaScoreResult
@@ -415,7 +430,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.getTriviaActionType() is not TriviaActionType.CHECK_SUPER_ANSWER:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CHECK_SUPER_ANSWER}: \"{action.getTriviaActionType()}\"')
 
-        state = await self.__triviaGameStore.getSuperGame(action.getTwitchChannel())
+        state = await self.__triviaGameStore.getSuperGame(
+            twitchChannelId = action.getTwitchChannelId()
+        )
 
         if state is None:
             await self.__submitEvent(SuperGameNotReadyCheckAnswerTriviaEvent(
@@ -450,7 +467,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 triviaQuestion = state.getTriviaQuestion(),
                 specialTriviaStatus = state.getSpecialTriviaStatus(),
                 actionId = action.getActionId(),
-                answer = action.getAnswer(),
+                answer = action.requireAnswer(),
                 emote = state.getEmote(),
                 eventId = await self.__triviaIdGenerator.generateEventId(),
                 gameId = state.getGameId(),
@@ -460,13 +477,17 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             ))
             return
 
-        await self.__removeSuperTriviaGame(action.getTwitchChannel())
+        await self.__removeSuperTriviaGame(
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
         pointsForWinning = state.getPointsForWinning()
 
         if state.isShiny():
             await self.__shinyTriviaHelper.shinyTriviaWin(
                 twitchChannel = state.getTwitchChannel(),
+                twitchChannelId = state.getTwitchChannelId(),
                 userId = action.getUserId(),
                 userName = action.getUserName()
             )
@@ -479,6 +500,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             if toxicTriviaPunishmentResult is not None:
                 await self.__toxicTriviaHelper.toxicTriviaWin(
                     twitchChannel = state.getTwitchChannel(),
+                    twitchChannelId = state.getTwitchChannelId(),
                     userId = action.getUserId(),
                     userName = action.getUserName()
                 )
@@ -488,16 +510,18 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         cutenessResult = await self.__cutenessRepository.fetchCutenessIncrementedBy(
             incrementAmount = pointsForWinning,
             twitchChannel = state.getTwitchChannel(),
+            twitchChannelId = state.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName()
         )
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
-            twitchChannel = action.getTwitchChannel()
+            twitchChannelId = action.getTwitchChannelId()
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementSuperTriviaWins(
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
         )
 
@@ -509,11 +533,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             toxicTriviaPunishmentResult = toxicTriviaPunishmentResult,
             specialTriviaStatus = state.getSpecialTriviaStatus(),
             actionId = action.getActionId(),
-            answer = action.getAnswer(),
+            answer = action.requireAnswer(),
             emote = state.getEmote(),
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName(),
             triviaScoreResult = triviaScoreResult
@@ -526,7 +551,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE}: \"{action.getTriviaActionType()}\"')
 
         result = await self.__queuedTriviaGameStore.clearQueuedSuperGames(
-            twitchChannel = action.getTwitchChannel()
+            twitchChannelId = action.getTwitchChannelId()
         )
 
         self.__timber.log('TriviaGameMachine', f'Cleared Super Trivia game queue for \"{action.getTwitchChannel()}\" (actionId=\"{action.getActionId()}\"): {result.toStr()}')
@@ -548,7 +573,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         now = datetime.now(self.__timeZone)
         state = await self.__triviaGameStore.getNormalGame(
-            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
         )
 
@@ -563,7 +588,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             ))
             return
 
-        emote = await self.__triviaEmoteGenerator.getNextEmoteFor(action.getTwitchChannel())
+        emote = await self.__triviaEmoteGenerator.getNextEmoteFor(
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         triviaQuestion: AbsTriviaQuestion | None = None
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
@@ -588,6 +617,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
         if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinyTriviaQuestion(
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName()
         ):
@@ -602,7 +632,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.getActionId(),
             emote = emote,
+            gameId = await self.__triviaIdGenerator.generateGameId(),
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId(),
             userName = action.getUserName()
         )
@@ -642,7 +674,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             self.submitAction(action)
             return
 
-        state = await self.__triviaGameStore.getSuperGame(action.getTwitchChannel())
+        state = await self.__triviaGameStore.getSuperGame(
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         isSuperTriviaGameCurrentlyInProgress = state is not None and state.getEndTime() >= now
 
         queueResult = await self.__queuedTriviaGameStore.addSuperGames(
@@ -660,7 +695,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 shinyMultiplier = action.getShinyMultiplier(),
                 actionId = action.getActionId(),
                 eventId = await self.__triviaIdGenerator.generateEventId(),
-                twitchChannel = action.getTwitchChannel()
+                twitchChannel = action.getTwitchChannel(),
+                twitchChannelId = action.getTwitchChannelId()
             ))
 
         if isSuperTriviaGameCurrentlyInProgress:
@@ -673,7 +709,11 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             self.submitAction(action)
             return
 
-        emote = await self.__triviaEmoteGenerator.getNextEmoteFor(action.getTwitchChannel())
+        emote = await self.__triviaEmoteGenerator.getNextEmoteFor(
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
+        )
+
         triviaQuestion: AbsTriviaQuestion | None = None
         try:
             triviaQuestion = await self.__triviaRepository.fetchTrivia(
@@ -695,12 +735,12 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         pointsForWinning = action.getPointsForWinning()
 
         if action.isShinyTriviaEnabled() and await self.__shinyTriviaHelper.isShinySuperTriviaQuestion(
-            twitchChannel = action.getTwitchChannel()
+            twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.SHINY
             pointsForWinning = pointsForWinning * action.getShinyMultiplier()
         elif action.isToxicTriviaEnabled() and await self.__toxicTriviaHelper.isToxicSuperTriviaQuestion(
-            twitchChannel = action.getTwitchChannel()
+            twitchChannelId = action.getTwitchChannelId()
         ):
             specialTriviaStatus = SpecialTriviaStatus.TOXIC
             pointsForWinning = pointsForWinning * action.getToxicMultiplier()
@@ -716,7 +756,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             specialTriviaStatus = specialTriviaStatus,
             actionId = action.getActionId(),
             emote = emote,
-            twitchChannel = action.getTwitchChannel()
+            gameId = await self.__triviaIdGenerator.generateGameId(),
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
         )
 
         await self.__triviaGameStore.add(state)
@@ -731,6 +773,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             eventId = await self.__triviaIdGenerator.generateEventId(),
             gameId = state.getGameId(),
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
         ))
 
     async def __refreshStatusOfTriviaGames(self):
@@ -759,12 +802,13 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
         await self.__removeNormalTriviaGame(
-            twitchChannel = state.getTwitchChannel(),
+            twitchChannelId = state.getTwitchChannelId(),
             userId = state.getUserId()
         )
 
         triviaScoreResult = await self.__triviaScoreRepository.incrementTriviaLosses(
             twitchChannel = state.getTwitchChannel(),
+            twitchChannelId = state.getTwitchChannelId(),
             userId = state.getUserId()
         )
 
@@ -786,7 +830,10 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         if not isinstance(state, SuperTriviaGameState):
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
-        await self.__removeSuperTriviaGame(state.getTwitchChannel())
+        await self.__removeSuperTriviaGame(
+            twitchChannelId = state.getTwitchChannelId()
+        )
+
         toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = None
         pointsForWinning = state.getPointsForWinning()
 
@@ -800,7 +847,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 pointsForWinning = pointsForWinning + toxicTriviaPunishmentResult.getTotalPointsStolen()
 
         remainingQueueSize = await self.__queuedTriviaGameStore.getQueuedSuperGamesSize(
-            twitchChannel = state.getTwitchChannel()
+            twitchChannelId = state.getTwitchChannelId()
         )
 
         await self.__submitEvent(OutOfTimeSuperTriviaEvent(
@@ -816,23 +863,23 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             twitchChannel = state.getTwitchChannel()
         ))
 
-    async def __removeNormalTriviaGame(self, twitchChannel: str, userId: str):
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __removeNormalTriviaGame(self, twitchChannelId: str, userId: str):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         await self.__triviaGameStore.removeNormalGame(
-            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-    async def __removeSuperTriviaGame(self, twitchChannel: str):
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __removeSuperTriviaGame(self, twitchChannelId: str):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        await self.__triviaGameStore.removeSuperGame(twitchChannel)
-        await self.__superTriviaCooldownHelper.update(twitchChannel)
+        await self.__triviaGameStore.removeSuperGame(twitchChannelId)
+        await self.__superTriviaCooldownHelper.update(twitchChannelId)
 
     def setEventListener(self, listener: TriviaEventListener | None):
         if listener is not None and not isinstance(listener, TriviaEventListener):

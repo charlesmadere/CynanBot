@@ -14,18 +14,20 @@ class TriviaGameControllersRepositoryInterface(ABC):
     async def addController(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userName: str
     ) -> AddTriviaGameControllerResult:
         pass
 
     @abstractmethod
-    async def getControllers(self, twitchChannel: str) -> list[TriviaGameController]:
+    async def getControllers(self, twitchChannel: str, twitchChannelId: str) -> list[TriviaGameController]:
         pass
 
     @abstractmethod
     async def removeController(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userName: str
     ) -> RemoveTriviaGameControllerResult:
         pass

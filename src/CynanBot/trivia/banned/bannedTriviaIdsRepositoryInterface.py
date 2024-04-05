@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.trivia.banned.bannedTriviaQuestion import BannedTriviaQuestion
 from CynanBot.trivia.banned.banTriviaQuestionResult import \
@@ -23,7 +22,7 @@ class BannedTriviaIdsRepositoryInterface(ABC):
         self,
         triviaId: str,
         triviaSource: TriviaSource
-    ) -> Optional[BannedTriviaQuestion]:
+    ) -> BannedTriviaQuestion | None:
         pass
 
     @abstractmethod

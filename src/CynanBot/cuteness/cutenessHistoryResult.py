@@ -1,5 +1,4 @@
 import locale
-from typing import List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessHistoryEntry import CutenessHistoryEntry
@@ -11,9 +10,9 @@ class CutenessHistoryResult():
         self,
         userId: str,
         userName: str,
-        bestCuteness: Optional[CutenessHistoryEntry] = None,
-        totalCuteness: Optional[int] = None,
-        entries: Optional[List[CutenessHistoryEntry]] = None
+        bestCuteness: CutenessHistoryEntry | None = None,
+        totalCuteness: int | None = None,
+        entries: list[CutenessHistoryEntry] | None = None
     ):
         if not utils.isValidStr(userId):
             raise ValueError(f'userId argument is malformed: \"{userId}\"')
@@ -25,22 +24,22 @@ class CutenessHistoryResult():
             raise ValueError(f'totalCuteness argument is malformed: \"{totalCuteness}\"')
         elif totalCuteness is not None and (totalCuteness < 0 or totalCuteness > utils.getLongMaxSafeSize()):
             raise ValueError(f'totalCuteness argument is out of bounds: {totalCuteness}')
-        elif entries is not None and not isinstance(entries, List):
+        elif entries is not None and not isinstance(entries, list):
             raise ValueError(f'entries argument is malformed: \"{entries}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName
-        self.__bestCuteness: Optional[CutenessHistoryEntry] = bestCuteness
-        self.__totalCuteness: Optional[int] = totalCuteness
-        self.__entries: Optional[List[CutenessHistoryEntry]] = entries
+        self.__bestCuteness: CutenessHistoryEntry | None = bestCuteness
+        self.__totalCuteness: int | None = totalCuteness
+        self.__entries: list[CutenessHistoryEntry] | None = entries
 
-    def getBestCuteness(self) -> Optional[CutenessHistoryEntry]:
+    def getBestCuteness(self) -> CutenessHistoryEntry | None:
         return self.__bestCuteness
 
-    def getEntries(self) -> Optional[List[CutenessHistoryEntry]]:
+    def getEntries(self) -> list[CutenessHistoryEntry] | None:
         return self.__entries
 
-    def getTotalCuteness(self) -> Optional[int]:
+    def getTotalCuteness(self) -> int | None:
         return self.__totalCuteness
 
     def getTotalCutenessStr(self) -> str:

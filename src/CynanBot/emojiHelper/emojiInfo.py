@@ -1,5 +1,3 @@
-from typing import Set
-
 import CynanBot.misc.utils as utils
 
 
@@ -7,13 +5,13 @@ class EmojiInfo():
 
     def __init__(
         self,
-        codes: Set[str],
+        codes: set[str],
         category: str,
         emoji: str,
         name: str,
         subCategory: str
     ):
-        if not isinstance(codes, Set) or not utils.hasItems(codes):
+        if not isinstance(codes, set) or len(codes) == 0:
             raise ValueError(f'codes argument is malformed: \"{codes}\"')
         elif not utils.isValidStr(category):
             raise ValueError(f'category argument is malformed: \"{category}\"')
@@ -24,7 +22,7 @@ class EmojiInfo():
         elif not utils.isValidStr(subCategory):
             raise ValueError(f'subCategory argument is malformed: \"{subCategory}\"')
 
-        self.__codes: Set[str] = codes
+        self.__codes: set[str] = codes
         self.__category: str = category
         self.__emoji: str = emoji
         self.__name: str = name
@@ -33,7 +31,7 @@ class EmojiInfo():
     def getCategory(self) -> str:
         return self.__category
 
-    def getCodes(self) -> Set[str]:
+    def getCodes(self) -> set[str]:
         return self.__codes
 
     def getEmoji(self) -> str:

@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.timedDict import TimedDict
@@ -36,7 +35,7 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
 
         del self.__wizards[twitchChannelId]
 
-    async def get(self, twitchChannelId: str) -> Optional[AbsWizard]:
+    async def get(self, twitchChannelId: str) -> AbsWizard | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 

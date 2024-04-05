@@ -27,9 +27,9 @@ class ToxicTriviaHelper():
         self.__timber: TimberInterface = timber
         self.__triviaSettingsRepository: TriviaSettingsRepositoryInterface = triviaSettingsRepository
 
-    async def isToxicSuperTriviaQuestion(self, twitchChannel: str) -> bool:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def isToxicSuperTriviaQuestion(self, twitchChannelId: str) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if not await self.__triviaSettingsRepository.areToxicTriviasEnabled():
             return False        
@@ -40,17 +40,20 @@ class ToxicTriviaHelper():
         if randomNumber > probability:
             return False
 
-        self.__timber.log('ToxicTriviaHelper', f'A toxic super trivia question was encountered in {twitchChannel}!')
+        self.__timber.log('ToxicTriviaHelper', f'A toxic super trivia question was encountered in {twitchChannelId}!')
         return True
 
     async def toxicTriviaWin(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
@@ -58,6 +61,7 @@ class ToxicTriviaHelper():
 
         result = await self.__toxicTriviaOccurencesRepository.incrementToxicCount(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 

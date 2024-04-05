@@ -61,6 +61,7 @@ class CutenessPointRedemption(AbsChannelPointRedemption):
             await self.__cutenessRepository.fetchCutenessIncrementedBy(
                 incrementAmount = incrementAmount,
                 twitchChannel = twitchUser.getHandle(),
+                twitchChannelId = await twitchChannel.getTwitchChannelId(),
                 userId = twitchChannelPointsMessage.getUserId(),
                 userName = twitchChannelPointsMessage.getUserName()
             )

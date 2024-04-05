@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.games.absTriviaGameState import AbsTriviaGameState
 from CynanBot.trivia.games.triviaGameType import TriviaGameType
@@ -15,10 +13,12 @@ class TriviaGameState(AbsTriviaGameState):
         basePointsForWinning: int,
         pointsForWinning: int,
         secondsToLive: int,
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         emote: str,
+        gameId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str
     ):
@@ -30,13 +30,15 @@ class TriviaGameState(AbsTriviaGameState):
             specialTriviaStatus = specialTriviaStatus,
             actionId = actionId,
             emote = emote,
-            twitchChannel = twitchChannel
+            gameId = gameId,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__userId: str = userId
         self.__userName: str = userName

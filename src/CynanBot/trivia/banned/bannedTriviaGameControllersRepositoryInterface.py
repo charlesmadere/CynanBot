@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from CynanBot.trivia.banned.addBannedTriviaGameControllerResult import \
     AddBannedTriviaGameControllerResult
@@ -16,7 +15,7 @@ class BannedTriviaGameControllersRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getBannedControllers(self) -> List[BannedTriviaGameController]:
+    async def getBannedControllers(self) -> list[BannedTriviaGameController]:
         pass
 
     @abstractmethod

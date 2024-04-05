@@ -148,4 +148,4 @@ class TestTriviaQuestionCompiler():
 
     def test_sanity(self):
         assert self.triviaQuestionCompiler is not None
-        assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompiler)
+        assert isinstance(self.triviaQuestionCompiler, TriviaQuestionCompilerInterface)

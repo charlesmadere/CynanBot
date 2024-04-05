@@ -212,7 +212,8 @@ class AddTriviaAnswerCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
@@ -294,9 +295,10 @@ class AddTriviaControllerCommand(AbsCommand):
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if user.getHandle().lower() != ctx.getAuthorName() and administrator != ctx.getAuthorId():
+        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('AddTriviaGameControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -314,6 +316,7 @@ class AddTriviaControllerCommand(AbsCommand):
 
         result = await self.__triviaGameControllersRepository.addController(
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             userName = userName
         )
 
@@ -535,7 +538,8 @@ class BanTriviaQuestionCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
@@ -826,6 +830,7 @@ class CutenessCommand(AbsCommand):
 
             result = await self.__cutenessRepository.fetchCuteness(
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 userId = userId,
                 userName = userName
             )
@@ -836,6 +841,7 @@ class CutenessCommand(AbsCommand):
 
             result = await self.__cutenessRepository.fetchCutenessLeaderboard(
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 specificLookupUserId = userId,
                 specificLookupUserName = userName
             )
@@ -889,7 +895,8 @@ class CutenessChampionsCommand(AbsCommand):
             return
 
         result = await self.__cutenessRepository.fetchCutenessChampions(
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessChampions(result, self.__delimiter))
@@ -964,6 +971,7 @@ class CutenessHistoryCommand(AbsCommand):
 
             result = await self.__cutenessRepository.fetchCutenessHistory(
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 userId = userId,
                 userName = userName
             )
@@ -971,7 +979,8 @@ class CutenessHistoryCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessHistory(result, self.__entryDelimiter))
         else:
             result = await self.__cutenessRepository.fetchCutenessLeaderboardHistory(
-                twitchChannel = user.getHandle()
+                twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId()
             )
 
             await self.__twitchUtils.safeSend(ctx, self.__cutenessUtils.getCutenessLeaderboardHistory(
@@ -1168,7 +1177,8 @@ class DeleteTriviaAnswersCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
@@ -1454,7 +1464,8 @@ class GetTriviaAnswersCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
@@ -1519,13 +1530,18 @@ class GetTriviaControllersCommand(AbsCommand):
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():
+        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('GetTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        controllers = await self.__triviaGameControllersRepository.getControllers(user.getHandle())
+        controllers = await self.__triviaGameControllersRepository.getControllers(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
+
         await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameControllers(controllers))
         self.__timber.log('GetTriviaControllersCommand', f'Handled !gettriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1695,6 +1711,7 @@ class MyCutenessHistoryCommand(AbsCommand):
 
         result = await self.__cutenessRepository.fetchCutenessHistory(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId,
             userName = userName
         )
@@ -2267,9 +2284,10 @@ class RemoveTriviaControllerCommand(AbsCommand):
         elif not user.isTriviaGameEnabled() and not user.isSuperTriviaGameEnabled():
             return
 
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if user.getHandle().lower() != ctx.getAuthorName().lower() and administrator != ctx.getAuthorId():
+        if twitchChannelId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
             self.__timber.log('RemoveTriviaControllerCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -2287,13 +2305,16 @@ class RemoveTriviaControllerCommand(AbsCommand):
 
         result = await self.__triviaGameControllersRepository.removeController(
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
             userName = userName
         )
 
-        if result is RemoveTriviaGameControllerResult.REMOVED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a trivia game controller.')
+        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ {userName} is not a trivia game controller')
         elif result is RemoveTriviaGameControllerResult.ERROR:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a trivia game controller!')
+        elif result is RemoveTriviaGameControllerResult.REMOVED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a trivia game controller')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a trivia game controller!')
             self.__timber.log('RemoveTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2863,7 +2884,8 @@ class TriviaInfoCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:
@@ -2968,16 +2990,19 @@ class TriviaScoreCommand(AbsCommand):
 
         shinyResult = await self.__shinyTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
 
         toxicResult = await self.__toxicTriviaOccurencesRepository.fetchDetails(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
 
         triviaResult = await self.__triviaScoreRepository.fetchTriviaScore(
             twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId(),
             userId = userId
         )
 
@@ -3263,7 +3288,8 @@ class UnbanTriviaQuestionCommand(AbsCommand):
 
         reference = await self.__triviaHistoryRepository.getMostRecentTriviaQuestionDetails(
             emote = normalizedEmote,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         if reference is None:

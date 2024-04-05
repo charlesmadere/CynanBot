@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class EmojiHelperInterface(ABC):
 
     @abstractmethod
-    async def getHumanNameForEmoji(self, emoji: Optional[str]) -> Optional[str]:
+    async def getHumanNameForEmoji(self, emoji: str | None) -> str | None:
         pass
 
     @abstractmethod

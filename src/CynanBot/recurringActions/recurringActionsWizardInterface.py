@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
 from CynanBot.recurringActions.wizards.absWizard import AbsWizard
@@ -12,7 +11,7 @@ class RecurringActionsWizardInterface(ABC):
         pass
 
     @abstractmethod
-    async def get(self, twitchChannelId: str) -> Optional[AbsWizard]:
+    async def get(self, twitchChannelId: str) -> AbsWizard | None:
         pass
 
     @abstractmethod

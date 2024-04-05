@@ -29,10 +29,13 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     async def fetchDetails(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
@@ -46,10 +49,10 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
             twitchChannel, userId
         )
 
-        shinyCount: int = 0
+        shinyCount = 0
         mostRecent: datetime | None = None
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             shinyCount = record[0]
             mostRecent = utils.getDateTimeFromStr(record[1])
 
@@ -60,6 +63,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
             newShinyCount = shinyCount,
             oldShinyCount = shinyCount,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
@@ -70,31 +74,37 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
     async def incrementShinyCount(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ShinyTriviaResult:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         result = await self.fetchDetails(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             userId = userId
         )
 
-        newShinyCount: int = result.getOldShinyCount() + 1
+        newShinyCount = result.getOldShinyCount() + 1
 
         newResult = ShinyTriviaResult(
             mostRecent = datetime.now(self.__timeZone),
             newShinyCount = newShinyCount,
             oldShinyCount = result.getOldShinyCount(),
             twitchChannel = result.getTwitchChannel(),
+            twitchChannelId = result.getTwitchChannelId(),
             userId = result.getUserId()
         )
 
         await self.__updateShinyCount(
             newShinyCount = newResult.getNewShinyCount(),
             twitchChannel = newResult.getTwitchChannel(),
+            twitchChannelId = newResult.getTwitchChannelId(),
             userId = newResult.getUserId()
         )
 
@@ -140,6 +150,7 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
         self,
         newShinyCount: int,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ):
         if not utils.isValidInt(newShinyCount):
@@ -148,6 +159,8 @@ class ShinyTriviaOccurencesRepository(ShinyTriviaOccurencesRepositoryInterface):
             raise ValueError(f'newShinyCount argument is out of bounds: {newShinyCount}')
         elif not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 

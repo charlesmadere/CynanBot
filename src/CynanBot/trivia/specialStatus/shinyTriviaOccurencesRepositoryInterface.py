@@ -9,6 +9,7 @@ class ShinyTriviaOccurencesRepositoryInterface(ABC):
     async def fetchDetails(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ShinyTriviaResult:
         pass
@@ -17,6 +18,7 @@ class ShinyTriviaOccurencesRepositoryInterface(ABC):
     async def incrementShinyCount(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str
     ) -> ShinyTriviaResult:
         pass

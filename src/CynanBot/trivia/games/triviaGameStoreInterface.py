@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from CynanBot.trivia.games.absTriviaGameState import AbsTriviaGameState
 from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
@@ -13,33 +12,41 @@ class TriviaGameStoreInterface(ABC):
         pass
 
     @abstractmethod
-    async def getAll(self) -> List[AbsTriviaGameState]:
+    async def getAll(self) -> list[AbsTriviaGameState]:
         pass
 
     @abstractmethod
-    async def getNormalGame(self, twitchChannel: str, userId: str) -> Optional[TriviaGameState]:
+    async def getNormalGame(
+        self,
+        twitchChannelId: str,
+        userId: str
+    ) -> TriviaGameState | None:
         pass
 
     @abstractmethod
-    async def getNormalGames(self) -> List[TriviaGameState]:
+    async def getNormalGames(self) -> list[TriviaGameState]:
         pass
 
     @abstractmethod
-    async def getSuperGame(self, twitchChannel: str) -> Optional[SuperTriviaGameState]:
+    async def getSuperGame(self, twitchChannelId: str) -> SuperTriviaGameState | None:
         pass
 
     @abstractmethod
-    async def getSuperGames(self) -> List[SuperTriviaGameState]:
+    async def getSuperGames(self) -> list[SuperTriviaGameState]:
         pass
 
     @abstractmethod
-    async def getTwitchChannelsWithActiveSuperGames(self) -> List[str]:
+    async def getTwitchChannelIdsWithActiveSuperGames(self) -> list[str]:
         pass
 
     @abstractmethod
-    async def removeNormalGame(self, twitchChannel: str, userId: str) -> bool:
+    async def removeNormalGame(
+        self,
+        twitchChannelId: str,
+        userId: str
+    ) -> bool:
         pass
 
     @abstractmethod
-    async def removeSuperGame(self, twitchChannel: str) -> bool:
+    async def removeSuperGame(self, twitchChannelId: str) -> bool:
         pass
