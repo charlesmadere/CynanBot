@@ -684,7 +684,11 @@ class TriviaUtils(TriviaUtilsInterface):
         if utils.isValidStr(twitchUserId) and userId == twitchUserId:
             return True
 
-        gameControllers = await self.__triviaGameControllersRepository.getControllers(twitchUser.getHandle())
+        gameControllers = await self.__triviaGameControllersRepository.getControllers(
+            twitchChannel = twitchUser.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
+
         for gameController in gameControllers:
             if userId == gameController.getUserId():
                 return True
