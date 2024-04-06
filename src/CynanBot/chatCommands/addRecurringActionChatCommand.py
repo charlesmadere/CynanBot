@@ -78,7 +78,7 @@ class AddRecurringActionChatCommand(AbsChatCommand):
         splits = utils.getCleanedSplits(ctx.getMessageContent())
         if len(splits) < 2:
             self.__timber.log('AddRecurringActionChatCommand', f'No argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            await self.__twitchUtils.safeSend(ctx, f'⚠ One argument is necessary for the !addrecurringaction command. Example: !addrecurringaction supertrivia')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Recurring action type argument is necessary for the !addrecurringaction command. Example: !addrecurringaction supertrivia')
             return
 
         try:
