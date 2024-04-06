@@ -90,7 +90,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         ))
 
         self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Super Trivia wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-        await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring recurring Super Trivia')
+        await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring recurring Super Trivia (minutes between: {wizard.getMinutesBetween()})')
         return True
 
     async def __configureWeatherWizard(

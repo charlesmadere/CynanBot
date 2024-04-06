@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
 from CynanBot.recurringActions.wizards.absWizard import AbsWizard
@@ -10,9 +8,9 @@ class SuperTriviaWizard(AbsWizard):
 
     def __init__(self):
         self.__steps = SuperTriviaSteps()
-        self.__minutesBetween: Optional[int] = None
+        self.__minutesBetween: int | None = None
 
-    def getMinutesBetween(self) -> Optional[int]:
+    def getMinutesBetween(self) -> int | None:
         return self.__minutesBetween
 
     def getRecurringActionType(self) -> RecurringActionType:

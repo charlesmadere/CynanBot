@@ -19,8 +19,6 @@ from CynanBot.cheerActions.exceptions import (
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.users.userIdsRepositoryInterface import \
-    UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
@@ -32,7 +30,6 @@ class AddCheerActionCommand(AbsChatCommand):
         cheerActionsRepository: CheerActionsRepositoryInterface,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
@@ -43,8 +40,6 @@ class AddCheerActionCommand(AbsChatCommand):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
@@ -52,7 +47,6 @@ class AddCheerActionCommand(AbsChatCommand):
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
 
     async def __actionToStr(self, action: CheerAction) -> str:
@@ -64,7 +58,7 @@ class AddCheerActionCommand(AbsChatCommand):
 
     async def handleChatCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        userId = await self.__userIdsRepository.requireUserId(user.getHandle())
+        userId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
