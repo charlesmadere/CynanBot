@@ -83,6 +83,8 @@ class RecurringActionsWizardChatAction(AbsChatAction):
             minutesBetween = wizard.getMinutesBetween()
         ))
 
+        await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
+
         self.__timber.log('RecurringActionsWizardChatAction', f'Finished configuring Super Trivia wizard ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
         await self.__twitchUtils.safeSend(channel, f'ⓘ Finished configuring recurring Super Trivia (minutes between: {wizard.getMinutesBetween()})')
         return True
