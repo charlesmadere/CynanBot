@@ -42,8 +42,6 @@ from CynanBot.chatCommands.addBannedTriviaControllerCommand import \
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
-from CynanBot.chatCommands.addRecurringActionChatCommand import \
-    AddRecurringActionChatCommand
 from CynanBot.chatCommands.addRecurringSuperTriviaActionChatCommand import \
     AddRecurringSuperTriviaActionChatCommand
 from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
