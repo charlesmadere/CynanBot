@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
-from CynanBot.trivia.gameController.triviaGameGlobalController import \
-    TriviaGameGlobalController
 from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
     RemoveTriviaGameControllerResult
+from CynanBot.trivia.gameController.triviaGameGlobalController import \
+    TriviaGameGlobalController
 
 
 class TriviaGameGlobalControllersRepositoryInterface(ABC):

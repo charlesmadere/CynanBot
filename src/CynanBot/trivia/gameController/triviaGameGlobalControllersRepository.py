@@ -7,12 +7,12 @@ from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.gameController.addTriviaGameControllerResult import \
     AddTriviaGameControllerResult
+from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
+    RemoveTriviaGameControllerResult
 from CynanBot.trivia.gameController.triviaGameGlobalController import \
     TriviaGameGlobalController
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.gameController.removeTriviaGameControllerResult import \
-    RemoveTriviaGameControllerResult
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \

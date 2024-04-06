@@ -1,11 +1,11 @@
 import locale
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 
@@ -17,13 +17,14 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         triviaQuestion: AbsTriviaQuestion,
         pointsForWinning: int,
         remainingQueueSize: int,
-        toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult],
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
+        toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None,
         actionId: str,
         emote: str,
         eventId: str,
         gameId: str,
-        twitchChannel: str
+        twitchChannel: str,
+        twitchChannelId: str
     ):
         super().__init__(
             actionId = actionId,
@@ -31,34 +32,37 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif not utils.isValidInt(pointsForWinning):
-            raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
+            raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
         elif not utils.isValidInt(remainingQueueSize):
-            raise ValueError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
+            raise TypeError(f'remainingQueueSize argument is malformed: \"{remainingQueueSize}\"')
         elif remainingQueueSize < 0 or remainingQueueSize > utils.getIntMaxSafeSize():
             raise ValueError(f'remainingQueueSize argument is out of bounds: {remainingQueueSize}')
-        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
-            raise ValueError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+            raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+        elif toxicTriviaPunishmentResult is not None and not isinstance(toxicTriviaPunishmentResult, ToxicTriviaPunishmentResult):
+            raise TypeError(f'toxicTriviaPunishmentResult argument is malformed: \"{toxicTriviaPunishmentResult}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
-            raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
+            raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
         self.__pointsForWinning: int = pointsForWinning
         self.__remainingQueueSize: int = remainingQueueSize
-        self.__toxicTriviaPunishmentResult: Optional[ToxicTriviaPunishmentResult] = toxicTriviaPunishmentResult
-        self.__specialTriviaStatus: Optional[SpecialTriviaStatus] = specialTriviaStatus
+        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
+        self.__toxicTriviaPunishmentResult: ToxicTriviaPunishmentResult | None = toxicTriviaPunishmentResult
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
 
     def getEmote(self) -> str:
         return self.__emote
@@ -78,10 +82,10 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def getRemainingQueueSizeStr(self) -> str:
         return locale.format_string("%d", self.__remainingQueueSize, grouping = True)
 
-    def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
+    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
-    def getToxicTriviaPunishmentResult(self) -> Optional[ToxicTriviaPunishmentResult]:
+    def getToxicTriviaPunishmentResult(self) -> ToxicTriviaPunishmentResult | None:
         return self.__toxicTriviaPunishmentResult
 
     def getTriviaEventType(self) -> TriviaEventType:
@@ -93,8 +97,8 @@ class OutOfTimeSuperTriviaEvent(AbsTriviaEvent):
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
 
-    def hasToxicTriviaPunishmentResult(self) -> bool:
-        return self.__toxicTriviaPunishmentResult is not None
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def isShiny(self) -> bool:
         return self.__specialTriviaStatus is SpecialTriviaStatus.SHINY

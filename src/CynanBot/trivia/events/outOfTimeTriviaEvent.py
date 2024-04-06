@@ -1,12 +1,12 @@
 import locale
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
 from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 
 
 class OutOfTimeTriviaEvent(AbsTriviaEvent):
@@ -15,12 +15,13 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         self,
         triviaQuestion: AbsTriviaQuestion,
         pointsForWinning: int,
-        specialTriviaStatus: Optional[SpecialTriviaStatus],
+        specialTriviaStatus: SpecialTriviaStatus | None,
         actionId: str,
         emote: str,
         eventId: str,
         gameId: str,
         twitchChannel: str,
+        twitchChannelId: str,
         userId: str,
         userName: str,
         triviaScoreResult: TriviaScoreResult
@@ -31,32 +32,35 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
         )
 
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif not utils.isValidInt(pointsForWinning):
-            raise ValueError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
+            raise TypeError(f'pointsForWinning argument is malformed: \"{pointsForWinning}\"')
         elif pointsForWinning < 1 or pointsForWinning > utils.getIntMaxSafeSize():
             raise ValueError(f'pointsForWinning argument is out of bounds: {pointsForWinning}')
         elif specialTriviaStatus is not None and not isinstance(specialTriviaStatus, SpecialTriviaStatus):
-            raise ValueError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
+            raise TypeError(f'specialTriviaStatus argument is malformed: \"{specialTriviaStatus}\"')
         elif not utils.isValidStr(emote):
-            raise ValueError(f'emote argument is malformed: \"{emote}\"')
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
         elif not utils.isValidStr(gameId):
-            raise ValueError(f'gameId argument is malformed: \"{gameId}\"')
+            raise TypeError(f'gameId argument is malformed: \"{gameId}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif not isinstance(triviaScoreResult, TriviaScoreResult):
-            raise ValueError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
+            raise TypeError(f'triviaScoreResult argument is malformed: \"{triviaScoreResult}\"')
 
         self.__triviaQuestion: AbsTriviaQuestion = triviaQuestion
-        self.__specialTriviaStatus: Optional[SpecialTriviaStatus] = specialTriviaStatus
         self.__pointsForWinning: int = pointsForWinning
+        self.__specialTriviaStatus: SpecialTriviaStatus | None = specialTriviaStatus
         self.__emote: str = emote
         self.__gameId: str = gameId
         self.__twitchChannel: str = twitchChannel
+        self.__twitchChannelId: str = twitchChannelId
         self.__userId: str = userId
         self.__userName: str = userName
         self.__triviaScoreResult: TriviaScoreResult = triviaScoreResult
@@ -73,7 +77,7 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
     def getPointsForWinningStr(self) -> str:
         return locale.format_string("%d", self.__pointsForWinning, grouping = True)
 
-    def getSpecialTriviaStatus(self) -> Optional[SpecialTriviaStatus]:
+    def getSpecialTriviaStatus(self) -> SpecialTriviaStatus | None:
         return self.__specialTriviaStatus
 
     def getTriviaEventType(self) -> TriviaEventType:
@@ -87,6 +91,9 @@ class OutOfTimeTriviaEvent(AbsTriviaEvent):
 
     def getTwitchChannel(self) -> str:
         return self.__twitchChannel
+
+    def getTwitchChannelId(self) -> str:
+        return self.__twitchChannelId
 
     def getUserId(self) -> str:
         return self.__userId

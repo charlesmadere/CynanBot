@@ -5,10 +5,11 @@ from CynanBot.cuteness.cutenessResult import CutenessResult
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
-from CynanBot.trivia.score.triviaScoreResult import TriviaScoreResult
 
 
 class CorrectSuperAnswerTriviaEvent(AbsTriviaEvent):

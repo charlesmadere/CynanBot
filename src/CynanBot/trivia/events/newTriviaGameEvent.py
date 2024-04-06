@@ -5,7 +5,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
-from CynanBot.trivia.specialStatus.specialTriviaStatus import SpecialTriviaStatus
+from CynanBot.trivia.specialStatus.specialTriviaStatus import \
+    SpecialTriviaStatus
 
 
 class NewTriviaGameEvent(AbsTriviaEvent):
