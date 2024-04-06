@@ -44,6 +44,12 @@ from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
 from CynanBot.chatCommands.addRecurringActionChatCommand import \
     AddRecurringActionChatCommand
+from CynanBot.chatCommands.addRecurringSuperTriviaActionChatCommand import \
+    AddRecurringSuperTriviaActionChatCommand
+from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
+    AddRecurringWeatherActionChatCommand
+from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
+    AddRecurringWordOfTheDayActionChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
     ClearSuperTriviaQueueCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -529,13 +535,17 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
         if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
-            self.__addRecurringActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
+            self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
             self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeWeatherRecurringActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addRecurringActionCommand: AbsChatCommand = AddRecurringActionChatCommand(administratorProvider, languagesRepository, recurringActionsRepository, recurringActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
+            self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
@@ -1110,10 +1120,20 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGlobalTriviaControllerCommand.handleChatCommand(context)
 
-    @commands.command(name = 'addrecurringaction')
-    async def command_addrecurringaction(self, ctx: Context):
+    @commands.command(name = 'addrecurringsupertriviaaction', aliases = [ 'addrecurringtriviaaction' ])
+    async def command_addrecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__addRecurringActionCommand.handleChatCommand(context)
+        await self.__addRecurringSuperTriviaActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addrecurringweatheraction')
+    async def command_addrecurringweatheraction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addRecurringWeatherActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'addrecurringwordofthedayaction', aliases = [ 'addrecurringwordaction' ])
+    async def command_addrecurringwordofthedayaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):
