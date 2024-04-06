@@ -619,6 +619,7 @@ cynanBot = CynanBot(
     recurringActionsHelper = None,
     recurringActionsMachine = None,
     recurringActionsRepository = None,
+    recurringActionsWizard = None,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = None,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,

@@ -1,24 +1,27 @@
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
+from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
+    RecurringActionsRepositoryInterface
 from CynanBot.recurringActions.recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
-from CynanBot.recurringActions.superTriviaRecurringAction import SuperTriviaRecurringAction
+from CynanBot.recurringActions.superTriviaRecurringAction import \
+    SuperTriviaRecurringAction
+from CynanBot.recurringActions.wizards.stepResult import StepResult
 from CynanBot.recurringActions.wizards.superTriviaStep import SuperTriviaStep
 from CynanBot.recurringActions.wizards.superTriviaSteps import SuperTriviaSteps
-from CynanBot.recurringActions.wizards.stepResult import StepResult
 from CynanBot.recurringActions.wizards.superTriviaWizard import \
     SuperTriviaWizard
 from CynanBot.recurringActions.wizards.weatherWizard import WeatherWizard
 from CynanBot.recurringActions.wizards.wordOfTheDayWizard import \
     WordOfTheDayWizard
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
-from CynanBot.users.userInterface import UserInterface
-from CynanBot.twitch.configuration.twitchChannelProvider import TwitchChannelProvider
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.recurringActions.recurringActionsRepositoryInterface import RecurringActionsRepositoryInterface
+from CynanBot.users.userInterface import UserInterface
 
 
 class RecurringActionsWizardChatAction(AbsChatAction):

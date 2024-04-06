@@ -22,6 +22,8 @@ from CynanBot.chatActions.chatLoggerChatAction import ChatLoggerChatAction
 from CynanBot.chatActions.deerForceChatAction import DeerForceChatAction
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
+from CynanBot.chatActions.recurringActionsWizardChatAction import \
+    RecurringActionsWizardChatAction
 from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -122,6 +124,10 @@ from CynanBot.recurringActions.recurringActionsRepository import \
     RecurringActionsRepository
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
+from CynanBot.recurringActions.recurringActionsWizard import \
+    RecurringActionsWizard
+from CynanBot.recurringActions.recurringActionsWizardInterface import \
+    RecurringActionsWizardInterface
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
@@ -876,6 +882,10 @@ recurringActionsHelper: RecurringActionsHelperInterface = RecurringActionsHelper
     timber = timber
 )
 
+recurringActionsWizard: RecurringActionsWizardInterface = RecurringActionsWizard(
+    timber = timber
+)
+
 #########################################
 ## Sound Player initialization section ##
 #########################################
@@ -1003,7 +1013,12 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         generalSettingsRepository = generalSettingsRepository,
         userIdsRepository = userIdsRepository
     ),
-    recurringActionsWizardChatAction = None,
+    recurringActionsWizardChatAction = RecurringActionsWizardChatAction(
+        recurringActionsRepository = recurringActionsRepository,
+        recurringActionsWizard = recurringActionsWizard,
+        timber = timber,
+        twitchUtils = twitchUtils
+    ),
     schubertWalkChatAction = SchubertWalkChatAction(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,
@@ -1120,6 +1135,7 @@ cynanBot = CynanBot(
     recurringActionsHelper = recurringActionsHelper,
     recurringActionsMachine = recurringActionsMachine,
     recurringActionsRepository = recurringActionsRepository,
+    recurringActionsWizard = recurringActionsWizard,
     sentMessageLogger = sentMessageLogger,
     shinyTriviaOccurencesRepository = shinyTriviaOccurencesRepository,
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,

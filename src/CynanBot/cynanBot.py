@@ -42,6 +42,8 @@ from CynanBot.chatCommands.addBannedTriviaControllerCommand import \
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
+from CynanBot.chatCommands.addRecurringActionChatCommand import \
+    AddRecurringActionChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
     ClearSuperTriviaQueueCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -81,7 +83,7 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                GetTriviaControllersCommand, JishoCommand,
                                LoremIpsumCommand, MyCutenessHistoryCommand,
                                PbsCommand, PkMonCommand, PkMoveCommand,
-                               RaceCommand, RecurringActionCommand,
+                               RaceCommand,
                                RemoveBannedTriviaControllerCommand,
                                RemoveGlobalTriviaControllerCommand,
                                RemoveTriviaControllerCommand,
@@ -122,6 +124,8 @@ from CynanBot.recurringActions.recurringActionsMachineInterface import \
     RecurringActionsMachineInterface
 from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
     RecurringActionsRepositoryInterface
+from CynanBot.recurringActions.recurringActionsWizardInterface import \
+    RecurringActionsWizardInterface
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
 from CynanBot.recurringActions.recurringEventType import RecurringEventType
 from CynanBot.recurringActions.superTriviaRecurringEvent import \
@@ -293,6 +297,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         recurringActionsHelper: Optional[RecurringActionsHelperInterface],
         recurringActionsMachine: Optional[RecurringActionsMachineInterface],
         recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
+        recurringActionsWizard: Optional[RecurringActionsWizardInterface],
         sentMessageLogger: SentMessageLoggerInterface,
         shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepositoryInterface],
         soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
@@ -399,6 +404,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise TypeError(f'recurringActionsMachine argument is malformed: \"{recurringActionsMachine}\"')
         elif recurringActionsRepository is not None and not isinstance(recurringActionsRepository, RecurringActionsRepositoryInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
+        elif recurringActionsWizard is not None and not isinstance(recurringActionsWizard, RecurringActionsWizardInterface):
+            raise TypeError(f'recurringActionsWizard argument is malformed: \"{recurringActionsWizard}\"')
         elif not isinstance(sentMessageLogger, SentMessageLoggerInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif shinyTriviaOccurencesRepository is not None and not isinstance(shinyTriviaOccurencesRepository, ShinyTriviaOccurencesRepositoryInterface):
@@ -521,14 +528,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__deleteCheerActionCommand: AbsCommand = DeleteCheerActionCommand(administratorProvider, cheerActionIdGenerator, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__getCheerActionsCommand: AbsCommand = GetCheerActionsCommand(administratorProvider, cheerActionsRepository, timber, twitchUtils, userIdsRepository, usersRepository)
 
-        if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None:
-            self.__recurringActionCommand: AbsCommand = StubCommand()
+        if recurringActionsHelper is None or recurringActionsMachine is None or recurringActionsRepository is None or recurringActionsWizard is None:
+            self.__addRecurringActionCommand: AbsChatCommand = StubChatCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
             self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeWeatherRecurringActionCommand: AbsChatCommand = StubChatCommand()
             self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__recurringActionCommand: AbsCommand = RecurringActionCommand(administratorProvider, languagesRepository, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__addRecurringActionCommand: AbsChatCommand = AddRecurringActionChatCommand(administratorProvider, languagesRepository, recurringActionsRepository, recurringActionsWizard, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
             self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
@@ -1103,6 +1110,11 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__addGlobalTriviaControllerCommand.handleChatCommand(context)
 
+    @commands.command(name = 'addrecurringaction')
+    async def command_addrecurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__addRecurringActionCommand.handleChatCommand(context)
+
     @commands.command(name = 'addtriviaanswer')
     async def command_addtriviaanswer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
@@ -1257,11 +1269,6 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     async def command_race(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__raceCommand.handleCommand(context)
-
-    @commands.command(name = 'recurringaction')
-    async def command_recurringaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__recurringActionCommand.handleCommand(context)
 
     @commands.command(name = 'removebannedtriviacontroller')
     async def command_removebannedtriviacontroller(self, ctx: Context):
