@@ -79,7 +79,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         if steps.stepForward() is not StepResult.DONE:
             # this situation should be impossible for super trivia
             self.__timber.log('RecurringActionsWizardChatAction', f'Super Trivia wizard was unable to step forward: ({content=}) ({step=}) ({minutesBetween=}) ({message.getAuthorId()=}) ({message.getAuthorName()=}) ({message.getTwitchChannelName()=})')
-            await self.__twitchUtils.safeSend(channel, f'⚠ The Sup9er Trivia wizard is in an invalid state, please try again')
+            await self.__twitchUtils.safeSend(channel, f'⚠ The Super Trivia wizard is in an invalid state, please try again')
             await self.__recurringActionsWizard.complete(await channel.getTwitchChannelId())
             return True
 
