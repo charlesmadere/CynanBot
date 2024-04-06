@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.recurringActions.recurringActionType import RecurringActionType
 
@@ -6,28 +6,20 @@ from CynanBot.recurringActions.recurringActionType import RecurringActionType
 class TestRecurringActionType():
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[RecurringActionType] = None
-        exception: Optional[Exception] = None
+        result: RecurringActionType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = RecurringActionType.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withNone(self):
-        result: Optional[RecurringActionType] = None
-        exception: Optional[Exception] = None
+        result: RecurringActionType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = RecurringActionType.fromStr(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withSuperTriviaStrings(self):
         result = RecurringActionType.fromStr('supertrivia')
@@ -69,16 +61,12 @@ class TestRecurringActionType():
         assert result is RecurringActionType.WORD_OF_THE_DAY
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[RecurringActionType] = None
-        exception: Optional[Exception] = None
+        result: RecurringActionType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = RecurringActionType.fromStr(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_toReadableStr_withSuperTrivia(self):
         result = RecurringActionType.SUPER_TRIVIA.toReadableStr()
