@@ -11,7 +11,7 @@ from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class RemoveWeatherRecurringActionCommand(AbsChatCommand):
+class RemoveRecurringSuperTriviaActionCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -48,18 +48,18 @@ class RemoveWeatherRecurringActionCommand(AbsChatCommand):
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
         if userId != ctx.getAuthorId() and administrator != ctx.getAuthorId():
-            self.__timber.log('RemoveWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringAction = await self.__recurringActionsRepository.getWeatherRecurringAction(user.getHandle())
+        recurringAction = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(user.getHandle())
 
         if recurringAction is None:
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring weather action')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring super trivia action')
             return
         elif not recurringAction.isEnabled():
-            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring weather action is already disabled')
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel\'s recurring super trivia action is already disabled')
             return
 
         await self.__recurringActionsHelper.disableRecurringAction(recurringAction)
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring weather action has been disabled')
-        self.__timber.log('RemoveWeatherRecurringActionCommand', f'Handled !removeweatherrecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Recurring super trivia action has been disabled')
+        self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'Handled !removesupertriviarecurringaction command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

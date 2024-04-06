@@ -54,12 +54,12 @@ from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
-from CynanBot.chatCommands.removeSuperTriviaRecurringActionCommand import \
-    RemoveSuperTriviaRecurringActionCommand
-from CynanBot.chatCommands.removeWeatherRecurringActionCommand import \
-    RemoveWeatherRecurringActionCommand
-from CynanBot.chatCommands.removeWordOfTheDayRecurringAction import \
-    RemoveWordOfTheDayRecurringActionCommand
+from CynanBot.chatCommands.removeRecurringSuperTriviaActionCommand import \
+    RemoveRecurringSuperTriviaActionCommand
+from CynanBot.chatCommands.removeRecurringWeatherActionCommand import \
+    RemoveRecurringWeatherActionCommand
+from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
+    RemoveRecurringWordOfTheDayActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
@@ -537,17 +537,17 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__addRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
             self.__recurringActionsCommand: AbsChatCommand = StubChatCommand()
-            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeWeatherRecurringActionCommand: AbsChatCommand = StubChatCommand()
-            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = StubChatCommand()
+            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = StubChatCommand()
+            self.__removeRecurringWeatherActionCommand: AbsChatCommand = StubChatCommand()
+            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addRecurringSuperTriviaActionCommand: AbsChatCommand = AddRecurringSuperTriviaActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWeatherActionCommand: AbsChatCommand = AddRecurringWeatherActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__addRecurringWordOfTheDayActionCommand: AbsChatCommand = AddRecurringWordOfTheDayActionChatCommand(administratorProvider, recurringActionsWizard, timber, twitchUtils, usersRepository)
             self.__recurringActionsCommand: AbsChatCommand = GetRecurringActionsCommand(administratorProvider, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeSuperTriviaRecurringActionCommand: AbsChatCommand = RemoveSuperTriviaRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeWeatherRecurringActionCommand: AbsChatCommand = RemoveWeatherRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
-            self.__removeWordOfTheDayRecurringActionCommand: AbsChatCommand = RemoveWordOfTheDayRecurringActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringSuperTriviaActionCommand: AbsChatCommand = RemoveRecurringSuperTriviaActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringWeatherActionCommand: AbsChatCommand = RemoveRecurringWeatherActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
+            self.__removeRecurringWordOfTheDayActionCommand: AbsChatCommand = RemoveRecurringWordOfTheDayActionCommand(administratorProvider, recurringActionsHelper, recurringActionsRepository, timber, twitchUtils, usersRepository)
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
@@ -1298,25 +1298,25 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
 
-    @commands.command(name = 'removesupertriviarecurringaction', aliases = [ 'removetriviarecurringaction' ])
-    async def command_removesupertriviarecurringaction(self, ctx: Context):
+    @commands.command(name = 'removerecurringsupertriviaaction', aliases = [ 'removerecurringtriviaaction' ])
+    async def command_removerecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeSuperTriviaRecurringActionCommand.handleChatCommand(context)
+        await self.__removeRecurringSuperTriviaActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'removerecurringweatheraction')
+    async def command_removeweatherrecurringaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeRecurringWeatherActionCommand.handleChatCommand(context)
+
+    @commands.command(name = 'removerecurringwordofthedayaction', aliases = [ 'removerecurringwordaction', 'removerecurringwotdaction' ])
+    async def command_removerecurringwordofthedayaction(self, ctx: Context):
+        context = self.__twitchConfiguration.getContext(ctx)
+        await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'removetriviacontroller')
     async def command_removetriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeTriviaControllerCommand.handleCommand(context)
-
-    @commands.command(name = 'removeweatherrecurringaction')
-    async def command_removeweatherrecurringaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeWeatherRecurringActionCommand.handleChatCommand(context)
-
-    @commands.command(name = 'removewordofthedayrecurringaction', aliases = [ 'removewotdrecurringaction' ])
-    async def command_removewordofthedayrecurringaction(self, ctx: Context):
-        context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeWordOfTheDayRecurringActionCommand.handleChatCommand(context)
 
     @commands.command(name = 'setfuntoontoken')
     async def command_setfuntoontoken(self, ctx: Context):
