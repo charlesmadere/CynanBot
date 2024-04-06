@@ -9,16 +9,12 @@ from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
 from CynanBot.recurringActions.wizards.stepResult import StepResult
 from CynanBot.recurringActions.wizards.superTriviaStep import SuperTriviaStep
-from CynanBot.recurringActions.wizards.superTriviaSteps import SuperTriviaSteps
 from CynanBot.recurringActions.wizards.superTriviaWizard import \
     SuperTriviaWizard
 from CynanBot.recurringActions.wizards.weatherWizard import WeatherWizard
 from CynanBot.recurringActions.wizards.wordOfTheDayWizard import \
     WordOfTheDayWizard
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
-from CynanBot.twitch.configuration.twitchChannelProvider import \
-    TwitchChannelProvider
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.userInterface import UserInterface
@@ -47,15 +43,13 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
-        self.__twitchChannelProvider: TwitchChannelProvider | None = None
-
     async def __configureSuperTriviaWizard(
         self,
         content: str,
         wizard: SuperTriviaWizard,
-        channel: TwitchChannel,
         message: TwitchMessage
     ) -> bool:
+        channel = message.getChannel()
         steps = wizard.getSteps()
         step = steps.getStep()
 
@@ -96,7 +90,6 @@ class RecurringActionsWizardChatAction(AbsChatAction):
     async def __configureWeatherWizard(
         self,
         content: str,
-        channel: TwitchChannel,
         message: TwitchMessage,
         wizard: WeatherWizard
     ) -> bool:
@@ -106,7 +99,6 @@ class RecurringActionsWizardChatAction(AbsChatAction):
     async def __configureWordOfTheDayWizard(
         self,
         content: str,
-        channel: TwitchChannel,
         message: TwitchMessage,
         wizard: WordOfTheDayWizard
     ) -> bool:
@@ -122,40 +114,28 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         content = message.getContent()
         twitchChannelId = await message.getTwitchChannelId()
         wizard = await self.__recurringActionsWizard.get(twitchChannelId)
-        twitchChannelProvider = self.__twitchChannelProvider
 
-        if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None or twitchChannelProvider is None:
+        if not utils.isValidStr(content) or twitchChannelId != message.getAuthorId() or wizard is None:
             return False
-
-        twitchChannel = await twitchChannelProvider.getTwitchChannel(user.getHandle())
 
         if isinstance(wizard, SuperTriviaWizard):
             return await self.__configureSuperTriviaWizard(
                 content = content,
-                channel = twitchChannel,
                 wizard = wizard,
                 message = message
             )
         elif isinstance(wizard, WeatherWizard):
             return await self.__configureWeatherWizard(
                 content = content,
-                channel = twitchChannel,
                 message = message,
                 wizard = wizard
             )
         elif isinstance(wizard, WordOfTheDayWizard):
             return await self.__configureWordOfTheDayWizard(
                 content = content,
-                channel = twitchChannel,
                 message = message,
                 wizard = wizard
             )
         else:
             self.__timber.log('RecurringActionsWizardChatAction', f'Received unknown AbsWizard type: \"{wizard}\" ({message.getAuthorName()=}) ({message.getAuthorName()=}) ({twitchChannelId=}) ({message.getTwitchChannelName()=})')
             return False
-
-    def setTwitchChannelProvider(self, provider: TwitchChannelProvider | None):
-        if provider is not None and not isinstance(provider, TwitchChannelProvider):
-            raise TypeError(f'provider argument is malformed: \"{provider}\"')
-
-        self.__twitchChannelProvider = provider
