@@ -111,7 +111,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaQuestion: MultipleChoiceTriviaQuestion
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.MULTIPLE_CHOICE}: \"{triviaQuestion.getTriviaType()}\"')
 
@@ -148,7 +148,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         extras: dict[str, Any] | None = None
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.QUESTION_ANSWER}: \"{triviaQuestion.getTriviaType()}\"')
 
@@ -196,7 +196,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         triviaQuestion: TrueFalseTriviaQuestion
     ) -> TriviaAnswerCheckResult:
         if not isinstance(triviaQuestion, TrueFalseTriviaQuestion):
-            raise ValueError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
+            raise TypeError(f'triviaQuestion argument is malformed: \"{triviaQuestion}\"')
         elif triviaQuestion.getTriviaType() is not TriviaQuestionType.TRUE_FALSE:
             raise RuntimeError(f'TriviaType is not {TriviaQuestionType.TRUE_FALSE}: \"{triviaQuestion.getTriviaType()}\"')
 
