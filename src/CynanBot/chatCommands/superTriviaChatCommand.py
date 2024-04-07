@@ -1,3 +1,5 @@
+import traceback
+
 import CynanBot.misc.utils as utils
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
