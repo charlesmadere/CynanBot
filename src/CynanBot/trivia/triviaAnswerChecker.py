@@ -671,6 +671,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'sic erat scriptum'
 
         # technology
+        if word == 'cd':
+            yield 'compact disc'
         if word == 'cmyk':
             yield 'cyan magenta yellow black'
         if word == 'cpu':
@@ -678,12 +680,17 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'processor'
         if word == 'ddr':
             yield 'data delivery rate'
+        if word == 'disk':
+            yield 'disc'
         if word == 'dns':
             yield 'domain name system'
         if word in ('dp', 'dip'):
             yield 'density independent pixel'
         if word == 'dpi':
             yield 'dots per inch'
+        if word == 'dvd':
+            yield 'digital versatile disc'
+            yield 'digital video disc'
         if word == 'ff':
             yield 'firefox'
         if word == 'fps':
@@ -741,6 +748,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'uniform resource identifier'
         if word == 'url':
             yield 'uniform resource locator'
+        if word == 'vhs':
+            yield 'video home system'
         if word == 'www':
             yield 'world wide web'
 

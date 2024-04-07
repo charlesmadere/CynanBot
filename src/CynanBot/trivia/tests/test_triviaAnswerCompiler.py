@@ -244,7 +244,7 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileTextAnswer_withHdDvd(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('HD-DVD')
-        assert result == 'hd dvd'
+        assert result == 'hd-dvd'
 
     @pytest.mark.asyncio
     async def test_compileTextAnswer_withHelloWorld(self):
@@ -289,7 +289,7 @@ class TestTriviaAnswerCompiler():
     @pytest.mark.asyncio
     async def test_compileTextAnswer_withUnderscoreWords(self):
         result = await self.triviaAnswerCompiler.compileTextAnswer('de_dust')
-        assert result == 'de dust'
+        assert result == 'de_dust'
 
     @pytest.mark.asyncio
     async def test_compileTextAnswer_withWhitespaceString(self):

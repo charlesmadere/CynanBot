@@ -53,8 +53,8 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
         self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
         self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
-        self.__useSpaceInsteadRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s\s*', re.IGNORECASE)
+        self.__wordDashWordRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
         self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
 
@@ -160,9 +160,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # removes common phrase prefixes
         answer = self.__prefixRegEx.sub('', answer).strip()
 
-        # replaces some common special characters with a space
-        answer = self.__useSpaceInsteadRegEx.sub(' ', answer).strip()
-
         return answer
 
     async def compileTextAnswersList(
@@ -226,6 +223,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return specialCases
 
         specialCases = await self.__expandSpecialCasesUsDollar(answer)
+        if utils.hasItems(specialCases):
+            return specialCases
+
+        specialCases = await self.__expandSpecialCasesWordDashWord(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
@@ -321,6 +322,17 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             cleanedUsDollarAmount
         ]
 
+    async def __expandSpecialCasesWordDashWord(self, answer: str) -> list[str] | None:
+        splits = self.__wordDashWordRegEx.split(answer)
+        if splits is None or len(splits) == 0:
+            return None
+
+        specialCases: set[str] = set()
+        specialCases.add(''.join(splits))
+        specialCases.add(' '.join(splits))
+
+        return list(specialCases)
+
     # Expands 'groan/grown' into ['groan/grown', 'groan', 'grown'], or 'hello/world/123' into
     # ['hello/world/123', 'hello', 'world', '123']
     async def __expandSpecialCasesWordSlashWord(self, answer: str) -> list[str] | None:
@@ -411,7 +423,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             self.__timber.log('TriviaAnswerCompiler', f'Failed to convert roman numerals \"{romanNumerals}\" into an integer: {e}', e)
 
         if not utils.isValidInt(n):
-            return list()
+            return [ romanNumerals ]
 
         return [
             romanNumerals.lower(),
