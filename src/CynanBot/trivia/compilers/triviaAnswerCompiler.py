@@ -45,7 +45,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__multipleChoiceBracedAnswerRegEx: Pattern = re.compile(r'^\[([a-z])\]$', re.IGNORECASE)
         self.__newLineRegEx: Pattern = re.compile(r'(\n)+', re.IGNORECASE)
         self.__parenGroupRegEx: Pattern = re.compile(r'(\(.*?\))', re.IGNORECASE)
-        self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9 ]|(?<=\s)\s+', re.IGNORECASE)
+        self.__phraseAnswerRegEx: Pattern = re.compile(r'[^A-Za-z0-9\-_ ]|(?<=\s)\s+', re.IGNORECASE)
         self.__possessivePronounPrefixRegEx: Pattern = re.compile(r'^(her|his|my|our|their|your)\s+', re.IGNORECASE)
         self.__prefixRegEx: Pattern = re.compile(r'^(a|an|and|at|as|by|for|in|of|on|that|the|these|this|those|to|with((\s+that)|(\s+the)|(\s+these)|(\s+this)|(\s+those))?)\s+', re.IGNORECASE)
         self.__simpleTimeDurationRegEx: Pattern = re.compile(r'^((\d+)\s+(second|minute|hour|day|month|year)s?)(\s+old)?$', re.IGNORECASE)
@@ -53,6 +53,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         self.__thingIsPhraseRegEx: Pattern = re.compile(r'^(he\'?s?|it\'?s?|she\'?s?|they\'?(re)?|we\'?(re)?)\s+((are|is|was|were)\s+)?((a|an|are)\s+)?(\w+\s*\w*)$', re.IGNORECASE)
         self.__thingsThatArePhraseRegEx: Pattern = re.compile(r'^(things\s+that\s+are)\s+(\w+(\s+)?(\w+)?)$', re.IGNORECASE)
         self.__usDollarRegEx: Pattern = re.compile(r'^\$?((?!,$)[\d,.]+)(\s+\(?USD?\)?)?$', re.IGNORECASE)
+        self.__useSpaceInsteadRegEx: Pattern = re.compile(r'[\-_]', re.IGNORECASE)
         self.__whiteSpaceRegEx: Pattern = re.compile(r'\s\s*', re.IGNORECASE)
         self.__wordSlashWordRegEx: Pattern = re.compile(r'^(\w+)\/(\w+)(\/(\w+))?$', re.IGNORECASE)
         self.__wordTheWordRegEx: Pattern = re.compile(r'^(\w+)\s+(a|an|the)\s+(\w+)$', re.IGNORECASE)
@@ -153,11 +154,14 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         # convert special characters to latin where possible
         answer = await self.__fancyToLatin(answer)
 
-        # removes all special characters
+        # completely removes most special characters
         answer = self.__phraseAnswerRegEx.sub('', answer).strip()
 
         # removes common phrase prefixes
         answer = self.__prefixRegEx.sub('', answer).strip()
+
+        # replaces some common special characters with a space
+        answer = self.__useSpaceInsteadRegEx.sub(' ', answer).strip()
 
         return answer
 
