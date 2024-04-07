@@ -238,11 +238,12 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if utils.hasItems(specialCases):
             return specialCases
 
-        specialCases = await self.__expandSpecialCasesWordThenNumber(answer)
+        specialCases = await self.__expandSpecialCasesWordDashWord(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
-        specialCases = await self.__expandSpecialCasesWordDashWord(answer)
+        # this special case is intentionally at the end of the list
+        specialCases = await self.__expandSpecialCasesWordThenNumber(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
