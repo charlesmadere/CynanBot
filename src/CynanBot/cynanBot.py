@@ -62,6 +62,7 @@ from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
     RemoveRecurringWordOfTheDayActionCommand
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
+from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -92,9 +93,8 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                RemoveGlobalTriviaControllerCommand,
                                RemoveTriviaControllerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
-                               StubCommand, SuperTriviaCommand, SwQuoteCommand,
-                               TimeCommand, TranslateCommand,
-                               TriviaInfoCommand, TtsCommand,
+                               StubCommand, SwQuoteCommand, TimeCommand,
+                               TranslateCommand, TriviaInfoCommand, TtsCommand,
                                TwitchInfoCommand, TwitterCommand,
                                UnbanTriviaQuestionCommand, WeatherCommand,
                                WordCommand)
@@ -573,14 +573,14 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
-            self.__superTriviaCommand: AbsCommand = StubCommand()
+            self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
-            self.__superTriviaCommand: AbsCommand = SuperTriviaCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsCommand = StubCommand()
@@ -1298,17 +1298,17 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeGlobalTriviaControllerCommand.handleCommand(context)
 
-    @commands.command(name = 'removerecurringsupertriviaaction', aliases = [ 'removerecurringtriviaaction' ])
+    @commands.command(name = 'removerecurringsupertriviaaction', aliases = [ 'deleterecurringsupertriviaaction', 'deleterecurringtriviaaction', 'removerecurringtriviaaction' ])
     async def command_removerecurringsupertriviaaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringSuperTriviaActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removerecurringweatheraction')
+    @commands.command(name = 'removerecurringweatheraction', aliases = [ 'deleterecurringweatheraction' ])
     async def command_removeweatherrecurringaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWeatherActionCommand.handleChatCommand(context)
 
-    @commands.command(name = 'removerecurringwordofthedayaction', aliases = [ 'removerecurringwordaction', 'removerecurringwotdaction' ])
+    @commands.command(name = 'removerecurringwordofthedayaction', aliases = [ 'deleterecurringwordaction', 'deleterecurringwordofthedayaction', 'deleterecurringwotdaction', 'removerecurringwordaction', 'removerecurringwotdaction' ])
     async def command_removerecurringwordofthedayaction(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
         await self.__removeRecurringWordOfTheDayActionCommand.handleChatCommand(context)
@@ -1336,7 +1336,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'supertrivia')
     async def command_supertrivia(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__superTriviaCommand.handleCommand(context)
+        await self.__superTriviaCommand.handleChatCommand(context)
 
     @commands.command(name = 'swquote')
     async def command_swquote(self, ctx: Context):
