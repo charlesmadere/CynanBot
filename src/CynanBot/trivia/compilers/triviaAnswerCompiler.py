@@ -226,10 +226,6 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if utils.hasItems(specialCases):
             return specialCases
 
-        specialCases = await self.__expandSpecialCasesWordDashWord(answer)
-        if utils.hasItems(specialCases):
-            return specialCases
-
         specialCases = await self.__expandSpecialCasesWordSlashWord(answer)
         if utils.hasItems(specialCases):
             return specialCases
@@ -243,6 +239,10 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             return specialCases
 
         specialCases = await self.__expandSpecialCasesWordThenNumber(answer)
+        if utils.hasItems(specialCases):
+            return specialCases
+
+        specialCases = await self.__expandSpecialCasesWordDashWord(answer)
         if utils.hasItems(specialCases):
             return specialCases
 
