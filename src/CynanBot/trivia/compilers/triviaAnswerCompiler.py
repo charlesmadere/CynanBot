@@ -325,7 +325,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
     async def __expandSpecialCasesWordDashWord(self, answer: str) -> list[str] | None:
         splits = self.__wordDashWordRegEx.split(answer)
-        if splits is None or len(splits) == 0:
+        if splits is None or len(splits) <= 1:
             return None
 
         specialCases: set[str] = set()
