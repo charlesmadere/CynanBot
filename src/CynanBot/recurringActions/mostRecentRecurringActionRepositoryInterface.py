@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.recurringActions.mostRecentRecurringAction import \
     MostRecentRecurringAction
@@ -11,8 +10,9 @@ class MostRecentRecurringActionRepositoryInterface(ABC):
     @abstractmethod
     async def getMostRecentRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[MostRecentRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> MostRecentRecurringAction | None:
         pass
 
     @abstractmethod

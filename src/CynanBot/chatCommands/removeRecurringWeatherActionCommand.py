@@ -51,7 +51,10 @@ class RemoveRecurringWeatherActionCommand(AbsChatCommand):
             self.__timber.log('RemoveWeatherRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringAction = await self.__recurringActionsRepository.getWeatherRecurringAction(user.getHandle())
+        recurringAction = await self.__recurringActionsRepository.getWeatherRecurringAction(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
 
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring weather action')

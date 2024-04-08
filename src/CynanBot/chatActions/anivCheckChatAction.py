@@ -1,5 +1,4 @@
 import traceback
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -71,12 +70,14 @@ class AnivCheckChatAction(AbsChatAction):
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
         anivUserId = await self.__anivUserIdProvider.getAnivUserId()
 
+        if not utils.isValidStr(anivUserId):
+            return False
         if message.getAuthorId() != anivUserId:
             return False
         elif not user.isAnivContentScanningEnabled():

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
@@ -18,7 +17,7 @@ class SupStreamerChatAction(AbsChatAction):
 
     def __init__(
         self,
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
         cooldown: timedelta = timedelta(hours = 6),
         timeZone: tzinfo = timezone.utc
@@ -32,14 +31,14 @@ class SupStreamerChatAction(AbsChatAction):
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
         self.__cooldown: timedelta = cooldown
         self.__timeZone: tzinfo = timeZone
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:

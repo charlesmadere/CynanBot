@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 
@@ -37,7 +37,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '{}',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, SuperTriviaRecurringAction)
@@ -51,7 +52,8 @@ class TestRecurringActionsJsonParser():
             enabled = False,
             minutesBetween = 60,
             jsonString = '{}',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, SuperTriviaRecurringAction)
@@ -65,7 +67,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -76,7 +79,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = None,
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -87,7 +91,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '{}',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, WeatherRecurringAction)
@@ -98,7 +103,7 @@ class TestRecurringActionsJsonParser():
 
     @pytest.mark.asyncio
     async def test_parseWeather2(self):
-        jsonObject: Dict[str, Any] = {
+        jsonObject: dict[str, Any] = {
             'alertsOnly': True
         }
 
@@ -106,7 +111,8 @@ class TestRecurringActionsJsonParser():
             enabled = False,
             minutesBetween = 60,
             jsonString = json.dumps(jsonObject),
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, WeatherRecurringAction)
@@ -117,7 +123,7 @@ class TestRecurringActionsJsonParser():
 
     @pytest.mark.asyncio
     async def test_parseWeather3(self):
-        jsonObject: Dict[str, Any] = {
+        jsonObject: dict[str, Any] = {
             'alertsOnly': False
         }
 
@@ -125,7 +131,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = 120,
             jsonString = json.dumps(jsonObject),
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, WeatherRecurringAction)
@@ -140,7 +147,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -151,7 +159,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = None,
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -162,7 +171,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '{}',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, WordOfTheDayRecurringAction)
@@ -173,7 +183,7 @@ class TestRecurringActionsJsonParser():
 
     @pytest.mark.asyncio
     async def test_parseWordOfTheDay2(self):
-        jsonObject: Dict[str, Any] = {
+        jsonObject: dict[str, Any] = {
             'languageEntry': 'ja'
         }
 
@@ -181,7 +191,8 @@ class TestRecurringActionsJsonParser():
             enabled = False,
             minutesBetween = 180,
             jsonString = json.dumps(jsonObject),
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert isinstance(action, WordOfTheDayRecurringAction)
@@ -199,7 +210,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = '',
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -210,7 +222,8 @@ class TestRecurringActionsJsonParser():
             enabled = True,
             minutesBetween = None,
             jsonString = None,
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         assert action is None
@@ -219,7 +232,8 @@ class TestRecurringActionsJsonParser():
     async def test_toJson_withSuperTriviaAction(self):
         action = SuperTriviaRecurringAction(
             enabled = True,
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         jsonString = await self.parser.toJson(action)
@@ -228,7 +242,7 @@ class TestRecurringActionsJsonParser():
         assert not jsonString.isspace()
 
         jsonObject = json.loads(jsonString)
-        assert isinstance(jsonObject, Dict)
+        assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 0
 
     @pytest.mark.asyncio
@@ -236,6 +250,7 @@ class TestRecurringActionsJsonParser():
         action = WeatherRecurringAction(
             enabled = True,
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             alertsOnly = False
         )
 
@@ -245,7 +260,7 @@ class TestRecurringActionsJsonParser():
         assert not jsonString.isspace()
 
         jsonObject = json.loads(jsonString)
-        assert isinstance(jsonObject, Dict)
+        assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
         assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
 
@@ -254,6 +269,7 @@ class TestRecurringActionsJsonParser():
         action = WeatherRecurringAction(
             enabled = True,
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             alertsOnly = True
         )
 
@@ -263,7 +279,7 @@ class TestRecurringActionsJsonParser():
         assert not jsonString.isspace()
 
         jsonObject = json.loads(jsonString)
-        assert isinstance(jsonObject, Dict)
+        assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
         assert jsonObject.get('alertsOnly') is action.isAlertsOnly()
 
@@ -274,6 +290,7 @@ class TestRecurringActionsJsonParser():
         action = WordOfTheDayRecurringAction(
             enabled = True,
             twitchChannel = 'smCharles',
+            twitchChannelId = 'c',
             languageEntry = languageEntry
         )
 
@@ -283,7 +300,7 @@ class TestRecurringActionsJsonParser():
         assert not jsonString.isspace()
 
         jsonObject = json.loads(jsonString)
-        assert isinstance(jsonObject, Dict)
+        assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 1
         assert jsonObject.get('languageEntry') == languageEntry.getWotdApiCode()
 
@@ -291,7 +308,8 @@ class TestRecurringActionsJsonParser():
     async def test_toJson_withWordOfTheDayRecurringAction_languageEntryNone(self):
         action = WordOfTheDayRecurringAction(
             enabled = True,
-            twitchChannel = 'smCharles'
+            twitchChannel = 'smCharles',
+            twitchChannelId = 'c'
         )
 
         jsonString = await self.parser.toJson(action)
@@ -300,5 +318,5 @@ class TestRecurringActionsJsonParser():
         assert not jsonString.isspace()
 
         jsonObject = json.loads(jsonString)
-        assert isinstance(jsonObject, Dict)
+        assert isinstance(jsonObject, dict)
         assert len(jsonObject) == 0

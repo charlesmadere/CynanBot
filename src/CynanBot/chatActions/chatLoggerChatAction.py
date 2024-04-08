@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -15,13 +13,13 @@ class ChatLoggerChatAction(AbsChatAction):
         chatLogger: ChatLoggerInterface
     ):
         if not isinstance(chatLogger, ChatLoggerInterface):
-            raise ValueError(f'chatLogger argument is malformed: \"{chatLogger}\"')
+            raise TypeError(f'chatLogger argument is malformed: \"{chatLogger}\"')
 
         self.__chatLogger: ChatLoggerInterface = chatLogger
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:

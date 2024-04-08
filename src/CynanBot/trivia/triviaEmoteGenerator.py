@@ -52,6 +52,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['📚'] = None
         emotesDict['💼'] = None
         emotesDict['🚌'] = None
+        emotesDict['🐪'] = { '🐫' }
         emotesDict['🍬'] = { '🍭' }
         emotesDict['📇'] = None
         emotesDict['🥕'] = None
@@ -61,7 +62,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['📋'] = None
         emotesDict['💽'] = { '📀', '💿' }
         emotesDict['🍪'] = { '🥠' }
-        emotesDict['🐄'] = { '🐮' }
+        emotesDict['🐄'] = { '🐮', '🐂', '🐃' }
         emotesDict['🦀'] = None
         emotesDict['🖍️'] = None
         emotesDict['🧁'] = None
@@ -69,15 +70,18 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🧬'] = None
         emotesDict['🐬'] = None
         emotesDict['🐉'] = { '🐲', '🦖' }
+        emotesDict['🔌'] = { '⚡' }
         emotesDict['🐘'] = None
         emotesDict['🧐'] = None
         emotesDict['🚒'] = None
+        emotesDict['🐟'] = { '🐡', '🎣', '🐠' }
         emotesDict['💾'] = None
         emotesDict['🐸'] = None
         emotesDict['👻'] = None
         emotesDict['🍇'] = None
         emotesDict['🍏'] = None
         emotesDict['🚁'] = None
+        emotesDict['🐎'] = { '🐴' }
         emotesDict['🌶️'] = None
         emotesDict['🎃'] = None
         emotesDict['📒'] = None
@@ -94,9 +98,10 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🍐'] = None
         emotesDict['🐧'] = None
         emotesDict['🥧'] = None
-        emotesDict['🐖'] = { '🐷' }
+        emotesDict['🐖'] = { '🐷', '🐗' }
         emotesDict['🍍'] = None
         emotesDict['🍕'] = None
+        emotesDict['🍿'] = { '🌽' }
         emotesDict['🥔'] = None
         emotesDict['🍎'] = None
         emotesDict['🌈'] = None
@@ -115,11 +120,12 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         emotesDict['🤔'] = None
         emotesDict['💭'] = None
         emotesDict['🐅'] = { '🐯' }
+        emotesDict['🎩'] = None
         emotesDict['📐'] = None
         emotesDict['🌷'] = { '🌹' }
         emotesDict['🐢'] = None
         emotesDict['🌊'] = { '💧', '💦' }
-        emotesDict['🐋'] = None
+        emotesDict['🐋'] = { '🐳' }
 
         return emotesDict
 
@@ -129,7 +135,10 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
+        emoteIndex = await self.__getCurrentEmoteIndexFor(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
 
         if emoteIndex < 0 or emoteIndex >= len(self.__emotesList):
             self.__timber.log('TriviaEmoteGenerator', f'Encountered out of bounds emoteIndex for \"{twitchChannel}\": {emoteIndex}')
@@ -137,9 +146,15 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         return self.__emotesList[emoteIndex]
 
-    async def __getCurrentEmoteIndexFor(self, twitchChannel: str) -> int:
+    async def __getCurrentEmoteIndexFor(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> int:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -172,8 +187,12 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannel)
-        emoteIndex = (emoteIndex + 1) % len(self.__emotesList)
+        currentEmoteIndex = await self.__getCurrentEmoteIndexFor(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
+        newEmoteIndex = (currentEmoteIndex + 1) % len(self.__emotesList)
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -182,11 +201,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
                 VALUES ($1, $2)
                 ON CONFLICT (twitchchannel) DO UPDATE SET emoteindex = EXCLUDED.emoteindex
             ''',
-            emoteIndex, twitchChannel
+            newEmoteIndex, twitchChannel
         )
 
         await connection.close()
-        return self.__emotesList[emoteIndex]
+        return self.__emotesList[newEmoteIndex]
 
     def getRandomEmote(self) -> str:
         return random.choice(self.__emotesList)
@@ -199,9 +218,8 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
             return emote
 
         for emoteKey, equivalentEmotes in self.__emotesDict.items():
-            if equivalentEmotes is not None and len(equivalentEmotes) >= 1:
-                if emote in equivalentEmotes:
-                    return emoteKey
+            if equivalentEmotes is not None and len(equivalentEmotes) >= 1 and emote in equivalentEmotes:
+                return emoteKey
 
         return None
 

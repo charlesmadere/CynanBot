@@ -20,13 +20,13 @@ class PkmnEvolvePointRedemption(AbsChannelPointRedemption):
         twitchUtils: TwitchUtilsInterface
     ):
         if not isinstance(funtoonRepository, FuntoonRepositoryInterface):
-            raise ValueError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
+            raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
         self.__funtoonRepository: FuntoonRepositoryInterface = funtoonRepository
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository

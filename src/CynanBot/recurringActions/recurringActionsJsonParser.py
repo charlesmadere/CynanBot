@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
@@ -26,9 +26,9 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         timber: TimberInterface
     ):
         if not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise ValueError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
@@ -36,30 +36,33 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
     async def parseSuperTrivia(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[SuperTriviaRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> SuperTriviaRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
 
         return SuperTriviaRecurringAction(
-            twitchChannel = twitchChannel,
             enabled = enabled,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween
         )
 
     async def parseWeather(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[WeatherRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WeatherRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: Optional[Dict[str, Any]] = json.loads(jsonString)
+        jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
         alertsOnly = utils.getBoolFromDict(
             d = jsonContents,
@@ -68,23 +71,25 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         )
 
         return WeatherRecurringAction(
-            twitchChannel = twitchChannel,
             alertsOnly = alertsOnly,
             enabled = enabled,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween
         )
 
     async def parseWordOfTheDay(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[WordOfTheDayRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WordOfTheDayRecurringAction | None:
         if not utils.isValidStr(jsonString):
             return None
 
-        jsonContents: Optional[Dict[str, Any]] = json.loads(jsonString)
+        jsonContents: dict[str, Any] | None = json.loads(jsonString)
 
         wotdApiCode = utils.getStrFromDict(
             d = jsonContents,
@@ -92,7 +97,7 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
             fallback = ''
         )
 
-        languageEntry: Optional[LanguageEntry] = None
+        languageEntry: LanguageEntry | None = None
 
         if utils.isValidStr(wotdApiCode):
             languageEntry = await self.__languagesRepository.getLanguageForWotdApiCode(
@@ -103,22 +108,23 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
                 self.__timber.log('RecurringActionsJsonParser', f'Unable to find language for Word of the Day API code \"{wotdApiCode}\"')
 
         return WordOfTheDayRecurringAction(
-            twitchChannel = twitchChannel,
             enabled = enabled,
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween,
             languageEntry = languageEntry
         )
 
     async def __superTriviaToJson(self, action: SuperTriviaRecurringAction) -> str:
         if not isinstance(action, SuperTriviaRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        jsonContents: Dict[str, Any] = dict()
+        jsonContents: dict[str, Any] = dict()
         return json.dumps(jsonContents)
 
     async def toJson(self, action: RecurringAction) -> str:
         if not isinstance(action, RecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         actionType = action.getActionType()
 
@@ -133,9 +139,9 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
     async def __weatherToJson(self, action: WeatherRecurringAction) -> str:
         if not isinstance(action, WeatherRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        jsonContents: Dict[str, Any] = {
+        jsonContents: dict[str, Any] = {
             'alertsOnly': action.isAlertsOnly()
         }
 
@@ -143,15 +149,15 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
 
     async def __wordOfTheDayToJson(self, action: WordOfTheDayRecurringAction) -> str:
         if not isinstance(action, WordOfTheDayRecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         languageEntry = action.getLanguageEntry()
-        wotdApiCode: Optional[str] = None
+        wotdApiCode: str | None = None
 
         if languageEntry is not None:
             wotdApiCode = languageEntry.getWotdApiCode()
 
-        jsonContents: Dict[str, Any] = dict()
+        jsonContents: dict[str, Any] = dict()
 
         if utils.isValidStr(wotdApiCode):
             jsonContents['languageEntry'] = wotdApiCode

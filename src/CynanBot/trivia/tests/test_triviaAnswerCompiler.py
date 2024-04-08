@@ -297,6 +297,26 @@ class TestTriviaAnswerCompiler():
         assert result == ''
 
     @pytest.mark.asyncio
+    async def test_compileTextAnswer_withZero(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswer('zero')
+        assert result == 'zero'
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswer_with0(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswer('0')
+        assert result == '0'
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswer_with1Second(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswer('1 second')
+        assert result == '1 second'
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswer_with6MonthsOld(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswer('6 months old')
+        assert result == '6 months old'
+
+    @pytest.mark.asyncio
     async def test_compileTextAnswersList_withDuplicateWords(self):
         result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'hello', 'Hello', 'HELLO', 'world', 'World', 'World!' ])
         assert result is not None
@@ -350,6 +370,14 @@ class TestTriviaAnswerCompiler():
         assert len(result) == 2
         assert 'mambo number 5' in result
         assert 'mambo 5' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withHdDvd(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'HD-DVD' ])
+        assert result is not None
+        assert len(result) == 2
+        assert 'hd dvd' in result
+        assert 'hddvd' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_withHeIsAVampire(self):
@@ -530,6 +558,21 @@ class TestTriviaAnswerCompiler():
         assert len(result) == 2
         assert 'your name' in result
         assert 'name' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withZero(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'zero' ])
+        assert result is not None
+        assert len(result) == 1
+        assert 'zero' in result
+
+    @pytest.mark.asyncio
+    async def test_compileTextAnswersList_with0Hours(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ '0 hours' ])
+        assert result is not None
+        assert len(result) == 2
+        assert '0 hours' in result
+        assert '0' in result
 
     @pytest.mark.asyncio
     async def test_compileTextAnswersList_with3MonthsOld(self):

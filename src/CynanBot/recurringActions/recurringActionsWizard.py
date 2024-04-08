@@ -87,7 +87,11 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = SuperTriviaWizard()
+        wizard = SuperTriviaWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('RecurringActionsWizard', f'Started new Super Trivia wizard for {twitchChannel}:{twitchChannelId}')
 
@@ -103,7 +107,11 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = WeatherWizard()
+        wizard = WeatherWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('RecurringActionsWizard', f'Started new Weather wizard for {twitchChannel}:{twitchChannelId}')
 
@@ -119,7 +127,11 @@ class RecurringActionsWizard(RecurringActionsWizardInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        wizard = WordOfTheDayWizard()
+        wizard = WordOfTheDayWizard(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
         self.__wizards[twitchChannelId] = wizard
         self.__timber.log('RecurringActionsWizard', f'Started new Word Of The Day wizard for {twitchChannel}:{twitchChannelId}')
 

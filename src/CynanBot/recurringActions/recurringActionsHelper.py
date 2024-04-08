@@ -1,5 +1,3 @@
-from typing import Optional
-
 from CynanBot.recurringActions.recurringAction import RecurringAction
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
     RecurringActionsHelperInterface
@@ -29,10 +27,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
 
-    async def disableRecurringAction(
-        self,
-        recurringAction: Optional[RecurringAction]
-    ) -> bool:
+    async def disableRecurringAction(self, recurringAction: RecurringAction | None) -> bool:
         if recurringAction is not None and not isinstance(recurringAction, RecurringAction):
             raise TypeError(f'recurringAction argument is malformed: \"{recurringAction}\"')
 

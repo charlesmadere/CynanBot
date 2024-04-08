@@ -5,11 +5,11 @@ from CynanBot.aniv.anivUserIdProviderInterface import \
 
 class AnivUserIdProvider(AnivUserIdProviderInterface):
 
-    def __init__(self, anivUserId: str = '749050409'):
-        if not utils.isValidStr(anivUserId):
-            raise ValueError(f'anivUserId argument is malformed: \"{anivUserId}\"')
+    def __init__(self, anivUserId: str | None = '749050409'):
+        if anivUserId is not None and not isinstance(anivUserId, str):
+            raise TypeError(f'anivUserId argument is malformed: \"{anivUserId}\"')
 
-        self.__anivUserId: str = anivUserId
+        self.__anivUserId: str | None = anivUserId
 
-    async def getAnivUserId(self) -> str:
+    async def getAnivUserId(self) -> str | None:
         return self.__anivUserId

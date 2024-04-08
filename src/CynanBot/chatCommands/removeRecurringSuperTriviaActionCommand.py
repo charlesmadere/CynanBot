@@ -51,7 +51,10 @@ class RemoveRecurringSuperTriviaActionCommand(AbsChatCommand):
             self.__timber.log('RemoveSuperTriviaRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringAction = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(user.getHandle())
+        recurringAction = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
 
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring super trivia action')

@@ -4,7 +4,6 @@ import random
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
 from queue import SimpleQueue
-from typing import Dict, List, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -66,7 +65,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         triviaGameMachine: TriviaGameMachineInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        weatherRepository: Optional[WeatherRepositoryInterface],
+        weatherRepository: WeatherRepositoryInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface,
         queueSleepTimeSeconds: float = 3,
         refreshSleepTimeSeconds: float = 90,
@@ -130,7 +129,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__weatherRepository: Optional[WeatherRepositoryInterface] = weatherRepository
+        self.__weatherRepository: WeatherRepositoryInterface | None = weatherRepository
         self.__wordOfTheDayRepository: WordOfTheDayRepositoryInterface = wordOfTheDayRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
         self.__refreshSleepTimeSeconds: float = refreshSleepTimeSeconds
@@ -140,12 +139,12 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
-        self.__eventListener: Optional[RecurringActionEventListener] = None
+        self.__eventListener: RecurringActionEventListener | None = None
         self.__eventQueue: SimpleQueue[RecurringEvent] = SimpleQueue()
 
-    async def __fetchViableUsers(self) -> List[UserInterface]:
+    async def __fetchViableUsers(self) -> list[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
-        usersToRemove: List[UserInterface] = list()
+        usersToRemove: list[UserInterface] = list()
 
         for user in users:
             if not user.isEnabled() or not user.areRecurringActionsEnabled():
@@ -156,14 +155,24 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         return users
 
-    async def __findDueRecurringAction(self, user: UserInterface) -> Optional[RecurringAction]:
-        if not isinstance(user, UserInterface):
+    async def __findDueRecurringAction(
+        self,
+        twitchChannelId: str,
+        user: UserInterface
+    ) -> RecurringAction | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        actionTypes: List[RecurringActionType] = list(RecurringActionType)
-        action: Optional[RecurringAction] = None
+        actionTypes: list[RecurringActionType] = list(RecurringActionType)
+        action: RecurringAction | None = None
 
-        mostRecentAction = await self.__mostRecentRecurringActionsRepository.getMostRecentRecurringAction(user.getHandle())
+        mostRecentAction = await self.__mostRecentRecurringActionsRepository.getMostRecentRecurringAction(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId
+        )
+
         now = datetime.now(self.__timeZone)
 
         while len(actionTypes) >= 1 and action is None:
@@ -171,11 +180,20 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             actionTypes.remove(actionType)
 
             if actionType is RecurringActionType.SUPER_TRIVIA:
-                action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(user.getHandle())
+                action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
+                    twitchChannel = user.getHandle(),
+                    twitchChannelId = twitchChannelId
+                )
             elif actionType is RecurringActionType.WEATHER:
-                action = await self.__recurringActionsRepository.getWeatherRecurringAction(user.getHandle())
+                action = await self.__recurringActionsRepository.getWeatherRecurringAction(
+                    twitchChannel = user.getHandle(),
+                    twitchChannelId = twitchChannelId
+                )
             elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-                action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(user.getHandle())
+                action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
+                    twitchChannel = user.getHandle(),
+                    twitchChannelId = twitchChannelId
+                )
             else:
                 raise RuntimeError(f'Unknown RecurringActionType: \"{actionType}\"')
 
@@ -245,7 +263,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(SuperTriviaRecurringEvent(
-            twitchChannel = action.getTwitchChannel()
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId()
         ))
 
         # delay to allow users to prepare for an incoming trivia question
@@ -272,7 +291,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         location = await self.__locationsRepository.getLocation(locationId)
-        weatherReport: Optional[WeatherReport] = None
+        weatherReport: WeatherReport | None = None
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
@@ -285,8 +304,9 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             return False
 
         await self.__submitEvent(WeatherRecurringEvent(
-            twitchChannel = action.getTwitchChannel(),
             alertsOnly = action.isAlertsOnly(),
+            twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             weatherReport = weatherReport
         ))
 
@@ -307,7 +327,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if languageEntry is None:
             return False
 
-        wordOfTheDayResponse: Optional[WordOfTheDayResponse] = None
+        wordOfTheDayResponse: WordOfTheDayResponse | None = None
 
         try:
             wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
@@ -320,6 +340,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         await self.__submitEvent(WordOfTheDayRecurringEvent(
             languageEntry = languageEntry,
             twitchChannel = action.getTwitchChannel(),
+            twitchChannelId = action.getTwitchChannelId(),
             wordOfTheDayResponse = wordOfTheDayResponse
         ))
 
@@ -328,11 +349,20 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
     async def __refreshActions(self):
         users = await self.__fetchViableUsers()
 
-        userToRecurringAction: Dict[UserInterface, RecurringAction] = dict()
-        twitchHandles: List[str] = list()
+        userToRecurringAction: dict[UserInterface, RecurringAction] = dict()
+        twitchHandles: list[str] = list()
 
         for user in users:
-            action = await self.__findDueRecurringAction(user)
+            twitchChannelId = await self.__userIdsRepository.fetchUserId(user.getHandle())
+
+            if not utils.isValidStr(twitchChannelId):
+                self.__timber.log('RecurringActionsMachine', f'Unable to find Twitch user ID for \"{user.getHandle()}\" when refreshing recurring actions')
+                continue
+
+            action = await self.__findDueRecurringAction(
+                twitchChannelId = twitchChannelId,
+                user = user
+            )
 
             if action is not None:
                 userToRecurringAction[user] = action
@@ -362,7 +392,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
             await asyncio.sleep(self.__refreshSleepTimeSeconds)
 
-    def setEventListener(self, listener: Optional[RecurringActionEventListener]):
+    def setEventListener(self, listener: RecurringActionEventListener | None):
         if listener is not None and not isinstance(listener, RecurringActionEventListener):
             raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
@@ -373,7 +403,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             eventListener = self.__eventListener
 
             if eventListener is not None:
-                events: List[RecurringEvent] = list()
+                events: list[RecurringEvent] = list()
 
                 try:
                     while not self.__eventQueue.empty():

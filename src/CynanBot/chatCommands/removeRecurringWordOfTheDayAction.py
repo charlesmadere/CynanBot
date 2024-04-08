@@ -51,7 +51,10 @@ class RemoveRecurringWordOfTheDayActionCommand(AbsChatCommand):
             self.__timber.log('RemoveWordOfTheDayRecurringActionCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringAction = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(user.getHandle())
+        recurringAction = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
 
         if recurringAction is None:
             await self.__twitchUtils.safeSend(ctx, f'⚠ Your channel has no recurring word of the day action')

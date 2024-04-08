@@ -1,5 +1,3 @@
-from typing import List
-
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
@@ -52,18 +50,22 @@ class GetRecurringActionsCommand(AbsChatCommand):
             self.__timber.log('GetRecurringActionsCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
-        recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(user.getHandle())
+        recurringActions = await self.__recurringActionsRepository.getAllRecurringActions(
+            twitchChannel = user.getHandle(),
+            twitchChannelId = userId
+        )
+
         await self.__twitchUtils.safeSend(ctx, await self.__toStr(recurringActions))
         self.__timber.log('GetRecurringActionsCommand', f'Handled !getrecurringactions command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
-    async def __toStr(self, recurringActions: List[RecurringAction]) -> str:
-        if not isinstance(recurringActions, List):
+    async def __toStr(self, recurringActions: list[RecurringAction]) -> str:
+        if not isinstance(recurringActions, list):
             raise TypeError(f'recurringActions argument is malformed: \"{recurringActions}\"')
 
         if len(recurringActions) == 0:
             return 'ⓘ Your channel has no recurring actions'
 
-        recurringActionsStrs: List[str] = list()
+        recurringActionsStrs: list[str] = list()
 
         for recurringAction in recurringActions:
             recurringActionsStrs.append(recurringAction.getActionType().toReadableStr())

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -11,17 +11,19 @@ class WeatherRecurringAction(RecurringAction):
         self,
         enabled: bool,
         twitchChannel: str,
+        twitchChannelId: str,
         alertsOnly: bool = True,
-        minutesBetween: Optional[int] = None
+        minutesBetween: int | None = None
     ):
         super().__init__(
             enabled = enabled,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween
         )
 
         if not utils.isValidBool(alertsOnly):
-            raise ValueError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
+            raise TypeError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
 
         self.__alertsOnly: bool = alertsOnly
 
@@ -31,15 +33,12 @@ class WeatherRecurringAction(RecurringAction):
     def isAlertsOnly(self) -> bool:
         return self.__alertsOnly
 
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'actionType': self.getActionType(),
             'alertsOnly': self.__alertsOnly,
             'enabled': self.isEnabled(),
             'minutesBetween': self.getMinutesBetween(),
-            'twitchChannel': self.getTwitchChannel()
+            'twitchChannel': self.getTwitchChannel(),
+            'twitchChannelId': self.getTwitchChannelId()
         }

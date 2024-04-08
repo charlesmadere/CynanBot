@@ -1,5 +1,4 @@
 from datetime import datetime, timezone, tzinfo
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -42,10 +41,13 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
 
     async def getMostRecentRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[MostRecentRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> MostRecentRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(

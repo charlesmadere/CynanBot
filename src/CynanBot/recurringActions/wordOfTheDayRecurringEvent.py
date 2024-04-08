@@ -1,3 +1,4 @@
+from typing import Any
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
@@ -10,9 +11,13 @@ class WordOfTheDayRecurringEvent(RecurringEvent):
         self,
         languageEntry: LanguageEntry,
         twitchChannel: str,
+        twitchChannelId: str,
         wordOfTheDayResponse: WordOfTheDayResponse
     ):
-        super().__init__(twitchChannel = twitchChannel)
+        super().__init__(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
 
         if not isinstance(languageEntry, LanguageEntry):
             raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
@@ -30,3 +35,12 @@ class WordOfTheDayRecurringEvent(RecurringEvent):
 
     def getWordOfTheDayResponse(self) -> WordOfTheDayResponse:
         return self.__wordOfTheDayResponse
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'eventType': self.getEventType(),
+            'languageEntry': self.__languageEntry,
+            'twitchChannel': self.getTwitchChannel(),
+            'twitchChannelId': self.getTwitchChannelId(),
+            'wordOfTheDayResponse': self.getWordOfTheDayResponse()
+        }

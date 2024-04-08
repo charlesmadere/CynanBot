@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.recurringActions.recurringActionEventListener import \
     RecurringActionEventListener
@@ -8,7 +7,7 @@ from CynanBot.recurringActions.recurringActionEventListener import \
 class RecurringActionsMachineInterface(ABC):
 
     @abstractmethod
-    def setEventListener(self, listener: Optional[RecurringActionEventListener]):
+    def setEventListener(self, listener: RecurringActionEventListener | None):
         pass
 
     @abstractmethod

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -11,29 +11,27 @@ class WordOfTheDayRecurringAction(RecurringAction):
         self,
         enabled: bool,
         twitchChannel: str,
-        minutesBetween: Optional[int] = None,
-        languageEntry: Optional[LanguageEntry] = None
+        twitchChannelId: str,
+        minutesBetween: int | None = None,
+        languageEntry: LanguageEntry | None = None
     ):
         super().__init__(
             enabled = enabled,
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             minutesBetween = minutesBetween
         )
 
         if languageEntry is not None and not isinstance(languageEntry, LanguageEntry):
-            raise ValueError(f'languageEntry argument is malformed: \"{languageEntry}\"')
+            raise TypeError(f'languageEntry argument is malformed: \"{languageEntry}\"')
 
-        self.__languageEntry: Optional[LanguageEntry] = languageEntry
+        self.__languageEntry: LanguageEntry | None = languageEntry
 
     def getActionType(self) -> RecurringActionType:
         return RecurringActionType.WORD_OF_THE_DAY
 
-    def getLanguageEntry(self) -> Optional[LanguageEntry]:
+    def getLanguageEntry(self) -> LanguageEntry | None:
         return self.__languageEntry
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
 
     def requireLanguageEntry(self) -> LanguageEntry:
         languageEntry = self.__languageEntry
@@ -43,11 +41,12 @@ class WordOfTheDayRecurringAction(RecurringAction):
 
         return languageEntry
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'actionType': self.getActionType(),
             'enabled': self.isEnabled(),
             'languageEntry': self.__languageEntry,
             'minutesBetween': self.getMinutesBetween(),
-            'twitchChannel': self.getTwitchChannel()
+            'twitchChannel': self.getTwitchChannel(),
+            'twitchChannelId': self.getTwitchChannelId()
         }

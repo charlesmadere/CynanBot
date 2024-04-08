@@ -4,8 +4,6 @@ from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Pattern
 
 import CynanBot.misc.utils as utils
-from CynanBot.aniv.anivUserIdProviderInterface import \
-    AnivUserIdProviderInterface
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
@@ -51,7 +49,6 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
-        anivUserIdProvider: AnivUserIdProviderInterface,
         cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
@@ -66,8 +63,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         minimumFollowDuration: timedelta = timedelta(weeks = 1),
         timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
-            raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
         if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
             raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
@@ -95,7 +90,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository

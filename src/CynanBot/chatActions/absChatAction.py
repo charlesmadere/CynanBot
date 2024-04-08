@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.twitch.configuration.twitchMessage import TwitchMessage
@@ -11,7 +10,7 @@ class AbsChatAction(ABC):
     @abstractmethod
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:

@@ -1,3 +1,5 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
 from CynanBot.recurringActions.recurringEventType import RecurringEventType
@@ -10,9 +12,13 @@ class WeatherRecurringEvent(RecurringEvent):
         self,
         alertsOnly: bool,
         twitchChannel: str,
+        twitchChannelId: str,
         weatherReport: WeatherReport
     ):
-        super().__init__(twitchChannel = twitchChannel)
+        super().__init__(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
 
         if not utils.isValidBool(alertsOnly):
             raise TypeError(f'alertsOnly argument is malformed: \"{alertsOnly}\"')
@@ -30,3 +36,12 @@ class WeatherRecurringEvent(RecurringEvent):
 
     def isAlertsOnly(self) -> bool:
         return self.__alertsOnly
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'alertsOnly': self.__alertsOnly,
+            'eventType': self.getEventType(),
+            'twitchChannel': self.getTwitchChannel(),
+            'twitchChannelId': self.getTwitchChannelId(),
+            'weatherReport': self.getWeatherReport()
+        }

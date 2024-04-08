@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.recurringActions.recurringAction import RecurringAction
 from CynanBot.recurringActions.superTriviaRecurringAction import \
@@ -16,30 +15,33 @@ class RecurringActionsJsonParserInterface(ABC):
     async def parseSuperTrivia(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[SuperTriviaRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> SuperTriviaRecurringAction | None:
         pass
 
     @abstractmethod
     async def parseWeather(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[WeatherRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WeatherRecurringAction | None:
         pass
 
     @abstractmethod
     async def parseWordOfTheDay(
         self,
         enabled: bool,
-        minutesBetween: Optional[int],
-        jsonString: Optional[str],
-        twitchChannel: str
-    ) -> Optional[WordOfTheDayRecurringAction]:
+        minutesBetween: int | None,
+        jsonString: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WordOfTheDayRecurringAction | None:
         pass
 
     @abstractmethod

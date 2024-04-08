@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -28,11 +28,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         timber: TimberInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(recurringActionsJsonParser, RecurringActionsJsonParserInterface):
-            raise ValueError(f'recurringActionsJsonParser argument is malformed: \"{recurringActionsJsonParser}\"')
+            raise TypeError(f'recurringActionsJsonParser argument is malformed: \"{recurringActionsJsonParser}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__recurringActionsJsonParser: RecurringActionsJsonParserInterface = recurringActionsJsonParser
@@ -42,22 +42,32 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
     async def getAllRecurringActions(
         self,
-        twitchChannel: str
-    ) -> List[RecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> list[RecurringAction]:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
-        recurringActions: List[RecurringAction] = list()
+        recurringActions: list[RecurringAction] = list()
 
-        superTrivia = await self.getSuperTriviaRecurringAction(twitchChannel)
+        superTrivia = await self.getSuperTriviaRecurringAction(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
         if superTrivia is not None and superTrivia.isEnabled():
             recurringActions.append(superTrivia)
 
-        weather = await self.getWeatherRecurringAction(twitchChannel)
+        weather = await self.getWeatherRecurringAction(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
         if weather is not None and weather.isEnabled():
             recurringActions.append(weather)
 
-        wordOfTheDay = await self.getWordOfTheDayRecurringAction(twitchChannel)
+        wordOfTheDay = await self.getWordOfTheDayRecurringAction(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
         if wordOfTheDay is not None and wordOfTheDay.isEnabled():
             recurringActions.append(wordOfTheDay)
 
@@ -70,12 +80,15 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     async def __getRecurringAction(
         self,
         actionType: RecurringActionType,
-        twitchChannel: str
-    ) -> Optional[List[Any]]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> list[Any] | None:
         if not isinstance(actionType, RecurringActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -89,24 +102,26 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
         await connection.close()
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             return record
         else:
             return None
 
     async def getSuperTriviaRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[SuperTriviaRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> SuperTriviaRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.SUPER_TRIVIA,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         return await self.__recurringActionsJsonParser.parseSuperTrivia(
@@ -118,17 +133,19 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
     async def getWeatherRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[WeatherRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WeatherRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.WEATHER,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         return await self.__recurringActionsJsonParser.parseWeather(
@@ -140,17 +157,19 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
     async def getWordOfTheDayRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[WordOfTheDayRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WordOfTheDayRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.WORD_OF_THE_DAY,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         return await self.__recurringActionsJsonParser.parseWordOfTheDay(
@@ -200,7 +219,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
 
     async def setRecurringAction(self, action: RecurringAction):
         if not isinstance(action, RecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
 
         configurationJson = await self.__recurringActionsJsonParser.toJson(action)
 
@@ -217,9 +236,9 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         configurationJson: str
     ):
         if not isinstance(action, RecurringAction):
-            raise ValueError(f'action argument is malformed: \"{action}\"')
+            raise TypeError(f'action argument is malformed: \"{action}\"')
         elif not utils.isValidStr(configurationJson):
-            raise ValueError(f'configurationJson argument is malformed: \"{configurationJson}\"')
+            raise TypeError(f'configurationJson argument is malformed: \"{configurationJson}\"')
 
         isEnabled = utils.boolToNum(action.isEnabled())
 

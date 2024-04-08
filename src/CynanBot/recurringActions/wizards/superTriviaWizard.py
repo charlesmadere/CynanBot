@@ -6,7 +6,16 @@ from CynanBot.recurringActions.wizards.superTriviaSteps import SuperTriviaSteps
 
 class SuperTriviaWizard(AbsWizard):
 
-    def __init__(self):
+    def __init__(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ):
+        super().__init__(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
+
         self.__steps = SuperTriviaSteps()
         self.__minutesBetween: int | None = None
 

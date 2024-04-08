@@ -1,5 +1,3 @@
-from typing import Optional
-
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
@@ -17,16 +15,16 @@ class PersistAllUsersChatAction(AbsChatAction):
         userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
     async def handleChat(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:

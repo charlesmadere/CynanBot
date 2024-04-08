@@ -1,6 +1,6 @@
 import re
 from re import Match
-from typing import Dict, List, Optional, Pattern, Set, Tuple
+from typing import Pattern, Tuple
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivContentCode import AnivContentCode
@@ -28,18 +28,18 @@ class AnivContentScanner(AnivContentScannerInterface):
         self.__contentScanner: ContentScannerInterface = contentScanner
         self.__timber: TimberInterface = timber
 
-        self.__parens: Dict[str, str] = {
+        self.__parens: dict[str, str] = {
             '[': ']',
             '(': ')',
             '{': '}'
         }
 
-        self.__quotes: Dict[str, str] = {
+        self.__quotes: dict[str, str] = {
             '“': '”',
             '「': '」'
         }
 
-        self.__twitchEmojiPatterns: List[Pattern] = [
+        self.__twitchEmojiPatterns: list[Pattern] = [
             re.compile(r'^[BR:;]-?[\)]$'),
             re.compile(r'^[:>]\($'),
             re.compile(r'^<3$')
@@ -50,7 +50,7 @@ class AnivContentScanner(AnivContentScannerInterface):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         splits = utils.getCleanedSplits(message)
-        indexesToBlank: List[int] = list()
+        indexesToBlank: list[int] = list()
 
         for index, split in enumerate(splits):
             emojiMatch: Match | None = None
@@ -74,25 +74,25 @@ class AnivContentScanner(AnivContentScannerInterface):
 
     async def __containsMatchingCharacterPairs(
         self,
-        characterPairs: Dict[str, str],
+        characterPairs: dict[str, str],
         message: str
     ) -> bool:
-        if not isinstance(characterPairs, Dict):
+        if not isinstance(characterPairs, dict):
             raise TypeError(f'characterPairs argument is malformed: \"{characterPairs}\"')
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
         stack: Stack[str] = Stack()
-        keys: Set[str] = set(characterPairs.keys())
-        values: Set[str] = set(characterPairs.values())
-        items: List[Tuple[str, str]] = list(characterPairs.items())
+        keys: set[str] = set(characterPairs.keys())
+        values: set[str] = set(characterPairs.values())
+        items: list[Tuple[str, str]] = list(characterPairs.items())
 
         try:
             for character in message:
                 if character in keys:
                     stack.push(character)
                 elif character in values:
-                    startCharacter: Optional[str] = None
+                    startCharacter: str | None = None
 
                     for start, end in items:
                         if end == character:
@@ -157,7 +157,7 @@ class AnivContentScanner(AnivContentScannerInterface):
 
         return AnivContentCode.OK
 
-    async def scan(self, message: Optional[str]) -> AnivContentCode:
+    async def scan(self, message: str | None) -> AnivContentCode:
         if not utils.isValidStr(message):
             return AnivContentCode.IS_NONE_OR_EMPTY_OR_BLANK
 

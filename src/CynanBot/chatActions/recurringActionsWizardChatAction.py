@@ -80,6 +80,7 @@ class RecurringActionsWizardChatAction(AbsChatAction):
         await self.__recurringActionsRepository.setRecurringAction(SuperTriviaRecurringAction(
             enabled = True,
             twitchChannel = channel.getTwitchChannelName(),
+            twitchChannelId = await channel.getTwitchChannelId(),
             minutesBetween = wizard.getMinutesBetween()
         ))
 

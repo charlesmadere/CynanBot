@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from CynanBot.recurringActions.recurringAction import RecurringAction
 from CynanBot.recurringActions.superTriviaRecurringAction import \
@@ -15,29 +14,33 @@ class RecurringActionsRepositoryInterface(ABC):
     @abstractmethod
     async def getAllRecurringActions(
         self,
-        twitchChannel: str
-    ) -> List[RecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> list[RecurringAction]:
         pass
 
     @abstractmethod
     async def getSuperTriviaRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[SuperTriviaRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> SuperTriviaRecurringAction | None:
         pass
 
     @abstractmethod
     async def getWeatherRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[WeatherRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WeatherRecurringAction | None:
         pass
 
     @abstractmethod
     async def getWordOfTheDayRecurringAction(
         self,
-        twitchChannel: str
-    ) -> Optional[WordOfTheDayRecurringAction]:
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> WordOfTheDayRecurringAction | None:
         pass
 
     @abstractmethod
