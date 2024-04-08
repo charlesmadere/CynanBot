@@ -128,7 +128,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             enabled = utils.numToBool(record[1]),
             minutesBetween = record[2],
             jsonString = record[0],
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
     async def getWeatherRecurringAction(
@@ -152,7 +153,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             enabled = utils.numToBool(record[1]),
             minutesBetween = record[2],
             jsonString = record[0],
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
     async def getWordOfTheDayRecurringAction(
@@ -176,7 +178,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             enabled = utils.numToBool(record[1]),
             minutesBetween = record[2],
             jsonString = record[0],
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
     async def __initDatabaseTable(self):
