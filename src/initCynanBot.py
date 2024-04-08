@@ -1058,7 +1058,6 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    anivUserIdProvider = anivUserIdProvider,
     cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
