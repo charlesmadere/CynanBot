@@ -1,9 +1,7 @@
 import traceback
 
 import CynanBot.misc.utils as utils
-from CynanBot.google.exceptions import (
-    GoogleCloudProjectApiKeyUnavailableException,
-    GoogleCloudProjectIdUnavailableException)
+from CynanBot.google.exceptions import GoogleCloudProjectIdUnavailableException
 from CynanBot.google.googleAccessToken import GoogleAccessToken
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
     GoogleApiAccessTokenStorageInterface

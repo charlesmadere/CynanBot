@@ -1,5 +1,5 @@
 from datetime import tzinfo
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -15,15 +15,15 @@ class Location():
         timeZone: tzinfo
     ):
         if not utils.isValidNum(latitude):
-            raise ValueError(f'latitude argument is malformed: \"{latitude}\"')
+            raise TypeError(f'latitude argument is malformed: \"{latitude}\"')
         elif not utils.isValidNum(longitude):
-            raise ValueError(f'longitude argument is malformed: \"{longitude}\"')
+            raise TypeError(f'longitude argument is malformed: \"{longitude}\"')
         elif not utils.isValidStr(locationId):
-            raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
+            raise TypeError(f'locationId argument is malformed: \"{locationId}\"')
         elif not utils.isValidStr(name):
-            raise ValueError(f'name argument is malformed: \"{name}\"')
+            raise TypeError(f'name argument is malformed: \"{name}\"')
         elif not isinstance(timeZone, tzinfo):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__latitude: float = latitude
         self.__longitude: float = longitude
@@ -50,7 +50,7 @@ class Location():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'latitude': self.__latitude,
             'locationId': self.__locationId,

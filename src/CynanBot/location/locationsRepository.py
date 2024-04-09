@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.location.location import Location
@@ -19,17 +19,17 @@ class LocationsRepository(LocationsRepositoryInterface):
         timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(locationsJsonReader, JsonReaderInterface):
-            raise ValueError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
+            raise TypeError(f'locationsJsonReader argument is malformed: \"{locationsJsonReader}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
-            raise ValueError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__locationsJsonReader: JsonReaderInterface = locationsJsonReader
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
-        self.__cache: Dict[str, Optional[Location]] = dict()
+        self.__cache: dict[str, Location | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -37,7 +37,7 @@ class LocationsRepository(LocationsRepositoryInterface):
 
     async def getLocation(self, locationId: str) -> Location:
         if not utils.isValidStr(locationId):
-            raise ValueError(f'locationId argument is malformed: \"{locationId}\"')
+            raise TypeError(f'locationId argument is malformed: \"{locationId}\"')
 
         locationId = locationId.lower()
         location = self.__cache.get(locationId, None)
@@ -65,8 +65,8 @@ class LocationsRepository(LocationsRepositoryInterface):
 
         raise RuntimeError(f'Unable to find location with ID \"{locationId}\" in locations file: {self.__locationsJsonReader}')
 
-    async def __readAllJson(self) -> Dict[str, Dict[str, Any]]:
-        jsonContents: Optional[Dict[str, Dict[str, Any]]] = await self.__locationsJsonReader.readJsonAsync()
+    async def __readAllJson(self) -> dict[str, dict[str, Any]]:
+        jsonContents: dict[str, dict[str, Any]] | None = await self.__locationsJsonReader.readJsonAsync()
 
         if jsonContents is None:
             raise IOError(f'Error reading from locations file: {self.__locationsJsonReader}')

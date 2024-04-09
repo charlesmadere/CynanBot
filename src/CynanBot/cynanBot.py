@@ -700,7 +700,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
 
     async def event_channel_join_failure(self, channel: str):
         userId = await self.__userIdsRepository.fetchUserId(channel)
-        user: Optional[UserInterface] = None
+        user: UserInterface | None = None
 
         try:
             user = await self.__usersRepository.getUserAsync(channel)
@@ -832,7 +832,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
-            cheerHandler: Optional[AbsTwitchCheerHandler] = TwitchCheerHandler(
+            cheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
                 cheerActionHelper = self.__cheerActionHelper,
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber,
@@ -841,24 +841,24 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
                 twitchChannelProvider = self
             )
 
-            pollHandler: Optional[AbsTwitchPollHandler] = TwitchPollHandler(
+            pollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber
             )
 
-            predictionHandler: Optional[AbsTwitchPredictionHandler] = TwitchPredictionHandler(
+            predictionHandler: AbsTwitchPredictionHandler | None = TwitchPredictionHandler(
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber,
                 twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils,
                 websocketConnectionServer = self.__websocketConnectionServer
             )
 
-            raidHandler: Optional[AbsTwitchRaidHandler] = TwitchRaidHandler(
+            raidHandler: AbsTwitchRaidHandler | None = TwitchRaidHandler(
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber
             )
 
-            subscriptionHandler: Optional[AbsTwitchSubscriptionHandler] = TwitchSubscriptionHandler(
+            subscriptionHandler: AbsTwitchSubscriptionHandler | None = TwitchSubscriptionHandler(
                 streamAlertsManager = self.__streamAlertsManager,
                 timber = self.__timber,
                 triviaGameBuilder = self.__triviaGameBuilder,
