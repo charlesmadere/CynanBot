@@ -56,6 +56,7 @@ class PkmnBattlePointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnBattle(
             twitchChannel = twitchUser.getHandle(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.getUserName(),
             userToBattle = opponentUserName
         ):

@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.funtoon.funtoonPkmnCatchType import FuntoonPkmnCatchType
 
@@ -14,6 +13,7 @@ class FuntoonRepositoryInterface(ABC):
     async def pkmnBattle(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userThatRedeemed: str,
         userToBattle: str
     ) -> bool:
@@ -23,8 +23,9 @@ class FuntoonRepositoryInterface(ABC):
     async def pkmnCatch(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userThatRedeemed: str,
-        funtoonPkmnCatchType: Optional[FuntoonPkmnCatchType] = None
+        funtoonPkmnCatchType: FuntoonPkmnCatchType | None = None
     ) -> bool:
         pass
 
@@ -32,6 +33,7 @@ class FuntoonRepositoryInterface(ABC):
     async def pkmnGiveEvolve(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userThatRedeemed: str
     ) -> bool:
         pass
@@ -40,6 +42,7 @@ class FuntoonRepositoryInterface(ABC):
     async def pkmnGiveShiny(
         self,
         twitchChannel: str,
+        twitchChannelId: str,
         userThatRedeemed: str
     ) -> bool:
         pass

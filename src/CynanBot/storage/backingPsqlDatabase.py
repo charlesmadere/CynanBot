@@ -1,6 +1,5 @@
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Optional
 
 import asyncpg
 
@@ -31,7 +30,7 @@ class BackingPsqlDatabase(BackingDatabase):
         self.__psqlCredentialsProvider: PsqlCredentialsProvider = psqlCredentialsProvider
         self.__timber: TimberInterface = timber
 
-        self.__connectionPool: Optional[asyncpg.Pool] = None
+        self.__connectionPool: asyncpg.Pool | None = None
 
     async def __createCollations(self, databaseConnection: DatabaseConnection):
         if not isinstance(databaseConnection, DatabaseConnection):

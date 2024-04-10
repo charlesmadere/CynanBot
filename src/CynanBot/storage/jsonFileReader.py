@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict, Optional
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -31,22 +31,22 @@ class JsonFileReader(JsonReaderInterface):
     async def fileExistsAsync(self) -> bool:
         return await aiofiles.ospath.exists(self.__fileName)
 
-    def readJson(self) -> Optional[Dict[Any, Any]]:
+    def readJson(self) -> dict[Any, Any] | None:
         if not self.fileExists():
             raise FileNotFoundError(f'File not found: \"{self.__fileName}\"')
 
-        jsonContents: Optional[Dict[Any, Any]] = None
+        jsonContents: dict[Any, Any] | None = None
 
         with open(self.__fileName, mode = 'r', encoding = 'utf-8') as file:
             jsonContents = json.load(file)
 
         return jsonContents
 
-    async def readJsonAsync(self) -> Optional[Dict[Any, Any]]:
+    async def readJsonAsync(self) -> dict[Any, Any] | None:
         if not await self.fileExistsAsync():
             raise FileNotFoundError(f'File not found: \"{self.__fileName}\"')
 
-        jsonContents: Optional[Dict[Any, Any]] = None
+        jsonContents: dict[Any, Any] | None = None
 
         async with aiofiles.open(self.__fileName, mode = 'r', encoding = 'utf-8') as file:
             data = await file.read()
@@ -54,5 +54,11 @@ class JsonFileReader(JsonReaderInterface):
 
         return jsonContents
 
-    def __str__(self) -> str:
-        return f'fileName=\"{self.__fileName}\"'
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'fileName': self.__fileName
+        }

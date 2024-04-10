@@ -194,7 +194,7 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
             ):
                 return
 
-        if user.areSoundAlertsEnabled():
+        if user.areSoundAlertsEnabled() and channelPointsMessage.getRewardId() == user.getSoundAlertRewardId():
             if await self.__soundAlertPointRedemption.handlePointRedemption(
                 twitchChannel = twitchChannel,
                 twitchChannelPointsMessage = channelPointsMessage

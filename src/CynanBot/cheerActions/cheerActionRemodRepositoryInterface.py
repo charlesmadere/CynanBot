@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
 
@@ -15,5 +14,5 @@ class CheerActionRemodRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getAll(self) -> List[CheerActionRemodData]:
+    async def getAll(self) -> list[CheerActionRemodData]:
         pass

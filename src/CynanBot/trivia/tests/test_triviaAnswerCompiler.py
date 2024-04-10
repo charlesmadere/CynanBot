@@ -552,6 +552,14 @@ class TestTriviaAnswerCompiler():
         assert '100000000055' in result
 
     @pytest.mark.asyncio
+    async def test_compileTextAnswersList_withWalMart(self):
+        result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'Wal-Mart' ])
+        assert result is not None
+        assert len(result) == 2
+        assert 'wal mart' in result
+        assert 'walmart' in result
+
+    @pytest.mark.asyncio
     async def test_compileTextAnswersList_withYourName(self):
         result = await self.triviaAnswerCompiler.compileTextAnswersList([ 'your name' ])
         assert result is not None

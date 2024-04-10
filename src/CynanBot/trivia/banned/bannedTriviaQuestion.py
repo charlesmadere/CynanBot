@@ -1,3 +1,5 @@
+from typing import Any
+
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 
@@ -37,5 +39,14 @@ class BannedTriviaQuestion():
     def getUserName(self) -> str:
         return self.__userName
 
-    def __str__(self) -> str:
-        return f'triviaId=\"{self.__triviaId}\", triviaSource=\"{self.__triviaSource}\", userId=\"{self.__userId}\", userName=\"{self.__userName}\"'
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'triviaId': self.__triviaId,
+            'userId': self.__userId,
+            'userName': self.__userName,
+            'triviaSource': self.__triviaSource
+        }

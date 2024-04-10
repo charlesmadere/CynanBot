@@ -1064,6 +1064,38 @@ class TestTriviaAnswerChecker():
         result = await self.triviaAnswerChecker.checkAnswer('blu ray disc', question)
         assert result is TriviaAnswerCheckResult.INCORRECT
 
+    @pytest.mark.asyncio
+    async def test_checkAnswer_withQuestionAnswerQuestion_withWalMart(self):
+        answer = 'Wal-Mart'
+
+        correctAnswers = await self.triviaQuestionCompiler.compileResponses([ answer ])
+        cleanedCorrectAnswers = await self.triviaAnswerCompiler.compileTextAnswersList([ answer ])
+
+        expandedCleanedCorrectAnswers: set[str] = set()
+        for cleanedCorrectAnswer in cleanedCorrectAnswers:
+            expandedCleanedCorrectAnswers.update(await self.triviaAnswerCompiler.expandNumerals(cleanedCorrectAnswer))
+
+        question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
+            correctAnswers = correctAnswers,
+            cleanedCorrectAnswers = list(expandedCleanedCorrectAnswers),
+            category = 'Test Category',
+            categoryId = None,
+            question = 'Something about toys',
+            triviaId = 'abc123',
+            triviaDifficulty = TriviaDifficulty.UNKNOWN,
+            originalTriviaSource = None,
+            triviaSource = TriviaSource.J_SERVICE
+        )
+
+        result = await self.triviaAnswerChecker.checkAnswer('walmart', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('wal mart', question)
+        assert result is TriviaAnswerCheckResult.CORRECT
+
+        result = await self.triviaAnswerChecker.checkAnswer('wally world', question)
+        assert result is TriviaAnswerCheckResult.INCORRECT
+
     def test_sanity(self):
         assert self.triviaAnswerChecker is not None
         assert isinstance(self.triviaAnswerChecker, TriviaAnswerChecker)

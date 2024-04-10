@@ -1,32 +1,28 @@
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
+from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
-from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
 from CynanBot.twitch.configuration.twitchChannelPointsMessage import \
     TwitchChannelPointsMessage
-from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 
 
 class SoundAlertPointRedemption(AbsChannelPointRedemption):
 
     def __init__(
         self,
-        streamAlertsManager: StreamAlertsManagerInterface,
-        timber: TimberInterface,
-        twitchUtils: TwitchUtilsInterface
+        channelPointSoundHelper: ChannelPointSoundHelperInterface,
+        streamAlertsManager: StreamAlertsManagerInterface
     ):
-        if not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
+            raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
+        elif not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
 
+        self.__channelPointSoundHelper: ChannelPointSoundHelperInterface = channelPointSoundHelper
         self.__streamAlertsManager: StreamAlertsManagerInterface = streamAlertsManager
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
 
     async def handlePointRedemption(
         self,
@@ -38,4 +34,16 @@ class SoundAlertPointRedemption(AbsChannelPointRedemption):
         if not user.areSoundAlertsEnabled():
             return False
 
-        return False
+        soundAlert = await self.__channelPointSoundHelper.chooseRandomSoundAlert()
+
+        if soundAlert is None:
+            return False
+
+        self.__streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = soundAlert,
+            twitchChannel = twitchChannel.getTwitchChannelName(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
+            ttsEvent = None
+        ))
+
+        return True

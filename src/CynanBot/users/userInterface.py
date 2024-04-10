@@ -72,6 +72,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getSoundAlertRewardId(self) -> str | None:
+        pass
+
+    @abstractmethod
     def getSuperTriviaCheerTriggerAmount(self) -> Optional[int]:
         pass
 

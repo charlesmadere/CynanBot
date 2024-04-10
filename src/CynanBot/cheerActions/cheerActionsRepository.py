@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionBitRequirement import \
@@ -46,7 +44,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__maximumPerUser: int = maximumPerUser
 
         self.__isDatabaseReady: bool = False
-        self.__cache: Dict[str, Optional[List[CheerAction]]] = dict()
+        self.__cache: dict[str, list[CheerAction] | None] = dict()
 
     async def addAction(
         self,
@@ -85,8 +83,8 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
             if action.getAmount() == amount:
                 raise CheerActionAlreadyExistsException(f'Attempted to add new cheer action for {userId=} but they already have a cheer action that requires the given amount ({amount}): {action=}')
 
-        actionId: Optional[str] = None
-        action: Optional[CheerAction] = None
+        actionId: str | None = None
+        action: CheerAction | None = None
 
         while actionId is None or action is not None:
             actionId = await self.__cheerActionIdGenerator.generateActionId()
@@ -122,11 +120,11 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         self.__cache.clear()
         self.__timber.log('CheerActionsRepository', 'Caches cleared')
 
-    async def deleteAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
+    async def deleteAction(self, actionId: str, userId: str) -> CheerAction | None:
         if not utils.isValidStr(actionId):
-            raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
+            raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         action = await self.getAction(
             actionId = actionId,
@@ -152,11 +150,11 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         return action
 
-    async def getAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
+    async def getAction(self, actionId: str, userId: str) -> CheerAction | None:
         if not utils.isValidStr(actionId):
-            raise ValueError(f'actionId argument is malformed: \"{actionId}\"')
+            raise TypeError(f'actionId argument is malformed: \"{actionId}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         actions = await self.getActions(userId)
 
@@ -169,11 +167,11 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
 
         return None
 
-    async def getActions(self, userId: str) -> List[CheerAction]:
+    async def getActions(self, userId: str) -> list[CheerAction]:
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        actions: Optional[List[CheerAction]] = self.__cache.get(userId, None)
+        actions = self.__cache.get(userId, None)
 
         if actions is not None:
             return actions

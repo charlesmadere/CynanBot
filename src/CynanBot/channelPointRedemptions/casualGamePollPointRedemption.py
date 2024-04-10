@@ -17,12 +17,14 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         self,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
-        cooldown: timedelta = timedelta(seconds = 30)
+        cooldown: timedelta = timedelta(seconds = 45)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
             raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(cooldown, timedelta):
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
@@ -45,6 +47,6 @@ class CasualGamePollPointRedemption(AbsChannelPointRedemption):
         if not self.__lastMessageTimes.isReadyAndUpdate(twitchChannelId):
             return False
 
-        await self.__twitchUtils.safeSend(twitchChannel, casualGamePollUrl)
+        await self.__twitchUtils.safeSend(twitchChannel, f'ⓘ Here\'s the current list of casual games: {casualGamePollUrl}')
         self.__timber.log('CasualGamePollPointRedemption', f'Redeemed casual game poll for {twitchChannelPointsMessage.getUserName()}:{twitchChannelPointsMessage.getUserId()} in {twitchUser.getHandle()}')
         return True

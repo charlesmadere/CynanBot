@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any
 
 import asyncpg
 
@@ -28,7 +28,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__isClosed = True
         await self.__pool.release(self.__connection)
 
-    async def createTableIfNotExists(self, query: str, *args: Optional[Any]):
+    async def createTableIfNotExists(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -39,7 +39,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         else:
             await self.execute(query)
 
-    async def execute(self, query: str, *args: Optional[Any]):
+    async def execute(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -48,7 +48,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         async with self.__connection.transaction():
             await self.__connection.execute(query, *args)
 
-    async def fetchRow(self, query: str, *args: Optional[Any]) -> Optional[List[Any]]:
+    async def fetchRow(self, query: str, *args: Any | None) -> list[Any] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -60,7 +60,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
         return list(record)
 
-    async def fetchRows(self, query: str, *args: Optional[Any]) -> Optional[List[List[Any]]]:
+    async def fetchRows(self, query: str, *args: Any | None) -> list[list[Any]] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -70,7 +70,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         if not utils.hasItems(records):
             return None
 
-        rows: List[List[Any]] = list()
+        rows: list[list[Any]] = list()
 
         for record in records:
             rows.append(list(record))

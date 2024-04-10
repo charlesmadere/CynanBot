@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 
 import CynanBot.misc.utils as utils
 from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
@@ -67,7 +66,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         await connection.close()
         self.__timber.log('CheerActionRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
 
-    async def getAll(self) -> List[CheerActionRemodData]:
+    async def getAll(self) -> list[CheerActionRemodData]:
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
@@ -78,7 +77,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         )
 
         await connection.close()
-        data: List[CheerActionRemodData] = list()
+        data: list[CheerActionRemodData] = list()
         now = SimpleDateTime()
 
         if utils.hasItems(records):

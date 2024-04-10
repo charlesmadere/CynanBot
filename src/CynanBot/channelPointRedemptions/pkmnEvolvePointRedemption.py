@@ -48,6 +48,7 @@ class PkmnEvolvePointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnGiveEvolve(
             twitchChannel = twitchUser.getHandle(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.getUserName()
         ):
             actionCompleted = True

@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -11,7 +10,7 @@ class CheerActionStreamStatusRequirement(Enum):
     ONLINE = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: str | None):
         if not utils.isValidStr(text):
             return CheerActionStreamStatusRequirement.ANY
 

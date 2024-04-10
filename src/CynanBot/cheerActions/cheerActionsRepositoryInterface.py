@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import List, Optional
 
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionBitRequirement import \
@@ -19,19 +18,19 @@ class CheerActionsRepositoryInterface(Clearable):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         actionType: CheerActionType,
         amount: int,
-        durationSeconds: Optional[int],
+        durationSeconds: int | None,
         userId: str
     ) -> CheerAction:
         pass
 
     @abstractmethod
-    async def deleteAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
+    async def deleteAction(self, actionId: str, userId: str) -> CheerAction | None:
         pass
 
     @abstractmethod
-    async def getAction(self, actionId: str, userId: str) -> Optional[CheerAction]:
+    async def getAction(self, actionId: str, userId: str) -> CheerAction | None:
         pass
 
     @abstractmethod
-    async def getActions(self, userId: str) -> List[CheerAction]:
+    async def getActions(self, userId: str) -> list[CheerAction]:
         pass

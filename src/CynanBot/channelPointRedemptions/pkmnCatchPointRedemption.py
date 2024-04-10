@@ -76,6 +76,7 @@ class PkmnCatchPointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnCatch(
             twitchChannel = twitchUser.getHandle(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.getUserName(),
             funtoonPkmnCatchType = funtoonPkmnCatchType
         ):

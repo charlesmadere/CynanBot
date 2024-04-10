@@ -140,6 +140,7 @@ class UsersRepository(UsersRepositoryInterface):
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
+        soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitter = utils.getStrFromDict(userJson, 'twitter', '')
@@ -289,6 +290,7 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
             speedrunProfile = speedrunProfile,
+            soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
             twitter = twitter,

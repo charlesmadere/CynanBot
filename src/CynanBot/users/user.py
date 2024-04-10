@@ -79,6 +79,7 @@ class User(UserInterface):
         pkmnBattleRewardId: Optional[str],
         pkmnEvolveRewardId: Optional[str],
         pkmnShinyRewardId: Optional[str],
+        soundAlertRewardId: str | None,
         speedrunProfile: Optional[str],
         supStreamerMessage: Optional[str],
         triviaGameRewardId: Optional[str],
@@ -219,6 +220,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
         elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
+        elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
+            raise TypeError(f'soundAlertRewardId argument is malformed: \"{soundAlertRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
             raise TypeError(f'speedrunProfile argument is malformed: \"{speedrunProfile}\"')
         elif supStreamerMessage is not None and not isinstance(supStreamerMessage, str):
@@ -296,6 +299,7 @@ class User(UserInterface):
         self.__pkmnBattleRewardId: Optional[str] = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: Optional[str] = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: Optional[str] = pkmnShinyRewardId
+        self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: Optional[str] = speedrunProfile
         self.__supStreamerMessage: Optional[str] = supStreamerMessage
         self.__triviaGameRewardId: Optional[str] = triviaGameRewardId
@@ -354,6 +358,9 @@ class User(UserInterface):
 
     def getPkmnShinyRewardId(self) -> Optional[str]:
         return self.__pkmnShinyRewardId
+
+    def getSoundAlertRewardId(self) -> str | None:
+        return self.__soundAlertRewardId
 
     def getSpeedrunProfile(self) -> Optional[str]:
         return self.__speedrunProfile

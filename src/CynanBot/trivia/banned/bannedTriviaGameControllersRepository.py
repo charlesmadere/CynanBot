@@ -63,7 +63,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
                 twitchAccessToken = twitchAccessToken
             )
         except Exception as e:
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to add \"{userName}\" as a banned trivia game controller', e, traceback.format_exc())
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Retrieved no userId from UserIdsRepository when trying to add \"{userName}\" as a banned trivia game controller: {e}', e, traceback.format_exc())
             return AddBannedTriviaGameControllerResult.ERROR
 
         connection = await self.__getDatabaseConnection()
@@ -82,7 +82,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
 
         if utils.isValidInt(count) and count >= 1:
             await connection.close()
-            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add userName=\"{userName}\" userId=\"{userId}\" as a banned trivia game controller, but this user has already been added as one')
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to add banned trivia game controller, but this user has already been banned ({userId=}) ({userName=})')
             return AddBannedTriviaGameControllerResult.ALREADY_EXISTS
 
         await connection.execute(
@@ -95,8 +95,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaGameControllersRepository', f'Added userName=\"{userName}\" userId=\"{userId}\" as a banned trivia game controller')
-
+        self.__timber.log('BannedTriviaGameControllersRepository', f'Added banned trivia game controller ({userId=}) ({userName=})')
         return AddBannedTriviaGameControllerResult.ADDED
 
     async def getBannedControllers(self) -> list[BannedTriviaGameController]:
@@ -169,6 +168,24 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             return RemoveBannedTriviaGameControllerResult.ERROR
 
         connection = await self.__backingDatabase.getConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT COUNT(1) FROM bannedtriviagamecontrollers
+                WHERE userid = $1
+                LIMIT 1
+            ''',
+            userId
+        )
+
+        count: int | None = None
+        if utils.hasItems(record):
+            count = record[0]
+
+        if not utils.isValidInt(count) or count < 1:
+            await connection.close()
+            self.__timber.log('BannedTriviaGameControllersRepository', f'Tried to removed banned trivia game controller, but this user has not already been banned ({userId=}) ({userName=})')
+            return RemoveBannedTriviaGameControllerResult.NOT_BANNED
+
         await connection.execute(
             '''
                 DELETE FROM bannedtriviagamecontrollers
@@ -178,5 +195,5 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
         )
 
         await connection.close()
-        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed userName=\"{userName}\" userId=\"{userId}\" as a banned trivia game controller')
+        self.__timber.log('BannedTriviaGameControllersRepository', f'Removed banned trivia game controller ({userId=}) ({userName=})')
         return RemoveBannedTriviaGameControllerResult.REMOVED

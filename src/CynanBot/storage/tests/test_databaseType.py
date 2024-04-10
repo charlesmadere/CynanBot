@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.storage.databaseType import DatabaseType
 
@@ -6,16 +6,12 @@ from CynanBot.storage.databaseType import DatabaseType
 class TestDatabaseType():
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[DatabaseType] = None
-        exception: Optional[Exception] = None
+        result: DatabaseType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = DatabaseType.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withPostgresString(self):
         result = DatabaseType.fromStr('postgres')
@@ -30,25 +26,17 @@ class TestDatabaseType():
         assert result is DatabaseType.SQLITE
 
     def test_fromStr_withNone(self):
-        result: Optional[DatabaseType] = None
-        exception: Optional[Exception] = None
+        result: DatabaseType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = DatabaseType.fromStr(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[DatabaseType] = None
-        exception: Optional[Exception] = None
+        result: DatabaseType | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = DatabaseType.fromStr(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)

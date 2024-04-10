@@ -1,15 +1,13 @@
-from typing import List, Optional
-
 from CynanBot.storage.linesReaderInterface import LinesReaderInterface
 
 
 class LinesStaticReader(LinesReaderInterface):
 
-    def __init__(self, lines: Optional[List[str]]):
-        self.__lines: Optional[List[str]] = lines
+    def __init__(self, lines: list[str] | None):
+        self.__lines: list[str] | None = lines
 
-    def readLines(self) -> Optional[List[str]]:
+    def readLines(self) -> list[str] | None:
         return self.__lines
 
-    async def readLinesAsync(self) -> Optional[List[str]]:
+    async def readLinesAsync(self) -> list[str] | None:
         return self.__lines

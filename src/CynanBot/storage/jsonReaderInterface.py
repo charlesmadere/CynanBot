@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class JsonReaderInterface(ABC):
@@ -21,9 +21,9 @@ class JsonReaderInterface(ABC):
         pass
 
     @abstractmethod
-    def readJson(self) -> Optional[Dict[Any, Any]]:
+    def readJson(self) -> dict[Any, Any] | None:
         pass
 
     @abstractmethod
-    async def readJsonAsync(self) -> Optional[Dict[Any, Any]]:
+    async def readJsonAsync(self) -> dict[Any, Any] | None:
         pass

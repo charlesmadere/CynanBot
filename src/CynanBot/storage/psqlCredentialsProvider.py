@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.clearable import Clearable
@@ -9,20 +9,20 @@ class PsqlCredentialsProvider(Clearable):
 
     def __init__(self, credentialsJsonReader: JsonReaderInterface):
         if not isinstance(credentialsJsonReader, JsonReaderInterface):
-            raise ValueError(f'credentialsJsonReader argument is malformed: \"{credentialsJsonReader}\"')
+            raise TypeError(f'credentialsJsonReader argument is malformed: \"{credentialsJsonReader}\"')
 
         self.__credentialsJsonReader: JsonReaderInterface = credentialsJsonReader
 
-        self.__jsonCache: Optional[Dict[str, Any]] = None
+        self.__jsonCache: dict[str, Any] | None = None
 
     async def clearCaches(self):
         self.__jsonCache = None
 
-    async def getPassword(self) -> Optional[str]:
+    async def getPassword(self) -> str | None:
         jsonContents = await self.__readJsonAsync()
         return utils.getStrFromDict(jsonContents, 'password', fallback = '')
 
-    async def __readJsonAsync(self) -> Dict[str, Any]:
+    async def __readJsonAsync(self) -> dict[str, Any] | None:
         if self.__jsonCache is not None:
             return self.__jsonCache
 

@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from CynanBot.contentScanner.bannedWordsRepository import BannedWordsRepository
@@ -62,7 +60,7 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withGnarlyTriviaQuestion1(self):
-        correctAnswers: List[bool] = list()
+        correctAnswers: list[bool] = list()
         correctAnswers.append(False)
 
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
@@ -81,10 +79,10 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withGnarlyTriviaQuestion2(self):
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append('two')
 
-        multipleChoiceResponses: List[str] = list()
+        multipleChoiceResponses: list[str] = list()
         multipleChoiceResponses.append('one')
         multipleChoiceResponses.append('two')
         multipleChoiceResponses.append('three')
@@ -109,10 +107,10 @@ class TestTriviaContentScanner():
     @pytest.mark.asyncio
     async def test_verify_withTriviaQuestionThatAlmostContainsBannedWord(self):
         # the banned word is "trump", but this answer contains "trumpet", which is not banned
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append('a trumpet')
 
-        cleanedCorrectAnswers: List[str] = list()
+        cleanedCorrectAnswers: list[str] = list()
         cleanedCorrectAnswers.append('trumpet')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(
@@ -137,7 +135,7 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withSimpleTriviaQuestion1(self):
-        correctAnswers: List[bool] = list()
+        correctAnswers: list[bool] = list()
         correctAnswers.append(True)
 
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
@@ -156,7 +154,7 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withSimpleTriviaQuestion2(self):
-        correctAnswers: List[bool] = list()
+        correctAnswers: list[bool] = list()
         correctAnswers.append(False)
 
         question: AbsTriviaQuestion = TrueFalseTriviaQuestion(
@@ -175,10 +173,10 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withSimpleTriviaQuestion3(self):
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append('Nintendo 64')
 
-        multipleChoiceResponses: List[str] = list()
+        multipleChoiceResponses: list[str] = list()
         multipleChoiceResponses.append('Nintendo Entertainment System')
         multipleChoiceResponses.append('Nintendo 64')
         multipleChoiceResponses.append('Sony PlayStation')
@@ -200,10 +198,10 @@ class TestTriviaContentScanner():
 
     @pytest.mark.asyncio
     async def test_verify_withSimpleTriviaQuestion4(self):
-        correctAnswers: List[str] = list()
+        correctAnswers: list[str] = list()
         correctAnswers.append('(King) James')
 
-        cleanedCorrectAnswers: List[str] = list()
+        cleanedCorrectAnswers: list[str] = list()
         cleanedCorrectAnswers.append('(King) James')
 
         question: AbsTriviaQuestion = QuestionAnswerTriviaQuestion(

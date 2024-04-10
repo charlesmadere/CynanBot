@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List, Optional
+from typing import Any
 
 from CynanBot.storage.databaseType import DatabaseType
 
@@ -11,19 +11,19 @@ class DatabaseConnection(ABC):
         pass
 
     @abstractmethod
-    async def createTableIfNotExists(self, query: str, *args: Optional[Any]):
+    async def createTableIfNotExists(self, query: str, *args: Any | None):
         pass
 
     @abstractmethod
-    async def execute(self, query: str, *args: Optional[Any]):
+    async def execute(self, query: str, *args: Any | None):
         pass
 
     @abstractmethod
-    async def fetchRow(self, query: str, *args: Optional[Any]) -> Optional[List[Any]]:
+    async def fetchRow(self, query: str, *args: Any | None) -> list[Any] | None:
         pass
 
     @abstractmethod
-    async def fetchRows(self, query: str, *args: Optional[Any]) -> Optional[List[List[Any]]]:
+    async def fetchRows(self, query: str, *args: Any | None) -> list[list[Any]] | None:
         pass
 
     @abstractmethod

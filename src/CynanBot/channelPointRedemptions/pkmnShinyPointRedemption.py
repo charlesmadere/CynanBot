@@ -48,6 +48,7 @@ class PkmnShinyPointRedemption(AbsChannelPointRedemption):
 
         if generalSettings.isFuntoonApiEnabled() and await self.__funtoonRepository.pkmnGiveShiny(
             twitchChannel = twitchUser.getHandle(),
+            twitchChannelId = await twitchChannel.getTwitchChannelId(),
             userThatRedeemed = twitchChannelPointsMessage.getUserName()
         ):
             actionCompleted = True

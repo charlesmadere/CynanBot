@@ -73,10 +73,11 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
-                               ClearCachesCommand, ConfirmCommand,
+                               ConfirmCommand,
                                CutenessChampionsCommand, CutenessCommand,
                                CutenessHistoryCommand, CynanSourceCommand,
                                DeleteCheerActionCommand,
@@ -140,6 +141,7 @@ from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -278,6 +280,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepositoryInterface],
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
+        channelPointSoundHelper: ChannelPointSoundHelperInterface |  None,
         chatActionsManager: Optional[ChatActionsManagerInterface],
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: Optional[CheerActionHelperInterface],
@@ -364,6 +367,8 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
         elif not isinstance(channelJoinHelper, ChannelJoinHelper):
             raise TypeError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
+        elif channelPointSoundHelper is not None and not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
+            raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
             raise TypeError(f'chatActionsManager argument is malformed: \"{chatActionsManager}\"')
         elif not isinstance(chatLogger, ChatLoggerInterface):
@@ -509,7 +514,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsCommand = ClearCachesCommand(administratorProvider, authRepository, bannedWordsRepository, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -684,10 +689,10 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__pkmnEvolvePointRedemption: AbsChannelPointRedemption = PkmnEvolvePointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
             self.__pkmnShinyPointRedemption: AbsChannelPointRedemption = PkmnShinyPointRedemption(funtoonRepository, generalSettingsRepository, timber, twitchUtils)
 
-        if streamAlertsManager is None:
+        if channelPointSoundHelper is None or streamAlertsManager is None:
             self.__soundAlertPointRedemption: AbsChannelPointRedemption = StubPointRedemption()
         else:
-            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(streamAlertsManager, timber, twitchUtils)
+            self.__soundAlertPointRedemption: AbsChannelPointRedemption = SoundAlertPointRedemption(channelPointSoundHelper, streamAlertsManager)
 
         if cutenessRepository is None or triviaGameBuilder is None or triviaGameMachine is None or triviaScoreRepository is None or triviaUtils is None:
             self.__superTriviaGamePointRedemption: AbsChannelPointRedemption = StubPointRedemption()
@@ -1161,7 +1166,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__clearCachesCommand.handleCommand(context)
+        await self.__clearCachesCommand.handleChatCommand(context)
 
     @commands.command(name = 'clearsupertriviaqueue')
     async def command_clearsupertriviaqueue(self, ctx: Context):

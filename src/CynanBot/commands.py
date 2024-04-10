@@ -8,14 +8,11 @@ from typing import List, Optional
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
-from CynanBot.authRepository import AuthRepository
 from CynanBot.cheerActions.cheerAction import CheerAction
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
-    BannedWordsRepositoryInterface
 from CynanBot.cuteness.cutenessLeaderboardResult import \
     CutenessLeaderboardResult
 from CynanBot.cuteness.cutenessRepositoryInterface import \
@@ -34,14 +31,9 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
-from CynanBot.misc.clearable import Clearable
 from CynanBot.misc.timedDict import TimedDict
-from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
-    MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
-    SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
     StarWarsQuotesRepositoryInterface
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -79,23 +71,13 @@ from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
-from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
-    OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaSettingsRepositoryInterface import \
-    TriviaSettingsRepositoryInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
-from CynanBot.tts.ttsSettingsRepositoryInterface import \
-    TtsSettingsRepositoryInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchUserDetails import TwitchUserDetails
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
-from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
-    IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -109,8 +91,6 @@ from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
-from CynanBot.websocketConnection.websocketConnectionServerInterface import \
-    WebsocketConnectionServerInterface
 
 
 class AbsCommand(ABC):
@@ -540,125 +520,6 @@ class BanTriviaQuestionCommand(AbsCommand):
         self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
 
 
-class ClearCachesCommand(AbsCommand):
-
-    def __init__(
-        self,
-        administratorProvider: AdministratorProviderInterface,
-        authRepository: AuthRepository,
-        bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
-        cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
-        funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
-        generalSettingsRepository: GeneralSettingsRepository,
-        isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
-        locationsRepository: Optional[LocationsRepositoryInterface],
-        modifyUserDataHelper: ModifyUserDataHelper,
-        mostRecentChatsRepository: Optional[MostRecentChatsRepositoryInterface],
-        openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
-        soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
-        timber: TimberInterface,
-        triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
-        ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
-        twitchFollowerRepository: Optional[TwitchFollowerRepositoryInterface],
-        twitchTokensRepository: Optional[TwitchTokensRepositoryInterface],
-        twitchUtils: TwitchUtilsInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        usersRepository: UsersRepositoryInterface,
-        weatherRepository: Optional[WeatherRepositoryInterface],
-        websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
-        wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
-    ):
-        if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
-        elif not isinstance(authRepository, AuthRepository):
-            raise ValueError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
-            raise ValueError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
-            raise ValueError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
-        elif funtoonTokensRepository is not None and not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
-            raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
-        elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif isLiveOnTwitchRepository is not None and not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
-            raise ValueError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
-        elif locationsRepository is not None and not isinstance(locationsRepository, LocationsRepositoryInterface):
-            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
-        elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
-            raise ValueError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
-        elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
-            raise ValueError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
-        elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
-            raise ValueError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
-        elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
-            raise ValueError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
-        elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
-        elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
-            raise ValueError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
-        elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
-            raise ValueError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
-        elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
-        elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
-        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
-            raise ValueError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
-        elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
-            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
-        elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
-            raise ValueError(f'websocketConnectionServer argument is malformed: \"{websocketConnectionServer}\"')
-        elif wordOfTheDayRepository is not None and not isinstance(wordOfTheDayRepository, WordOfTheDayRepositoryInterface):
-            raise ValueError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
-
-        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
-        self.__timber: TimberInterface = timber
-        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__usersRepository: UsersRepositoryInterface = usersRepository
-
-        self.__clearables: List[Optional[Clearable]] = list()
-        self.__clearables.append(administratorProvider)
-        self.__clearables.append(authRepository)
-        self.__clearables.append(bannedWordsRepository)
-        self.__clearables.append(cheerActionsRepository)
-        self.__clearables.append(funtoonTokensRepository)
-        self.__clearables.append(generalSettingsRepository)
-        self.__clearables.append(isLiveOnTwitchRepository)
-        self.__clearables.append(locationsRepository)
-        self.__clearables.append(modifyUserDataHelper)
-        self.__clearables.append(mostRecentChatsRepository)
-        self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
-        self.__clearables.append(soundPlayerSettingsRepository)
-        self.__clearables.append(triviaSettingsRepository)
-        self.__clearables.append(ttsSettingsRepository)
-        self.__clearables.append(twitchFollowerRepository)
-        self.__clearables.append(twitchTokensRepository)
-        self.__clearables.append(userIdsRepository)
-        self.__clearables.append(usersRepository)
-        self.__clearables.append(weatherRepository)
-        self.__clearables.append(websocketConnectionServer)
-        self.__clearables.append(wordOfTheDayRepository)
-
-    async def handleCommand(self, ctx: TwitchContext):
-        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
-        administrator = await self.__administratorProvider.getAdministratorUserId()
-
-        if administrator != ctx.getAuthorId():
-            self.__timber.log('ClearCachesCommand', f'Attempted use of !clearcaches command by {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            return
-
-        for clearable in self.__clearables:
-            if clearable is not None:
-                await clearable.clearCaches()
-
-        await self.__twitchUtils.safeSend(ctx, 'ⓘ All caches cleared')
-        self.__timber.log('ClearCachesCommand', f'Handled !clearcaches command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-
-
 class ConfirmCommand(AbsCommand):
 
     def __init__(
@@ -1005,7 +866,7 @@ class CynanSourceCommand(AbsCommand):
         elif not ctx.isAuthorMod() and not ctx.isAuthorVip() and not self.__lastMessageTimes.isReadyAndUpdate(ctx.getTwitchChannelName()):
             return
 
-        await self.__twitchUtils.safeSend(ctx, 'My source code is available here: https://github.com/charlesmadere/cynanbot')
+        await self.__twitchUtils.safeSend(ctx, 'ⓘ My source code is available here: https://github.com/charlesmadere/cynanbot')
         self.__timber.log('CynanSourceCommand', f'Handled !cynansource command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -1908,15 +1769,15 @@ class RemoveBannedTriviaControllerCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
-            raise ValueError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
@@ -1938,24 +1799,23 @@ class RemoveBannedTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as no username argument was given. Example: !removebannedtriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveBannedTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove banned trivia controller as username argument is malformed. Example: !removebannedtriviacontroller {user.getHandle()}')
             return
 
-        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(
-            userName = userName
-        )
+        result = await self.__bannedTriviaGameControllersRepository.removeBannedController(userName)
 
-        if result is RemoveBannedTriviaGameControllerResult.REMOVED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a banned trivia game controller.')
-        elif result is RemoveBannedTriviaGameControllerResult.ERROR:
+        if result is RemoveBannedTriviaGameControllerResult.ERROR:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a banned trivia game controller!')
+        elif result is RemoveBannedTriviaGameControllerResult.NOT_BANNED:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Did not remove {userName} as a banned trivia game controller, as they have not already been banned')
+        elif result is RemoveBannedTriviaGameControllerResult.REMOVED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a banned trivia game controller')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a banned trivia game controller!')
             self.__timber.log('RemoveBannedTriviaControllerCommand', f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
-            raise ValueError(f'Encountered unknown RemoveBannedTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a banned trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
         self.__timber.log('RemoveBannedTriviaControllerCommand', f'Handled !removebannedtriviacontroller command with {result} result for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1971,15 +1831,15 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
-            raise ValueError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+            raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
@@ -2001,20 +1861,20 @@ class RemoveGlobalTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as no username argument was given. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to remove global trivia controller as username argument is malformed. Example: !removeglobaltriviacontroller {user.getHandle()}')
             return
 
-        result = await self.__triviaGameGlobalControllersRepository.removeController(
-            userName = userName
-        )
+        result = await self.__triviaGameGlobalControllersRepository.removeController(userName)
 
-        if result is RemoveTriviaGameControllerResult.REMOVED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a global trivia game controller.')
+        if result is RemoveTriviaGameControllerResult.DOES_NOT_EXIST:
+            await self.__twitchUtils.safeSend(ctx, f'⚠ Did not remove {userName} as a global trivia game controller, as they have not already been added')
         elif result is RemoveTriviaGameControllerResult.ERROR:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to remove {userName} as a global trivia game controller!')
+        elif result is RemoveTriviaGameControllerResult.REMOVED:
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Removed {userName} as a global trivia game controller')
         else:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An unknown error occurred when trying to remove {userName} as a global trivia game controller!')
             self.__timber.log('RemoveGlobalTriviaControllerCommand', f'Encountered unknown RemoveTriviaGameControllerResult value ({result}) when trying to remove \"{userName}\" as a global trivia game controller for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -2186,15 +2046,15 @@ class SetFuntoonTokenCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(funtoonTokensRepository, FuntoonTokensRepositoryInterface):
-            raise ValueError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
+            raise TypeError(f'funtoonTokensRepository argument is malformed: \"{funtoonTokensRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__funtoonTokensRepository: FuntoonTokensRepositoryInterface = funtoonTokensRepository
@@ -2216,7 +2076,7 @@ class SetFuntoonTokenCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Token argument is necessary for the !setfuntoontoken command. Example: !setfuntoontoken {self.__getRandomTokenStr()}')
             return
 
-        token: Optional[str] = splits[1]
+        token: str | None = splits[1]
         if not utils.isValidStr(token):
             self.__timber.log('SetFuntoonTokenCommand', f'Invalid token argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !setfuntoontoken command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Token argument is necessary for the !setfuntoontoken command. Example: !setfuntoontoken {self.__getRandomTokenStr()}')
@@ -2224,7 +2084,8 @@ class SetFuntoonTokenCommand(AbsCommand):
 
         await self.__funtoonTokensRepository.setToken(
             token = token,
-            twitchChannel = user.getHandle()
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await ctx.getTwitchChannelId()
         )
 
         self.__timber.log('SetFuntoonTokenCommand', f'Handled !setfuntoontoken command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

@@ -16,10 +16,11 @@ class DatabaseType(EnumWithToFromStr):
     @classmethod
     def fromStr(cls, text: str):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 
         if text == 'postgres':
             return DatabaseType.POSTGRESQL
+
         return super().fromStr(text)

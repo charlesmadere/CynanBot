@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Any, List, Optional
+from typing import Any
 
 import aiosqlite
 
@@ -25,7 +25,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         self.__isClosed = True
         await self.__connection.close()
 
-    async def createTableIfNotExists(self, query: str, *args: Optional[Any]):
+    async def createTableIfNotExists(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -34,7 +34,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         else:
             await self.execute(query)
 
-    async def execute(self, query: str, *args: Optional[Any]):
+    async def execute(self, query: str, *args: Any | None):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -43,7 +43,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         await self.__connection.commit()
         await cursor.close()
 
-    async def fetchRow(self, query: str, *args: Optional[Any]) -> Optional[List[Any]]:
+    async def fetchRow(self, query: str, *args: Any | None) -> list[Any] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -60,13 +60,13 @@ class SqliteDatabaseConnection(DatabaseConnection):
             await cursor.close()
             return None
 
-        results: List[Any] = list()
+        results: list[Any] = list()
         results.extend(row)
 
         await cursor.close()
         return results
 
-    async def fetchRows(self, query: str, *args: Optional[Any]) -> Optional[List[List[Any]]]:
+    async def fetchRows(self, query: str, *args: Any | None) -> list[list[Any]] | None:
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
@@ -83,7 +83,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
             await cursor.close()
             return None
 
-        records: List[List[Any]] = list()
+        records: list[list[Any]] = list()
 
         for record in rows:
             records.append(list(record))

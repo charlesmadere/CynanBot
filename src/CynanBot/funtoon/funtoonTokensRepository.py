@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+import traceback
 
 import CynanBot.misc.utils as utils
 from CynanBot.funtoon.exceptions import NoFuntoonTokenException
@@ -9,6 +9,7 @@ from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 
 
 class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
@@ -17,21 +18,25 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        seedFileReader: Optional[JsonReaderInterface] = None
+        userIdsRepository: UserIdsRepositoryInterface,
+        seedFileReader: JsonReaderInterface | None = None
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
-            raise ValueError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
+            raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__seedFileReader: Optional[JsonReaderInterface] = seedFileReader
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__seedFileReader: JsonReaderInterface | None = seedFileReader
 
         self.__isDatabaseReady: bool = False
-        self.__cache: Dict[str, Optional[str]] = dict()
+        self.__cache: dict[str, str | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -49,19 +54,26 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
             self.__timber.log('FuntoonTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
             return
 
-        jsonContents: Optional[Dict[str, str]] = await seedFileReader.readJsonAsync()
+        jsonContents: dict[str, str] | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
-        if not utils.hasItems(jsonContents):
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             self.__timber.log('FuntoonTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
             return
 
         self.__timber.log('FuntoonTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
 
         for twitchChannel, token in jsonContents.items():
+            try:
+                twitchChannelId = await self.__userIdsRepository.requireUserId(twitchChannel)
+            except Exception as e:
+                self.__timber.log('FuntoonTokensRepository', f'Failed to fetch Twitch channel ID for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                continue
+
             await self.setToken(
                 token = token,
-                twitchChannel = twitchChannel
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
             )
 
         self.__timber.log('FuntoonTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
@@ -70,9 +82,15 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getToken(self, twitchChannel: str) -> Optional[str]:
+    async def getToken(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str | None:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         if twitchChannel.lower() in self.__cache:
             return self.__cache[twitchChannel.lower()]
@@ -88,7 +106,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         )
 
         await connection.close()
-        token: Optional[str] = None
+        token: str | None = None
 
         if utils.hasItems(record):
             token = record[0]
@@ -128,22 +146,38 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         await connection.close()
         await self.__consumeSeedFile()
 
-    async def requireToken(self, twitchChannel: str) -> str:
+    async def requireToken(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str:
         if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        token = await self.getToken(twitchChannel)
+        token = await self.getToken(
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
+        )
 
         if not utils.isValidStr(token):
             raise NoFuntoonTokenException(f'token for twitchChannel \"{twitchChannel}\" is missing/unavailable')
 
         return token
 
-    async def setToken(self, token: Optional[str], twitchChannel: str):
+    async def setToken(
+        self,
+        token: str | None,
+        twitchChannel: str,
+        twitchChannelId: str
+    ):
         if token is not None and not isinstance(token, str):
-            raise ValueError(f'token argument is malformed: \"{token}\"')
+            raise TypeError(f'token argument is malformed: \"{token}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
 

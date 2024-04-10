@@ -1,5 +1,4 @@
 import asyncio
-from typing import Dict, Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -56,7 +55,7 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
             return
 
         self.__timber.log('CheerActionRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
-        twitchAccessTokens: Dict[str, Optional[str]] = dict()
+        twitchAccessTokens: dict[str, str | None] = dict()
 
         for remodAction in remodActions:
             twitchAccessToken = twitchAccessTokens.get(remodAction.getBroadcasterUserId(), None)

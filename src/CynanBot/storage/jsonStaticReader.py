@@ -1,12 +1,12 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 
 
 class JsonStaticReader(JsonReaderInterface):
 
-    def __init__(self, jsonContents: Optional[Dict[Any, Any]]):
-        self.__jsonContents: Optional[Dict[Any, Any]] = jsonContents
+    def __init__(self, jsonContents: dict[Any, Any] | None):
+        self.__jsonContents: dict[Any, Any] | None = jsonContents
         self.__isDeleted: bool = False
 
     def deleteFile(self):
@@ -21,14 +21,21 @@ class JsonStaticReader(JsonReaderInterface):
     async def fileExistsAsync(self) -> bool:
         return self.fileExists()
 
-    def readJson(self) -> Optional[Dict[Any, Any]]:
+    def readJson(self) -> dict[Any, Any] | None:
         if self.__isDeleted:
             return None
         else:
             return self.__jsonContents
 
-    async def readJsonAsync(self) -> Optional[Dict[Any, Any]]:
+    async def readJsonAsync(self) -> dict[Any, Any] | None:
         return self.readJson()
 
-    def __str__(self) -> str:
-        return f'jsonContents=\"{self.__jsonContents}\", isDeleted={self.__isDeleted}'
+    def __repr__(self) -> str:
+        dictionary = self.toDictionary()
+        return str(dictionary)
+
+    def toDictionary(self) -> dict[str, Any]:
+        return {
+            'isDeleted': self.__isDeleted,
+            'jsonContents': self.__jsonContents
+        }

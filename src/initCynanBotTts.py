@@ -88,6 +88,8 @@ from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import ChannelPointSoundHelper
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
@@ -311,6 +313,7 @@ emojiHelper: EmojiHelperInterface = EmojiHelper(
 funtoonTokensRepository: FuntoonTokensRepositoryInterface = FuntoonTokensRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader('funtoonTokensRepositorySeedFile.json')
 )
 funtoonRepository: FuntoonRepositoryInterface = FuntoonRepository(
@@ -400,6 +403,11 @@ if generalSettingsSnapshot.isEventSubEnabled():
 
 soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface = SoundPlayerSettingsRepository(
     settingsJsonReader = JsonFileReader('soundPlayerSettingsRepository.json')
+)
+
+channelPointSoundHelper: ChannelPointSoundHelperInterface | None = ChannelPointSoundHelper(
+    soundPlayerSettingsRepository = soundPlayerSettingsRepository,
+    timber = timber
 )
 
 soundPlayerManager: Optional[SoundPlayerManagerInterface] = VlcSoundPlayerManager(
@@ -590,6 +598,7 @@ cynanBot = CynanBot(
         timber = timber,
         usersRepository = usersRepository
     ),
+    channelPointSoundHelper = channelPointSoundHelper,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
