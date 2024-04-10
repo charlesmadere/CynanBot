@@ -9,7 +9,8 @@ from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):

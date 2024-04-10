@@ -131,8 +131,10 @@ from CynanBot.recurringActions.recurringActionsWizardInterface import \
 from CynanBot.sentMessageLogger.sentMessageLogger import SentMessageLogger
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import ChannelPointSoundHelper
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import \
+    ChannelPointSoundHelper
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
+    ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \

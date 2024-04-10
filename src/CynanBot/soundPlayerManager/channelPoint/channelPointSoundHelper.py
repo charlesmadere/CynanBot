@@ -1,9 +1,13 @@
 import random
+
 import aiofiles.ospath
+
 import CynanBot.misc.utils as utils
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
+    ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 

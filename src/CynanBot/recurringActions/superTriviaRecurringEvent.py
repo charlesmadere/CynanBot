@@ -1,4 +1,5 @@
 from typing import Any
+
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
 from CynanBot.recurringActions.recurringEventType import RecurringEventType
 

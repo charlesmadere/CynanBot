@@ -48,6 +48,7 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
     AddRecurringWeatherActionChatCommand
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
+from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
     ClearSuperTriviaQueueCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
@@ -73,14 +74,12 @@ from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
     CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
-                               ConfirmCommand,
-                               CutenessChampionsCommand, CutenessCommand,
-                               CutenessHistoryCommand, CynanSourceCommand,
-                               DeleteCheerActionCommand,
+                               ConfirmCommand, CutenessChampionsCommand,
+                               CutenessCommand, CutenessHistoryCommand,
+                               CynanSourceCommand, DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
                                GetBannedTriviaControllersCommand,
                                GetCheerActionsCommand,
@@ -141,7 +140,8 @@ from CynanBot.recurringActions.wordOfTheDayRecurringEvent import \
     WordOfTheDayRecurringEvent
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
+    ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \

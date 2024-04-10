@@ -1,4 +1,5 @@
 from typing import Any
+
 from CynanBot.language.languageEntry import LanguageEntry
 from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
