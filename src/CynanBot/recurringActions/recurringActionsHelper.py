@@ -54,6 +54,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         await self.__recurringActionsRepository.setRecurringAction(SuperTriviaRecurringAction(
             enabled = False,
             twitchChannel = recurringAction.getTwitchChannel(),
+            twitchChannelId = recurringAction.getTwitchChannelId(),
             minutesBetween = recurringAction.getMinutesBetween()
         ))
 
@@ -61,6 +62,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         await self.__recurringActionsRepository.setRecurringAction(WeatherRecurringAction(
             enabled = False,
             twitchChannel = recurringAction.getTwitchChannel(),
+            twitchChannelId = recurringAction.getTwitchChannelId(),
             alertsOnly = recurringAction.isAlertsOnly(),
             minutesBetween = recurringAction.getMinutesBetween()
         ))
@@ -69,6 +71,7 @@ class RecurringActionsHelper(RecurringActionsHelperInterface):
         await self.__recurringActionsRepository.setRecurringAction(WordOfTheDayRecurringAction(
             enabled = False,
             twitchChannel = recurringAction.getTwitchChannel(),
+            twitchChannelId = recurringAction.getTwitchChannelId(),
             minutesBetween = recurringAction.getMinutesBetween(),
             languageEntry = recurringAction.getLanguageEntry()
         ))
