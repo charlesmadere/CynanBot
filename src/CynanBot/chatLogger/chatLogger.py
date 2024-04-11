@@ -2,7 +2,6 @@ import asyncio
 import queue
 from collections import defaultdict
 from queue import SimpleQueue
-from typing import Dict, List
 
 import aiofiles
 import aiofiles.os
@@ -28,15 +27,15 @@ class ChatLogger(ChatLoggerInterface):
         logRootDirectory: str = 'logs/chatLogger'
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 1 or sleepTimeSeconds > 60:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidStr(logRootDirectory):
-            raise ValueError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
+            raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__timber: TimberInterface = timber
@@ -48,9 +47,9 @@ class ChatLogger(ChatLoggerInterface):
 
     def __getLogStatement(self, message: AbsChatMessage) -> str:
         if not isinstance(message, AbsChatMessage):
-            raise ValueError(f'message argument is malformed: \"{message}\"')
+            raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        logStatement: str = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} —'
+        logStatement = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} —'
 
         if message.getChatEventType() is ChatEventType.MESSAGE:
             chatMessage: ChatMessage = message
@@ -65,13 +64,13 @@ class ChatLogger(ChatLoggerInterface):
 
     def logMessage(self, msg: str, twitchChannel: str, userId: str, userName: str):
         if not utils.isValidStr(msg):
-            raise ValueError(f'msg argument is malformed: \"{msg}\"')
+            raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         chatMessage: AbsChatMessage = ChatMessage(
             msg = msg,
@@ -84,13 +83,13 @@ class ChatLogger(ChatLoggerInterface):
 
     def logRaid(self, raidSize: int, fromWho: str, twitchChannel: str):
         if not utils.isValidInt(raidSize):
-            raise ValueError(f'raidSize argument is malformed: \"{raidSize}\"')
+            raise TypeError(f'raidSize argument is malformed: \"{raidSize}\"')
         elif raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
             raise ValueError(f'raidSize argument is out of bounds: {raidSize}')
         elif not utils.isValidStr(fromWho):
-            raise ValueError(f'fromWho argument is malformed: \"{fromWho}\"')
+            raise TypeError(f'fromWho argument is malformed: \"{fromWho}\"')
         elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         raidMessage: AbsChatMessage = RaidMessage(
             raidSize = raidSize,
@@ -112,7 +111,7 @@ class ChatLogger(ChatLoggerInterface):
 
     async def __startMessageLoop(self):
         while True:
-            messages: List[AbsChatMessage] = list()
+            messages: list[AbsChatMessage] = list()
 
             try:
                 while not self.__messageQueue.empty():
@@ -124,14 +123,14 @@ class ChatLogger(ChatLoggerInterface):
             await self.__writeToLogFiles(messages)
             await asyncio.sleep(self.__sleepTimeSeconds)
 
-    async def __writeToLogFiles(self, messages: List[AbsChatMessage]):
+    async def __writeToLogFiles(self, messages: list[AbsChatMessage]):
         if len(messages) == 0:
             return
 
         # The below logic is kind of intense, however, there is a very similar/nearly identical
         # flow within the Timber class. Check that out for more information and context.
 
-        structure: Dict[str, Dict[str, List[AbsChatMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
+        structure: dict[str, dict[str, list[AbsChatMessage]]] = defaultdict(lambda: defaultdict(lambda: list()))
 
         for message in messages:
             twitchChannel = message.getTwitchChannel().lower()

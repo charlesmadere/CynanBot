@@ -412,7 +412,7 @@ channelPointSoundHelper: ChannelPointSoundHelperInterface | None = ChannelPointS
     timber = timber
 )
 
-soundPlayerManager: Optional[SoundPlayerManagerInterface] = VlcSoundPlayerManager(
+soundPlayerManager: SoundPlayerManagerInterface | None = VlcSoundPlayerManager(
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     timber = timber
 )
@@ -438,7 +438,7 @@ ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
     timber = timber
 )
 
-decTalkManager: Optional[DecTalkManager] = DecTalkManager(
+decTalkManager: DecTalkManager | None = DecTalkManager(
     decTalkFileManager = DecTalkFileManager(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber
@@ -458,7 +458,7 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
-googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
+googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     googleApiService = googleApiService,
     googleTtsFileManager = googleTtsFileManager,
     soundPlayerManager = soundPlayerManager,
@@ -468,7 +468,7 @@ googleTtsManager: Optional[GoogleTtsManager] = GoogleTtsManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
-ttsManager: Optional[TtsManagerInterface] = TtsManager(
+ttsManager: TtsManagerInterface | None = TtsManager(
     decTalkManager = decTalkManager,
     googleTtsManager = googleTtsManager,
     timber = timber,
@@ -485,7 +485,7 @@ streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = Stream
     settingsJsonReader = JsonFileReader('streamAlertsSettingsRepository.json')
 )
 
-streamAlertsManager: Optional[StreamAlertsManagerInterface] = StreamAlertsManager(
+streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
     backgroundTaskHelper = backgroundTaskHelper,
     soundPlayerManager = soundPlayerManager,
     streamAlertsSettingsRepository = streamAlertsSettingsRepository,
@@ -498,7 +498,7 @@ streamAlertsManager: Optional[StreamAlertsManagerInterface] = StreamAlertsManage
 ## Chat Actions initialization section ##
 #########################################
 
-supStreamerChatAction: Optional[AbsChatAction] = None
+supStreamerChatAction: AbsChatAction | None = None
 if streamAlertsManager is not None:
     supStreamerChatAction = SupStreamerChatAction(
         streamAlertsManager = streamAlertsManager,
@@ -540,7 +540,8 @@ cheerActionRemodHelper: CheerActionRemodHelperInterface = CheerActionRemodHelper
     cheerActionRemodRepository = cheerActionRemodRepository,
     timber = timber,
     twitchApiService = twitchApiService,
-    twitchTokensRepository = twitchTokensRepository
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
 )
 
 cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()

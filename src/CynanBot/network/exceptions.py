@@ -7,7 +7,7 @@ class GenericNetworkException(Exception):
         super().__init__(message)
 
         if statusCode is not None and not utils.isValidInt(statusCode):
-            raise ValueError(f'statusCode argument is malformed: \"{statusCode}\"')
+            raise TypeError(f'statusCode argument is malformed: \"{statusCode}\"')
 
         self.__statusCode: int | None = statusCode
 

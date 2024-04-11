@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -7,11 +7,11 @@ class LanguageEntry():
 
     def __init__(
         self,
-        commandNames: List[str],
+        commandNames: list[str],
         name: str,
-        flag: Optional[str] = None,
-        iso6391Code: Optional[str] = None,
-        wotdApiCode: Optional[str] = None
+        flag: str | None = None,
+        iso6391Code: str | None = None,
+        wotdApiCode: str | None = None
     ):
         if not utils.areValidStrs(commandNames):
             raise ValueError(f'commandNames argument is malformed: \"{commandNames}\"')
@@ -24,11 +24,11 @@ class LanguageEntry():
         elif wotdApiCode is not None and not isinstance(wotdApiCode, str):
             raise ValueError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
 
-        self.__commandNames: List[str] = commandNames
+        self.__commandNames: list[str] = commandNames
         self.__name: str = name
-        self.__flag: Optional[str] = flag
-        self.__iso6391Code: Optional[str] = iso6391Code
-        self.__wotdApiCode: Optional[str] = wotdApiCode
+        self.__flag: str | None = flag
+        self.__iso6391Code: str | None = iso6391Code
+        self.__wotdApiCode: str | None = wotdApiCode
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, LanguageEntry):
@@ -36,13 +36,13 @@ class LanguageEntry():
 
         return self.__name.lower() == other.__name.lower()
 
-    def getCommandNames(self) -> List[str]:
+    def getCommandNames(self) -> list[str]:
         return self.__commandNames
 
-    def getFlag(self) -> Optional[str]:
+    def getFlag(self) -> str | None:
         return self.__flag
 
-    def getIso6391Code(self) -> Optional[str]:
+    def getIso6391Code(self) -> str | None:
         return self.__iso6391Code
 
     def getName(self) -> str:
@@ -51,7 +51,7 @@ class LanguageEntry():
     def getPrimaryCommandName(self) -> str:
         return self.__commandNames[0]
 
-    def getWotdApiCode(self) -> Optional[str]:
+    def getWotdApiCode(self) -> str | None:
         return self.__wotdApiCode
 
     def hasFlag(self) -> bool:
@@ -86,7 +86,7 @@ class LanguageEntry():
 
         return wotdApiCode
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'commandNames': self.__commandNames,
             'flag': self.__flag,

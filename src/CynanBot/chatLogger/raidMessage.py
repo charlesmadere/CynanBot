@@ -19,11 +19,11 @@ class RaidMessage(AbsChatMessage):
         )
 
         if not utils.isValidInt(raidSize):
-            raise ValueError(f'raidSize argument is malformed: \"{raidSize}\"')
+            raise TypeError(f'raidSize argument is malformed: \"{raidSize}\"')
         elif raidSize < 0 or raidSize > utils.getIntMaxSafeSize():
             raise ValueError(f'raidSize argument is out of bounds: {raidSize}')
         elif not utils.isValidStr(fromWho):
-            raise ValueError(f'fromWho argument is malformed: \"{fromWho}\"')
+            raise TypeError(f'fromWho argument is malformed: \"{fromWho}\"')
 
         self.__raidSize: int = raidSize
         self.__fromWho: str = fromWho

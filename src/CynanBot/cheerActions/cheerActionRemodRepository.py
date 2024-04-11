@@ -17,7 +17,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        remodTimeBuffer: timedelta = timedelta(seconds = 2)
+        remodTimeBuffer: timedelta = timedelta(seconds = 3)
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -41,6 +41,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
             '''
                 INSERT INTO cheerremodactions (broadcasteruserid, remoddatetime, userid)
                 VALUES ($1, $2, $3)
+                ON CONFLICT (broadcasteruserid, userid) DO UPDATE SET remoddatetime = EXCLUDED.remoddatetime
             ''',
             data.getBroadcasterUserId(), data.getRemodDateTime().getIsoFormatStr(), data.getUserId()
         )
@@ -80,7 +81,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         data: list[CheerActionRemodData] = list()
         now = SimpleDateTime()
 
-        if utils.hasItems(records):
+        if records is not None and len(records) >= 1:
             for record in records:
                 remodDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[1]))
 

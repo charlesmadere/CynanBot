@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.deepL.deepLTranslationResponse import DeepLTranslationResponse
-from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.deepL.deepLTranslationResponses import DeepLTranslationResponses
+from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
 
 
-class DeepLApiServicecInterface(ABC):
+class DeepLApiServiceInterface(ABC):
 
     @abstractmethod
     async def translate(
         self,
-        targetLanguage: LanguageEntry,
-        text: str,
-    ) -> DeepLTranslationResponse:
+        request: DeepLTranslationRequest
+    ) -> DeepLTranslationResponses:
         pass

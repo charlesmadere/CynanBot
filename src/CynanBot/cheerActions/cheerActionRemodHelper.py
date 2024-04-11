@@ -12,6 +12,8 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class CheerActionRemodHelper(CheerActionRemodHelperInterface):
@@ -23,6 +25,7 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -35,6 +38,8 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(queueSleepTimeSeconds):
             raise TypeError(f'queueSleepTimeSeconds argument is malformed: \"{queueSleepTimeSeconds}\"')
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
@@ -45,13 +50,14 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueSleepTimeSeconds: float = queueSleepTimeSeconds
 
         self.__isStarted: bool = False
 
     async def __refresh(self):
         remodActions = await self.__cheerActionRemodRepository.getAll()
-        if not utils.hasItems(remodActions):
+        if remodActions is None or len(remodActions) == 0:
             return
 
         self.__timber.log('CheerActionRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
@@ -71,6 +77,11 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
                 twitchAccessTokens[remodAction.getBroadcasterUserId()] = twitchAccessToken
 
+            userName = await self.__userIdsRepository.requireUserName(
+                userId = remodAction.getUserId(),
+                twitchAccessToken = twitchAccessToken
+            )
+
             if await self.__twitchApiService.addModerator(
                 broadcasterId = remodAction.getBroadcasterUserId(),
                 twitchAccessToken = twitchAccessToken,
@@ -80,8 +91,10 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
                     broadcasterUserId = remodAction.getBroadcasterUserId(),
                     userId = remodAction.getUserId()
                 )
+
+                self.__timber.log('CheerActionRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
             else:
-                self.__timber.log('CheerActionRemodHelper', f'Failed to re-mod user ({remodAction})')
+                self.__timber.log('CheerActionRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userName=})')
 
         self.__timber.log('CheerActionRemodHelper', f'Finished re-applying mod status to {len(remodActions)} user(s)')
 

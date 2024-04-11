@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Dict, Optional
 
 from lru import LRU
 
@@ -35,13 +34,13 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         self.__timber: TimberInterface = timber
 
         self.__isDatabaseReady: bool = False
-        self.__caches: Dict[str, LRU[str, Optional[MostRecentChat]]] = defaultdict(lambda: LRU(cacheSize))
+        self.__caches: dict[str, LRU[str, MostRecentChat | None]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
         self.__caches.clear()
         self.__timber.log('MostRecentChatsRepository', 'Caches cleared')
 
-    async def get(self, chatterUserId: str, twitchChannelId: str) -> Optional[MostRecentChat]:
+    async def get(self, chatterUserId: str, twitchChannelId: str) -> MostRecentChat | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -63,7 +62,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         )
 
         await connection.close()
-        mostRecentChat: Optional[MostRecentChat] = None
+        mostRecentChat: MostRecentChat | None = None
 
         if utils.hasItems(record):
             simpleDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[0]))

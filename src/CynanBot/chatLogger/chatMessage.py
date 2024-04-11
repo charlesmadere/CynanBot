@@ -18,11 +18,11 @@ class ChatMessage(AbsChatMessage):
         )
 
         if not utils.isValidStr(msg):
-            raise ValueError(f'msg argument is malformed: \"{msg}\"')
+            raise TypeError(f'msg argument is malformed: \"{msg}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__msg: str = msg
         self.__userId: str = userId

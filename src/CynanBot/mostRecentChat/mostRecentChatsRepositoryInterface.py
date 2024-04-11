@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional
 
 from CynanBot.misc.clearable import Clearable
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
@@ -8,7 +7,7 @@ from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 class MostRecentChatsRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def get(self, chatterUserId: str, twitchChannelId: str) -> Optional[MostRecentChat]:
+    async def get(self, chatterUserId: str, twitchChannelId: str) -> MostRecentChat | None:
         pass
 
     @abstractmethod
