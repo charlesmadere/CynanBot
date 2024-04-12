@@ -1,7 +1,7 @@
 from typing import Any
 
-from CynanBot.language.languageEntry import LanguageEntry
 import CynanBot.misc.utils as utils
+from CynanBot.language.languageEntry import LanguageEntry
 
 
 class DeepLTranslationResponse():

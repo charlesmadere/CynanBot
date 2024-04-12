@@ -1,12 +1,13 @@
 import traceback
 
+import CynanBot.misc.utils as utils
+from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
+from CynanBot.deepL.deepLAuthKeyProviderInterface import \
+    DeepLAuthKeyProviderInterface
 from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
-from CynanBot.deepL.exceptions import DeepLAuthKeyUnavailableException
-import CynanBot.misc.utils as utils
-from CynanBot.deepL.deepLAuthKeyProviderInterface import DeepLAuthKeyProviderInterface
-from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
 from CynanBot.deepL.deepLTranslationResponses import DeepLTranslationResponses
+from CynanBot.deepL.exceptions import DeepLAuthKeyUnavailableException
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface

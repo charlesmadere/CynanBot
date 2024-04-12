@@ -4,11 +4,19 @@ from abc import ABC, abstractmethod
 class TriviaEmoteGeneratorInterface(ABC):
 
     @abstractmethod
-    async def getCurrentEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
+    async def getCurrentEmoteFor(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str:
         pass
 
     @abstractmethod
-    async def getNextEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
+    async def getNextEmoteFor(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str:
         pass
 
     @abstractmethod
@@ -16,5 +24,8 @@ class TriviaEmoteGeneratorInterface(ABC):
         pass
 
     @abstractmethod
-    async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
+    async def getValidatedAndNormalizedEmote(
+        self,
+        emote: str | None
+    ) -> str | None:
         pass

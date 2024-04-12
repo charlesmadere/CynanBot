@@ -131,7 +131,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         return emotesDict
 
-    async def getCurrentEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
+    async def getCurrentEmoteFor(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -183,7 +187,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getNextEmoteFor(self, twitchChannel: str, twitchChannelId: str) -> str:
+    async def getNextEmoteFor(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> str:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -212,7 +220,10 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
     def getRandomEmote(self) -> str:
         return random.choice(self.__emotesList)
 
-    async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
+    async def getValidatedAndNormalizedEmote(
+        self,
+        emote: str | None
+    ) -> str | None:
         if not utils.isValidStr(emote):
             return None
 

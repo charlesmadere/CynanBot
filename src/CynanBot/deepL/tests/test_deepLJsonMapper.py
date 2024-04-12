@@ -4,7 +4,8 @@ from CynanBot.deepL.deepLJsonMapper import DeepLJsonMapper
 from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
 from CynanBot.language.languagesRepository import LanguagesRepository
-from CynanBot.language.languagesRepositoryInterface import LanguagesRepositoryInterface
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
 

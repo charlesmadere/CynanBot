@@ -1,12 +1,13 @@
 from typing import Any
 
-from CynanBot.language.languageEntry import LanguageEntry
 import CynanBot.misc.utils as utils
-from CynanBot.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
 from CynanBot.deepL.deepLTranslationResponse import DeepLTranslationResponse
 from CynanBot.deepL.deepLTranslationResponses import DeepLTranslationResponses
+from CynanBot.language.languageEntry import LanguageEntry
+from CynanBot.language.languagesRepositoryInterface import \
+    LanguagesRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
