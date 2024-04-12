@@ -91,8 +91,8 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
                 data.append(CheerActionRemodData(
                     remodDateTime = remodDateTime,
                     broadcasterUserId = record[0],
-                    broadcasterUserName = record[2],
-                    userId = record[1]
+                    broadcasterUserName = record[3],
+                    userId = record[2]
                 ))
 
         return data

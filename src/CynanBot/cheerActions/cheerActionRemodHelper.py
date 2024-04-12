@@ -71,7 +71,9 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
             twitchAccessToken = twitchAccessTokens.get(remodAction.getBroadcasterUserId(), None)
 
             if not utils.isValidStr(twitchAccessToken):
-                if not await self.__twitchTokensRepository.hasAccessToken(remodAction.getBroadcasterUserName()):
+                if not await self.__twitchTokensRepository.hasAccessToken(
+                    twitchChannel = remodAction.getBroadcasterUserName()
+                ):
                     broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
                     continue
 
