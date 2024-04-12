@@ -4,7 +4,7 @@ import queue
 import traceback
 from datetime import datetime, timedelta, timezone
 from queue import SimpleQueue
-from typing import Any, Dict, Optional
+from typing import Any
 
 import websockets
 
@@ -65,7 +65,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         self.__timeZone: timezone = timeZone
 
         self.__isStarted: bool = False
-        self.__cache: Optional[Dict[str, Any]] = None
+        self.__cache: dict[str, Any] | None = None
         self.__eventQueue: SimpleQueue[WebsocketEvent] = SimpleQueue()
 
     async def clearCaches(self):
@@ -76,11 +76,11 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         jsonContents = await self.__readJson()
         return utils.getBoolFromDict(jsonContents, 'debugLoggingEnabled', False)
 
-    async def __readJson(self) -> Dict[str, Any]:
+    async def __readJson(self) -> dict[str, Any]:
         if self.__cache is not None:
             return self.__cache
 
-        jsonContents: Optional[Dict[str, Any]] = None
+        jsonContents: dict[str, Any] | None = None
 
         if await self.__settingsJsonReader.fileExistsAsync():
             jsonContents = await self.__settingsJsonReader.readJsonAsync()
@@ -97,16 +97,16 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         self,
         twitchChannel: str,
         eventType: str,
-        eventData: Dict[Any, Any]
+        eventData: dict[Any, Any]
     ):
         if not utils.isValidStr(twitchChannel):
             raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(eventType):
             raise ValueError(f'eventType argument for twitchChannel \"{twitchChannel}\" is malformed: \"{eventType}\"')
-        elif not isinstance(eventData, Dict) or len(eventData) == 0:
+        elif not isinstance(eventData, dict) or len(eventData) == 0:
             raise ValueError(f'eventData argument for eventType \"{eventType}\" and twitchChannel \"{twitchChannel}\" is malformed: \"{eventData}\"')
 
-        event: Dict[str, Any] = {
+        event: dict[str, Any] = {
             'twitchChannel': twitchChannel,
             'eventType': eventType,
             'eventData': eventData
