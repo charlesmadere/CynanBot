@@ -13,15 +13,19 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
     def __init__(
         self,
         googleJsonMapper: GoogleJsonMapperInterface,
-        settingsJsonReader: JsonReaderInterface
+        settingsJsonReader: JsonReaderInterface,
+        defaultGoogleVoiceAudioEncoding: GoogleVoiceAudioEncoding = GoogleVoiceAudioEncoding.OGG_OPUS
     ):
         if not isinstance(googleJsonMapper, GoogleJsonMapperInterface):
             raise TypeError(f'googleJsonMapper argument is malformed: \"{googleJsonMapper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise TypeError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
+        elif not isinstance(defaultGoogleVoiceAudioEncoding, GoogleVoiceAudioEncoding):
+            raise TypeError(f'defaultGoogleVoiceAudioEncoding argument is malformed: \"{defaultGoogleVoiceAudioEncoding}\"')
 
         self.__googleJsonMapper: GoogleJsonMapperInterface = googleJsonMapper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
+        self.__defaultGoogleVoiceAudioEncoding: GoogleVoiceAudioEncoding = defaultGoogleVoiceAudioEncoding
 
         self.__settingsCache: dict[str, Any] | None = None
 
@@ -32,7 +36,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         jsonContents = await self.__readJson()
 
         defaultAudioEncoding = await self.__googleJsonMapper.serializeVoiceAudioEncoding(
-            voiceAudioEncoding = GoogleVoiceAudioEncoding.MP3
+            voiceAudioEncoding = self.__defaultGoogleVoiceAudioEncoding
         )
 
         audioEncodingString = utils.getStrFromDict(
@@ -46,7 +50,7 @@ class TtsSettingsRepository(TtsSettingsRepositoryInterface):
         )
 
         if audioEncoding is None:
-            return GoogleVoiceAudioEncoding.MP3
+            return self.__defaultGoogleVoiceAudioEncoding
         else:
             return audioEncoding
 
