@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
@@ -27,7 +27,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
-        seedFileReader: Optional[JsonReaderInterface] = None,
+        seedFileReader: JsonReaderInterface | None = None,
         tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
         timeZone: tzinfo = timezone.utc
     ):
@@ -47,14 +47,14 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
-        self.__seedFileReader: Optional[JsonReaderInterface] = seedFileReader
+        self.__seedFileReader: JsonReaderInterface | None = seedFileReader
         self.__tokensExpirationBuffer: timedelta = tokensExpirationBuffer
         self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
-        self.__cache: Dict[str, TwitchTokensDetails] = dict()
-        self.__tokenExpirationTimes: Dict[str, Optional[datetime]] = dict()
-        self.__twitchTokensRepositoryListener: Optional[TwitchTokensRepositoryListener] = None
+        self.__cache: dict[str, TwitchTokensDetails] = dict()
+        self.__tokenExpirationTimes: dict[str, datetime | None] = dict()
+        self.__twitchTokensRepositoryListener: TwitchTokensRepositoryListener | None = None
 
     async def addUser(self, code: str, twitchChannel: str):
         if not utils.isValidStr(code):
@@ -104,7 +104,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             self.__timber.log('TwitchTokensRepository', f'Seed file (\"{seedFileReader}\") does not exist')
             return
 
-        jsonContents: Optional[Dict[str, Dict[str, Any]]] = await seedFileReader.readJsonAsync()
+        jsonContents: dict[str, dict[str, Any]] | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
         if not utils.hasItems(jsonContents):
@@ -114,7 +114,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__timber.log('TwitchTokensRepository', f'Reading in seed file \"{seedFileReader}\"...')
 
         for twitchChannel, tokensDetailsJson in jsonContents.items():
-            tokensDetails: Optional[TwitchTokensDetails] = None
+            tokensDetails: TwitchTokensDetails | None = None
 
             if utils.isValidStr(tokensDetailsJson.get('code')):
                 code = utils.getStrFromDict(tokensDetailsJson, 'code')
@@ -142,7 +142,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         nowDateTime = datetime.now(self.__timeZone)
         return nowDateTime - timedelta(weeks = 1)
 
-    async def getAccessToken(self, twitchChannel: str) -> Optional[str]:
+    async def getAccessToken(self, twitchChannel: str) -> str | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -157,11 +157,11 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getExpiringTwitchChannels(self) -> Optional[List[str]]:
+    async def getExpiringTwitchChannels(self) -> list[str] | None:
         if not utils.hasItems(self.__tokenExpirationTimes):
             return None
 
-        expiringTwitchChannels: Set[str] = set()
+        expiringTwitchChannels: set[str] = set()
         nowDateTime = datetime.now(self.__timeZone)
 
         for twitchChannel, expirationDateTime in self.__tokenExpirationTimes.items():
@@ -170,7 +170,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return list(expiringTwitchChannels)
 
-    async def getRefreshToken(self, twitchChannel: str) -> Optional[str]:
+    async def getRefreshToken(self, twitchChannel: str) -> str | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -181,7 +181,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         return tokensDetails.getRefreshToken()
 
-    async def getTokensDetails(self, twitchChannel: str) -> Optional[TwitchTokensDetails]:
+    async def getTokensDetails(self, twitchChannel: str) -> TwitchTokensDetails | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
@@ -374,7 +374,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self.__cache.pop(twitchChannel.lower(), None)
         self.__tokenExpirationTimes[twitchChannel.lower()] = expirationTime
 
-    def setListener(self, listener: Optional[TwitchTokensRepositoryListener]):
+    def setListener(self, listener: TwitchTokensRepositoryListener | None):
         if listener is not None and not isinstance(listener, TwitchTokensRepositoryListener):
             raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
@@ -382,7 +382,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
     async def __setTokensDetails(
         self,
-        tokensDetails: Optional[TwitchTokensDetails],
+        tokensDetails: TwitchTokensDetails | None,
         twitchChannel: str
     ):
         if tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
@@ -434,7 +434,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannel}\"...')
 
-        expirationTime: Optional[datetime] = None
+        expirationTime: datetime | None = None
         try:
             expirationTime = await self.__twitchApiService.validateTokens(
                 twitchAccessToken = tokensDetails.getAccessToken()

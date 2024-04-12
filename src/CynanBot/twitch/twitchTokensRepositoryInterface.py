@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import List, Optional
 
 from CynanBot.misc.clearable import Clearable
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
@@ -14,15 +13,15 @@ class TwitchTokensRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def getAccessToken(self, twitchChannel: str) -> Optional[str]:
+    async def getAccessToken(self, twitchChannel: str) -> str | None:
         pass
 
     @abstractmethod
-    async def getExpiringTwitchChannels(self) -> Optional[List[str]]:
+    async def getExpiringTwitchChannels(self) -> list[str] | None:
         pass
 
     @abstractmethod
-    async def getRefreshToken(self, twitchChannel: str) -> Optional[str]:
+    async def getRefreshToken(self, twitchChannel: str) -> str | None:
         pass
 
     @abstractmethod
@@ -46,7 +45,7 @@ class TwitchTokensRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    def setListener(self, listener: Optional[TwitchTokensRepositoryListener]):
+    def setListener(self, listener: TwitchTokensRepositoryListener | None):
         pass
 
     @abstractmethod
