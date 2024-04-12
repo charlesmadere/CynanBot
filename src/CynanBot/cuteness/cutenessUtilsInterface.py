@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
 from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
@@ -33,5 +32,5 @@ class CutenessUtilsInterface(ABC):
         pass
 
     @abstractmethod
-    def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
+    def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
         pass

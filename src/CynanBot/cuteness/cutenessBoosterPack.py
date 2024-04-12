@@ -11,9 +11,9 @@ class CutenessBoosterPack():
         rewardId: str
     ):
         if not utils.isValidInt(amount):
-            raise ValueError(f'amount argument is malformed: \"{amount}\"')
+            raise TypeError(f'amount argument is malformed: \"{amount}\"')
         elif not utils.isValidStr(rewardId):
-            raise ValueError(f'rewardId argument is malformed: \"{rewardId}\"')
+            raise TypeError(f'rewardId argument is malformed: \"{rewardId}\"')
 
         self.__amount: int = amount
         self.__rewardId: str = rewardId

@@ -8,7 +8,9 @@ from CynanBot.misc.simpleDateTime import SimpleDateTime
 class CutenessDate():
 
     def __init__(self, utcYearAndMonthStr: str | None = None):
-        if utils.isValidStr(utcYearAndMonthStr):
+        if utcYearAndMonthStr is not None and not isinstance(utcYearAndMonthStr, str):
+            raise TypeError(f'utcYearAndMonthStr argument is malformed: \"{utcYearAndMonthStr}\"')
+        elif utils.isValidStr(utcYearAndMonthStr):
             self.__simpleDateTime: SimpleDateTime = SimpleDateTime(
                 now = datetime.strptime(utcYearAndMonthStr, '%Y-%m')
             )

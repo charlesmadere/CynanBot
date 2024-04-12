@@ -12,13 +12,13 @@ class CutenessEntry():
         userName: str
     ):
         if not utils.isValidInt(cuteness):
-            raise ValueError(f'cuteness argument is malformed: \"{cuteness}\"')
+            raise TypeError(f'cuteness argument is malformed: \"{cuteness}\"')
         elif cuteness < 0 or cuteness > utils.getLongMaxSafeSize():
             raise ValueError(f'cuteness argument is out of bounds: {cuteness}')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__cuteness: int = cuteness
         self.__userId: str = userId

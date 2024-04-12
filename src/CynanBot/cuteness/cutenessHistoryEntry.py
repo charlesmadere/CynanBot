@@ -18,7 +18,7 @@ class CutenessHistoryEntry(CutenessEntry):
         )
 
         if not isinstance(cutenessDate, CutenessDate):
-            raise ValueError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
+            raise TypeError(f'cutenessDate argument is malformed: \"{cutenessDate}\"')
 
         self.__cutenessDate: CutenessDate = cutenessDate
 

@@ -1,5 +1,3 @@
-from typing import List
-
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessChampionsResult import CutenessChampionsResult
 from CynanBot.cuteness.cutenessHistoryResult import CutenessHistoryResult
@@ -17,9 +15,9 @@ class CutenessUtils(CutenessUtilsInterface):
 
     def getCuteness(self, result: CutenessResult, delimiter: str) -> str:
         if not isinstance(result, CutenessResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
         elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         cuteness = result.getCuteness()
 
@@ -30,16 +28,16 @@ class CutenessUtils(CutenessUtilsInterface):
 
     def getCutenessChampions(self, result: CutenessChampionsResult, delimiter: str) -> str:
         if not isinstance(result, CutenessChampionsResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
         elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         champions = result.getChampions()
 
         if champions is None or len(champions) == 0:
             return f'There are no cuteness champions 😿'
 
-        championsStrs: List[str] = list()
+        championsStrs: list[str] = list()
 
         for champion in champions:
             championsStrs.append(self.__getLeaderboardPlacementString(champion))
@@ -49,16 +47,16 @@ class CutenessUtils(CutenessUtilsInterface):
 
     def getCutenessHistory(self, result: CutenessHistoryResult, delimiter: str) -> str:
         if not isinstance(result, CutenessHistoryResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
         elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
         entries = result.getEntries()
 
         if entries is None or len(entries) == 0:
             return f'{result.getUserName()} has no cuteness history 😿'
 
-        historyStrs: List[str] = list()
+        historyStrs: list[str] = list()
 
         for entry in entries:
             historyStrs.append(f'{entry.getCutenessDate().getHumanString()} ({entry.getCutenessStr()})')
@@ -76,13 +74,13 @@ class CutenessUtils(CutenessUtilsInterface):
         else:
             return f'@{result.getUserName()}\'s recent cuteness history: {historyStr} ✨'
 
-    def getLeaderboard(self, entries: List[CutenessLeaderboardEntry], delimiter: str) -> str:
-        if not isinstance(entries, List) or len(entries) == 0:
-            raise ValueError(f'entries argument is malformed: \"{entries}\"')
+    def getLeaderboard(self, entries: list[CutenessLeaderboardEntry], delimiter: str) -> str:
+        if not isinstance(entries, list) or len(entries) == 0:
+            raise TypeError(f'entries argument is malformed: \"{entries}\"')
         elif not isinstance(delimiter, str):
-            raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
+            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        entryStrings: List[str] = list()
+        entryStrings: list[str] = list()
 
         for entry in entries:
             entryStrings.append(self.__getLeaderboardPlacementString(entry))
@@ -96,25 +94,25 @@ class CutenessUtils(CutenessUtilsInterface):
         leaderboardDelimiter: str
     ) -> str:
         if not isinstance(result, CutenessLeaderboardHistoryResult):
-            raise ValueError(f'result argument is malformed: \"{result}\"')
+            raise TypeError(f'result argument is malformed: \"{result}\"')
         elif not isinstance(entryDelimiter, str):
-            raise ValueError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
+            raise TypeError(f'entryDelimiter argument is malformed: \"{entryDelimiter}\"')
         elif not isinstance(leaderboardDelimiter, str):
-            raise ValueError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
+            raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
         leaderboards = result.getLeaderboards()
 
         if leaderboards is None or len(leaderboards) == 0:
             return f'There is no Cuteness Leaderboard History here 😿'
 
-        leaderboardStrings: List[str] = list()
+        leaderboardStrings: list[str] = list()
 
         for leaderboard in leaderboards:
             entries = leaderboard.getEntries()
             if entries is None or len(entries) == 0:
                 continue
 
-            entryStrings: List[str] = list()
+            entryStrings: list[str] = list()
             for entry in entries:
                 entryStrings.append(self.__getLeaderboardPlacementString(entry))
 
@@ -124,7 +122,7 @@ class CutenessUtils(CutenessUtilsInterface):
 
     def __getLeaderboardPlacementString(self, entry: CutenessLeaderboardEntry) -> str:
         if not isinstance(entry, CutenessLeaderboardEntry):
-            raise ValueError(f'result argument is malformed: \"{entry}\"')
+            raise TypeError(f'result argument is malformed: \"{entry}\"')
 
         rankStr = ''
 

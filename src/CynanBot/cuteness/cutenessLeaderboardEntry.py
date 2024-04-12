@@ -20,7 +20,7 @@ class CutenessLeaderboardEntry(CutenessEntry):
         )
 
         if not utils.isValidInt(rank):
-            raise ValueError(f'rank argument is malformed: \"{rank}\"')
+            raise TypeError(f'rank argument is malformed: \"{rank}\"')
         elif rank < 1 or rank > utils.getIntMaxSafeSize():
             raise ValueError(f'rank argument is out of bounds: {rank}')
 
