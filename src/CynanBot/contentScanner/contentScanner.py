@@ -45,10 +45,10 @@ class ContentScanner(ContentScannerInterface):
             self.__timber.log('ContentScanner', f'Content contains a URL: \"{string}\"')
             return ContentCode.CONTAINS_URL
 
-        phrases: Set[str] = set()
+        phrases: set[str] = set()
         await self.updatePhrasesContent(phrases, string)
 
-        words: Set[str] = set()
+        words: set[str] = set()
         await self.updateWordsContent(words, string)
 
         phrasesAndWordsContentCode = await self.__scanPhrasesAndWords(phrases, words)
