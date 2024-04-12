@@ -140,7 +140,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
         detectedLanguageCode: str | None = None
         if 'detectedLanguageCode' in jsonContents and utils.isValidStr(jsonContents.get('detectedLanguageCode')):
-            detectedLanguageCode = utils.getStrFromDict(jsonContents, 'detectedLangaugeCode')
+            detectedLanguageCode = utils.getStrFromDict(jsonContents, 'detectedLanguageCode')
 
         model: str | None = None
         if 'model' in jsonContents and utils.isValidStr(jsonContents.get('model')):
