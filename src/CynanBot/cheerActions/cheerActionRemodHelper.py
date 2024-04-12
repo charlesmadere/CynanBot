@@ -62,18 +62,31 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
         self.__timber.log('CheerActionRemodHelper', f'Re-applying mod status to {len(remodActions)} user(s)...')
         twitchAccessTokens: dict[str, str | None] = dict()
+        broadcastersWithoutTokens: set[str] = set()
 
         for remodAction in remodActions:
+            if remodAction.getBroadcasterUserId() in broadcastersWithoutTokens:
+                continue
+
             twitchAccessToken = twitchAccessTokens.get(remodAction.getBroadcasterUserId(), None)
 
             if not utils.isValidStr(twitchAccessToken):
+                if not await self.__twitchTokensRepository.hasAccessToken(remodAction.getBroadcasterUserName()):
+                    broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    continue
+
                 await self.__twitchTokensRepository.validateAndRefreshAccessToken(
                     twitchChannel = remodAction.getBroadcasterUserName()
                 )
 
-                twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
+                twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
                     twitchChannel = remodAction.getBroadcasterUserName()
                 )
+
+                if not utils.isValidStr(twitchAccessToken):
+                    self.__timber.log('CheerActionRemodHelper', f'Unable to retrieve Twitch access token for {remodAction.getBroadcasterUserName()}:{remodAction.getBroadcasterUserId()}')
+                    broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    continue
 
                 twitchAccessTokens[remodAction.getBroadcasterUserId()] = twitchAccessToken
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -7,7 +7,7 @@ from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 class CutenessDate():
 
-    def __init__(self, utcYearAndMonthStr: Optional[str] = None):
+    def __init__(self, utcYearAndMonthStr: str | None = None):
         if utils.isValidStr(utcYearAndMonthStr):
             self.__simpleDateTime: SimpleDateTime = SimpleDateTime(
                 now = datetime.strptime(utcYearAndMonthStr, '%Y-%m')
@@ -55,7 +55,7 @@ class CutenessDate():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'databaseString': self.__databaseString,
             'humanString': self.__humanString

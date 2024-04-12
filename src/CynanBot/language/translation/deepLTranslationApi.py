@@ -1,6 +1,8 @@
 import traceback
-from typing import Any
 
+from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
+from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
+from CynanBot.deepL.exceptions import DeepLAuthKeyUnavailableException
 import CynanBot.misc.utils as utils
 from CynanBot.deepL.deepLAuthKeyProviderInterface import \
     DeepLAuthKeyProviderInterface
@@ -8,13 +10,10 @@ from CynanBot.language.exceptions import (
     TranslationEngineUnavailableException, TranslationException,
     TranslationLanguageHasNoIso6391Code)
 from CynanBot.language.languageEntry import LanguageEntry
-from CynanBot.language.languagesRepositoryInterface import \
-    LanguagesRepositoryInterface
 from CynanBot.language.translation.translationApi import TranslationApi
 from CynanBot.language.translationApiSource import TranslationApiSource
 from CynanBot.language.translationResponse import TranslationResponse
 from CynanBot.network.exceptions import GenericNetworkException
-from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -22,23 +21,19 @@ class DeepLTranslationApi(TranslationApi):
 
     def __init__(
         self,
+        deepLApiService: DeepLApiServiceInterface,
         deepLAuthKeyProvider: DeepLAuthKeyProviderInterface,
-        languagesRepository: LanguagesRepositoryInterface,
-        networkClientProvider: NetworkClientProvider,
         timber: TimberInterface
     ):
-        if not isinstance(deepLAuthKeyProvider, DeepLAuthKeyProviderInterface):
+        if not isinstance(deepLApiService, DeepLApiServiceInterface):
+            raise TypeError(f'deepLApiService argument is malformed: \"{deepLApiService}\"')
+        elif not isinstance(deepLAuthKeyProvider, DeepLAuthKeyProviderInterface):
             raise TypeError(f'deepLAuthKeyProvider argument is malformed: \"{deepLAuthKeyProvider}\"')
-        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
-            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
-        elif not isinstance(networkClientProvider, NetworkClientProvider):
-            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__deepLApiService: DeepLApiServiceInterface = deepLApiService
         self.__deepLAuthKeyProvider: DeepLAuthKeyProviderInterface = deepLAuthKeyProvider
-        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
-        self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
 
     def getTranslationApiSource(self) -> TranslationApiSource:
@@ -61,70 +56,50 @@ class DeepLTranslationApi(TranslationApi):
                 message = f'targetLanguage has no ISO 639-1 code: \"{targetLanguage}\"'
             )
 
-        deepLAuthKey = await self.__deepLAuthKeyProvider.getDeepLAuthKey()
-        if not utils.isValidStr(deepLAuthKey):
+        if not await self.isAvailable():
             raise TranslationEngineUnavailableException(
-                message = f'DeepL Translation engine is currently unavailable ({text=}) ({targetLanguage=}) ({deepLAuthKey=})',
+                message = f'DeepL Translation engine is currently unavailable ({text=}) ({targetLanguage=})',
                 translationApiSource = self.getTranslationApiSource()
             )
 
         self.__timber.log('DeepLTranslationApi', f'Fetching translation ({text=}) ({targetLanguage=})...')
 
-        # Retrieve translation from DeepL API: https://www.deepl.com/en/docs-api/
-
-        requestUrl = 'https://api-free.deepl.com/v2/translate?auth_key={}&text={}&target_lang={}'.format(
-            deepLAuthKey, text, iso6391Code)
-
-        clientSession = await self.__networkClientProvider.get()
+        request = DeepLTranslationRequest(
+            targetLanguage = targetLanguage,
+            text = text
+        )
 
         try:
-            response = await clientSession.get(requestUrl)
-        except GenericNetworkException as e:
-            self.__timber.log('DeepLTranslationApi', f'Encountered network error when translating \"{text}\": {e}', e, traceback.format_exc())
+            response = await self.__deepLApiService.translate(request)
+        except DeepLAuthKeyUnavailableException as e:
+            self.__timber.log('DeepLTranslationApi', f'No DeepL authentication key is unavailable ({request=})')
 
             raise TranslationException(
-                message = f'Encountered network error when translating \"{text}\": {e}',
+                message = f'No DeepL authentication key is available',
+                translationApiSource = self.getTranslationApiSource()
+            )
+        except GenericNetworkException as e:
+            self.__timber.log('DeepLTranslationApi', f'Encountered network error when translating ({request=}): {e}', e, traceback.format_exc())
+
+            raise TranslationException(
+                message = f'Encountered network error when translating ({request=}): {e}',
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        if response.getStatusCode() != 200:
-            self.__timber.log('DeepLTranslationApi', f'Encountered non-200 HTTP status code when fetching translation from DeepL for \"{text}\": {response.getStatusCode()}')
-            raise RuntimeError(f'Encountered non-200 HTTP status code when fetching translation from DeepL for \"{text}\": {response.getStatusCode()}')
+        translations = response.getTranslations()
 
-        jsonResponse = await response.json()
-        await response.close()
+        if translations is None or len(translations) == 0:
+            self.__timber.log('DeepLTranslationApi', f'Received no translations from DeepL when translating ({request=})')
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('DeepLTranslationApi', f'DeepL\'s JSON response is null/empty for \"{text}\": {jsonResponse}')
-            raise ValueError(f'DeepL\'s JSON response is null/empty for \"{text}\": {jsonResponse}')
-
-        translationsJson: list[dict[str, Any]] | None = jsonResponse.get('translations')
-        if not utils.hasItems(translationsJson):
-            raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" field: {jsonResponse}')
-
-        translationJson: dict[str, Any] | None = translationsJson[0]
-        if not utils.hasItems(translationJson):
-            raise ValueError(f'DeepL\'s JSON response for \"{text}\" has missing or empty \"translations\" list entry: {jsonResponse}')
-
-        originalLanguage: LanguageEntry | None = None
-        detectedSourceLanguage: str | None = translationJson.get('detected_source_language')
-        if utils.isValidStr(detectedSourceLanguage):
-            originalLanguage = await self.__languagesRepository.getLanguageForCommand(
-                command = detectedSourceLanguage,
-                hasIso6391Code = True
+            raise TranslationException(
+                message = f'Received no translations from DeepL when translating ({request})',
+                translationApiSource = self.getTranslationApiSource()
             )
 
-        translatedText = utils.getStrFromDict(
-            translationJson,
-            key = 'text',
-            clean = True,
-            htmlUnescape = True
-        )
-
         return TranslationResponse(
-            originalLanguage = originalLanguage,
+            originalLanguage = translations[0].getDetectedSourceLanguage(),
             translatedLanguage = targetLanguage,
             originalText = text,
-            translatedText = translatedText,
+            translatedText = translations[0].getText(),
             translationApiSource = self.getTranslationApiSource()
         )

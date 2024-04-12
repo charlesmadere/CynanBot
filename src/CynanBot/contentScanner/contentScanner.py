@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Pattern, Set
+from typing import Pattern
 
 import CynanBot.misc.utils as utils
 from CynanBot.contentScanner.bannedPhrase import BannedPhrase
@@ -31,7 +31,7 @@ class ContentScanner(ContentScannerInterface):
         self.__phraseRegEx: Pattern = re.compile(r'[a-z]+', re.IGNORECASE)
         self.__wordRegEx: Pattern = re.compile(r'\w', re.IGNORECASE)
 
-    async def scan(self, string: Optional[str]) -> ContentCode:
+    async def scan(self, string: str | None) -> ContentCode:
         if string is None:
             return ContentCode.IS_NONE
         elif not isinstance(string, str):
@@ -59,12 +59,12 @@ class ContentScanner(ContentScannerInterface):
 
     async def __scanPhrasesAndWords(
         self,
-        phrases: Set[str],
-        words: Set[str]
+        phrases: set[str],
+        words: set[str]
     ) -> ContentCode:
-        if not isinstance(phrases, Set):
+        if not isinstance(phrases, set):
             raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
-        elif not isinstance(words, Set):
+        elif not isinstance(words, set):
             raise TypeError(f'words argument is malformed: \"{words}\"')
 
         absBannedWords = await self.__bannedWordsRepository.getBannedWordsAsync()
@@ -90,10 +90,10 @@ class ContentScanner(ContentScannerInterface):
 
     async def updatePhrasesContent(
         self,
-        phrases: Set[str],
-        string: Optional[str]
+        phrases: set[str],
+        string: str | None
     ):
-        if not isinstance(phrases, Set):
+        if not isinstance(phrases, set):
             raise TypeError(f'phrases argument is malformed: \"{phrases}\"')
 
         if not utils.isValidStr(string):
@@ -110,10 +110,10 @@ class ContentScanner(ContentScannerInterface):
 
     async def updateWordsContent(
         self,
-        words: Set[str],
-        string: Optional[str]
+        words: set[str],
+        string: str | None
     ):
-        if not isinstance(words, Set):
+        if not isinstance(words, set):
             raise TypeError(f'words argument is malformed: \"{words}\"')
 
         if not utils.isValidStr(string):

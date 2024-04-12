@@ -54,6 +54,10 @@ from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cuteness.cutenessUtils import CutenessUtils
 from CynanBot.cynanBot import CynanBot
+from CynanBot.deepL.deepLApiService import DeepLApiService
+from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
+from CynanBot.deepL.deepLJsonMapper import DeepLJsonMapper
+from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
@@ -524,10 +528,21 @@ wordOfTheDayRepository: WordOfTheDayRepositoryInterface = WordOfTheDayRepository
     timber = timber
 )
 
-deepLTranslationApi: TranslationApi = DeepLTranslationApi(
-    deepLAuthKeyProvider = authRepository,
+deepLJsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
     languagesRepository = languagesRepository,
+    timber = timber
+)
+
+deepLApiService: DeepLApiServiceInterface = DeepLApiService(
+    deepLAuthKeyProvider = authRepository,
+    deepLJsonMapper = deepLJsonMapper,
     networkClientProvider = networkClientProvider,
+    timber = timber
+)
+
+deepLTranslationApi: TranslationApi = DeepLTranslationApi(
+    deepLApiService = deepLApiService,
+    deepLAuthKeyProvider = authRepository,
     timber = timber
 )
 

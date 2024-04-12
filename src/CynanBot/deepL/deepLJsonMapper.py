@@ -1,6 +1,8 @@
 from typing import Any
 
+from CynanBot.language.languageEntry import LanguageEntry
 import CynanBot.misc.utils as utils
+from CynanBot.language.languagesRepositoryInterface import LanguagesRepositoryInterface
 from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
 from CynanBot.deepL.deepLTranslationRequest import DeepLTranslationRequest
 from CynanBot.deepL.deepLTranslationResponse import DeepLTranslationResponse
@@ -10,10 +12,17 @@ from CynanBot.timber.timberInterface import TimberInterface
 
 class DeepLJsonMapper(DeepLJsonMapperInterface):
 
-    def __init__(self, timber: TimberInterface):
-        if not isinstance(timber, TimberInterface):
+    def __init__(
+        self,
+        languagesRepository: LanguagesRepositoryInterface,
+        timber: TimberInterface
+    ):
+        if not isinstance(languagesRepository, LanguagesRepositoryInterface):
+            raise TypeError(f'languagesRepository argument is malformed: \"{languagesRepository}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__languagesRepository: LanguagesRepositoryInterface = languagesRepository
         self.__timber: TimberInterface = timber
 
     async def parseTranslationResponse(
@@ -28,9 +37,18 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
 
         text = utils.getStrFromDict(jsonContents, 'text')
 
-        detectedSourceLanguage: str | None = None
-        if 'detected_source_language' in jsonContents and utils.isValidStr(jsonContents.get('detected_source_language')):
-            detectedSourceLanguage = utils.getStrFromDict(jsonContents, 'detected_source_language')
+        detectedSourceLanguage: LanguageEntry | None = None
+        if 'detected_source_language' in jsonContents:
+            detectedSourceLanguageString = jsonContents.get('detected_source_language')
+
+            if utils.isValidStr(detectedSourceLanguageString):
+                detectedSourceLanguage = await self.__languagesRepository.getLanguageForCommand(
+                    command = detectedSourceLanguageString,
+                    hasIso6391Code = True
+                )
+
+                if detectedSourceLanguage is None:
+                    self.__timber.log('DeepLJsonMapper', f'Encountered detectedSourceLanguage that has no corresponding LanguageEntry: \"{detectedSourceLanguageString}\"')
 
         return DeepLTranslationResponse(
             detectedSourceLanguage = detectedSourceLanguage,

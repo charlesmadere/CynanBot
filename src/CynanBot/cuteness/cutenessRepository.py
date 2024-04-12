@@ -130,8 +130,12 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         await connection.close()
 
-        if not utils.hasItems(records):
-            return CutenessChampionsResult(twitchChannel = twitchChannel)
+        if records is None or len(records) == 0:
+            return CutenessChampionsResult(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId,
+                champions = None
+            )
 
         champions: list[CutenessLeaderboardEntry] = list()
 
@@ -149,6 +153,7 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         return CutenessChampionsResult(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             champions = champions
         )
 
@@ -181,7 +186,7 @@ class CutenessRepository(CutenessRepositoryInterface):
             twitchChannel, userId, self.__historySize
         )
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             await connection.close()
             return CutenessHistoryResult(
                 userId = userId,

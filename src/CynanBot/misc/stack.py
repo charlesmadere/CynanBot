@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import Generic, List, TypeVar
+from typing import Generic, TypeVar
 
 T = TypeVar('T')
 
 class Stack(Generic[T]):
 
     def __init__(self):
-        self.__backingList: List[T] = list()
+        self.__backingList: list[T] = list()
 
     def clear(self):
         self.__backingList.clear()

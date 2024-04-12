@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Set
 
 from CynanBot.contentScanner.contentCode import ContentCode
 
@@ -7,21 +6,21 @@ from CynanBot.contentScanner.contentCode import ContentCode
 class ContentScannerInterface(ABC):
 
     @abstractmethod
-    async def scan(self, message: Optional[str]) -> ContentCode:
+    async def scan(self, message: str | None) -> ContentCode:
         pass
 
     @abstractmethod
     async def updatePhrasesContent(
         self,
-        phrases: Set[str],
-        string: Optional[str]
+        phrases: set[str],
+        string: str | None
     ):
         pass
 
     @abstractmethod
     async def updateWordsContent(
         self,
-        words: Set[str],
-        string: Optional[str]
+        words: set[str],
+        string: str | None
     ):
         pass

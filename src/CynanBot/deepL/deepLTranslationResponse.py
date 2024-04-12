@@ -1,5 +1,6 @@
 from typing import Any
 
+from CynanBot.language.languageEntry import LanguageEntry
 import CynanBot.misc.utils as utils
 
 
@@ -7,18 +8,18 @@ class DeepLTranslationResponse():
 
     def __init__(
         self,
-        detectedSourceLanguage: str | None,
+        detectedSourceLanguage: LanguageEntry | None,
         text: str
     ):
-        if detectedSourceLanguage is not None and not isinstance(detectedSourceLanguage, str):
+        if detectedSourceLanguage is not None and not isinstance(detectedSourceLanguage, LanguageEntry):
             raise TypeError(f'detectedSourceLanguage argument is malformed: \"{detectedSourceLanguage}\"')
         elif not utils.isValidStr(text):
             raise TypeError(f'text argument is malformed: \"{text}\"')
 
-        self.__detectedSourceLanguage: str | None = detectedSourceLanguage
+        self.__detectedSourceLanguage: LanguageEntry | None = detectedSourceLanguage
         self.__text: str = text
 
-    def getDetectedSourceLanguage(self) -> str | None:
+    def getDetectedSourceLanguage(self) -> LanguageEntry | None:
         return self.__detectedSourceLanguage
 
     def getText(self) -> str:

@@ -368,7 +368,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
                 userToRecurringAction[user] = action
                 twitchHandles.append(user.getHandle().lower())
 
-        if not utils.hasItems(userToRecurringAction) or not utils.hasItems(twitchHandles):
+        if len(userToRecurringAction) == 0 or len(twitchHandles) == 0:
             return
 
         usersToLiveStatus = await self.__isLiveOnTwitchRepository.isLive(twitchHandles)

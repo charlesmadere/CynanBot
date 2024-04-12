@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
     CheerActionStreamStatusRequirement
@@ -15,16 +15,12 @@ class TestCheerActionStreamStatusRequirement():
         assert result is CheerActionStreamStatusRequirement.ANY
 
     def test_fromStr_withHelloWorldString(self):
-        result: Optional[CheerActionStreamStatusRequirement] = None
-        exception: Optional[Exception] = None
+        result: CheerActionStreamStatusRequirement | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = CheerActionStreamStatusRequirement.fromStr('Hello, World!')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withNone(self):
         result = CheerActionStreamStatusRequirement.fromStr(None)

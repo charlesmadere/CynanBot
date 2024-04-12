@@ -70,5 +70,18 @@ class DeepLApiService(DeepLApiServiceInterface):
             self.__timber.log('DeepLApiService', f'Encountered unknown network error when fetching translation ({request=}) ({response=})')
             raise GenericNetworkException(f'DeepLApiService encountered unknown network error when fetching translation ({request=}) ({response=})')
 
-        # TODO
-        raise GenericNetworkException(f'Not yet implemented')
+        responseStatusCode = response.getStatusCode()
+        jsonResponse = await response.json()
+        await response.close()
+
+        if responseStatusCode != 200:
+            self.__timber.log('DeepLApiService', f'Encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'DeepLApiService encountered non-200 HTTP status code when fetching translation ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
+
+        translationResponses = await self.__deepLJsonMapper.parseTranslationResponses(jsonResponse)
+
+        if translationResponses is None:
+            self.__timber.log('DeepLApiService', f'Failed to parse JSON response into DeepLTranslationResponses instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({translationResponses=})')
+            raise GenericNetworkException(f'DeepLApiService failed to parse JSON response into DeepLTranslationResponses instance ({request=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({translationResponses=})')
+
+        return translationResponses

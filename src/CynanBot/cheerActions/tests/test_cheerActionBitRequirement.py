@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
@@ -7,28 +7,20 @@ from CynanBot.cheerActions.cheerActionBitRequirement import \
 class TestCheerBitActionRequirement():
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[CheerActionBitRequirement] = None
-        exception: Optional[Exception] = None
+        result: CheerActionBitRequirement | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = CheerActionBitRequirement.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withNone(self):
-        result: Optional[CheerActionBitRequirement] = None
-        exception: Optional[Exception] = None
+        result: CheerActionBitRequirement | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = CheerActionBitRequirement.fromStr(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromStr_withExactString(self):
         result = CheerActionBitRequirement.fromStr('exact')
@@ -39,16 +31,12 @@ class TestCheerBitActionRequirement():
         assert result is CheerActionBitRequirement.GREATER_THAN_OR_EQUAL_TO
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[CheerActionBitRequirement] = None
-        exception: Optional[Exception] = None
+        result: CheerActionBitRequirement | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = CheerActionBitRequirement.fromStr(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_toStr_withExact(self):
         result = CheerActionBitRequirement.EXACT.toStr()

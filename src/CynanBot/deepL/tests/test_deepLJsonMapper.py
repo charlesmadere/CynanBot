@@ -11,13 +11,13 @@ from CynanBot.timber.timberStub import TimberStub
 
 class TestDeepLJsonMapper():
 
+    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
     timber: TimberInterface = TimberStub()
 
     jsonMapper: DeepLJsonMapperInterface = DeepLJsonMapper(
+        languagesRepository = languagesRepository,
         timber = timber
     )
-
-    languagesRepository: LanguagesRepositoryInterface = LanguagesRepository()
 
     @pytest.mark.asyncio
     async def test_parseTranslationResponse_withEmptyDictionary(self):

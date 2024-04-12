@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 
 from CynanBot.misc.stack import Stack
@@ -48,7 +46,7 @@ class TestStack():
 
     def test_pop_withEmptyStack_raisesIndexError(self):
         stack: Stack[float] = Stack()
-        value: Optional[float] = None
+        value: float | None = None
 
         with pytest.raises(IndexError):
             value = stack.pop()
@@ -57,7 +55,7 @@ class TestStack():
 
     def test_top_withEmptyStack_raisesIndexError(self):
         stack: Stack[str] = Stack()
-        value: Optional[str] = None
+        value: str | None = None
 
         with pytest.raises(IndexError):
             value = stack.top()

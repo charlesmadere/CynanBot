@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -7,12 +7,12 @@ import CynanBot.misc.utils as utils
 class IncrementalJsonBuilder():
 
     def __init__(self):
-        self.__jsonString: Optional[str] = None
+        self.__jsonString: str | None = None
 
     async def buildDictionariesOrAppendInternalJsonCache(
         self,
-        jsonString: Optional[str]
-    ) -> Optional[List[Dict[Any, Any]]]:
+        jsonString: str | None
+    ) -> list[dict[Any, Any]] | None:
         if not utils.isValidStr(jsonString):
             return None
 
@@ -24,11 +24,11 @@ class IncrementalJsonBuilder():
         if self.__jsonString[0] != '{':
             raise RuntimeError(f'Invalid internal JSON string state: \"{self.__jsonString}\"')
 
-        inString: Optional[str] = None
+        inString: str | None = None
         skipNext = False
         depth = 0
         index = 0
-        dictionaries: List[Dict[Any, Any]] = list()
+        dictionaries: list[dict[Any, Any]] = list()
 
         for i in range(len(self.__jsonString)):
             if skipNext:
