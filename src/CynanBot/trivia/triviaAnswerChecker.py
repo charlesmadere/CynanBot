@@ -998,10 +998,14 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield 'birthday'
         if word == 'bunny':
             yield 'rabbit'
-        if word == 'dad':
-            yield 'father'
+        if word == 'cmd':
+            yield 'command'
         if word == 'cnn':
             yield 'cable news network'
+        if word == 'ctrl':
+            yield 'control'
+        if word == 'dad':
+            yield 'father'
         if word == 'est':
             yield 'establish'
             yield 'established'
