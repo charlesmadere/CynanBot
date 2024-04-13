@@ -2,6 +2,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 
@@ -32,14 +33,55 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                DELETE FROM mostrecentanivmessages
+                WHERE twitchchannelid = $1
+            ''',
+            twitchChannelId
+        )
+
+        await connection.close()
 
     async def get(self, twitchChannelId: str) -> str | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
-        raise RuntimeError('not implemented')
+        if twitchChannelId in self.__cache:
+            return self.__cache[twitchChannelId]
+
+        message = await self.__getFromDatabase(
+            twitchChannelId = twitchChannelId
+        )
+
+        self.__cache[twitchChannelId] = message
+        return message
+
+    async def __getDatabaseConnection(self) -> DatabaseConnection:
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
+    async def __getFromDatabase(self, twitchChannelId: str) -> str | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        connection = await self.__getDatabaseConnection()
+        record = await connection.fetchRow(
+            '''
+                SELECT message FROM mostrecentanivmessages
+                WHERE twitchchannelid = $1
+            ''',
+            twitchChannelId
+        )
+
+        message: str | None = None
+
+        if record is not None and len(record) >= 1:
+            message = record[0]
+
+        await connection.close()
+        return message
 
     async def __initDatabaseTable(self):
         if self.__isDatabaseReady:
@@ -75,13 +117,26 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        # TODO
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO mostrecentanivmessages (message, twitchchannelid)
+                VALUES ($1, $2)
+                ON CONFLICT (twitchchannelid) DO UPDATE SET message = EXCLUDED.message
+            ''',
+            message, twitchChannelId
+        )
+
+        await connection.close()
 
     async def set(self, message: str | None, twitchChannelId: str):
         if message is not None and not isinstance(message, str):
             raise TypeError(f'message argument is malformed: \"{message}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        if message is not None:
+            message = utils.cleanStr(message)
 
         if utils.isValidStr(message):
             await self.__saveMessage(
