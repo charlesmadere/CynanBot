@@ -74,7 +74,7 @@ class FuntoonTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('FuntoonTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: dict[str, Any] | None = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():

@@ -70,7 +70,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
         clientSession = await self.__networkClientProvider.get()
 
         try:
-            response = await clientSession.get(f'https://jservice.io/api/random?count=1')
+            response = await clientSession.get('https://jservice.io/api/random?count=1')
         except GenericNetworkException as e:
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered network error ({fetchOptions=}): {e}', e, traceback.format_exc())
             raise GenericTriviaNetworkException(self.getTriviaSource(), e)
