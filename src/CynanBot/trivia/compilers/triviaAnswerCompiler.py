@@ -170,7 +170,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
         if not utils.isValidBool(expandParentheses):
             raise TypeError(f'expandParentheses argument is malformed: \"{expandParentheses}\"')
 
-        if not utils.hasItems(answers):
+        if answers is None or len(answers) == 0:
             return list()
 
         cleanedAnswers: set[str] = set()

@@ -169,7 +169,7 @@ def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bo
 
     return value
 
-def getCleanedSplits(s: Optional[str]) -> List[str]:
+def getCleanedSplits(s: str | None) -> List[str]:
     words: List[str] = list()
 
     if not isValidStr(s):
