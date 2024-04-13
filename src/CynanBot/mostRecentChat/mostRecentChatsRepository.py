@@ -40,7 +40,11 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         self.__caches.clear()
         self.__timber.log('MostRecentChatsRepository', 'Caches cleared')
 
-    async def get(self, chatterUserId: str, twitchChannelId: str) -> MostRecentChat | None:
+    async def get(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ) -> MostRecentChat | None:
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
@@ -64,7 +68,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         await connection.close()
         mostRecentChat: MostRecentChat | None = None
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             simpleDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[0]))
 
             mostRecentChat = MostRecentChat(
@@ -114,7 +118,11 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
 
         await connection.close()
 
-    async def set(self, chatterUserId: str, twitchChannelId: str):
+    async def set(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
