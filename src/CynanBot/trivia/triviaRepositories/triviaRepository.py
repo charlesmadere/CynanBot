@@ -61,7 +61,8 @@ from CynanBot.trivia.triviaSourceInstabilityHelper import \
 from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TriviaRepository(TriviaRepositoryInterface):
@@ -423,16 +424,16 @@ class TriviaRepository(TriviaRepositoryInterface):
         try:
             question = await triviaQuestionRepository.fetchTriviaQuestion(triviaFetchOptions)
         except (NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException, NoTriviaQuestionException) as e:
-            self.__timber.log('TriviaRepository', f'Failed to fetch trivia question for spool due to malformed data (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Failed to fetch trivia question for spool due to malformed data ({triviaSource=}): {e}', e, traceback.format_exc())
         except GenericTriviaNetworkException as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching super trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching super trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
         except MalformedTriviaJsonException as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching super trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching super trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
         except Exception as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching super trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching super trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
 
         if question is None:
             return
@@ -469,16 +470,16 @@ class TriviaRepository(TriviaRepositoryInterface):
         try:
             question = await triviaQuestionRepository.fetchTriviaQuestion(triviaFetchOptions)
         except (NoTriviaCorrectAnswersException, NoTriviaMultipleChoiceResponsesException, NoTriviaQuestionException) as e:
-            self.__timber.log('TriviaRepository', f'Failed to fetch trivia question for spool due to malformed data (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Failed to fetch trivia question for spool due to malformed data ({triviaSource=}): {e}', e, traceback.format_exc())
         except GenericTriviaNetworkException as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered network Exception when fetching trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
         except MalformedTriviaJsonException as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered malformed JSON Exception when fetching trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
         except Exception as e:
             self.__triviaSourceInstabilityHelper.incrementErrorCount(triviaSource)
-            self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching trivia question for spool (trivia source was \"{triviaSource}\"): {e}', e, traceback.format_exc())
+            self.__timber.log('TriviaRepository', f'Encountered unknown Exception when fetching trivia question for spool ({triviaSource=}): {e}', e, traceback.format_exc())
 
         if question is None:
             return
