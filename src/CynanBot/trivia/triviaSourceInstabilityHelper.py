@@ -1,6 +1,5 @@
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Optional
 
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.triviaSource import TriviaSource
@@ -25,7 +24,7 @@ class TriviaSourceInstabilityHelper():
         self.__fallOffTimeDelta: timedelta = fallOffTimeDelta
         self.__timeZone: tzinfo = timeZone
 
-        self.__times: dict[TriviaSource, Optional[datetime]] = dict()
+        self.__times: dict[TriviaSource, datetime | None] = dict()
         self.__values: dict[TriviaSource, int] = defaultdict(lambda: 0)
 
     def __getitem__(self, key: TriviaSource) -> int:
