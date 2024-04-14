@@ -72,7 +72,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         records = await connection.fetchRows(
             '''
                 SELECT cheerremodactions.broadcasteruserid, cheerremodactions.remoddatetime, cheerremodactions.userid, userids.username FROM cheerremodactions
-                INNER JOIN userids ON cheerremodactions.userid = userids.userid
+                INNER JOIN userids ON cheerremodactions.broadcasteruserid = userids.userid
                 ORDER BY cheerremodactions.remoddatetime ASC
             '''
         )
