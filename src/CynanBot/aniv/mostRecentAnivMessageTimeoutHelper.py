@@ -13,12 +13,15 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
     def __init__(
         self,
         anivUserIdProvider: AnivUserIdProviderInterface,
-        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface
+        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
+        timeoutProbability: float = 0.5
     ):
         if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
             raise TypeError(f'anivUserIdProvider argument is malformed: \"{anivUserIdProvider}\"')
         elif not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
+        elif not utils.isValidNum(timeoutProbability):
+            raise TypeError(f'timeoutProbability argument is malformed: \"{timeoutProbability}\"')
 
         self.__anivUserIdProvider: AnivUserIdProviderInterface = anivUserIdProvider
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
