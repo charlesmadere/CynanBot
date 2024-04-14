@@ -500,7 +500,10 @@ mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface 
 if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
         anivUserIdProvider = anivUserIdProvider,
-        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+        timber = timber,
+        twitchApiService = twitchApiService,
+        twitchTokensRepository = twitchTokensRepository
     )
 
 
