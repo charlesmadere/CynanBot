@@ -55,6 +55,15 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
 
         self.__isStarted: bool = False
 
+    async def __deleteFromRepository(self, remodAction: CheerActionRemodData):
+        if not isinstance(remodAction, CheerActionRemodData):
+            raise TypeError(f'remodAction argument is malformed: \"{remodAction}\"')
+
+        await self.__cheerActionRemodRepository.delete(
+            broadcasterUserId = remodAction.getBroadcasterUserId(),
+            userId = remodAction.getUserId()
+        )
+
     async def __refresh(self):
         remodActions = await self.__cheerActionRemodRepository.getAll()
         if remodActions is None or len(remodActions) == 0:
@@ -74,7 +83,9 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
                 if not await self.__twitchTokensRepository.hasAccessToken(
                     twitchChannel = remodAction.getBroadcasterUserName()
                 ):
+                    self.__timber.log('CheerActionRemodHelper', f'There is no Twitch access token available for {remodAction.getBroadcasterUserName()}:{remodAction.getBroadcasterUserId()}')
                     broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    await self.__deleteFromRepository(remodAction)
                     continue
 
                 await self.__twitchTokensRepository.validateAndRefreshAccessToken(
@@ -88,6 +99,7 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
                 if not utils.isValidStr(twitchAccessToken):
                     self.__timber.log('CheerActionRemodHelper', f'Unable to retrieve Twitch access token for {remodAction.getBroadcasterUserName()}:{remodAction.getBroadcasterUserId()}')
                     broadcastersWithoutTokens.add(remodAction.getBroadcasterUserId())
+                    await self.__deleteFromRepository(remodAction)
                     continue
 
                 twitchAccessTokens[remodAction.getBroadcasterUserId()] = twitchAccessToken
@@ -102,12 +114,8 @@ class CheerActionRemodHelper(CheerActionRemodHelperInterface):
                 twitchAccessToken = twitchAccessToken,
                 userId = remodAction.getUserId()
             ):
-                await self.__cheerActionRemodRepository.delete(
-                    broadcasterUserId = remodAction.getBroadcasterUserId(),
-                    userId = remodAction.getUserId()
-                )
-
                 self.__timber.log('CheerActionRemodHelper', f'Successfully re-modded user ({remodAction=}) ({userName=})')
+                await self.__deleteFromRepository(remodAction)
             else:
                 self.__timber.log('CheerActionRemodHelper', f'Failed to re-mod user ({remodAction=}) ({userName=})')
 
