@@ -356,7 +356,7 @@ class CheerActionHelper(CheerActionHelperInterface):
                     duration = action.getDurationSeconds(),
                     broadcasterUserId = broadcasterUserId,
                     moderatorUserId = moderatorUserId,
-                    reason = f'cheer timeout from {cheerUserName} ({bits} bit(s), {action.getDurationSeconds()} second(s))',
+                    reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {action.getDurationSeconds()} second(s)',
                     userIdToBan = userIdToTimeout
                 )
             )
