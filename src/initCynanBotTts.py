@@ -10,6 +10,14 @@ from CynanBot.administratorProviderInterface import \
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
+from CynanBot.aniv.mostRecentAnivMessageRepository import \
+    MostRecentAnivMessageRepository
+from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
+    MostRecentAnivMessageRepositoryInterface
+from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
+    MostRecentAnivMessageTimeoutHelper
+from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
+    MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.absChatAction import AbsChatAction
@@ -286,7 +294,6 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
@@ -477,6 +484,26 @@ ttsManager: TtsManagerInterface | None = TtsManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+
+#################################
+## Aniv initialization section ##
+#################################
+
+anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
+
+mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
+if mostRecentAnivMessageRepository is not None:
+    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+    )
+
+
 #################################################
 ## Stream Alerts Manager intialization section ##
 #################################################
@@ -511,6 +538,8 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     chatLoggerChatAction = None,
     deerForceChatAction = None,
     generalSettingsRepository = generalSettingsRepository,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(
         generalSettingsRepository = generalSettingsRepository,
@@ -624,6 +653,8 @@ cynanBot = CynanBot(
     modifyUserDataHelper = ModifyUserDataHelper(
         timber = timber
     ),
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseTriviaQuestionRepository = None,
     pokepediaRepository = None,

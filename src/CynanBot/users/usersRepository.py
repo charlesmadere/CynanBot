@@ -99,6 +99,7 @@ class UsersRepository(UsersRepositoryInterface):
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
+        isAnivMessageCopyTimeoutEnabled = utils.getBoolFromDict(userJson, 'anivMessageCopyTimeoutEnabled', False)
         isCasualGamePollEnabled = utils.getBoolFromDict(userJson, 'casualGamePollEnabled', False)
         isCatJamMessageEnabled = utils.getBoolFromDict(userJson, 'catJamMessageEnabled', False)
         isChannelPredictionChartEnabled = utils.getBoolFromDict(userJson, 'channelPredictionChartEnabled', False)
@@ -225,6 +226,7 @@ class UsersRepository(UsersRepositoryInterface):
             areRecurringActionsEnabled = areRecurringActionsEnabled,
             areSoundAlertsEnabled = areSoundAlertsEnabled,
             isAnivContentScanningEnabled = isAnivContentScanningEnabled,
+            isAnivMessageCopyTimeoutEnabled = isAnivMessageCopyTimeoutEnabled,
             isCatJamMessageEnabled = isCatJamMessageEnabled,
             isCasualGamePollEnabled = isCasualGamePollEnabled,
             isChannelPredictionChartEnabled = isChannelPredictionChartEnabled,

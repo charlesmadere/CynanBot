@@ -8,9 +8,19 @@ from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
+from CynanBot.aniv.anivContentScannerInterface import \
+    AnivContentScannerInterface
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
+from CynanBot.aniv.mostRecentAnivMessageRepository import \
+    MostRecentAnivMessageRepository
+from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
+    MostRecentAnivMessageRepositoryInterface
+from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
+    MostRecentAnivMessageTimeoutHelper
+from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
+    MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
@@ -438,7 +448,6 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
-anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
@@ -866,6 +875,30 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 )
 
 
+#################
+## Aniv things ##
+#################
+
+anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
+
+anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
+    contentScanner = contentScanner,
+    timber = timber
+)
+
+mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
+if mostRecentAnivMessageRepository is not None:
+    mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+    )
+
+
 ##############################################
 ## Recurring Actions initialization section ##
 ##############################################
@@ -905,6 +938,7 @@ recurringActionsHelper: RecurringActionsHelperInterface = RecurringActionsHelper
 recurringActionsWizard: RecurringActionsWizardInterface = RecurringActionsWizard(
     timber = timber
 )
+
 
 #########################################
 ## Sound Player initialization section ##
@@ -984,6 +1018,7 @@ ttsManager: TtsManagerInterface | None = TtsManager(
     ttsTempFileHelper = ttsTempFileHelper
 )
 
+
 #################################################
 ## Stream Alerts Manager intialization section ##
 #################################################
@@ -1007,10 +1042,7 @@ streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     anivCheckChatAction = AnivCheckChatAction(
-        anivContentScanner = AnivContentScanner(
-            contentScanner = contentScanner,
-            timber = timber
-        ),
+        anivContentScanner = anivContentScanner,
         anivUserIdProvider = anivUserIdProvider,
         timber = timber,
         twitchApiService = twitchApiService,
@@ -1033,6 +1065,8 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         twitchUtils = twitchUtils
     ),
     generalSettingsRepository = generalSettingsRepository,
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(
         generalSettingsRepository = generalSettingsRepository,
@@ -1155,6 +1189,8 @@ cynanBot = CynanBot(
     modifyUserDataHelper = ModifyUserDataHelper(
         timber = timber
     ),
+    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
+    mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     openTriviaDatabaseTriviaQuestionRepository = openTriviaDatabaseTriviaQuestionRepository,
     pokepediaRepository = pokepediaRepository,

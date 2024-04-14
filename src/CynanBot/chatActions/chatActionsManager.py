@@ -1,5 +1,7 @@
-from typing import Optional
-
+from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
+    MostRecentAnivMessageRepositoryInterface
+from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
+    MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
 from CynanBot.chatActions.catJamChatAction import CatJamChatAction
@@ -30,16 +32,18 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
     def __init__(
         self,
-        anivCheckChatAction: Optional[AnivCheckChatAction],
-        catJamChatAction: Optional[CatJamChatAction],
-        chatLoggerChatAction: Optional[ChatLoggerChatAction],
-        deerForceChatAction: Optional[DeerForceChatAction],
+        anivCheckChatAction: AnivCheckChatAction | None,
+        catJamChatAction: CatJamChatAction | None,
+        chatLoggerChatAction: ChatLoggerChatAction | None,
+        deerForceChatAction: DeerForceChatAction | None,
         generalSettingsRepository: GeneralSettingsRepository,
+        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
+        mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
-        persistAllUsersChatAction: Optional[PersistAllUsersChatAction],
-        recurringActionsWizardChatAction: Optional[RecurringActionsWizardChatAction],
-        schubertWalkChatAction: Optional[SchubertWalkChatAction],
-        supStreamerChatAction: Optional[SupStreamerChatAction],
+        persistAllUsersChatAction: PersistAllUsersChatAction | None,
+        recurringActionsWizardChatAction: RecurringActionsWizardChatAction | None,
+        schubertWalkChatAction: SchubertWalkChatAction | None,
+        supStreamerChatAction: SupStreamerChatAction | None,
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -55,6 +59,10 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'deerForceChatAction argument is malformed: \"{deerForceChatAction}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+        elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
+            raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
+        elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
+            raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif persistAllUsersChatAction is not None and not isinstance(persistAllUsersChatAction, PersistAllUsersChatAction):
@@ -74,18 +82,55 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
-        self.__anivCheckChatAction: Optional[AbsChatAction] = anivCheckChatAction
-        self.__catJamChatAction: Optional[AbsChatAction] = catJamChatAction
-        self.__chatLoggerChatAction: Optional[AbsChatAction] = chatLoggerChatAction
-        self.__deerForceChatAction: Optional[AbsChatAction] = deerForceChatAction
+        self.__anivCheckChatAction: AbsChatAction | None = anivCheckChatAction
+        self.__catJamChatAction: AbsChatAction | None = catJamChatAction
+        self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
+        self.__deerForceChatAction: AbsChatAction | None = deerForceChatAction
+        self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = mostRecentAnivMessageRepository
+        self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
-        self.__persistAllUsersChatAction: Optional[AbsChatAction] = persistAllUsersChatAction
-        self.__recurringActionsWizardChatAction: Optional[AbsChatAction] = recurringActionsWizardChatAction
-        self.__schubertWalkChatAction: Optional[AbsChatAction] = schubertWalkChatAction
-        self.__supStreamerChatAction: Optional[AbsChatAction] = supStreamerChatAction
+        self.__persistAllUsersChatAction: AbsChatAction | None = persistAllUsersChatAction
+        self.__recurringActionsWizardChatAction: AbsChatAction | None = recurringActionsWizardChatAction
+        self.__schubertWalkChatAction: AbsChatAction | None = schubertWalkChatAction
+        self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def __handleAnivChatActions(
+        self,
+        mostRecentChat: MostRecentChat | None,
+        message: TwitchMessage,
+        user: UserInterface
+    ):
+        if mostRecentChat is not None and not isinstance(mostRecentChat, MostRecentChat):
+            raise TypeError(f'mostRecentChat argument is malformed: \"{mostRecentChat}\"')
+        elif not isinstance(message, TwitchMessage):
+            raise TypeError(f'message argument is malformed: \"{message}\"')
+        elif not isinstance(user, UserInterface):
+            raise TypeError(f'user argument is malformed: \"{user}\"')
+
+        if self.__mostRecentAnivMessageRepository is not None:
+            await self.__mostRecentAnivMessageRepository.set(
+                message = message.getContent(),
+                twitchChannelId = await message.getTwitchChannelId()
+            )
+
+            if self.__mostRecentAnivMessageTimeoutHelper is not None:
+                await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
+                    chatterUserId = message.getAuthorId(),
+                    chatterUserName = message.getAuthorName(),
+                    message = message.getContent(),
+                    twitchChannelId = await message.getTwitchChannelId(),
+                    user = user
+                )
+
+        if self.__anivCheckChatAction is not None:
+            await self.__anivCheckChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
+            )
 
     async def handleMessage(self, message: TwitchMessage):
         if not isinstance(message, TwitchMessage):
@@ -103,12 +148,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
         user = await self.__usersRepository.getUserAsync(message.getTwitchChannelName())
 
-        if self.__anivCheckChatAction is not None:
-            await self.__anivCheckChatAction.handleChat(
-                mostRecentChat = mostRecentChat,
-                message = message,
-                user = user
-            )
+        await self.__handleAnivChatActions(
+            mostRecentChat = mostRecentChat,
+            message = message,
+            user = user
+        )
 
         if self.__chatLoggerChatAction is not None:
             await self.__chatLoggerChatAction.handleChat(
@@ -152,7 +196,7 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
     async def __handleSimpleMessageChatActions(
         self,
-        mostRecentChat: Optional[MostRecentChat],
+        mostRecentChat: MostRecentChat | None,
         message: TwitchMessage,
         user: UserInterface
     ):

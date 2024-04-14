@@ -1,30 +1,50 @@
-from CynanBot.administratorProviderInterface import AdministratorProviderInterface
+from CynanBot.administratorProviderInterface import \
+    AdministratorProviderInterface
+from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
+    MostRecentAnivMessageRepositoryInterface
 from CynanBot.authRepository import AuthRepository
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
-from CynanBot.cheerActions.cheerActionsRepositoryInterface import CheerActionsRepositoryInterface
-from CynanBot.contentScanner.bannedWordsRepositoryInterface import BannedWordsRepositoryInterface
-from CynanBot.funtoon.funtoonTokensRepositoryInterface import FuntoonTokensRepositoryInterface
+from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
+    CheerActionsRepositoryInterface
+from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
+    BannedWordsRepositoryInterface
+from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
+    FuntoonTokensRepositoryInterface
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
-from CynanBot.language.wordOfTheDayRepositoryInterface import WordOfTheDayRepositoryInterface
-from CynanBot.location.locationsRepositoryInterface import LocationsRepositoryInterface
+from CynanBot.language.wordOfTheDayRepositoryInterface import \
+    WordOfTheDayRepositoryInterface
+from CynanBot.location.locationsRepositoryInterface import \
+    LocationsRepositoryInterface
 from CynanBot.misc.clearable import Clearable
-from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import MostRecentChatsRepositoryInterface
-from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import ChannelPointSoundHelperInterface
-from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import SoundPlayerSettingsRepositoryInterface
+from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
+    MostRecentChatsRepositoryInterface
+from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
+    ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
+    SoundPlayerSettingsRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import OpenTriviaDatabaseTriviaQuestionRepository
-from CynanBot.trivia.triviaSettingsRepositoryInterface import TriviaSettingsRepositoryInterface
-from CynanBot.tts.ttsSettingsRepositoryInterface import TtsSettingsRepositoryInterface
+from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
+    OpenTriviaDatabaseTriviaQuestionRepository
+from CynanBot.trivia.triviaSettingsRepositoryInterface import \
+    TriviaSettingsRepositoryInterface
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
-from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import TwitchFollowerRepositoryInterface
-from CynanBot.twitch.twitchTokensRepositoryInterface import TwitchTokensRepositoryInterface
+from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
+    IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchFollowerRepositoryInterface import \
+    TwitchFollowerRepositoryInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
 from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
-from CynanBot.weather.weatherRepositoryInterface import WeatherRepositoryInterface
-from CynanBot.websocketConnection.websocketConnectionServerInterface import WebsocketConnectionServerInterface
+from CynanBot.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
+from CynanBot.websocketConnection.websocketConnectionServerInterface import \
+    WebsocketConnectionServerInterface
 
 
 class ClearCachesChatCommand(AbsChatCommand):
@@ -41,6 +61,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
         locationsRepository: LocationsRepositoryInterface | None,
         modifyUserDataHelper: ModifyUserDataHelper,
+        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
@@ -76,6 +97,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(modifyUserDataHelper, ModifyUserDataHelper):
             raise TypeError(f'modifyUserDataHelper argument is malformed: \"{modifyUserDataHelper}\"')
+        elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
+            raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentChatsRepository is not None and not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
             raise TypeError(f'mostRecentChatsRepository argument is malformed: \"{mostRecentChatsRepository}\"')
         elif openTriviaDatabaseTriviaQuestionRepository is not None and not isinstance(openTriviaDatabaseTriviaQuestionRepository, OpenTriviaDatabaseTriviaQuestionRepository):
@@ -120,6 +143,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(isLiveOnTwitchRepository)
         self.__clearables.append(locationsRepository)
         self.__clearables.append(modifyUserDataHelper)
+        self.__clearables.append(mostRecentAnivMessageRepository)
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
         self.__clearables.append(soundPlayerSettingsRepository)

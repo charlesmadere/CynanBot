@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import tzinfo
-from typing import List, Optional
 
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 
@@ -20,19 +19,19 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getCasualGamePollRewardId(self) -> Optional[str]:
+    def getCasualGamePollRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getCasualGamePollUrl(self) -> Optional[str]:
+    def getCasualGamePollUrl(self) -> str | None:
         pass
 
     @abstractmethod
-    def getCutenessBoosterPacks(self) -> Optional[List[CutenessBoosterPack]]:
+    def getCutenessBoosterPacks(self) -> list[CutenessBoosterPack] | None:
         pass
 
     @abstractmethod
-    def getDiscordUrl(self) -> Optional[str]:
+    def getDiscordUrl(self) -> str | None:
         pass
 
     @abstractmethod
@@ -40,35 +39,35 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getLocationId(self) -> Optional[str]:
+    def getLocationId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getMastodonUrl(self) -> Optional[str]:
+    def getMastodonUrl(self) -> str | None:
         pass
 
     @abstractmethod
-    def getMaximumTtsCheerAmount(self) -> Optional[int]:
+    def getMaximumTtsCheerAmount(self) -> int | None:
         pass
 
     @abstractmethod
-    def getMinimumTtsCheerAmount(self) -> Optional[int]:
+    def getMinimumTtsCheerAmount(self) -> int | None:
         pass
 
     @abstractmethod
-    def getPkmnBattleRewardId(self) -> Optional[str]:
+    def getPkmnBattleRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getPkmnEvolveRewardId(self) -> Optional[str]:
+    def getPkmnEvolveRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getPkmnShinyRewardId(self) -> Optional[str]:
+    def getPkmnShinyRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getSpeedrunProfile(self) -> Optional[str]:
+    def getSpeedrunProfile(self) -> str | None:
         pass
 
     @abstractmethod
@@ -76,75 +75,75 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getSuperTriviaCheerTriggerAmount(self) -> Optional[int]:
+    def getSuperTriviaCheerTriggerAmount(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaCheerTriggerMaximum(self) -> Optional[int]:
+    def getSuperTriviaCheerTriggerMaximum(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaGamePoints(self) -> Optional[int]:
+    def getSuperTriviaGamePoints(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaGameRewardId(self) -> Optional[str]:
+    def getSuperTriviaGameRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaGameShinyMultiplier(self) -> Optional[int]:
+    def getSuperTriviaGameShinyMultiplier(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaGameToxicMultiplier(self) -> Optional[int]:
+    def getSuperTriviaGameToxicMultiplier(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaGameToxicPunishmentMultiplier(self) -> Optional[int]:
+    def getSuperTriviaGameToxicPunishmentMultiplier(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaPerUserAttempts(self) -> Optional[int]:
+    def getSuperTriviaPerUserAttempts(self) -> int | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaSubscribeTriggerAmount(self) -> Optional[float]:
+    def getSuperTriviaSubscribeTriggerAmount(self) -> float | None:
         pass
 
     @abstractmethod
-    def getSuperTriviaSubscribeTriggerMaximum(self) -> Optional[float]:
+    def getSuperTriviaSubscribeTriggerMaximum(self) -> float | None:
         pass
 
     @abstractmethod
-    def getSupStreamerMessage(self) -> Optional[str]:
+    def getSupStreamerMessage(self) -> str | None:
         pass
 
     @abstractmethod
-    def getTimeZones(self) -> Optional[List[tzinfo]]:
+    def getTimeZones(self) -> list[tzinfo] | None:
         pass
 
     @abstractmethod
-    def getTriviaGamePoints(self) -> Optional[int]:
+    def getTriviaGamePoints(self) -> int | None:
         pass
 
     @abstractmethod
-    def getTriviaGameRewardId(self) -> Optional[str]:
+    def getTriviaGameRewardId(self) -> str | None:
         pass
 
     @abstractmethod
-    def getTriviaGameShinyMultiplier(self) -> Optional[int]:
+    def getTriviaGameShinyMultiplier(self) -> int | None:
         pass
 
     @abstractmethod
-    def getTwitterUrl(self) -> Optional[str]:
+    def getTwitterUrl(self) -> str | None:
         pass
 
     @abstractmethod
-    def getWaitForSuperTriviaAnswerDelay(self) -> Optional[int]:
+    def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
         pass
 
     @abstractmethod
-    def getWaitForTriviaAnswerDelay(self) -> Optional[int]:
+    def getWaitForTriviaAnswerDelay(self) -> int | None:
         pass
 
     @abstractmethod
@@ -177,6 +176,10 @@ class UserInterface(ABC):
 
     @abstractmethod
     def isAnivContentScanningEnabled(self) -> bool:
+        pass
+
+    @abstractmethod
+    def isAnivMessageCopyTimeoutEnabled(self) -> bool:
         pass
 
     @abstractmethod
