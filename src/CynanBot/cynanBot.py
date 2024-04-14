@@ -64,6 +64,7 @@ from CynanBot.chatCommands.removeRecurringWordOfTheDayAction import \
 from CynanBot.chatCommands.stubChatCommand import StubChatCommand
 from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
+from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -94,7 +95,7 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                RemoveTriviaControllerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
                                StubCommand, SwQuoteCommand, TimeCommand,
-                               TranslateCommand, TriviaInfoCommand, TtsCommand,
+                               TriviaInfoCommand, TtsCommand,
                                TwitchInfoCommand, TwitterCommand,
                                UnbanTriviaQuestionCommand, WeatherCommand,
                                WordCommand)
@@ -623,9 +624,9 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
             self.__swQuoteCommand: AbsCommand = SwQuoteCommand(starWarsQuotesRepository, timber, twitchUtils, usersRepository)
 
         if translationHelper is None:
-            self.__translateCommand: AbsCommand = StubCommand()
+            self.__translateCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__translateCommand: AbsCommand = TranslateCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, twitchUtils, usersRepository)
+            self.__translateCommand: AbsChatCommand = TranslateChatCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, twitchUtils, usersRepository)
 
         if triviaGameControllersRepository is None or triviaUtils is None:
             self.__addTriviaControllerCommand: AbsCommand = StubCommand()
@@ -1356,7 +1357,7 @@ class CynanBot(commands.Bot, ChannelJoinListener, ModifyUserEventListener, Recur
     @commands.command(name = 'translate')
     async def command_translate(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__translateCommand.handleCommand(context)
+        await self.__translateCommand.handleChatCommand(context)
 
     @commands.command(name = 'triviainfo')
     async def command_triviainfo(self, ctx: Context):
