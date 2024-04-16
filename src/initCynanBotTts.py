@@ -100,6 +100,8 @@ from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import \
     ChannelPointSoundHelper
 from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
     ChannelPointSoundHelperInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
@@ -294,6 +296,9 @@ administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
+    timber = timber
+)
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
@@ -305,6 +310,7 @@ twitchFollowerRepository: TwitchFollowerRepositoryInterface = TwitchFollowerRepo
 )
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
+    soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )

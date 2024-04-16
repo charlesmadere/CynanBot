@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import tzinfo
 
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
+from CynanBot.users.soundAlertRedemption import SoundAlertRedemption
 
 
 class UserInterface(ABC):
@@ -67,7 +68,15 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getRandomSoundAlertRewardId(self) -> str | None:
+        pass
+
+    @abstractmethod
     def getSpeedrunProfile(self) -> str | None:
+        pass
+
+    @abstractmethod
+    def getSoundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
         pass
 
     @abstractmethod

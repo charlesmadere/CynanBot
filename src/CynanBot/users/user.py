@@ -3,6 +3,7 @@ from datetime import tzinfo
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
+from CynanBot.users.soundAlertRedemption import SoundAlertRedemption
 from CynanBot.users.userInterface import UserInterface
 
 
@@ -79,11 +80,13 @@ class User(UserInterface):
         pkmnBattleRewardId: str | None,
         pkmnEvolveRewardId: str | None,
         pkmnShinyRewardId: str | None,
+        randomSoundAlertRewardId: str | None,
         soundAlertRewardId: str | None,
         speedrunProfile: str | None,
         supStreamerMessage: str | None,
         triviaGameRewardId: str | None,
-        twitter: str,
+        twitterUrl: str,
+        soundAlertRedemptions: dict[str, SoundAlertRedemption] | None,
         cutenessBoosterPacks: list[CutenessBoosterPack] | None,
         pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None,
         timeZones: list[tzinfo] | None
@@ -222,6 +225,8 @@ class User(UserInterface):
             raise TypeError(f'pkmnEvolveRewardId argument is malformed: \"{pkmnEvolveRewardId}\"')
         elif pkmnShinyRewardId and not isinstance(pkmnShinyRewardId, str):
             raise TypeError(f'pkmnShinyRewardId argument is malformed: \"{pkmnShinyRewardId}\"')
+        elif randomSoundAlertRewardId is not None and not isinstance(randomSoundAlertRewardId, str):
+            raise TypeError(f'randomSoundAlertRewardId argument is malformed: \"{randomSoundAlertRewardId}\"')
         elif soundAlertRewardId is not None and not isinstance(soundAlertRewardId, str):
             raise TypeError(f'soundAlertRewardId argument is malformed: \"{soundAlertRewardId}\"')
         elif speedrunProfile is not None and not isinstance(speedrunProfile, str):
@@ -230,8 +235,16 @@ class User(UserInterface):
             raise TypeError(f'supStreamerMessage argument is malformed: \"{supStreamerMessage}\"')
         elif triviaGameRewardId is not None and not isinstance(triviaGameRewardId, str):
             raise TypeError(f'triviaGameRewardId argument is malformed: \"{triviaGameRewardId}\"')
-        elif twitter is not None and not isinstance(twitter, str):
-            raise TypeError(f'twitter argument is malformed: \"{twitter}\"')
+        elif twitterUrl is not None and not isinstance(twitterUrl, str):
+            raise TypeError(f'twitterUrl argument is malformed: \"{twitterUrl}\"')
+        elif soundAlertRedemptions is not None and not isinstance(soundAlertRedemptions, dict):
+            raise TypeError(f'soundAlertRedemptions argument is malformed: \"{soundAlertRedemptions}\"')
+        elif cutenessBoosterPacks is not None and not isinstance(cutenessBoosterPacks, list):
+            raise TypeError(f'cutenessBoosterPacks argument is malformed: \"{cutenessBoosterPacks}\"')
+        elif pkmnCatchBoosterPacks is not None and not isinstance(pkmnCatchBoosterPacks, list):
+            raise TypeError(f'pkmnCatchBoosterPacks argument is malformed: \"{pkmnCatchBoosterPacks}\"')
+        elif timeZones is not None and not isinstance(timeZones, list):
+            raise TypeError(f'timeZones argument is malformed: \"{timeZones}\"')
 
         self.__areCheerActionsEnabled: bool = areCheerActionsEnabled
         self.__areRecurringActionsEnabled: bool = areRecurringActionsEnabled
@@ -302,11 +315,13 @@ class User(UserInterface):
         self.__pkmnBattleRewardId: str | None = pkmnBattleRewardId
         self.__pkmnEvolveRewardId: str | None = pkmnEvolveRewardId
         self.__pkmnShinyRewardId: str | None = pkmnShinyRewardId
+        self.__randomSoundAlertRewardId: str | None = randomSoundAlertRewardId
         self.__soundAlertRewardId: str | None = soundAlertRewardId
         self.__speedrunProfile: str | None = speedrunProfile
         self.__supStreamerMessage: str | None = supStreamerMessage
         self.__triviaGameRewardId: str | None = triviaGameRewardId
-        self.__twitter: str | None = twitter
+        self.__twitterUrl: str | None = twitterUrl
+        self.__soundAlertRedemptions: dict[str, SoundAlertRedemption] | None = soundAlertRedemptions
         self.__cutenessBoosterPacks: list[CutenessBoosterPack] | None = cutenessBoosterPacks
         self.__pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] | None = pkmnCatchBoosterPacks
         self.__timeZones: list[tzinfo] | None = timeZones
@@ -361,6 +376,12 @@ class User(UserInterface):
 
     def getPkmnShinyRewardId(self) -> str | None:
         return self.__pkmnShinyRewardId
+
+    def getRandomSoundAlertRewardId(self) -> str | None:
+        return self.__randomSoundAlertRewardId
+
+    def getSoundAlertRedemptions(self) -> dict[str, SoundAlertRedemption] | None:
+        return self.__soundAlertRedemptions
 
     def getSoundAlertRewardId(self) -> str | None:
         return self.__soundAlertRewardId
@@ -417,7 +438,7 @@ class User(UserInterface):
         return f'https://twitch.tv/{self.__handle.lower()}'
 
     def getTwitterUrl(self) -> str | None:
-        return self.__twitter
+        return self.__twitterUrl
 
     def getWaitForSuperTriviaAnswerDelay(self) -> int | None:
         return self.__waitForSuperTriviaAnswerDelay
@@ -450,7 +471,7 @@ class User(UserInterface):
         return utils.hasItems(self.__timeZones)
 
     def hasTwitter(self) -> bool:
-        return utils.isValidUrl(self.__twitter)
+        return utils.isValidUrl(self.__twitterUrl)
 
     def isAnivContentScanningEnabled(self) -> bool:
         return self.__isAnivContentScanningEnabled

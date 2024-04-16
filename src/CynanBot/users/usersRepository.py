@@ -10,10 +10,12 @@ import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.users.exceptions import NoSuchUserException, NoUsersException
 from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack
 from CynanBot.users.pkmnCatchType import PkmnCatchType
+from CynanBot.users.soundAlertRedemption import SoundAlertRedemption
 from CynanBot.users.user import User
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
@@ -22,17 +24,21 @@ class UsersRepository(UsersRepositoryInterface):
 
     def __init__(
         self,
+        soundAlertJsonMapper: SoundAlertJsonMapperInterface,
         timber: TimberInterface,
         timeZoneRepository: TimeZoneRepositoryInterface,
         usersFile: str = 'usersRepository.json'
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(soundAlertJsonMapper, SoundAlertJsonMapperInterface):
+            raise TypeError(f'soundAlertJsonMapper argument is malformed: \"{soundAlertJsonMapper}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
             raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not utils.isValidStr(usersFile):
             raise TypeError(f'usersFile argument is malformed: \"{usersFile}\"')
 
+        self.__soundAlertJsonMapper: SoundAlertJsonMapperInterface = soundAlertJsonMapper
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__usersFile: str = usersFile
@@ -95,7 +101,7 @@ class UsersRepository(UsersRepositoryInterface):
         elif not isinstance(userJson, dict):
             raise TypeError(f'userJson argument is malformed: \"{userJson}\"')
 
-        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', True)
+        areCheerActionsEnabled = utils.getBoolFromDict(userJson, 'cheerActionsEnabled', False)
         areRecurringActionsEnabled = utils.getBoolFromDict(userJson, 'recurringActionsEnabled', True)
         areSoundAlertsEnabled = utils.getBoolFromDict(userJson, 'soundAlertsEnabled', False)
         isAnivContentScanningEnabled = utils.getBoolFromDict(userJson, 'anivContentScanningEnabled', False)
@@ -141,10 +147,11 @@ class UsersRepository(UsersRepositoryInterface):
         instagram = utils.getStrFromDict(userJson, 'instagram', '')
         locationId = utils.getStrFromDict(userJson, 'locationId', '')
         mastodonUrl = utils.getStrFromDict(userJson, 'mastodonUrl', '')
+        randomSoundAlertRewardId = utils.getStrFromDict(userJson, 'randomSoundAlertRewardId', '')
         soundAlertRewardId = utils.getStrFromDict(userJson, 'soundAlertRewardId', '')
         speedrunProfile = utils.getStrFromDict(userJson, 'speedrunProfile', '')
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
-        twitter = utils.getStrFromDict(userJson, 'twitter', '')
+        twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
@@ -221,6 +228,11 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnCatchBoosterPacksJson: list[dict[str, Any]] | None = userJson.get('pkmnCatchBoosterPacks')
             pkmnCatchBoosterPacks = self.__parsePkmnCatchBoosterPacksFromJson(pkmnCatchBoosterPacksJson)
 
+        soundAlertRedemptions: dict[str, SoundAlertRedemption] | None = None
+        if areSoundAlertsEnabled:
+            soundAlertRedemptionsJson: list[dict[str, Any]] | None = userJson.get('soundAlertRedemptions')
+            soundAlertRedemptions = self.__parseSoundAlertRedemptionsFromJson(soundAlertRedemptionsJson)
+
         user = User(
             areCheerActionsEnabled = areCheerActionsEnabled,
             areRecurringActionsEnabled = areRecurringActionsEnabled,
@@ -291,11 +303,13 @@ class UsersRepository(UsersRepositoryInterface):
             pkmnBattleRewardId = pkmnBattleRewardId,
             pkmnEvolveRewardId = pkmnEvolveRewardId,
             pkmnShinyRewardId = pkmnShinyRewardId,
+            randomSoundAlertRewardId = randomSoundAlertRewardId,
             speedrunProfile = speedrunProfile,
             soundAlertRewardId = soundAlertRewardId,
             supStreamerMessage = supStreamerMessage,
             triviaGameRewardId = triviaGameRewardId,
-            twitter = twitter,
+            twitterUrl = twitterUrl,
+            soundAlertRedemptions = soundAlertRedemptions,
             cutenessBoosterPacks = cutenessBoosterPacks,
             pkmnCatchBoosterPacks = pkmnCatchBoosterPacks,
             timeZones = timeZones
@@ -380,7 +394,7 @@ class UsersRepository(UsersRepositoryInterface):
         self,
         jsonList: list[dict[str, Any]] | None
     ) -> list[PkmnCatchBoosterPack] | None:
-        if not utils.hasItems(jsonList):
+        if not isinstance(jsonList, list) or len(jsonList) == 0:
             return None
 
         pkmnCatchBoosterPacks: list[PkmnCatchBoosterPack] = list()
@@ -402,6 +416,32 @@ class UsersRepository(UsersRepositoryInterface):
             ))
 
         return pkmnCatchBoosterPacks
+
+    def __parseSoundAlertRedemptionsFromJson(
+        self,
+        jsonList: list[dict[str, Any]] | None
+    ) -> dict[str, SoundAlertRedemption] | None:
+        if not isinstance(jsonList, list) or len(jsonList) == 0:
+            return None
+
+        redemptions: dict[str, SoundAlertRedemption] = dict()
+
+        for soundAlertJson in jsonList:
+            soundAlertString = utils.getStrFromDict(soundAlertJson, 'soundAlert', '')
+            soundAlert = self.__soundAlertJsonMapper.parseSoundAlert(soundAlertString)
+
+            if soundAlert is None:
+                self.__timber.log('UsersRepository', f'Unable to read string into a valid SoundAlert value ({soundAlertJson=}) ({soundAlertString=}) ({soundAlert=})')
+                continue
+
+            rewardId = utils.getStrFromDict(soundAlertJson, 'rewardId')
+
+            redemptions[rewardId] = SoundAlertRedemption(
+                soundAlert = soundAlert,
+                rewardId = rewardId
+            )
+
+        return redemptions
 
     def __readJson(self) -> dict[str, Any]:
         if self.__jsonCache is not None:
