@@ -95,6 +95,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
                 userId = userIdToTimeout
             )
         except Exception as e:
-            self.__timber.log('CheerActionHelper', f'Failed to fetch Twitch moderator info ({broadcasterUserId=}) ({userIdToTimeout=})', e, traceback.format_exc())
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch moderator info ({broadcasterUserId=}) ({userIdToTimeout=}): {e}', e, traceback.format_exc())
 
         return moderatorInfo is not None
