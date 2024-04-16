@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -55,7 +53,7 @@ class AddGlobalTriviaControllerCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as no username argument was given. Example: !addglobaltriviacontroller {administrator}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddGlobalTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add global trivia controller as username argument is malformed. Example: !addglobaltriviacontroller {user.getHandle()}')
