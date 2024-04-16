@@ -1,5 +1,4 @@
 import traceback
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -74,14 +73,14 @@ class AddCheerActionCommand(AbsChatCommand):
             return
 
         bitsString = splits[1]
-        bits: Optional[int] = None
+        bits: int | None = None
         try:
             bits = int(bitsString)
         except Exception as e:
             self.__timber.log('AddCheerActionCommand', f'Failed to parse bitsString (\"{bitsString}\") into bits int: {e}', e, traceback.format_exc())
 
         durationSecondsString = splits[2]
-        durationSeconds: Optional[int] = None
+        durationSeconds: int | None = None
         try:
             durationSeconds = int(durationSecondsString)
         except Exception as e:
