@@ -236,11 +236,11 @@ from CynanBot.twitch.configuration.twitchChannelPointRedemptionHandler import \
     TwitchChannelPointRedemptionHandler
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPollHandler import TwitchPollHandler
