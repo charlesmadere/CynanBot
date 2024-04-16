@@ -101,7 +101,7 @@ class AddCheerActionCommand(AbsChatCommand):
             return
 
         streamStatus = CheerActionStreamStatusRequirement.ANY
-        if len(splits) >= 3:
+        if len(splits) >= 4:
             streamStatusString = splits[3]
             try:
                 streamStatus = CheerActionStreamStatusRequirement.fromStr(streamStatusString)
