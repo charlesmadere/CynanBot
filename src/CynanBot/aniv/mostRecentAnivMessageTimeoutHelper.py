@@ -11,6 +11,8 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
@@ -24,6 +26,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         timeoutProbability: float = 0.5
     ):
@@ -35,6 +38,8 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
+            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not utils.isValidNum(timeoutProbability):
@@ -44,6 +49,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface = mostRecentAnivMessageRepository
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__timeoutProbability: float = timeoutProbability
 
