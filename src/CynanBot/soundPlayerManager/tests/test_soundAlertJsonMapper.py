@@ -1,8 +1,11 @@
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapper import \
+    SoundAlertJsonMapper
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
+    SoundAlertJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+
 
 class TestSoundAlertJsonMapper():
 

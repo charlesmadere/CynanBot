@@ -10,7 +10,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessBoosterPack import CutenessBoosterPack
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
+    SoundAlertJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.users.exceptions import NoSuchUserException, NoUsersException
 from CynanBot.users.pkmnCatchBoosterPack import PkmnCatchBoosterPack

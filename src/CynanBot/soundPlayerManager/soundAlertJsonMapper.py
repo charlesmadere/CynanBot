@@ -1,5 +1,6 @@
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
-from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
+    SoundAlertJsonMapperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
