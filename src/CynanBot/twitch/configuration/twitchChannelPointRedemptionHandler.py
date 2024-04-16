@@ -97,11 +97,11 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         dataBundle: TwitchWebsocketDataBundle
     ):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not isinstance(user, UserInterface):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
+            raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
-            raise ValueError(f'dataBundle argument is malformed: \"{dataBundle}\"')
+            raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         event = dataBundle.requirePayload().getEvent()
 
