@@ -77,8 +77,6 @@ from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
-from CynanBot.cheerActions.twitchTimeoutRemodHelperInterface import \
-    TwitchTimeoutRemodHelperInterface
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
@@ -249,6 +247,8 @@ from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
+from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchTokensUtilsInterface import \
@@ -505,7 +505,6 @@ class CynanBot(
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__chatActionsManager: Optional[ChatActionsManagerInterface] = chatActionsManager
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
-        self.__cheerActionRemodHelper: Optional[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
@@ -519,6 +518,7 @@ class CynanBot(
         self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
+        self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
@@ -834,8 +834,8 @@ class CynanBot(
         if self.__cheerActionHelper is not None:
             self.__cheerActionHelper.setTwitchChannelProvider(self)
 
-        if self.__cheerActionRemodHelper is not None:
-            self.__cheerActionRemodHelper.start()
+        if self.__twitchTimeoutRemodHelper is not None:
+            self.__twitchTimeoutRemodHelper.start()
 
         if self.__triviaRepository is not None:
             self.__triviaRepository.startSpooler()
