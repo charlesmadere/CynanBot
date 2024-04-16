@@ -1,17 +1,17 @@
 from datetime import timedelta
 
 import CynanBot.misc.utils as utils
-from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
-from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
-    CheerActionRemodRepositoryInterface
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
+from CynanBot.twitch.twitchTimeoutRemodRepositoryInterface import \
+    TwitchTimeoutRemodRepositoryInterface
 
 
-class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
+class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
 
     def __init__(
         self,
@@ -32,14 +32,14 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
 
         self.__isDatabaseReady: bool = False
 
-    async def add(self, data: CheerActionRemodData):
-        if not isinstance(data, CheerActionRemodData):
+    async def add(self, data: TwitchTimeoutRemodData):
+        if not isinstance(data, TwitchTimeoutRemodData):
             raise TypeError(f'data argument is malformed: \"{data}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO cheerremodactions (broadcasteruserid, remoddatetime, userid)
+                INSERT INTO twitchtimeoutremodactions (broadcasteruserid, remoddatetime, userid)
                 VALUES ($1, $2, $3)
                 ON CONFLICT (broadcasteruserid, userid) DO UPDATE SET remoddatetime = EXCLUDED.remoddatetime
             ''',
@@ -58,7 +58,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                DELETE FROM cheerremodactions
+                DELETE FROM twitchtimeoutremodactions
                 WHERE broadcasteruserid = $1 AND userid = $2
             ''',
             broadcasterUserId, userId
@@ -67,18 +67,18 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         await connection.close()
         self.__timber.log('CheerActionRemodRepository', f'Deleted remod action ({broadcasterUserId=}) ({userId=})')
 
-    async def getAll(self) -> list[CheerActionRemodData]:
+    async def getAll(self) -> list[TwitchTimeoutRemodData]:
         connection = await self.__getDatabaseConnection()
         records = await connection.fetchRows(
             '''
-                SELECT cheerremodactions.broadcasteruserid, cheerremodactions.remoddatetime, cheerremodactions.userid, userids.username FROM cheerremodactions
-                INNER JOIN userids ON cheerremodactions.broadcasteruserid = userids.userid
-                ORDER BY cheerremodactions.remoddatetime ASC
+                SELECT twitchtimeoutremodactions.broadcasteruserid, twitchtimeoutremodactions.remoddatetime, twitchtimeoutremodactions.userid, userids.username FROM twitchtimeoutremodactions
+                INNER JOIN userids ON twitchtimeoutremodactions.broadcasteruserid = userids.userid
+                ORDER BY twitchtimeoutremodactions.remoddatetime ASC
             '''
         )
 
         await connection.close()
-        data: list[CheerActionRemodData] = list()
+        data: list[TwitchTimeoutRemodData] = list()
         now = SimpleDateTime()
 
         if records is not None and len(records) >= 1:
@@ -88,7 +88,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
                 if remodDateTime >= (now + self.__remodTimeBuffer):
                     break
 
-                data.append(CheerActionRemodData(
+                data.append(TwitchTimeoutRemodData(
                     remodDateTime = remodDateTime,
                     broadcasterUserId = record[0],
                     broadcasterUserName = record[3],
@@ -111,7 +111,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
             await connection.createTableIfNotExists(
                 '''
-                    CREATE TABLE IF NOT EXISTS cheerremodactions (
+                    CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
                         broadcasteruserid public.citext NOT NULL,
                         remoddatetime text NOT NULL,
                         userid public.citext NOT NULL,
@@ -122,7 +122,7 @@ class CheerActionRemodRepository(CheerActionRemodRepositoryInterface):
         elif connection.getDatabaseType() is DatabaseType.SQLITE:
             await connection.createTableIfNotExists(
                 '''
-                    CREATE TABLE IF NOT EXISTS cheerremodactions (
+                    CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
                         broadcasteruserid TEXT NOT NULL COLLATE NOCASE,
                         remoddatetime TEXT NOT NULL,
                         userid TEXT NOT NULL COLLATE NOCASE,

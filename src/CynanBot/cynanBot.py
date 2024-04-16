@@ -75,10 +75,10 @@ from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
-    CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
+from CynanBot.cheerActions.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
@@ -296,7 +296,6 @@ class CynanBot(
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: Optional[CheerActionHelperInterface],
         cheerActionIdGenerator: Optional[CheerActionIdGeneratorInterface],
-        cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface],
         cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
         cutenessRepository: Optional[CutenessRepositoryInterface],
         cutenessUtils: Optional[CutenessUtilsInterface],
@@ -343,6 +342,7 @@ class CynanBot(
         twitchConfiguration: TwitchConfiguration,
         twitchFollowerRepository: Optional[TwitchFollowerRepositoryInterface],
         twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
+        twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -390,8 +390,6 @@ class CynanBot(
             raise TypeError(f'cheerActionsHelper argument is malformed: \"{cheerActionHelper}\"')
         elif cheerActionIdGenerator is not None and not isinstance(cheerActionIdGenerator, CheerActionIdGeneratorInterface):
             raise TypeError(f'cheerActionIdGenerator argument is malformed: \"{cheerActionIdGenerator}\"')
-        elif cheerActionRemodHelper is not None and not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
-            raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
         elif cheerActionsRepository is not None and not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif cutenessRepository is not None and not isinstance(cutenessRepository, CutenessRepositoryInterface):
@@ -482,6 +480,8 @@ class CynanBot(
             raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
+        elif twitchTimeoutRemodHelper is not None and not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
+            raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchTokensUtils, TwitchTokensUtilsInterface):
@@ -505,7 +505,7 @@ class CynanBot(
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__chatActionsManager: Optional[ChatActionsManagerInterface] = chatActionsManager
         self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
-        self.__cheerActionRemodHelper: Optional[CheerActionRemodHelperInterface] = cheerActionRemodHelper
+        self.__cheerActionRemodHelper: Optional[TwitchTimeoutRemodHelperInterface] = twitchTimeoutRemodHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper

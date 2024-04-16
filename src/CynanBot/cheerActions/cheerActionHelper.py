@@ -9,9 +9,6 @@ from CynanBot.cheerActions.cheerActionBitRequirement import \
     CheerActionBitRequirement
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
-from CynanBot.cheerActions.cheerActionRemodData import CheerActionRemodData
-from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
-    CheerActionRemodHelperInterface
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
@@ -37,6 +34,9 @@ from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
+from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
+from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -49,7 +49,6 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     def __init__(
         self,
-        cheerActionRemodHelper: CheerActionRemodHelperInterface,
         cheerActionsRepository: CheerActionsRepositoryInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface | None,
@@ -57,15 +56,14 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchFollowerRepository: TwitchFollowerRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         minimumFollowDuration: timedelta = timedelta(weeks = 1),
         timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(cheerActionRemodHelper, CheerActionRemodHelperInterface):
-            raise TypeError(f'cheerActionRemodHelper argument is malformed: \"{cheerActionRemodHelper}\"')
-        elif not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
+        if not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
@@ -79,6 +77,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
+            raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -90,7 +90,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__cheerActionRemodHelper: CheerActionRemodHelperInterface = cheerActionRemodHelper
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
@@ -98,6 +97,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -376,7 +376,7 @@ class CheerActionHelper(CheerActionHelperInterface):
 
             remodDateTime = datetime.now(self.__timeZone) + timedelta(seconds = action.getDurationSeconds())
 
-            await self.__cheerActionRemodHelper.submitRemodData(CheerActionRemodData(
+            await self.__twitchTimeoutRemodHelper.submitRemodData(TwitchTimeoutRemodData(
                 remodDateTime = SimpleDateTime(remodDateTime),
                 broadcasterUserId = broadcasterUserId,
                 broadcasterUserName = user.getHandle(),

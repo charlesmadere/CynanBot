@@ -4,7 +4,7 @@ import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 
 
-class CheerActionRemodData():
+class TwitchTimeoutRemodData():
 
     def __init__(
         self,

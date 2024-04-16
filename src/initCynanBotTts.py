@@ -35,13 +35,6 @@ from CynanBot.cheerActions.cheerActionHelperInterface import \
 from CynanBot.cheerActions.cheerActionIdGenerator import CheerActionIdGenerator
 from CynanBot.cheerActions.cheerActionIdGeneratorInterface import \
     CheerActionIdGeneratorInterface
-from CynanBot.cheerActions.cheerActionRemodHelper import CheerActionRemodHelper
-from CynanBot.cheerActions.cheerActionRemodHelperInterface import \
-    CheerActionRemodHelperInterface
-from CynanBot.cheerActions.cheerActionRemodRepository import \
-    CheerActionRemodRepository
-from CynanBot.cheerActions.cheerActionRemodRepositoryInterface import \
-    CheerActionRemodRepositoryInterface
 from CynanBot.cheerActions.cheerActionsRepository import CheerActionsRepository
 from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
@@ -100,8 +93,10 @@ from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelper import \
     ChannelPointSoundHelper
 from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface import \
     ChannelPointSoundHelperInterface
-from CynanBot.soundPlayerManager.soundAlertJsonMapper import SoundAlertJsonMapper
-from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import SoundAlertJsonMapperInterface
+from CynanBot.soundPlayerManager.soundAlertJsonMapper import \
+    SoundAlertJsonMapper
+from CynanBot.soundPlayerManager.soundAlertJsonMapperInterface import \
+    SoundAlertJsonMapperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepository import \
@@ -171,6 +166,16 @@ from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
+from CynanBot.twitch.twitchTimeoutHelper import TwitchTimeoutHelper
+from CynanBot.twitch.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
+from CynanBot.twitch.twitchTimeoutRemodHelper import TwitchTimeoutRemodHelper
+from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
+    TwitchTimeoutRemodHelperInterface
+from CynanBot.twitch.twitchTimeoutRemodRepository import \
+    TwitchTimeoutRemodRepository
+from CynanBot.twitch.twitchTimeoutRemodRepositoryInterface import \
+    TwitchTimeoutRemodRepositoryInterface
 from CynanBot.twitch.twitchTokensRepository import TwitchTokensRepository
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -348,20 +353,45 @@ locationsRepository: LocationsRepositoryInterface = LocationsRepository(
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
+
 mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsRepository(
     backingDatabase = backingDatabase,
     timber = timber
 )
+
 systemCommandHelper: SystemCommandHelperInterface = SystemCommandHelper(
     timber = timber
 )
+
 twitchConfiguration: TwitchConfiguration = TwitchIoConfiguration(
     userIdsRepository = userIdsRepository
 )
+
 sentMessageLogger: SentMessageLoggerInterface = SentMessageLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber
 )
+
+twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = TwitchTimeoutRemodRepository(
+    backingDatabase = backingDatabase,
+    timber = timber
+)
+
+twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemodHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTimeoutRemodRepository = twitchTimeoutRemodRepository,
+    twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
+twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper
+)
+
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -568,20 +598,6 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
 ## Cheer Actions initialization section ##
 ##########################################
 
-cheerActionRemodRepository: CheerActionRemodRepositoryInterface = CheerActionRemodRepository(
-    backingDatabase = backingDatabase,
-    timber = timber
-)
-
-cheerActionRemodHelper: CheerActionRemodHelperInterface = CheerActionRemodHelper(
-    backgroundTaskHelper = backgroundTaskHelper,
-    cheerActionRemodRepository = cheerActionRemodRepository,
-    timber = timber,
-    twitchApiService = twitchApiService,
-    twitchTokensRepository = twitchTokensRepository,
-    userIdsRepository = userIdsRepository
-)
-
 cheerActionIdGenerator: CheerActionIdGeneratorInterface = CheerActionIdGenerator()
 
 cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository(
@@ -591,7 +607,6 @@ cheerActionsRepository: CheerActionsRepositoryInterface = CheerActionsRepository
 )
 
 cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
-    cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
@@ -599,6 +614,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchApiService = twitchApiService,
     twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository
@@ -644,7 +660,6 @@ cynanBot = CynanBot(
     chatLogger = chatLogger,
     cheerActionHelper = cheerActionHelper,
     cheerActionIdGenerator = cheerActionIdGenerator,
-    cheerActionRemodHelper = cheerActionRemodHelper,
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = None,
     cutenessUtils = None,
@@ -696,6 +711,7 @@ cynanBot = CynanBot(
     twitchConfiguration = twitchConfiguration,
     twitchFollowerRepository = twitchFollowerRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchTokensUtils = twitchTokensUtils,
     twitchUtils = twitchUtils,
