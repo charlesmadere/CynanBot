@@ -186,11 +186,11 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             self.__cache.pop(twitchChannel.lower(), None)
             return None
 
-        expirationTime = utils.getDateTimeFromStr(record[0])
+        expirationTime = datetime.fromisoformat(record[0])
 
         if expirationTime is None:
             expirationTime = await self.__createExpiredExpirationTime()
@@ -407,13 +407,14 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         tokensDetails = await self.getTokensDetails(twitchChannel)
+
         if tokensDetails is None:
             self.__timber.log('TwitchTokensRepository', f'Attempted to validate Twitch tokens for \"{twitchChannel}\", but tokens details are missing/unavailable')
             return
 
         nowDateTime = datetime.now(self.__timeZone)
 
-        if tokensDetails.getExpirationTime() + self.__tokensExpirationBuffer <= nowDateTime:
+        if tokensDetails.getExpirationTime() < nowDateTime - self.__tokensExpirationBuffer:
             self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens for \"{twitchChannel}\", they don\'t need to be refreshed yet ({tokensDetails.getExpirationTime()=})')
             return
 
