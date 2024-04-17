@@ -152,7 +152,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         await connection.execute(
             '''
                 INSERT INTO mostrecentanivmessages (datetime, message, twitchchannelid)
-                VALUES ($1, $2)
+                VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET datetime = EXCLUDED.datetime, message = EXCLUDED.message
             ''',
             nowDateTimeStr, message, twitchChannelId
