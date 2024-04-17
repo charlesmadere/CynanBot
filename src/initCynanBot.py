@@ -553,11 +553,11 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
-    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     timber = timber,
     twitchApiService = twitchApiService,
     twitchFollowerRepository = twitchFollowerRepository,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
+    userIdsRepository = userIdsRepository
 )
 
 twitchUtils: TwitchUtilsInterface = TwitchUtils(

@@ -8,6 +8,7 @@ class TwitchTimeoutHelperInterface(ABC):
     @abstractmethod
     async def timeout(
         self,
+        reason: str | None,
         twitchAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str,

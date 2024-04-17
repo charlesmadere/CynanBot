@@ -34,7 +34,8 @@ from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.twitch.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
+from CynanBot.twitch.twitchTimeoutHelperInterface import \
+    TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
 from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface

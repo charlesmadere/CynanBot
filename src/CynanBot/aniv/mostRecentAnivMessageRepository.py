@@ -1,4 +1,7 @@
+from datetime import datetime, timedelta, timezone, tzinfo
+
 import CynanBot.misc.utils as utils
+from CynanBot.aniv.mostRecentAnivMessage import MostRecentAnivMessage
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -12,18 +15,26 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
+        maxMessageAge: timedelta = timedelta(minutes = 2, seconds = 30),
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(maxMessageAge, timedelta):
+            raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__maxMessageAge: timedelta = maxMessageAge
+        self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, str | None] = dict()
+        self.__cache: dict[str, MostRecentAnivMessage | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -48,15 +59,21 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if twitchChannelId in self.__cache:
-            return self.__cache[twitchChannelId]
+        cachedAnivMessage = self.__cache.get(twitchChannelId, None)
+        now = datetime.now(self.__timeZone)
 
-        message = await self.__getFromDatabase(
-            twitchChannelId = twitchChannelId
+        if cachedAnivMessage is not None and cachedAnivMessage.getDateTime() + self.__maxMessageAge <= now:
+            return cachedAnivMessage.getMessage()
+
+        anivMessage = MostRecentAnivMessage(
+            dateTime = datetime.now(self.__timeZone),
+            message = await self.__getFromDatabase(
+                twitchChannelId = twitchChannelId
+            )
         )
 
-        self.__cache[twitchChannelId] = message
-        return message
+        self.__cache[twitchChannelId] = anivMessage
+        return anivMessage.getMessage()
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -69,19 +86,28 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT message FROM mostrecentanivmessages
+                SELECT datetime, message FROM mostrecentanivmessages
                 WHERE twitchchannelid = $1
             ''',
             twitchChannelId
         )
 
+        messageDateTime: datetime | None = None
         message: str | None = None
 
         if record is not None and len(record) >= 1:
-            message = record[0]
+            messageDateTime = datetime.fromisoformat(record[0])
+            message = record[1]
 
         await connection.close()
-        return message
+
+        if messageDateTime is not None and utils.isValidStr(message):
+            now = datetime.now(self.__timeZone)
+
+            if messageDateTime + self.__maxMessageAge <= now:
+                return message
+
+        return None
 
     async def __initDatabaseTable(self):
         if self.__isDatabaseReady:
@@ -94,6 +120,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS mostrecentanivmessages (
+                        datetime text NOT NULL,
                         message public.citext DEFAULT NULL,
                         twitchchannelid text NOT NULL PRIMARY KEY
                     )
@@ -103,6 +130,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS mostrecentanivmessages (
+                        datetime TEXT NOT NULL,
                         message TEXT DEFAULT NULL COLLATE NOCASE,f
                         twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
@@ -117,14 +145,17 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        nowDateTime = datetime.now(self.__timeZone)
+        nowDateTimeStr = nowDateTime.isoformat()
+
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO mostrecentanivmessages (message, twitchchannelid)
+                INSERT INTO mostrecentanivmessages (datetime, message, twitchchannelid)
                 VALUES ($1, $2)
-                ON CONFLICT (twitchchannelid) DO UPDATE SET message = EXCLUDED.message
+                ON CONFLICT (twitchchannelid) DO UPDATE SET datetime = EXCLUDED.datetime, message = EXCLUDED.message
             ''',
-            message, twitchChannelId
+            nowDateTimeStr, message, twitchChannelId
         )
 
         await connection.close()

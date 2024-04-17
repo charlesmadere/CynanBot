@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.exceptions import TimeoutDurationSecondsTooLongException
@@ -10,10 +10,10 @@ class TwitchBanRequest():
 
     def __init__(
         self,
-        duration: Optional[int],
+        duration: int | None,
         broadcasterUserId: str,
         moderatorUserId: str,
-        reason: Optional[str],
+        reason: str | None,
         userIdToBan: str
     ):
         if duration is not None and not utils.isValidInt(duration):
@@ -31,22 +31,22 @@ class TwitchBanRequest():
         elif not utils.isValidStr(userIdToBan):
             raise TypeError(f'userIdToBan argument is malformed: \"{userIdToBan}\"')
 
-        self.__duration: Optional[int] = duration
+        self.__duration: int | None = duration
         self.__broadcasterUserId: str = broadcasterUserId
         self.__moderatorUserId: str = moderatorUserId
-        self.__reason: Optional[str] = reason
+        self.__reason: str | None = reason
         self.__userIdToBan: str = userIdToBan
 
     def getBroadcasterUserId(self) -> str:
         return self.__broadcasterUserId
 
-    def getDuration(self) -> Optional[int]:
+    def getDuration(self) -> int | None:
         return self.__duration
 
     def getModeratorUserId(self) -> str:
         return self.__moderatorUserId
 
-    def getReason(self) -> Optional[str]:
+    def getReason(self) -> str | None:
         return self.__reason
 
     def getUserIdToBan(self) -> str:
@@ -56,7 +56,7 @@ class TwitchBanRequest():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'duration': self.__duration,
             'broadcasterUserId': self.__broadcasterUserId,
@@ -65,8 +65,8 @@ class TwitchBanRequest():
             'userIdToBan': self.__userIdToBan
         }
 
-    def toJson(self) -> Dict[str, Any]:
-        data: Dict[str, Any] = {
+    def toJson(self) -> dict[str, Any]:
+        data: dict[str, Any] = {
             'user_id': self.__userIdToBan
         }
 
