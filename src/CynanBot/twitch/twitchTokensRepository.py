@@ -414,7 +414,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         nowDateTime = datetime.now(self.__timeZone)
 
-        if tokensDetails.getExpirationTime() < nowDateTime - self.__tokensExpirationBuffer:
+        if nowDateTime + self.__tokensExpirationBuffer <= tokensDetails.getExpirationTime():
             self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens for \"{twitchChannel}\", they don\'t need to be refreshed yet ({tokensDetails.getExpirationTime()=})')
             return
 
