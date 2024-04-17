@@ -387,8 +387,10 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
 )
 
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+    isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchFollowerRepository = twitchFollowerRepository,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper
 )
 
@@ -615,6 +617,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     twitchApiService = twitchApiService,
     twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
+    twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,

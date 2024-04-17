@@ -34,6 +34,7 @@ from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
+from CynanBot.twitch.twitchTimeoutHelperInterface import TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData
 from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface
@@ -56,6 +57,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchApiService: TwitchApiServiceInterface,
         twitchFollowerRepository: TwitchFollowerRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
+        twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
@@ -77,6 +79,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
+            raise TypeError(f'twitchTimeoutHelper argument is malformed: \"{twitchTimeoutHelper}\"')
         elif not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -97,6 +101,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = twitchTimeoutRemodHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils

@@ -53,7 +53,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, TwitchTokensDetails] = dict()
-        self.__tokenExpirationTimes: dict[str, datetime | None] = dict()
         self.__twitchTokensRepositoryListener: TwitchTokensRepositoryListener | None = None
 
     async def addUser(self, code: str, twitchChannel: str):
@@ -107,7 +106,7 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         jsonContents: dict[str, dict[str, Any]] | None = await seedFileReader.readJsonAsync()
         await seedFileReader.deleteFileAsync()
 
-        if not utils.hasItems(jsonContents):
+        if jsonContents is None or len(jsonContents) == 0:
             self.__timber.log('TwitchTokensRepository', f'Seed file (\"{seedFileReader}\") is empty')
             return
 
@@ -157,19 +156,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def getExpiringTwitchChannels(self) -> list[str] | None:
-        if not utils.hasItems(self.__tokenExpirationTimes):
-            return None
-
-        expiringTwitchChannels: set[str] = set()
-        nowDateTime = datetime.now(self.__timeZone)
-
-        for twitchChannel, expirationDateTime in self.__tokenExpirationTimes.items():
-            if expirationDateTime is None or nowDateTime + self.__tokensExpirationBuffer >= expirationDateTime:
-                expiringTwitchChannels.add(twitchChannel.lower())
-
-        return list(expiringTwitchChannels)
-
     async def getRefreshToken(self, twitchChannel: str) -> str | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -216,8 +202,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         )
 
         self.__cache[twitchChannel.lower()] = tokensDetails
-        self.__tokenExpirationTimes[twitchChannel.lower()] = tokensDetails.getExpirationTime()
-
         return tokensDetails
 
     async def hasAccessToken(self, twitchChannel: str) -> bool:
@@ -308,7 +292,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
         self.__cache.pop(twitchChannel.lower(), None)
-        self.__tokenExpirationTimes.pop(twitchChannel.lower(), None)
 
         twitchTokensRepositoryListener = self.__twitchTokensRepositoryListener
 
@@ -372,7 +355,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
         self.__cache.pop(twitchChannel.lower(), None)
-        self.__tokenExpirationTimes[twitchChannel.lower()] = expirationTime
 
     def setListener(self, listener: TwitchTokensRepositoryListener | None):
         if listener is not None and not isinstance(listener, TwitchTokensRepositoryListener):
@@ -402,7 +384,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             )
 
             self.__cache.pop(twitchChannel.lower(), None)
-            self.__tokenExpirationTimes.pop(twitchChannel.lower(), None)
             self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannel}\" has been deleted')
         else:
             expirationTime = tokensDetails.getExpirationTime()
@@ -417,7 +398,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             )
 
             self.__cache[twitchChannel.lower()] = tokensDetails
-            self.__tokenExpirationTimes[twitchChannel.lower()] = expirationTime
             self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannel}\" has been updated ({tokensDetails})')
 
         await connection.close()
@@ -427,9 +407,14 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         tokensDetails = await self.getTokensDetails(twitchChannel)
-
         if tokensDetails is None:
             self.__timber.log('TwitchTokensRepository', f'Attempted to validate Twitch tokens for \"{twitchChannel}\", but tokens details are missing/unavailable')
+            return
+
+        nowDateTime = datetime.now(self.__timeZone)
+
+        if tokensDetails.getExpirationTime() + self.__tokensExpirationBuffer <= nowDateTime:
+            self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens for \"{twitchChannel}\", they don\'t need to be refreshed yet ({tokensDetails.getExpirationTime()=})')
             return
 
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannel}\"...')
@@ -442,8 +427,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         except GenericNetworkException as e:
             self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\": {e}')
-
-        nowDateTime = datetime.now(self.__timeZone)
 
         if expirationTime is not None and expirationTime > nowDateTime + self.__tokensExpirationBuffer:
             await self.__setExpirationTime(

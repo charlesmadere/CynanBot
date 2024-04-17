@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional
 
 from CynanBot.misc.clearable import Clearable
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
@@ -13,5 +12,5 @@ class TwitchFollowerRepositoryInterface(Clearable):
         twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
-    ) -> Optional[TwitchFollower]:
+    ) -> TwitchFollower | None:
         pass

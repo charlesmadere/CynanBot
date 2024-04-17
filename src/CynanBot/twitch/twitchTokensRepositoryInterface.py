@@ -17,10 +17,6 @@ class TwitchTokensRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def getExpiringTwitchChannels(self) -> list[str] | None:
-        pass
-
-    @abstractmethod
     async def getRefreshToken(self, twitchChannel: str) -> str | None:
         pass
 

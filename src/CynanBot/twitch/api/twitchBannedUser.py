@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -9,11 +9,11 @@ class TwitchBannedUser():
     def __init__(
         self,
         createdAt: SimpleDateTime,
-        expiresAt: Optional[SimpleDateTime],
+        expiresAt: SimpleDateTime | None,
         moderatorId: str,
         moderatorLogin: str,
         moderatorName: str,
-        reason: Optional[str],
+        reason: str | None,
         userId: str,
         userLogin: str,
         userName: str
@@ -38,11 +38,11 @@ class TwitchBannedUser():
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__createdAt: SimpleDateTime = createdAt
-        self.__expiresAt: Optional[SimpleDateTime] = expiresAt
+        self.__expiresAt: SimpleDateTime | None = expiresAt
         self.__moderatorId: str = moderatorId
         self.__moderatorLogin: str = moderatorLogin
         self.__moderatorName: str = moderatorName
-        self.__reason: Optional[str] = reason
+        self.__reason: str | None = reason
         self.__userId: str = userId
         self.__userLogin: str = userLogin
         self.__userName: str = userName
@@ -50,7 +50,7 @@ class TwitchBannedUser():
     def getCreatedAt(self) -> SimpleDateTime:
         return self.__createdAt
 
-    def getExpiresAt(self) -> Optional[SimpleDateTime]:
+    def getExpiresAt(self) -> SimpleDateTime | None:
         return self.__expiresAt
 
     def getModeratorId(self) -> str:
@@ -62,7 +62,7 @@ class TwitchBannedUser():
     def getModeratorName(self) -> str:
         return self.__moderatorName
 
-    def getReason(self) -> Optional[str]:
+    def getReason(self) -> str | None:
         return self.__reason
 
     def getUserId(self) -> str:
@@ -78,7 +78,7 @@ class TwitchBannedUser():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'createdAt': self.__createdAt,
             'expiresAt': self.__expiresAt,
