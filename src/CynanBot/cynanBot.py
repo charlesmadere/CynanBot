@@ -237,16 +237,18 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
 from CynanBot.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
+from CynanBot.twitch.configuration.twitchPollHandler import TwitchPollHandler
+from CynanBot.twitch.configuration.twitchPredictionHandler import \
+    TwitchPredictionHandler
+from CynanBot.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
+from CynanBot.twitch.configuration.twitchSubscriptionHandler import \
+    TwitchSubscriptionHandler
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
 from CynanBot.twitch.twitchFollowerRepositoryInterface import \
     TwitchFollowerRepositoryInterface
-from CynanBot.twitch.twitchPollHandler import TwitchPollHandler
-from CynanBot.twitch.twitchPredictionHandler import TwitchPredictionHandler
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
-from CynanBot.twitch.twitchRaidHandler import TwitchRaidHandler
-from CynanBot.twitch.twitchSubscriptionHandler import TwitchSubscriptionHandler
 from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
     TwitchTimeoutRemodHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
