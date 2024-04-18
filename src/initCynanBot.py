@@ -552,14 +552,6 @@ twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = TwitchTimeoutRemod
     userIdsRepository = userIdsRepository
 )
 
-twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
-    timber = timber,
-    twitchApiService = twitchApiService,
-    twitchFollowerRepository = twitchFollowerRepository,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
-    userIdsRepository = userIdsRepository
-)
-
 twitchUtils: TwitchUtilsInterface = TwitchUtils(
     backgroundTaskHelper = backgroundTaskHelper,
     generalSettingsRepository = generalSettingsRepository,
@@ -568,6 +560,15 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
+    userIdsRepository = userIdsRepository
+)
+
+twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
+    timber = timber,
+    twitchApiService = twitchApiService,
+    twitchConstants = twitchUtils,
+    twitchHandleProvider = authRepository,
+    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     userIdsRepository = userIdsRepository
 )
 
@@ -936,9 +937,10 @@ if mostRecentAnivMessageRepository is not None:
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
-        twitchApiService = twitchApiService,
+        twitchHandleProvider = authRepository,
         twitchTimeoutHelper = twitchTimeoutHelper,
-        twitchTokensRepository = twitchTokensRepository
+        twitchTokensRepository = twitchTokensRepository,
+        twitchUtils = twitchUtils
     )
 
 
@@ -1151,11 +1153,9 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchApiService = twitchApiService,
     twitchFollowerRepository = twitchFollowerRepository,
     twitchHandleProvider = authRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
-    twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,
     twitchUtils = twitchUtils,
     userIdsRepository = userIdsRepository

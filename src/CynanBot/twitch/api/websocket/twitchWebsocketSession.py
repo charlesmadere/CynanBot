@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -12,9 +12,9 @@ class TwitchWebsocketSession():
         self,
         keepAliveTimeoutSeconds: int,
         connectedAt: SimpleDateTime,
-        reconnectUrl: Optional[str],
+        reconnectUrl: str | None,
         sessionId: str,
-        status: Optional[TwitchWebsocketConnectionStatus]
+        status: TwitchWebsocketConnectionStatus | None
     ):
         if not utils.isValidInt(keepAliveTimeoutSeconds):
             raise ValueError(f'keepAliveTimeoutSeconds argument is malformed: \"{keepAliveTimeoutSeconds}\"')
@@ -29,9 +29,9 @@ class TwitchWebsocketSession():
 
         self.__keepAliveTimeoutSeconds: int = keepAliveTimeoutSeconds
         self.__connectedAt: SimpleDateTime = connectedAt
-        self.__reconnectUrl: Optional[str] = reconnectUrl
+        self.__reconnectUrl: str | None = reconnectUrl
         self.__sessionId: str = sessionId
-        self.__status: Optional[TwitchWebsocketConnectionStatus] = status
+        self.__status: TwitchWebsocketConnectionStatus | None = status
 
     def getConnectedAt(self) -> SimpleDateTime:
         return self.__connectedAt
@@ -39,20 +39,20 @@ class TwitchWebsocketSession():
     def getKeepAliveTimeoutSeconds(self) -> int:
         return self.__keepAliveTimeoutSeconds
 
-    def getReconnectUrl(self) -> Optional[str]:
+    def getReconnectUrl(self) -> str | None:
         return self.__reconnectUrl
 
     def getSessionId(self) -> str:
         return self.__sessionId
 
-    def getStatus(self) -> Optional[TwitchWebsocketConnectionStatus]:
+    def getStatus(self) -> TwitchWebsocketConnectionStatus | None:
         return self.__status
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'connectedAt': self.__connectedAt,
             'keepAliveTimeoutSeconds': self.__keepAliveTimeoutSeconds,

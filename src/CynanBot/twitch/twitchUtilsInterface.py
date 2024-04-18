@@ -1,13 +1,10 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from CynanBot.twitch.configuration.twitchMessageable import TwitchMessageable
+from CynanBot.twitch.twitchConstantsInterface import TwitchConstantsInterface
 
 
-class TwitchUtilsInterface(ABC):
-
-    @abstractmethod
-    def getMaxMessageSize(self) -> int:
-        pass
+class TwitchUtilsInterface(TwitchConstantsInterface):
 
     @abstractmethod
     async def safeSend(

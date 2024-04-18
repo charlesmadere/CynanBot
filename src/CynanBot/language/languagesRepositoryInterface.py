@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.language.languageEntry import LanguageEntry
 
@@ -16,8 +15,8 @@ class LanguagesRepositoryInterface(ABC):
     @abstractmethod
     async def getExampleLanguageEntry(
         self,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
     ) -> LanguageEntry:
         pass
 
@@ -25,24 +24,24 @@ class LanguagesRepositoryInterface(ABC):
     async def getLanguageForCommand(
         self,
         command: str,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
-    ) -> Optional[LanguageEntry]:
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
+    ) -> LanguageEntry | None:
         pass
 
     @abstractmethod
     async def getLanguageForWotdApiCode(
         self,
         wotdApiCode: str
-    ) -> Optional[LanguageEntry]:
+    ) -> LanguageEntry | None:
         pass
 
     @abstractmethod
     async def requireLanguageForCommand(
         self,
         command: str,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
     ) -> LanguageEntry:
         pass
 

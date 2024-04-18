@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
@@ -27,10 +25,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     def __init__(
         self,
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
-        twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
-        websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
+        twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
+        websocketConnectionServer: WebsocketConnectionServerInterface | None,
         websocketEventType: str = 'channelPrediction',
     ):
         if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
@@ -44,10 +42,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not utils.isValidStr(websocketEventType):
             raise TypeError(f'websocketEventType argument is malformed: \"{websocketEventType}\"')
 
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
-        self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
+        self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
+        self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
         self.__websocketEventType: str = websocketEventType
 
     async def onNewPrediction(
@@ -74,7 +72,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         title = event.getTitle()
         outcomes = event.getOutcomes()
 
-        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, List):
+        if not utils.isValidStr(broadcasterUserId) or not utils.isValidStr(title) or not isinstance(outcomes, list):
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
@@ -116,14 +114,16 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
+        streamAlertsManager = self.__streamAlertsManager
+
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
             return
-        elif self.__streamAlertsManager is None:
+        elif streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
@@ -140,13 +140,13 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
 
     async def __processWebsocketEvent(
         self,
-        outcomes: List[TwitchOutcome],
+        outcomes: list[TwitchOutcome],
         title: str,
         user: UserInterface,
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
     ):
-        if not isinstance(outcomes, List):
+        if not isinstance(outcomes, list):
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
         elif not utils.isValidStr(title):
             raise TypeError(f'title argument is malformed: \"{title}\"')
@@ -157,12 +157,15 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if self.__twitchPredictionWebsocketUtils is None or self.__websocketConnectionServer is None:
+        twitchPredictionWebsocketUtils = self.__twitchPredictionWebsocketUtils
+        websocketConnectionServer = self.__websocketConnectionServer
+
+        if twitchPredictionWebsocketUtils is None or websocketConnectionServer is None:
             return
         elif not user.isChannelPredictionChartEnabled():
             return
 
-        eventData = await self.__twitchPredictionWebsocketUtils.websocketEventToEventDataDictionary(
+        eventData = await twitchPredictionWebsocketUtils.websocketEventToEventDataDictionary(
             event = event,
             subscriptionType = subscriptionType
         )
@@ -170,7 +173,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
         if eventData is None or len(eventData) == 0:
             return
 
-        await self.__websocketConnectionServer.sendEvent(
+        await websocketConnectionServer.sendEvent(
             twitchChannel = user.getHandle(),
             eventType = self.__websocketEventType,
             eventData = eventData

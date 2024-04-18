@@ -118,9 +118,9 @@ class ChatActionsManager(ChatActionsManagerInterface):
 
             if self.__mostRecentAnivMessageTimeoutHelper is not None:
                 await self.__mostRecentAnivMessageTimeoutHelper.checkMessageAndMaybeTimeout(
+                    chatterMessage = message.getContent(),
                     chatterUserId = message.getAuthorId(),
                     chatterUserName = message.getAuthorName(),
-                    message = message.getContent(),
                     twitchChannelId = await message.getTwitchChannelId(),
                     user = user
                 )

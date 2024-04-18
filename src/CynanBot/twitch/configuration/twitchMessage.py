@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from CynanBot.twitch.configuration.twitchAuthor import TwitchAuthor
 from CynanBot.twitch.configuration.twitchChannel import TwitchChannel
@@ -26,7 +25,7 @@ class TwitchMessage(ABC):
         pass
 
     @abstractmethod
-    def getContent(self) -> Optional[str]:
+    def getContent(self) -> str | None:
         pass
 
     @abstractmethod

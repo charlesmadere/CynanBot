@@ -106,7 +106,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
 
         try:
             return utils.strictStrToBool(cleanedAnswer)
-        except ValueError as e:
+        except (TypeError, ValueError) as e:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to bool ({answer=}) ({cleanedAnswer=}): {e}')
 
     async def compileMultipleChoiceAnswer(self, answer: str | None) -> int:

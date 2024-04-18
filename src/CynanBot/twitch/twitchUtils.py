@@ -102,6 +102,9 @@ class TwitchUtils(TwitchUtilsInterface):
     def getMaxMessageSize(self) -> int:
         return 494
 
+    def getMaxTimeoutSeconds(self) -> int:
+        return 1209600
+
     async def __getSenderId(self) -> str:
         senderId = self.__senderId
 

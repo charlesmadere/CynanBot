@@ -62,22 +62,25 @@ def cleanPath(path: str) -> str:
     return os.path.normcase(os.path.normpath(path))
 
 carrotRemovalRegEx: Pattern = re.compile(r'<\/?\w+>', re.IGNORECASE)
+extraWhiteSpaceRegEx: Pattern = re.compile(r'\s{2,}', re.IGNORECASE)
 
 def cleanStr(
-    s: Optional[str],
+    s: str | None,
     replacement: str = ' ',
     htmlUnescape: bool = False,
     removeCarrots: bool = False
 ) -> str:
     if replacement is None:
-        raise ValueError(f'replacement argument is malformed: \"{replacement}\"')
+        raise TypeError(f'replacement argument is malformed: \"{replacement}\"')
     elif not isValidBool(htmlUnescape):
-        raise ValueError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
+        raise TypeError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
     elif not isValidBool(removeCarrots):
-        raise ValueError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
+        raise TypeError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
-    if s is None:
+    if s is None or len(s) == 0:
         return ''
+
+    s = extraWhiteSpaceRegEx.sub(' ', s).strip()
 
     s = s.replace('\r\n', replacement)\
             .replace('\r', replacement)\
@@ -92,13 +95,13 @@ def cleanStr(
 
     return s
 
-def containsUrl(s: Optional[str]) -> TypeGuard[str]:
+def containsUrl(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):
         return False
 
     splits = s.split()
 
-    if not hasItems(splits):
+    if splits is None or len(splits) == 0:
         return False
 
     for split in splits:
@@ -107,7 +110,7 @@ def containsUrl(s: Optional[str]) -> TypeGuard[str]:
 
     return False
 
-def copyList(l: Optional[List[Any]]) -> List:
+def copyList(l: list[Any] | None) -> list:
     newList = list()
 
     if l is not None and len(l) >= 1:
@@ -169,8 +172,8 @@ def getBoolFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[bo
 
     return value
 
-def getCleanedSplits(s: str | None) -> List[str]:
-    words: List[str] = list()
+def getCleanedSplits(s: str | None) -> list[str]:
+    words: list[str] = list()
 
     if not isValidStr(s):
         return words
@@ -298,9 +301,9 @@ def getRandomSpaceEmoji() -> str:
     return random.choice(spaceEmoji)
 
 def getStrFromDict(
-    d: Optional[Dict[str, Any]],
+    d: dict[str, Any] | None,
     key: str,
-    fallback: Optional[str] = None,
+    fallback: str | None = None,
     clean: bool = False,
     htmlUnescape: bool = False,
     removeCarrots: bool = False
@@ -316,9 +319,9 @@ def getStrFromDict(
     elif not isValidBool(removeCarrots):
         raise ValueError(f'removeCarrots argument is malformed: \"{removeCarrots}\"')
 
-    value: Optional[str] = None
+    value: str | None = None
 
-    if not hasItems(d):
+    if d is None or len(d) == 0:
         if fallback is None:
             raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
         else:
@@ -352,7 +355,7 @@ def isValidInt(i: Optional[float]) -> TypeGuard[int]:
 def isValidNum(n: Optional[float]) -> TypeGuard[float]:
     return n is not None and isinstance(n, (float, int)) and math.isfinite(n)
 
-def isValidStr(s: Optional[str]) -> TypeGuard[str]:
+def isValidStr(s: str | None) -> TypeGuard[str]:
     """ str len >= 1, not all space """
     return s is not None and isinstance(s, str) and len(s) >= 1 and not s.isspace()
 
@@ -368,7 +371,7 @@ def isValidUrl(s: Optional[str]) -> TypeGuard[str]:
 
     return False
 
-def numToBool(n: Optional[float]) -> bool:
+def numToBool(n: float | None) -> bool:
     if not isValidNum(n):
         raise ValueError(f'n argument is malformed: \"{n}\"')
 
@@ -474,7 +477,7 @@ def strContainsAlphanumericCharacters(s: Optional[str]) -> TypeGuard[str]:
 trueRegEx: Pattern = re.compile(r't(rue)?|y(es)?', re.IGNORECASE)
 falseRegEx: Pattern = re.compile(r'f(alse)?|n(o)?', re.IGNORECASE)
 
-def strictStrToBool(s: Optional[str]) -> bool:
+def strictStrToBool(s: str | None) -> bool:
     """_summary_
 
     Converts the given string into a bool. None/empty/whitespace strings will cause an exception
@@ -488,12 +491,17 @@ def strictStrToBool(s: Optional[str]) -> bool:
 
     Raises
     --------
+    TypeError
+        This exception will be raised if the argument is an incorrect type.
+
     ValueError
         This exception will be raised if the given string matches neither one of trueRegEx nor
         falseRegEx.
     """
 
-    if not isValidStr(s):
+    if s is not None and not isinstance(s, str):
+        raise TypeError(f's argument is malformed: \"{s}\"')
+    elif not isValidStr(s):
         raise ValueError(f's argument is malformed: \"{s}\"')
 
     if trueRegEx.match(s) is not None:

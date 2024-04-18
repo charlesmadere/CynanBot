@@ -370,20 +370,20 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'from_broadcaster_user_name' in eventJson and utils.isValidStr(eventJson.get('from_broadcaster_user_name')):
             fromBroadcasterUserName = utils.getStrFromDict(eventJson, 'from_broadcaster_user_name')
 
-        message: Optional[str] = None
+        message: str | None = None
         if 'message' in eventJson:
-            messageItem: Any = eventJson.get('message')
+            messageItem: Any | None = eventJson.get('message')
 
             if utils.isValidStr(messageItem):
-                message = utils.getStrFromDict(eventJson, 'message')
-            elif isinstance(messageItem, Dict) and utils.isValidStr(messageItem.get('text')):
-                message = utils.getStrFromDict(messageItem, 'text')
+                message = utils.getStrFromDict(eventJson, 'message', clean = True)
+            elif isinstance(messageItem, dict) and utils.isValidStr(messageItem.get('text')):
+                message = utils.getStrFromDict(messageItem, 'text', clean = True)
 
         rewardId: Optional[str] = None
         if 'reward_id' in eventJson and utils.isValidStr(eventJson.get('reward_id')):
             rewardId = utils.getStrFromDict(eventJson, 'reward_id')
 
-        text: Optional[str] = None
+        text: str | None = None
         if 'text' in eventJson and utils.isValidStr(eventJson.get('text')):
             text = utils.getStrFromDict(eventJson, 'text')
 

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
@@ -19,16 +17,16 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
     def __init__(
         self,
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface
     ):
-        if not isinstance(timber, TimberInterface):
-            raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
+        if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
 
     async def onNewRaid(
         self,
@@ -92,7 +90,9 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__streamAlertsManager is None:
+        streamAlertsManager = self.__streamAlertsManager
+
+        if streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
@@ -101,7 +101,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
 
         raidInfo = TtsRaidInfo(viewers = viewers)
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.RAID,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,

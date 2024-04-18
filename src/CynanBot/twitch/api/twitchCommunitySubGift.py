@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
@@ -8,7 +8,7 @@ class TwitchCommunitySubGift():
 
     def __init__(
         self,
-        cumulativeTotal: Optional[int],
+        cumulativeTotal: int | None,
         total: int,
         communitySubGiftId: str,
         subTier: TwitchSubscriberTier
@@ -26,7 +26,7 @@ class TwitchCommunitySubGift():
         elif not isinstance(subTier, TwitchSubscriberTier):
             raise TypeError(f'subTier argument is malformed: \"{subTier}\"')
 
-        self.__cumulativeTotal: Optional[int] = cumulativeTotal
+        self.__cumulativeTotal: int | None = cumulativeTotal
         self.__total: int = total
         self.__communitySubGiftId: str = communitySubGiftId
         self.__subTier: TwitchSubscriberTier = subTier
@@ -34,7 +34,7 @@ class TwitchCommunitySubGift():
     def getCommunitySubGiftId(self) -> str:
         return self.__communitySubGiftId
 
-    def getCumulativeTotal(self) -> Optional[int]:
+    def getCumulativeTotal(self) -> int | None:
         return self.__cumulativeTotal
 
     def getSubTier(self) -> TwitchSubscriberTier:
@@ -47,7 +47,7 @@ class TwitchCommunitySubGift():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'communitySubGiftId': self.__communitySubGiftId,
             'cumulativeTotal': self.__cumulativeTotal,

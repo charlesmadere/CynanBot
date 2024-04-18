@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -11,7 +11,7 @@ class TwitchBanResponse():
     def __init__(
         self,
         createdAt: SimpleDateTime,
-        endTime: Optional[SimpleDateTime],
+        endTime: SimpleDateTime | None,
         broadcasterUserId: str,
         moderatorUserId: str,
         userId: str
@@ -28,7 +28,7 @@ class TwitchBanResponse():
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__createdAt: SimpleDateTime = createdAt
-        self.__endTime: Optional[SimpleDateTime] = endTime
+        self.__endTime: SimpleDateTime | None = endTime
         self.__broadcasterUserId: str = broadcasterUserId
         self.__moderatorUserId: str = moderatorUserId
         self.__userId: str = userId
@@ -39,7 +39,7 @@ class TwitchBanResponse():
     def getCreatedAt(self) -> SimpleDateTime:
         return self.__createdAt
 
-    def getEndTime(self) -> Optional[SimpleDateTime]:
+    def getEndTime(self) -> SimpleDateTime | None:
         return self.__endTime
 
     def getModeratorUserId(self) -> str:
@@ -52,7 +52,7 @@ class TwitchBanResponse():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'broadcasterUserId': self.__broadcasterUserId,
             'createdAt': self.__createdAt,

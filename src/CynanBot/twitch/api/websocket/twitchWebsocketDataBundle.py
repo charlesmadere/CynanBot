@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.twitch.api.websocket.twitchWebsocketMetadata import \
     TwitchWebsocketMetadata
@@ -11,7 +11,7 @@ class TwitchWebsocketDataBundle():
     def __init__(
         self,
         metadata: TwitchWebsocketMetadata,
-        payload: Optional[TwitchWebsocketPayload] = None
+        payload: TwitchWebsocketPayload | None = None
     ):
         if not isinstance(metadata, TwitchWebsocketMetadata):
             raise TypeError(f'metadata argument is malformed: \"{metadata}\"')
@@ -19,12 +19,12 @@ class TwitchWebsocketDataBundle():
             raise TypeError(f'payload argument is malformed: \"{payload}\"')
 
         self.__metadata: TwitchWebsocketMetadata = metadata
-        self.__payload: Optional[TwitchWebsocketPayload] = payload
+        self.__payload: TwitchWebsocketPayload | None = payload
 
     def getMetadata(self) -> TwitchWebsocketMetadata:
         return self.__metadata
 
-    def getPayload(self) -> Optional[TwitchWebsocketPayload]:
+    def getPayload(self) -> TwitchWebsocketPayload | None:
         return self.__payload
 
     def __repr__(self) -> str:
@@ -39,7 +39,7 @@ class TwitchWebsocketDataBundle():
 
         return payload
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'metadata': self.__metadata,
             'payload': self.__payload

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Any, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -8,7 +8,7 @@ class SimpleDateTime():
 
     def __init__(
         self,
-        now: Optional[datetime] = None,
+        now: datetime | None = None,
         timeZone: tzinfo = timezone.utc
     ):
         if now is not None and not isinstance(now, datetime):

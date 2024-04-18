@@ -3,7 +3,6 @@ from collections import defaultdict
 from datetime import timedelta
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.timedDict import TimedDict
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
@@ -37,7 +36,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-        self.__cache: dict[str, TimedDict[TwitchFollower]] = defaultdict(lambda: TimedDict(cacheTimeDelta))
+        self.__cache: dict[str, dict[str, TwitchFollower | None]] = defaultdict(lambda: dict())
 
     async def clearCaches(self):
         self.__cache.clear()

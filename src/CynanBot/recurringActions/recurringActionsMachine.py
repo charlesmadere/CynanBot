@@ -350,7 +350,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         users = await self.__fetchViableUsers()
 
         userToRecurringAction: dict[UserInterface, RecurringAction] = dict()
-        twitchHandles: list[str] = list()
+        twitchChannelIds: set[str] = set()
 
         for user in users:
             twitchChannelId = await self.__userIdsRepository.fetchUserId(user.getHandle())
@@ -366,15 +366,15 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
             if action is not None:
                 userToRecurringAction[user] = action
-                twitchHandles.append(user.getHandle().lower())
+                twitchChannelIds.add(twitchChannelId)
 
-        if len(userToRecurringAction) == 0 or len(twitchHandles) == 0:
+        if len(userToRecurringAction) == 0 or len(twitchChannelIds) == 0:
             return
 
-        usersToLiveStatus = await self.__isLiveOnTwitchRepository.isLive(twitchHandles)
+        twitchChannelIdToLiveStatus = await self.__isLiveOnTwitchRepository.areLive(twitchChannelIds)
 
         for user, action in userToRecurringAction.items():
-            if not usersToLiveStatus.get(user.getHandle().lower(), False):
+            if not twitchChannelIdToLiveStatus.get(action.getTwitchChannelId(), False):
                 continue
 
             if await self.__processRecurringAction(

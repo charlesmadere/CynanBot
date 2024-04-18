@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import Dict, List, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
@@ -43,71 +42,83 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
 
         self.__cache: TimedDict[bool] = TimedDict(cacheTimeDelta)
 
+    async def areLive(self, twitchChannelIds: set[str]) -> dict[str, bool]:
+        if not isinstance(twitchChannelIds, set):
+            raise TypeError(f'twitchChannelIds argument is malformed: \"{twitchChannelIds}\"')
+
+        twitchChannelIdToLiveStatus: dict[str, bool] = dict()
+
+        if len(twitchChannelIds) == 0:
+            return twitchChannelIdToLiveStatus
+
+        await self.__populateFromCache(
+            twitchChannelIds = twitchChannelIds,
+            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus
+        )
+
+        await self.__fetchLiveUserDetails(
+            twitchChannelIds = twitchChannelIds,
+            twitchChannelIdToLiveStatus = twitchChannelIdToLiveStatus
+        )
+
+        return twitchChannelIdToLiveStatus
+
     async def clearCaches(self):
         self.__cache.clear()
         self.__timber.log('IsLiveOnTwitchRepository', 'Caches cleared')
 
     async def __fetchLiveUserDetails(
         self,
-        twitchHandles: List[str],
-        twitchHandlesToLiveStatus: Dict[str, bool]
+        twitchChannelIds: set[str],
+        twitchChannelIdToLiveStatus: dict[str, bool]
     ):
-        twitchHandlesToFetch: Set[str] = set()
+        twitchChannelIdsToFetch: set[str] = set()
 
-        for twitchHandle in twitchHandles:
-            if twitchHandle.lower() in twitchHandlesToLiveStatus:
+        for twitchChannelId in twitchChannelIds:
+            if twitchChannelId in twitchChannelIdToLiveStatus:
                 continue
 
-            twitchHandlesToFetch.add(twitchHandle.lower())
+            twitchChannelIdsToFetch.add(twitchChannelId)
 
-        if not utils.hasItems(twitchHandlesToFetch):
+        if len(twitchChannelIdsToFetch) == 0:
             return
 
         userName = await self.__administratorProvider.getAdministratorUserName()
-
         await self.__twitchTokensRepository.validateAndRefreshAccessToken(userName)
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(userName)
 
         liveUserDetails = await self.__twitchApiService.fetchLiveUserDetails(
             twitchAccessToken = twitchAccessToken,
-            userNames = list(twitchHandlesToFetch)
+            twitchChannelIds = list(twitchChannelIdsToFetch)
         )
 
         for liveUserDetail in liveUserDetails:
             isLive = liveUserDetail.getStreamType() is TwitchStreamType.LIVE
-            twitchHandlesToLiveStatus[liveUserDetail.getUserName().lower()] = isLive
-            self.__cache[liveUserDetail.getUserName().lower()] = isLive
+            twitchChannelIdToLiveStatus[liveUserDetail.getUserId()] = isLive
+            self.__cache[liveUserDetail.getUserId()] = isLive
 
-        for twitchHandle in twitchHandles:
-            if twitchHandle.lower() not in twitchHandlesToLiveStatus:
-                twitchHandlesToLiveStatus[twitchHandle.lower()] = False
-                self.__cache[twitchHandle.lower()] = False
+        for twitchChannelId in twitchChannelIds:
+            if twitchChannelId not in twitchChannelIdToLiveStatus:
+                twitchChannelIdToLiveStatus[twitchChannelId] = False
+                self.__cache[twitchChannelId] = False
 
-    async def isLive(self, twitchHandles: List[str]) -> Dict[str, bool]:
-        twitchHandlesToLiveStatus: Dict[str, bool] = dict()
+    async def isLive(self, twitchChannelId: str) -> bool:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if not utils.hasItems(twitchHandles):
-            return twitchHandlesToLiveStatus
+        twitchChannelIds: set[str] = set()
+        twitchChannelIds.add(twitchChannelId)
 
-        await self.__populateFromCache(
-            twitchHandles = twitchHandles,
-            twitchHandlesToLiveStatus = twitchHandlesToLiveStatus
-        )
-
-        await self.__fetchLiveUserDetails(
-            twitchHandles = twitchHandles,
-            twitchHandlesToLiveStatus = twitchHandlesToLiveStatus
-        )
-
-        return twitchHandlesToLiveStatus
+        twitchChannelIdsToLiveStatus = await self.areLive(twitchChannelIds)
+        return twitchChannelIdsToLiveStatus.get(twitchChannelId, False) is True
 
     async def __populateFromCache(
         self,
-        twitchHandles: List[str],
-        twitchHandlesToLiveStatus: Dict[str, bool]
+        twitchChannelIds: set[str],
+        twitchChannelIdToLiveStatus: dict[str, bool]
     ):
-        for twitchHandle in twitchHandles:
-            isLive = self.__cache[twitchHandle.lower()]
+        for twitchChannelId in twitchChannelIds:
+            isLive = self.__cache[twitchChannelId]
 
             if utils.isValidBool(isLive):
-                twitchHandlesToLiveStatus[twitchHandle.lower()] = isLive
+                twitchChannelIdToLiveStatus[twitchChannelId] = isLive

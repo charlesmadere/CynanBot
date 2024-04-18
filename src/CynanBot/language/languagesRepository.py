@@ -1,5 +1,4 @@
 import random
-from typing import List, Optional, Set
 
 import CynanBot.misc.utils as utils
 from CynanBot.language.languageEntry import LanguageEntry
@@ -10,10 +9,10 @@ from CynanBot.language.languagesRepositoryInterface import \
 class LanguagesRepository(LanguagesRepositoryInterface):
 
     def __init__(self):
-        self.__languageList: List[LanguageEntry] = self.__createLanguageList()
+        self.__languageList: list[LanguageEntry] = self.__createLanguageList()
 
-    def __createLanguageList(self) -> List[LanguageEntry]:
-        languagesList: List[LanguageEntry] = list()
+    def __createLanguageList(self) -> list[LanguageEntry]:
+        languagesList: list[LanguageEntry] = list()
 
         languagesList.append(LanguageEntry(
             commandNames = [ 'de', 'deutsche', 'german', 'germany' ],
@@ -158,6 +157,14 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         ))
 
         languagesList.append(LanguageEntry(
+            commandNames = [ 'ur', 'urd', 'urdu' ],
+            flag = '🇵🇰',
+            iso6391Code = 'ur',
+            name = 'Urdu',
+            wotdApiCode = 'urdu'
+        ))
+
+        languagesList.append(LanguageEntry(
             commandNames = [ 'zh', 'chinese', 'china', '中文' ],
             flag = '🇨🇳',
             iso6391Code = 'zh',
@@ -165,16 +172,16 @@ class LanguagesRepository(LanguagesRepositoryInterface):
             wotdApiCode = 'zh'
         ))
 
-        if not utils.hasItems(languagesList):
+        if len(languagesList) == 0:
             raise RuntimeError(f'languagesList must contain at least 1 entry: \"{languagesList}\"')
 
-        languagesNames: Set[str] = set()
+        languagesNames: set[str] = set()
 
         for language in languagesList:
-            if language.getName().lower() in languagesNames:
+            if language.getName().casefold() in languagesNames:
                 raise ValueError(f'Every language name must be unique (found duplicate of \"{language.getName()}\"): {languagesList}')
             else:
-                languagesNames.add(language.getName().lower())
+                languagesNames.add(language.getName().casefold())
 
         return languagesList
 
@@ -185,7 +192,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
         if not isinstance(delimiter, str):
             raise ValueError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        wotdApiCodes: List[str] = list()
+        wotdApiCodes: list[str] = list()
         validEntries = await self.__getLanguageEntries(hasWotdApiCode = True)
 
         for entry in validEntries:
@@ -196,8 +203,8 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
     async def getExampleLanguageEntry(
         self,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
     ) -> LanguageEntry:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
@@ -213,15 +220,15 @@ class LanguagesRepository(LanguagesRepositoryInterface):
 
     async def __getLanguageEntries(
         self,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
-    ) -> List[LanguageEntry]:
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
+    ) -> list[LanguageEntry]:
         if hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
             raise ValueError(f'hasIso6391Code argument is malformed: \"{hasIso6391Code}\"')
         elif hasWotdApiCode is not None and not utils.isValidBool(hasWotdApiCode):
             raise ValueError(f'hasWotdApiCode argument is malformed: \"{hasWotdApiCode}\"')
 
-        validEntries: List[LanguageEntry] = list()
+        validEntries: list[LanguageEntry] = list()
 
         for entry in self.__languageList:
             if hasIso6391Code is not None and hasWotdApiCode is not None:
@@ -244,9 +251,9 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     async def getLanguageForCommand(
         self,
         command: str,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
-    ) -> Optional[LanguageEntry]:
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
+    ) -> LanguageEntry | None:
         if not utils.isValidStr(command):
             raise ValueError(f'command argument is malformed: \"{command}\"')
         elif hasIso6391Code is not None and not utils.isValidBool(hasIso6391Code):
@@ -269,7 +276,7 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     async def getLanguageForWotdApiCode(
         self,
         wotdApiCode: str
-    ) -> Optional[LanguageEntry]:
+    ) -> LanguageEntry | None:
         if not utils.isValidStr(wotdApiCode):
             raise ValueError(f'wotdApiCode argument is malformed: \"{wotdApiCode}\"')
 
@@ -284,8 +291,8 @@ class LanguagesRepository(LanguagesRepositoryInterface):
     async def requireLanguageForCommand(
         self,
         command: str,
-        hasIso6391Code: Optional[bool] = None,
-        hasWotdApiCode: Optional[bool] = None
+        hasIso6391Code: bool | None = None,
+        hasWotdApiCode: bool | None = None
     ) -> LanguageEntry:
         if not utils.isValidStr(command):
             raise ValueError(f'command argument is malformed: \"{command}\"')

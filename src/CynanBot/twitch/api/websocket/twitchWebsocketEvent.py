@@ -257,7 +257,7 @@ class TwitchWebsocketEvent():
     def getLocksAt(self) -> Optional[SimpleDateTime]:
         return self.__locksAt
 
-    def getMessage(self) -> Optional[str]:
+    def getMessage(self) -> str | None:
         return self.__message
 
     def getNoticeType(self) -> Optional[TwitchWebsocketNoticeType]:

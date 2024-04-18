@@ -1,5 +1,4 @@
 import math
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
@@ -38,10 +37,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
 
     def __init__(
         self,
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
-        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
-        triviaGameMachine: Optional[TriviaGameMachineInterface],
+        triviaGameBuilder: TriviaGameBuilderInterface | None,
+        triviaGameMachine: TriviaGameMachineInterface | None,
         twitchChannelProvider: TwitchChannelProvider,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface
@@ -61,10 +60,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
 
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
-        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
+        self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
+        self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -136,7 +135,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
     async def __processSuperTriviaEvent(
         self,
         broadcasterUserId: str,
-        communitySubGift: Optional[TwitchCommunitySubGift],
+        communitySubGift: TwitchCommunitySubGift | None,
         tier: TwitchSubscriberTier,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface
@@ -152,7 +151,10 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__triviaGameBuilder is None or self.__triviaGameMachine is None:
+        triviaGameBuilder = self.__triviaGameBuilder
+        triviaGameMachine = self.__triviaGameMachine
+
+        if triviaGameBuilder is None or triviaGameMachine is None:
             return
         elif not user.isSuperTriviaGameEnabled():
             return
@@ -167,30 +169,30 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         if communitySubGift is not None:
             numberOfSubs = communitySubGift.getTotal()
 
-        numberOfGames = math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount)
+        numberOfGames = int(math.floor(numberOfSubs / superTriviaSubscribeTriggerAmount))
         if numberOfGames < 1:
             return
 
-        action = await self.__triviaGameBuilder.createNewSuperTriviaGame(
+        action = await triviaGameBuilder.createNewSuperTriviaGame(
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
             numberOfGames = numberOfGames
         )
 
         if action is not None:
-            self.__triviaGameMachine.submitAction(action)
+            triviaGameMachine.submitAction(action)
 
     async def __processTtsEvent(
         self,
-        isAnonymous: Optional[bool],
-        isGift: Optional[bool],
+        isAnonymous: bool | None,
+        isGift: bool | None,
         broadcasterUserId: str,
-        message: Optional[str],
-        userId: Optional[str],
-        userInput: Optional[str],
-        userLogin: Optional[str],
-        userName: Optional[str],
-        communitySubGift: Optional[TwitchCommunitySubGift],
+        message: str | None,
+        userId: str | None,
+        userInput: str | None,
+        userLogin: str | None,
+        userName: str | None,
+        communitySubGift: TwitchCommunitySubGift | None,
         tier: TwitchSubscriberTier,
         subscriptionType: TwitchWebsocketSubscriptionType,
         user: UserInterface,
@@ -220,7 +222,9 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__streamAlertsManager is None:
+        streamAlertsManager = self.__streamAlertsManager
+
+        if streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
@@ -257,7 +261,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
                 self.__timber.log('TwitchSubscriptionHandler', f'Attempted to process subscription event into a TTS message, but data is weird? ({isAnonymous=}) ({isGift=}) ({userId=}) ({userName=}) ({communitySubGift=}) ({subscriptionType=})')
                 return
 
-        giftType: Optional[TtsSubscriptionDonationGiftType] = None
+        giftType: TtsSubscriptionDonationGiftType | None = None
 
         if isGift is True:
             giftType = TtsSubscriptionDonationGiftType.RECEIVER
@@ -280,7 +284,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raidInfo = None
         )
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = SoundAlert.SUBSCRIBE,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,

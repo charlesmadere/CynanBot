@@ -508,6 +508,7 @@ class CynanBot(
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
+        self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
@@ -833,6 +834,9 @@ class CynanBot(
 
         if self.__cheerActionHelper is not None:
             self.__cheerActionHelper.setTwitchChannelProvider(self)
+
+        if self.__mostRecentAnivMessageTimeoutHelper is not None:
+            self.__mostRecentAnivMessageTimeoutHelper.setTwitchChannelProvider(self)
 
         if self.__twitchTimeoutRemodHelper is not None:
             self.__twitchTimeoutRemodHelper.start()

@@ -79,7 +79,7 @@ class TwitchApiServiceInterface(ABC):
     async def fetchLiveUserDetails(
         self,
         twitchAccessToken: str,
-        userNames: list[str]
+        twitchChannelIds: list[str]
     ) -> list[TwitchLiveUserDetails]:
         pass
 

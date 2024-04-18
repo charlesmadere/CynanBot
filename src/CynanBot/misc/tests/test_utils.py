@@ -1,6 +1,8 @@
 import math
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
+
+import pytest
 
 import CynanBot.misc.utils as utils
 
@@ -8,8 +10,8 @@ import CynanBot.misc.utils as utils
 class TestUtils():
 
     def test_areAllStrsInts_withEmptyList(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
+        exception: Exception | None = None
 
         try:
             result = utils.areAllStrsInts(list())
@@ -29,17 +31,12 @@ class TestUtils():
         assert result is False
 
     def test_areAllStrsInts_withNone(self):
-        result: bool = None
-        exception: Exception = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = utils.areAllStrsInts(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, Exception)
 
     def test_areAllStrsInts_withWordList(self):
         result = utils.areAllStrsInts([ 'hello', 'world' ])
@@ -126,37 +123,37 @@ class TestUtils():
         assert result is False
 
     def test_copyList_withEmptyList(self):
-        original: List = list()
-        result: List = utils.copyList(original)
+        original: list[Any] = list()
+        result = utils.copyList(original)
         assert result is not None
         assert len(result) == 0
         assert result is not original
 
     def test_copyList_withIntList(self):
-        original: List[int] = [ 1, 2, 3, 4 ]
-        result: List = utils.copyList(original)
+        original: list[int] = [ 1, 2, 3, 4 ]
+        result = utils.copyList(original)
         assert result is not None
         assert len(result) == 4
         assert result is not original
         assert result == original
 
     def test_copyList_withNone(self):
-        result: List = utils.copyList(None)
+        result: list = utils.copyList(None)
         assert result is not None
         assert len(result) == 0
 
     def test_copyList_withStrList(self):
-        original: List[str] = [ '1', '2', '3', '4' ]
-        result: List = utils.copyList(original)
+        original: list[str] = [ '1', '2', '3', '4' ]
+        result = utils.copyList(original)
         assert result is not None
         assert len(result) == 4
         assert result is not original
         assert result == original
 
     def test_getBoolFromDict_withEmptyDict(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[bool] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: bool | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getBoolFromDict(d = d, key = "hello")
@@ -167,9 +164,9 @@ class TestUtils():
         assert exception is not None
 
     def test_getBoolFromDict_withEmptyDictAndNoneFallback(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[bool] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: bool | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getBoolFromDict(d = d, key = "hello")
@@ -180,9 +177,9 @@ class TestUtils():
         assert exception is not None
 
     def test_getBoolFromDict_withNoneDict(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[bool] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: bool | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getBoolFromDict(d = d, key = "hello", fallback = True)
@@ -193,9 +190,9 @@ class TestUtils():
         assert exception is None
 
     def test_getBoolFromDict_withNoneDictAndNoneFallback(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[bool] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: bool | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getBoolFromDict(d = d, key = "hello")
@@ -206,28 +203,29 @@ class TestUtils():
         assert exception is not None
 
     def test_getCleanedSplits_withEmptyString(self):
-        original: str = ''
-        result: List[str] = utils.getCleanedSplits(original)
+        original = ''
+        result = utils.getCleanedSplits(original)
         assert result is not None
         assert len(result) == 0
 
     def test_getCleanedSplits_withHelloWorld(self):
-        original: str = 'Hello, World!'
-        result: List[str] = utils.getCleanedSplits(original)
+        original = 'Hello, World!'
+        result = utils.getCleanedSplits(original)
         assert result is not None
         assert len(result) == 2
         assert result[0] == 'Hello,'
         assert result[1] == 'World!'
 
     def test_getCleanedSplits_withNone(self):
-        original: Optional[str] = None
-        result: List[str] = utils.getCleanedSplits(original)
+        original: str | None = None
+        result = utils.getCleanedSplits(original)
         assert result is not None
+        assert isinstance(result, list)
         assert len(result) == 0
 
     def test_getCleanedSplits_withWhitespaceString(self):
-        original: str = ' '
-        result: List[str] = utils.getCleanedSplits(original)
+        original = ' '
+        result = utils.getCleanedSplits(original)
         assert result is not None
         assert len(result) == 0
 
@@ -270,9 +268,9 @@ class TestUtils():
         assert result.second == 41
 
     def test_getFloatFromDict_withEmptyDict(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[float] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: float | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getFloatFromDict(d = d, key = "hello", fallback = 3.14)
@@ -283,9 +281,9 @@ class TestUtils():
         assert exception is None
 
     def test_getFloatFromDict_withEmptyDictAndNoneFallback(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[float] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: float | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getFloatFromDict(d = d, key = "hello")
@@ -296,9 +294,9 @@ class TestUtils():
         assert exception is not None
 
     def test_getFloatFromDict_withNoneDict(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[float] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: float | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getFloatFromDict(d = d, key = "hello", fallback = 1.1)
@@ -309,9 +307,9 @@ class TestUtils():
         assert exception is None
 
     def test_getFloatFromDict_withNoneDictAndNoneFallback(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[float] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: float | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getFloatFromDict(d = d, key = "hello")
@@ -322,9 +320,9 @@ class TestUtils():
         assert exception is not None
 
     def test_getIntFromDict_withEmptyDict(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[int] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: int | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getIntFromDict(d = d, key = "hello", fallback = 64)
@@ -335,9 +333,9 @@ class TestUtils():
         assert exception is None
 
     def test_getIntFromDict_withEmptyDictAndNoneFallback(self):
-        d: Dict[str, Any] = dict()
-        value: Optional[int] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] = dict()
+        value: int | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getIntFromDict(d = d, key = "hello")
@@ -348,9 +346,9 @@ class TestUtils():
         assert exception is not None
 
     def test_getIntFromDict_withNoneDict(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[int] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: int | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getIntFromDict(d = d, key = "hello", fallback = 2000)
@@ -361,9 +359,9 @@ class TestUtils():
         assert exception is None
 
     def test_getIntFromDict_withNoneDictAndNoneFallback(self):
-        d: Optional[Dict[str, Any]] = None
-        value: Optional[int] = None
-        exception: Optional[Exception] = None
+        d: dict[str, Any] | None = None
+        value: int | None = None
+        exception: Exception | None = None
 
         try:
             value = utils.getIntFromDict(d = d, key = "hello")
@@ -374,83 +372,83 @@ class TestUtils():
         assert exception is not None
 
     def test_isValidBool_withFalse(self):
-        result: bool = utils.isValidBool(False)
+        result = utils.isValidBool(False)
         assert result is True
 
     def test_isValidBool_withNone(self):
-        result: bool = utils.isValidBool(None)
+        result = utils.isValidBool(None)
         assert result is False
 
     def test_isValidBool_withTrue(self):
-        result: bool = utils.isValidBool(True)
+        result = utils.isValidBool(True)
         assert result is True
 
     def test_isValidInt_withNan(self):
-        result: bool = utils.isValidInt(math.nan)
+        result = utils.isValidInt(math.nan)
         assert result is False
 
     def test_isValidInt_withNegativeOne(self):
-        result: bool = utils.isValidInt(-1)
+        result = utils.isValidInt(-1)
         assert result is True
 
     def test_isValidInt_withNone(self):
-        result: bool = utils.isValidInt(None)
+        result = utils.isValidInt(None)
         assert result is False
 
     def test_isValidInt_withOne(self):
-        result: bool = utils.isValidInt(1)
+        result = utils.isValidInt(1)
         assert result is True
 
     def test_isValidInt_withPi(self):
-        result: bool = utils.isValidInt(math.pi)
+        result = utils.isValidInt(math.pi)
         assert result is False
 
     def test_isValidInt_withTwo(self):
-        result: bool = utils.isValidInt(2)
+        result = utils.isValidInt(2)
         assert result is True
 
     def test_isValidInt_withZero(self):
-        result: bool = utils.isValidInt(0)
+        result = utils.isValidInt(0)
         assert result is True
 
     def test_isValidNum_withFloat(self):
-        result: bool = utils.isValidNum(3.33)
+        result = utils.isValidNum(3.33)
         assert result is True
 
     def test_isValidNum_withInt(self):
-        result: bool = utils.isValidNum(100)
+        result = utils.isValidNum(100)
         assert result is True
 
     def test_isValidNum_withNan(self):
-        result: bool = utils.isValidNum(math.nan)
+        result = utils.isValidNum(math.nan)
         assert result is False
 
     def test_isValidNum_withNone(self):
-        result: bool = utils.isValidNum(None)
+        result = utils.isValidNum(None)
         assert result is False
 
     def test_isValidNum_withPi(self):
-        result: bool = utils.isValidNum(math.pi)
+        result = utils.isValidNum(math.pi)
         assert result is True
 
     def test_isValidStr_withEmptyString(self):
-        result: bool = utils.isValidStr('')
+        result = utils.isValidStr('')
         assert result is False
 
     def test_isValidStr_withHelloWorldString(self):
-        result: bool = utils.isValidStr('Hello, World!')
+        result = utils.isValidStr('Hello, World!')
         assert result is True
 
     def test_isValidStr_withNewLineString(self):
-        result: bool = utils.isValidStr('\n')
+        result = utils.isValidStr('\n')
         assert result is False
 
     def test_isValidStr_withNone(self):
-        result: bool = utils.isValidStr(None)
+        result = utils.isValidStr(None)
         assert result is False
 
     def test_isValidStr_withWhitespaceString(self):
-        result: bool = utils.isValidStr(' ')
+        result = utils.isValidStr(' ')
         assert result is False
 
     def test_isValidUrl_withEmptyString(self):
@@ -488,28 +486,20 @@ class TestUtils():
         assert result is False
 
     def test_numToBool_withInf(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = utils.numToBool(math.inf)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
 
     def test_numToBool_withNan(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = utils.numToBool(math.nan)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
 
     def test_numToBool_withNegativeOne(self):
         result = utils.numToBool(-1)
@@ -520,8 +510,7 @@ class TestUtils():
         assert result is True
 
     def test_numToBool_withNone(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
         try:
             result = utils.numToBool(None)
@@ -731,16 +720,12 @@ class TestUtils():
         assert result is False
 
     def test_strictStrToBool_withEmptyString(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = utils.strictStrToBool('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, ValueError)
 
     def test_strictStrToBool_withF(self):
         result = utils.strictStrToBool('f')
@@ -751,95 +736,83 @@ class TestUtils():
         assert result is False
 
     def test_strictStrToBool_withNewLineString(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = utils.strictStrToBool('\n')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, ValueError)
 
     def test_strictStrToBool_withNone(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = utils.strictStrToBool(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, ValueError)
 
     def test_strictStrToBool_withT(self):
-        result: bool = utils.strictStrToBool('t')
+        result = utils.strictStrToBool('t')
         assert result is True
 
     def test_strictStrToBool_withTrue(self):
-        result: bool = utils.strictStrToBool('true')
+        result = utils.strictStrToBool('true')
         assert result is True
 
     def test_strictStrToBool_withWhitespaceString(self):
-        result: Optional[bool] = None
-        exception: Optional[Exception] = None
+        result: bool | None = None
 
-        try:
+        with pytest.raises(ValueError):
             result = utils.strictStrToBool(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, ValueError)
 
     def test_strToBool_withEmptyString(self):
-        result: bool = utils.strToBool('')
+        result = utils.strToBool('')
         assert result is True
 
     def test_strToBool_withF(self):
-        result: bool = utils.strToBool('f')
+        result = utils.strToBool('f')
         assert result is False
 
     def test_strToBool_withFalse(self):
-        result: bool = utils.strToBool('false')
+        result = utils.strToBool('false')
         assert result is False
 
     def test_strToBool_withNewLineString(self):
-        result: bool = utils.strToBool('\n')
+        result = utils.strToBool('\n')
         assert result is True
 
     def test_strToBool_withNone(self):
-        result: bool = utils.strToBool(None)
+        result = utils.strToBool(None)
         assert result is True
 
     def test_strToBool_withT(self):
-        result: bool = utils.strToBool('t')
+        result = utils.strToBool('t')
         assert result is True
 
     def test_strToBool_withTrue(self):
-        result: bool = utils.strToBool('true')
+        result = utils.strToBool('true')
         assert result is True
 
     def test_strToBool_withWhitespaceString(self):
-        result: bool = utils.strToBool(' ')
+        result = utils.strToBool(' ')
         assert result is True
 
     def test_strToBools_withEmptyList(self):
         result = utils.strsToBools(list())
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 0
 
     def test_strToBools_withFalse(self):
         result = utils.strsToBools([ 'false' ])
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 1
         assert result[0] is False
 
     def test_strToBools_withMixedList(self):
         result = utils.strsToBools([ 'false', 'f', 'true', 'FALSE', 'T', 'true', 'f' ])
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 7
         assert result[0] is False
         assert result[1] is False
@@ -851,11 +824,11 @@ class TestUtils():
 
     def test_strToBools_withNone(self):
         result = utils.strsToBools(None)
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 0
 
     def test_strToBools_withTrue(self):
         result = utils.strsToBools([ 'true' ])
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 1
         assert result[0] is True
