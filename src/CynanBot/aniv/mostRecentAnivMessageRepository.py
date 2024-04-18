@@ -62,8 +62,8 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         cachedAnivMessage = self.__cache.get(twitchChannelId, None)
         now = datetime.now(self.__timeZone)
 
-        if cachedAnivMessage is not None and cachedAnivMessage.getDateTime() + self.__maxMessageAge <= now:
-            return cachedAnivMessage.getMessage()
+        if cachedAnivMessage is not None and cachedAnivMessage.dateTime + self.__maxMessageAge <= now:
+            return cachedAnivMessage.message
 
         anivMessage = MostRecentAnivMessage(
             dateTime = datetime.now(self.__timeZone),
@@ -73,7 +73,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         )
 
         self.__cache[twitchChannelId] = anivMessage
-        return anivMessage.getMessage()
+        return anivMessage.message
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
