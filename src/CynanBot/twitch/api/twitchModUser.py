@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -35,7 +35,7 @@ class TwitchModUser():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'userId': self.__userId,
             'userLogin': self.__userLogin,

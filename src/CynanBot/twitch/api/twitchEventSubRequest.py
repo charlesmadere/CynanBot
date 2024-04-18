@@ -3,10 +3,10 @@ from typing import Any, Dict
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
-from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
-    TwitchWebsocketTransport
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
 
 
 # This class intends to directly correspond to Twitch's "Create EventSub Subscription" API:

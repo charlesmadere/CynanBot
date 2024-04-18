@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchEmoteImage import TwitchEmoteImage
 from CynanBot.twitch.api.twitchEmoteImageScale import TwitchEmoteImageScale
@@ -11,7 +9,7 @@ class TwitchEmoteDetails():
 
     def __init__(
         self,
-        emoteImages: List[TwitchEmoteImage],
+        emoteImages: list[TwitchEmoteImage],
         emoteId: str,
         emoteName: str,
         emoteType: TwitchEmoteType,
@@ -28,15 +26,15 @@ class TwitchEmoteDetails():
         elif not isinstance(subscriberTier, TwitchSubscriberTier):
             raise ValueError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
 
-        self.__emoteImages: List[TwitchEmoteImage] = emoteImages
+        self.__emoteImages: list[TwitchEmoteImage] = emoteImages
         self.__emoteId: str = emoteId
         self.__emoteName: str = emoteName
         self.__emoteType: TwitchEmoteType = emoteType
         self.__subscriberTier: TwitchSubscriberTier = subscriberTier
 
-    def getEmote(self, imageScale: TwitchEmoteImageScale) -> Optional[TwitchEmoteImage]:
+    def getEmote(self, imageScale: TwitchEmoteImageScale) -> TwitchEmoteImage | None:
         if not isinstance(imageScale, TwitchEmoteImageScale):
-            raise ValueError(f'imageScale argument is malformed: \"{imageScale}\"')
+            raise TypeError(f'imageScale argument is malformed: \"{imageScale}\"')
 
         for emoteImage in self.__emoteImages:
             if emoteImage.getImageScale() is imageScale:
@@ -44,7 +42,7 @@ class TwitchEmoteDetails():
 
         return None
 
-    def getEmotes(self) -> List[TwitchEmoteImage]:
+    def getEmotes(self) -> list[TwitchEmoteImage]:
         return self.__emoteImages
 
     def getEmoteId(self) -> str:

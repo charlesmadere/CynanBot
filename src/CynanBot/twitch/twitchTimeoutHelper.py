@@ -1,18 +1,19 @@
 import traceback
-from datetime import timedelta, datetime, tzinfo, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchBannedUserRequest import TwitchBannedUserRequest
 from CynanBot.twitch.api.twitchBannedUsersResponse import \
     TwitchBannedUsersResponse
+from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
 from CynanBot.twitch.twitchConstantsInterface import TwitchConstantsInterface
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTimeoutRemodData import TwitchTimeoutRemodData

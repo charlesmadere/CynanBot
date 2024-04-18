@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
@@ -25,7 +23,7 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
 
-    async def getAccessTokenOrFallback(self, twitchChannel: str) -> Optional[str]:
+    async def getAccessTokenOrFallback(self, twitchChannel: str) -> str | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 

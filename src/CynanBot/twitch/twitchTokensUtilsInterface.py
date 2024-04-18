@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 
 class TwitchTokensUtilsInterface(ABC):
 
     @abstractmethod
-    async def getAccessTokenOrFallback(self, twitchChannel: str) -> Optional[str]:
+    async def getAccessTokenOrFallback(self, twitchChannel: str) -> str | None:
         pass
 
     @abstractmethod

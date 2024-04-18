@@ -4,10 +4,10 @@ from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
     TwitchWebsocketConnectionStatus
-from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
-    TwitchWebsocketTransport
 from CynanBot.twitch.api.websocket.twitchWebsocketSubscriptionType import \
     TwitchWebsocketSubscriptionType
+from CynanBot.twitch.api.websocket.twitchWebsocketTransport import \
+    TwitchWebsocketTransport
 
 
 class TwitchEventSubResponse():
