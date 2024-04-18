@@ -55,7 +55,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        follower = self.__cache[twitchChannelId][userId]
+        follower = self.__cache[twitchChannelId].get(userId, None)
 
         if follower is not None:
             return follower
