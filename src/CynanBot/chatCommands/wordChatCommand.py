@@ -1,3 +1,4 @@
+import traceback
 from datetime import timedelta
 
 import CynanBot.misc.utils as utils
