@@ -70,6 +70,7 @@ from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
+from CynanBot.chatCommands.wordChatCommand import WordChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
     CheerActionHelperInterface
@@ -99,8 +100,7 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                StubCommand, SwQuoteCommand, TimeCommand,
                                TriviaInfoCommand, TtsCommand,
                                TwitchInfoCommand, TwitterCommand,
-                               UnbanTriviaQuestionCommand, WeatherCommand,
-                               WordCommand)
+                               UnbanTriviaQuestionCommand, WeatherCommand)
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from CynanBot.cuteness.cutenessRepositoryInterface import \
@@ -683,9 +683,9 @@ class CynanBot(
             self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherRepository)
 
         if wordOfTheDayRepository is None:
-            self.__wordCommand: AbsCommand = StubCommand()
+            self.__wordCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__wordCommand: AbsCommand = WordCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayRepository)
+            self.__wordCommand: AbsChatCommand = WordChatCommand(generalSettingsRepository, languagesRepository, timber, twitchUtils, usersRepository, wordOfTheDayRepository)
 
         ########################################################
         ## Initialization of point redemption handler objects ##
@@ -1419,4 +1419,4 @@ class CynanBot(
     @commands.command(name = 'word')
     async def command_word(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__wordCommand.handleCommand(context)
+        await self.__wordCommand.handleChatCommand(context)
