@@ -1,5 +1,5 @@
-from datetime import timedelta
 import random
+from datetime import timedelta
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.anivUserIdProviderInterface import \
@@ -9,8 +9,10 @@ from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.twitch.configuration.twitchChannelProvider import TwitchChannelProvider
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTimeoutHelperInterface import \
     TwitchTimeoutHelperInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \

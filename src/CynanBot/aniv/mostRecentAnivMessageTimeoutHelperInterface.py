@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.twitch.configuration.twitchChannelProvider import TwitchChannelProvider
+from CynanBot.twitch.configuration.twitchChannelProvider import \
+    TwitchChannelProvider
 from CynanBot.users.userInterface import UserInterface
 
 
