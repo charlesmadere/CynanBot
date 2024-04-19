@@ -97,7 +97,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
         await connection.execute(
             '''
                 INSERT INTO cheeractions (actionid, bitrequirement, streamstatusrequirement, actiontype, amount, durationseconds, userid)
-                VALUES ($1, $2, $3, $4, $5, $6)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
             ''',
             actionId, bitRequirement.toStr(), streamStatusRequirement.getDatabaseString(), actionType.toStr(), amount, durationSeconds, userId
         )
