@@ -499,7 +499,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         bannedControllersNames: list[str] = list()
         for bannedController in bannedControllers:
-            bannedControllersNames.append(bannedController.getUserName())
+            bannedControllersNames.append(bannedController.userName)
 
         bannedControllersStr = delimiter.join(bannedControllersNames)
         return f'ⓘ Banned trivia game controllers — {bannedControllersStr}'
@@ -674,7 +674,7 @@ class TriviaUtils(TriviaUtilsInterface):
 
         bannedGameControllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
         for bannedGameController in bannedGameControllers:
-            if userId == bannedGameController.getUserId():
+            if userId == bannedGameController.userId:
                 return False
 
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchUser.getHandle())
