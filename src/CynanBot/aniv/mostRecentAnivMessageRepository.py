@@ -60,11 +60,12 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         anivMessage = self.__cache.get(twitchChannelId, None)
-        now = datetime.now(self.__timeZone)
 
         if anivMessage is None:
             anivMessage = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
             self.__cache[twitchChannelId] = anivMessage
+
+        now = datetime.now(self.__timeZone)
 
         if anivMessage is not None and anivMessage.dateTime + self.__maxMessageAge >= now:
             return anivMessage.message
