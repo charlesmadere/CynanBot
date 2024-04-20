@@ -28,14 +28,14 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseAccessToken(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleAccessToken | None:
         pass
 
     @abstractmethod
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleTextSynthesisResponse | None:
         pass
 
@@ -49,7 +49,7 @@ class GoogleJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTranslateTextResponse(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleTranslateTextResponse | None:
         pass
 

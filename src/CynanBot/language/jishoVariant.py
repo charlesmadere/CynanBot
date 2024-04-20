@@ -12,7 +12,7 @@ class JishoVariant():
         furigana: Optional[str],
         word: Optional[str]
     ):
-        if not utils.areValidStrs(definitions):
+        if not utils.areValidStrs(definitions) or not isinstance(definitions, list):
             raise ValueError(f'definitions argument is malformed: \"{definitions}\"')
 
         self.__definitions: List[str] = definitions

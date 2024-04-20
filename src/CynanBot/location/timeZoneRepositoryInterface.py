@@ -8,7 +8,7 @@ from typing import List
 class TimeZoneRepositoryInterface(ABC):
 
     @abstractmethod
-    def getTimeZone(self, timeZone: str) -> tzinfo:
+    def getTimeZone(self, timeZoneStr: str) -> tzinfo:
         pass
 
     @abstractmethod

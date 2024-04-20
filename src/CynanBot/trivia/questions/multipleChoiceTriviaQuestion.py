@@ -32,7 +32,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
             triviaType = TriviaQuestionType.MULTIPLE_CHOICE,
         )
 
-        if not utils.areValidStrs(correctAnswers):
+        if not utils.areValidStrs(correctAnswers) or not isinstance(correctAnswers, list):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
         elif not utils.hasItems(multipleChoiceResponses):
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')

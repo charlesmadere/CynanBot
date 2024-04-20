@@ -512,13 +512,10 @@ class TestUtils():
     def test_numToBool_withNone(self):
         result: bool | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = utils.numToBool(None)
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
 
     def test_numToBool_withOne(self):
         result = utils.numToBool(1)

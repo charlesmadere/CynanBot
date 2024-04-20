@@ -109,8 +109,10 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         machinesStr = '/'.join(machinesStrs)
 
+        machines = move.getGenerationMachines()
+
         return {
-            'correctAnswer': move.hasMachines() and randomGeneration in move.getGenerationMachines(),
+            'correctAnswer': machines is not None and randomGeneration in machines,
             'question': f'In Pokémon {randomGeneration.toLongStr()}, {move.getName()} can be taught via {machinesStr}.',
             'triviaType': TriviaQuestionType.TRUE_FALSE
         }
@@ -119,11 +121,13 @@ class PkmnTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not isinstance(move, PokepediaMove):
             raise TypeError(f'move argument is malformed: \"{move}\"')
 
-        if not move.hasMachines():
+        machines = move.getGenerationMachines()
+
+        if machines is None:
             return None
 
         randomGeneration = await self.__selectRandomGeneration(move.getInitialGeneration())
-        machine = move.getGenerationMachines()[randomGeneration][0]
+        machine = machines[randomGeneration][0]
         correctMachineNumber = machine.getMachineNumber()
         machinePrefix = machine.getMachineType().toStr()
 

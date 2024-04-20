@@ -818,9 +818,9 @@ class CynanBot(
 
         await self.wait_for_ready()
 
-        if eventType is ChannelJoinEventType.FINISHED:
+        if isinstance(event, FinishedJoiningChannelsEvent):
             await self.__handleFinishedJoiningChannelsEvent(event)
-        elif eventType is ChannelJoinEventType.JOIN:
+        elif isinstance(event, JoinChannelsEvent):
             await self.__handleJoinChannelsEvent(event)
 
     async def __handleFinishedJoiningChannelsEvent(self, event: FinishedJoiningChannelsEvent):
@@ -930,13 +930,12 @@ class CynanBot(
         await self.wait_for_ready()
 
         self.__timber.log('CynanBot', f'Received new recurring action event: \"{event}\"')
-        eventType = event.getEventType()
 
-        if eventType is RecurringEventType.SUPER_TRIVIA:
+        if isinstance(event, SuperTriviaRecurringEvent):
             await self.__handleSuperTriviaRecurringActionEvent(event)
-        elif eventType is RecurringEventType.WEATHER:
+        elif isinstance(event, WeatherRecurringEvent):
             await self.__handleWeatherRecurringActionEvent(event)
-        elif eventType is RecurringEventType.WORD_OF_THE_DAY:
+        elif isinstance(event, WordOfTheDayRecurringEvent):
             await self.__handleWordOfTheDayRecurringActionEvent(event)
 
     async def __handleSuperTriviaRecurringActionEvent(self, event: SuperTriviaRecurringEvent):

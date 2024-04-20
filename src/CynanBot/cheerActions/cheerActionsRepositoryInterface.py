@@ -18,7 +18,7 @@ class CheerActionsRepositoryInterface(Clearable):
         streamStatusRequirement: CheerActionStreamStatusRequirement,
         actionType: CheerActionType,
         amount: int,
-        durationSeconds: int | None,
+        durationSeconds: int,
         userId: str
     ) -> CheerAction:
         pass

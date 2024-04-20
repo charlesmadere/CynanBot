@@ -18,7 +18,7 @@ class PokepediaMoveGeneration():
         elementType: PokepediaElementType,
         generation: PokepediaGeneration
     ):
-        if not utils.isValidNum(pp):
+        if not utils.isValidInt(pp):
             raise ValueError(f'pp argument is malformed: \"{pp}\"')
         elif not isinstance(damageClass, PokepediaDamageClass):
             raise ValueError(f'damageClass argument is malformed: \"{damageClass}\"')

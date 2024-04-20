@@ -58,7 +58,7 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
 
     async def parseTranslationResponses(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> DeepLTranslationResponses | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None

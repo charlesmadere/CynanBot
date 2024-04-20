@@ -44,7 +44,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseAccessToken(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleAccessToken | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -62,7 +62,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseTextSynthesisResponse(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleTextSynthesisResponse | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None
@@ -95,7 +95,7 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
 
     async def parseTranslateTextResponse(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | None | Any
     ) -> GoogleTranslateTextResponse | None:
         if jsonContents is None or len(jsonContents) == 0:
             return None

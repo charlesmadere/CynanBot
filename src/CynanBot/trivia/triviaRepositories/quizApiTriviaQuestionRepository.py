@@ -64,7 +64,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             response = await clientSession.get(
                 url = f'https://quizapi.io/api/v1/questions?apiKey={self.__quizApiKey}&limit=1',
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0' # LOOOOL
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0'  # LOOOOL
                 }
             )
         except GenericNetworkException as e:
@@ -75,13 +75,13 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered non-200 HTTP status code when fetching trivia question: \"{response.getStatusCode()}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: Optional[List[Dict[str, Any]]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
             self.__timber.log('QuizApiTriviaQuestionRepository', f'{jsonResponse}')
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, list):
             self.__timber.log('QuizApiTriviaQuestionRepository', f'Rejecting Quiz API\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Quiz API JSON data due to null/empty contents: {jsonResponse}')
 
@@ -152,7 +152,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaSource = TriviaSource.QUIZ_API
                 )
             else:
-                self.__timber.log('QuizApiTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
+                self.__timber.log('QuizApiTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
                 triviaType = TriviaQuestionType.TRUE_FALSE
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:

@@ -18,7 +18,7 @@ class TestCheerBitActionRequirement():
         result: CheerActionBitRequirement | None = None
 
         with pytest.raises(ValueError):
-            result = CheerActionBitRequirement.fromStr(None)
+            result = CheerActionBitRequirement.fromStr(None)  # type: ignore
 
         assert result is None
 

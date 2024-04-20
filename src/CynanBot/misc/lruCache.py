@@ -50,6 +50,7 @@ class LruCache():
         node = self.__lookup[key]
 
         if node is not self.__tail:
+            assert node
             self.__unlink_cur_node(node)
             self.__append_new_node(node)
 
@@ -65,6 +66,7 @@ class LruCache():
 
         if len(self.__lookup) == self.__capacity:
             # remove head node and corresponding key
+            assert self.__head
             self.__lookup.pop(self.__head.key)
             self.__remove_head_node()
 
@@ -98,5 +100,6 @@ class LruCache():
 
         # removing the node from somewhere in the middle; update pointers
         prev, nex = node.prev, node.next
-        prev.next = nex    
+        assert prev and nex
+        prev.next = nex
         nex.prev = prev

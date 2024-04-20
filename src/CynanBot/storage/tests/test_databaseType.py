@@ -29,7 +29,7 @@ class TestDatabaseType():
         result: DatabaseType | None = None
 
         with pytest.raises(TypeError):
-            result = DatabaseType.fromStr(None)
+            result = DatabaseType.fromStr(None)  # type: ignore
 
         assert result is None
 

@@ -8,7 +8,6 @@ from CynanBot.language.languagesRepositoryInterface import \
 from CynanBot.recurringActions.recurringAction import RecurringAction
 from CynanBot.recurringActions.recurringActionsJsonParserInterface import \
     RecurringActionsJsonParserInterface
-from CynanBot.recurringActions.recurringActionType import RecurringActionType
 from CynanBot.recurringActions.superTriviaRecurringAction import \
     SuperTriviaRecurringAction
 from CynanBot.recurringActions.weatherRecurringAction import \
@@ -126,16 +125,14 @@ class RecurringActionsJsonParser(RecurringActionsJsonParserInterface):
         if not isinstance(action, RecurringAction):
             raise TypeError(f'action argument is malformed: \"{action}\"')
 
-        actionType = action.getActionType()
-
-        if actionType is RecurringActionType.SUPER_TRIVIA:
+        if isinstance(action, SuperTriviaRecurringAction):
             return await self.__superTriviaToJson(action)
-        elif actionType is RecurringActionType.WEATHER:
+        elif isinstance(action, WeatherRecurringAction):
             return await self.__weatherToJson(action)
-        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+        elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__wordOfTheDayToJson(action)
         else:
-            raise RuntimeError(f'Encountered unknown actionType (\"{actionType}\") for action (\"{action}\")')
+            raise RuntimeError(f'Encountered unknown action type (\"{type(action)=}\") for action (\"{action}\")')
 
     async def __weatherToJson(self, action: WeatherRecurringAction) -> str:
         if not isinstance(action, WeatherRecurringAction):

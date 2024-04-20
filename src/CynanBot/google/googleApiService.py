@@ -115,7 +115,7 @@ class GoogleApiService(GoogleApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://texttospeech.googleapis.com/v1/text:synthesize',
+                url = 'https://texttospeech.googleapis.com/v1/text:synthesize',
                 headers = {
                     'Accept': self.__contentType,
                     'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',

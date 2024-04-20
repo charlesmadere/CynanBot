@@ -56,7 +56,7 @@ class DeepLApiService(DeepLApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://api-free.deepl.com/v2/translate',
+                url = 'https://api-free.deepl.com/v2/translate',
                 headers = {
                     'Authorization': f'DeepL-Auth-Key {deepLAuthKey}',
                     'Content-Type': self.__contentType

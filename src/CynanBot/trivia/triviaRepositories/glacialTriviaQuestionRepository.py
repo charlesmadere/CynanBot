@@ -102,7 +102,7 @@ class GlacialTriviaQuestionRepository(
         self,
         question: AbsTriviaQuestion,
         connection: Connection
-    ):
+    ) -> bool:
         cursor = await connection.execute(
             '''
                 SELECT EXISTS(
