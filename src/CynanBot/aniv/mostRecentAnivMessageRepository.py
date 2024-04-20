@@ -59,27 +59,23 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        cachedAnivMessage = self.__cache.get(twitchChannelId, None)
+        anivMessage = self.__cache.get(twitchChannelId, None)
         now = datetime.now(self.__timeZone)
 
-        if cachedAnivMessage is not None and cachedAnivMessage.dateTime + self.__maxMessageAge <= now:
-            return cachedAnivMessage.message
+        if anivMessage is None:
+            anivMessage = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
+            self.__cache[twitchChannelId] = anivMessage
 
-        anivMessage = MostRecentAnivMessage(
-            dateTime = datetime.now(self.__timeZone),
-            message = await self.__getFromDatabase(
-                twitchChannelId = twitchChannelId
-            )
-        )
-
-        self.__cache[twitchChannelId] = anivMessage
-        return anivMessage.message
+        if anivMessage is not None and anivMessage.dateTime + self.__maxMessageAge <= now:
+            return anivMessage.message
+        else:
+            return None
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def __getFromDatabase(self, twitchChannelId: str) -> str | None:
+    async def __getFromDatabase(self, twitchChannelId: str) -> MostRecentAnivMessage | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -92,22 +88,22 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             twitchChannelId
         )
 
-        messageDateTime: datetime | None = None
+        dateTime: datetime | None = None
         message: str | None = None
 
         if record is not None and len(record) >= 1:
-            messageDateTime = datetime.fromisoformat(record[0])
+            dateTime = datetime.fromisoformat(record[0])
             message = record[1]
 
         await connection.close()
 
-        if messageDateTime is not None and utils.isValidStr(message):
-            now = datetime.now(self.__timeZone)
-
-            if messageDateTime + self.__maxMessageAge <= now:
-                return message
-
-        return None
+        if dateTime is not None and utils.isValidStr(message):
+            return MostRecentAnivMessage(
+                dateTime = dateTime,
+                message = message
+            )
+        else:
+            return None
 
     async def __initDatabaseTable(self):
         if self.__isDatabaseReady:
