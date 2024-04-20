@@ -44,6 +44,8 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
+        self.__cache.pop(twitchChannelId, None)
+
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
@@ -142,8 +144,12 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        nowDateTime = datetime.now(self.__timeZone)
-        nowDateTimeStr = nowDateTime.isoformat()
+        anivMessage = MostRecentAnivMessage(
+            dateTime = datetime.now(self.__timeZone),
+            message = message
+        )
+
+        self.__cache[twitchChannelId] = anivMessage
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -152,7 +158,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid) DO UPDATE SET datetime = EXCLUDED.datetime, message = EXCLUDED.message
             ''',
-            nowDateTimeStr, message, twitchChannelId
+            anivMessage.dateTime.isoformat(), message, twitchChannelId
         )
 
         await connection.close()
