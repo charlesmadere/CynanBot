@@ -26,6 +26,8 @@ from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
+from CynanBot.chatActions.saveMostRecentAnivMessageChatAction import \
+    SaveMostRecentAnivMessageChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -569,6 +571,13 @@ streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
 ## Chat Actions initialization section ##
 #########################################
 
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
+if mostRecentAnivMessageRepository is not None:
+    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+    )
+
 supStreamerChatAction: AbsChatAction | None = None
 if streamAlertsManager is not None:
     supStreamerChatAction = SupStreamerChatAction(
@@ -582,7 +591,6 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     chatLoggerChatAction = None,
     deerForceChatAction = None,
     generalSettingsRepository = generalSettingsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(
@@ -590,6 +598,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         userIdsRepository = userIdsRepository
     ),
     recurringActionsWizardChatAction = None,
+    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     schubertWalkChatAction = None,
     supStreamerChatAction = supStreamerChatAction,
     timber = timber,

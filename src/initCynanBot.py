@@ -34,6 +34,8 @@ from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.recurringActionsWizardChatAction import \
     RecurringActionsWizardChatAction
+from CynanBot.chatActions.saveMostRecentAnivMessageChatAction import \
+    SaveMostRecentAnivMessageChatAction
 from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatLogger.chatLogger import ChatLogger
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
@@ -1085,6 +1087,13 @@ streamAlertsManager: StreamAlertsManagerInterface | None = StreamAlertsManager(
 ## Chat Actions initialization section ##
 #########################################
 
+saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None = None
+if mostRecentAnivMessageRepository is not None:
+    saveMostRecentAnivMessageChatAction = SaveMostRecentAnivMessageChatAction(
+        anivUserIdProvider = anivUserIdProvider,
+        mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
+    )
+
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     anivCheckChatAction = AnivCheckChatAction(
         anivContentScanner = anivContentScanner,
@@ -1110,7 +1119,6 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         twitchUtils = twitchUtils
     ),
     generalSettingsRepository = generalSettingsRepository,
-    mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
     persistAllUsersChatAction = PersistAllUsersChatAction(
@@ -1123,6 +1131,7 @@ chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
         timber = timber,
         twitchUtils = twitchUtils
     ),
+    saveMostRecentAnivMessageChatAction = saveMostRecentAnivMessageChatAction,
     schubertWalkChatAction = SchubertWalkChatAction(
         generalSettingsRepository = generalSettingsRepository,
         timber = timber,

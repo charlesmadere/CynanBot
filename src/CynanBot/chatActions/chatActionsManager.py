@@ -1,5 +1,3 @@
-from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
-    MostRecentAnivMessageRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.chatActions.absChatAction import AbsChatAction
@@ -13,6 +11,8 @@ from CynanBot.chatActions.persistAllUsersChatAction import \
     PersistAllUsersChatAction
 from CynanBot.chatActions.recurringActionsWizardChatAction import \
     RecurringActionsWizardChatAction
+from CynanBot.chatActions.saveMostRecentAnivMessageChatAction import \
+    SaveMostRecentAnivMessageChatAction
 from CynanBot.chatActions.schubertWalkChatAction import SchubertWalkChatAction
 from CynanBot.chatActions.supStreamerChatAction import SupStreamerChatAction
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
@@ -37,11 +37,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         chatLoggerChatAction: ChatLoggerChatAction | None,
         deerForceChatAction: DeerForceChatAction | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface,
         persistAllUsersChatAction: PersistAllUsersChatAction | None,
         recurringActionsWizardChatAction: RecurringActionsWizardChatAction | None,
+        saveMostRecentAnivMessageChatAction: SaveMostRecentAnivMessageChatAction | None,
         schubertWalkChatAction: SchubertWalkChatAction | None,
         supStreamerChatAction: SupStreamerChatAction | None,
         timber: TimberInterface,
@@ -59,8 +59,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'deerForceChatAction argument is malformed: \"{deerForceChatAction}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
-        elif mostRecentAnivMessageRepository is not None and not isinstance(mostRecentAnivMessageRepository, MostRecentAnivMessageRepositoryInterface):
-            raise TypeError(f'mostRecentAnivMessageRepository argument is malformed: \"{mostRecentAnivMessageRepository}\"')
         elif mostRecentAnivMessageTimeoutHelper is not None and not isinstance(mostRecentAnivMessageTimeoutHelper, MostRecentAnivMessageTimeoutHelperInterface):
             raise TypeError(f'mostRecentAnivMessageTimeoutHelper argument is malformed: \"{mostRecentAnivMessageTimeoutHelper}\"')
         elif not isinstance(mostRecentChatsRepository, MostRecentChatsRepositoryInterface):
@@ -69,6 +67,8 @@ class ChatActionsManager(ChatActionsManagerInterface):
             raise TypeError(f'persistAllUsersChatAction argument is malformed: \"{persistAllUsersChatAction}\"')
         elif recurringActionsWizardChatAction is not None and not isinstance(recurringActionsWizardChatAction, RecurringActionsWizardChatAction):
             raise TypeError(f'recurringActionsWizardChatAction argument is malformed: \"{recurringActionsWizardChatAction}\"')
+        elif saveMostRecentAnivMessageChatAction is not None and not isinstance(saveMostRecentAnivMessageChatAction, SaveMostRecentAnivMessageChatAction):
+            raise TypeError(f'saveMostRecentAnivMessageChatAction argument is malformed: \"{saveMostRecentAnivMessageChatAction}\"')
         elif schubertWalkChatAction is not None and not isinstance(schubertWalkChatAction, SchubertWalkChatAction):
             raise TypeError(f'schubertWalkChatAction argument is malformed: \"{schubertWalkChatAction}\"')
         elif supStreamerChatAction is not None and not isinstance(supStreamerChatAction, SupStreamerChatAction):
@@ -86,11 +86,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         self.__catJamChatAction: AbsChatAction | None = catJamChatAction
         self.__chatLoggerChatAction: AbsChatAction | None = chatLoggerChatAction
         self.__deerForceChatAction: AbsChatAction | None = deerForceChatAction
-        self.__mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = mostRecentAnivMessageRepository
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
         self.__mostRecentChatsRepository: MostRecentChatsRepositoryInterface =  mostRecentChatsRepository
         self.__persistAllUsersChatAction: AbsChatAction | None = persistAllUsersChatAction
         self.__recurringActionsWizardChatAction: AbsChatAction | None = recurringActionsWizardChatAction
+        self.__saveMostRecentAnivMessageChatAction: AbsChatAction | None = saveMostRecentAnivMessageChatAction
         self.__schubertWalkChatAction: AbsChatAction | None = schubertWalkChatAction
         self.__supStreamerChatAction: AbsChatAction | None = supStreamerChatAction
         self.__timber: TimberInterface = timber
@@ -110,10 +110,11 @@ class ChatActionsManager(ChatActionsManagerInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        if self.__mostRecentAnivMessageRepository is not None:
-            await self.__mostRecentAnivMessageRepository.set(
-                message = message.getContent(),
-                twitchChannelId = await message.getTwitchChannelId()
+        if self.__saveMostRecentAnivMessageChatAction is not None:
+            await self.__saveMostRecentAnivMessageChatAction.handleChat(
+                mostRecentChat = mostRecentChat,
+                message = message,
+                user = user
             )
 
             if self.__mostRecentAnivMessageTimeoutHelper is not None:
