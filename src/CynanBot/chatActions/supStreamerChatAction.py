@@ -42,7 +42,12 @@ class SupStreamerChatAction(AbsChatAction):
         message: TwitchMessage,
         user: UserInterface
     ) -> bool:
-        if not user.isSupStreamerEnabled() and not user.isTtsEnabled():
+        if not user.isSupStreamerEnabled() or not user.isTtsEnabled():
+            return False
+
+        streamAlertsManager = self.__streamAlertsManager
+
+        if streamAlertsManager is None:
             return False
 
         now = datetime.now(self.__timeZone)
@@ -55,25 +60,24 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif chatMessage.lower() != supStreamerMessage.lower():
+        elif chatMessage.casefold() != supStreamerMessage.casefold():
             return False
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
 
-        if self.__streamAlertsManager is not None:
-            self.__streamAlertsManager.submitAlert(StreamAlert(
-                soundAlert = None,
+        streamAlertsManager.submitAlert(StreamAlert(
+            soundAlert = None,
+            twitchChannel = user.getHandle(),
+            twitchChannelId = await message.getTwitchChannelId(),
+            ttsEvent = TtsEvent(
+                message = f'{message.getAuthorName()} sup',
                 twitchChannel = user.getHandle(),
-                twitchChannelId = await message.getTwitchChannelId(),
-                ttsEvent = TtsEvent(
-                    message = f'{message.getAuthorName()} sup',
-                    twitchChannel = user.getHandle(),
-                    userId = message.getAuthorId(),
-                    userName = message.getAuthorName(),
-                    donation = None,
-                    provider = TtsProvider.DEC_TALK,
-                    raidInfo = None
-                )
-            ))
+                userId = message.getAuthorId(),
+                userName = message.getAuthorName(),
+                donation = None,
+                provider = TtsProvider.DEC_TALK,
+                raidInfo = None
+            )
+        ))
 
         return True
