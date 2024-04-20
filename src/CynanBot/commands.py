@@ -1106,9 +1106,7 @@ class GetBannedTriviaControllersCommand(AbsCommand):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        userName = ctx.getAuthorName().lower()
-
-        if user.getHandle().lower() != userName and ctx.getAuthorId() != administrator:
+        if ctx.getAuthorId() != administrator:
             self.__timber.log('GetBannedTriviaControllersCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
