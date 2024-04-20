@@ -29,7 +29,7 @@ class TestTriviaQuestionType():
         result: TriviaQuestionType | None = None
 
         with pytest.raises(ValueError):
-            result = TriviaQuestionType.fromStr(None)
+            result = TriviaQuestionType.fromStr(None)  # type: ignore
 
         assert result is None
 

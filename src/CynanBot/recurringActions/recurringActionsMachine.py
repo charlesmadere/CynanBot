@@ -144,16 +144,14 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __fetchViableUsers(self) -> list[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
-        usersToRemove: list[UserInterface] = list()
 
-        for user in users:
-            if not user.isEnabled() or not user.areRecurringActionsEnabled():
-                usersToRemove.append(user)
+        usersToReturn = [
+            user
+            for user in users
+            if user.isEnabled() and user.areRecurringActionsEnabled()
+        ]
 
-        for userToRemove in usersToRemove:
-            users.remove(userToRemove)
-
-        return users
+        return usersToReturn
 
     async def __findDueRecurringAction(
         self,
@@ -224,25 +222,23 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         if not action.isEnabled():
             raise RuntimeError(f'Attempting to process a disabled action: \"{action}\"')
 
-        actionType = action.getActionType()
-
-        if actionType is RecurringActionType.SUPER_TRIVIA:
+        if isinstance(action, SuperTriviaRecurringAction):
             return await self.__processSuperTriviaRecurringAction(
                 user = user,
                 action = action
             )
-        elif actionType is RecurringActionType.WEATHER:
+        elif isinstance(action, WeatherRecurringAction):
             return await self.__processWeatherRecurringAction(
                 user = user,
                 action = action
             )
-        elif actionType is RecurringActionType.WORD_OF_THE_DAY:
+        elif isinstance(action, WordOfTheDayRecurringAction):
             return await self.__processWordOfTheDayRecurringAction(
                 user = user,
                 action = action
             )
         else:
-            raise RuntimeError(f'Unknown RecurringActionType: \"{actionType}\"')
+            raise RuntimeError(f'Unknown RecurringAction type: \"{type(action)=}\"')
 
     async def __processSuperTriviaRecurringAction(
         self,
@@ -295,7 +291,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
-        except:
+        except Exception:
             pass
 
         if weatherReport is None:
@@ -331,7 +327,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         try:
             wordOfTheDayResponse = await self.__wordOfTheDayRepository.fetchWotd(languageEntry)
-        except:
+        except Exception:
             pass
 
         if wordOfTheDayResponse is None:

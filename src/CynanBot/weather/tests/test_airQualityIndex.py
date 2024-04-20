@@ -10,7 +10,7 @@ class TestAirQualityIndex():
         exception: Optional[Exception] = None
 
         try:
-            result = AirQualityIndex.fromInt(None)
+            result = AirQualityIndex.fromInt(None)  # type: ignore
         except Exception as e:
             exception = e
 

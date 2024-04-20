@@ -34,7 +34,7 @@ class TestUtils():
         result: bool | None = None
 
         with pytest.raises(Exception):
-            result = utils.areAllStrsInts(None)
+            result = utils.areAllStrsInts(None)  # type: ignore
 
         assert result is None
 
@@ -47,15 +47,15 @@ class TestUtils():
         assert result is False
 
     def test_areValidBools_withEmptyStringList(self):
-        result = utils.areValidBools([ '', '\n', 'hello', 'world', '' ])
+        result = utils.areValidBools([ '', '\n', 'hello', 'world', '' ])  # type: ignore
         assert result is False
 
     def test_areValidBools_withIntList(self):
-        result = utils.areValidBools([ 100, 200 ])
+        result = utils.areValidBools([ 100, 200 ])  # type: ignore
         assert result is False
 
     def test_areValidBools_withMixedTypeList(self):
-        result = utils.areValidBools([ True, 'hello', 1, False ])
+        result = utils.areValidBools([ True, 'hello', 1, False ])  # type: ignore
         assert result is False
 
     def test_areValidBools_withNone(self):
@@ -75,11 +75,11 @@ class TestUtils():
         assert result is False
 
     def test_areValidStrs_withIntList(self):
-        result = utils.areValidStrs([ 100, 200 ])
+        result = utils.areValidStrs([ 100, 200 ])  # type: ignore
         assert result is False
 
     def test_areValidStrs_withMixedTypeList(self):
-        result = utils.areValidStrs([ True, 'hello', 1, False ])
+        result = utils.areValidStrs([ True, 'hello', 1, False ])  # type: ignore
         assert result is False
 
     def test_areValidStrs_withNone(self):

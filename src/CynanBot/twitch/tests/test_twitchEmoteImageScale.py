@@ -22,7 +22,7 @@ class TestTwitchEmoteImageScale():
         exception: Optional[Exception] = None
 
         try:
-            result = TwitchEmoteImageScale.fromStr(None)
+            result = TwitchEmoteImageScale.fromStr(None)  # type: ignore
         except Exception as e:
             exception = e
 

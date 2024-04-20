@@ -30,7 +30,7 @@ class TestTwitchEmoteType():
         exception: Optional[Exception] = None
 
         try:
-            result = TwitchEmoteType.fromStr(None)
+            result = TwitchEmoteType.fromStr(None)  # type: ignore
         except Exception as e:
             exception = e
 

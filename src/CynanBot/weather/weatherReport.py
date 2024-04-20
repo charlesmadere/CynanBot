@@ -143,7 +143,7 @@ class WeatherReport():
         humidity = f'humidity is {self.getHumidity()}%, '
 
         airQuality = ''
-        if self.hasAirQualityIndex():
+        if self.__airQualityIndex:
             airQuality = f'air quality index is {self.__airQualityIndex.toStr()}, '
 
         uvIndex = ''

@@ -3,8 +3,9 @@ import math
 import os
 import random
 import re
+from collections.abc import Collection
 from datetime import datetime
-from typing import (Any, Dict, Generator, List, Optional, Pattern, Set, Sized,
+from typing import (Any, Dict, Generator, List, Optional, Pattern, Sized,
                     TypeVar, overload)
 from urllib.parse import urlparse
 
@@ -26,7 +27,7 @@ def areAllStrsInts(l: List[str]) -> bool:
 
     return True
 
-def areValidBools(l: Optional[List[Optional[bool]]]) -> TypeGuard[List[bool]]:
+def areValidBools(l: Optional[Collection[Optional[bool]]]) -> TypeGuard[Collection[bool]]:
     if not hasItems(l):
         return False
 
@@ -36,7 +37,7 @@ def areValidBools(l: Optional[List[Optional[bool]]]) -> TypeGuard[List[bool]]:
 
     return True
 
-def areValidStrs(l: Optional[List[Optional[str]]]) -> TypeGuard[List[str]]:
+def areValidStrs(l: Optional[Collection[Optional[str]]]) -> TypeGuard[Collection[str]]:
     if not hasItems(l):
         return False
 
@@ -216,6 +217,8 @@ def getDateTimeFromStr(text: Optional[str]) -> Optional[datetime]:
     if naiveTimeZoneRegEx.fullmatch(text) is not None:
         text = f'{text}+00:00'
 
+    assert isinstance(text, str)
+
     return datetime.fromisoformat(text)
 
 def getFloatFromDict(d: Optional[Dict[str, Any]], key: str, fallback: Optional[float] = None) -> float:
@@ -378,7 +381,7 @@ def numToBool(n: float | None) -> bool:
     return n != 0
 
 def permuteSubArrays(array: List[Any], pos: int = 0) -> Generator[List[Any], None, None]:
-    if not isValidNum(pos):
+    if not isValidInt(pos):
         raise ValueError(f'pos argument is malformed: \"{pos}\"')
 
     if pos >= len(array):
@@ -419,7 +422,7 @@ def safeStrToInt(s: Optional[str]) -> Optional[int]:
 
     try:
         return int(s)
-    except:
+    except Exception:
         return None
 
 def splitLongStringIntoMessages(

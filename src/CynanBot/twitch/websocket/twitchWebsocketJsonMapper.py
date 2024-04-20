@@ -228,7 +228,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchWebsocketPayload(
             event = event,
             session = session,
-            subscription  = subscription
+            subscription = subscription
         )
 
     async def __parseTransport(self, transportJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketTransport]:
@@ -656,7 +656,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         )
 
     async def parseWebsocketSubscription(self, subscriptionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketSubscription]:
-        if not isinstance(subscriptionJson, Dict) or len(subscriptionJson) == 0:
+        if not isinstance(subscriptionJson, dict) or len(subscriptionJson) == 0:
             return None
 
         cost = utils.getIntFromDict(subscriptionJson, 'cost')
@@ -667,6 +667,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(subscriptionJson, 'status'))
         subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(subscriptionJson, 'type'))
         transport = await self.__parseTransport(subscriptionJson.get('transport'))
+
+        assert condition and status and subscriptionType and transport, (
+            f"{condition=} {status=} {subscriptionType=} {transport=}"
+        )
 
         return TwitchWebsocketSubscription(
             cost = cost,

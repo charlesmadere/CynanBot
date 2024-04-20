@@ -12,7 +12,7 @@ class TestTwitchEmoteImageFormat():
         assert result is TwitchEmoteImageFormat.DEFAULT
 
     def test_fromStr_withNone(self):
-        result = TwitchEmoteImageFormat.fromStr(None)
+        result = TwitchEmoteImageFormat.fromStr(None)  # type: ignore
         assert result is TwitchEmoteImageFormat.DEFAULT
 
     def test_fromStr_withPartnerString(self):

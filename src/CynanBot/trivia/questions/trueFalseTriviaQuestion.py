@@ -30,7 +30,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
             triviaType = TriviaQuestionType.TRUE_FALSE
         )
 
-        if not utils.areValidBools(correctAnswers):
+        if not utils.areValidBools(correctAnswers) or not isinstance(correctAnswers, list):
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
 
         self.__correctAnswers: list[bool] = correctAnswers

@@ -10,5 +10,5 @@ class TwitchTimeoutRemodHelperInterface(ABC):
         pass
 
     @abstractmethod
-    async def submitRemodData(self, action: TwitchTimeoutRemodData):
+    async def submitRemodData(self, data: TwitchTimeoutRemodData):
         pass

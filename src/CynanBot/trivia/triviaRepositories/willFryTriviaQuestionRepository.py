@@ -71,7 +71,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\"')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: list[dict[str, Any]] | None = await response.json()
+        jsonResponse: list[dict[str, Any] | Any] | None | Any = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
@@ -81,7 +81,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('WillFryTriviaQuestionRepository', f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
 
-        triviaJson: dict[str, Any] | None = jsonResponse[0]
+        triviaJson: dict[str, Any] | Any = jsonResponse[0]
         if not isinstance(triviaJson, dict) or len(triviaJson) == 0:
             self.__timber.log('WillFryTriviaQuestionRepository', f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Will Fry Trivia\'s JSON data due to null/empty contents: {jsonResponse}')
@@ -131,7 +131,7 @@ class WillFryTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaSource = TriviaSource.WILL_FRY_TRIVIA
                 )
             else:
-                self.__timber.log('WillFryTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
+                self.__timber.log('WillFryTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
                 triviaType = TriviaQuestionType.TRUE_FALSE
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:

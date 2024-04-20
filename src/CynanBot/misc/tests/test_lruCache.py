@@ -1,70 +1,30 @@
+import pytest
 from CynanBot.misc.lruCache import LruCache
 
 
 class TestLruCache():
 
     def test_constructWithNegativeOneCapacity(self):
-        lruCache: LruCache = None
-        exception: Exception = None
-
-        try:
-            lruCache = LruCache(-1)
-        except Exception as e:
-            exception = e
-
-        assert lruCache is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
+        with pytest.raises(ValueError):
+            LruCache(-1)
 
     def test_constructWithOneCapacity(self):
-        lruCache: LruCache = None
-        exception: Exception = None
-
-        try:
-            lruCache = LruCache(1)
-        except Exception as e:
-            exception = e
-
-        assert lruCache is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
+        with pytest.raises(ValueError):
+            LruCache(1)
 
     def test_constructWithThreeCapacity(self):
-        lruCache: LruCache = None
-        exception: Exception = None
+        lruCache = LruCache(3)
 
-        try:
-            lruCache = LruCache(3)
-        except Exception as e:
-            exception = e
-
-        assert lruCache is not None
-        assert exception is None
+        assert isinstance(lruCache, LruCache)
 
     def test_constructWithTwoCapacity(self):
-        lruCache: LruCache = None
-        exception: Exception = None
+        lruCache = LruCache(2)
 
-        try:
-            lruCache = LruCache(2)
-        except Exception as e:
-            exception = e
-
-        assert lruCache is not None
-        assert exception is None
+        assert isinstance(lruCache, LruCache)
 
     def test_constructWithZeroCapacity(self):
-        lruCache: LruCache = None
-        exception: Exception = None
-
-        try:
-            lruCache = LruCache(0)
-        except Exception as e:
-            exception = e
-
-        assert lruCache is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
+        with pytest.raises(ValueError):
+            LruCache(0)
 
     def test_containsWhenEmptyIsFalse(self):
         lruCache = LruCache(3)

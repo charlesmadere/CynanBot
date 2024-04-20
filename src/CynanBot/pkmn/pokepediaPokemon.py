@@ -23,11 +23,11 @@ class PokepediaPokemon():
             raise ValueError(f'generationElementTypes argument is malformed: \"{generationElementTypes}\"')
         elif not isinstance(initialGeneration, PokepediaGeneration):
             raise ValueError(f'initialGeneration argument is malformed: \"{initialGeneration}\"')
-        elif not utils.isValidNum(height):
+        elif not utils.isValidInt(height):
             raise ValueError(f'height argument is malformed: \"{height}\"')
-        elif not utils.isValidNum(pokedexId):
+        elif not utils.isValidInt(pokedexId):
             raise ValueError(f'pokedexId argument is malformed: \"{pokedexId}\"')
-        elif not utils.isValidNum(weight):
+        elif not utils.isValidInt(weight):
             raise ValueError(f'weight argument is malformed: \"{weight}\"')
         elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')
