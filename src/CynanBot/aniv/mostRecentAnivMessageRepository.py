@@ -66,7 +66,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             anivMessage = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
             self.__cache[twitchChannelId] = anivMessage
 
-        if anivMessage is not None and anivMessage.dateTime + self.__maxMessageAge <= now:
+        if anivMessage is not None and anivMessage.dateTime + self.__maxMessageAge >= now:
             return anivMessage.message
         else:
             return None
