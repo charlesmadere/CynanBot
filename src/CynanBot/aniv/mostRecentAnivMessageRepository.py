@@ -172,3 +172,5 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             )
         else:
             await self.__deleteMessage(twitchChannelId = twitchChannelId)
+
+        self.__timber.log('MostRecentAnivMessageRepository', f'Updated most recent aniv message in \"{twitchChannelId}\"')
