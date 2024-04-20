@@ -42,8 +42,8 @@ class TwitchIoChannel(TwitchChannel, TwitchMessageable):
     def getTwitchConfigurationType(self) -> TwitchConfigurationType:
         return TwitchConfigurationType.TWITCHIO
 
+    def __repr__(self) -> str:
+        return self.getTwitchChannelName()
+
     async def send(self, message: str):
         await self.__channel.send(message)
-
-    def __str__(self) -> str:
-        return self.getTwitchChannelName()
