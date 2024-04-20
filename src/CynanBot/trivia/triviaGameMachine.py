@@ -62,7 +62,6 @@ from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
 from CynanBot.trivia.games.triviaGameState import TriviaGameState
 from CynanBot.trivia.games.triviaGameStoreInterface import \
     TriviaGameStoreInterface
-from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.questions.absTriviaQuestion import AbsTriviaQuestion
 from CynanBot.trivia.score.triviaScoreRepositoryInterface import \
     TriviaScoreRepositoryInterface
@@ -796,9 +795,9 @@ class TriviaGameMachine(TriviaGameMachineInterface):
                 gameStatesToRemove.append(state)
 
         for state in gameStatesToRemove:
-            if state.getTriviaGameType() is TriviaGameType.NORMAL:
+            if isinstance(state, TriviaGameState):
                 await self.__removeDeadNormalTriviaGame(state)
-            elif state.getTriviaGameType() is TriviaGameType.SUPER:
+            elif isinstance(state, SuperTriviaGameState):
                 await self.__removeDeadSuperTriviaGame(state)
             else:
                 raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType (gameId=\"{state.getGameId()}\") (twitchChannel=\"{state.getTwitchChannel()}\") (actionId=\"{state.getActionId()}\"): \"{state.getTriviaGameType()}\"')
@@ -907,20 +906,19 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
             try:
                 for action in actions:
-                    triviaActionType = action.getTriviaActionType()
 
-                    if triviaActionType is TriviaActionType.CHECK_ANSWER:
+                    if isinstance(action, CheckAnswerTriviaAction):
                         await self.__handleActionCheckAnswer(action)
-                    elif triviaActionType is TriviaActionType.CHECK_SUPER_ANSWER:
+                    elif isinstance(action, CheckSuperAnswerTriviaAction):
                         await self.__handleActionCheckSuperAnswer(action)
-                    elif triviaActionType is TriviaActionType.CLEAR_SUPER_TRIVIA_QUEUE:
+                    elif isinstance(action, ClearSuperTriviaQueueTriviaAction):
                         await self.__handleActionClearSuperTriviaQueue(action)
-                    elif triviaActionType is TriviaActionType.START_NEW_GAME:
+                    elif isinstance(action, StartNewTriviaGameAction):
                         await self.__handleActionStartNewTriviaGame(action)
-                    elif triviaActionType is TriviaActionType.START_NEW_SUPER_GAME:
+                    elif isinstance(action, StartNewSuperTriviaGameAction):
                         await self.__handleActionStartNewSuperTriviaGame(action)
                     else:
-                        raise UnknownTriviaActionTypeException(f'Unknown TriviaActionType: \"{triviaActionType}\"')
+                        raise UnknownTriviaActionTypeException(f'Unknown TriviaActionType: \"{type(action)=}\"')
             except Exception as e:
                 self.__timber.log('TriviaGameMachine', f'Encountered unknown Exception when looping through actions (queue size: {self.__actionQueue.qsize()}) (actions size: {len(actions)}): {e}', e, traceback.format_exc())
 

@@ -17,7 +17,7 @@ class TestCheerActionType():
         result: CheerActionType | None = None
 
         with pytest.raises(ValueError):
-            result = CheerActionType.fromStr(None)
+            result = CheerActionType.fromStr(None)  # type: ignore
 
         assert result is None
 

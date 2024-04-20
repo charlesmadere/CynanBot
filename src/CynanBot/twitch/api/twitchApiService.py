@@ -171,8 +171,8 @@ class TwitchApiService(TwitchApiServiceInterface):
         if responseStatusCode != 200:
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
             raise GenericNetworkException(f'Encountered non-200 HTTP status code when banning user ({banRequest=}) ({responseStatusCode=}) ({jsonResponse=})')
-        elif not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
+        elif not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({jsonResponse=})')
             raise TwitchJsonException(f'Recieved a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
         data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
@@ -231,22 +231,22 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: Optional[dict[str, Any]] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
         elif responseStatusCode != 202:
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchStatusCodeException(f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: Optional[list[dict[str, Any]]] = jsonResponse.get('data')
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        dataJson: Dict[str, Any] = data[0]
+        dataJson: dict[str, Any] = data[0]
         if not utils.hasItems(dataJson):
             self.__timber.log('TwitchApiService', f'Received a null/empty first \"data\" field element in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty first \"data\" field element in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
@@ -275,6 +275,8 @@ class TwitchApiService(TwitchApiServiceInterface):
             sessionId = utils.getStrFromDict(transportJson, 'session_id'),
             method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
         )
+
+        assert condition and subscriptionType and status, f"{condition=} {subscriptionType=} {status=}"
 
         return TwitchEventSubResponse(
             cost = cost,
@@ -382,12 +384,12 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: Dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
             self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty/invalid JSON response when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
             raise TwitchTokenIsExpiredException(f'TwitchApiService received an error ({responseStatusCode}) when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {jsonResponse}')
@@ -467,11 +469,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching emote details (broadcasterId=\"{broadcasterId}\") (twitchAccessToken=\"{twitchAccessToken}\"): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
@@ -542,11 +544,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
@@ -604,11 +606,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({twitchChannelIds=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if jsonResponse is None or len(jsonResponse) == 0:
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching live user details ({twitchChannelIds=}): {jsonResponse}')
@@ -671,11 +673,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching moderator ({broadcasterId=}) ({userId=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
             self.__timber.log('TwitchApiService', f'Received an error ({responseStatusCode}) when fetching moderator ({broadcasterId=}) ({userId=}): {jsonResponse}')
@@ -716,11 +718,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching tokens (code=\"{code}\"): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching tokens (code=\"{code}\"): {jsonResponse}')
@@ -777,11 +779,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user details ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details ({userId=}): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
@@ -844,11 +846,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
 
-        jsonResponse: dict[str, Any] | None = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user details (userName=\"{userName}\"): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details (userName=\"{userName}\"): {jsonResponse}')
@@ -913,11 +915,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
@@ -978,11 +980,11 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
-            self.__timber.log('TwitchApiService', f'Received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
             self.__timber.log('TwitchApiService', f'Received an error of some kind when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
@@ -1023,7 +1025,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://api.twitch.tv/helix/chat/messages',
+                url = 'https://api.twitch.tv/helix/chat/messages',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId,
@@ -1147,9 +1149,12 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when refreshing tokens ({twitchAccessToken=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | None = await response.json()
+        jsonResponse: dict[str, Any] | Any = await response.json()
         await response.close()
 
+        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response: {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response: {jsonResponse}')
         clientId: str | None = None
         if jsonResponse is not None and utils.isValidStr(jsonResponse.get('client_id')):
             clientId = utils.getStrFromDict(jsonResponse, 'client_id')

@@ -244,20 +244,18 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         if donation is None:
             return None
 
-        donationType = donation.getType()
-
-        if donationType is TtsDonationType.CHEER:
+        if isinstance(donation, TtsCheerDonation):
             return await self.__processCheerDonationPrefix(
                 event = event,
                 donation = donation
             )
-        elif donationType is TtsDonationType.SUBSCRIPTION:
+        elif isinstance(donation, TtsSubscriptionDonation):
             return await self.__processSubcriptionDonationPrefix(
                 event = event,
                 donation = donation
             )
         else:
-            raise RuntimeError(f'donationType is unknown: \"{donationType}\"')
+            raise RuntimeError(f'donation type is unknown: \"{type(donation)=}\"')
 
     async def __processSubcriptionDonationPrefix(
         self,
@@ -275,7 +273,7 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
 
         if donation.getGiftType() is TtsSubscriptionDonationGiftType.GIVER:
             if donation.isAnonymous():
-                return f'anonymous gifted a sub!'
+                return 'anonymous gifted a sub!'
             else:
                 return f'{event.getUserName()} gifted a sub!'
         elif donation.getGiftType() is TtsSubscriptionDonationGiftType.RECEIVER:

@@ -84,7 +84,7 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
-    def getSuperTriviaCheerTriggerAmount(self) -> int | None:
+    def getSuperTriviaCheerTriggerAmount(self) -> float | None:
         pass
 
     @abstractmethod

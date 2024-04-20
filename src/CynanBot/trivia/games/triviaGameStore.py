@@ -4,7 +4,6 @@ from CynanBot.trivia.games.superTriviaGameState import SuperTriviaGameState
 from CynanBot.trivia.games.triviaGameState import TriviaGameState
 from CynanBot.trivia.games.triviaGameStoreInterface import \
     TriviaGameStoreInterface
-from CynanBot.trivia.games.triviaGameType import TriviaGameType
 from CynanBot.trivia.triviaExceptions import UnknownTriviaGameTypeException
 
 
@@ -18,9 +17,9 @@ class TriviaGameStore(TriviaGameStoreInterface):
         if not isinstance(state, AbsTriviaGameState):
             raise TypeError(f'state argument is malformed: \"{state}\"')
 
-        if state.getTriviaGameType() is TriviaGameType.NORMAL:
+        if isinstance(state, TriviaGameState):
             await self.__addNormalGame(state)
-        elif state.getTriviaGameType() is TriviaGameType.SUPER:
+        elif isinstance(state, SuperTriviaGameState):
             await self.__addSuperGame(state)
         else:
             raise UnknownTriviaGameTypeException(f'Unknown TriviaGameType: \"{state.getTriviaGameType()}\"')

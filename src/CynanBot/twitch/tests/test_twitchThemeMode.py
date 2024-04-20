@@ -30,7 +30,7 @@ class TestTwitchThemeMode():
         exception: Optional[Exception] = None
 
         try:
-            result = TwitchThemeMode.fromStr(None)
+            result = TwitchThemeMode.fromStr(None)  # type: ignore
         except Exception as e:
             exception = e
 

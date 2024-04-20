@@ -70,7 +70,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('BongoTriviaQuestionRepository', f'Encountered non-200 HTTP status code: {response.getStatusCode()}')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: list[dict[str, Any]] | None = await response.json()
+        jsonResponse: list[dict[str, Any]] | None | Any = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
@@ -140,7 +140,7 @@ class BongoTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaSource = TriviaSource.BONGO
                 )
             else:
-                self.__timber.log('BongoTriviaQuestionRepository', f'Encountered a multiple choice question that is better suited for true/false')
+                self.__timber.log('BongoTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
                 triviaType = TriviaQuestionType.TRUE_FALSE
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:

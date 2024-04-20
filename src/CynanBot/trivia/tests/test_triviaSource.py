@@ -17,7 +17,7 @@ class TestTriviaSource():
         result: TriviaSource | None = None
 
         with pytest.raises(ValueError):
-            result = TriviaSource.fromStr(None)
+            result = TriviaSource.fromStr(None)  # type: ignore
 
         assert result is None
 

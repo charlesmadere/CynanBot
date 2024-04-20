@@ -127,7 +127,7 @@ class TriviaAnswerCompiler(TriviaAnswerCompilerInterface):
             if bracedAnswerMatch is not None and utils.isValidStr(bracedAnswerMatch.group(1)):
                 cleanedAnswer = bracedAnswerMatch.group(1)
 
-        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1  or self.__multipleChoiceAnswerRegEx.fullmatch(cleanedAnswer) is None:
+        if not utils.isValidStr(cleanedAnswer) or len(cleanedAnswer) != 1 or self.__multipleChoiceAnswerRegEx.fullmatch(cleanedAnswer) is None:
             raise BadTriviaAnswerException(f'answer can\'t be compiled to multiple choice ordinal ({answer=}) ({cleanedAnswer=})')
 
         # this converts the answer 'A' into 0, 'B' into 1, 'C' into 2, and so on...

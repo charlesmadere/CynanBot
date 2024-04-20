@@ -181,7 +181,6 @@ from CynanBot.trivia.events.newTriviaGameEvent import NewTriviaGameEvent
 from CynanBot.trivia.events.outOfTimeSuperTriviaEvent import \
     OutOfTimeSuperTriviaEvent
 from CynanBot.trivia.events.outOfTimeTriviaEvent import OutOfTimeTriviaEvent
-from CynanBot.trivia.events.triviaEventType import TriviaEventType
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
@@ -293,7 +292,7 @@ class CynanBot(
         bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepositoryInterface],
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
-        channelPointSoundHelper: ChannelPointSoundHelperInterface |  None,
+        channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
         chatActionsManager: Optional[ChatActionsManagerInterface],
         chatLogger: ChatLoggerInterface,
         cheerActionHelper: Optional[CheerActionHelperInterface],
@@ -589,7 +588,7 @@ class CynanBot(
             self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
         else:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
-            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider,  timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
@@ -729,7 +728,7 @@ class CynanBot(
 
         try:
             user = await self.__usersRepository.getUserAsync(channel)
-        except:
+        except Exception:
             pass
 
         self.__timber.log('CynanBot', f'Failed to join channel \"{channel}\" (userId=\"{userId}\") (user=\"{user}\"), disabling this user...')
@@ -965,29 +964,28 @@ class CynanBot(
         await self.wait_for_ready()
 
         self.__timber.log('CynanBot', f'Received new trivia event: \"{event}\"')
-        eventType = event.getTriviaEventType()
 
-        if eventType is TriviaEventType.CLEARED_SUPER_TRIVIA_QUEUE:
+        if isinstance(event, ClearedSuperTriviaQueueTriviaEvent):
             await self.__handleClearedSuperTriviaQueueTriviaEvent(event)
-        elif eventType is TriviaEventType.CORRECT_ANSWER:
+        elif isinstance(event, CorrectAnswerTriviaEvent):
             await self.__handleCorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.GAME_FAILED_TO_FETCH_QUESTION:
+        elif isinstance(event, FailedToFetchQuestionTriviaEvent):
             await self.__handleFailedToFetchQuestionTriviaEvent(event)
-        elif eventType is TriviaEventType.GAME_OUT_OF_TIME:
+        elif isinstance(event, OutOfTimeTriviaEvent):
             await self.__handleGameOutOfTimeTriviaEvent(event)
-        elif eventType is TriviaEventType.INCORRECT_ANSWER:
+        elif isinstance(event, IncorrectAnswerTriviaEvent):
             await self.__handleIncorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.INVALID_ANSWER_INPUT:
+        elif isinstance(event, InvalidAnswerInputTriviaEvent):
             await self.__handleInvalidAnswerInputTriviaEvent(event)
-        elif eventType is TriviaEventType.NEW_GAME:
+        elif isinstance(event, NewTriviaGameEvent):
             await self.__handleNewTriviaGameEvent(event)
-        elif eventType is TriviaEventType.NEW_SUPER_GAME:
+        elif isinstance(event, NewSuperTriviaGameEvent):
             await self.__handleNewSuperTriviaGameEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_FAILED_TO_FETCH_QUESTION:
+        elif isinstance(event, FailedToFetchQuestionSuperTriviaEvent):
             await self.__handleFailedToFetchQuestionSuperTriviaEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_CORRECT_ANSWER:
+        elif isinstance(event, CorrectSuperAnswerTriviaEvent):
             await self.__handleSuperGameCorrectAnswerTriviaEvent(event)
-        elif eventType is TriviaEventType.SUPER_GAME_OUT_OF_TIME:
+        elif isinstance(event, OutOfTimeSuperTriviaEvent):
             await self.__handleSuperGameOutOfTimeTriviaEvent(event)
 
     async def __handleClearedSuperTriviaQueueTriviaEvent(self, event: ClearedSuperTriviaQueueTriviaEvent):

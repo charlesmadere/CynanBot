@@ -10,7 +10,6 @@ import aiofiles.ospath
 import CynanBot.misc.utils as utils
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatLogger.absChatMessage import AbsChatMessage
-from CynanBot.chatLogger.chatEventType import ChatEventType
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.chatLogger.chatMessage import ChatMessage
 from CynanBot.chatLogger.raidMessage import RaidMessage
@@ -51,14 +50,12 @@ class ChatLogger(ChatLoggerInterface):
 
         logStatement = f'{message.getSimpleDateTime().getDateAndTimeStr(True)} —'
 
-        if message.getChatEventType() is ChatEventType.MESSAGE:
-            chatMessage: ChatMessage = message
-            logStatement = f'{logStatement} {chatMessage.getUserName()} ({chatMessage.getUserId()}) — {chatMessage.getMsg()}'
-        elif message.getChatEventType() is ChatEventType.RAID:
-            raidMessage: RaidMessage = message
-            logStatement = f'{logStatement} Received raid from {raidMessage.getFromWho()} of {raidMessage.getRaidSizeStr()}!'
+        if isinstance(message, ChatMessage):
+            logStatement = f'{logStatement} {message.getUserName()} ({message.getUserId()}) — {message.getMsg()}'
+        elif isinstance(message, RaidMessage):
+            logStatement = f'{logStatement} Received raid from {message.getFromWho()} of {message.getRaidSizeStr()}!'
         else:
-            raise RuntimeError(f'AbsChatMessage has unknown ChatEventType: \"{message.getChatEventType()}\"')
+            raise RuntimeError(f'AbsChatMessage has unknown type: \"{type(message)=}\"')
 
         return f'{logStatement.strip()}\n'
 

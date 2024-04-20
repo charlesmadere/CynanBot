@@ -27,7 +27,7 @@ class NetworkResponse(ABC):
         pass
 
     @abstractmethod
-    async def json(self) -> dict[str, Any] | None:
+    async def json(self) -> dict[str, Any] | list[Any] | None:
         pass
 
     @abstractmethod

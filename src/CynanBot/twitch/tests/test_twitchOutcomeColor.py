@@ -26,7 +26,7 @@ class TestTwitchOutcomeColor():
         exception: Optional[Exception] = None
 
         try:
-            result = TwitchOutcomeColor.fromStr(None)
+            result = TwitchOutcomeColor.fromStr(None)  # type: ignore
         except Exception as e:
             exception = e
 
