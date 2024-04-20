@@ -32,7 +32,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
-        timeoutProbability: float = 0.5,
+        timeoutProbability: float = 0.69,
         timeoutDuration: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(anivUserIdProvider, AnivUserIdProviderInterface):
@@ -92,7 +92,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
         elif chatterMessage.casefold() != anivMessage.casefold():
             return False
-        elif random.random() > self.__timeoutProbability:
+        elif random.random() <= self.__timeoutProbability:
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
             return False
 
