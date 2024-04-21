@@ -53,7 +53,7 @@ class AddBannedTriviaControllerChatCommand(AbsChatCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add banned trivia controller as no username argument was given. Example: !addbannedtriviacontroller {administrator}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddBannedTriviaControllerCommand', f'Attempted to handle command for {userName}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add banned trivia controller as username argument is malformed. Example: !addbannedtriviacontroller {user.getHandle()}')
