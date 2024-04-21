@@ -56,6 +56,8 @@ from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
     ClearSuperTriviaQueueCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
+from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
+    GetBannedTriviaControllersChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
@@ -85,7 +87,6 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                CutenessCommand, CutenessHistoryCommand,
                                CynanSourceCommand, DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
-                               GetBannedTriviaControllersCommand,
                                GetCheerActionsCommand,
                                GetGlobalTriviaControllersCommand,
                                GetTriviaAnswersCommand,
@@ -575,11 +576,11 @@ class CynanBot(
 
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-            self.__getBannedTriviaControllersCommand: AbsCommand = StubCommand()
+            self.__getBannedTriviaControllersCommand: AbsChatCommand = StubChatCommand()
             self.__removeBannedTriviaControllerCommand: AbsCommand = StubCommand()
         else:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = AddBannedTriviaControllerCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
-            self.__getBannedTriviaControllersCommand: AbsCommand = GetBannedTriviaControllersCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
+            self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsCommand = RemoveBannedTriviaControllerCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
 
         if triviaGameGlobalControllersRepository is None or triviaUtils is None:
@@ -1242,7 +1243,7 @@ class CynanBot(
     @commands.command(name = 'getbannedtriviacontrollers')
     async def command_getbannedtriviacontrollers(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__getBannedTriviaControllersCommand.handleCommand(context)
+        await self.__getBannedTriviaControllersCommand.handleChatCommand(context)
 
     @commands.command(name = 'getcheeractions')
     async def command_getcheeractions(self, ctx: Context):

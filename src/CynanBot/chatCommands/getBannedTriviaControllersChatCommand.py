@@ -1,0 +1,52 @@
+from CynanBot.administratorProviderInterface import \
+    AdministratorProviderInterface
+from CynanBot.chatCommands.absChatCommand import AbsChatCommand
+from CynanBot.timber.timberInterface import TimberInterface
+from CynanBot.trivia.banned.bannedTriviaGameControllersRepositoryInterface import \
+    BannedTriviaGameControllersRepositoryInterface
+from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
+from CynanBot.twitch.configuration.twitchContext import TwitchContext
+from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+
+
+class GetBannedTriviaControllersChatCommand(AbsChatCommand):
+
+    def __init__(
+        self,
+        administratorProvider: AdministratorProviderInterface,
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface,
+        timber: TimberInterface,
+        triviaUtils: TriviaUtilsInterface,
+        twitchUtils: TwitchUtilsInterface,
+        usersRepository: UsersRepositoryInterface
+    ):
+        if not isinstance(administratorProvider, AdministratorProviderInterface):
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
+            raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
+        elif not isinstance(timber, TimberInterface):
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(twitchUtils, TwitchUtilsInterface):
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+        elif not isinstance(usersRepository, UsersRepositoryInterface):
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+
+        self.__administratorProvider: AdministratorProviderInterface = administratorProvider
+        self.__bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface = bannedTriviaGameControllersRepository
+        self.__timber: TimberInterface = timber
+        self.__triviaUtils: TriviaUtilsInterface = triviaUtils
+        self.__twitchUtils: TwitchUtilsInterface = twitchUtils
+        self.__usersRepository: UsersRepositoryInterface = usersRepository
+
+    async def handleChatCommand(self, ctx: TwitchContext):
+        user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        administrator = await self.__administratorProvider.getAdministratorUserId()
+
+        if ctx.getAuthorId() != administrator:
+            self.__timber.log('GetBannedTriviaControllersChatCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
+            return
+
+        controllers = await self.__bannedTriviaGameControllersRepository.getBannedControllers()
+        await self.__twitchUtils.safeSend(ctx, await self.__triviaUtils.getTriviaGameBannedControllers(controllers))
+        self.__timber.log('GetBannedTriviaControllersChatCommand', f'Handled !getbannedtriviacontrollers command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
