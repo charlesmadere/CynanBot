@@ -54,6 +54,7 @@ class User(UserInterface):
         isWeatherEnabled: bool,
         isWelcomeTtsEnabled: bool,
         isWordOfTheDayEnabled: bool,
+        anivMessageCopyTimeoutChance: float | None,
         superTriviaCheerTriggerAmount: float | None,
         superTriviaSubscribeTriggerAmount: float | None,
         maximumTtsCheerAmount: int | None,
@@ -177,6 +178,8 @@ class User(UserInterface):
             raise TypeError(f'isWelcomeTtsEnabled argument is malformed: \"{isWelcomeTtsEnabled}\"')
         elif not utils.isValidBool(isWordOfTheDayEnabled):
             raise TypeError(f'isWordOfTheDayEnabled argument is malformed: \"{isWordOfTheDayEnabled}\"')
+        elif anivMessageCopyTimeoutChance is not None and not utils.isValidNum(anivMessageCopyTimeoutChance):
+            raise TypeError(f'anivMessageCopyTimeoutChance argument is malformed: \"{anivMessageCopyTimeoutChance}\"')
         elif superTriviaCheerTriggerAmount is not None and not utils.isValidNum(superTriviaCheerTriggerAmount):
             raise TypeError(f'superTriviaCheerTriggerAmount argument is malformed: \"{superTriviaCheerTriggerAmount}\"')
         elif superTriviaSubscribeTriggerAmount is not None and not utils.isValidNum(superTriviaSubscribeTriggerAmount):
@@ -289,6 +292,7 @@ class User(UserInterface):
         self.__isWeatherEnabled: bool = isWeatherEnabled
         self.__isWelcomeTtsEnabled: bool = isWelcomeTtsEnabled
         self.__isWordOfTheDayEnabled: bool = isWordOfTheDayEnabled
+        self.__anivMessageCopyTimeoutChance: float | None = anivMessageCopyTimeoutChance
         self.__superTriviaCheerTriggerAmount: float | None = superTriviaCheerTriggerAmount
         self.__superTriviaSubscribeTriggerAmount: float | None = superTriviaSubscribeTriggerAmount
         self.__maximumTtsCheerAmount: int | None = maximumTtsCheerAmount
@@ -334,6 +338,9 @@ class User(UserInterface):
 
     def areSoundAlertsEnabled(self) -> bool:
         return self.__areSoundAlertsEnabled
+
+    def getAnivMessageCopyTimeoutChance(self) -> float | None:
+        return self.__anivMessageCopyTimeoutChance
 
     def getCasualGamePollRewardId(self) -> str | None:
         return self.__casualGamePollRewardId

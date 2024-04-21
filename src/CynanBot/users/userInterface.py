@@ -20,6 +20,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getAnivMessageCopyTimeoutChance(self) -> float | None:
+        pass
+
+    @abstractmethod
     def getCasualGamePollRewardId(self) -> str | None:
         pass
 

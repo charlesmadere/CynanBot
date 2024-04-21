@@ -154,6 +154,11 @@ class UsersRepository(UsersRepositoryInterface):
         supStreamerMessage = utils.getStrFromDict(userJson, 'supStreamerMessage', '')
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
+        anivMessageCopyTimeoutChance: float | None = None
+        if isAnivMessageCopyTimeoutEnabled:
+            if 'anivMessageCopyTimeoutChance' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutChance')):
+                anivMessageCopyTimeoutChance = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutChance')
+
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
         if isTtsEnabled:
@@ -278,6 +283,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWeatherEnabled = isWeatherEnabled,
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
+            anivMessageCopyTimeoutChance = anivMessageCopyTimeoutChance,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             maximumTtsCheerAmount = maximumTtsCheerAmount,
