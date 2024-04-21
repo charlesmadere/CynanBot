@@ -13,7 +13,7 @@ class LanguageEntry():
         iso6391Code: str | None = None,
         wotdApiCode: str | None = None
     ):
-        if not utils.areValidStrs(commandNames):
+        if not utils.areValidStrs(commandNames) or not isinstance(commandNames, list):
             raise ValueError(f'commandNames argument is malformed: \"{commandNames}\"')
         elif not utils.isValidStr(name):
             raise ValueError(f'name argument is malformed: \"{name}\"')

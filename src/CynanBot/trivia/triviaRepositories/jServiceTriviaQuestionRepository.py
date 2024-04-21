@@ -79,7 +79,7 @@ class JServiceTriviaQuestionRepository(AbsTriviaQuestionRepository):
             self.__timber.log('JServiceTriviaQuestionRepository', f'Encountered non-200 HTTP status code: \"{response.getStatusCode()}\" ({response=}) ({fetchOptions=})')
             raise GenericTriviaNetworkException(self.getTriviaSource())
 
-        jsonResponse: list[dict[str, Any]] | None = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():

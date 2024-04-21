@@ -11,6 +11,6 @@ class TranslationHelperInterface(ABC):
     async def translate(
         self,
         text: str,
-        targetLanguageEntry: Optional[LanguageEntry] = None
+        targetLanguage: Optional[LanguageEntry] = None
     ) -> TranslationResponse:
         pass

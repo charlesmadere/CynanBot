@@ -25,7 +25,7 @@ class TestNetworkClientType():
         result: NetworkClientType | None = None
 
         with pytest.raises(ValueError):
-            result = NetworkClientType.fromStr(None)
+            result = NetworkClientType.fromStr(None)  # type: ignore
 
         assert result is None
 

@@ -31,25 +31,25 @@ class ContentScanner(ContentScannerInterface):
         self.__phraseRegEx: Pattern = re.compile(r'[a-z]+', re.IGNORECASE)
         self.__wordRegEx: Pattern = re.compile(r'\w', re.IGNORECASE)
 
-    async def scan(self, string: str | None) -> ContentCode:
-        if string is None:
+    async def scan(self, message: str | None) -> ContentCode:
+        if message is None:
             return ContentCode.IS_NONE
-        elif not isinstance(string, str):
-            raise TypeError(f'string argument is malformed: \"{string}\"')
-        elif len(string) == 0:
+        elif not isinstance(message, str):
+            raise TypeError(f'string argument is malformed: \"{message}\"')
+        elif len(message) == 0:
             return ContentCode.IS_EMPTY
-        elif string.isspace():
+        elif message.isspace():
             return ContentCode.IS_BLANK
 
-        if utils.containsUrl(string):
-            self.__timber.log('ContentScanner', f'Content contains a URL: \"{string}\"')
+        if utils.containsUrl(message):
+            self.__timber.log('ContentScanner', f'Content contains a URL: \"{message}\"')
             return ContentCode.CONTAINS_URL
 
         phrases: set[str] = set()
-        await self.updatePhrasesContent(phrases, string)
+        await self.updatePhrasesContent(phrases, message)
 
         words: set[str] = set()
-        await self.updateWordsContent(words, string)
+        await self.updateWordsContent(words, message)
 
         phrasesAndWordsContentCode = await self.__scanPhrasesAndWords(phrases, words)
         if phrasesAndWordsContentCode is not ContentCode.OK:

@@ -141,7 +141,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('WeatherRepository', f'Received null/empty JSON response when fetching air quality index for \"{location.getName()}\" ({location.getLocationId()})')
             return None
 
@@ -197,10 +197,10 @@ class WeatherRepository(WeatherRepositoryInterface):
             self.__timber.log('WeatherRepository', f'Encountered non-200 HTTP status code when fetching weather for \"{location.getName()}\" ({location.getLocationId()}): {response.getStatusCode()}')
             raise RuntimeError(f'Encountered network error when fetching weather for \"{location.getName()}\" ({location.getLocationId()})')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('WeatherRepository', f'Received null/empty JSON response when fetching weather for \"{location.getName()}\" ({location.getLocationId()}): {jsonResponse}')
             raise RuntimeError(f'WeatherRepository received null/empty JSON response when fetching weather for \"{location.getName()}\" ({location.getLocationId()}): {jsonResponse}')
 

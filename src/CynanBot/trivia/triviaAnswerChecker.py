@@ -74,7 +74,7 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         }
 
         self.__stopWords: set[str] = {
-            'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them',  'what',
+            'i', 'me', 'my', 'myself', 'we', 'ourselves', 'you', 'he', 'him', 'his', 'she', 'they', 'them', 'what',
             'which', 'who', 'whom', 'this', 'that', 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been',
             'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if',
             'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between',
@@ -96,11 +96,11 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
         if not utils.isValidStr(answer):
             return TriviaAnswerCheckResult.INVALID_INPUT
 
-        if triviaQuestion.getTriviaType() is TriviaQuestionType.MULTIPLE_CHOICE:
+        if isinstance(triviaQuestion, MultipleChoiceTriviaQuestion):
             return await self.__checkAnswerMultipleChoice(answer, triviaQuestion)
-        elif triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
+        elif isinstance(triviaQuestion, QuestionAnswerTriviaQuestion):
             return await self.__checkAnswerQuestionAnswer(answer, triviaQuestion, extras)
-        elif triviaQuestion.getTriviaType() is TriviaQuestionType.TRUE_FALSE:
+        elif isinstance(triviaQuestion, TrueFalseTriviaQuestion):
             return await self.__checkAnswerTrueFalse(answer, triviaQuestion)
         else:
             raise UnsupportedTriviaTypeException(f'Unsupported TriviaType: \"{triviaQuestion.getTriviaType()}\"')
@@ -226,8 +226,8 @@ class TriviaAnswerChecker(TriviaAnswerCheckerInterface):
             yield wordList
         else:
             for i in range(len(wordList) - target_length + 1):
-                for w in self.__mergeWords(wordList[i+1:], target_length - 1):
-                    yield [''.join(wordList[0:i+1])] + w
+                for w in self.__mergeWords(wordList[i + 1:], target_length - 1):
+                    yield [''.join(wordList[0:i + 1])] + w
 
     # compare two individual words, returns true if any valid variants match between the two words
     async def __compareWords(self, word1: str, word2: str) -> bool:

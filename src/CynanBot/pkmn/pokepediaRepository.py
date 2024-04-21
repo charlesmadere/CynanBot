@@ -138,10 +138,10 @@ class PokepediaRepository():
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.getStatusCode()}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching machine with ID \"{machineId}\": \"{response.getStatusCode()}\"')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching machine with ID \"{machineId}\": {jsonResponse}')
             raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching machine with ID \"{machineId}\": {jsonResponse}')
 
@@ -163,10 +163,10 @@ class PokepediaRepository():
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.getStatusCode()}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching move with ID \"{moveId}\": \"{response.getStatusCode()}\"')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching move with ID \"{moveId}\": {jsonResponse}')
             raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching move with ID \"{moveId}\": {jsonResponse}')
 
@@ -251,10 +251,10 @@ class PokepediaRepository():
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.getStatusCode()}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": \"{response.getStatusCode()}\"')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": {jsonResponse}')
             raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when fetching Pokemon with ID \"{randomPokemonId}\": {jsonResponse}')
 
@@ -505,10 +505,10 @@ class PokepediaRepository():
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.getStatusCode()}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" move: \"{response.getStatusCode()}\"')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when searching for \"{name}\" move: {jsonResponse}')
             raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when searching for \"{name}\" move: {jsonResponse}')
 
@@ -533,10 +533,10 @@ class PokepediaRepository():
             self.__timber.log('PokepediaRepository', f'Encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.getStatusCode()}\"')
             raise GenericNetworkException(f'PokepediaRepository encountered non-200 HTTP status code from PokeAPI when searching for \"{name}\" Pokemon: \"{response.getStatusCode()}\"')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             self.__timber.log('PokepediaRepository', f'Encountered data error from PokeAPI when searching for \"{name}\" Pokemon: {jsonResponse}')
             raise GenericNetworkException(f'PokepediaRepository encountered data error from PokeAPI when searching for \"{name}\" Pokemon: {jsonResponse}')
 

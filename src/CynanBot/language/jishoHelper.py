@@ -1,5 +1,4 @@
 import traceback
-from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 
 import CynanBot.misc.utils as utils
@@ -57,17 +56,17 @@ class JishoHelper(JishoHelperInterface):
             self.__timber.log('JishoHelper', f'Encountered non-200 HTTP status code when searching Jisho for \"{query}\": {response.getStatusCode()}')
             raise RuntimeError(f'Encountered non-200 HTTP status code when searching Jisho for \"{query}\": {response.getStatusCode()}')
 
-        jsonResponse: Optional[Dict[str, Any]] = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse):
+        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty JSON: {jsonResponse}')
         elif 'meta' not in jsonResponse or utils.getIntFromDict(jsonResponse['meta'], 'status') != 200:
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has an invalid \"status\": {jsonResponse}')
         elif not utils.hasItems(jsonResponse['data']):
             raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty \"data\": {jsonResponse}')
 
-        variants: List[JishoVariant] = list()
+        variants: list[JishoVariant] = list()
         for variantJson in jsonResponse['data']:
             if not utils.hasItems(variantJson['japanese']):
                 raise RuntimeError(f'Jisho\'s response for \"{query}\" has malformed or empty \"japanese\": {jsonResponse}')
@@ -80,14 +79,14 @@ class JishoHelper(JishoHelperInterface):
             if not utils.isValidStr(word) and not utils.isValidStr(furigana):
                 continue
 
-            definitions: List[str] = list()
+            definitions: list[str] = list()
             for definition in variantJson['senses'][0]['english_definitions']:
                 definitions.append(utils.cleanStr(definition))
 
                 if len(definitions) >= self.__definitionsMaxSize:
                     break
 
-            partsOfSpeech: List[str] = list()
+            partsOfSpeech: list[str] = list()
             for partOfSpeech in variantJson['senses'][0]['parts_of_speech']:
                 partsOfSpeech.append(utils.cleanStr(partOfSpeech))
 

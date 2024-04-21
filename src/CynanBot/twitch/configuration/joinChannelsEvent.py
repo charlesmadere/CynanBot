@@ -12,7 +12,7 @@ class JoinChannelsEvent(AbsChannelJoinEvent):
     def __init__(self, channels: List[str]):
         super().__init__(eventType = ChannelJoinEventType.JOIN)
 
-        if not utils.areValidStrs(channels):
+        if not utils.areValidStrs(channels) or not isinstance(channels, list):
             raise ValueError(f'channels argument is malformed: \"{channels}\"')
 
         self.__channels: List[str] = channels

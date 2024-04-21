@@ -84,9 +84,9 @@ def cleanStr(
     s = extraWhiteSpaceRegEx.sub(' ', s).strip()
 
     s = s.replace('\r\n', replacement)\
-            .replace('\r', replacement)\
-            .replace('\n', replacement)\
-            .strip()
+         .replace('\r', replacement)\
+         .replace('\n', replacement)\
+         .strip()
 
     if htmlUnescape:
         s = html.unescape(s)
@@ -532,7 +532,7 @@ def strToBool(s: Optional[str]) -> bool:
     else:
         return False
 
-def strsToBools(l: Optional[List[Optional[str]]]) -> List[bool]:
+def strsToBools(l: Collection[str] | None) -> List[bool]:
     bools: List[bool] = list()
 
     if not hasItems(l):

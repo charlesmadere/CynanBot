@@ -8,6 +8,7 @@ class TestSimpleDateTime():
 
     def test_add(self):
         someDate = utils.getDateTimeFromStr('2023-08-25T04:55:21+00:00')
+        assert someDate
         sdt = SimpleDateTime(someDate) + timedelta(hours = 1)
         assert sdt == (someDate + timedelta(hours = 1))
 
@@ -78,5 +79,6 @@ class TestSimpleDateTime():
 
     def test_sub(self):
         someDate = utils.getDateTimeFromStr('2023-08-25T04:55:21+00:00')
+        assert someDate
         sdt = SimpleDateTime(someDate) - timedelta(minutes = 30)
         assert sdt == (someDate - timedelta(minutes = 30))

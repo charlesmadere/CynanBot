@@ -17,7 +17,7 @@ class TestRecurringActionType():
         result: RecurringActionType | None = None
 
         with pytest.raises(TypeError):
-            result = RecurringActionType.fromStr(None)
+            result = RecurringActionType.fromStr(None)  # type: ignore
 
         assert result is None
 
