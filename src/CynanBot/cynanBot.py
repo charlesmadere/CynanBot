@@ -41,8 +41,8 @@ from CynanBot.channelPointRedemptions.triviaGamePointRedemption import \
 from CynanBot.chatActions.chatActionsManagerInterface import \
     ChatActionsManagerInterface
 from CynanBot.chatCommands.absChatCommand import AbsChatCommand
-from CynanBot.chatCommands.addBannedTriviaControllerCommand import \
-    AddBannedTriviaControllerCommand
+from CynanBot.chatCommands.addBannedTriviaControllerChatCommand import \
+    AddBannedTriviaControllerChatCommand
 from CynanBot.chatCommands.addCheerActionCommand import AddCheerActionCommand
 from CynanBot.chatCommands.addGlobalTriviaControllerCommand import \
     AddGlobalTriviaControllerCommand
@@ -61,6 +61,8 @@ from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
 from CynanBot.chatCommands.getRecurringActionsCommand import \
     GetRecurringActionsCommand
 from CynanBot.chatCommands.giveCutenessCommand import GiveCutenessCommand
+from CynanBot.chatCommands.removeBannedTriviaControllerChatCommand import \
+    RemoveBannedTriviaControllerChatCommand
 from CynanBot.chatCommands.removeRecurringSuperTriviaActionCommand import \
     RemoveRecurringSuperTriviaActionCommand
 from CynanBot.chatCommands.removeRecurringWeatherActionCommand import \
@@ -94,7 +96,6 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                LoremIpsumCommand, MyCutenessHistoryCommand,
                                PbsCommand, PkMonCommand, PkMoveCommand,
                                RaceCommand,
-                               RemoveBannedTriviaControllerCommand,
                                RemoveGlobalTriviaControllerCommand,
                                RemoveTriviaControllerCommand,
                                SetFuntoonTokenCommand, SetTwitchCodeCommand,
@@ -577,11 +578,11 @@ class CynanBot(
         if bannedTriviaGameControllersRepository is None or triviaUtils is None:
             self.__addBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
             self.__getBannedTriviaControllersCommand: AbsChatCommand = StubChatCommand()
-            self.__removeBannedTriviaControllerCommand: AbsCommand = StubCommand()
+            self.__removeBannedTriviaControllerCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__addBannedTriviaControllerCommand: AbsChatCommand = AddBannedTriviaControllerCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
+            self.__addBannedTriviaControllerCommand: AbsChatCommand = AddBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
-            self.__removeBannedTriviaControllerCommand: AbsCommand = RemoveBannedTriviaControllerCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
+            self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
 
         if triviaGameGlobalControllersRepository is None or triviaUtils is None:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = StubChatCommand()
