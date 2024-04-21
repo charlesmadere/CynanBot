@@ -92,7 +92,7 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
         elif chatterMessage.casefold() != anivMessage.casefold():
             return False
-        elif random.random() <= self.__timeoutProbability:
+        elif random.random() > self.__timeoutProbability:
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv!')
             return False
 
