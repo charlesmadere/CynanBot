@@ -12,7 +12,7 @@ from CynanBot.twitch.configuration.twitchContext import TwitchContext
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class ClearSuperTriviaQueueCommand(AbsChatCommand):
+class ClearSuperTriviaQueueChatCommand(AbsChatCommand):
 
     def __init__(
         self,
@@ -67,4 +67,4 @@ class ClearSuperTriviaQueueCommand(AbsChatCommand):
             twitchChannelId = twitchChannelId
         ))
 
-        self.__timber.log('ClearSuperTriviaQueueCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
+        self.__timber.log('ClearSuperTriviaQueueChatCommand', f'Handled !clearsupertriviaqueue command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')

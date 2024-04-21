@@ -53,8 +53,8 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
 from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
-from CynanBot.chatCommands.clearSuperTriviaQueueCommand import \
-    ClearSuperTriviaQueueCommand
+from CynanBot.chatCommands.clearSuperTriviaQueueChatCommand import \
+    ClearSuperTriviaQueueChatCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
 from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
     GetBannedTriviaControllersChatCommand
@@ -660,7 +660,7 @@ class CynanBot(
         if triviaGameMachine is None or triviaIdGenerator is None or triviaUtils is None:
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
+            self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
