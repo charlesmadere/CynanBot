@@ -155,6 +155,7 @@ class UsersRepository(UsersRepositoryInterface):
         twitterUrl = utils.getStrFromDict(userJson, 'twitterUrl', '')
 
         anivMessageCopyTimeoutChance: float | None = None
+        anivMessageCopyTimeoutSeconds: int | None = None
         if isAnivMessageCopyTimeoutEnabled:
             if 'anivMessageCopyTimeoutChance' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutChance')):
                 anivMessageCopyTimeoutChance = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutChance')
