@@ -10,6 +10,8 @@ from twitchio.ext.commands.errors import CommandNotFound
 import CynanBot.misc.utils as utils
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivSettingsRepositoryInterface import \
+    AnivSettingsRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
@@ -56,6 +58,7 @@ from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueChatCommand import \
     ClearSuperTriviaQueueChatCommand
 from CynanBot.chatCommands.commandsChatCommand import CommandsChatCommand
+from CynanBot.chatCommands.cutenessChatCommand import CutenessChatCommand
 from CynanBot.chatCommands.getBannedTriviaControllersChatCommand import \
     GetBannedTriviaControllersChatCommand
 from CynanBot.chatCommands.getRecurringActionsCommand import \
@@ -86,8 +89,8 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
                                AnswerCommand, BanTriviaQuestionCommand,
                                ConfirmCommand, CutenessChampionsCommand,
-                               CutenessCommand, CutenessHistoryCommand,
-                               CynanSourceCommand, DeleteCheerActionCommand,
+                               CutenessHistoryCommand, CynanSourceCommand,
+                               DeleteCheerActionCommand,
                                DeleteTriviaAnswersCommand, DiscordCommand,
                                GetCheerActionsCommand,
                                GetGlobalTriviaControllersCommand,
@@ -289,9 +292,10 @@ class CynanBot(
         eventLoop: AbstractEventLoop,
         additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface | None,
         administratorProvider: AdministratorProviderInterface,
+        anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
-        bannedTriviaGameControllersRepository: Optional[BannedTriviaGameControllersRepositoryInterface],
+        bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
         channelJoinHelper: ChannelJoinHelper,
         channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
@@ -373,6 +377,8 @@ class CynanBot(
             raise TypeError(f'additionalTriviaAnswersRepository argument is malformed: \"{additionalTriviaAnswersRepository}\"')
         elif not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProviderInterface argument is malformed: \"{administratorProvider}\"')
+        elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
+            raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
@@ -535,7 +541,7 @@ class CynanBot(
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)
@@ -609,13 +615,13 @@ class CynanBot(
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
-            self.__cutenessCommand: AbsCommand = StubCommand()
+            self.__cutenessCommand: AbsChatCommand = StubChatCommand()
             self.__cutenessChampionsCommand: AbsCommand = StubCommand()
             self.__cutenessHistoryCommand: AbsCommand = StubCommand()
             self.__giveCutenessCommand: AbsChatCommand = StubChatCommand()
             self.__myCutenessHistoryCommand: AbsCommand = StubCommand()
         else:
-            self.__cutenessCommand: AbsCommand = CutenessCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
+            self.__cutenessCommand: AbsChatCommand = CutenessChatCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__cutenessChampionsCommand: AbsCommand = CutenessChampionsCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, usersRepository)
             self.__cutenessHistoryCommand: AbsCommand = CutenessHistoryCommand(cutenessRepository, cutenessUtils, timber, twitchUtils, userIdsRepository, usersRepository)
             self.__giveCutenessCommand: AbsChatCommand = GiveCutenessCommand(cutenessRepository, timber, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
@@ -1318,7 +1324,7 @@ class CynanBot(
     @commands.command(name = 'removebannedtriviacontroller')
     async def command_removebannedtriviacontroller(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__removeBannedTriviaControllerCommand.handleCommand(context)
+        await self.__removeBannedTriviaControllerCommand.handleChatCommand(context)
 
     @commands.command(name = 'removeglobaltriviacontroller')
     async def command_removeglobaltriviacontroller(self, ctx: Context):

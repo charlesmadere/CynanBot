@@ -7,6 +7,9 @@ from typing import Optional
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivSettingsRepository import AnivSettingsRepository
+from CynanBot.aniv.anivSettingsRepositoryInterface import \
+    AnivSettingsRepositoryInterface
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
@@ -532,6 +535,10 @@ ttsManager: TtsManagerInterface | None = TtsManager(
 
 anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
 
+anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
+    settingsJsonReader = JsonFileReader('anivSettingsRepository.json')
+)
+
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
     timber = timber
@@ -540,6 +547,7 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
 if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivSettingsRepository = anivSettingsRepository,
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
@@ -658,6 +666,7 @@ cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = None,
     administratorProvider = administratorProvider,
+    anivSettingsRepository = anivSettingsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,

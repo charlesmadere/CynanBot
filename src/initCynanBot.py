@@ -10,6 +10,9 @@ from CynanBot.administratorProviderInterface import \
 from CynanBot.aniv.anivContentScanner import AnivContentScanner
 from CynanBot.aniv.anivContentScannerInterface import \
     AnivContentScannerInterface
+from CynanBot.aniv.anivSettingsRepository import AnivSettingsRepository
+from CynanBot.aniv.anivSettingsRepositoryInterface import \
+    AnivSettingsRepositoryInterface
 from CynanBot.aniv.anivUserIdProvider import AnivUserIdProvider
 from CynanBot.aniv.anivUserIdProviderInterface import \
     AnivUserIdProviderInterface
@@ -917,11 +920,15 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
 )
 
 
-#################
-## Aniv things ##
-#################
+#################################
+## Aniv initialization section ##
+#################################
 
 anivUserIdProvider: AnivUserIdProviderInterface = AnivUserIdProvider()
+
+anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository(
+    settingsJsonReader = JsonFileReader('anivSettingsRepository.json')
+)
 
 anivContentScanner: AnivContentScannerInterface = AnivContentScanner(
     contentScanner = contentScanner,
@@ -936,6 +943,7 @@ mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
 if mostRecentAnivMessageRepository is not None:
     mostRecentAnivMessageTimeoutHelper = MostRecentAnivMessageTimeoutHelper(
+        anivSettingsRepository = anivSettingsRepository,
         anivUserIdProvider = anivUserIdProvider,
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
         timber = timber,
@@ -1195,6 +1203,7 @@ cynanBot = CynanBot(
     eventLoop = eventLoop,
     additionalTriviaAnswersRepository = additionalTriviaAnswersRepository,
     administratorProvider = administratorProvider,
+    anivSettingsRepository = anivSettingsRepository,
     authRepository = authRepository,
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,

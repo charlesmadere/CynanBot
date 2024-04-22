@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timezone, tzinfo
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.mostRecentAnivMessage import MostRecentAnivMessage
@@ -16,21 +16,17 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        maxMessageAge: timedelta = timedelta(minutes = 2, seconds = 30),
         timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(maxMessageAge, timedelta):
-            raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__maxMessageAge: timedelta = maxMessageAge
         self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
@@ -57,22 +53,19 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
 
         await connection.close()
 
-    async def get(self, twitchChannelId: str) -> str | None:
+    async def get(self, twitchChannelId: str) -> MostRecentAnivMessage | None:
         if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        anivMessage = self.__cache.get(twitchChannelId, None)
+        message: MostRecentAnivMessage | None
 
-        if anivMessage is None:
-            anivMessage = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
-            self.__cache[twitchChannelId] = anivMessage
-
-        now = datetime.now(self.__timeZone)
-
-        if anivMessage is not None and anivMessage.dateTime + self.__maxMessageAge >= now:
-            return anivMessage.message
+        if twitchChannelId in self.__cache:
+            message = self.__cache.get(twitchChannelId, None)
         else:
-            return None
+            message = await self.__getFromDatabase(twitchChannelId = twitchChannelId)
+            self.__cache[twitchChannelId] = message
+
+        return message
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()

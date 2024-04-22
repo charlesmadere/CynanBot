@@ -1,5 +1,7 @@
 from CynanBot.administratorProviderInterface import \
     AdministratorProviderInterface
+from CynanBot.aniv.anivSettingsRepositoryInterface import \
+    AnivSettingsRepositoryInterface
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
 from CynanBot.authRepository import AuthRepository
@@ -52,6 +54,7 @@ class ClearCachesChatCommand(AbsChatCommand):
     def __init__(
         self,
         administratorProvider: AdministratorProviderInterface,
+        anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
         channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
@@ -79,6 +82,8 @@ class ClearCachesChatCommand(AbsChatCommand):
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
             raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+        elif anivSettingsRepository is not None and not isinstance(anivSettingsRepository, AnivSettingsRepositoryInterface):
+            raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
@@ -135,6 +140,7 @@ class ClearCachesChatCommand(AbsChatCommand):
 
         self.__clearables: list[Clearable | None] = list()
         self.__clearables.append(administratorProvider)
+        self.__clearables.append(anivSettingsRepository)
         self.__clearables.append(authRepository)
         self.__clearables.append(bannedWordsRepository)
         self.__clearables.append(cheerActionsRepository)
