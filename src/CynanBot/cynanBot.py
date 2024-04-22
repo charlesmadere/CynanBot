@@ -1214,7 +1214,7 @@ class CynanBot(
     @commands.command(name = 'cuteness', aliases = [ 'CUTENESS' ])
     async def command_cuteness(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__cutenessCommand.handleCommand(context)
+        await self.__cutenessCommand.handleChatCommand(context)
 
     @commands.command(name = 'cutenesschampions')
     async def command_cutenesschampions(self, ctx: Context):
