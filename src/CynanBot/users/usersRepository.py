@@ -159,6 +159,9 @@ class UsersRepository(UsersRepositoryInterface):
             if 'anivMessageCopyTimeoutChance' in userJson and utils.isValidNum(userJson.get('anivMessageCopyTimeoutChance')):
                 anivMessageCopyTimeoutChance = utils.getFloatFromDict(userJson, 'anivMessageCopyTimeoutChance')
 
+            if 'anivMessageCopyTimeoutSeconds' in userJson and utils.isValidInt(userJson.get('anivMessageCopyTimeoutSeconds')):
+                anivMessageCopyTimeoutSeconds = utils.getIntFromDict(userJson, 'anivMessageCopyTimeoutSeconds')
+
         maximumTtsCheerAmount: int | None = None
         minimumTtsCheerAmount: int | None = None
         if isTtsEnabled:
@@ -284,6 +287,7 @@ class UsersRepository(UsersRepositoryInterface):
             isWelcomeTtsEnabled = isWelcomeTtsEnabled,
             isWordOfTheDayEnabled = isWordOfTheDayEnabled,
             anivMessageCopyTimeoutChance = anivMessageCopyTimeoutChance,
+            anivMessageCopyTimeoutSeconds = anivMessageCopyTimeoutSeconds,
             superTriviaCheerTriggerAmount = superTriviaCheerTriggerAmount,
             superTriviaSubscribeTriggerAmount = superTriviaSubscribeTriggerAmount,
             maximumTtsCheerAmount = maximumTtsCheerAmount,

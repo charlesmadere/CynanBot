@@ -24,6 +24,10 @@ class UserInterface(ABC):
         pass
 
     @abstractmethod
+    def getAnivMessageCopyTimeoutSeconds(self) -> int | None:
+        pass
+
+    @abstractmethod
     def getCasualGamePollRewardId(self) -> str | None:
         pass
 
