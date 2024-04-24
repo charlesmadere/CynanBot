@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pytest
 
@@ -11,9 +11,9 @@ class TestIncrementalJsonBuilder():
     async def test_buildDictionariesOrAppendInternalJsonCache_withEmptyJsonStructure(self):
         builder = IncrementalJsonBuilder()
         result = await builder.buildDictionariesOrAppendInternalJsonCache('{}')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 1
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert len(result[0]) == 0
 
     @pytest.mark.asyncio
@@ -26,16 +26,12 @@ class TestIncrementalJsonBuilder():
     async def test_buildDictionariesOrAppendInternalJsonCache_withEmptyHalfJsonStructure(self):
         builder = IncrementalJsonBuilder()
 
-        result: Optional[List[Dict[Any, Any]]] = None
-        exception: Optional[Exception] = None
+        result: list[dict[Any, Any]] | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = await builder.buildDictionariesOrAppendInternalJsonCache('}')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     @pytest.mark.asyncio
     async def test_buildDictionariesOrAppendInternalJsonCache_withNone(self):
@@ -47,9 +43,9 @@ class TestIncrementalJsonBuilder():
     async def test_buildDictionariesOrAppendInternalJsonCache_withThreeIncrementalJsonStructures(self):
         builder = IncrementalJsonBuilder()
         result = await builder.buildDictionariesOrAppendInternalJsonCache('{}{\"wor')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 1
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert len(result[0]) == 0
 
         result = await builder.buildDictionariesOrAppendInternalJsonCache('d\":')
@@ -59,28 +55,28 @@ class TestIncrementalJsonBuilder():
         assert result is None
 
         result = await builder.buildDictionariesOrAppendInternalJsonCache('}{}{}{\"is_mod\":true')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 3
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert len(result[0]) == 1
         assert 'word' in result[0]
         assert isinstance(result[0]['word'], str)
         assert result[0]['word'] == 'test'
-        assert isinstance(result[1], Dict)
+        assert isinstance(result[1], dict)
         assert len(result[1]) == 0
-        assert isinstance(result[2], Dict)
+        assert isinstance(result[2], dict)
         assert len(result[2]) == 0
 
         result = await builder.buildDictionariesOrAppendInternalJsonCache(',\"stats\":{\"rank\":50}}')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 1
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert 'is_mod' in result[0]
         assert isinstance(result[0]['is_mod'], bool)
         assert result[0]['is_mod'] is True
 
         assert 'stats' in result[0]
-        assert isinstance(result[0]['stats'], Dict)
+        assert isinstance(result[0]['stats'], dict)
         assert len(result[0]['stats']) == 1
         assert 'rank' in result[0]['stats']
         assert isinstance(result[0]['stats']['rank'], int)
@@ -90,22 +86,22 @@ class TestIncrementalJsonBuilder():
     async def test_buildDictionariesOrAppendInternalJsonCache_withTwoEmptyJsonStructures(self):
         builder = IncrementalJsonBuilder()
         result = await builder.buildDictionariesOrAppendInternalJsonCache('{}{}')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 2
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert len(result[0]) == 0
-        assert isinstance(result[1], Dict)
+        assert isinstance(result[1], dict)
         assert len(result[1]) == 0
 
     @pytest.mark.asyncio
     async def test_buildDictionariesOrAppendInternalJsonCache_withTwoAndAHalfEmptyJsonStructures(self):
         builder = IncrementalJsonBuilder()
         result = await builder.buildDictionariesOrAppendInternalJsonCache('{}{}{')
-        assert isinstance(result, List)
+        assert isinstance(result, list)
         assert len(result) == 2
-        assert isinstance(result[0], Dict)
+        assert isinstance(result[0], dict)
         assert len(result[0]) == 0
-        assert isinstance(result[1], Dict)
+        assert isinstance(result[1], dict)
         assert len(result[1]) == 0
 
     @pytest.mark.asyncio
