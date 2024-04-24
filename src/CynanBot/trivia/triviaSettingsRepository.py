@@ -54,7 +54,7 @@ class TriviaSettingsRepository(TriviaSettingsRepositoryInterface):
 
             triviaSources[triviaSource] = weight
 
-        if not utils.hasItems(triviaSources):
+        if len(triviaSources) == 0:
             raise RuntimeError(f'triviaSources is empty: \"{triviaSources}\"')
 
         return triviaSources
