@@ -163,6 +163,9 @@ class GlacialTriviaQuestionRepository(
 
         self.__areTablesCreated = True
 
+    async def __triviaDatabaseFileExists(self) -> bool:
+        return await aiofiles.ospath.exists(self.__triviaDatabaseFile)
+
     async def __fetchAnyTriviaQuestion(
         self,
         fetchOptions: TriviaFetchOptions
@@ -187,10 +190,10 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any trivia question in the database! ({fetchOptions=})')
             return None
 
-        category: str | None = await self.__triviaQuestionCompiler.compileCategory(row[0])
+        category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
         originalTriviaSource = TriviaSource.fromStr(row[2])
-        question: str = await self.__triviaQuestionCompiler.compileQuestion(row[3])
+        question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
         triviaType = TriviaQuestionType.fromStr(row[6])
@@ -283,10 +286,10 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.MULTIPLE_CHOICE} or {TriviaQuestionType.TRUE_FALSE} question in the database! ({fetchOptions=})')
             return None
 
-        category: str | None = await self.__triviaQuestionCompiler.compileCategory(row[0])
+        category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
         originalTriviaSource = TriviaSource.fromStr(row[2])
-        question: str = await self.__triviaQuestionCompiler.compileQuestion(row[3])
+        question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
         triviaType = TriviaQuestionType.fromStr(row[6])
@@ -363,10 +366,10 @@ class GlacialTriviaQuestionRepository(
             self.__timber.log('GlacialTriviaQuestionRepository', f'Unable to find any {TriviaQuestionType.QUESTION_ANSWER} question in the database! ({fetchOptions=})')
             return None
 
-        category: str | None = await self.__triviaQuestionCompiler.compileCategory(row[0])
+        category = await self.__triviaQuestionCompiler.compileCategory(row[0])
         categoryId: str | None = row[1]
         originalTriviaSource = TriviaSource.fromStr(row[2])
-        question: str = await self.__triviaQuestionCompiler.compileQuestion(row[3])
+        question = await self.__triviaQuestionCompiler.compileQuestion(row[3])
         triviaDifficulty = TriviaDifficulty.fromStr(row[4])
         triviaId: str = row[5]
 
@@ -396,7 +399,7 @@ class GlacialTriviaQuestionRepository(
         if not isinstance(fetchOptions, TriviaFetchOptions):
             raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
+        if not await self.__triviaDatabaseFileExists():
             raise FileNotFoundError(f'Glacial trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
         question: AbsTriviaQuestion | None = None
@@ -509,29 +512,30 @@ class GlacialTriviaQuestionRepository(
     async def hasQuestionSetAvailable(self) -> bool:
         hasQuestionSetAvailable = self.__hasQuestionSetAvailable
 
-        if hasQuestionSetAvailable is None:
-            hasQuestionSetAvailable = await aiofiles.ospath.exists(self.__triviaDatabaseFile)
+        if hasQuestionSetAvailable is not None:
+            return hasQuestionSetAvailable
 
-            if hasQuestionSetAvailable:
-                twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
-                twitchChannelId = await self.__getTwitchChannelId()
+        hasQuestionSetAvailable = await self.__triviaDatabaseFileExists()
 
-                multipleChoiceOrTrueFalse = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(TriviaFetchOptions(
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId,
-                    questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
-                ))
+        if hasQuestionSetAvailable:
+            twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchChannelId = await self.__getTwitchChannelId()
 
-                questionAnswer = await self.__fetchQuestionAnswerTriviaQuestion(TriviaFetchOptions(
-                    twitchChannel = twitchChannel,
-                    twitchChannelId = twitchChannelId,
-                    questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
-                ))
+            multipleChoiceOrTrueFalse = await self.__fetchMultipleChoiceOrTrueFalseTriviaQuestion(TriviaFetchOptions(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId,
+                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.NOT_ALLOWED
+            ))
 
-                hasQuestionSetAvailable = multipleChoiceOrTrueFalse is not None and questionAnswer is not None
+            questionAnswer = await self.__fetchQuestionAnswerTriviaQuestion(TriviaFetchOptions(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId,
+                questionAnswerTriviaConditions = QuestionAnswerTriviaConditions.REQUIRED
+            ))
 
-            self.__hasQuestionSetAvailable = hasQuestionSetAvailable
+            hasQuestionSetAvailable = multipleChoiceOrTrueFalse is not None and questionAnswer is not None
 
+        self.__hasQuestionSetAvailable = hasQuestionSetAvailable
         return hasQuestionSetAvailable
 
     async def remove(self, triviaId: str, originalTriviaSource: TriviaSource):
@@ -541,6 +545,25 @@ class GlacialTriviaQuestionRepository(
             raise TypeError(f'originalTriviaSource argument is malformed: \"{originalTriviaSource}\"')
 
         connection = await aiosqlite.connect(self.__triviaDatabaseFile)
+
+        cursor = await connection.execute(
+            '''
+                DELETE FROM glacialAnswers
+                WHERE originalTriviaSource = $1 AND triviaId = $2
+            ''',
+            (originalTriviaSource.toStr(), triviaId, )
+        )
+        await cursor.close()
+
+        cursor = await connection.execute(
+            '''
+                DELETE FROM glacialQuestions
+                WHERE originalTriviaSource = $1 AND triviaId = $2
+            ''',
+            (originalTriviaSource.toStr(), triviaId, )
+        )
+        await cursor.close()
+
         cursor = await connection.execute(
             '''
                 DELETE FROM glacialResponses
@@ -548,11 +571,10 @@ class GlacialTriviaQuestionRepository(
             ''',
             (originalTriviaSource.toStr(), triviaId, )
         )
-
         await cursor.close()
+
         await connection.commit()
         await connection.close()
-
         self.__timber.log('GlacialTriviaQuestionRepository', f'Removed trivia question ({triviaId=}) ({originalTriviaSource=})')
 
     async def store(self, question: AbsTriviaQuestion) -> bool:
