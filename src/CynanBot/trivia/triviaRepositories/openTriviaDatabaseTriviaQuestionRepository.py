@@ -1,5 +1,5 @@
 import traceback
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.clearable import Clearable
@@ -63,55 +63,52 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
 
         self.__isDatabaseReady: bool = False
-        self.__cache: Dict[str, Optional[str]] = dict()
+        self.__cache: dict[str, str | None] = dict()
 
     async def clearCaches(self):
         self.__cache.clear()
         self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', 'Caches cleared')
 
-    async def __fetchNewSessionToken(self, twitchChannel: str) -> str:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __fetchNewSessionToken(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Fetching new session token for \"{twitchChannel}\"...')
+        self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Fetching new session token for \"{twitchChannelId}\"...')
 
         clientSession = await self.__networkClientProvider.get()
 
         try:
             response = await clientSession.get('https://opentdb.com/api_token.php?command=request')
         except GenericNetworkException as e:
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error when fetching Open Trivia Database\'s session token for twitchChannel: \"{twitchChannel}\": {e}', e, traceback.format_exc())
-            raise BadTriviaSessionTokenException(f'Encountered network error when fetching Open Trivia Database\'s session token for twitchChannel: \"{twitchChannel}\": {e}')
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered network error when fetching Open Trivia Database\'s session token ({twitchChannelId=}): {e}', e, traceback.format_exc())
+            raise BadTriviaSessionTokenException(f'Encountered network error when fetching Open Trivia Database\'s session token ({twitchChannelId=}): {e}')
 
         if response.getStatusCode() != 200:
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token for twitchChannel: \"{twitchChannel}\"')
-            raise BadTriviaSessionTokenException(f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token for twitchChannel: \"{twitchChannel}\"')
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
+            raise BadTriviaSessionTokenException(f'Encountered non-200 HTTP status code ({response.getStatusCode()}) when fetching Open Trivia Database\'s session token ({twitchChannelId=})')
 
         jsonResponse = await response.json()
         await response.close()
 
-        if await self._triviaSettingsRepository.isDebugLoggingEnabled():
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'{jsonResponse}')
-
-        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to null/empty JSON contents: {jsonResponse}')
-            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to null/empty JSON contents: {jsonResponse}')
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to null/empty JSON contents: {jsonResponse}')
+            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to null/empty JSON contents: {jsonResponse}')
         elif utils.getIntFromDict(jsonResponse, 'response_code', fallback = -1) != 0:
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to bad \"response_code\" value: {jsonResponse}')
-            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to bad \"response_code\" value: {jsonResponse}')
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to bad \"response_code\" value: {jsonResponse}')
+            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to bad \"response_code\" value: {jsonResponse}')
         elif not utils.isValidStr(jsonResponse.get('token')):
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to bad \"token\" value: {jsonResponse}')
-            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannel \"{twitchChannel}\" due to bad \"token\" value: {jsonResponse}')
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to bad \"token\" value: {jsonResponse}')
+            raise BadTriviaSessionTokenException(f'Rejecting Open Trivia Database\'s session token JSON data for twitchChannelId \"{twitchChannelId}\" due to bad \"token\" value: {jsonResponse}')
 
         return utils.getStrFromDict(jsonResponse, 'token')
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
-            raise ValueError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
+            raise TypeError(f'fetchOptions argument is malformed: \"{fetchOptions}\"')
 
-        self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Fetching trivia question... (fetchOptions={fetchOptions})')
+        self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
-        sessionToken = await self.__getOrFetchNewSessionToken(fetchOptions.getTwitchChannel())
+        sessionToken = await self.__getOrFetchNewSessionToken(fetchOptions.getTwitchChannelId())
         clientSession = await self.__networkClientProvider.get()
 
         try:
@@ -133,21 +130,21 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         if await self._triviaSettingsRepository.isDebugLoggingEnabled():
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'{jsonResponse}')
 
-        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to null/empty JSON contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to null/empty JSON contents: {jsonResponse}')
         elif utils.getIntFromDict(jsonResponse, 'response_code', fallback = -1) != 0:
-            await self.__removeSessionToken(fetchOptions.getTwitchChannel())
+            await self.__removeSessionToken(fetchOptions.getTwitchChannelId())
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to bad \"response_code\" value: {jsonResponse}')
             raise GenericTriviaNetworkException(self.getTriviaSource())
-        elif not utils.hasItems(jsonResponse.get('results')):
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to missing/null/empty \"results\" array: {jsonResponse}')
-            raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to missing/null/empty \"results\" array: {jsonResponse}')
+        elif not isinstance(jsonResponse.get('results'), list):
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to missing/null \"results\" array: {jsonResponse}')
+            raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to missing/null \"results\" array: {jsonResponse}')
 
-        triviaJson: Optional[Dict[str, Any]] = jsonResponse['results'][0]
+        triviaJson: dict[str, Any] | None = jsonResponse['results'][0]
 
-        if not utils.hasItems(triviaJson):
-            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to null/empty \"results\" contents: {jsonResponse}')
+        if not isinstance(triviaJson, dict) or len(triviaJson) == 0:
+            self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to missing/null/empty \"results\" contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON API data due to null/empty contents: {jsonResponse}')
 
         triviaDifficulty = TriviaDifficulty.fromStr(utils.getStrFromDict(triviaJson, 'difficulty', fallback = ''))
@@ -174,7 +171,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 response = utils.getStrFromDict(triviaJson, 'correct_answer'),
                 htmlUnescape = True
             )
-            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings: list[str] = list()
             correctAnswerStrings.append(correctAnswer)
 
             incorrectAnswers = await self.__triviaQuestionCompiler.compileResponses(
@@ -205,7 +202,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaJson, 'correct_answer')
-            correctAnswerBools: List[bool] = list()
+            correctAnswerBools: list[bool] = list()
             correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
@@ -225,26 +222,26 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         await self.__initDatabaseTable()
         return await self.__backingDatabase.getConnection()
 
-    async def __getOrFetchNewSessionToken(self, twitchChannel: str) -> Optional[str]:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __getOrFetchNewSessionToken(self, twitchChannelId: str) -> str | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        sessionToken = await self.__retrieveSessionToken(twitchChannel)
+        sessionToken = await self.__retrieveSessionToken(twitchChannelId)
 
         if not utils.isValidStr(sessionToken):
             try:
-                sessionToken = await self.__fetchNewSessionToken(twitchChannel)
+                sessionToken = await self.__fetchNewSessionToken(twitchChannelId)
             except BadTriviaSessionTokenException:
                 pass
 
         await self.__storeSessionToken(
             sessionToken = sessionToken,
-            twitchChannel = twitchChannel
+            twitchChannelId = twitchChannelId
         )
 
         return sessionToken
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:
@@ -265,7 +262,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 '''
                     CREATE TABLE IF NOT EXISTS opentriviadatabasesessiontokens (
                         sessiontoken text DEFAULT NULL,
-                        twitchchannel public.citext NOT NULL PRIMARY KEY
+                        twitchchannelid text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -274,7 +271,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
                 '''
                     CREATE TABLE IF NOT EXISTS opentriviadatabasesessiontokens (
                         sessiontoken TEXT DEFAULT NULL,
-                        twitchchannel TEXT NOT NULL PRIMARY KEY COLLATE NOCASE
+                        twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -283,20 +280,20 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         await connection.close()
 
-    async def __removeSessionToken(self, twitchChannel: str):
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __removeSessionToken(self, twitchChannelId: str):
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         await self.__storeSessionToken(
             sessionToken = None,
-            twitchChannel = twitchChannel
+            twitchChannelId = twitchChannelId
         )
 
-    async def __retrieveSessionToken(self, twitchChannel: str) -> Optional[str]:
-        if not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+    async def __retrieveSessionToken(self, twitchChannelId: str) -> str | None:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        sessionToken = self.__cache.get(twitchChannel.lower())
+        sessionToken = self.__cache.get(twitchChannelId, None)
 
         if utils.isValidStr(sessionToken):
             return sessionToken
@@ -305,53 +302,53 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
         record = await connection.fetchRow(
             '''
                 SELECT sessiontoken FROM opentriviadatabasesessiontokens
-                WHERE twitchchannel = $1
+                WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannel
+            twitchChannelId
         )
 
         await connection.close()
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             sessionToken = record[0]
 
-        self.__cache[twitchChannel.lower()] = sessionToken
+        self.__cache[twitchChannelId] = sessionToken
 
         return sessionToken
 
     async def __storeSessionToken(
         self,
-        sessionToken: Optional[str],
-        twitchChannel: str
+        sessionToken: str | None,
+        twitchChannelId: str
     ):
         if sessionToken is not None and not isinstance(sessionToken, str):
-            raise ValueError(f'sessionToken argument is malformed: \"{sessionToken}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise ValueError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+            raise TypeError(f'sessionToken argument is malformed: \"{sessionToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         connection = await self.__getDatabaseConnection()
 
         if utils.isValidStr(sessionToken):
             await connection.execute(
                 '''
-                    INSERT INTO opentriviadatabasesessiontokens (sessiontoken, twitchchannel)
+                    INSERT INTO opentriviadatabasesessiontokens (sessiontoken, twitchchannelid)
                     VALUES ($1, $2)
-                    ON CONFLICT (twitchchannel) DO UPDATE SET sessiontoken = EXCLUDED.sessiontoken
+                    ON CONFLICT (twitchchannelid) DO UPDATE SET sessiontoken = EXCLUDED.sessiontoken
                 ''',
-                sessionToken, twitchChannel
+                sessionToken, twitchChannelId
             )
 
-            self.__cache[twitchChannel.lower()] = sessionToken
+            self.__cache[twitchChannelId] = sessionToken
         else:
             await connection.execute(
                 '''
                     DELETE FROM opentriviadatabasesessiontokens
-                    WHERE twitchchannel = $1
+                    WHERE twitchchannelid = $1
                 ''',
-                twitchChannel
+                twitchChannelId
             )
 
-            self.__cache.pop(twitchChannel.lower(), None)
+            self.__cache.pop(twitchChannelId, None)
 
         await connection.close()
