@@ -441,7 +441,7 @@ class TriviaUtils(TriviaUtilsInterface):
             cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and triviaQuestion.hasCategory():
+        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and utils.isValidStr(triviaQuestion.getCategory()):
             questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
@@ -586,8 +586,8 @@ class TriviaUtils(TriviaUtilsInterface):
             cutenessPrompt = f'for {pointsStr} cuteness '
 
         questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and triviaQuestion.hasCategory():
-            questionPrompt = f'(category is \"{triviaQuestion.getCategory()}\") — {triviaQuestion.getQuestion()}'
+        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and utils.isValidStr(triviaQuestion.getCategory()):
+            questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
         else:
             questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
 

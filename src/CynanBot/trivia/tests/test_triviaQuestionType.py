@@ -7,16 +7,11 @@ class TestTriviaQuestionType():
 
     def test_fromStr_withEmptyString(self):
         result: TriviaQuestionType | None = None
-        exception: Exception | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = TriviaQuestionType.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withMultipleChoiceStrings(self):
         strings: list[str] = [ 'multiple', 'multiple choice', 'multiple-choice', 'multiple_choice' ]
@@ -28,8 +23,8 @@ class TestTriviaQuestionType():
     def test_fromStr_withNone(self):
         result: TriviaQuestionType | None = None
 
-        with pytest.raises(ValueError):
-            result = TriviaQuestionType.fromStr(None)  # type: ignore
+        with pytest.raises(TypeError):
+            result = TriviaQuestionType.fromStr(None) # type: ignore
 
         assert result is None
 
@@ -49,16 +44,11 @@ class TestTriviaQuestionType():
 
     def test_fromStr_withWhitespaceString(self):
         result: TriviaQuestionType | None = None
-        exception: Exception | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = TriviaQuestionType.fromStr(' ')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_toStr_withMultipleChoice(self):
         result = TriviaQuestionType.MULTIPLE_CHOICE.toStr()

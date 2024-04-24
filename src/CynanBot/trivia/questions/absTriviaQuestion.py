@@ -83,12 +83,6 @@ class AbsTriviaQuestion(ABC):
     def getTriviaType(self) -> TriviaQuestionType:
         return self.__triviaType
 
-    def hasCategory(self) -> bool:
-        return utils.isValidStr(self.__category)
-
-    def hasCategoryId(self) -> bool:
-        return utils.isValidStr(self.__categoryId)
-
     def __repr__(self) -> str:
         dictionary = self.toDictionary()
         return str(dictionary)

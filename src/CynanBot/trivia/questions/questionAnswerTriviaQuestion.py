@@ -31,9 +31,9 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             triviaType = TriviaQuestionType.QUESTION_ANSWER
         )
 
-        if not utils.areValidStrs(correctAnswers) or not isinstance(correctAnswers, list):
+        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.areValidStrs(cleanedCorrectAnswers) or not isinstance(cleanedCorrectAnswers, list):
+        elif not isinstance(cleanedCorrectAnswers, list) or len(cleanedCorrectAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'cleanedCorrectAnswers argument is malformed: \"{cleanedCorrectAnswers}\"')
 
         self.__correctAnswers: list[str] = correctAnswers
@@ -49,7 +49,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         if not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if self.hasCategory():
+        if utils.isValidStr(self.getCategory()):
             return f'(category is \"{self.getCategory()}\") {self.getQuestion()}'
         else:
             return self.getQuestion()

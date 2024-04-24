@@ -45,9 +45,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         phrases: set[str] = set()
         await self.__contentScanner.updatePhrasesContent(phrases, question.getQuestion())
         await self.__contentScanner.updatePhrasesContent(phrases, question.getPrompt())
-
-        if question.hasCategory():
-            await self.__contentScanner.updatePhrasesContent(phrases, question.getCategory())
+        await self.__contentScanner.updatePhrasesContent(phrases, question.getCategory())
 
         for correctAnswer in question.getCorrectAnswers():
             await self.__contentScanner.updatePhrasesContent(phrases, correctAnswer)
@@ -64,9 +62,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         words: set[str] = set()
         await self.__contentScanner.updateWordsContent(words, question.getQuestion())
         await self.__contentScanner.updateWordsContent(words, question.getPrompt())
-
-        if question.hasCategory():
-            await self.__contentScanner.updateWordsContent(words, question.getCategory())
+        await self.__contentScanner.updateWordsContent(words, question.getCategory())
 
         for correctAnswer in question.getCorrectAnswers():
             await self.__contentScanner.updateWordsContent(words, correctAnswer)
@@ -166,7 +162,7 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.getQuestion()}\"')
             return TriviaContentCode.CONTAINS_EMPTY_STR
 
-        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and not question.hasCategory():
+        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and not utils.isValidStr(question.getCategory()):
             # This means that we are requiring "question-answer" style trivia questions to have
             # a category, which I think is probably fine? (this is an opinion situation)
             self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty category: \"{question.getCategory()}\"')

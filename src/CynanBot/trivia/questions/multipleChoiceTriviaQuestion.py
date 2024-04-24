@@ -32,9 +32,9 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
             triviaType = TriviaQuestionType.MULTIPLE_CHOICE,
         )
 
-        if not utils.areValidStrs(correctAnswers) or not isinstance(correctAnswers, list):
+        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
             raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
-        elif not utils.hasItems(multipleChoiceResponses):
+        elif not utils.hasItems(multipleChoiceResponses) or len(multipleChoiceResponses) == 0:
             raise NoTriviaMultipleChoiceResponsesException(f'multipleChoiceResponses argument is malformed: \"{multipleChoiceResponses}\"')
 
         self.__correctAnswers: list[str] = correctAnswers
