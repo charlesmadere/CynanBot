@@ -54,6 +54,9 @@ from CynanBot.chatCommands.addRecurringWeatherActionChatCommand import \
     AddRecurringWeatherActionChatCommand
 from CynanBot.chatCommands.addRecurringWordOfTheDayActionChatCommand import \
     AddRecurringWordOfTheDayActionChatCommand
+from CynanBot.chatCommands.answerChatCommand import AnswerChatCommand
+from CynanBot.chatCommands.banTriviaQuestionChatCommand import \
+    BanTriviaQuestionChatCommand
 from CynanBot.chatCommands.clearCachesChatCommand import ClearCachesChatCommand
 from CynanBot.chatCommands.clearSuperTriviaQueueChatCommand import \
     ClearSuperTriviaQueueChatCommand
@@ -87,7 +90,6 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
     CheerActionsRepositoryInterface
 from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                AddTriviaControllerCommand, AddUserCommand,
-                               AnswerCommand, BanTriviaQuestionCommand,
                                ConfirmCommand, CutenessChampionsCommand,
                                CutenessHistoryCommand, CynanSourceCommand,
                                DeleteCheerActionCommand,
@@ -601,14 +603,14 @@ class CynanBot(
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
-            self.__answerCommand: AbsCommand = StubCommand()
+            self.__answerCommand: AbsChatCommand = StubChatCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__answerCommand: AbsCommand = AnswerCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
+            self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
@@ -669,12 +671,12 @@ class CynanBot(
             self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
 
         if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
-            self.__banTriviaQuestionCommand: AbsCommand = StubCommand()
+            self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
             self.__triviaInfoCommand: AbsCommand = StubCommand()
             self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
             self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
-            self.__banTriviaQuestionCommand: AbsCommand = BanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
             self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
@@ -1184,12 +1186,12 @@ class CynanBot(
     @commands.command(name = 'answer', aliases = [ 'ANSWER', 'Answer', 'a', 'A' ])
     async def command_answer(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__answerCommand.handleCommand(context)
+        await self.__answerCommand.handleChatCommand(context)
 
     @commands.command(name = 'bantriviaquestion', aliases = [ 'bantrivia' ])
     async def command_bantriviaquestion(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__banTriviaQuestionCommand.handleCommand(context)
+        await self.__banTriviaQuestionCommand.handleChatCommand(context)
 
     @commands.command(name = 'clearcaches')
     async def command_clearcaches(self, ctx: Context):
