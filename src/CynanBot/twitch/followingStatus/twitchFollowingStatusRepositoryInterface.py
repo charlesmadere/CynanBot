@@ -4,10 +4,10 @@ from CynanBot.misc.clearable import Clearable
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
 
 
-class TwitchFollowerRepositoryInterface(Clearable):
+class TwitchFollowingStatusRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def fetchFollowingInfo(
+    async def fetchFollowingStatus(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,

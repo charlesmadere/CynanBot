@@ -319,6 +319,10 @@ from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
     TwitchIoConfiguration
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepository import \
+    TwitchFollowingStatusRepository
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepository import IsLiveOnTwitchRepository
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
@@ -326,9 +330,6 @@ from CynanBot.twitch.twitchAnonymousUserIdProvider import \
     TwitchAnonymousUserIdProvider
 from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
     TwitchAnonymousUserIdProviderInterface
-from CynanBot.twitch.twitchFollowerRepository import TwitchFollowerRepository
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTimeoutHelper import TwitchTimeoutHelper
@@ -467,7 +468,8 @@ twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
 )
-twitchFollowerRepository: TwitchFollowerRepositoryInterface = TwitchFollowerRepository(
+twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = TwitchFollowingStatusRepository(
+    backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository
@@ -1170,7 +1172,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
-    twitchFollowerRepository = twitchFollowerRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchHandleProvider = authRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
     twitchTokensRepository = twitchTokensRepository,
@@ -1270,7 +1272,7 @@ cynanBot = CynanBot(
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
     twitchConfiguration = twitchConfiguration,
-    twitchFollowerRepository = twitchFollowerRepository,
+    twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),
     twitchTimeoutRemodHelper = twitchTimeoutRemodHelper,
     twitchTokensRepository = twitchTokensRepository,

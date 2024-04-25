@@ -32,10 +32,10 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
 from CynanBot.twitch.configuration.twitchContext import TwitchContext
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
@@ -71,7 +71,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
-        twitchFollowerRepository: TwitchFollowerRepositoryInterface | None,
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface | None,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -116,8 +116,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'triviaSettingsRepository argument is malformed: \"{triviaSettingsRepository}\"')
         elif ttsSettingsRepository is not None and not isinstance(ttsSettingsRepository, TtsSettingsRepositoryInterface):
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
-        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
+        elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+            raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchTokensRepository is not None and not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
@@ -155,7 +155,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(soundPlayerSettingsRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
-        self.__clearables.append(twitchFollowerRepository)
+        self.__clearables.append(twitchFollowingStatusRepository)
         self.__clearables.append(twitchTokensRepository)
         self.__clearables.append(userIdsRepository)
         self.__clearables.append(usersRepository)

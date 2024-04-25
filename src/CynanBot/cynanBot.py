@@ -1,6 +1,5 @@
 import traceback
 from asyncio import AbstractEventLoop
-from typing import Optional
 
 from twitchio import Message
 from twitchio.ext import commands
@@ -249,10 +248,10 @@ from CynanBot.twitch.configuration.twitchPredictionHandler import \
 from CynanBot.twitch.configuration.twitchRaidHandler import TwitchRaidHandler
 from CynanBot.twitch.configuration.twitchSubscriptionHandler import \
     TwitchSubscriptionHandler
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
@@ -298,69 +297,69 @@ class CynanBot(
         authRepository: AuthRepository,
         backgroundTaskHelper: BackgroundTaskHelper,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
-        bannedWordsRepository: Optional[BannedWordsRepositoryInterface],
+        bannedWordsRepository: BannedWordsRepositoryInterface | None,
         channelJoinHelper: ChannelJoinHelper,
         channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
-        chatActionsManager: Optional[ChatActionsManagerInterface],
+        chatActionsManager: ChatActionsManagerInterface | None,
         chatLogger: ChatLoggerInterface,
-        cheerActionHelper: Optional[CheerActionHelperInterface],
-        cheerActionIdGenerator: Optional[CheerActionIdGeneratorInterface],
-        cheerActionsRepository: Optional[CheerActionsRepositoryInterface],
-        cutenessRepository: Optional[CutenessRepositoryInterface],
-        cutenessUtils: Optional[CutenessUtilsInterface],
+        cheerActionHelper: CheerActionHelperInterface | None,
+        cheerActionIdGenerator: CheerActionIdGeneratorInterface | None,
+        cheerActionsRepository: CheerActionsRepositoryInterface | None,
+        cutenessRepository: CutenessRepositoryInterface | None,
+        cutenessUtils: CutenessUtilsInterface | None,
         dependencyHolder: DependencyHolder,
-        funtoonRepository: Optional[FuntoonRepositoryInterface],
-        funtoonTokensRepository: Optional[FuntoonTokensRepositoryInterface],
+        funtoonRepository: FuntoonRepositoryInterface | None,
+        funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
-        isLiveOnTwitchRepository: Optional[IsLiveOnTwitchRepositoryInterface],
-        jishoHelper: Optional[JishoHelperInterface],
+        isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface | None,
+        jishoHelper: JishoHelperInterface | None,
         languagesRepository: LanguagesRepositoryInterface,
-        locationsRepository: Optional[LocationsRepositoryInterface],
+        locationsRepository: LocationsRepositoryInterface | None,
         modifyUserDataHelper: ModifyUserDataHelper,
         mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None,
         mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None,
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
-        openTriviaDatabaseTriviaQuestionRepository: Optional[OpenTriviaDatabaseTriviaQuestionRepository],
-        pokepediaRepository: Optional[PokepediaRepository],
-        recurringActionsHelper: Optional[RecurringActionsHelperInterface],
-        recurringActionsMachine: Optional[RecurringActionsMachineInterface],
-        recurringActionsRepository: Optional[RecurringActionsRepositoryInterface],
-        recurringActionsWizard: Optional[RecurringActionsWizardInterface],
+        openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
+        pokepediaRepository: PokepediaRepository | None,
+        recurringActionsHelper: RecurringActionsHelperInterface | None,
+        recurringActionsMachine: RecurringActionsMachineInterface | None,
+        recurringActionsRepository: RecurringActionsRepositoryInterface | None,
+        recurringActionsWizard: RecurringActionsWizardInterface | None,
         sentMessageLogger: SentMessageLoggerInterface,
-        shinyTriviaOccurencesRepository: Optional[ShinyTriviaOccurencesRepositoryInterface],
-        soundPlayerSettingsRepository: Optional[SoundPlayerSettingsRepositoryInterface],
-        starWarsQuotesRepository: Optional[StarWarsQuotesRepositoryInterface],
-        streamAlertsManager: Optional[StreamAlertsManagerInterface],
+        shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface | None,
+        soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
+        starWarsQuotesRepository: StarWarsQuotesRepositoryInterface | None,
+        streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
-        toxicTriviaOccurencesRepository: Optional[ToxicTriviaOccurencesRepositoryInterface],
-        translationHelper: Optional[TranslationHelper],
-        triviaBanHelper: Optional[TriviaBanHelperInterface],
-        triviaEmoteGenerator: Optional[TriviaEmoteGeneratorInterface],
-        triviaGameBuilder: Optional[TriviaGameBuilderInterface],
-        triviaGameControllersRepository: Optional[TriviaGameControllersRepositoryInterface],
-        triviaGameGlobalControllersRepository: Optional[TriviaGameGlobalControllersRepositoryInterface],
-        triviaGameMachine: Optional[TriviaGameMachineInterface],
-        triviaHistoryRepository: Optional[TriviaHistoryRepositoryInterface],
-        triviaIdGenerator: Optional[TriviaIdGeneratorInterface],
-        triviaRepository: Optional[TriviaRepositoryInterface],
-        triviaScoreRepository: Optional[TriviaScoreRepositoryInterface],
-        triviaSettingsRepository: Optional[TriviaSettingsRepositoryInterface],
-        triviaUtils: Optional[TriviaUtilsInterface],
-        ttsSettingsRepository: Optional[TtsSettingsRepositoryInterface],
+        toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface | None,
+        translationHelper: TranslationHelper | None,
+        triviaBanHelper: TriviaBanHelperInterface | None,
+        triviaEmoteGenerator: TriviaEmoteGeneratorInterface | None,
+        triviaGameBuilder: TriviaGameBuilderInterface | None,
+        triviaGameControllersRepository: TriviaGameControllersRepositoryInterface | None,
+        triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface | None,
+        triviaGameMachine: TriviaGameMachineInterface | None,
+        triviaHistoryRepository: TriviaHistoryRepositoryInterface | None,
+        triviaIdGenerator: TriviaIdGeneratorInterface | None,
+        triviaRepository: TriviaRepositoryInterface | None,
+        triviaScoreRepository: TriviaScoreRepositoryInterface | None,
+        triviaSettingsRepository: TriviaSettingsRepositoryInterface |  None,
+        triviaUtils: TriviaUtilsInterface | None,
+        ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchApiService: TwitchApiServiceInterface,
         twitchConfiguration: TwitchConfiguration,
-        twitchFollowerRepository: Optional[TwitchFollowerRepositoryInterface],
-        twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface],
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
+        twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchTokensUtils: TwitchTokensUtilsInterface,
         twitchUtils: TwitchUtilsInterface,
-        twitchWebsocketClient: Optional[TwitchWebsocketClientInterface],
+        twitchWebsocketClient: TwitchWebsocketClientInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
-        weatherRepository: Optional[WeatherRepositoryInterface],
-        websocketConnectionServer: Optional[WebsocketConnectionServerInterface],
-        wordOfTheDayRepository: Optional[WordOfTheDayRepositoryInterface]
+        weatherRepository: WeatherRepositoryInterface | None,
+        websocketConnectionServer: WebsocketConnectionServerInterface | None,
+        wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
     ):
         super().__init__(
             client_secret = authRepository.getAll().requireTwitchClientSecret(),
@@ -487,8 +486,8 @@ class CynanBot(
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
-        elif twitchFollowerRepository is not None and not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
+        elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+            raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif twitchPredictionWebsocketUtils is not None and not isinstance(twitchPredictionWebsocketUtils, TwitchPredictionWebsocketUtilsInterface):
             raise TypeError(f'twitchPredictionWebsocketUtils argument is malformed: \"{twitchPredictionWebsocketUtils}\"')
         elif twitchTimeoutRemodHelper is not None and not isinstance(twitchTimeoutRemodHelper, TwitchTimeoutRemodHelperInterface):
@@ -514,36 +513,36 @@ class CynanBot(
 
         self.__authRepository: AuthRepository = authRepository
         self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
-        self.__chatActionsManager: Optional[ChatActionsManagerInterface] = chatActionsManager
-        self.__cheerActionHelper: Optional[CheerActionHelperInterface] = cheerActionHelper
+        self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
+        self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__modifyUserDataHelper: ModifyUserDataHelper = modifyUserDataHelper
         self.__mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = mostRecentAnivMessageTimeoutHelper
-        self.__recurringActionsMachine: Optional[RecurringActionsMachineInterface] = recurringActionsMachine
+        self.__recurringActionsMachine: RecurringActionsMachineInterface | None = recurringActionsMachine
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
-        self.__streamAlertsManager: Optional[StreamAlertsManagerInterface] = streamAlertsManager
+        self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__triviaGameBuilder: Optional[TriviaGameBuilderInterface] = triviaGameBuilder
-        self.__triviaGameMachine: Optional[TriviaGameMachineInterface] = triviaGameMachine
-        self.__triviaRepository: Optional[TriviaRepositoryInterface] = triviaRepository
-        self.__triviaUtils: Optional[TriviaUtilsInterface] = triviaUtils
+        self.__triviaGameBuilder: TriviaGameBuilderInterface | None = triviaGameBuilder
+        self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
+        self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
+        self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
-        self.__twitchPredictionWebsocketUtils: Optional[TwitchPredictionWebsocketUtilsInterface] = twitchPredictionWebsocketUtils
+        self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
-        self.__twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = twitchWebsocketClient
+        self.__twitchWebsocketClient: TwitchWebsocketClientInterface | None = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
-        self.__websocketConnectionServer: Optional[WebsocketConnectionServerInterface] = websocketConnectionServer
+        self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
 
         #######################################
         ## Initialization of command objects ##
         #######################################
 
         self.__addUserCommand: AbsCommand = AddUserCommand(administratorProvider, modifyUserDataHelper, timber, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository)
-        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowerRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
+        self.__clearCachesCommand: AbsChatCommand = ClearCachesChatCommand(administratorProvider, anivSettingsRepository, authRepository, bannedWordsRepository, channelPointSoundHelper, cheerActionsRepository, funtoonTokensRepository, generalSettingsRepository, isLiveOnTwitchRepository, locationsRepository, modifyUserDataHelper, mostRecentAnivMessageRepository, mostRecentChatsRepository, openTriviaDatabaseTriviaQuestionRepository, soundPlayerSettingsRepository, timber, triviaSettingsRepository, ttsSettingsRepository, twitchFollowingStatusRepository, twitchTokensRepository, twitchUtils, userIdsRepository, usersRepository, weatherRepository, websocketConnectionServer, wordOfTheDayRepository)
         self.__commandsCommand: AbsChatCommand = CommandsChatCommand(generalSettingsRepository, timber, twitchUtils, usersRepository)
         self.__confirmCommand: AbsCommand = ConfirmCommand(administratorProvider, modifyUserDataHelper, timber, twitchUtils, usersRepository)
         self.__cynanSourceCommand: AbsCommand = CynanSourceCommand(timber, twitchUtils, usersRepository)

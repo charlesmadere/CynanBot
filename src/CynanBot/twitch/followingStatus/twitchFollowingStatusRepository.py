@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import traceback
 from collections import defaultdict
-from datetime import datetime
 
 from lru import LRU
 
@@ -15,13 +14,13 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
 
-class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
+class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
     def __init__(
         self,
@@ -55,7 +54,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         self.__caches.clear()
         self.__timber.log('TwitchFollowerRepository', f'Caches cleared')
 
-    async def fetchFollowingInfo(
+    async def fetchFollowingStatus(
         self,
         twitchAccessToken: str,
         twitchChannelId: str,

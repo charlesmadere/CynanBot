@@ -21,10 +21,10 @@ from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
 from CynanBot.twitch.configuration.twitchChannelProvider import \
     TwitchChannelProvider
+from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
+    TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
-from CynanBot.twitch.twitchFollowerRepositoryInterface import \
-    TwitchFollowerRepositoryInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
 from CynanBot.twitch.twitchTimeoutHelperInterface import \
@@ -45,7 +45,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         streamAlertsManager: StreamAlertsManagerInterface | None,
         timber: TimberInterface,
-        twitchFollowerRepository: TwitchFollowerRepositoryInterface,
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutHelper: TwitchTimeoutHelperInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -62,8 +62,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(twitchFollowerRepository, TwitchFollowerRepositoryInterface):
-            raise TypeError(f'twitchFollowerRepository argument is malformed: \"{twitchFollowerRepository}\"')
+        elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+            raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
         elif not isinstance(twitchTimeoutHelper, TwitchTimeoutHelperInterface):
@@ -83,7 +83,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
         self.__timber: TimberInterface = timber
-        self.__twitchFollowerRepository: TwitchFollowerRepositoryInterface = twitchFollowerRepository
+        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTimeoutHelper: TwitchTimeoutHelperInterface = twitchTimeoutHelper
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -170,7 +170,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
-        followingInfo = await self.__twitchFollowerRepository.fetchFollowingInfo(
+        followingInfo = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
             twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = userIdToTimeout
