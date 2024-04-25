@@ -16,6 +16,8 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
 from CynanBot.twitch.api.twitchFollower import TwitchFollower
 from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
     TwitchFollowingStatusRepositoryInterface
+from CynanBot.twitch.twitchTokensRepositoryInterface import \
+    TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
@@ -27,6 +29,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
+        twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         cacheSize: int = 16
     ):
@@ -36,6 +39,8 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
+            raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not utils.isValidInt(cacheSize):
@@ -46,6 +51,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
+        self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
         self.__caches: dict[str, LRU[str, TwitchFollower | None]] = defaultdict(lambda: LRU(cacheSize))

@@ -472,6 +472,7 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
+    twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
 timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
