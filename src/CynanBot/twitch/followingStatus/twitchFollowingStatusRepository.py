@@ -19,8 +19,6 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatus import \
     TwitchFollowingStatus
 from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface import \
     TwitchFollowingStatusRepositoryInterface
-from CynanBot.twitch.twitchTokensRepositoryInterface import \
-    TwitchTokensRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
@@ -77,40 +75,27 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         if followingStatus is not None:
             return followingStatus
 
-        twitchChannel = await self.__userIdsRepository.requireUserName(
-            userId = twitchChannelId,
-            twitchAccessToken = twitchAccessToken
+        followingStatus = await self.__fetchFromDatabase(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+            userId = userId
         )
 
-        userName = await self.__userIdsRepository.requireUserName(
-            userId = userId,
-            twitchAccessToken = twitchAccessToken
+        if followingStatus is not None:
+            self.__caches[twitchChannelId][userId] = followingStatus
+            return followingStatus
+
+        followingStatus = await self.__fetchFromTwitchApi(
+            twitchAccessToken = twitchAccessToken,
+            twitchChannelId = twitchChannelId,
+            userId = userId
         )
 
-        twitchFollower: TwitchFollower | None = None
-        exception: GenericNetworkException | None =  None
-
-        try:
-            twitchFollower = await self.__twitchApiService.fetchFollower(
-                broadcasterId = twitchChannelId,
-                twitchAccessToken = twitchAccessToken,
-                userId = userId
-            )
-        except GenericNetworkException as e:
-            exception = e
-
-        if twitchFollower is None or exception is not None:
-            self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {exception}', exception, traceback.format_exc())
+        if followingStatus is None:
+            self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch following status ({followingStatus=}) ({twitchChannelId=}) ({userId=})')
             return None
 
-        followingStatus = TwitchFollowingStatus(
-            followedAt = twitchFollower.followedAt,
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId,
-            userId = userId,
-            userName = userName
-        )
-
+        await self.__saveToDatabase(followingStatus)
         self.__caches[twitchChannelId][userId] = followingStatus
         return followingStatus
 
@@ -144,6 +129,46 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         return TwitchFollowingStatus(
             followedAt = datetime.fromisoformat(record[0]),
             twitchChannel = record[1],
+            twitchChannelId = twitchChannelId,
+            userId = userId,
+            userName = userName
+        )
+
+    async def __fetchFromTwitchApi(
+        self,
+        twitchAccessToken: str,
+        twitchChannelId: str,
+        userId: str
+    ) -> TwitchFollowingStatus | None:
+        twitchChannel = await self.__userIdsRepository.requireUserName(
+            userId = twitchChannelId,
+            twitchAccessToken = twitchAccessToken
+        )
+
+        userName = await self.__userIdsRepository.requireUserName(
+            userId = userId,
+            twitchAccessToken = twitchAccessToken
+        )
+
+        twitchFollower: TwitchFollower | None = None
+        exception: GenericNetworkException | None =  None
+
+        try:
+            twitchFollower = await self.__twitchApiService.fetchFollower(
+                broadcasterId = twitchChannelId,
+                twitchAccessToken = twitchAccessToken,
+                userId = userId
+            )
+        except GenericNetworkException as e:
+            exception = e
+
+        if twitchFollower is None or exception is not None:
+            self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower from Twitch API ({twitchFollower=}) ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId=}) ({userId=}): {exception}', exception, traceback.format_exc())
+            return None
+
+        return TwitchFollowingStatus(
+            followedAt = twitchFollower.followedAt,
+            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId,
             userId = userId,
             userName = userName
@@ -184,5 +209,21 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             )
         else:
             raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+
+        await connection.close()
+
+    async def __saveToDatabase(self, followingStatus: TwitchFollowingStatus):
+        if not isinstance(followingStatus, TwitchFollowingStatus):
+            raise TypeError(f'followingStatus argument is malformed: \"{followingStatus}\"')
+
+        connection = await self.__getDatabaseConnection()
+        await connection.execute(
+            '''
+                INSERT INTO twitchfollowingstatus (datetime, twitchchannelid, userid)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (twitchchannelid, userid) DO UPDATE SET datetime = EXCLUDED.datetime
+            ''',
+            followingStatus.followedAt.isoformat(), followingStatus.twitchChannelId, followingStatus.userId
+        )
 
         await connection.close()
