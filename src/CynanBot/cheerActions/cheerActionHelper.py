@@ -159,15 +159,19 @@ class CheerActionHelper(CheerActionHelperInterface):
 
     async def __isNewFollower(
         self,
+        twitchAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str
     ) -> bool:
-        if not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userIdToTimeout):
             raise TypeError(f'userIdToTimeout argument is malformed: \"{userIdToTimeout}\"')
 
         followingStatus = await self.__twitchFollowingStatusRepository.fetchFollowingStatus(
+            twitchAccessToken = twitchAccessToken,
             twitchChannelId = twitchChannelId,
             userId = userIdToTimeout
         )

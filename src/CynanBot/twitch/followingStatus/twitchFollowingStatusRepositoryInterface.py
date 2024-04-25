@@ -10,6 +10,7 @@ class TwitchFollowingStatusRepositoryInterface(Clearable):
     @abstractmethod
     async def fetchFollowingStatus(
         self,
+        twitchAccessToken: str,
         twitchChannelId: str,
         userId: str
     ) -> TwitchFollowingStatus | None:
