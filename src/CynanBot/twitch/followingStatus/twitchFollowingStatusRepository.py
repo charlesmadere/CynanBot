@@ -111,7 +111,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
             await connection.createTableIfNotExists(
                 '''
-                    CREATE TABLE IF NOT EXISTS twitchfollowers (
+                    CREATE TABLE IF NOT EXISTS twitchfollowingstatus (
                         datetime text NOT NULL,
                         twitchchannelid text NOT NULL,
                         userid text NOT NULL,
@@ -122,7 +122,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         elif connection.getDatabaseType() is DatabaseType.SQLITE:
             await connection.createTableIfNotExists(
                 '''
-                    CREATE TABLE IF NOT EXISTS twitchfollowers (
+                    CREATE TABLE IF NOT EXISTS twitchfollowingstatus (
                         datetime TEXT NOT NULL,
                         twitchchannelid TEXT NOT NULL,
                         userid TEXT NOT NULL,
