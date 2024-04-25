@@ -52,7 +52,7 @@ class SupStreamerChatAction(AbsChatAction):
 
         now = datetime.now(self.__timeZone)
 
-        if mostRecentChat is not None and (mostRecentChat.getMostRecentChat() + self.__cooldown) > now:
+        if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
             return False
 
         chatMessage = message.getContent()

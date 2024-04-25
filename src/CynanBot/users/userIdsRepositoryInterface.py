@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional
 
 from CynanBot.misc.clearable import Clearable
 
@@ -11,35 +10,39 @@ class UserIdsRepositoryInterface(Clearable):
         pass
 
     @abstractmethod
-    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> Optional[str]:
+    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> str | None:
         pass
 
     @abstractmethod
     async def fetchUserId(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[str]:
+        twitchAccessToken: str | None = None
+    ) -> str | None:
         pass
 
     @abstractmethod
     async def fetchUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[int]:
+        twitchAccessToken: str | None = None
+    ) -> int | None:
         pass
 
     @abstractmethod
     async def fetchUserName(
         self,
         userId: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[str]:
+        twitchAccessToken: str | None = None
+    ) -> str | None:
         pass
 
     @abstractmethod
-    async def optionallySetUser(self, userId: Optional[str], userName: Optional[str]):
+    async def optionallySetUser(
+        self,
+        userId: str | None,
+        userName: str | None
+    ):
         pass
 
     @abstractmethod
@@ -54,7 +57,7 @@ class UserIdsRepositoryInterface(Clearable):
     async def requireUserId(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> str:
         pass
 
@@ -62,7 +65,7 @@ class UserIdsRepositoryInterface(Clearable):
     async def requireUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> int:
         pass
 
@@ -70,7 +73,7 @@ class UserIdsRepositoryInterface(Clearable):
     async def requireUserName(
         self,
         userId: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> str:
         pass
 

@@ -3,7 +3,9 @@ from datetime import datetime
 
 
 @dataclass(frozen = True)
-class MostRecentChat():
-    mostRecentChat: datetime
+class TwitchFollowingStatus():
+    followedAt: datetime
+    twitchChannel: str
     twitchChannelId: str
     userId: str
+    userName: str

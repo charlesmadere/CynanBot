@@ -519,7 +519,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchFollower]:
+    ) -> TwitchFollower | None:
         if not utils.isValidStr(broadcasterId):
             raise TypeError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
@@ -544,10 +544,10 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {jsonResponse}')
         elif responseStatusCode == 401 or ('error' in jsonResponse and len(jsonResponse['error']) >= 1):
@@ -557,9 +557,9 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching follower ({broadcasterId=}) ({twitchAccessToken=}) ({userId=}): {responseStatusCode}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
-        if not isinstance(data, List) or len(data) == 0:
+        if not isinstance(data, list) or len(data) == 0:
             return None
 
         for dataEntry in data:
@@ -567,9 +567,9 @@ class TwitchApiService(TwitchApiServiceInterface):
 
             if dataEntryUserId == userId:
                 return TwitchFollower(
-                    followedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(dataEntry, 'followed_at'))),
+                    followedAt = utils.getDateTimeFromDict(dataEntry, 'followed_at'),
                     userId = dataEntryUserId,
-                    userLogin = utils.getStrFromDict(dataEntry, 'user_id'),
+                    userLogin = utils.getStrFromDict(dataEntry, 'user_login'),
                     userName = utils.getStrFromDict(dataEntry, 'user_name')
                 )
 

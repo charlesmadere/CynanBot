@@ -1,5 +1,5 @@
 import re
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Pattern
 
 import CynanBot.misc.utils as utils
@@ -13,7 +13,6 @@ from CynanBot.cheerActions.cheerActionsRepositoryInterface import \
 from CynanBot.cheerActions.cheerActionStreamStatusRequirement import \
     CheerActionStreamStatusRequirement
 from CynanBot.cheerActions.cheerActionType import CheerActionType
-from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
@@ -52,7 +51,8 @@ class CheerActionHelper(CheerActionHelperInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchUtils: TwitchUtilsInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        minimumFollowDuration: timedelta = timedelta(weeks = 1),
+        minimumFollowDuration: timedelta = timedelta(days = 3),
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(cheerActionsRepository, CheerActionsRepositoryInterface):
             raise TypeError(f'cheerActionsRepository argument is malformed: \"{cheerActionsRepository}\"')
@@ -76,6 +76,8 @@ class CheerActionHelper(CheerActionHelperInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(minimumFollowDuration, timedelta):
             raise TypeError(f'minimumFollowDuration argument is malformed: \"{minimumFollowDuration}\"')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__cheerActionsRepository: CheerActionsRepositoryInterface = cheerActionsRepository
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
@@ -88,6 +90,7 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__minimumFollowDuration: timedelta = minimumFollowDuration
+        self.__timeZone: tzinfo = timeZone
 
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
@@ -177,9 +180,9 @@ class CheerActionHelper(CheerActionHelperInterface):
             self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user is not following the channel ({followingInfo=}) ({self.__minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 
-        now = SimpleDateTime()
+        now = datetime.now(self.__timeZone)
 
-        if followingInfo.getFollowedAt() + self.__minimumFollowDuration >= now:
+        if followingInfo.followedAt + self.__minimumFollowDuration >= now:
             self.__timber.log('CheerActionHelper', f'The given user ID will not be timed out as this user started following the channel within the minimum follow duration window: ({followingInfo=}) ({self.__minimumFollowDuration=}) ({twitchChannelId=}) ({userIdToTimeout=})')
             return True
 

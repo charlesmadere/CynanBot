@@ -12,7 +12,6 @@ from CynanBot.google.googleTextSynthesisResponse import \
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.google.googleVoiceSelectionParams import \
     GoogleVoiceSelectionParams
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
@@ -147,19 +146,23 @@ class GoogleTtsManager(TtsManagerInterface):
             audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
         )
 
-        languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'ja-JP' ]
+        languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'fr-CA', 'ja-JP', 'sv-SE' ]
         languageCode = random.choice(languageCodes)
 
         names: list[str] | None = None
 
         if languageCode == 'en-AU':
-            names = [ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' ]
+            names = [ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D', 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' ]
         elif languageCode == 'en-GB':
-            names = [ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' ]
+            names = [ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F', 'en-GB-Wavenet-A', 'en-GB-Wavenet-B', 'en-GB-Wavenet-C', 'en-GB-Wavenet-D', 'en-GB-Wavenet-F' ]
         elif languageCode == 'en-US':
-            names = [ 'en-US-Journey-D', 'en-US-Journey-F' ]
+            names = [ 'en-US-Casual-K', 'en-US-Journey-D', 'en-US-Journey-F' ]
+        elif languageCode == 'fr-CA':
+            names = [ 'fr-CA-Wavenet-A', 'fr-CA-Wavenet-B', 'fr-CA-Wavenet-C', 'fr-CA-Wavenet-D' ]
         elif languageCode == 'ja-JP':
             names = [ 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' ]
+        elif languageCode == 'sv-SE':
+            names = [ 'sv-SE-Wavenet-A', 'sv-SE-Wavenet-B', 'sv-SE-Wavenet-C', 'sv-SE-Wavenet-D', 'sv-SE-Wavenet-E' ]
 
         name: str | None = None
 

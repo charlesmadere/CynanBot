@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import traceback
-from typing import Optional
 
 from lru import LRU
 
@@ -32,15 +31,15 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         cacheSize: int = 128
     ):
         if not isinstance(backingDatabase, BackingDatabase):
-            raise ValueError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchAnonymousUserIdProvider, TwitchAnonymousUserIdProviderInterface):
-            raise ValueError(f'twitchAnonymousUserIdProvider argument is malformed: \"{twitchAnonymousUserIdProvider}\"')
+            raise TypeError(f'twitchAnonymousUserIdProvider argument is malformed: \"{twitchAnonymousUserIdProvider}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
-            raise ValueError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+            raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not utils.isValidInt(cacheSize):
-            raise ValueError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
         elif cacheSize < 32 or cacheSize > utils.getIntMaxSafeSize():
             raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
@@ -50,7 +49,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
 
         self.__isDatabaseReady: bool = False
-        self.__cache: LRU[str, Optional[str]] = LRU(cacheSize)
+        self.__cache: LRU[str, str | None] = LRU(cacheSize)
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -59,9 +58,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def fetchAnonymousUserId(self) -> str:
         return await self.__twitchAnonymousUserIdProvider.getTwitchAnonymousUserId()
 
-    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> Optional[str]:
+    async def fetchAnonymousUserName(self, twitchAccessToken: str) -> str | None:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         anonymousUserId = await self.fetchAnonymousUserId()
 
@@ -73,12 +72,12 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def fetchUserId(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[str]:
+        twitchAccessToken: str | None = None
+    ) -> str | None:
         if not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
         elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -90,8 +89,8 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             userName
         )
 
-        userId: Optional[str] = None
-        if utils.hasItems(record):
+        userId: str | None = None
+        if record is not None and len(record) >= 1:
             userId = record[0]
 
         await connection.close()
@@ -103,7 +102,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         self.__timber.log('UserIdsRepository', f'User ID for username \"{userName}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
-        userDetails: Optional[TwitchUserDetails] = None
+        userDetails: TwitchUserDetails | None = None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserName(
@@ -118,16 +117,23 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
             return None
 
-        userId = userDetails.getUserId()
-        await self.setUser(userId = userId, userName = userName)
+        await self.setUser(
+            userId = userDetails.getUserId(),
+            userName = userDetails.getLogin()
+        )
 
-        return userId
+        return userDetails.getUserId()
 
     async def fetchUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[int]:
+        twitchAccessToken: str | None = None
+    ) -> int | None:
+        if not utils.isValidStr(userName):
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
         userId = await self.fetchUserId(
             userName = userName,
             twitchAccessToken = twitchAccessToken
@@ -136,21 +142,23 @@ class UserIdsRepository(UserIdsRepositoryInterface):
         if not utils.isValidStr(userId):
             return None
 
-        return int(userId)
+        try:
+            return int(userId)
+        except (SyntaxError, TypeError, ValueError) as e:
+            self.__timber.log('UserIdsRepository', f'Encountered exception when attempting to convert userId (\"{userId}\") into int ({userName=}) ({twitchAccessToken=}): {e}')
+            raise e
 
     async def fetchUserName(
         self,
         userId: str,
-        twitchAccessToken: Optional[str] = None
-    ) -> Optional[str]:
+        twitchAccessToken: str | None = None
+    ) -> str | None:
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
-        userName: Optional[str] = None
+        userName: str | None = None
 
         if userId in self.__cache:
             userName = self.__cache[userId]
@@ -181,7 +189,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             return None
 
         self.__timber.log('UserIdsRepository', f'Username for user ID \"{userId}\" wasn\'t found locally, so performing a network call to fetch instead ({twitchAccessToken=})...')
-        userDetails: Optional[TwitchUserDetails] = None
+        userDetails: TwitchUserDetails | None = None
 
         try:
             userDetails = await self.__twitchApiService.fetchUserDetailsWithUserId(
@@ -196,11 +204,14 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             self.__timber.log('UserIdsRepository', f'Unable to retrieve Twitch username for user ID \"{userId}\" ({twitchAccessToken=})')
             return None
 
-        userName = userDetails.getLogin()
-        self.__cache[userId] = userName
-        await self.setUser(userId = userId, userName = userName)
+        self.__cache[userId] = userDetails.getLogin()
 
-        return userName
+        await self.setUser(
+            userId = userId,
+            userName = userDetails.getLogin()
+        )
+
+        return userDetails.getLogin()
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -236,7 +247,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
         await connection.close()
 
-    async def optionallySetUser(self, userId: Optional[str], userName: Optional[str]):
+    async def optionallySetUser(self, userId: str | None, userName: str | None):
         if utils.isValidStr(userId) and utils.isValidStr(userName):
             await self.setUser(userId = userId, userName = userName)
 
@@ -250,7 +261,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
     async def requireAnonymousUserName(self, twitchAccessToken: str) -> str:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
 
         anonymousUserName = await self.fetchAnonymousUserName(twitchAccessToken)
 
@@ -262,8 +273,13 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def requireUserId(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> str:
+        if not utils.isValidStr(userName):
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
         userId = await self.fetchUserId(
             userName = userName,
             twitchAccessToken = twitchAccessToken
@@ -277,31 +293,33 @@ class UserIdsRepository(UserIdsRepositoryInterface):
     async def requireUserIdAsInt(
         self,
         userName: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> int:
-        userIdStr = await self.fetchUserId(
+        if not utils.isValidStr(userName):
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
+        userId = await self.fetchUserIdAsInt(
             userName = userName,
             twitchAccessToken = twitchAccessToken
         )
 
-        userIdInt: Optional[int] = None
+        if not utils.isValidInt(userId):
+            raise NoSuchUserException(f'Unable to fetch Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
 
-        if utils.isValidStr(userIdStr):
-            try:
-                userIdInt = int(userIdStr)
-            except:
-                pass
-
-        if not utils.isValidInt(userIdInt):
-            raise NoSuchUserException(f'Unable to find Twitch user ID for username \"{userName}\" ({twitchAccessToken=})')
-
-        return userIdInt
+        return userId
 
     async def requireUserName(
         self,
         userId: str,
-        twitchAccessToken: Optional[str] = None
+        twitchAccessToken: str | None = None
     ) -> str:
+        if not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
+        elif twitchAccessToken is not None and not utils.isValidStr(twitchAccessToken):
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+
         userName = await self.fetchUserName(
             userId = userId,
             twitchAccessToken = twitchAccessToken
@@ -314,11 +332,9 @@ class UserIdsRepository(UserIdsRepositoryInterface):
 
     async def setUser(self, userId: str, userName: str):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(

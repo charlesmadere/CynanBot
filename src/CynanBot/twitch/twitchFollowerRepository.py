@@ -1,9 +1,16 @@
+from __future__ import annotations
+
 import traceback
 from collections import defaultdict
-from datetime import timedelta
+from datetime import datetime
+
+from lru import LRU
 
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
+from CynanBot.storage.backingDatabase import BackingDatabase
+from CynanBot.storage.databaseConnection import DatabaseConnection
+from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
@@ -18,28 +25,34 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
 
     def __init__(
         self,
+        backingDatabase: BackingDatabase,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheTimeDelta: timedelta = timedelta(hours = 8)
+        cacheSize: int = 16
     ):
-        if not isinstance(timber, TimberInterface):
+        if not isinstance(backingDatabase, BackingDatabase):
+            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
+        elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(cacheTimeDelta, timedelta):
-            raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
+        elif not utils.isValidInt(cacheSize):
+            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+        elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
+        self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
-        self.__cache: dict[str, dict[str, TwitchFollower | None]] = defaultdict(lambda: dict())
+        self.__caches: dict[str, LRU[str, TwitchFollower | None]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
-        self.__cache.clear()
+        self.__caches.clear()
         self.__timber.log('TwitchFollowerRepository', f'Caches cleared')
 
     async def fetchFollowingInfo(
@@ -55,7 +68,7 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        follower = self.__cache[twitchChannelId].get(userId, None)
+        follower = self.__caches[twitchChannelId].get(userId, None)
 
         if follower is not None:
             return follower
@@ -76,5 +89,43 @@ class TwitchFollowerRepository(TwitchFollowerRepositoryInterface):
             self.__timber.log('TwitchFollowerRepository', f'Failed to fetch Twitch follower ({twitchAccessToken=}) ({twitchChannel=}) ({twitchChannelId}) ({userId=}): {exception}', exception, traceback.format_exc())
             return None
 
-        self.__cache[twitchChannelId][userId] = follower
+        self.__caches[twitchChannelId][userId] = follower
         return follower
+
+    async def __getDatabaseConnection(self) -> DatabaseConnection:
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
+    async def __initDatabaseTable(self):
+        if self.__isDatabaseReady:
+            return
+
+        self.__isDatabaseReady = True
+        connection = await self.__backingDatabase.getConnection()
+
+        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
+            await connection.createTableIfNotExists(
+                '''
+                    CREATE TABLE IF NOT EXISTS twitchfollowers (
+                        datetime text NOT NULL,
+                        twitchchannelid text NOT NULL,
+                        userid text NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
+                    )
+                '''
+            )
+        elif connection.getDatabaseType() is DatabaseType.SQLITE:
+            await connection.createTableIfNotExists(
+                '''
+                    CREATE TABLE IF NOT EXISTS twitchfollowers (
+                        datetime TEXT NOT NULL,
+                        twitchchannelid TEXT NOT NULL,
+                        userid TEXT NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
+                    )
+                '''
+            )
+        else:
+            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
+
+        await connection.close()

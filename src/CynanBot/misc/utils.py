@@ -192,6 +192,43 @@ def getCleanedSplits(s: str | None) -> list[str]:
 
     return words
 
+def getDateTimeFromDict(
+    d: dict[str, Any] | None,
+    key: str,
+    fallback: datetime | None = None
+) -> datetime:
+    if d is not None and not isinstance(d, dict):
+        raise TypeError(f'd argument is malformed: \"{d}\"')
+    elif not isValidStr(key):
+        raise TypeError(f'key argument is malformed: \"{key}\"')
+    elif fallback is not None and not isinstance(fallback, datetime):
+        raise TypeError(f'fallback argument is malformed: \"{fallback}\"')
+
+    value: datetime | None = None
+
+    if d is None or len(d) == 0:
+        if fallback is not None:
+            return fallback
+        else:
+            raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
+
+    valueString: str | None = None
+
+    if isValidStr(d.get(key, None)):
+        valueString = d[key]
+    elif fallback is not None:
+        value = fallback
+    else:
+        raise KeyError(f'there is no fallback and key \"{key}\" doesn\'t exist in d: \"{d}\"')
+
+    if isValidStr(valueString):
+        value = datetime.fromisoformat(valueString)
+
+    if not isinstance(value, datetime):
+        raise ValueError(f'there is no fallback for key \"{key}\" and d is None/empty: \"{d}\"')
+
+    return value
+
 digitsAfterDecimalRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)\.\d+(.+)$', re.IGNORECASE)
 endsWithZRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z$', re.IGNORECASE)
 endsWithZAndPlusRegEx: Pattern = re.compile(r'^(\d{4}.+T.+)Z\+\d{1,2}\:\d{2}$', re.IGNORECASE)

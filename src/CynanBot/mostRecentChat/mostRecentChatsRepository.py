@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import datetime, timezone, tzinfo
 
 from lru import LRU
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
@@ -21,7 +21,8 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        cacheSize: int = 100
+        cacheSize: int = 100,
+        timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -29,9 +30,14 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(cacheSize):
             raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+        elif cacheSize < 1 or cacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
         self.__caches: dict[str, LRU[str, MostRecentChat | None]] = defaultdict(lambda: LRU(cacheSize))
@@ -69,10 +75,8 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         mostRecentChat: MostRecentChat | None = None
 
         if record is not None and len(record) >= 1:
-            simpleDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[0]))
-
             mostRecentChat = MostRecentChat(
-                mostRecentChat = simpleDateTime,
+                mostRecentChat = datetime.fromisoformat(record[0]),
                 twitchChannelId = record[1],
                 userId = record[2]
             )
@@ -128,10 +132,10 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        simpleDateTime = SimpleDateTime()
+        mostRecentChat = datetime.now(self.__timeZone)
 
         self.__caches[twitchChannelId][chatterUserId] = MostRecentChat(
-            mostRecentChat = simpleDateTime,
+            mostRecentChat = mostRecentChat,
             twitchChannelId = twitchChannelId,
             userId = chatterUserId
         )
@@ -143,7 +147,7 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (chatteruserid, twitchchannelid) DO UPDATE SET datetime = EXCLUDED.datetime
             ''',
-            chatterUserId, simpleDateTime.getDateTime().isoformat(), twitchChannelId
+            chatterUserId, mostRecentChat.isoformat(), twitchChannelId
         )
 
         await connection.close()
