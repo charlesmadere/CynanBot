@@ -338,6 +338,7 @@ class CheerActionHelper(CheerActionHelperInterface):
             durationSeconds = action.getDurationSeconds(),
             reason = f'Cheer timeout from {cheerUserName} — {bits} bit(s), {action.getDurationSeconds()} second(s), action ID \"{action.getActionId()}\"',
             twitchAccessToken = moderatorTwitchAccessToken,
+            twitchChannelAccessToken = userTwitchAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout,
             user = user

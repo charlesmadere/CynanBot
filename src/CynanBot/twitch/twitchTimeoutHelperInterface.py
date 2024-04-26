@@ -11,6 +11,7 @@ class TwitchTimeoutHelperInterface(ABC):
         durationSeconds: int,
         reason: str | None,
         twitchAccessToken: str,
+        twitchChannelAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str,
         user: UserInterface

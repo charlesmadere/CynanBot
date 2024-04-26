@@ -61,12 +61,12 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
     async def __isAlreadyCurrentlyBannedOrTimedOut(
         self,
-        twitchAccessToken: str,
+        twitchChannelAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str
     ) -> bool:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        if not utils.isValidStr(twitchChannelAccessToken):
+            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userIdToTimeout):
@@ -76,7 +76,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
         try:
             bannedUsersResponse = await self.__twitchApiService.fetchBannedUsers(
-                twitchAccessToken = twitchAccessToken,
+                twitchAccessToken = twitchChannelAccessToken,
                 bannedUserRequest = TwitchBannedUserRequest(
                     broadcasterId = twitchChannelId,
                     requestedUserId = userIdToTimeout
@@ -107,12 +107,12 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
 
     async def __isMod(
         self,
-        twitchAccessToken: str,
+        twitchChannelAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str
     ) -> bool:
-        if not utils.isValidStr(twitchAccessToken):
-            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        if not utils.isValidStr(twitchChannelAccessToken):
+            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userIdToTimeout):
@@ -123,7 +123,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         try:
             moderatorInfo = await self.__twitchApiService.fetchModerator(
                 broadcasterId = twitchChannelId,
-                twitchAccessToken = twitchAccessToken,
+                twitchAccessToken = twitchChannelAccessToken,
                 userId = userIdToTimeout
             )
         except Exception as e:
@@ -137,6 +137,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         durationSeconds: int,
         reason: str | None,
         twitchAccessToken: str,
+        twitchChannelAccessToken: str,
         twitchChannelId: str,
         userIdToTimeout: str,
         user: UserInterface
@@ -149,6 +150,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'reason argument is malformed: \"{reason}\"')
         elif not utils.isValidStr(twitchAccessToken):
             raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+        elif not utils.isValidStr(twitchChannelAccessToken):
+            raise TypeError(f'twitchChannelAccessToken argument is malformed: \"{twitchChannelAccessToken}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userIdToTimeout):
@@ -168,7 +171,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return False
         elif await self.__isAlreadyCurrentlyBannedOrTimedOut(
-            twitchAccessToken = twitchAccessToken,
+            twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout
         ):
@@ -181,7 +184,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         )
 
         mustRemod = await self.__isMod(
-            twitchAccessToken = twitchAccessToken,
+            twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = userIdToTimeout
         )

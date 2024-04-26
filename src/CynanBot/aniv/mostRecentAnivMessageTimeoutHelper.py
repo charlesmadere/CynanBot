@@ -105,6 +105,10 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'User {chatterUserName}:{chatterUserId} got away with copying a message from aniv! ({timeoutProbability=})')
             return False
 
+        durationSeconds = user.getAnivMessageCopyTimeoutSeconds()
+        if not utils.isValidInt(durationSeconds):
+            durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
+
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
@@ -112,14 +116,16 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
             return False
 
-        durationSeconds = user.getAnivMessageCopyTimeoutSeconds()
-        if not utils.isValidInt(durationSeconds):
-            durationSeconds = await self.__anivSettingsRepository.getCopyMessageTimeoutSeconds()
+        twitchChannelAccessToken = await self.__twitchTokensRepository.getAccessToken(user.getHandle())
+        if not utils.isValidStr(twitchChannelAccessToken):
+            self.__timber.log('MostRecentAnivMessageTimeoutHelper', f'Failed to fetch Twitch channel access token when trying to time out {chatterUserName}:{chatterUserId} for copying a message from aniv')
+            return False
 
         if not await self.__twitchTimeoutHelper.timeout(
             durationSeconds = durationSeconds,
             reason = None,
             twitchAccessToken = twitchAccessToken,
+            twitchChannelAccessToken = twitchChannelAccessToken,
             twitchChannelId = twitchChannelId,
             userIdToTimeout = chatterUserId,
             user = user
