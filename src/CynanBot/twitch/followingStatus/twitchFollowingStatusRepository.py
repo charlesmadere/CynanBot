@@ -51,6 +51,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
 
+        self.__isDatabaseReady: bool = False
         self.__caches: dict[str, LRU[str, TwitchFollowingStatus | None]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
