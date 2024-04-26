@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import tzinfo
-from typing import List
 
 
 # A listing of pytz timezones can be found here:
@@ -8,9 +7,13 @@ from typing import List
 class TimeZoneRepositoryInterface(ABC):
 
     @abstractmethod
+    def getDefault(self) -> tzinfo:
+        pass
+
+    @abstractmethod
     def getTimeZone(self, timeZoneStr: str) -> tzinfo:
         pass
 
     @abstractmethod
-    def getTimeZones(self, timeZoneStrs: List[str]) -> List[tzinfo]:
+    def getTimeZones(self, timeZoneStrs: list[str]) -> list[tzinfo]:
         pass

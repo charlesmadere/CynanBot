@@ -95,13 +95,6 @@ class CheerActionHelper(CheerActionHelperInterface):
         self.__userNameRegEx: Pattern = re.compile(r'^\s*(\w+\d+)\s+@?(\w+)\s*$', re.IGNORECASE)
         self.__twitchChannelProvider: TwitchChannelProvider | None = None
 
-    async def __getTwitchAccessToken(self, twitchChannel: str) -> str:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
-        return await self.__twitchTokensRepository.requireAccessToken(twitchChannel)
-
     async def handleCheerAction(
         self,
         bits: int,
@@ -126,11 +119,11 @@ class CheerActionHelper(CheerActionHelperInterface):
         elif not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
 
-        moderatorTwitchAccessToken = await self.__getTwitchAccessToken(
+        moderatorTwitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
             twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
         )
 
-        userTwitchAccessToken = await self.__getTwitchAccessToken(
+        userTwitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(
             twitchChannel = user.getHandle()
         )
 

@@ -84,7 +84,6 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
             return
 
         userName = await self.__administratorProvider.getAdministratorUserName()
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(userName)
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(userName)
 
         liveUserDetails = await self.__twitchApiService.fetchLiveUserDetails(

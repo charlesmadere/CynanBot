@@ -143,7 +143,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             method = TwitchWebsocketTransportMethod.WEBSOCKET
         )
 
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(user.getUserName())
         twitchAccessToken = await self.__twitchTokensRepository.requireAccessToken(user.getUserName())
         results: dict[TwitchWebsocketSubscriptionType, Exception | None] = OrderedDict()
 

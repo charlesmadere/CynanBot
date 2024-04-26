@@ -92,7 +92,6 @@ class AnivCheckChatAction(AbsChatAction):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but the bot user ({moderatorUserName}) does not have an available Twitch token')
             return False
 
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(moderatorUserName)
         twitchToken = await self.__twitchTokensRepository.getAccessToken(moderatorUserName)
 
         if not utils.isValidStr(twitchToken):

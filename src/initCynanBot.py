@@ -381,12 +381,20 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 
 #################################
-## Misc initialization section ##
+## Core initialization section ##
 #################################
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
-backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
-timber: TimberInterface = Timber(backgroundTaskHelper = backgroundTaskHelper)
+
+backgroundTaskHelper: BackgroundTaskHelper = BackgroundTaskHelper(
+    eventLoop = eventLoop
+)
+
+timber: TimberInterface = Timber(
+    backgroundTaskHelper = backgroundTaskHelper
+)
+
+timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 
 generalSettingsRepository = GeneralSettingsRepository(
     settingsJsonReader = JsonFileReader('generalSettingsRepository.json')
@@ -426,41 +434,51 @@ else:
 authRepository = AuthRepository(
     authJsonReader = JsonFileReader('authRepository.json')
 )
-bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
-    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
-    timber = timber
-)
-contentScanner: ContentScannerInterface = ContentScanner(
-    bannedWordsRepository = bannedWordsRepository,
-    timber = timber
-)
+
 twitchWebsocketJsonMapper: TwitchWebsocketJsonMapperInterface = TwitchWebsocketJsonMapper(
     timber = timber
 )
+
 twitchApiService: TwitchApiServiceInterface = TwitchApiService(
     networkClientProvider = networkClientProvider,
     timber = timber,
     twitchWebsocketJsonMapper = twitchWebsocketJsonMapper,
     twitchCredentialsProvider = authRepository
 )
-twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
-    backingDatabase = backingDatabase,
-    timber = timber,
-    twitchApiService = twitchApiService,
-    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
-)
+
 twitchAnonymousUserIdProvider: TwitchAnonymousUserIdProviderInterface = TwitchAnonymousUserIdProvider()
+
 userIdsRepository: UserIdsRepositoryInterface = UserIdsRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchAnonymousUserIdProvider = twitchAnonymousUserIdProvider,
     twitchApiService = twitchApiService
 )
+
+twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository,
+    twitchApiService = twitchApiService,
+    seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
+)
+
 administratorProvider: AdministratorProviderInterface = AdministratorProvider(
     generalSettingsRepository = generalSettingsRepository,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository
 )
+
+bannedWordsRepository: BannedWordsRepositoryInterface = BannedWordsRepository(
+    bannedWordsLinesReader = LinesFileReader('bannedWords.txt'),
+    timber = timber
+)
+
+contentScanner: ContentScannerInterface = ContentScanner(
+    bannedWordsRepository = bannedWordsRepository,
+    timber = timber
+)
+
 soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
     timber = timber
 )
@@ -474,7 +492,6 @@ twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = Twit
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository
 )
-timeZoneRepository: TimeZoneRepositoryInterface = TimeZoneRepository()
 usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,

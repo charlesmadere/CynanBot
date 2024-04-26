@@ -106,7 +106,6 @@ class MostRecentAnivMessageTimeoutHelper(MostRecentAnivMessageTimeoutHelperInter
             return False
 
         twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchHandle)
         twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(twitchHandle)
 
         if not utils.isValidStr(twitchAccessToken):

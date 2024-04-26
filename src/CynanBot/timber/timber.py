@@ -8,7 +8,7 @@ import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from CynanBot.timber.timberEntry import TimberEntry
 from CynanBot.timber.timberInterface import TimberInterface
 
@@ -17,11 +17,11 @@ class Timber(TimberInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         sleepTimeSeconds: float = 15,
         timberRootDirectory: str = 'logs/timber'
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')

@@ -2,6 +2,7 @@ import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any
 
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.storage.backingDatabase import BackingDatabase
@@ -16,8 +17,6 @@ from CynanBot.twitch.exceptions import (NoTwitchTokenDetailsException,
                                         TwitchPasswordChangedException)
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
-from CynanBot.twitch.twitchTokensRepositoryListener import \
-    TwitchTokensRepositoryListener
 
 
 class TwitchTokensRepository(TwitchTokensRepositoryInterface):
@@ -26,34 +25,33 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         seedFileReader: JsonReaderInterface | None = None,
-        tokensExpirationBuffer: timedelta = timedelta(minutes = 10),
-        timeZone: tzinfo = timezone.utc
+        tokensExpirationBuffer: timedelta = timedelta(minutes = 10)
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif seedFileReader is not None and not isinstance(seedFileReader, JsonReaderInterface):
             raise TypeError(f'seedFileReader argument is malformed: \"{seedFileReader}\"')
         elif not isinstance(tokensExpirationBuffer, timedelta):
             raise TypeError(f'tokensExpirationBuffer argument is malformed: \"{tokensExpirationBuffer}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__seedFileReader: JsonReaderInterface | None = seedFileReader
         self.__tokensExpirationBuffer: timedelta = tokensExpirationBuffer
-        self.__timeZone: tzinfo = timeZone
 
         self.__isDatabaseReady: bool = False
-        self.__cache: dict[str, TwitchTokensDetails] = dict()
-        self.__twitchTokensRepositoryListener: TwitchTokensRepositoryListener | None = None
+        self.__cache: dict[str, TwitchTokensDetails | None] = dict()
 
     async def addUser(self, code: str, twitchChannel: str):
         if not utils.isValidStr(code):
@@ -70,22 +68,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to add user \"{twitchChannel}\": {e}')
 
         await self.__setTokensDetails(
-            tokensDetails = tokensDetails,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            tokensDetails = tokensDetails
         )
-
-        twitchTokensRepositoryListener = self.__twitchTokensRepositoryListener
-
-        if twitchTokensRepositoryListener is not None:
-            if tokensDetails is None:
-                await twitchTokensRepositoryListener.onUserRemoved(
-                    twitchChannel = twitchChannel
-                )
-            else:
-                await twitchTokensRepositoryListener.onUserAdded(
-                    tokensDetails = tokensDetails,
-                    twitchChannel = twitchChannel
-                )
 
     async def clearCaches(self):
         self.__cache.clear()
@@ -131,48 +116,19 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
             if tokensDetails is not None:
                 await self.__setTokensDetails(
-                    tokensDetails = tokensDetails,
-                    twitchChannel = twitchChannel
+                    twitchChannel = twitchChannel,
+                    tokensDetails = tokensDetails
                 )
 
         self.__timber.log('TwitchTokensRepository', f'Finished reading in seed file \"{seedFileReader}\"')
 
     async def __createExpiredExpirationTime(self) -> datetime:
-        nowDateTime = datetime.now(self.__timeZone)
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
         return nowDateTime - timedelta(weeks = 1)
 
-    async def getAccessToken(self, twitchChannel: str) -> str | None:
+    async def __fetchTokensDetailsFromDatabase(self, twitchChannel: str) -> TwitchTokensDetails | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        tokensDetails = await self.getTokensDetails(twitchChannel)
-
-        if tokensDetails is None:
-            return None
-
-        return tokensDetails.getAccessToken()
-
-    async def __getDatabaseConnection(self) -> DatabaseConnection:
-        await self.__initDatabaseTable()
-        return await self.__backingDatabase.getConnection()
-
-    async def getRefreshToken(self, twitchChannel: str) -> str | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        tokensDetails = await self.getTokensDetails(twitchChannel)
-
-        if tokensDetails is None:
-            return None
-
-        return tokensDetails.getRefreshToken()
-
-    async def getTokensDetails(self, twitchChannel: str) -> TwitchTokensDetails | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        if twitchChannel.lower() in self.__cache:
-            return self.__cache[twitchChannel.lower()]
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
@@ -187,7 +143,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await connection.close()
 
         if record is None or len(record) == 0:
-            self.__cache.pop(twitchChannel.lower(), None)
             return None
 
         expirationTime = datetime.fromisoformat(record[0])
@@ -195,10 +150,58 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         if expirationTime is None:
             expirationTime = await self.__createExpiredExpirationTime()
 
-        tokensDetails = TwitchTokensDetails(
+        return TwitchTokensDetails(
             expirationTime = expirationTime,
             accessToken = record[1],
             refreshToken = record[2]
+        )
+
+    async def getAccessToken(self, twitchChannel: str) -> str | None:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        tokensDetails = await self.getTokensDetails(twitchChannel)
+
+        if tokensDetails is None:
+            return None
+
+        return tokensDetails.accessToken
+
+    async def __getDatabaseConnection(self) -> DatabaseConnection:
+        await self.__initDatabaseTable()
+        return await self.__backingDatabase.getConnection()
+
+    async def getRefreshToken(self, twitchChannel: str) -> str | None:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        tokensDetails = await self.getTokensDetails(twitchChannel)
+
+        if tokensDetails is None:
+            return None
+
+        return tokensDetails.refreshToken
+
+    async def getTokensDetails(self, twitchChannel: str) -> TwitchTokensDetails | None:
+        if not utils.isValidStr(twitchChannel):
+            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+
+        tokensDetails: TwitchTokensDetails | None = None
+
+        if twitchChannel.lower() in self.__cache:
+            tokensDetails = self.__cache.get(twitchChannel.lower(), None)
+        else:
+            tokensDetails = await self.__fetchTokensDetailsFromDatabase(
+                twitchChannel = twitchChannel
+            )
+
+        if tokensDetails is None:
+            self.__cache[twitchChannel.lower()] = None
+            return None
+
+        tokensDetails = await self.__validateAndRefreshAccessToken(
+            twitchChannel = twitchChannel,
+            tokensDetails = tokensDetails
         )
 
         self.__cache[twitchChannel.lower()] = tokensDetails
@@ -246,35 +249,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await connection.close()
         await self.__consumeSeedFile()
 
-    async def __refreshTokensDetails(
-        self,
-        twitchChannel: str,
-        tokensDetails: TwitchTokensDetails
-    ):
-        if not isinstance(tokensDetails, TwitchTokensDetails):
-            raise TypeError(f'tokenDetails argument is malformed: \"{tokensDetails}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        self.__timber.log('TwitchTokensRepository', f'Refreshing Twitch tokens for \"{twitchChannel}\"...')
-
-        try:
-            newTokensDetails = await self.__twitchApiService.refreshTokens(
-                twitchRefreshToken = tokensDetails.getRefreshToken()
-            )
-        except GenericNetworkException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}')
-        except TwitchPasswordChangedException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error caused by password change when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
-            await self.removeUser(twitchChannel)
-            raise TwitchPasswordChangedException(f'TwitchTokensRepository encountered network error caused by password change when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}')
-
-        await self.__setTokensDetails(
-            tokensDetails = newTokensDetails,
-            twitchChannel = twitchChannel
-        )
-
     async def removeUser(self, twitchChannel: str):
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
@@ -292,13 +266,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
 
         await connection.close()
         self.__cache.pop(twitchChannel.lower(), None)
-
-        twitchTokensRepositoryListener = self.__twitchTokensRepositoryListener
-
-        if twitchTokensRepositoryListener is not None:
-            await twitchTokensRepositoryListener.onUserRemoved(
-                twitchChannel = twitchChannel
-            )
 
     async def requireAccessToken(self, twitchChannel: str) -> str:
         if not utils.isValidStr(twitchChannel):
@@ -356,21 +323,15 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         await connection.close()
         self.__cache.pop(twitchChannel.lower(), None)
 
-    def setListener(self, listener: TwitchTokensRepositoryListener | None):
-        if listener is not None and not isinstance(listener, TwitchTokensRepositoryListener):
-            raise TypeError(f'listener argument is malformed: \"{listener}\"')
-
-        self.__twitchTokensRepositoryListener = listener
-
     async def __setTokensDetails(
         self,
+        twitchChannel: str,
         tokensDetails: TwitchTokensDetails | None,
-        twitchChannel: str
     ):
-        if tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
-            raise TypeError(f'tokenDetails argument is malformed: \"{tokensDetails}\"')
-        elif not utils.isValidStr(twitchChannel):
+        if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif tokensDetails is not None and not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokenDetails argument is malformed: \"{tokensDetails}\"')
 
         connection = await self.__getDatabaseConnection()
 
@@ -384,9 +345,9 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             )
 
             self.__cache.pop(twitchChannel.lower(), None)
-            self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannel}\" has been deleted')
+            self.__timber.log('TwitchTokensRepository', f'Twitch tokens details have been deleted ({twitchChannel=}) ({tokensDetails=})')
         else:
-            expirationTime = tokensDetails.getExpirationTime()
+            expirationTime = tokensDetails.expirationTime
 
             await connection.execute(
                 '''
@@ -394,48 +355,68 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (twitchchannel) DO UPDATE SET expirationtime = EXCLUDED.expirationtime, accesstoken = EXCLUDED.accesstoken, refreshtoken = EXCLUDED.refreshtoken
                 ''',
-                expirationTime.isoformat(), tokensDetails.getAccessToken(), tokensDetails.getRefreshToken(), twitchChannel
+                expirationTime.isoformat(), tokensDetails.accessToken, tokensDetails.refreshToken, twitchChannel
             )
 
             self.__cache[twitchChannel.lower()] = tokensDetails
-            self.__timber.log('TwitchTokensRepository', f'Twitch tokens details for \"{twitchChannel}\" has been updated ({tokensDetails})')
+            self.__timber.log('TwitchTokensRepository', f'Twitch tokens details have been updated ({twitchChannel=}) ({tokensDetails=})')
 
         await connection.close()
 
-    async def validateAndRefreshAccessToken(self, twitchChannel: str):
+    async def __validateAndRefreshAccessToken(
+        self,
+        twitchChannel: str,
+        tokensDetails: TwitchTokensDetails
+    ) -> TwitchTokensDetails:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not isinstance(tokensDetails, TwitchTokensDetails):
+            raise TypeError(f'tokensDetails argument is malformed: \"{tokensDetails}\"')
 
-        tokensDetails = await self.getTokensDetails(twitchChannel)
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
-        if tokensDetails is None:
-            self.__timber.log('TwitchTokensRepository', f'Attempted to validate Twitch tokens for \"{twitchChannel}\", but tokens details are missing/unavailable')
-            return
-
-        nowDateTime = datetime.now(self.__timeZone)
-
-        if nowDateTime + self.__tokensExpirationBuffer <= tokensDetails.getExpirationTime():
-            self.__timber.log('TwitchTokensRepository', f'Validated Twitch tokens for \"{twitchChannel}\", they don\'t need to be refreshed yet ({tokensDetails.getExpirationTime()=})')
-            return
+        if nowDateTime + self.__tokensExpirationBuffer <= tokensDetails.expirationTime:
+            self.__timber.log('TwitchTokensRepository', f'Twitch tokens for \"{twitchChannel}\" don\'t need to be validated and refreshed yet ({tokensDetails.expirationTime=})')
+            return tokensDetails
 
         self.__timber.log('TwitchTokensRepository', f'Validating Twitch tokens for \"{twitchChannel}\"...')
-
         expirationTime: datetime | None = None
+
         try:
             expirationTime = await self.__twitchApiService.validateTokens(
-                twitchAccessToken = tokensDetails.getAccessToken()
+                twitchAccessToken = tokensDetails.accessToken
             )
         except GenericNetworkException as e:
-            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
-            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\": {e}')
+            self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\" ({tokensDetails=}): {e}', e, traceback.format_exc())
+            raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to validate Twitch tokens for \"{twitchChannel}\" ({tokensDetails=}): {e}')
 
-        if expirationTime is not None and expirationTime > nowDateTime + self.__tokensExpirationBuffer:
-            await self.__setExpirationTime(
-                expirationTime = expirationTime,
-                twitchChannel = twitchChannel
-            )
-        else:
-            await self.__refreshTokensDetails(
+        if expirationTime is None or expirationTime + self.__tokensExpirationBuffer > nowDateTime:
+            try:
+                newTokensDetails = await self.__twitchApiService.refreshTokens(
+                    twitchRefreshToken = tokensDetails.refreshToken
+                )
+            except GenericNetworkException as e:
+                self.__timber.log('TwitchTokensRepository', f'Encountered network error when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                raise GenericNetworkException(f'TwitchTokensRepository encountered network error when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}')
+            except TwitchPasswordChangedException as e:
+                self.__timber.log('TwitchTokensRepository', f'Encountered network error caused by password change when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}', e, traceback.format_exc())
+                await self.removeUser(twitchChannel)
+                raise TwitchPasswordChangedException(f'TwitchTokensRepository encountered network error caused by password change when trying to refresh Twitch tokens for \"{twitchChannel}\": {e}')
+
+            await self.__setTokensDetails(
                 twitchChannel = twitchChannel,
-                tokensDetails = tokensDetails
+                tokensDetails = newTokensDetails
             )
+
+            return newTokensDetails
+
+        await self.__setExpirationTime(
+            expirationTime = expirationTime,
+            twitchChannel = twitchChannel
+        )
+
+        return TwitchTokensDetails(
+            expirationTime = expirationTime,
+            accessToken = tokensDetails.accessToken,
+            refreshToken = tokensDetails.refreshToken
+        )

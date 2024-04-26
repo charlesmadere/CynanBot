@@ -951,7 +951,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
     async def refreshTokens(self, twitchRefreshToken: str) -> TwitchTokensDetails:
         if not utils.isValidStr(twitchRefreshToken):
-            raise ValueError(f'twitchRefreshToken argument is malformed: \"{twitchRefreshToken}\"')
+            raise TypeError(f'twitchRefreshToken argument is malformed: \"{twitchRefreshToken}\"')
 
         self.__timber.log('TwitchApiService', f'Refreshing tokens... ({twitchRefreshToken=})')
 
@@ -973,22 +973,22 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered network error when refreshing tokens ({twitchRefreshToken=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when refreshing tokens ({twitchRefreshToken=}): {e}')
 
-        if response.getStatusCode() == 400:
-            self.__timber.log('TwitchApiService', f'Encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
-            raise TwitchPasswordChangedException(f'Encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
-        elif response.getStatusCode() != 200:
-            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
-            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}): {response.getStatusCode()}')
-
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        responseStatusCode = response.getStatusCode()
+        jsonResponse = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
-            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
+        if responseStatusCode == 400:
+            self.__timber.log('TwitchApiService', f'Encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchPasswordChangedException(f'TwitchApiService encountered HTTP 400 status code when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+        elif responseStatusCode != 200:
+            self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+        elif not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
+            self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
         elif 'error' in jsonResponse and len(jsonResponse['error']) >= 1:
-            self.__timber.log('TwitchApiService', f'Received an error of some kind when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
-            raise TwitchErrorException(f'TwitchApiService received an error of some kind when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received an error of some kind when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchErrorException(f'TwitchApiService received an error of some kind when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         expirationTime = await self.__calculateExpirationTime(
             expiresInSeconds = utils.getIntFromDict(jsonResponse, 'expires_in', fallback = -1)
@@ -996,13 +996,13 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         accessToken = utils.getStrFromDict(jsonResponse, 'access_token', fallback = '')
         if not utils.isValidStr(accessToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
-            raise TwitchAccessTokenMissingException(f'TwitchApiService received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchAccessTokenMissingException(f'TwitchApiService received malformed \"access_token\" ({accessToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         refreshToken = utils.getStrFromDict(jsonResponse, 'refresh_token', fallback = '')
         if not utils.isValidStr(refreshToken):
-            self.__timber.log('TwitchApiService', f'Received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
-            raise TwitchRefreshTokenMissingException(f'TwitchApiService received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}): {jsonResponse}')
+            self.__timber.log('TwitchApiService', f'Received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
+            raise TwitchRefreshTokenMissingException(f'TwitchApiService received malformed \"refresh_token\" ({refreshToken}) when refreshing tokens ({twitchRefreshToken=}) ({response=}) ({responseStatusCode=}) ({jsonResponse=})')
 
         return TwitchTokensDetails(
             expirationTime = expirationTime,
@@ -1040,10 +1040,6 @@ class TwitchApiService(TwitchApiServiceInterface):
         except GenericNetworkException as e:
             self.__timber.log('TwitchApiService', f'Encountered network error when sending chat message ({chatRequest=}): {e}', e, traceback.format_exc())
             raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}): {e}')
-
-        if response is None:
-            self.__timber.log('TwitchApiService', f'Encountered unknown network error when sending chat message ({chatRequest=}) ({response=})')
-            raise GenericNetworkException(f'TwitchApiService encountered network error when sending chat message ({chatRequest=}) ({response=})')
 
         responseStatusCode = response.getStatusCode()
         jsonResponse = await response.json()

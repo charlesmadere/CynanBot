@@ -51,7 +51,7 @@ class ChannelPointSoundHelper(ChannelPointSoundHelperInterface):
 
     async def clearCaches(self):
         self.__cache = None
-        self.__timber.log('ChannelPointSoundHelper', f'Caches cleared')
+        self.__timber.log('ChannelPointSoundHelper', 'Caches cleared')
 
     async def chooseRandomSoundAlert(self) -> SoundAlert | None:
         cache = self.__cache

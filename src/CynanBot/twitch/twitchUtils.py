@@ -119,19 +119,12 @@ class TwitchUtils(TwitchUtilsInterface):
 
     async def __getTwitchAccessToken(
         self,
-        refresh: bool,
         twitchChannelId: str
     ) -> str:
-        if not utils.isValidBool(refresh):
-            raise TypeError(f'refresh argument is malformed: \"{refresh}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         twitchChannel = await self.__twitchHandleProvider.getTwitchHandle()
-
-        if refresh:
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
-
         return await self.__twitchTokensRepository.requireAccessToken(twitchChannel)
 
     async def safeSend(
@@ -242,16 +235,12 @@ class TwitchUtils(TwitchUtilsInterface):
             return False
 
         twitchChannelId = await messageable.getTwitchChannelId()
+        twitchAccessToken = await self.__getTwitchAccessToken(twitchChannelId)
         senderId = await self.__getSenderId()
         numberOfRetries = 0
         successfullySent = False
 
         while numberOfRetries <= 1 and not successfullySent:
-            twitchAccessToken = await self.__getTwitchAccessToken(
-                refresh = numberOfRetries == 1,
-                twitchChannelId = twitchChannelId
-            )
-
             response: TwitchSendChatMessageResponse | None = None
             exception: Exception | None = None
 

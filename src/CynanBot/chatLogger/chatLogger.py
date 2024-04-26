@@ -8,11 +8,11 @@ import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatLogger.absChatMessage import AbsChatMessage
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.chatLogger.chatMessage import ChatMessage
 from CynanBot.chatLogger.raidMessage import RaidMessage
+from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -20,12 +20,12 @@ class ChatLogger(ChatLoggerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/chatLogger'
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -36,7 +36,7 @@ class ChatLogger(ChatLoggerInterface):
         elif not utils.isValidStr(logRootDirectory):
             raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__logRootDirectory: str = logRootDirectory

@@ -88,10 +88,6 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
                     await self.__deleteFromRepository(remodAction)
                     continue
 
-                await self.__twitchTokensRepository.validateAndRefreshAccessToken(
-                    twitchChannel = remodAction.getBroadcasterUserName()
-                )
-
                 twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(
                     twitchChannel = remodAction.getBroadcasterUserName()
                 )

@@ -1,4 +1,4 @@
-from datetime import tzinfo
+from datetime import timezone, tzinfo
 
 import pytz
 
@@ -11,8 +11,15 @@ from CynanBot.location.timeZoneRepositoryInterface import \
 # https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones
 class TimeZoneRepository(TimeZoneRepositoryInterface):
 
-    def __init__(self):
+    def __init__(self, defaultTimeZone: tzinfo = timezone.utc):
+        if not isinstance(defaultTimeZone, tzinfo):
+            raise TypeError(f'defaultTimeZone argument is malformed: \"{defaultTimeZone}\"')
+
+        self.__defaultTimeZone: tzinfo = defaultTimeZone
         self.__timeZones: dict[str, tzinfo] = dict()
+
+    def getDefault(self) -> tzinfo:
+        return self.__defaultTimeZone
 
     def getTimeZone(self, timeZoneStr: str) -> tzinfo:
         if not utils.isValidStr(timeZoneStr):

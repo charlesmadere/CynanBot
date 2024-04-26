@@ -45,7 +45,7 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
             return users
 
         for user in usersWithTwitchTokens:
-            twitchAccessToken = await self.__validateAndRefreshAccessToken(user)
+            twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(user)
 
             if not utils.isValidStr(twitchAccessToken):
                 self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Unable to find Twitch access token for \"{user}\"')
@@ -97,11 +97,4 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
         self.__timber.log('TwitchWebsocketAllowedUsersRepository', f'Built up a list of {len(users)} user(s) that are eligible for websocket connections')
 
         return users
- 
-    async def __validateAndRefreshAccessToken(self, user: str) -> Optional[str]:
-        if not utils.isValidStr(user):
-            raise ValueError(f'user argument is malformed: \"{user}\"')
- 
-        await self.__twitchTokensRepository.validateAndRefreshAccessToken(user)
-        return await self.__twitchTokensRepository.getAccessToken(user)
  

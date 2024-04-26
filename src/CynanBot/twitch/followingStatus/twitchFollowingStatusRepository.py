@@ -55,7 +55,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
     async def clearCaches(self):
         self.__caches.clear()
-        self.__timber.log('TwitchFollowerRepository', f'Caches cleared')
+        self.__timber.log('TwitchFollowerRepository', 'Caches cleared')
 
     async def fetchFollowingStatus(
         self,

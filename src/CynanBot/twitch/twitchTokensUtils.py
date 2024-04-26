@@ -28,11 +28,9 @@ class TwitchTokensUtils(TwitchTokensUtilsInterface):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
 
         if await self.__twitchTokensRepository.hasAccessToken(twitchChannel):
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(twitchChannel)
             return await self.__twitchTokensRepository.getAccessToken(twitchChannel)
         else:
             administratorUserName = await self.__administratorProvider.getAdministratorUserName()
-            await self.__twitchTokensRepository.validateAndRefreshAccessToken(administratorUserName)
             return await self.__twitchTokensRepository.getAccessToken(administratorUserName)
 
     async def requireAccessTokenOrFallback(self, twitchChannel: str) -> str:
