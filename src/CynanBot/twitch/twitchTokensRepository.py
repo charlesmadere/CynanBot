@@ -2,8 +2,9 @@ import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
 from typing import Any
 
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
