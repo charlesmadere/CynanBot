@@ -591,29 +591,42 @@ class CynanBot(
             self.__getBannedTriviaControllersCommand: AbsChatCommand = GetBannedTriviaControllersChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, triviaUtils, twitchUtils, usersRepository)
             self.__removeBannedTriviaControllerCommand: AbsChatCommand = RemoveBannedTriviaControllerChatCommand(administratorProvider, bannedTriviaGameControllersRepository, timber, twitchUtils, usersRepository)
 
-        if triviaGameGlobalControllersRepository is None or triviaUtils is None:
+        if additionalTriviaAnswersRepository is None or cutenessRepository is None or cutenessUtils is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameControllersRepository is None or triviaGameGlobalControllersRepository is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaScoreRepository is None or triviaSettingsRepository is None or triviaUtils is None:
             self.__addGlobalTriviaControllerCommand: AbsChatCommand = StubChatCommand()
-            self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
-        else:
-            self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
-            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
-
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or triviaEmoteGenerator is None or triviaGameBuilder is None or triviaGameMachine is None or triviaHistoryRepository is None or triviaIdGenerator is None or triviaSettingsRepository is None or triviaScoreRepository is None or triviaUtils is None:
             self.__addTriviaAnswerCommand: AbsCommand = StubCommand()
+            self.__addTriviaControllerCommand: AbsCommand = StubCommand()
             self.__answerCommand: AbsChatCommand = StubChatCommand()
+            self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
+            self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
             self.__deleteTriviaAnswersCommand: AbsCommand = StubCommand()
+            self.__getGlobalTriviaControllersCommand: AbsCommand = StubCommand()
             self.__getTriviaAnswersCommand: AbsCommand = StubCommand()
+            self.__getTriviaControllersCommand: AbsCommand = StubCommand()
+            self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
             self.__superAnswerCommand: AbsChatCommand = StubChatCommand()
             self.__superTriviaCommand: AbsChatCommand = StubChatCommand()
+            self.__triviaInfoCommand: AbsCommand = StubCommand()
+            self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = StubCommand()
+            self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
         else:
+            self.__addGlobalTriviaControllerCommand: AbsChatCommand = AddGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
             self.__addTriviaAnswerCommand: AbsCommand = AddTriviaAnswerCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
             self.__answerCommand: AbsChatCommand = AnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
+            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
             self.__deleteTriviaAnswersCommand: AbsCommand = DeleteTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getGlobalTriviaControllersCommand: AbsCommand = GetGlobalTriviaControllersCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, triviaUtils, twitchUtils, usersRepository)
             self.__getTriviaAnswersCommand: AbsCommand = GetTriviaAnswersCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__removeGlobalTriviaControllerCommand: AbsCommand = RemoveGlobalTriviaControllerCommand(administratorProvider, timber, triviaGameGlobalControllersRepository, twitchUtils, usersRepository)
+            self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
             self.__superAnswerCommand: AbsChatCommand = SuperAnswerChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, usersRepository)
             self.__superTriviaCommand: AbsChatCommand = SuperTriviaChatCommand(generalSettingsRepository, timber, triviaGameBuilder, triviaGameMachine, triviaSettingsRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
+            self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
+            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if cutenessRepository is None or cutenessUtils is None or triviaUtils is None:
             self.__cutenessCommand: AbsChatCommand = StubChatCommand()
@@ -654,31 +667,6 @@ class CynanBot(
             self.__translateCommand: AbsChatCommand = StubChatCommand()
         else:
             self.__translateCommand: AbsChatCommand = TranslateChatCommand(generalSettingsRepository, languagesRepository, timber, translationHelper, twitchUtils, usersRepository)
-
-        if triviaGameControllersRepository is None or triviaUtils is None:
-            self.__addTriviaControllerCommand: AbsCommand = StubCommand()
-            self.__getTriviaControllersCommand: AbsCommand = StubCommand()
-            self.__removeTriviaControllerCommand: AbsCommand = StubCommand()
-        else:
-            self.__addTriviaControllerCommand: AbsCommand = AddTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
-            self.__getTriviaControllersCommand: AbsCommand = GetTriviaControllersCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__removeTriviaControllerCommand: AbsCommand = RemoveTriviaControllerCommand(administratorProvider, generalSettingsRepository, timber, triviaGameControllersRepository, twitchUtils, usersRepository)
-
-        if triviaGameMachine is None or triviaIdGenerator is None or triviaUtils is None:
-            self.__clearSuperTriviaQueueCommand: AbsChatCommand = StubChatCommand()
-        else:
-            self.__clearSuperTriviaQueueCommand: AbsChatCommand = ClearSuperTriviaQueueChatCommand(generalSettingsRepository, timber, triviaGameMachine, triviaIdGenerator, triviaUtils, usersRepository)
-
-        if additionalTriviaAnswersRepository is None or cutenessRepository is None or shinyTriviaOccurencesRepository is None or toxicTriviaOccurencesRepository is None or triviaBanHelper is None or triviaEmoteGenerator is None or triviaHistoryRepository is None or triviaScoreRepository is None or triviaUtils is None:
-            self.__banTriviaQuestionCommand: AbsChatCommand = StubChatCommand()
-            self.__triviaInfoCommand: AbsCommand = StubCommand()
-            self.__triviaScoreCommand: AbsChatCommand = StubChatCommand()
-            self.__unbanTriviaQuestionCommand: AbsCommand = StubCommand()
-        else:
-            self.__banTriviaQuestionCommand: AbsChatCommand = BanTriviaQuestionChatCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__triviaInfoCommand: AbsCommand = TriviaInfoCommand(additionalTriviaAnswersRepository, generalSettingsRepository, timber, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
-            self.__triviaScoreCommand: AbsChatCommand = TriviaScoreChatCommand(generalSettingsRepository, shinyTriviaOccurencesRepository, timber, toxicTriviaOccurencesRepository, triviaScoreRepository, triviaUtils, twitchUtils, userIdsRepository, usersRepository)
-            self.__unbanTriviaQuestionCommand: AbsCommand = UnbanTriviaQuestionCommand(generalSettingsRepository, timber, triviaBanHelper, triviaEmoteGenerator, triviaHistoryRepository, triviaUtils, twitchUtils, usersRepository)
 
         if streamAlertsManager is None:
             self.__ttsCommand: AbsCommand = StubCommand()
