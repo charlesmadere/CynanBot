@@ -111,7 +111,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             '''
                 SELECT twitchfollowingstatus.datetime, userids.username FROM twitchfollowingstatus
                 INNER JOIN userids ON twitchfollowingstatus.twitchchannelid = userids.userid
-                WHERE twitchfollowingstatus.userid = $1
+                WHERE twitchfollowingstatus.twitchchannelid = $1 AND twitchfollowingstatus.userid = $2
                 LIMIT 1
             ''',
             twitchChannelId, userId
