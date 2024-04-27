@@ -1,23 +1,25 @@
 import asyncio
 import random
-from typing import List, Optional
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.configuration.channelJoinListener import \
     ChannelJoinListener
 from CynanBot.twitch.configuration.finishedJoiningChannelsEvent import \
     FinishedJoiningChannelsEvent
 from CynanBot.twitch.configuration.joinChannelsEvent import JoinChannelsEvent
+from CynanBot.twitch.twitchChannelJoinHelperInterface import \
+    TwitchChannelJoinHelperInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
 
 
-class ChannelJoinHelper():
+class TwitchChannelJoinHelper(TwitchChannelJoinHelperInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         verified: bool,
         timber: TimberInterface,
         usersRepository: UsersRepositoryInterface,
@@ -25,28 +27,28 @@ class ChannelJoinHelper():
         maxChannelsToJoinIfUnverified: int = 10,
         maxChannelsToJoinIfVerified: int = 100
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
-            raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
+            raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not utils.isValidBool(verified):
-            raise ValueError(f'verified argument is malformed: \"{verified}\"')
+            raise TypeError(f'verified argument is malformed: \"{verified}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
         elif not utils.isValidNum(sleepTimeSeconds):
-            raise ValueError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
+            raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 10 or sleepTimeSeconds > 20:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
         elif not utils.isValidInt(maxChannelsToJoinIfUnverified):
-            raise ValueError(f'maxChannelsToJoinIfUnverified argument is malformed: \"{maxChannelsToJoinIfUnverified}\"')
+            raise TypeError(f'maxChannelsToJoinIfUnverified argument is malformed: \"{maxChannelsToJoinIfUnverified}\"')
         elif maxChannelsToJoinIfUnverified < 5 or maxChannelsToJoinIfUnverified > 10:
             raise ValueError(f'maxChannelsToJoinIfUnverified argument is out of bounds: {maxChannelsToJoinIfUnverified}')
         elif not utils.isValidInt(maxChannelsToJoinIfVerified):
-            raise ValueError(f'maxChannelsToJoinIfVerified argument is malformed: \"{maxChannelsToJoinIfVerified}\"')
+            raise TypeError(f'maxChannelsToJoinIfVerified argument is malformed: \"{maxChannelsToJoinIfVerified}\"')
         elif maxChannelsToJoinIfVerified < 5 or maxChannelsToJoinIfVerified > 200:
             raise ValueError(f'maxChannelsToJoinIfVerified argument is out of bounds: {maxChannelsToJoinIfVerified}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__verified: bool = verified
         self.__timber: TimberInterface = timber
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -54,7 +56,7 @@ class ChannelJoinHelper():
         self.__maxChannelsToJoinIfUnverified: int = maxChannelsToJoinIfUnverified
         self.__maxChannelsToJoinIfVerified: int = maxChannelsToJoinIfVerified
 
-        self.__channelJoinListener: Optional[ChannelJoinListener] = None
+        self.__channelJoinListener: ChannelJoinListener | None = None
         self.__isJoiningChannels: bool = False
 
     def joinChannels(self):
@@ -72,8 +74,8 @@ class ChannelJoinHelper():
         if channelJoinListener is None:
             raise RuntimeError(f'channelJoinListener has not been set: \"{channelJoinListener}\"')
 
-        allChannels: List[str] = list()
-        disabledChannels: List[str] = list()
+        allChannels: list[str] = list()
+        disabledChannels: list[str] = list()
         users = await self.__usersRepository.getUsersAsync()
 
         for user in users:
@@ -93,7 +95,7 @@ class ChannelJoinHelper():
         allChannels.sort(key = lambda userHandle: userHandle.lower())
         self.__timber.log('ChannelJoinHelper', f'Will be joining a total of {len(allChannels)} channel(s)...')
 
-        workingChannels: List[str] = list()
+        workingChannels: list[str] = list()
         workingChannels.extend(allChannels)
 
         maxChannelsToJoin = self.__maxChannelsToJoinIfUnverified
@@ -101,7 +103,7 @@ class ChannelJoinHelper():
             maxChannelsToJoin = self.__maxChannelsToJoinIfVerified
 
         while len(workingChannels) >= 1:
-            newChannelsToJoin: List[str] = list()
+            newChannelsToJoin: list[str] = list()
 
             while len(workingChannels) >= 1 and len(newChannelsToJoin) < maxChannelsToJoin - 1:
                 userHandle = random.choice(workingChannels)
@@ -123,7 +125,7 @@ class ChannelJoinHelper():
         self.__timber.log('ChannelJoinHelper', f'Finished joining {len(allChannels)} channel(s)')
         self.__isJoiningChannels = False
 
-    def setChannelJoinListener(self, listener: Optional[ChannelJoinListener]):
+    def setChannelJoinListener(self, listener: ChannelJoinListener | None):
         if listener is not None and not isinstance(listener, ChannelJoinListener):
             raise ValueError(f'listener argument is malformed: \"{listener}\"')
 

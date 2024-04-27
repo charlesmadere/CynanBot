@@ -140,7 +140,6 @@ from CynanBot.recurringActions.recurringActionsRepositoryInterface import \
 from CynanBot.recurringActions.recurringActionsWizardInterface import \
     RecurringActionsWizardInterface
 from CynanBot.recurringActions.recurringEvent import RecurringEvent
-from CynanBot.recurringActions.recurringEventType import RecurringEventType
 from CynanBot.recurringActions.superTriviaRecurringEvent import \
     SuperTriviaRecurringEvent
 from CynanBot.recurringActions.weatherRecurringEvent import \
@@ -226,9 +225,6 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.configuration.absChannelJoinEvent import \
     AbsChannelJoinEvent
-from CynanBot.twitch.configuration.channelJoinEventType import \
-    ChannelJoinEventType
-from CynanBot.twitch.configuration.channelJoinHelper import ChannelJoinHelper
 from CynanBot.twitch.configuration.channelJoinListener import \
     ChannelJoinListener
 from CynanBot.twitch.configuration.finishedJoiningChannelsEvent import \
@@ -252,6 +248,8 @@ from CynanBot.twitch.followingStatus.twitchFollowingStatusRepositoryInterface im
     TwitchFollowingStatusRepositoryInterface
 from CynanBot.twitch.isLiveOnTwitchRepositoryInterface import \
     IsLiveOnTwitchRepositoryInterface
+from CynanBot.twitch.twitchChannelJoinHelperInterface import \
+    TwitchChannelJoinHelperInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtilsInterface import \
     TwitchPredictionWebsocketUtilsInterface
 from CynanBot.twitch.twitchTimeoutRemodHelperInterface import \
@@ -298,7 +296,6 @@ class CynanBot(
         backgroundTaskHelper: BackgroundTaskHelper,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
-        channelJoinHelper: ChannelJoinHelper,
         channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
         chatActionsManager: ChatActionsManagerInterface | None,
         chatLogger: ChatLoggerInterface,
@@ -347,6 +344,7 @@ class CynanBot(
         triviaUtils: TriviaUtilsInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
         twitchApiService: TwitchApiServiceInterface,
+        twitchChannelJoinHelper: TwitchChannelJoinHelperInterface,
         twitchConfiguration: TwitchConfiguration,
         twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None,
         twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None,
@@ -388,8 +386,6 @@ class CynanBot(
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
         elif bannedWordsRepository is not None and not isinstance(bannedWordsRepository, BannedWordsRepositoryInterface):
             raise TypeError(f'bannedWordsRepository argument is malformed: \"{bannedWordsRepository}\"')
-        elif not isinstance(channelJoinHelper, ChannelJoinHelper):
-            raise TypeError(f'channelJoinHelper argument is malformed: \"{channelJoinHelper}\"')
         elif channelPointSoundHelper is not None and not isinstance(channelPointSoundHelper, ChannelPointSoundHelperInterface):
             raise TypeError(f'channelPointSoundHelper argument is malformed: \"{channelPointSoundHelper}\"')
         elif chatActionsManager is not None and not isinstance(chatActionsManager, ChatActionsManagerInterface):
@@ -484,6 +480,8 @@ class CynanBot(
             raise TypeError(f'ttsSettingsRepository argument is malformed: \"{ttsSettingsRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
+        elif not isinstance(twitchChannelJoinHelper, TwitchChannelJoinHelperInterface):
+            raise TypeError(f'twitchChannelJoinHelper argument is malformed: \"{twitchChannelJoinHelper}\"')
         elif not isinstance(twitchConfiguration, TwitchConfiguration):
             raise TypeError(f'twitchConfiguration argument is malformed: \"{twitchConfiguration}\"')
         elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
@@ -512,7 +510,6 @@ class CynanBot(
             raise TypeError(f'wordOfTheDayRepository argument is malformed: \"{wordOfTheDayRepository}\"')
 
         self.__authRepository: AuthRepository = authRepository
-        self.__channelJoinHelper: ChannelJoinHelper = channelJoinHelper
         self.__chatActionsManager: ChatActionsManagerInterface | None = chatActionsManager
         self.__cheerActionHelper: CheerActionHelperInterface | None = cheerActionHelper
         self.__chatLogger: ChatLoggerInterface = chatLogger
@@ -527,6 +524,7 @@ class CynanBot(
         self.__triviaGameMachine: TriviaGameMachineInterface | None = triviaGameMachine
         self.__triviaRepository: TriviaRepositoryInterface | None = triviaRepository
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
+        self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
@@ -760,8 +758,8 @@ class CynanBot(
         twitchHandle = await self.__authRepository.getTwitchHandle()
         self.__timber.log('CynanBot', f'{twitchHandle} is ready!')
 
-        self.__channelJoinHelper.setChannelJoinListener(self)
-        self.__channelJoinHelper.joinChannels()
+        self.__twitchChannelJoinHelper.setChannelJoinListener(self)
+        self.__twitchChannelJoinHelper.joinChannels()
         self.__modifyUserDataHelper.setModifyUserEventListener(self)
 
     async def event_reconnect(self):

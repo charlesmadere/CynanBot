@@ -154,7 +154,8 @@ from CynanBot.tts.ttsSettingsRepositoryInterface import \
 from CynanBot.twitch.api.twitchApiService import TwitchApiService
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
-from CynanBot.twitch.configuration.channelJoinHelper import ChannelJoinHelper
+from CynanBot.twitch.configuration.twitchChannelJoinHelper import \
+    TwitchChannelJoinHelper
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
 from CynanBot.twitch.configuration.twitchIo.twitchIoConfiguration import \
@@ -170,6 +171,8 @@ from CynanBot.twitch.twitchAnonymousUserIdProvider import \
     TwitchAnonymousUserIdProvider
 from CynanBot.twitch.twitchAnonymousUserIdProviderInterface import \
     TwitchAnonymousUserIdProviderInterface
+from CynanBot.twitch.twitchChannelJoinHelperInterface import \
+    TwitchChannelJoinHelperInterface
 from CynanBot.twitch.twitchPredictionWebsocketUtils import \
     TwitchPredictionWebsocketUtils
 from CynanBot.twitch.twitchTimeoutHelper import TwitchTimeoutHelper
@@ -326,28 +329,40 @@ contentScanner: ContentScannerInterface = ContentScanner(
     timber = timber
 )
 
-soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
-    timber = timber
-)
 twitchTokensUtils: TwitchTokensUtilsInterface = TwitchTokensUtils(
     administratorProvider = administratorProvider,
     twitchTokensRepository = twitchTokensRepository
 )
+
 twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = TwitchFollowingStatusRepository(
     backingDatabase = backingDatabase,
     timber = timber,
     twitchApiService = twitchApiService,
     userIdsRepository = userIdsRepository
 )
+
+soundAlertJsonMapper: SoundAlertJsonMapperInterface = SoundAlertJsonMapper(
+    timber = timber
+)
+
 usersRepository: UsersRepositoryInterface = UsersRepository(
     soundAlertJsonMapper = soundAlertJsonMapper,
     timber = timber,
     timeZoneRepository = timeZoneRepository
 )
+
+twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHelper(
+    backgroundTaskHelper = backgroundTaskHelper,
+    verified = True,
+    timber = timber,
+    usersRepository = usersRepository
+)
+
 chatLogger: ChatLoggerInterface = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber
 )
+
 emojiRepository: EmojiRepositoryInterface = EmojiRepository(
     emojiJsonReader = JsonFileReader('emojiRepository.json'),
     timber = timber
@@ -691,12 +706,6 @@ cynanBot = CynanBot(
     backgroundTaskHelper = backgroundTaskHelper,
     bannedTriviaGameControllersRepository = None,
     bannedWordsRepository = bannedWordsRepository,
-    channelJoinHelper = ChannelJoinHelper(
-        backgroundTaskHelper = backgroundTaskHelper,
-        verified = True,
-        timber = timber,
-        usersRepository = usersRepository
-    ),
     channelPointSoundHelper = channelPointSoundHelper,
     chatActionsManager = chatActionsManager,
     chatLogger = chatLogger,
@@ -750,6 +759,7 @@ cynanBot = CynanBot(
     triviaUtils = None,
     ttsSettingsRepository = ttsSettingsRepository,
     twitchApiService = twitchApiService,
+    twitchChannelJoinHelper = twitchChannelJoinHelper,
     twitchConfiguration = twitchConfiguration,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchPredictionWebsocketUtils = TwitchPredictionWebsocketUtils(),

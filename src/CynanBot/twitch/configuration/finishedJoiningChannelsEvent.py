@@ -1,6 +1,3 @@
-from typing import List, Optional
-
-import CynanBot.misc.utils as utils
 from CynanBot.twitch.configuration.absChannelJoinEvent import \
     AbsChannelJoinEvent
 from CynanBot.twitch.configuration.channelJoinEventType import \
@@ -9,13 +6,14 @@ from CynanBot.twitch.configuration.channelJoinEventType import \
 
 class FinishedJoiningChannelsEvent(AbsChannelJoinEvent):
 
-    def __init__(self, allChannels: Optional[List[str]]):
-        super().__init__(eventType = ChannelJoinEventType.FINISHED)
+    def __init__(self, allChannels: list[str]):
+        if not isinstance(allChannels, list):
+            raise TypeError(f'allChannels argument is malformed: \"{allChannels}\"')
 
-        self.__allChannels: Optional[List[str]] = allChannels
+        self.__allChannels: list[str] = allChannels
 
-    def getAllChannels(self) -> Optional[List[str]]:
+    def getAllChannels(self) -> list[str]:
         return self.__allChannels
 
-    def hasAllChannels(self) -> bool:
-        return utils.hasItems(self.__allChannels)
+    def getEventType(self) -> ChannelJoinEventType:
+        return ChannelJoinEventType.FINISHED

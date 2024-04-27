@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from CynanBot.twitch.configuration.channelJoinEventType import \
     ChannelJoinEventType
@@ -6,11 +6,6 @@ from CynanBot.twitch.configuration.channelJoinEventType import \
 
 class AbsChannelJoinEvent(ABC):
 
-    def __init__(self, eventType: ChannelJoinEventType):
-        if not isinstance(eventType, ChannelJoinEventType):
-            raise ValueError(f'eventType argument is malformed: \"{eventType}\"')
-
-        self.__eventType: ChannelJoinEventType = eventType
-
+    @abstractmethod
     def getEventType(self) -> ChannelJoinEventType:
-        return self.__eventType
+        pass

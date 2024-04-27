@@ -1,6 +1,3 @@
-from typing import List
-
-import CynanBot.misc.utils as utils
 from CynanBot.twitch.configuration.absChannelJoinEvent import \
     AbsChannelJoinEvent
 from CynanBot.twitch.configuration.channelJoinEventType import \
@@ -9,13 +6,14 @@ from CynanBot.twitch.configuration.channelJoinEventType import \
 
 class JoinChannelsEvent(AbsChannelJoinEvent):
 
-    def __init__(self, channels: List[str]):
-        super().__init__(eventType = ChannelJoinEventType.JOIN)
+    def __init__(self, channels: list[str]):
+        if not isinstance(channels, list) or len(channels) == 0:
+            raise TypeError(f'channels argument is malformed: \"{channels}\"')
 
-        if not utils.areValidStrs(channels) or not isinstance(channels, list):
-            raise ValueError(f'channels argument is malformed: \"{channels}\"')
+        self.__channels: list[str] = channels
 
-        self.__channels: List[str] = channels
-
-    def getChannels(self) -> List[str]:
+    def getChannels(self) -> list[str]:
         return self.__channels
+
+    def getEventType(self) -> ChannelJoinEventType:
+        return ChannelJoinEventType.JOIN
