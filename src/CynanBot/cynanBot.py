@@ -792,20 +792,20 @@ class CynanBot(
         return await self.__getChannel(twitchChannel)
 
     async def onModifyUserEvent(self, event: ModifyUserData):
-        self.__timber.log('CynanBot', f'Received new modify user data event: {event.toStr()}')
+        self.__timber.log('CynanBot', f'Received new modify user data event: {event}')
 
         await self.wait_for_ready()
 
-        if event.getActionType() is ModifyUserActionType.ADD:
+        if event.actionType is ModifyUserActionType.ADD:
             channels: list[str] = list()
-            channels.append(event.getUserName())
+            channels.append(event.userName)
             await self.join_channels(channels)
-        elif event.getActionType() is ModifyUserActionType.REMOVE:
+        elif event.actionType is ModifyUserActionType.REMOVE:
             channels: list[str] = list()
-            channels.append(event.getUserName())
+            channels.append(event.userName)
             await self.part_channels(channels)
         else:
-            raise RuntimeError(f'unknown ModifyUserActionType: \"{event.getActionType()}\"')
+            raise RuntimeError(f'unknown ModifyUserActionType: \"{event.actionType}\"')
 
     async def onNewChannelJoinEvent(self, event: AbsChannelJoinEvent):
         eventType = event.getEventType()

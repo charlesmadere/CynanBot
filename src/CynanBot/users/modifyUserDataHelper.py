@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.clearable import Clearable
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.users.modifyUserActionType import ModifyUserActionType
@@ -14,31 +15,31 @@ class ModifyUserDataHelper(Clearable):
     def __init__(
         self,
         timber: TimberInterface,
-        timeToLive: timedelta = timedelta(minutes = 2, seconds = 30),
-        timeZone: timezone = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        timeToLive: timedelta = timedelta(minutes = 2, seconds = 30)
     ):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(timeToLive, timedelta):
-            raise ValueError(f'timeToLive argument is malformed: \"{timeToLive}\"')
-        elif not isinstance(timeZone, timezone):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeToLive argument is malformed: \"{timeToLive}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__timeToLive: timedelta = timeToLive
-        self.__timeZone: timezone = timeZone
 
-        self.__modifyUserData: Optional[ModifyUserData] = None
-        self.__modifyUserEventListener: Optional[ModifyUserEventListener] = None
-        self.__setTime: Optional[datetime] = None
+        self.__modifyUserData: ModifyUserData | None = None
+        self.__modifyUserEventListener: ModifyUserEventListener | None = None
+        self.__setTime: datetime | None = None
 
     async def clearCaches(self):
         self.__modifyUserData = None
         self.__setTime = None
         self.__timber.log('ModifyUserDataHelper', 'Caches cleared')
 
-    async def getUserData(self) -> Optional[ModifyUserData]:
-        now = datetime.now(self.__timeZone)
+    async def getUserData(self) -> ModifyUserData | None:
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if self.__setTime is None or self.__setTime + self.__timeToLive < now:
             self.__modifyUserData = None
@@ -60,9 +61,9 @@ class ModifyUserDataHelper(Clearable):
         await self.clearCaches()
         await modifyUserEventListener.onModifyUserEvent(modifyUserData)
 
-    def setModifyUserEventListener(self, listener: Optional[ModifyUserEventListener]):
+    def setModifyUserEventListener(self, listener: ModifyUserEventListener | None):
         if listener is not None and not isinstance(listener, ModifyUserEventListener):
-            raise ValueError(f'listener argument is malformed: \"{listener}\"')
+            raise TypeError(f'listener argument is malformed: \"{listener}\"')
 
         self.__modifyUserEventListener = listener
 
@@ -73,15 +74,13 @@ class ModifyUserDataHelper(Clearable):
         userName: str
     ):
         if not isinstance(actionType, ModifyUserActionType):
-            raise ValueError(f'actionType argument is malformed: \"{actionType}\"')
+            raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
         elif not utils.isValidStr(userName):
-            raise ValueError(f'userName argument is malformed: \"{userName}\"')
+            raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
-        self.__setTime = datetime.now(self.__timeZone)
+        self.__setTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         self.__modifyUserData = ModifyUserData(
             actionType = actionType,

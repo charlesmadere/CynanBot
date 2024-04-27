@@ -511,6 +511,11 @@ twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = TwitchChannelJoinHel
     usersRepository = usersRepository
 )
 
+modifyUserDataHelper: ModifyUserDataHelper = ModifyUserDataHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 chatLogger: ChatLoggerInterface = ChatLogger(
     backgroundTaskHelper = backgroundTaskHelper,
     timber = timber
@@ -1261,9 +1266,7 @@ cynanBot = CynanBot(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     languagesRepository = languagesRepository,
     locationsRepository = locationsRepository,
-    modifyUserDataHelper = ModifyUserDataHelper(
-        timber = timber
-    ),
+    modifyUserDataHelper = modifyUserDataHelper,
     mostRecentAnivMessageRepository = mostRecentAnivMessageRepository,
     mostRecentAnivMessageTimeoutHelper = mostRecentAnivMessageTimeoutHelper,
     mostRecentChatsRepository = mostRecentChatsRepository,
