@@ -26,7 +26,7 @@ class EmojiHelper(EmojiHelperInterface):
         if emojiInfo is None:
             return None
         else:
-            return emojiInfo.getName()
+            return emojiInfo.name
 
     async def replaceEmojisWithHumanNames(self, text: str) -> str:
         if not utils.isValidStr(text):
