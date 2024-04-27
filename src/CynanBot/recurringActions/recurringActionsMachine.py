@@ -208,7 +208,11 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         return action
 
-    async def __processRecurringAction(self, user: UserInterface, action: RecurringAction):
+    async def __processRecurringAction(
+        self,
+        user: UserInterface,
+        action: RecurringAction
+    ):
         if not isinstance(user, UserInterface):
             raise TypeError(f'user argument is malformed: \"{user}\"')
         elif not isinstance(action, RecurringAction):

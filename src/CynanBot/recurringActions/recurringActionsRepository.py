@@ -47,6 +47,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     ) -> list[RecurringAction]:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         recurringActions: list[RecurringAction] = list()
 
@@ -54,6 +56,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
+
         if superTrivia is not None and superTrivia.isEnabled():
             recurringActions.append(superTrivia)
 
@@ -61,6 +64,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
+
         if weather is not None and weather.isEnabled():
             recurringActions.append(weather)
 
@@ -68,6 +72,7 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
             twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
+
         if wordOfTheDay is not None and wordOfTheDay.isEnabled():
             recurringActions.append(wordOfTheDay)
 
@@ -80,13 +85,10 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     async def __getRecurringAction(
         self,
         actionType: RecurringActionType,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> list[Any] | None:
         if not isinstance(actionType, RecurringActionType):
             raise TypeError(f'actionType argument is malformed: \"{actionType}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -94,10 +96,10 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT configurationjson, isenabled, minutesbetween FROM recurringactions
-                WHERE actiontype = $1 AND twitchchannel = $2
+                WHERE actiontype = $1 AND twitchchannelid = $2
                 LIMIT 1
             ''',
-            actionType.toStr(), twitchChannel
+            actionType.toStr(), twitchChannelId
         )
 
         await connection.close()
@@ -114,10 +116,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     ) -> SuperTriviaRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.SUPER_TRIVIA,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -139,10 +142,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     ) -> WeatherRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.WEATHER,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -164,10 +168,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
     ) -> WordOfTheDayRecurringAction | None:
         if not utils.isValidStr(twitchChannel):
             raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         record = await self.__getRecurringAction(
             actionType = RecurringActionType.WORD_OF_THE_DAY,
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
@@ -197,8 +202,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                         configurationjson text DEFAULT NULL,
                         isenabled smallint DEFAULT 1 NOT NULL,
                         minutesbetween integer DEFAULT NULL,
-                        twitchchannel public.citext NOT NULL,
-                        PRIMARY KEY (actiontype, twitchchannel)
+                        twitchchannelid text NOT NULL,
+                        PRIMARY KEY (actiontype, twitchchannelid)
                     )
                 '''
             )
@@ -210,8 +215,8 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
                         configurationjson TEXT DEFAULT NULL,
                         isenabled INTEGER DEFAULT 1 NOT NULL,
                         minutesbetween INTEGER DEFAULT NULL,
-                        twitchchannel TEXT NOT NULL COLLATE NOCASE,
-                        PRIMARY KEY (actiontype, twitchchannel)
+                        twitchchannelid TEXT NOT NULL,
+                        PRIMARY KEY (actiontype, twitchchannelid)
                     )
                 '''
             )
@@ -248,11 +253,11 @@ class RecurringActionsRepository(RecurringActionsRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO recurringactions (actiontype, configurationjson, isenabled, minutesbetween, twitchchannel)
+                INSERT INTO recurringactions (actiontype, configurationjson, isenabled, minutesbetween, twitchchannelid)
                 VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT (actiontype, twitchchannel) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, isenabled = EXCLUDED.isenabled, minutesbetween = EXCLUDED.minutesbetween
+                ON CONFLICT (actiontype, twitchchannelid) DO UPDATE SET configurationjson = EXCLUDED.configurationjson, isenabled = EXCLUDED.isenabled, minutesbetween = EXCLUDED.minutesbetween
             ''',
-            action.getActionType().toStr(), configurationJson, isEnabled, action.getMinutesBetween(), action.getTwitchChannel()
+            action.getActionType().toStr(), configurationJson, isEnabled, action.getMinutesBetween(), action.getTwitchChannelId()
         )
 
         await connection.close()
