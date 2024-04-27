@@ -1,7 +1,8 @@
-from datetime import datetime, timezone, tzinfo
+from datetime import datetime
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.recurringActions.mostRecentRecurringAction import \
     MostRecentRecurringAction
 from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
@@ -20,18 +21,18 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZone, timezone):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__timeZone: tzinfo = timeZone
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
 
@@ -61,15 +62,15 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
 
         await connection.close()
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         actionType = RecurringActionType.fromStr(record[0])
-        simpleDateTime = SimpleDateTime(utils.getDateTimeFromStr(record[1]))
+        dateTime = datetime.fromisoformat(record[1])
 
         return MostRecentRecurringAction(
             actionType = actionType,
-            dateTime = simpleDateTime,
+            dateTime = dateTime,
             twitchChannel = twitchChannel
         )
 
@@ -109,8 +110,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         if not isinstance(action, RecurringAction):
             raise ValueError(f'action argument is malformed: \"{action}\"')
 
-        nowDateTime = datetime.now(self.__timeZone)
-        nowDateTimeStr = nowDateTime.isoformat()
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -119,9 +119,8 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannel) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
             ''',
-            action.getActionType().toStr(), nowDateTimeStr, action.getTwitchChannel()
+            action.getActionType().toStr(), nowDateTime.isoformat(), action.getTwitchChannel()
         )
 
         await connection.close()
-
-        self.__timber.log('MostRecentRecurringActionRepository', f'Updated \"{action.getActionType()}\" for \"{action.getTwitchChannel()}\" ({nowDateTimeStr})')
+        self.__timber.log('MostRecentRecurringActionRepository', f'Updated most recent recurring action ({action=})')

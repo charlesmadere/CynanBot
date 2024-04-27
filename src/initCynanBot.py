@@ -122,6 +122,8 @@ from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
     MostRecentRecurringActionRepository
+from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
+    MostRecentRecurringActionRepositoryInterface
 from CynanBot.recurringActions.recurringActionsHelper import \
     RecurringActionsHelper
 from CynanBot.recurringActions.recurringActionsHelperInterface import \
@@ -1007,16 +1009,20 @@ recurringActionsRepository: RecurringActionsRepositoryInterface = RecurringActio
     timber = timber
 )
 
+mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface = MostRecentRecurringActionRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 recurringActionsMachine: RecurringActionsMachineInterface = RecurringActionsMachine(
     backgroundTaskHelper = backgroundTaskHelper,
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     locationsRepository = locationsRepository,
-    mostRecentRecurringActionRepository = MostRecentRecurringActionRepository(
-        backingDatabase = backingDatabase,
-        timber = timber
-    ),
+    mostRecentRecurringActionRepository = mostRecentRecurringActionRepository,
     recurringActionsRepository = recurringActionsRepository,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     triviaGameBuilder = triviaGameBuilder,
     triviaGameMachine = triviaGameMachine,
     userIdsRepository = userIdsRepository,

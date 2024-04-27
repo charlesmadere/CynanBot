@@ -2,7 +2,7 @@ import asyncio
 import queue
 import random
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
@@ -12,6 +12,8 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
 from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -61,6 +63,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface,
         recurringActionsRepository: RecurringActionsRepositoryInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         triviaGameBuilder: TriviaGameBuilderInterface,
         triviaGameMachine: TriviaGameMachineInterface,
         userIdsRepository: UserIdsRepositoryInterface,
@@ -71,8 +74,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         refreshSleepTimeSeconds: float = 90,
         queueTimeoutSeconds: int = 3,
         superTriviaCountdownSeconds: int = 5,
-        cooldown: timedelta = timedelta(minutes = 3),
-        timeZone: tzinfo = timezone.utc
+        cooldown: timedelta = timedelta(minutes = 3)
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -86,6 +88,8 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise TypeError(f'recurringActionsRepository argument is malformed: \"{recurringActionsRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(triviaGameBuilder, TriviaGameBuilderInterface):
             raise TypeError(f'triviaGameBuilder argument is malformed: \"{triviaGameBuilder}\"')
         elif not isinstance(triviaGameMachine, TriviaGameMachineInterface):
@@ -116,8 +120,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             raise ValueError(f'superTriviaCountdownSeconds argument is out of bounds: {superTriviaCountdownSeconds}')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
@@ -125,6 +127,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__mostRecentRecurringActionsRepository: MostRecentRecurringActionRepositoryInterface = mostRecentRecurringActionRepository
         self.__recurringActionsRepository: RecurringActionsRepositoryInterface = recurringActionsRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__triviaGameBuilder: TriviaGameBuilderInterface = triviaGameBuilder
         self.__triviaGameMachine: TriviaGameMachineInterface = triviaGameMachine
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
@@ -136,7 +139,6 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         self.__queueTimeoutSeconds: int = queueTimeoutSeconds
         self.__superTriviaCountdownSeconds: int = superTriviaCountdownSeconds
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__eventListener: RecurringActionEventListener | None = None
@@ -144,14 +146,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     async def __fetchViableUsers(self) -> list[UserInterface]:
         users = await self.__usersRepository.getUsersAsync()
-
-        usersToReturn = [
-            user
-            for user in users
-            if user.isEnabled() and user.areRecurringActionsEnabled()
-        ]
-
-        return usersToReturn
+        return [ user for user in users if user.isEnabled() and user.areRecurringActionsEnabled() ]
 
     async def __findDueRecurringAction(
         self,
@@ -171,7 +166,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             twitchChannelId = twitchChannelId
         )
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         while len(actionTypes) >= 1 and action is None:
             actionType = random.choice(actionTypes)
@@ -198,7 +193,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             if action is not None and not action.isEnabled():
                 action = None
             elif mostRecentAction is not None and action is not None:
-                if now < mostRecentAction.getDateTime() + self.__cooldown:
+                if now < mostRecentAction.dateTime + self.__cooldown:
                     action = None
                 else:
                     minutesBetweenInt = action.getMinutesBetween()
@@ -208,7 +203,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
                     minutesBetween = timedelta(minutes = minutesBetweenInt)
 
-                    if now < mostRecentAction.getDateTime() + minutesBetween:
+                    if now < mostRecentAction.dateTime + minutesBetween:
                         action = None
 
         return action
