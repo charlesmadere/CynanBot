@@ -94,8 +94,8 @@ class EmojiRepository(EmojiRepositoryInterface):
                 exception = e
 
             if emojiInfo is None or exception is not None:
-                self.__timber.log('EmojiRepository', f'Failed to read in emoji info at index {index} ({emojiDict}): {exception}', exception, traceback.format_exc())
+                self.__timber.log('EmojiRepository', f'Failed to read in emoji info at index {index} ({emojiDict=}): {exception}', exception, traceback.format_exc())
             else:
-                self.__emojiInfoData[emojiInfo.getEmoji()] = emojiInfo
+                self.__emojiInfoData[emojiInfo.emoji] = emojiInfo
 
         self.__timber.log('EmojiRepository', f'Finished reading in {len(self.__emojiInfoData)} emoji(s)')
