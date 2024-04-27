@@ -1695,7 +1695,6 @@ class SetFuntoonTokenCommand(AbsCommand):
 
         await self.__funtoonTokensRepository.setToken(
             token = token,
-            twitchChannel = user.getHandle(),
             twitchChannelId = await ctx.getTwitchChannelId()
         )
 

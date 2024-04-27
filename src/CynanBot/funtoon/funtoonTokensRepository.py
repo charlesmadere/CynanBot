@@ -73,7 +73,6 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
 
             await self.setToken(
                 token = token,
-                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
 
@@ -85,35 +84,31 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
 
     async def getToken(
         self,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> str | None:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if twitchChannel.lower() in self.__cache:
-            return self.__cache[twitchChannel.lower()]
+        if twitchChannelId in self.__cache:
+            return self.__cache[twitchChannelId]
 
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
                 SELECT token FROM funtoontokens
-                WHERE twitchchannel = $1
+                WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannel
+            twitchChannelId
         )
 
         await connection.close()
         token: str | None = None
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             token = record[0]
 
-        self.__cache[twitchChannel.lower()] = token
-
+        self.__cache[twitchChannelId] = token
         return token
 
     async def __initDatabaseTable(self):
@@ -128,7 +123,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS funtoontokens (
                         token text DEFAULT NULL,
-                        twitchchannel public.citext NOT NULL PRIMARY KEY
+                        twitchchannelid text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -137,7 +132,7 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS funtoontokens (
                         token TEXT DEFAULT NULL,
-                        twitchchannel TEXT NOT NULL PRIMARY KEY COLLATE NOCASE
+                        twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -149,34 +144,27 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
 
     async def requireToken(
         self,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> str:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         token = await self.getToken(
-            twitchChannel = twitchChannel,
             twitchChannelId = twitchChannelId
         )
 
         if not utils.isValidStr(token):
-            raise NoFuntoonTokenException(f'token for twitchChannel \"{twitchChannel}\" is missing/unavailable')
+            raise NoFuntoonTokenException(f'token for twitchChannel \"{twitchChannelId}\" is missing/unavailable')
 
         return token
 
     async def setToken(
         self,
         token: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ):
         if token is not None and not isinstance(token, str):
             raise TypeError(f'token argument is malformed: \"{token}\"')
-        elif not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
@@ -185,25 +173,25 @@ class FuntoonTokensRepository(FuntoonTokensRepositoryInterface):
         if utils.isValidStr(token):
             await connection.execute(
                 '''
-                    INSERT INTO funtoontokens (token, twitchchannel)
+                    INSERT INTO funtoontokens (token, twitchchannelid)
                     VALUES ($1, $2)
-                    ON CONFLICT (twitchchannel) DO UPDATE SET token = EXCLUDED.token
+                    ON CONFLICT (twitchchannelid) DO UPDATE SET token = EXCLUDED.token
                 ''',
-                token, twitchChannel
+                token, twitchChannelId
             )
 
-            self.__cache[twitchChannel.lower()] = token
-            self.__timber.log('FuntoonTokensRepository', f'Funtoon token for \"{twitchChannel}\" has been updated (\"{token}\")')
+            self.__cache[twitchChannelId] = token
+            self.__timber.log('FuntoonTokensRepository', f'Funtoon token has been updated ({twitchChannelId=}) ({token=})')
         else:
             await connection.execute(
                 '''
                     DELETE FROM funtoontokens
-                    WHERE twitchchannel = $1
+                    WHERE twitchchannelid = $1
                 ''',
-                twitchChannel
+                twitchChannelId
             )
 
-            self.__cache[twitchChannel.lower()] = None
-            self.__timber.log('FuntoonTokensRepository', f'Funtoon token for \"{twitchChannel}\" has been deleted')
+            self.__cache[twitchChannelId] = None
+            self.__timber.log('FuntoonTokensRepository', f'Funtoon token has been deleted ({twitchChannelId=})')
 
         await connection.close()

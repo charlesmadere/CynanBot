@@ -127,7 +127,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
@@ -163,7 +162,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
@@ -202,7 +200,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:
@@ -232,7 +229,6 @@ class FuntoonRepository(FuntoonRepositoryInterface):
 
         try:
             funtoonToken = await self.__funtoonTokensRepository.requireToken(
-                twitchChannel = twitchChannel,
                 twitchChannelId = twitchChannelId
             )
         except NoFuntoonTokenException as e:

@@ -8,7 +8,6 @@ class FuntoonTokensRepositoryInterface(Clearable):
     @abstractmethod
     async def getToken(
         self,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> str | None:
         pass
@@ -16,7 +15,6 @@ class FuntoonTokensRepositoryInterface(Clearable):
     @abstractmethod
     async def requireToken(
         self,
-        twitchChannel: str,
         twitchChannelId: str
     ) -> str:
         pass
@@ -25,7 +23,6 @@ class FuntoonTokensRepositoryInterface(Clearable):
     async def setToken(
         self,
         token: str | None,
-        twitchChannel: str,
         twitchChannelId: str
     ):
         pass
