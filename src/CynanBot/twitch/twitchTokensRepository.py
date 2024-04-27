@@ -1,5 +1,5 @@
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from typing import Any
 
 import CynanBot.misc.utils as utils
