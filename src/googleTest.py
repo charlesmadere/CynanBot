@@ -123,7 +123,7 @@ async def main():
     # print(f'translation result: {translationResult}')
 
     input = GoogleTextSynthesisInput(
-        text = 'sheeples timed out aniv for 60 seconds! ripbozo'
+        text = 'sheeples23 timed out aniv for 60 seconds! rip bozo!'
     )
 
     selectionParams = await googleTtsVoiceChooser.choose()
