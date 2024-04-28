@@ -6,9 +6,10 @@ from queue import SimpleQueue
 from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.actions.absTriviaAction import AbsTriviaAction
 from CynanBot.trivia.actions.checkAnswerTriviaAction import \
@@ -102,7 +103,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         cutenessRepository: CutenessRepositoryInterface,
         queuedTriviaGameStore: QueuedTriviaGameStoreInterface,
         shinyTriviaHelper: ShinyTriviaHelper,
@@ -122,7 +123,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         sleepTimeSeconds: float = 0.5,
         timeZone: tzinfo = timezone.utc
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(cutenessRepository, CutenessRepositoryInterface):
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
@@ -165,7 +166,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif not isinstance(timeZone, tzinfo):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
         self.__queuedTriviaGameStore: QueuedTriviaGameStoreInterface = queuedTriviaGameStore
         self.__shinyTriviaHelper: ShinyTriviaHelper = shinyTriviaHelper

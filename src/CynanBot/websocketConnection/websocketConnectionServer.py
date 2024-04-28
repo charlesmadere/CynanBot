@@ -9,7 +9,8 @@ from typing import Any
 import websockets
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
@@ -21,7 +22,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         settingsJsonReader: JsonReaderInterface,
         timber: TimberInterface,
         sleepTimeSeconds: float = 5,
@@ -31,7 +32,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         eventTimeToLive: timedelta = timedelta(seconds = 30),
         timeZone: timezone = timezone.utc
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise ValueError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(settingsJsonReader, JsonReaderInterface):
             raise ValueError(f'settingsJsonReader argument is malformed: \"{settingsJsonReader}\"')
@@ -54,7 +55,7 @@ class WebsocketConnectionServer(WebsocketConnectionServerInterface):
         elif not isinstance(timeZone, timezone):
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__settingsJsonReader: JsonReaderInterface = settingsJsonReader
         self.__timber: TimberInterface = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds

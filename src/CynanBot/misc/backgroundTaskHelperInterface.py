@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from asyncio import AbstractEventLoop
 from typing import Coroutine
 
