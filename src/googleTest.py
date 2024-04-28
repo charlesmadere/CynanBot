@@ -18,7 +18,6 @@ from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
