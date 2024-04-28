@@ -122,23 +122,28 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
+    input = GoogleTextSynthesisInput(
+        text = 'sheeples timed out aniv for 60 seconds! ripbozo'
+    )
+
     selectionParams = await googleTtsVoiceChooser.choose()
 
-    textToSpeechResult = await googleApiService.textToSpeech(GoogleTextSynthesizeRequest(
-        input = GoogleTextSynthesisInput(
-            text = 'sheeples timed out aniv for 60 seconds! ripbozo'
-        ),
-        voice = selectionParams,
-        audioConfig = GoogleVoiceAudioConfig(
-            pitch = None,
-            speakingRate = None,
-            volumeGainDb = await ttsSettingsRepository.getGoogleVolumeGainDb(),
-            sampleRateHertz = None,
-            audioEncoding = await ttsSettingsRepository.getGoogleVoiceAudioEncoding()
-        )
-    ))
+    audioConfig = GoogleVoiceAudioConfig(
+        pitch = None,
+        speakingRate = None,
+        volumeGainDb = await ttsSettingsRepository.getGoogleVolumeGainDb(),
+        sampleRateHertz = None,
+        audioEncoding = await ttsSettingsRepository.getGoogleVoiceAudioEncoding()
+    )
 
-    print(f'text to speech result: {textToSpeechResult}')
+    request = GoogleTextSynthesizeRequest(
+        input = input,
+        voice = selectionParams,
+        audioConfig = audioConfig
+    )
+
+    textToSpeechResult = await googleApiService.textToSpeech(request)
+    print(f'text to speech result: {textToSpeechResult=}')
 
     fileName = await googleTtsFileManager.writeBase64CommandToNewFile(textToSpeechResult.getAudioContent())
     print(f'{fileName=}')
