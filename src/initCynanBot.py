@@ -1216,6 +1216,7 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
     isLiveOnTwitchRepository = isLiveOnTwitchRepository,
     streamAlertsManager = streamAlertsManager,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchFollowingStatusRepository = twitchFollowingStatusRepository,
     twitchHandleProvider = authRepository,
     twitchTimeoutHelper = twitchTimeoutHelper,
