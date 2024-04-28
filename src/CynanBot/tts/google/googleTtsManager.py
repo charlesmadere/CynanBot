@@ -1,4 +1,3 @@
-import random
 import traceback
 from typing import Any
 
@@ -12,14 +11,14 @@ from CynanBot.google.googleTextSynthesisResponse import \
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
-from CynanBot.google.googleVoiceSelectionParams import \
-    GoogleVoiceSelectionParams
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.google.googleTtsChoice import GoogleTtsChoice
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
+from CynanBot.tts.google.googleTtsVoiceChooserInterface import \
+    GoogleTtsVoiceChooserInterface
 from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
     TtsTempFileHelperInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -35,6 +34,7 @@ class GoogleTtsManager(TtsManagerInterface):
         self,
         googleApiService: GoogleApiServiceInterface,
         googleTtsFileManager: GoogleTtsFileManagerInterface,
+        googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface,
         soundPlayerManager: SoundPlayerManagerInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
@@ -45,6 +45,8 @@ class GoogleTtsManager(TtsManagerInterface):
             raise TypeError(f'googleApiService argument is malformed: \"{googleApiService}"')
         elif not isinstance(googleTtsFileManager, GoogleTtsFileManagerInterface):
             raise TypeError(f'googleTtsFileManager argument is malformed: \"{googleTtsFileManager}\"')
+        elif not isinstance(googleTtsVoiceChooser, GoogleTtsVoiceChooserInterface):
+            raise TypeError(f'googleTtsVoiceChooser argument is malformed: \"{googleTtsVoiceChooser}\"')
         elif not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
         elif not isinstance(timber, TimberInterface):
@@ -58,6 +60,7 @@ class GoogleTtsManager(TtsManagerInterface):
 
         self.__googleApiService: GoogleApiServiceInterface = googleApiService
         self.__googleTtsFileManager: GoogleTtsFileManagerInterface = googleTtsFileManager
+        self.__googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = googleTtsVoiceChooser
         self.__soundPlayerManager: SoundPlayerManagerInterface = soundPlayerManager
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
@@ -146,34 +149,7 @@ class GoogleTtsManager(TtsManagerInterface):
             audioEncoding = await self.__ttsSettingsRepository.getGoogleVoiceAudioEncoding()
         )
 
-        languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'fr-CA', 'ja-JP', 'sv-SE' ]
-        languageCode = random.choice(languageCodes)
-
-        names: list[str] | None = None
-
-        if languageCode == 'en-AU':
-            names = [ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D', 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' ]
-        elif languageCode == 'en-GB':
-            names = [ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F', 'en-GB-Wavenet-A', 'en-GB-Wavenet-B', 'en-GB-Wavenet-C', 'en-GB-Wavenet-D', 'en-GB-Wavenet-F' ]
-        elif languageCode == 'en-US':
-            names = [ 'en-US-Casual-K', 'en-US-Journey-D', 'en-US-Journey-F' ]
-        elif languageCode == 'fr-CA':
-            names = [ 'fr-CA-Wavenet-A', 'fr-CA-Wavenet-B', 'fr-CA-Wavenet-C', 'fr-CA-Wavenet-D' ]
-        elif languageCode == 'ja-JP':
-            names = [ 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' ]
-        elif languageCode == 'sv-SE':
-            names = [ 'sv-SE-Wavenet-A', 'sv-SE-Wavenet-B', 'sv-SE-Wavenet-C', 'sv-SE-Wavenet-D', 'sv-SE-Wavenet-E' ]
-
-        name: str | None = None
-
-        if names is not None and len(names) >= 1:
-            name = random.choice(names)
-
-        selectionParams = GoogleVoiceSelectionParams(
-            gender = None,
-            languageCode = languageCode,
-            name = name
-        )
+        selectionParams = await self.__googleTtsVoiceChooser.choose()
 
         return GoogleTtsChoice(
             audioConfig = audioConfig,

@@ -1,5 +1,4 @@
 import asyncio
-import random
 from asyncio import AbstractEventLoop
 
 from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
@@ -18,12 +17,10 @@ from CynanBot.google.googleJwtBuilderInterface import GoogleJwtBuilderInterface
 from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
-from CynanBot.google.googleTranslationRequest import GoogleTranslationRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
 from CynanBot.google.googleVoiceAudioEncoding import GoogleVoiceAudioEncoding
-from CynanBot.google.googleVoiceGender import GoogleVoiceGender
-from CynanBot.google.googleVoiceSelectionParams import \
-    GoogleVoiceSelectionParams
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.storage.jsonStaticReader import JsonStaticReader
@@ -36,6 +33,9 @@ from CynanBot.tts.google.googleFileExtensionHelperInterface import \
 from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
+from CynanBot.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
+from CynanBot.tts.google.googleTtsVoiceChooserInterface import \
+    GoogleTtsVoiceChooserInterface
 from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
@@ -57,7 +57,7 @@ class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProvide
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
-backgroundTaskHelper = BackgroundTaskHelper(
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
@@ -106,6 +106,8 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
+
 async def main():
     pass
 
@@ -121,30 +123,7 @@ async def main():
 
     # print(f'translation result: {translationResult}')
 
-    languageCodes: list[str] = [ 'en-AU', 'en-GB', 'en-US', 'ja-JP' ]
-    languageCode = random.choice(languageCodes)
-
-    names: list[str] | None = None
-
-    if languageCode == 'en-AU':
-        names = [ 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' ]
-    elif languageCode == 'en-GB':
-        names = [ 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' ]
-    elif languageCode == 'en-US':
-        names = [ 'en-US-Journey-D', 'en-US-Journey-F' ]
-    elif languageCode == 'ja-JP':
-        names = [ 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' ]
-
-    name: str | None = None
-
-    if names is not None and len(names) >= 1:
-        name = random.choice(names)
-
-    selectionParams = GoogleVoiceSelectionParams(
-        gender = None,
-        languageCode = languageCode,
-        name = name
-    )
+    selectionParams = await googleTtsVoiceChooser.choose()
 
     textToSpeechResult = await googleApiService.textToSpeech(GoogleTextSynthesizeRequest(
         input = GoogleTextSynthesisInput(

@@ -141,6 +141,9 @@ from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
 from CynanBot.tts.google.googleTtsManager import GoogleTtsManager
+from CynanBot.tts.google.googleTtsVoiceChooser import GoogleTtsVoiceChooser
+from CynanBot.tts.google.googleTtsVoiceChooserInterface import \
+    GoogleTtsVoiceChooserInterface
 from CynanBot.tts.tempFileHelper.ttsTempFileHelper import TtsTempFileHelper
 from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
     TtsTempFileHelperInterface
@@ -549,9 +552,12 @@ googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     ttsSettingsRepository = ttsSettingsRepository
 )
 
+googleTtsVoiceChooser: GoogleTtsVoiceChooserInterface = GoogleTtsVoiceChooser()
+
 googleTtsManager: GoogleTtsManager | None = GoogleTtsManager(
     googleApiService = googleApiService,
     googleTtsFileManager = googleTtsFileManager,
+    googleTtsVoiceChooser = googleTtsVoiceChooser,
     soundPlayerManager = soundPlayerManager,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
