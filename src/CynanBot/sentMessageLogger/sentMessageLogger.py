@@ -1,7 +1,6 @@
 import asyncio
 import queue
 from collections import defaultdict
-from mailbox import Message
 from queue import SimpleQueue
 
 import aiofiles
@@ -9,7 +8,8 @@ import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.sentMessageLogger.messageMethod import MessageMethod
 from CynanBot.sentMessageLogger.sentMessage import SentMessage
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
@@ -21,12 +21,12 @@ class SentMessageLogger(SentMessageLoggerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         sleepTimeSeconds: float = 15,
         logRootDirectory: str = 'logs/sentMessageLogger'
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -37,7 +37,7 @@ class SentMessageLogger(SentMessageLoggerInterface):
         elif not utils.isValidStr(logRootDirectory):
             raise TypeError(f'logRootDirectory argument is malformed: \"{logRootDirectory}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__logRootDirectory: str = logRootDirectory
