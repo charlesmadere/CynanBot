@@ -27,8 +27,11 @@ class GoogleTtsVoiceChooser(GoogleTtsVoiceChooserInterface):
         self.__languageCodeToNames: dict[str, set[str]] = languageCodeToNames
 
     async def choose(self) -> GoogleVoiceSelectionParams:
-        languageCode = random.choice(list(self.__languageCodeToNames.keys()))
-        name = random.choice(list(self.__languageCodeToNames[languageCode]))
+        languageCodes = self.__languageCodeToNames.keys()
+        languageCode = random.choice(list(languageCodes))
+
+        names = self.__languageCodeToNames[languageCode]
+        name = random.choice(list(names))
 
         return GoogleVoiceSelectionParams(
             gender = None,
