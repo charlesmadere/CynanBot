@@ -133,9 +133,9 @@ async def main():
         audioConfig = GoogleVoiceAudioConfig(
             pitch = None,
             speakingRate = None,
-            volumeGainDb = -3.75,
+            volumeGainDb = await ttsSettingsRepository.getGoogleVolumeGainDb(),
             sampleRateHertz = None,
-            audioEncoding = GoogleVoiceAudioEncoding.MP3
+            audioEncoding = await ttsSettingsRepository.getGoogleVoiceAudioEncoding()
         )
     ))
 
