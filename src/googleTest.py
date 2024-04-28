@@ -26,11 +26,19 @@ from CynanBot.google.googleVoiceSelectionParams import \
     GoogleVoiceSelectionParams
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
+from CynanBot.storage.jsonStaticReader import JsonStaticReader
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
+from CynanBot.tts.google.googleFileExtensionHelper import \
+    GoogleFileExtensionHelper
+from CynanBot.tts.google.googleFileExtensionHelperInterface import \
+    GoogleFileExtensionHelperInterface
 from CynanBot.tts.google.googleTtsFileManager import GoogleTtsFileManager
 from CynanBot.tts.google.googleTtsFileManagerInterface import \
     GoogleTtsFileManagerInterface
+from CynanBot.tts.ttsSettingsRepository import TtsSettingsRepository
+from CynanBot.tts.ttsSettingsRepositoryInterface import \
+    TtsSettingsRepositoryInterface
 
 
 class GoogleCloudProjectCredentialsProvider(GoogleCloudProjectCredentialsProviderInterface):
@@ -84,9 +92,18 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber
 )
 
+googleFileExtensionHelper: GoogleFileExtensionHelperInterface = GoogleFileExtensionHelper()
+
+ttsSettingsRepository: TtsSettingsRepositoryInterface = TtsSettingsRepository(
+    googleJsonMapper = googleJsonMapper,
+    settingsJsonReader = JsonStaticReader(dict())
+)
+
 googleTtsFileManager: GoogleTtsFileManagerInterface = GoogleTtsFileManager(
     eventLoop = eventLoop,
-    timber = timber
+    googleFileExtensionHelper = googleFileExtensionHelper,
+    timber = timber,
+    ttsSettingsRepository = ttsSettingsRepository
 )
 
 async def main():
