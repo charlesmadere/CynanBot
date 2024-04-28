@@ -11,7 +11,6 @@ asyncpg = "*"
 cryptography = "*"
 emoji = "*"
 flake8 = "*"
-google-cloud-translate = "*"
 lru-dict = "*"
 lxml = "*"
 mock = "*"
@@ -31,6 +30,7 @@ websockets = "*"
 xmltodict = "*"
 
 [dev-packages]
+
 
 [requires]
 python_version = "3.11"
