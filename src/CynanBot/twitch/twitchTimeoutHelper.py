@@ -11,6 +11,8 @@ from CynanBot.twitch.api.twitchBannedUsersResponse import \
     TwitchBannedUsersResponse
 from CynanBot.twitch.api.twitchBanRequest import TwitchBanRequest
 from CynanBot.twitch.api.twitchModUser import TwitchModUser
+from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
+    TimeoutImmuneUserIdsRepositoryInterface
 from CynanBot.twitch.twitchConstantsInterface import TwitchConstantsInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
@@ -29,6 +31,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     def __init__(
         self,
         timber: TimberInterface,
+        timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
@@ -38,6 +41,8 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
+            raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConstants, TwitchConstantsInterface):
@@ -52,6 +57,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
@@ -169,6 +175,9 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             return False
         elif userIdToTimeout == twitchChannelId:
             self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout the streamer themselves ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
+            return False
+        elif await self.__timeoutImmuneUserIdsRepository.isImmune(userIdToTimeout):
+            self.__timber.log('TwitchTimeoutHelper', f'Abandoning timeout attempt, as we were going to timeout an immune user ({twitchChannelId=}) ({userIdToTimeout=}) ({userNameToTimeout=}) ({user=})')
             return False
         elif await self.__isAlreadyCurrentlyBannedOrTimedOut(
             twitchChannelAccessToken = twitchChannelAccessToken,
