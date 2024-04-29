@@ -20,7 +20,11 @@ class TriviaGameControllersRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    async def getControllers(self, twitchChannel: str, twitchChannelId: str) -> list[TriviaGameController]:
+    async def getControllers(
+        self,
+        twitchChannel: str,
+        twitchChannelId: str
+    ) -> list[TriviaGameController]:
         pass
 
     @abstractmethod
