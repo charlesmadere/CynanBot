@@ -224,11 +224,12 @@ cython_debug/
 #.idea/
 
 
-################################################
-## Python environment things added by Charles ##
-################################################
+########################################################
+## Python virtual environment things added by Charles ##
+########################################################
 
 bin/
+Scripts/
 pyvenv.cfg
 
 
