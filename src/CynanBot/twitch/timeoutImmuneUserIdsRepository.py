@@ -1,16 +1,39 @@
+from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
 from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
+from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
 
 
 class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
 
     def __init__(
         self,
-        immuneUserIds: list[str] = list()
+        twitchHandleProvider: TwitchHandleProviderInterface,
+        userIdsRepository: UserIdsRepositoryInterface,
+        immuneUserIds: set[str] = set()
     ):
-        if not isinstance(immuneUserIds, list):
+        if not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
+            raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
+        elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
+            raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
+        elif not isinstance(immuneUserIds, set):
             raise TypeError(f'immuneUserIds argument is malformed: \"{immuneUserIds}\"')
 
-        self.__immuneUserIds: set[str] = set(immuneUserIds)
+        self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
+        self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
+        self.__immuneUserIds: set[str] = immuneUserIds
+
+        self.__twitchUserId: str | None = None
+
+    async def __getTwitchUserId(self) -> str:
+        twitchUserId = self.__twitchUserId
+
+        if twitchUserId is None:
+            twitchHandle = await self.__twitchHandleProvider.getTwitchHandle()
+            twitchUserId = await self.__userIdsRepository.requireUserId(twitchHandle)
+            self.__twitchUserId = twitchUserId
+
+        return twitchUserId
 
     async def isImmune(self, userId: str) -> bool:
-        return userId in self.__immuneUserIds
+        twitchUserId = await self.__getTwitchUserId()
+        return userId == twitchUserId or userId in self.__immuneUserIds
