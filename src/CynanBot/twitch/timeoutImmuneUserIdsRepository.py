@@ -1,6 +1,9 @@
-from CynanBot.users.userIdsRepositoryInterface import UserIdsRepositoryInterface
-from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import TimeoutImmuneUserIdsRepositoryInterface
-from CynanBot.twitch.twitchHandleProviderInterface import TwitchHandleProviderInterface
+from CynanBot.twitch.timeoutImmuneUserIdsRepositoryInterface import \
+    TimeoutImmuneUserIdsRepositoryInterface
+from CynanBot.twitch.twitchHandleProviderInterface import \
+    TwitchHandleProviderInterface
+from CynanBot.users.userIdsRepositoryInterface import \
+    UserIdsRepositoryInterface
 
 
 class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
@@ -9,7 +12,11 @@ class TimeoutImmuneUserIdsRepository(TimeoutImmuneUserIdsRepositoryInterface):
         self,
         twitchHandleProvider: TwitchHandleProviderInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        immuneUserIds: set[str] = set()
+        immuneUserIds: set[str] = {
+            '546457893', # CynanBot
+            '977636741', # CynanBotTTS
+            '477393386', # FUNtoon
+        }
     ):
         if not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
             raise TypeError(f'twitchHandleProvider argument is malformed: \"{twitchHandleProvider}\"')
