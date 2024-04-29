@@ -1,6 +1,7 @@
-from datetime import datetime, timezone, tzinfo
+from datetime import datetime
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
@@ -14,15 +15,15 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
-        self.__timeZone: tzinfo = timeZone
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
 
@@ -93,7 +94,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         newToxicCount = result.getOldToxicCount() + 1
 
         newResult = ToxicTriviaResult(
-            mostRecent = datetime.now(self.__timeZone),
+            mostRecent = datetime.now(self.__timeZoneRepository.getDefault()),
             newToxicCount = newToxicCount,
             oldToxicCount = result.getOldToxicCount(),
             twitchChannel = result.getTwitchChannel(),
@@ -164,8 +165,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
-        nowDateTime = datetime.now(self.__timeZone)
-        nowDateTimeStr = nowDateTime.isoformat()
+        nowDateTime = datetime.now(self.__timeZoneRepository.getDefault())
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -174,7 +174,7 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                     VALUES ($1, $2, $3, $4)
                     ON CONFLICT (twitchchannel, userid) DO UPDATE SET count = EXCLUDED.count, mostrecent = EXCLUDED.mostrecent
             ''',
-            newToxicCount, nowDateTimeStr, twitchChannel, userId
+            newToxicCount, nowDateTime.isoformat(), twitchChannel, userId
         )
 
         await connection.close()

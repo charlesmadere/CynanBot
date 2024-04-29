@@ -1,17 +1,18 @@
 {
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
     "editor.wordWrapColumn": 120,
     "files.autoSave": "afterDelay",
     "python.analysis.autoImportCompletions": true,
     "python.analysis.typeCheckingMode": "basic",
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "ms-python.isort",
+        "editor.formatOnSave": true
     },
     "python.testing.pytestArgs": [
         "src"
     ],
-    "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false
 }

@@ -710,10 +710,12 @@ weatherRepository: Optional[WeatherRepositoryInterface] = WeatherRepository(
 ###################################
 
 shinyTriviaOccurencesRepository: ShinyTriviaOccurencesRepositoryInterface = ShinyTriviaOccurencesRepository(
-    backingDatabase = backingDatabase
+    backingDatabase = backingDatabase,
+    timeZoneRepository = timeZoneRepository
 )
 toxicTriviaOccurencesRepository: ToxicTriviaOccurencesRepositoryInterface = ToxicTriviaOccurencesRepository(
-    backingDatabase = backingDatabase
+    backingDatabase = backingDatabase,
+    timeZoneRepository = timeZoneRepository
 )
 triviaAnswerCompiler: TriviaAnswerCompilerInterface = TriviaAnswerCompiler(
     timber = timber
