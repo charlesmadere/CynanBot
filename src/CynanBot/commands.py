@@ -251,7 +251,7 @@ class AddTriviaControllerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as no username argument was given. Example: !addtriviacontroller {user.getHandle()}')
             return
 
-        userName: Optional[str] = utils.removePreceedingAt(splits[1])
+        userName: str | None = utils.removePreceedingAt(splits[1])
         if not utils.isValidStr(userName):
             self.__timber.log('AddTriviaGameControllerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but username argument is malformed: \"{userName}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add trivia controller as username argument is malformed. Example: !addtriviacontroller {user.getHandle()}')
@@ -264,9 +264,9 @@ class AddTriviaControllerCommand(AbsCommand):
         )
 
         if result is AddTriviaGameControllerResult.ADDED:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller.')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Added {userName} as a trivia game controller')
         elif result is AddTriviaGameControllerResult.ALREADY_EXISTS:
-            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one.')
+            await self.__twitchUtils.safeSend(ctx, f'ⓘ Tried adding {userName} as a trivia game controller, but they already were one')
         elif result is AddTriviaGameControllerResult.ERROR:
             await self.__twitchUtils.safeSend(ctx, f'⚠ An error occurred when trying to add {userName} as a trivia game controller!')
         else:
