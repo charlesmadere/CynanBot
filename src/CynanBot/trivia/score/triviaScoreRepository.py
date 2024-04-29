@@ -33,11 +33,11 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         record = await connection.fetchRow(
             '''
-                SELECT streak, supertriviawins, trivialosses, triviawins, twitchchannel, userid FROM triviascores
-                WHERE twitchchannel = $1 AND userid = $2
+                SELECT streak, supertriviawins, trivialosses, triviawins, twitchchannelid, userid FROM triviascores
+                WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannel, userId
+            twitchChannelId, userId
         )
 
         if record is not None and len(record) >= 1:
@@ -56,10 +56,10 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
 
         await connection.execute(
             '''
-                INSERT INTO triviascores (streak, supertriviawins, trivialosses, triviawins, twitchchannel, userid)
+                INSERT INTO triviascores (streak, supertriviawins, trivialosses, triviawins, twitchchannelid, userid)
                 VALUES ($1, $2, $3, $4, $5, $6)
             ''',
-            0, 0, 0, 0, twitchChannel, userId
+            0, 0, 0, 0, twitchChannelId, userId
         )
 
         await connection.close()
@@ -234,9 +234,9 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                         supertriviawins integer DEFAULT 0 NOT NULL,
                         trivialosses integer DEFAULT 0 NOT NULL,
                         triviawins integer DEFAULT 0 NOT NULL,
-                        twitchchannel public.citext NOT NULL,
-                        userid public.citext NOT NULL,
-                        PRIMARY KEY (twitchchannel, userid)
+                        twitchchannelid text NOT NULL,
+                        userid text NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
                     )
                 '''
             )
@@ -248,9 +248,9 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
                         supertriviawins INTEGER NOT NULL DEFAULT 0,
                         trivialosses INTEGER NOT NULL DEFAULT 0,
                         triviawins INTEGER NOT NULL DEFAULT 0,
-                        twitchchannel TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL COLLATE NOCASE,
-                        PRIMARY KEY (twitchchannel, userid)
+                        twitchchannelid TEXT NOT NULL,
+                        userid TEXT NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
                     )
                 '''
             )
@@ -295,11 +295,11 @@ class TriviaScoreRepository(TriviaScoreRepositoryInterface):
         connection = await self.__backingDatabase.getConnection()
         await connection.execute(
             '''
-                INSERT INTO triviascores (streak, supertriviawins, trivialosses, triviawins, twitchchannel, userid)
+                INSERT INTO triviascores (streak, supertriviawins, trivialosses, triviawins, twitchchannelid, userid)
                 VALUES ($1, $2, $3, $4, $5, $6)
-                ON CONFLICT (twitchchannel, userid) DO UPDATE SET streak = EXCLUDED.streak, supertriviawins = EXCLUDED.supertriviawins, triviaLosses = EXCLUDED.trivialosses, triviawins = EXCLUDED.triviawins
+                ON CONFLICT (twitchchannelid, userid) DO UPDATE SET streak = EXCLUDED.streak, supertriviawins = EXCLUDED.supertriviawins, triviaLosses = EXCLUDED.trivialosses, triviawins = EXCLUDED.triviawins
             ''',
-            newStreak, newSuperTriviaWins, newTriviaLosses, newTriviaWins, twitchChannel, userId
+            newStreak, newSuperTriviaWins, newTriviaLosses, newTriviaWins, twitchChannelId, userId
         )
 
         await connection.close()
