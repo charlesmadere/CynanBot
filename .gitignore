@@ -224,6 +224,14 @@ cython_debug/
 #.idea/
 
 
+################################################
+## Python environment things added by Charles ##
+################################################
+
+bin/
+pyvenv.cfg
+
+
 ##################
 ## Sublime Text ##
 ##################
