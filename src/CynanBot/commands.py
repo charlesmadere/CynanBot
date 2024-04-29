@@ -398,12 +398,12 @@ class ConfirmCommand(AbsCommand):
             self.__timber.log('ConfirmCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried confirming the modification of a user, but there is no persisted user data')
             return
 
-        if userData.getActionType() is ModifyUserActionType.ADD:
-            await self.__usersRepository.addUser(userData.getUserName())
-        elif userData.getActionType() is ModifyUserActionType.REMOVE:
-            await self.__usersRepository.removeUser(userData.getUserName())
+        if userData.actionType is ModifyUserActionType.ADD:
+            await self.__usersRepository.addUser(userData.userName)
+        elif userData.actionType is ModifyUserActionType.REMOVE:
+            await self.__usersRepository.removeUser(userData.userName)
         else:
-            raise RuntimeError(f'unknown ModifyUserActionType: \"{userData.getActionType()}\"')
+            raise RuntimeError(f'unknown ModifyUserActionType: \"{userData.actionType}\"')
 
         await self.__modifyUserDataHelper.notifyModifyUserListenerAndClearData()
         self.__timber.log('CommandsCommand', f'Handled !confirm command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
