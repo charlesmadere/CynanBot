@@ -45,7 +45,7 @@ class SuperTriviaGameState(AbsTriviaGameState):
         elif not utils.isValidInt(toxicTriviaPunishmentMultiplier):
             raise TypeError(f'toxicTriviaPunishmentMultiplier argument is malformed: \"{toxicTriviaPunishmentMultiplier}\"')
         elif toxicTriviaPunishmentMultiplier < 0 or toxicTriviaPunishmentMultiplier > utils.getIntMaxSafeSize():
-            raise TypeError(f'toxicTriviaPunishmentMultiplier argument is out of bounds: {toxicTriviaPunishmentMultiplier}')
+            raise ValueError(f'toxicTriviaPunishmentMultiplier argument is out of bounds: {toxicTriviaPunishmentMultiplier}')
 
         self.__perUserAttempts: int = perUserAttempts
         self.__regularTriviaPointsForWinning: int = regularTriviaPointsForWinning
@@ -70,7 +70,7 @@ class SuperTriviaGameState(AbsTriviaGameState):
 
     def incrementAnswerCount(self, userId: str):
         if not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__answeredUserIds[userId] = self.__answeredUserIds[userId] + 1
 
