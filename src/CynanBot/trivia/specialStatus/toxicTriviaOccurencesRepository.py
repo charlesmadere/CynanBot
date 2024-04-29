@@ -44,10 +44,10 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT count, mostrecent FROM toxictriviaoccurences
-                WHERE twitchchannel = $1 AND userid = $2
+                WHERE twitchchannelid = $1 AND userid = $2
                 LIMIT 1
             ''',
-            twitchChannel, userId
+            twitchChannelId, userId
         )
 
         toxicCount = 0
@@ -124,9 +124,9 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS toxictriviaoccurences (
                         count integer DEFAULT 0 NOT NULL,
                         mostrecent text NOT NULL,
-                        twitchchannel public.citext NOT NULL,
-                        userid public.citext NOT NULL,
-                        PRIMARY KEY (twitchchannel, userid)
+                        twitchchannelid text NOT NULL,
+                        userid text NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
                     )
                 '''
             )
@@ -136,9 +136,9 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS toxictriviaoccurences (
                         count INTEGER NOT NULL DEFAULT 0,
                         mostrecent TEXT NOT NULL,
-                        twitchchannel TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL COLLATE NOCASE,
-                        PRIMARY KEY (twitchchannel, userid)
+                        twitchchannelid TEXT NOT NULL,
+                        userid TEXT NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid)
                     )
                 '''
             )
@@ -170,11 +170,11 @@ class ToxicTriviaOccurencesRepository(ToxicTriviaOccurencesRepositoryInterface):
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                    INSERT INTO toxictriviaoccurences (count, mostrecent, twitchchannel, userid)
+                    INSERT INTO toxictriviaoccurences (count, mostrecent, twitchchannelid, userid)
                     VALUES ($1, $2, $3, $4)
-                    ON CONFLICT (twitchchannel, userid) DO UPDATE SET count = EXCLUDED.count, mostrecent = EXCLUDED.mostrecent
+                    ON CONFLICT (twitchchannelid, userid) DO UPDATE SET count = EXCLUDED.count, mostrecent = EXCLUDED.mostrecent
             ''',
-            newToxicCount, nowDateTime.isoformat(), twitchChannel, userId
+            newToxicCount, nowDateTime.isoformat(), twitchChannelId, userId
         )
 
         await connection.close()
