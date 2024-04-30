@@ -66,8 +66,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
@@ -80,15 +78,15 @@ class CutenessRepository(CutenessRepositoryInterface):
             '''
                 SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
                 INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannel = $1 AND cuteness.userid = $2 AND cuteness.utcyearandmonth = $3
+                WHERE cuteness.twitchchannelid = $1 AND cuteness.userid = $2 AND cuteness.utcyearandmonth = $3
                 LIMIT 1
             ''',
-            twitchChannel, userId, cutenessDate.getDatabaseString()
+            twitchChannelId, userId, cutenessDate.getDatabaseString()
         )
 
         await connection.close()
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return CutenessResult(
                 cutenessDate = cutenessDate,
                 cuteness = 0,
@@ -120,12 +118,12 @@ class CutenessRepository(CutenessRepositoryInterface):
             '''
                 SELECT cuteness.userid, userids.username, SUM(cuteness.cuteness) AS totalcuteness FROM cuteness
                 INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannel = $1 AND cuteness.userid != $2
+                WHERE cuteness.twitchchannelid = $1 AND cuteness.userid != $2
                 GROUP BY cuteness.userid, userids.username
                 ORDER BY totalcuteness DESC
                 LIMIT $3
             ''',
-            twitchChannel, twitchChannelId, self.__leaderboardSize
+            twitchChannelId, twitchChannelId, self.__leaderboardSize
         )
 
         await connection.close()
@@ -133,8 +131,7 @@ class CutenessRepository(CutenessRepositoryInterface):
         if records is None or len(records) == 0:
             return CutenessChampionsResult(
                 twitchChannel = twitchChannel,
-                twitchChannelId = twitchChannelId,
-                champions = None
+                twitchChannelId = twitchChannelId
             )
 
         champions: list[CutenessLeaderboardEntry] = list()
@@ -179,11 +176,11 @@ class CutenessRepository(CutenessRepositoryInterface):
         records = await connection.fetchRows(
             '''
                 SELECT cuteness, utcyearandmonth FROM cuteness
-                WHERE twitchchannel = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
                 ORDER BY utcyearandmonth DESC
                 LIMIT $3
             ''',
-            twitchChannel, userId, self.__historySize
+            twitchChannelId, userId, self.__historySize
         )
 
         if records is None or len(records) == 0:
@@ -209,31 +206,31 @@ class CutenessRepository(CutenessRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT SUM(cuteness) FROM cuteness
-                WHERE twitchchannel = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
                 LIMIT 1
             ''',
-            twitchChannel, userId
+            twitchChannelId, userId
         )
 
         totalCuteness = 0
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             # this should be impossible at this point, but let's just be safe
             totalCuteness = int(round(record[0]))
 
         record = await connection.fetchRow(
             '''
                 SELECT cuteness, utcyearandmonth FROM cuteness
-                WHERE twitchchannel = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
+                WHERE twitchchannelid = $1 AND userid = $2 AND cuteness IS NOT NULL AND cuteness >= 1
                 ORDER BY cuteness DESC
                 LIMIT 1
             ''',
-            twitchChannel, userId
+            twitchChannelId, userId
         )
 
         bestCuteness: CutenessHistoryEntry | None = None
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             # again, this should be impossible here, but let's just be safe
             bestCuteness = CutenessHistoryEntry(
                 cutenessDate = CutenessDate(record[1]),
@@ -270,8 +267,6 @@ class CutenessRepository(CutenessRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
         elif not utils.isValidStr(userId):
             raise TypeError(f'userId argument is malformed: \"{userId}\"')
-        elif userId == '0':
-            raise ValueError(f'userId argument is an illegal value: \"{userId}\"')
         elif not utils.isValidStr(userName):
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
@@ -283,15 +278,15 @@ class CutenessRepository(CutenessRepositoryInterface):
         record = await connection.fetchRow(
             '''
                 SELECT cuteness FROM cuteness
-                WHERE twitchchannel = $1 AND userid = $2 AND utcyearandmonth = $3
+                WHERE twitchchannelid = $1 AND userid = $2 AND utcyearandmonth = $3
                 LIMIT 1
             ''',
-            twitchChannel, userId, cutenessDate.getDatabaseString()
+            twitchChannelId, userId, cutenessDate.getDatabaseString()
         )
 
         oldCuteness = 0
 
-        if utils.hasItems(record):
+        if record is not None and len(record) >= 1:
             oldCuteness = record[0]
 
         newCuteness = oldCuteness + incrementAmount
@@ -303,11 +298,11 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         await connection.execute(
             '''
-                INSERT INTO cuteness (cuteness, twitchchannel, userid, utcyearandmonth)
+                INSERT INTO cuteness (cuteness, twitchchannelid, userid, utcyearandmonth)
                 VALUES ($1, $2, $3, $4)
-                ON CONFLICT (twitchchannel, userid, utcyearandmonth) DO UPDATE SET cuteness = EXCLUDED.cuteness
+                ON CONFLICT (twitchchannelid, userid, utcyearandmonth) DO UPDATE SET cuteness = EXCLUDED.cuteness
             ''',
-            newCuteness, twitchChannel, userId, cutenessDate.getDatabaseString()
+            newCuteness, twitchChannelId, userId, cutenessDate.getDatabaseString()
         )
 
         await connection.close()
@@ -337,16 +332,16 @@ class CutenessRepository(CutenessRepositoryInterface):
             '''
                 SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
                 INNER JOIN userids ON cuteness.userid = userids.userid
-                WHERE cuteness.twitchchannel = $1 AND cuteness.utcyearandmonth = $2 AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userid != $3
+                WHERE cuteness.twitchchannelid = $1 AND cuteness.utcyearandmonth = $2 AND cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.userid != $3
                 ORDER BY cuteness.cuteness DESC
                 LIMIT $4
             ''',
-            twitchChannel, cutenessDate.getDatabaseString(), twitchChannelId, self.__leaderboardSize
+            twitchChannelId, cutenessDate.getDatabaseString(), twitchChannelId, self.__leaderboardSize
         )
 
         await connection.close()
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             return CutenessLeaderboardResult(cutenessDate = cutenessDate)
 
         entries: list[CutenessLeaderboardEntry] = list()
@@ -404,16 +399,19 @@ class CutenessRepository(CutenessRepositoryInterface):
         records = await connection.fetchRows(
             '''
                 SELECT DISTINCT utcyearandmonth FROM cuteness
-                WHERE twitchchannel = $1 AND utcyearandmonth != $2
+                WHERE twitchchannelid = $1 AND utcyearandmonth != $2
                 ORDER BY utcyearandmonth DESC
                 LIMIT $3
             ''',
-            twitchChannel, CutenessDate().getDatabaseString(), self.__historyLeaderboardSize
+            twitchChannelId, CutenessDate().getDatabaseString(), self.__historyLeaderboardSize
         )
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             await connection.close()
-            return CutenessLeaderboardHistoryResult(twitchChannel = twitchChannel)
+            return CutenessLeaderboardHistoryResult(
+                twitchChannel = twitchChannel,
+                twitchChannelId = twitchChannelId
+            )
 
         leaderboards: list[CutenessLeaderboardResult] = list()
 
@@ -423,14 +421,14 @@ class CutenessRepository(CutenessRepositoryInterface):
                 '''
                     SELECT cuteness.cuteness, cuteness.userid, userids.username FROM cuteness
                     INNER JOIN userids ON cuteness.userid = userids.userid
-                    WHERE cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.twitchchannel = $1 AND cuteness.userid != $2 AND cuteness.utcyearandmonth = $3
+                    WHERE cuteness.cuteness IS NOT NULL AND cuteness.cuteness >= 1 AND cuteness.twitchchannelid = $1 AND cuteness.userid != $2 AND cuteness.utcyearandmonth = $3
                     ORDER BY cuteness.cuteness DESC
                     LIMIT $4
                 ''',
-                twitchChannel, twitchChannelId, cutenessDate.getDatabaseString(), self.__historyLeaderboardSize
+                twitchChannelId, twitchChannelId, cutenessDate.getDatabaseString(), self.__historyLeaderboardSize
             )
 
-            if not utils.hasItems(monthRecords):
+            if monthRecords is None or len(monthRecords) == 0:
                 continue
 
             entries: list[CutenessLeaderboardEntry] = list()
@@ -454,6 +452,7 @@ class CutenessRepository(CutenessRepositoryInterface):
 
         return CutenessLeaderboardHistoryResult(
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             leaderboards = leaderboards
         )
 
@@ -473,10 +472,10 @@ class CutenessRepository(CutenessRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS cuteness (
                         cuteness bigint DEFAULT 0 NOT NULL,
-                        twitchchannel public.citext NOT NULL,
-                        userid public.citext NOT NULL,
-                        utcyearandmonth public.citext NOT NULL,
-                        PRIMARY KEY (twitchchannel, userid, utcyearandmonth)
+                        twitchchannelid text NOT NULL,
+                        userid text NOT NULL,
+                        utcyearandmonth text NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
                     )
                 '''
             )
@@ -485,10 +484,10 @@ class CutenessRepository(CutenessRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS cuteness (
                         cuteness INTEGER NOT NULL DEFAULT 0,
-                        twitchchannel TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL COLLATE NOCASE,
-                        utcyearandmonth TEXT NOT NULL COLLATE NOCASE,
-                        PRIMARY KEY (twitchchannel, userid, utcyearandmonth)
+                        twitchchannelid TEXT NOT NULL,
+                        userid TEXT NOT NULL,
+                        utcyearandmonth TEXT NOT NULL,
+                        PRIMARY KEY (twitchchannelid, userid, utcyearandmonth)
                     )
                 '''
             )

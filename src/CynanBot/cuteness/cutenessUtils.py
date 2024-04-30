@@ -32,7 +32,7 @@ class CutenessUtils(CutenessUtilsInterface):
         elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        champions = result.getChampions()
+        champions = result.champions
 
         if champions is None or len(champions) == 0:
             return f'There are no cuteness champions 😿'
@@ -100,7 +100,7 @@ class CutenessUtils(CutenessUtilsInterface):
         elif not isinstance(leaderboardDelimiter, str):
             raise TypeError(f'leaderboardDelimiter argument is malformed: \"{leaderboardDelimiter}\"')
 
-        leaderboards = result.getLeaderboards()
+        leaderboards = result.leaderboards
 
         if leaderboards is None or len(leaderboards) == 0:
             return f'There is no Cuteness Leaderboard History here 😿'
