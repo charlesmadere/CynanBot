@@ -228,7 +228,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS userids (
-                        userid public.citext NOT NULL PRIMARY KEY,
+                        userid text NOT NULL PRIMARY KEY,
                         username public.citext NOT NULL
                     )
                 '''
@@ -237,7 +237,7 @@ class UserIdsRepository(UserIdsRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS userids (
-                        userid TEXT NOT NULL PRIMARY KEY COLLATE NOCASE,
+                        userid TEXT NOT NULL PRIMARY KEY,
                         username TEXT NOT NULL COLLATE NOCASE
                     )
                 '''
