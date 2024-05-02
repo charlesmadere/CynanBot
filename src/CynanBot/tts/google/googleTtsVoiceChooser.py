@@ -12,7 +12,7 @@ class GoogleTtsVoiceChooser(GoogleTtsVoiceChooserInterface):
         self,
         languageCodeToNames: dict[str, set[str]] = {
             'en-AU': { 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D', 'en-AU-Neural2-A', 'en-AU-Neural2-B', 'en-AU-Neural2-C', 'en-AU-Neural2-D' },
-            'en-GB': { 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F', 'en-GB-Wavenet-A', 'en-GB-Wavenet-B', 'en-GB-Wavenet-C', 'en-GB-Wavenet-D', 'en-GB-Wavenet-F' },
+            'en-GB': { 'en-GB-Neural2-A', 'en-GB-Neural2-B', 'en-GB-Neural2-C', 'en-GB-Neural2-D', 'en-GB-Neural2-F' },
             'en-US': { 'en-US-Casual-K', 'en-US-Journey-F', 'en-US-Studio-O', 'en-US-Studio-Q' },
             'fr-CA': { 'fr-CA-Neural2-A', 'fr-CA-Neural2-B', 'fr-CA-Neural2-C', 'fr-CA-Neural2-D' },
             'ja-JP': { 'ja-JP-Neural2-B', 'ja-JP-Neural2-C', 'ja-JP-Neural2-D' },
