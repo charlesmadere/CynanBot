@@ -118,6 +118,10 @@ from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
+from CynanBot.openWeather.openWeatherApiService import OpenWeatherApiService
+from CynanBot.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
+from CynanBot.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
@@ -610,6 +614,7 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,
@@ -708,9 +713,22 @@ if generalSettingsSnapshot.isEventSubEnabled():
 
 authSnapshot = authRepository.getAll()
 
-weatherRepository: Optional[WeatherRepositoryInterface] = WeatherRepository(
+openWeatherJsonMapper: OpenWeatherJsonMapperInterface = OpenWeatherJsonMapper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
+openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
     networkClientProvider = networkClientProvider,
-    oneWeatherApiKeyProvider = authRepository,
+    openWeatherApiKeyProvider = authRepository,
+    openWeatherJsonMapper = openWeatherJsonMapper,
+    timber = timber
+)
+
+weatherRepository: WeatherRepositoryInterface = WeatherRepository(
+    networkClientProvider = networkClientProvider,
+    openWeatherApiKeyProvider = authRepository,
+    openWeatherApiService = openWeatherApiService,
     timber = timber
 )
 

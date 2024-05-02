@@ -443,6 +443,7 @@ twitchUtils: TwitchUtilsInterface = TwitchUtils(
     generalSettingsRepository = generalSettingsRepository,
     sentMessageLogger = sentMessageLogger,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchHandleProvider = authRepository,
     twitchTokensRepository = twitchTokensRepository,

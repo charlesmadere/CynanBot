@@ -1,6 +1,6 @@
 import traceback
 from datetime import timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.location.location import Location
@@ -9,13 +9,13 @@ from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.network.networkHandle import NetworkHandle
+from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
+from CynanBot.openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
+from CynanBot.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
 from CynanBot.weather.airQualityIndex import AirQualityIndex
 from CynanBot.weather.uvIndex import UvIndex
 from CynanBot.weather.weatherReport import WeatherReport
-from CynanBot.weather.weatherRepositoryInterface import \
-    WeatherRepositoryInterface
-from CynanBot.weather.oneWeatherApiKeyProvider import OneWeatherApiKeyProvider
-from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
+from CynanBot.weather.weatherRepositoryInterface import WeatherRepositoryInterface
 
 
 class WeatherRepository(WeatherRepositoryInterface):
@@ -23,15 +23,18 @@ class WeatherRepository(WeatherRepositoryInterface):
     def __init__(
         self,
         networkClientProvider: NetworkClientProvider,
-        oneWeatherApiKeyProvider: OneWeatherApiKeyProvider,
+        openWeatherApiKeyProvider: OpenWeatherApiKeyProvider,
+        openWeatherApiService: OpenWeatherApiServiceInterface,
         timber: TimberInterface,
         maxAlerts: int = 2,
-        cacheTimeDelta: timedelta = timedelta(minutes = 15)
+        cacheTimeDelta: timedelta = timedelta(minutes = 20)
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
             raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
-        elif not isinstance(oneWeatherApiKeyProvider, OneWeatherApiKeyProvider):
-            raise TypeError(f'oneWeatherApiKeyProvider argument is malformed: \"{oneWeatherApiKeyProvider}\"')
+        elif not isinstance(openWeatherApiKeyProvider, OpenWeatherApiKeyProvider):
+            raise TypeError(f'openWeatherApiKeyProvider argument is malformed: \"{openWeatherApiKeyProvider}\"')
+        elif not isinstance(openWeatherApiService, OpenWeatherApiServiceInterface):
+            raise TypeError(f'openWeatherApiService argument is malformed: \"{openWeatherApiService}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not utils.isValidInt(maxAlerts):
@@ -42,14 +45,15 @@ class WeatherRepository(WeatherRepositoryInterface):
             raise TypeError(f'cacheTimeDelta argument is malformed: \"{cacheTimeDelta}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
-        self.__oneWeatherApiKeyProvider: OneWeatherApiKeyProvider = oneWeatherApiKeyProvider
+        self.__openWeatherApiKeyProvider: OpenWeatherApiKeyProvider = openWeatherApiKeyProvider
+        self.__openWeatherApiService: OpenWeatherApiServiceInterface = openWeatherApiService
         self.__timber: TimberInterface = timber
         self.__maxAlerts: int = maxAlerts
 
         self.__cache: TimedDict[WeatherReport] = TimedDict(cacheTimeDelta)
-        self.__conditionIcons: Dict[str, str] = self.__createConditionIconsDict()
+        self.__conditionIcons: dict[str, str] = self.__createConditionIconsDict()
 
-    async def __chooseTomorrowFromForecast(self, jsonResponse: Dict[str, Any]) -> Dict[str, Any]:
+    async def __chooseTomorrowFromForecast(self, jsonResponse: dict[str, Any]) -> dict[str, Any]:
         currentSunrise = jsonResponse['current']['sunrise']
         currentSunset = jsonResponse['current']['sunset']
 
@@ -63,11 +67,11 @@ class WeatherRepository(WeatherRepositoryInterface):
         self.__cache.clear()
         self.__timber.log('WeatherRepository', 'Caches cleared')
 
-    def __createConditionIconsDict(self) -> Dict[str, str]:
+    def __createConditionIconsDict(self) -> dict[str, str]:
         # This dictionary is built from the Weather Condition Codes listed here:
         # https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
 
-        icons: Dict[str, str] = dict()
+        icons: dict[str, str] = dict()
         icons['200'] = '⛈️'
         icons['201'] = icons['200']
         icons['202'] = icons['200']
@@ -113,20 +117,20 @@ class WeatherRepository(WeatherRepositoryInterface):
         self,
         location: Location,
         clientSession: NetworkHandle,
-        oneWeatherApiKey: str
-    ) -> Optional[AirQualityIndex]:
+        openWeatherApiKey: str
+    ) -> AirQualityIndex | None:
         if not isinstance(location, Location):
             raise TypeError(f'location argument is malformed: \"{location}\"')
         elif not isinstance(clientSession, NetworkHandle):
             raise TypeError(f'clientSession argument is malformed: \"{clientSession}\"')
-        elif not utils.isValidStr(oneWeatherApiKey):
-            raise TypeError(f'oneWeatherApiKey argument is malformed: \"{oneWeatherApiKey}\"')
+        elif not utils.isValidStr(openWeatherApiKey):
+            raise TypeError(f'openWeatherApiKey argument is malformed: \"{openWeatherApiKey}\"')
 
         # Retrieve air quality index from: https://openweathermap.org/api/air-pollution
         # Doing this requires an API key, which you can get here: https://openweathermap.org/api
 
         requestUrl = 'https://api.openweathermap.org/data/2.5/air_pollution?appid={}&lat={}&lon={}'.format(
-            oneWeatherApiKey, location.getLatitude(), location.getLongitude())
+            openWeatherApiKey, location.getLatitude(), location.getLongitude())
 
         try:
             response = await clientSession.get(requestUrl)
@@ -160,9 +164,9 @@ class WeatherRepository(WeatherRepositoryInterface):
         if not isinstance(location, Location):
             raise TypeError(f'location argument is malformed: \"{location}\"')
 
-        cacheValue = self.__cache[location.getLocationId()]
-        if cacheValue is not None:
-            return cacheValue
+        weatherReport = self.__cache[location.getLocationId()]
+        if weatherReport is not None:
+            return weatherReport
 
         weatherReport = await self.__fetchWeather(location)
         self.__cache[location.getLocationId()] = weatherReport
@@ -173,10 +177,9 @@ class WeatherRepository(WeatherRepositoryInterface):
         if not isinstance(location, Location):
             raise TypeError(f'location argument is malformed: \"{location}\"')
 
-        oneWeatherApiKey = await self.__oneWeatherApiKeyProvider.getOneWeatherApiKey()
-
-        if not utils.isValidStr(oneWeatherApiKey):
-            raise OneWeatherApiKeyUnavailableException(f'One Weather API key unavailable when fetching weather ({location=}) ({oneWeatherApiKey=})')
+        openWeatherApiKey = await self.__openWeatherApiKeyProvider.getOpenWeatherApiKey()
+        if not utils.isValidStr(openWeatherApiKey):
+            raise OpenWeatherApiKeyUnavailableException(f'OpenWeather API key unavailable when fetching weather ({location=}) ({openWeatherApiKey=})')
 
         self.__timber.log('WeatherRepository', f'Fetching weather for \"{location.getName()}\" ({location.getLocationId()})...')
         clientSession = await self.__networkClientProvider.get()
@@ -185,7 +188,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         # Doing this requires an API key, which you can get here: https://openweathermap.org/api
 
         requestUrl = 'https://api.openweathermap.org/data/2.5/onecall?appid={}&lat={}&lon={}&exclude=minutely,hourly&units=metric'.format(
-            oneWeatherApiKey, location.getLatitude(), location.getLongitude())
+            openWeatherApiKey, location.getLatitude(), location.getLongitude())
 
         try:
             response = await clientSession.get(requestUrl)
@@ -200,22 +203,22 @@ class WeatherRepository(WeatherRepositoryInterface):
         jsonResponse = await response.json()
         await response.close()
 
-        if not utils.hasItems(jsonResponse) or not isinstance(jsonResponse, dict):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('WeatherRepository', f'Received null/empty JSON response when fetching weather for \"{location.getName()}\" ({location.getLocationId()}): {jsonResponse}')
             raise RuntimeError(f'WeatherRepository received null/empty JSON response when fetching weather for \"{location.getName()}\" ({location.getLocationId()}): {jsonResponse}')
 
-        currentJson: Dict[str, Any] = jsonResponse['current']
+        currentJson: dict[str, Any] = jsonResponse['current']
         humidity = int(round(utils.getFloatFromDict(currentJson, 'humidity')))
         pressure = int(round(utils.getFloatFromDict(currentJson, 'pressure')))
         temperature = utils.getFloatFromDict(currentJson, 'temp')
         uvIndex = UvIndex.fromFloat(utils.getFloatFromDict(currentJson, 'uvi'))
 
-        conditions: List[str] = list()
+        conditions: list[str] = list()
         if 'weather' in currentJson and len(currentJson['weather']) >= 1:
             for conditionJson in currentJson['weather']:
                 conditions.append(await self.__prettifyCondition(conditionJson))
 
-        alerts: List[str] = list()
+        alerts: list[str] = list()
         if 'alerts' in jsonResponse and len(jsonResponse['alerts']) >= 1:
             for alertJson in jsonResponse['alerts']:
                 event = alertJson.get('event')
@@ -234,7 +237,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         tomorrowsHighTemperature = utils.getFloatFromDict(tomorrowsJson['temp'], 'max')
         tomorrowsLowTemperature = utils.getFloatFromDict(tomorrowsJson['temp'], 'min')
 
-        tomorrowsConditions: List[str] = list()
+        tomorrowsConditions: list[str] = list()
         if 'weather' in tomorrowsJson and len(tomorrowsJson['weather']) >= 1:
             for conditionJson in tomorrowsJson['weather']:
                 tomorrowsConditions.append(conditionJson['description'])
@@ -242,7 +245,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         airQualityIndex = await self.__fetchAirQualityIndex(
             location = location,
             clientSession = clientSession,
-            oneWeatherApiKey = oneWeatherApiKey
+            openWeatherApiKey = openWeatherApiKey
         )
 
         return WeatherReport(
@@ -259,7 +262,11 @@ class WeatherRepository(WeatherRepositoryInterface):
             uvIndex = uvIndex
         )
 
-    async def __prettifyCondition(self, conditionJson: Dict) -> str:
+    async def isAvailable(self) -> bool:
+        openWeatherApiKey = await self.__openWeatherApiKeyProvider.getOpenWeatherApiKey()
+        return utils.isValidStr(openWeatherApiKey)
+
+    async def __prettifyCondition(self, conditionJson: dict[Any, Any]) -> str:
         conditionIcon = ''
         if 'id' in conditionJson:
             conditionId = utils.getStrFromDict(conditionJson, 'id')
@@ -269,4 +276,4 @@ class WeatherRepository(WeatherRepositoryInterface):
                 conditionIcon = f'{icon} '
 
         conditionDescription = utils.getStrFromDict(conditionJson, 'description')
-        return f'{conditionIcon}{conditionDescription}'
+        return f'{conditionIcon}{conditionDescription}'.strip()

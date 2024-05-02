@@ -6,21 +6,21 @@ from CynanBot.deepL.deepLAuthKeyProviderInterface import \
 from CynanBot.google.googleCloudProjectCredentialsProviderInterface import \
     GoogleCloudProjectCredentialsProviderInterface
 from CynanBot.misc.clearable import Clearable
+from CynanBot.openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
 from CynanBot.storage.jsonReaderInterface import JsonReaderInterface
 from CynanBot.twitch.twitchCredentialsProviderInterface import \
     TwitchCredentialsProviderInterface
 from CynanBot.twitch.twitchHandleProviderInterface import \
     TwitchHandleProviderInterface
-from CynanBot.weather.oneWeatherApiKeyProvider import OneWeatherApiKeyProvider
 
 
 class AuthRepository(
     Clearable,
     DeepLAuthKeyProviderInterface,
     GoogleCloudProjectCredentialsProviderInterface,
+    OpenWeatherApiKeyProvider,
     TwitchCredentialsProviderInterface,
-    TwitchHandleProviderInterface,
-    OneWeatherApiKeyProvider
+    TwitchHandleProviderInterface
 ):
 
     def __init__(self, authJsonReader: JsonReaderInterface):
@@ -77,9 +77,9 @@ class AuthRepository(
         snapshot = await self.getAllAsync()
         return snapshot.getGoogleCloudServiceAccountEmail()
 
-    async def getOneWeatherApiKey(self) -> str | None:
+    async def getOpenWeatherApiKey(self) -> str | None:
         snapshot = await self.getAllAsync()
-        return snapshot.getOneWeatherApiKey()
+        return snapshot.getOpenWeatherApiKey()
 
     async def getTwitchClientId(self) -> str:
         snapshot = await self.getAllAsync()

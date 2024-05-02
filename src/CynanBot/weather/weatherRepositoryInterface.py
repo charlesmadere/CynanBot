@@ -10,3 +10,7 @@ class WeatherRepositoryInterface(Clearable):
     @abstractmethod
     async def fetchWeather(self, location: Location) -> WeatherReport:
         pass
+
+    @abstractmethod
+    async def isAvailable(self) -> bool:
+        pass

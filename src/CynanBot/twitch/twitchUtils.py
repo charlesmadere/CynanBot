@@ -1,7 +1,7 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
@@ -24,6 +24,7 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
@@ -36,6 +37,7 @@ class TwitchUtils(TwitchUtilsInterface):
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
@@ -43,8 +45,7 @@ class TwitchUtils(TwitchUtilsInterface):
         queueTimeoutSeconds: float = 3,
         sleepBeforeRetryTimeSeconds: float = 1,
         sleepTimeSeconds: float = 0.5,
-        maxRetries: int = 3,
-        timeZone: tzinfo = timezone.utc
+        maxRetries: int = 3
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -54,6 +55,8 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'sentMessageLogger argument is malformed: \"{sentMessageLogger}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchHandleProvider, TwitchHandleProviderInterface):
@@ -78,13 +81,12 @@ class TwitchUtils(TwitchUtilsInterface):
             raise TypeError(f'maxRetries argument is malformed: \"{maxRetries}\"')
         elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
@@ -93,7 +95,6 @@ class TwitchUtils(TwitchUtilsInterface):
         self.__sleepBeforeRetryTimeSeconds: float = sleepBeforeRetryTimeSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
         self.__maxRetries: int = maxRetries
-        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__messageQueue: SimpleQueue[OutboundMessage] = SimpleQueue()
@@ -305,13 +306,13 @@ class TwitchUtils(TwitchUtilsInterface):
             except queue.Empty as e:
                 self.__timber.log('TwitchUtils', f'Encountered queue.Empty when building up Twitch messages list (queue size: {self.__messageQueue.qsize()}) (actions size: {len(outboundMessages)}): {e}', e)
 
-            now = datetime.now(self.__timeZone)
+            now = datetime.now(self.__timeZoneRepository.getDefault())
 
             for outboundMessage in outboundMessages:
-                if now >= outboundMessage.getDelayUntilTime():
+                if now >= outboundMessage.delayUntilTime:
                     await self.safeSend(
-                        messageable = outboundMessage.getMessageable(),
-                        message = outboundMessage.getMessage()
+                        messageable = outboundMessage.messageable,
+                        message = outboundMessage.message
                     )
                 else:
                     await self.__sendOutboundMessage(outboundMessage)
@@ -333,7 +334,7 @@ class TwitchUtils(TwitchUtilsInterface):
         elif not utils.isValidStr(message):
             raise TypeError(f'message argument is malformed: \"{message}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         delayUntilTime = now + timedelta(seconds = delaySeconds)
 
         await self.__sendOutboundMessage(OutboundMessage(

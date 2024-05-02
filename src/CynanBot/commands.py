@@ -23,6 +23,7 @@ from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
 from CynanBot.misc.timedDict import TimedDict
+from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -69,7 +70,8 @@ from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
-from CynanBot.weather.exceptions import OneWeatherApiKeyUnavailableException
+from CynanBot.weather.weatherReportPresenterInterface import \
+    WeatherReportPresenterInterface
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 
@@ -2285,29 +2287,33 @@ class WeatherCommand(AbsCommand):
         timber: TimberInterface,
         twitchUtils: TwitchUtilsInterface,
         usersRepository: UsersRepositoryInterface,
+        weatherReportPresenter: WeatherReportPresenterInterface,
         weatherRepository: WeatherRepositoryInterface,
         cooldown: timedelta = timedelta(minutes = 1)
     ):
         if not isinstance(generalSettingsRepository, GeneralSettingsRepository):
-            raise ValueError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
+            raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
         elif not isinstance(locationsRepository, LocationsRepositoryInterface):
-            raise ValueError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
+            raise TypeError(f'locationsRepository argument is malformed: \"{locationsRepository}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif not isinstance(weatherReportPresenter, WeatherReportPresenterInterface):
+            raise TypeError(f'weatherReportPresenter argument is malformed: \"{weatherReportPresenter}\"')
         elif not isinstance(weatherRepository, WeatherRepositoryInterface):
-            raise ValueError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
+            raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif not isinstance(cooldown, timedelta):
-            raise ValueError(f'cooldown argument is malformed: \"{cooldown}\"')
+            raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__locationsRepository: LocationsRepositoryInterface = locationsRepository
         self.__timber: TimberInterface = timber
         self.__twitchUtils: TwitchUtilsInterface = twitchUtils
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__weatherReportPresenter: WeatherReportPresenterInterface = weatherReportPresenter
         self.__weatherRepository: WeatherRepositoryInterface = weatherRepository
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
@@ -2330,9 +2336,11 @@ class WeatherCommand(AbsCommand):
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
-            await self.__twitchUtils.safeSend(ctx, weatherReport.toStr())
-        except OneWeatherApiKeyUnavailableException as e:
-            self.__timber.log('WeatherCommand', f'Unable to fetch weather as no One Weather API key is available: {e}', e, traceback.format_exc())
+            weatherReportString = await self.__weatherReportPresenter.present(weatherReport)
+            await self.__twitchUtils.safeSend(ctx, weatherReportString)
+        except OpenWeatherApiKeyUnavailableException as e:
+            self.__timber.log('WeatherCommand', f'Unable to fetch weather for \"{locationId}\" as no OpenWeather API key is available: {e}', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')
         except (RuntimeError, ValueError) as e:
             self.__timber.log('WeatherCommand', f'Error fetching weather for \"{locationId}\": {e}', e, traceback.format_exc())
             await self.__twitchUtils.safeSend(ctx, '⚠ Error fetching weather')

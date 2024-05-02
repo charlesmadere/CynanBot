@@ -11,14 +11,14 @@ class DeepLJsonMapperInterface(ABC):
     @abstractmethod
     async def parseTranslationResponse(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None
     ) -> DeepLTranslationResponse | None:
         pass
 
     @abstractmethod
     async def parseTranslationResponses(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None
     ) -> DeepLTranslationResponses | None:
         pass
 

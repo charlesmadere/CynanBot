@@ -28,9 +28,9 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
 
     async def parseTranslationResponse(
         self,
-        jsonContents: dict[str, Any] | None
+        jsonContents: dict[str, Any] | Any | None
     ) -> DeepLTranslationResponse | None:
-        if jsonContents is None or len(jsonContents) == 0:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
         if not utils.isValidStr(jsonContents.get('text')):
@@ -58,9 +58,9 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
 
     async def parseTranslationResponses(
         self,
-        jsonContents: dict[str, Any] | None | Any
+        jsonContents: dict[str, Any] | Any | None
     ) -> DeepLTranslationResponses | None:
-        if jsonContents is None or len(jsonContents) == 0:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
         translationsJson: list[dict[str, Any]] | None = jsonContents.get('translations')

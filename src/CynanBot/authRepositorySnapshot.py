@@ -17,8 +17,8 @@ class AuthRepositorySnapshot():
     def getMerriamWebsterApiKey(self) -> str:
         return utils.getStrFromDict(self.__jsonContents, 'merriamWebsterApiKey', fallback = '')
 
-    def getOneWeatherApiKey(self) -> str:
-        return utils.getStrFromDict(self.__jsonContents, 'oneWeatherApiKey', fallback = '')
+    def getOpenWeatherApiKey(self) -> str:
+        return utils.getStrFromDict(self.__jsonContents, 'openWeatherApiKey', fallback = '')
 
     def getQuizApiKey(self) -> str:
         return utils.getStrFromDict(self.__jsonContents, 'quizApiKey', fallback = '')
@@ -28,9 +28,6 @@ class AuthRepositorySnapshot():
 
     def hasMerriamWebsterApiKey(self) -> bool:
         return utils.isValidStr(self.getMerriamWebsterApiKey())
-
-    def hasOneWeatherApiKey(self) -> bool:
-        return utils.isValidStr(self.getOneWeatherApiKey())
 
     def hasQuizApiKey(self) -> bool:
         return utils.isValidStr(self.getQuizApiKey())
@@ -62,14 +59,6 @@ class AuthRepositorySnapshot():
             raise ValueError(f'\"merriamWebsterApiKey\" in Auth Repository file is malformed: \"{merriamWebsterApiKey}\"')
 
         return merriamWebsterApiKey
-
-    def requireOneWeatherApiKey(self) -> str:
-        oneWeatherApiKey = self.getOneWeatherApiKey()
-
-        if not utils.isValidStr(oneWeatherApiKey):
-            raise ValueError(f'\"oneWeatherApiKey\" in Auth Repository file is malformed: \"{oneWeatherApiKey}\"')
-
-        return oneWeatherApiKey
 
     def requireQuizApiKey(self) -> str:
         quizApiKey = self.getQuizApiKey()
