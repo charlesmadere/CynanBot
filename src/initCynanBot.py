@@ -384,6 +384,9 @@ from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.usersRepository import UsersRepository
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.weatherReportPresenter import WeatherReportPresenter
+from CynanBot.weather.weatherReportPresenterInterface import \
+    WeatherReportPresenterInterface
 from CynanBot.weather.weatherRepository import WeatherRepository
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
@@ -727,6 +730,8 @@ openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
     openWeatherJsonMapper = openWeatherJsonMapper,
     timber = timber
 )
+
+weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
 
 weatherRepository: WeatherRepositoryInterface = WeatherRepository(
     networkClientProvider = networkClientProvider,

@@ -271,6 +271,8 @@ from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.userInterface import UserInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
+from CynanBot.weather.weatherReportPresenterInterface import \
+    WeatherReportPresenterInterface
 from CynanBot.weather.weatherRepositoryInterface import \
     WeatherRepositoryInterface
 from CynanBot.websocketConnection.websocketConnectionServerInterface import \
@@ -355,6 +357,7 @@ class CynanBot(
         twitchWebsocketClient: TwitchWebsocketClientInterface | None,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface,
+        weatherReportPresenter: WeatherReportPresenterInterface | None,
         weatherRepository: WeatherRepositoryInterface | None,
         websocketConnectionServer: WebsocketConnectionServerInterface | None,
         wordOfTheDayRepository: WordOfTheDayRepositoryInterface | None
@@ -502,6 +505,8 @@ class CynanBot(
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
             raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+        elif weatherReportPresenter is not None and not isinstance(weatherReportPresenter, WeatherReportPresenterInterface):
+            raise TypeError(f'weatherReportPresenter argument is malformed: \"{weatherReportPresenter}\"')
         elif weatherRepository is not None and not isinstance(weatherRepository, WeatherRepositoryInterface):
             raise TypeError(f'weatherRepository argument is malformed: \"{weatherRepository}\"')
         elif websocketConnectionServer is not None and not isinstance(websocketConnectionServer, WebsocketConnectionServerInterface):
@@ -671,10 +676,10 @@ class CynanBot(
         else:
             self.__ttsCommand: AbsCommand = TtsCommand(administratorProvider, streamAlertsManager, timber, twitchUtils, usersRepository)
 
-        if locationsRepository is None or weatherRepository is None:
+        if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
             self.__weatherCommand: AbsCommand = StubCommand()
         else:
-            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherRepository)
+            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()

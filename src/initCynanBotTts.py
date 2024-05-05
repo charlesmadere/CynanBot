@@ -793,6 +793,7 @@ cynanBot = CynanBot(
     twitchWebsocketClient = twitchWebsocketClient,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository,
+    weatherReportPresenter = None,
     weatherRepository = None,
     websocketConnectionServer = websocketConnectionServer,
     wordOfTheDayRepository = None
