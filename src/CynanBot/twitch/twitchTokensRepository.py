@@ -15,6 +15,7 @@ from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 from CynanBot.twitch.exceptions import (NoTwitchTokenDetailsException,
+                                        TwitchAccessTokenMissingException,
                                         TwitchPasswordChangedException)
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -322,7 +323,18 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
         accessToken = await self.getAccessToken(twitchChannel)
 
         if not utils.isValidStr(accessToken):
-            raise ValueError(f'\"accessToken\" value for \"{twitchChannel}\" is malformed: \"{accessToken}\"')
+            raise TwitchAccessTokenMissingException(f'Twitch access token is missing ({twitchChannel=}) ({accessToken=})')
+
+        return accessToken
+
+    async def requireAccessTokenById(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+
+        accessToken = await self.getAccessTokenById(twitchChannelId)
+
+        if not utils.isValidStr(accessToken):
+            raise TwitchAccessTokenMissingException(f'Twitch access token is missing ({twitchChannelId=}) ({accessToken=})')
 
         return accessToken
 
