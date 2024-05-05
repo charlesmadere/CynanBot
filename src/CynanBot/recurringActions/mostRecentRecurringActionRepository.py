@@ -87,7 +87,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                     CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                         actiontype text NOT NULL,
                         datetime text NOT NULL,
-                        twitchchannel public.citext NOT NULL PRIMARY KEY
+                        twitchchannel text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -97,7 +97,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                     CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                         actiontype TEXT NOT NULL,
                         datetime TEXT NOT NULL,
-                        twitchchannel TEXT NOT NULL PRIMARY KEY COLLATE NOCASE
+                        twitchchannel TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )

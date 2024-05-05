@@ -140,7 +140,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
-                        userid public.citext NOT NULL PRIMARY KEY
+                        userid text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -148,7 +148,7 @@ class BannedTriviaGameControllersRepository(BannedTriviaGameControllersRepositor
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS bannedtriviagamecontrollers (
-                        userid TEXT NOT NULL PRIMARY KEY COLLATE NOCASE
+                        userid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )

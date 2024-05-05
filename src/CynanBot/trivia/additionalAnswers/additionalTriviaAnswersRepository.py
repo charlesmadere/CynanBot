@@ -292,7 +292,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                         triviaid public.citext NOT NULL,
                         triviasource public.citext NOT NULL,
                         triviatype public.citext NOT NULL,
-                        userid public.citext NOT NULL
+                        userid text NOT NULL
                     )
                 '''
             )
@@ -304,7 +304,7 @@ class AdditionalTriviaAnswersRepository(AdditionalTriviaAnswersRepositoryInterfa
                         triviaid TEXT NOT NULL COLLATE NOCASE,
                         triviasource TEXT NOT NULL COLLATE NOCASE,
                         triviatype TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL COLLATE NOCASE
+                        userid TEXT NOT NULL
                     )
                 '''
             )

@@ -99,9 +99,9 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS mostrecentchats (
-                        chatteruserid public.citext NOT NULL,
+                        chatteruserid text NOT NULL,
                         datetime text NOT NULL,
-                        twitchchannelid public.citext NOT NULL,
+                        twitchchannelid text NOT NULL,
                         PRIMARY KEY (chatteruserid, twitchchannelid)
                     )
                 '''
@@ -110,9 +110,9 @@ class MostRecentChatsRepository(MostRecentChatsRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS mostrecentchats (
-                        chatteruserid TEXT NOT NULL COLLATE NOCASE,
+                        chatteruserid TEXT NOT NULL,
                         datetime TEXT NOT NULL,
-                        twitchchannelid TEXT NOT NULL COLLATE NOCASE,
+                        twitchchannelid TEXT NOT NULL,
                         PRIMARY KEY (chatteruserid, twitchchannelid)
                     )
                 '''

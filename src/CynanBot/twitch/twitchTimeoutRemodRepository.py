@@ -112,9 +112,9 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
-                        broadcasteruserid public.citext NOT NULL,
+                        broadcasteruserid text NOT NULL,
                         remoddatetime text NOT NULL,
-                        userid public.citext NOT NULL,
+                        userid text NOT NULL,
                         PRIMARY KEY (broadcasteruserid, userid)
                     )
                 '''
@@ -123,9 +123,9 @@ class TwitchTimeoutRemodRepository(TwitchTimeoutRemodRepositoryInterface):
             await connection.createTableIfNotExists(
                 '''
                     CREATE TABLE IF NOT EXISTS twitchtimeoutremodactions (
-                        broadcasteruserid TEXT NOT NULL COLLATE NOCASE,
+                        broadcasteruserid TEXT NOT NULL,
                         remoddatetime TEXT NOT NULL,
-                        userid TEXT NOT NULL COLLATE NOCASE,
+                        userid TEXT NOT NULL,
                         PRIMARY KEY (broadcasteruserid, userid)
                     )
                 '''

@@ -113,7 +113,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS bannedtriviaids (
                         triviaid public.citext NOT NULL,
                         triviasource public.citext NOT NULL,
-                        userid public.citext NOT NULL,
+                        userid text NOT NULL,
                         PRIMARY KEY (triviaid, triviasource)
                     )
                 '''
@@ -124,7 +124,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
                     CREATE TABLE IF NOT EXISTS bannedtriviaids (
                         triviaid TEXT NOT NULL COLLATE NOCASE,
                         triviasource TEXT NOT NULL COLLATE NOCASE,
-                        userid TEXT NOT NULL COLLATE NOCASE,
+                        userid TEXT NOT NULL,
                         PRIMARY KEY (triviaid, triviasource)
                     )
                 '''

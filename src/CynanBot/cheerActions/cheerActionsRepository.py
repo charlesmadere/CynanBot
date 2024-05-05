@@ -227,7 +227,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                         actiontype text NOT NULL,
                         amount integer NOT NULL,
                         durationseconds integer NOT NULL,
-                        userid public.citext NOT NULL,
+                        userid text NOT NULL,
                         PRIMARY KEY (actionid, userid)
                     )
                 '''
@@ -242,7 +242,7 @@ class CheerActionsRepository(CheerActionsRepositoryInterface):
                         actiontype TEXT NOT NULL,
                         amount INTEGER NOT NULL,
                         durationseconds INTEGER NOT NULL,
-                        userid TEXT NOT NULL COLLATE NOCASE,
+                        userid TEXT NOT NULL,
                         PRIMARY KEY (actionid, userid)
                     )
                 '''

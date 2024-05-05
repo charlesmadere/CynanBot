@@ -99,8 +99,8 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS supstreamerchatters (
                         mostrecentsup text NOT NULL,
-                        chatteruserid public.citext NOT NULL,
-                        twitchchannelid public.citext NOT NULL
+                        chatteruserid text NOT NULL,
+                        twitchchannelid text NOT NULL
                     )
                 '''
             )
@@ -109,8 +109,8 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS supstreamerchatters (
                         mostrecentsup TEXT NOT NULL,
-                        chatteruserid TEXT NOT NULL COLLATE NOCASE,
-                        twitchchannelid TEXT NOT NULL COLLATE NOCASE
+                        chatteruserid TEXT NOT NULL,
+                        twitchchannelid TEXT NOT NULL
                     )
                 '''
             )
