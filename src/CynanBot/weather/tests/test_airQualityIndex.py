@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.weather.airQualityIndex import AirQualityIndex
 
@@ -6,16 +6,12 @@ from CynanBot.weather.airQualityIndex import AirQualityIndex
 class TestAirQualityIndex():
 
     def test_fromInt_withNone(self):
-        result: Optional[AirQualityIndex] = None
-        exception: Optional[Exception] = None
+        result: AirQualityIndex | None = None
 
-        try:
+        with pytest.raises(Exception):
             result = AirQualityIndex.fromInt(None)  # type: ignore
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert isinstance(exception, Exception)
 
     def test_fromInt_with0(self):
         result = AirQualityIndex.fromInt(0)

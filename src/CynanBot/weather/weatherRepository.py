@@ -7,15 +7,19 @@ from CynanBot.location.location import Location
 from CynanBot.misc.timedDict import TimedDict
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.network.networkHandle import NetworkHandle
-from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
-from CynanBot.openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
-from CynanBot.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from CynanBot.openWeather.exceptions import \
+    OpenWeatherApiKeyUnavailableException
+from CynanBot.openWeather.openWeatherApiKeyProvider import \
+    OpenWeatherApiKeyProvider
+from CynanBot.openWeather.openWeatherApiServiceInterface import \
+    OpenWeatherApiServiceInterface
+from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.weather.airQualityIndex import AirQualityIndex
 from CynanBot.weather.uvIndex import UvIndex
 from CynanBot.weather.weatherReport import WeatherReport
-from CynanBot.weather.weatherRepositoryInterface import WeatherRepositoryInterface
+from CynanBot.weather.weatherRepositoryInterface import \
+    WeatherRepositoryInterface
 
 
 class WeatherRepository(WeatherRepositoryInterface):
