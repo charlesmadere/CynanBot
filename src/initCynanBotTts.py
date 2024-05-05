@@ -311,6 +311,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
+    userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
 )
 

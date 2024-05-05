@@ -1,5 +1,3 @@
-from typing import Optional, Set
-
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
@@ -37,11 +35,11 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
     async def __buildTwitchWebsocketUsers(
         self,
-        usersWithTwitchTokens: Set[str]
-    ) -> Set[TwitchWebsocketUser]:
-        users: Set[TwitchWebsocketUser] = set()
+        usersWithTwitchTokens: set[str]
+    ) -> set[TwitchWebsocketUser]:
+        users: set[TwitchWebsocketUser] = set()
 
-        if not utils.hasItems(usersWithTwitchTokens):
+        if len(usersWithTwitchTokens) == 0:
             return users
 
         for user in usersWithTwitchTokens:
@@ -67,10 +65,10 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
         return users
 
-    async def __findUsersWithTwitchTokens(self, enabledUsers: Set[str]) -> Set[str]:
-        usersWithTwitchTokens: Set[str] = set()
+    async def __findUsersWithTwitchTokens(self, enabledUsers: set[str]) -> set[str]:
+        usersWithTwitchTokens: set[str] = set()
 
-        if not utils.hasItems(enabledUsers):
+        if len(enabledUsers) == 0:
             return usersWithTwitchTokens
 
         for user in enabledUsers:
@@ -79,8 +77,8 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
         return usersWithTwitchTokens
 
-    async def __getEnabledUsers(self) -> Set[str]:
-        enabledUsers: Set[str] = set()
+    async def __getEnabledUsers(self) -> set[str]:
+        enabledUsers: set[str] = set()
         users = await self.__usersRepository.getUsersAsync()
 
         for user in users:
@@ -89,7 +87,7 @@ class TwitchWebsocketAllowedUsersRepository(TwitchWebsocketAllowedUsersRepositor
 
         return enabledUsers
 
-    async def getUsers(self) -> Set[TwitchWebsocketUser]:
+    async def getUsers(self) -> set[TwitchWebsocketUser]:
         enabledUsers = await self.__getEnabledUsers()
         usersWithTwitchTokens = await self.__findUsersWithTwitchTokens(enabledUsers)
         users = await self.__buildTwitchWebsocketUsers(usersWithTwitchTokens)

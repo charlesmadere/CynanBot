@@ -23,7 +23,8 @@ from CynanBot.language.jishoHelperInterface import JishoHelperInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
 from CynanBot.misc.timedDict import TimedDict
-from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
+from CynanBot.openWeather.exceptions import \
+    OpenWeatherApiKeyUnavailableException
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.soundPlayerManager.soundAlert import SoundAlert
 from CynanBot.starWars.starWarsQuotesRepositoryInterface import \
@@ -1722,15 +1723,15 @@ class SetTwitchCodeCommand(AbsCommand):
         usersRepository: UsersRepositoryInterface
     ):
         if not isinstance(administratorProvider, AdministratorProviderInterface):
-            raise ValueError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
+            raise TypeError(f'administratorProvider argument is malformed: \"{administratorProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
-            raise ValueError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
+            raise TypeError(f'twitchTokensRepositoryInterface argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(twitchUtils, TwitchUtilsInterface):
-            raise ValueError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
+            raise TypeError(f'twitchUtils argument is malformed: \"{twitchUtils}\"')
         elif not isinstance(usersRepository, UsersRepositoryInterface):
-            raise ValueError(f'usersRepository argument is malformed: \"{usersRepository}\"')
+            raise TypeError(f'usersRepository argument is malformed: \"{usersRepository}\"')
 
         self.__administratorProvider: AdministratorProviderInterface = administratorProvider
         self.__timber: TimberInterface = timber
@@ -1740,9 +1741,10 @@ class SetTwitchCodeCommand(AbsCommand):
 
     async def handleCommand(self, ctx: TwitchContext):
         user = await self.__usersRepository.getUserAsync(ctx.getTwitchChannelName())
+        twitchChannelId = await ctx.getTwitchChannelId()
         administrator = await self.__administratorProvider.getAdministratorUserId()
 
-        if ctx.getAuthorName().lower() != user.getHandle().lower() and ctx.getAuthorId() != administrator:
+        if ctx.getAuthorId() != twitchChannelId and ctx.getAuthorId() != administrator:
             self.__timber.log('SetTwitchCodeCommand', f'{ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} tried using this command!')
             return
 
@@ -1752,7 +1754,7 @@ class SetTwitchCodeCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
             return
 
-        code: Optional[str] = splits[1]
+        code: str | None = splits[1]
         if not utils.isValidStr(code):
             self.__timber.log('SetTwitchCodeCommand', f'Invalid code argument given by {ctx.getAuthorName()}:{ctx.getAuthorId()} for the !settwitchcode command: \"{splits}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Code argument is necessary for the !settwitchcode command. Example: !settwitchcode {self.__getRandomCodeStr()}')
@@ -1761,6 +1763,7 @@ class SetTwitchCodeCommand(AbsCommand):
         await self.__twitchTokensRepository.addUser(
             code = code,
             twitchChannel = user.getHandle(),
+            twitchChannelId = twitchChannelId,
         )
 
         self.__timber.log('SetTwitchCodeCommand', f'Handled !settwitchcode command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -1770,7 +1773,7 @@ class SetTwitchCodeCommand(AbsCommand):
         randomUuid = str(uuid.uuid4())
         randomUuid = randomUuid.replace('-', '')
 
-        if len(randomUuid) > 16:
+        if len(randomUuid) > 12:
             randomUuid = randomUuid[0:16]
 
         return randomUuid

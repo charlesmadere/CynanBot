@@ -92,15 +92,14 @@ class AnivCheckChatAction(AbsChatAction):
             self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but the bot user ({moderatorUserName}) does not have an available Twitch token')
             return False
 
-        twitchToken = await self.__twitchTokensRepository.getAccessToken(moderatorUserName)
-
-        if not utils.isValidStr(twitchToken):
-            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch token (\"{twitchToken}\") for the bot user ({moderatorUserName})')
+        twitchAccessToken = await self.__twitchTokensRepository.getAccessToken(moderatorUserName)
+        if not utils.isValidStr(twitchAccessToken):
+            self.__timber.log('AnivCheckChatAction', f'Attempted to timeout {message.getAuthorName()} (user ID \"{anivUserId}\") for posting bad content (\"{message.getContent()}\") ({contentCode=}), but was unable to fetch a valid Twitch token (\"{twitchAccessToken}\") for the bot user ({moderatorUserName})')
             return False
 
         moderatorUserId = await self.__userIdsRepository.fetchUserId(
             userName = moderatorUserName,
-            twitchAccessToken = twitchToken
+            twitchAccessToken = twitchAccessToken
         )
 
         if not utils.isValidStr(moderatorUserId):
@@ -119,7 +118,7 @@ class AnivCheckChatAction(AbsChatAction):
 
         try:
             await self.__twitchApiService.banUser(
-                twitchAccessToken = twitchToken,
+                twitchAccessToken = twitchAccessToken,
                 banRequest = banRequest
             )
         except Exception as e:

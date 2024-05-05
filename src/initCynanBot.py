@@ -119,9 +119,11 @@ from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.network.networkClientType import NetworkClientType
 from CynanBot.network.requestsClientProvider import RequestsClientProvider
 from CynanBot.openWeather.openWeatherApiService import OpenWeatherApiService
-from CynanBot.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
+from CynanBot.openWeather.openWeatherApiServiceInterface import \
+    OpenWeatherApiServiceInterface
 from CynanBot.openWeather.openWeatherJsonMapper import OpenWeatherJsonMapper
-from CynanBot.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from CynanBot.openWeather.openWeatherJsonMapperInterface import \
+    OpenWeatherJsonMapperInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
 from CynanBot.pkmn.pokepediaUtils import PokepediaUtils
 from CynanBot.recurringActions.mostRecentRecurringActionRepository import \
@@ -476,6 +478,7 @@ twitchTokensRepository: TwitchTokensRepositoryInterface = TwitchTokensRepository
     timber = timber,
     timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
+    userIdsRepository = userIdsRepository,
     seedFileReader = JsonFileReader('twitchTokensRepositorySeedFile.json')
 )
 
