@@ -1,5 +1,6 @@
 from CynanBot.weather.weatherReport import WeatherReport
-from CynanBot.weather.weatherReportPresenterInterface import WeatherReportPresenterInterface
+from CynanBot.weather.weatherReportPresenterInterface import \
+    WeatherReportPresenterInterface
 
 
 class WeatherReportPresenter(WeatherReportPresenterInterface):
