@@ -4,10 +4,10 @@ from typing import Any
 import CynanBot.misc.utils as utils
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
-from CynanBot.openWeather.openWeatherAirQualityIndex import \
-    OpenWeatherAirQualityIndex
-from CynanBot.openWeather.openWeatherAirQualityReport import \
-    OpenWeatherAirQualityReport
+from CynanBot.openWeather.openWeatherAirPollutionIndex import \
+    OpenWeatherAirPollutionIndex
+from CynanBot.openWeather.openWeatherAirPollutionReport import \
+    OpenWeatherAirPollutionReport
 from CynanBot.openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
 from CynanBot.openWeather.openWeatherMomentReport import \
@@ -31,28 +31,28 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
-    async def parseAirQualityIndex(
+    async def parseAirPollutionIndex(
         self,
         index: int | None
-    ) -> OpenWeatherAirQualityIndex | None:
+    ) -> OpenWeatherAirPollutionIndex | None:
         if not utils.isValidInt(index):
             return None
 
         if index <= 1:
-            return OpenWeatherAirQualityIndex.GOOD
+            return OpenWeatherAirPollutionIndex.GOOD
         elif index <= 2:
-            return OpenWeatherAirQualityIndex.FAIR
+            return OpenWeatherAirPollutionIndex.FAIR
         elif index <= 3:
-            return OpenWeatherAirQualityIndex.MODERATE
+            return OpenWeatherAirPollutionIndex.MODERATE
         elif index <= 4:
-            return OpenWeatherAirQualityIndex.POOR
+            return OpenWeatherAirPollutionIndex.POOR
         else:
-            return OpenWeatherAirQualityIndex.VERY_POOR
+            return OpenWeatherAirPollutionIndex.VERY_POOR
 
-    async def parseAirQualityReport(
+    async def parseAirPollutionReport(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> OpenWeatherAirQualityReport | None:
+    ) -> OpenWeatherAirPollutionReport | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
@@ -81,16 +81,16 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"main\" field in JSON data: ({jsonContents=})')
             return None
 
-        airQualityIndex = await self.parseAirQualityIndex(mainJson.get('aqi'))
-        if airQualityIndex is None:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid OpenWeatherAirQualityIndex in \"main\" JSON data: ({jsonContents=})')
+        airPollutionIndex = await self.parseAirPollutionIndex(mainJson.get('aqi'))
+        if airPollutionIndex is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid OpenWeatherAirPollutionIndex in \"main\" JSON data: ({jsonContents=})')
             return None
 
-        return OpenWeatherAirQualityReport(
+        return OpenWeatherAirPollutionReport(
             dateTime = dateTime,
             latitude = latitude,
             longitude = longitude,
-            airQualityIndex = airQualityIndex
+            airPollutionIndex = airPollutionIndex
         )
 
     async def parseWeatherMomentReport(

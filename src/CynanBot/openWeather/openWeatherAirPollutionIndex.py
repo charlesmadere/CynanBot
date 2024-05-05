@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class OpenWeatherAirQualityIndex(Enum):
+class OpenWeatherAirPollutionIndex(Enum):
 
     FAIR = auto()
     GOOD = auto()

@@ -5,8 +5,8 @@ from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
 from CynanBot.openWeather.exceptions import \
     OpenWeatherApiKeyUnavailableException
-from CynanBot.openWeather.openWeatherAirQualityReport import \
-    OpenWeatherAirQualityReport
+from CynanBot.openWeather.openWeatherAirPollutionReport import \
+    OpenWeatherAirPollutionReport
 from CynanBot.openWeather.openWeatherApiKeyProvider import \
     OpenWeatherApiKeyProvider
 from CynanBot.openWeather.openWeatherApiServiceInterface import \
@@ -40,11 +40,11 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         self.__openWeatherJsonMapper: OpenWeatherJsonMapperInterface = openWeatherJsonMapper
         self.__timber: TimberInterface = timber
 
-    async def fetchAirQuality(
+    async def fetchAirPollutionReport(
         self,
         latitude: float,
         longitude: float
-    ) -> OpenWeatherAirQualityReport:
+    ) -> OpenWeatherAirPollutionReport:
         if not utils.isValidNum(latitude):
             raise TypeError(f'latitude argument is malformed: \"{latitude}\"')
         elif not utils.isValidNum(longitude):
@@ -59,7 +59,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f''
+                url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={latitude}&lon={longitude}'
             )
         except GenericNetworkException as e:
             self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({latitude=}) ({longitude=}): {e}', e, traceback.format_exc())
@@ -73,13 +73,13 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
             self.__timber.log('OpenWeatherApiService', f'Encountered non-200 HTTP status code when fetching weather ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
             raise GenericNetworkException(f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
 
-        airQualityReport = await self.__openWeatherJsonMapper.parseAirQualityReport(jsonResponse)
+        airPollutionReport = await self.__openWeatherJsonMapper.parseAirPollutionReport(jsonResponse)
 
-        if airQualityReport is None:
-            self.__timber.log('OpenWeatherApiService', f'Failed to parse JSON response into OpenWeatherAirQualityReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQualityReport=})')
-            raise GenericNetworkException(f'OpenWeatherApiService failed to parse JSON response into OpenWeatherAirQualityReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQualityReport=})')
+        if airPollutionReport is None:
+            self.__timber.log('OpenWeatherApiService', f'Failed to parse JSON response into OpenWeatherAirPollutionReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airPollutionReport=})')
+            raise GenericNetworkException(f'OpenWeatherApiService failed to parse JSON response into OpenWeatherAirPollutionReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airPollutionReport=})')
 
-        return airQualityReport
+        return airPollutionReport
 
     async def fetchWeatherReport(
         self,
