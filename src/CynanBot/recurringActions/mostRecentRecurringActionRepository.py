@@ -54,10 +54,10 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         record = await connection.fetchRow(
             '''
                 SELECT actiontype, datetime FROM mostrecentrecurringaction
-                WHERE twitchchannel = $1
+                WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannel
+            twitchChannelId
         )
 
         await connection.close()
@@ -71,7 +71,8 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         return MostRecentRecurringAction(
             actionType = actionType,
             dateTime = dateTime,
-            twitchChannel = twitchChannel
+            twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId
         )
 
     async def __initDatabaseTable(self):
@@ -87,7 +88,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                     CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                         actiontype text NOT NULL,
                         datetime text NOT NULL,
-                        twitchchannel text NOT NULL PRIMARY KEY
+                        twitchchannelid text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -97,7 +98,7 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
                     CREATE TABLE IF NOT EXISTS mostrecentrecurringaction (
                         actiontype TEXT NOT NULL,
                         datetime TEXT NOT NULL,
-                        twitchchannel TEXT NOT NULL PRIMARY KEY
+                        twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -115,11 +116,11 @@ class MostRecentRecurringActionRepository(MostRecentRecurringActionRepositoryInt
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO mostrecentrecurringaction (actiontype, datetime, twitchchannel)
+                INSERT INTO mostrecentrecurringaction (actiontype, datetime, twitchchannelid)
                 VALUES ($1, $2, $3)
-                ON CONFLICT (twitchchannel) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
+                ON CONFLICT (twitchchannelid) DO UPDATE SET actiontype = EXCLUDED.actiontype, datetime = EXCLUDED.datetime
             ''',
-            action.getActionType().toStr(), nowDateTime.isoformat(), action.getTwitchChannel()
+            action.getActionType().toStr(), nowDateTime.isoformat(), action.getTwitchChannelId()
         )
 
         await connection.close()

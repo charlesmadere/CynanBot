@@ -9,3 +9,4 @@ class MostRecentRecurringAction():
     dateTime: datetime
     actionType: RecurringActionType
     twitchChannel: str
+    twitchChannelId: str
