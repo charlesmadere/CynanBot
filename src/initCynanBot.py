@@ -819,6 +819,7 @@ triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInte
 triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryRepository(
     backingDatabase = backingDatabase,
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     triviaSettingsRepository = triviaSettingsRepository
 )
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
