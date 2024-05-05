@@ -1,12 +1,17 @@
-from typing import Any
 from datetime import datetime
+from typing import Any
 
 import CynanBot.misc.utils as utils
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
-from CynanBot.openWeather.openWeatherAirQualityIndex import OpenWeatherAirQualityIndex
-from CynanBot.openWeather.openWeatherAirQualityReport import OpenWeatherAirQualityReport
-from CynanBot.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
-from CynanBot.openWeather.openWeatherMomentReport import OpenWeatherMomentReport
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
+from CynanBot.openWeather.openWeatherAirQualityIndex import \
+    OpenWeatherAirQualityIndex
+from CynanBot.openWeather.openWeatherAirQualityReport import \
+    OpenWeatherAirQualityReport
+from CynanBot.openWeather.openWeatherJsonMapperInterface import \
+    OpenWeatherJsonMapperInterface
+from CynanBot.openWeather.openWeatherMomentReport import \
+    OpenWeatherMomentReport
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 from CynanBot.timber.timberInterface import TimberInterface
 

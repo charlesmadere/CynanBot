@@ -3,11 +3,16 @@ import traceback
 import CynanBot.misc.utils as utils
 from CynanBot.network.exceptions import GenericNetworkException
 from CynanBot.network.networkClientProvider import NetworkClientProvider
-from CynanBot.openWeather.exceptions import OpenWeatherApiKeyUnavailableException
-from CynanBot.openWeather.openWeatherAirQualityReport import OpenWeatherAirQualityReport
-from CynanBot.openWeather.openWeatherApiKeyProvider import OpenWeatherApiKeyProvider
-from CynanBot.openWeather.openWeatherApiServiceInterface import OpenWeatherApiServiceInterface
-from CynanBot.openWeather.openWeatherJsonMapperInterface import OpenWeatherJsonMapperInterface
+from CynanBot.openWeather.exceptions import \
+    OpenWeatherApiKeyUnavailableException
+from CynanBot.openWeather.openWeatherAirQualityReport import \
+    OpenWeatherAirQualityReport
+from CynanBot.openWeather.openWeatherApiKeyProvider import \
+    OpenWeatherApiKeyProvider
+from CynanBot.openWeather.openWeatherApiServiceInterface import \
+    OpenWeatherApiServiceInterface
+from CynanBot.openWeather.openWeatherJsonMapperInterface import \
+    OpenWeatherJsonMapperInterface
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 from CynanBot.timber.timberInterface import TimberInterface
 
@@ -39,7 +44,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
         self,
         latitude: float,
         longitude: float
-    ) -> OpenWeatherAirQuality:
+    ) -> OpenWeatherAirQualityReport:
         if not utils.isValidNum(latitude):
             raise TypeError(f'latitude argument is malformed: \"{latitude}\"')
         elif not utils.isValidNum(longitude):
@@ -68,13 +73,13 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
             self.__timber.log('OpenWeatherApiService', f'Encountered non-200 HTTP status code when fetching weather ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
             raise GenericNetworkException(f'OpenWeatherApiService encountered non-200 HTTP status code when fetching weather ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=})')
 
-        airQuality = await self.__openWeatherApiKeyProvider.parseAirQuality(jsonResponse)
+        airQualityReport = await self.__openWeatherJsonMapper.parseAirQualityReport(jsonResponse)
 
-        if airQuality is None:
-            self.__timber.log('OpenWeatherApiService', f'Failed to parse JSON response into OpenWeatherAirQuality instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQuality=})')
-            raise GenericNetworkException(f'OpenWeatherApiService failed to parse JSON response into OpenWeatherAirQuality instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQuality=})')
+        if airQualityReport is None:
+            self.__timber.log('OpenWeatherApiService', f'Failed to parse JSON response into OpenWeatherAirQualityReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQualityReport=})')
+            raise GenericNetworkException(f'OpenWeatherApiService failed to parse JSON response into OpenWeatherAirQualityReport instance ({latitude=}) ({longitude=}) ({responseStatusCode=}) ({response=}) ({jsonResponse=}) ({airQualityReport=})')
 
-        return airQuality
+        return airQualityReport
 
     async def fetchWeatherReport(
         self,

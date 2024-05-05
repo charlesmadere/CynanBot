@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import tzinfo
 
-from CynanBot.openWeather.openWeatherMomentReport import OpenWeatherMomentReport
+from CynanBot.openWeather.openWeatherMomentReport import \
+    OpenWeatherMomentReport
 
 
 @dataclass(frozen = True)

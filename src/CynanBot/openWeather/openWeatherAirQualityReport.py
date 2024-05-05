@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from CynanBot.openWeather.openWeatherAirQualityIndex import OpenWeatherAirQualityIndex
+from CynanBot.openWeather.openWeatherAirQualityIndex import \
+    OpenWeatherAirQualityIndex
 
 
 @dataclass(frozen = True)

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from CynanBot.openWeather.openWeatherAirQualityReport import OpenWeatherAirQualityReport
+from CynanBot.openWeather.openWeatherAirQualityReport import \
+    OpenWeatherAirQualityReport
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 
 
