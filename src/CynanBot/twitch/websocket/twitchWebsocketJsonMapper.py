@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -54,8 +54,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
 
-    async def parseWebsocketChannelPointsVoting(self, channelPointsVotingJson: Optional[Dict[str, Any]]) -> Optional[TwitchChannelPointsVoting]:
-        if not isinstance(channelPointsVotingJson, Dict) or len(channelPointsVotingJson) == 0:
+    async def parseWebsocketChannelPointsVoting(
+        self,
+        channelPointsVotingJson: dict[str, Any] | None
+    ) -> TwitchChannelPointsVoting | None:
+        if not isinstance(channelPointsVotingJson, dict) or len(channelPointsVotingJson) == 0:
             return None
 
         isEnabled = utils.getBoolFromDict(channelPointsVotingJson, 'is_enabled')
@@ -66,8 +69,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             amountPerVote = amountPerVote
         )
 
-    async def parseWebsocketPollChoice(self, choiceJson: Optional[Dict[str, Any]]) -> Optional[TwitchPollChoice]:
-        if not isinstance(choiceJson, Dict) or len(choiceJson) == 0:
+    async def parseWebsocketPollChoice(
+        self,
+        choiceJson: dict[str, Any] | None
+    ) -> TwitchPollChoice | None:
+        if not isinstance(choiceJson, dict) or len(choiceJson) == 0:
             return None
 
         channelPointsVotes = utils.getIntFromDict(choiceJson, 'channel_points_votes', 0)
@@ -82,11 +88,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             title = title
         )
 
-    async def parseWebsocketCommunitySubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[TwitchCommunitySubGift]:
-        if not isinstance(giftJson, Dict) or len(giftJson) == 0:
+    async def parseWebsocketCommunitySubGift(
+        self,
+        giftJson: dict[str, Any] | None
+    ) -> TwitchCommunitySubGift | None:
+        if not isinstance(giftJson, dict) or len(giftJson) == 0:
             return None
 
-        cumulativeTotal: Optional[int] = None
+        cumulativeTotal: int | None = None
         if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
             cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
 
@@ -101,75 +110,78 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subTier = subTier
         )
 
-    async def parseWebsocketCondition(self, conditionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketCondition]:
-        if not isinstance(conditionJson, Dict):
+    async def parseWebsocketCondition(
+        self,
+        conditionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketCondition | None:
+        if not isinstance(conditionJson, dict):
             return None
 
-        broadcasterUserId: Optional[str] = None
+        broadcasterUserId: str | None = None
         if 'broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_id')):
             broadcasterUserId = utils.getStrFromDict(conditionJson, 'broadcaster_user_id')
 
-        broadcasterUserLogin: Optional[str] = None
+        broadcasterUserLogin: str | None = None
         if 'broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_login')):
             broadcasterUserLogin = utils.getStrFromDict(conditionJson, 'broadcaster_user_login')
 
-        broadcasterUserName: Optional[str] = None
+        broadcasterUserName: str | None = None
         if 'broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('broadcaster_user_name')):
             broadcasterUserName = utils.getStrFromDict(conditionJson, 'broadcaster_user_name')
 
-        clientId: Optional[str] = None
+        clientId: str | None = None
         if 'client_id' in conditionJson and utils.isValidStr(conditionJson.get('client_id')):
             clientId = utils.getStrFromDict(conditionJson, 'client_id')
 
-        fromBroadcasterUserId: Optional[str] = None
+        fromBroadcasterUserId: str | None = None
         if 'from_broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_id')):
             fromBroadcasterUserId = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_id')
 
-        fromBroadcasterUserLogin: Optional[str] = None
+        fromBroadcasterUserLogin: str | None = None
         if 'from_broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_login')):
             fromBroadcasterUserLogin = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_login')
 
-        fromBroadcasterUserName: Optional[str] = None
+        fromBroadcasterUserName: str | None = None
         if 'from_broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('from_broadcaster_user_name')):
             fromBroadcasterUserName = utils.getStrFromDict(conditionJson, 'from_broadcaster_user_name')
 
-        moderatorUserId: Optional[str] = None
+        moderatorUserId: str | None = None
         if 'moderator_user_id' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_id')):
             moderatorUserId = utils.getStrFromDict(conditionJson, 'moderator_user_id')
 
-        moderatorUserLogin: Optional[str] = None
+        moderatorUserLogin: str | None = None
         if 'moderator_user_login' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_login')):
             moderatorUserLogin = utils.getStrFromDict(conditionJson, 'moderator_user_login')
 
-        moderatorUserName: Optional[str] = None
+        moderatorUserName: str | None = None
         if 'moderator_user_name' in conditionJson and utils.isValidStr(conditionJson.get('moderator_user_name')):
             moderatorUserName = utils.getStrFromDict(conditionJson, 'moderator_user_name')
 
-        rewardId: Optional[str] = None
+        rewardId: str | None = None
         if 'reward_id' in conditionJson and utils.isValidStr(conditionJson.get('reward_id')):
             rewardId = utils.getStrFromDict(conditionJson, 'reward_id')
 
-        toBroadcasterUserId: Optional[str] = None
+        toBroadcasterUserId: str | None = None
         if 'to_broadcaster_user_id' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_id')):
             toBroadcasterUserId = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_id')
 
-        toBroadcasterUserLogin: Optional[str] = None
+        toBroadcasterUserLogin: str | None = None
         if 'to_broadcaster_user_login' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_login')):
             toBroadcasterUserLogin = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_login')
 
-        toBroadcasterUserName: Optional[str] = None
+        toBroadcasterUserName: str | None = None
         if 'to_broadcaster_user_name' in conditionJson and utils.isValidStr(conditionJson.get('to_broadcaster_user_name')):
             toBroadcasterUserName = utils.getStrFromDict(conditionJson, 'to_broadcaster_user_name')
 
-        userId: Optional[str] = None
+        userId: str | None = None
         if 'user_id' in conditionJson and utils.isValidStr(conditionJson.get('user_id')):
             userId = utils.getStrFromDict(conditionJson, 'user_id')
 
-        userLogin: Optional[str] = None
+        userLogin: str | None = None
         if 'user_login' in conditionJson and utils.isValidStr(conditionJson.get('user_login')):
             userLogin = utils.getStrFromDict(conditionJson, 'user_login')
 
-        userName: Optional[str] = None
+        userName: str | None = None
         if 'user_name' in conditionJson and utils.isValidStr(conditionJson.get('user_name')):
             userName = utils.getStrFromDict(conditionJson, 'user_name')
 
@@ -193,19 +205,22 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName
         )
 
-    async def __parseMetadata(self, metadataJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketMetadata]:
-        if not isinstance(metadataJson, Dict) or len(metadataJson) == 0:
+    async def __parseMetadata(
+        self,
+        metadataJson: dict[str, Any] | None
+    ) -> TwitchWebsocketMetadata | None:
+        if not isinstance(metadataJson, dict) or len(metadataJson) == 0:
             return None
 
         messageTimestamp = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(metadataJson, 'message_timestamp')))
         messageId = utils.getStrFromDict(metadataJson, 'message_id')
         messageType = TwitchWebsocketMessageType.fromStr(utils.getStrFromDict(metadataJson, 'message_type'))
 
-        subscriptionVersion: Optional[str] = None
+        subscriptionVersion: str | None = None
         if 'subscription_version' in metadataJson and utils.isValidStr(metadataJson.get('subscription_version')):
             subscriptionVersion = utils.getStrFromDict(metadataJson, 'subscription_version')
 
-        subscriptionType: Optional[TwitchWebsocketSubscriptionType] = None
+        subscriptionType: TwitchWebsocketSubscriptionType | None = None
         if 'subscription_type' in metadataJson and utils.isValidStr(metadataJson.get('subscription_type')):
             subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(metadataJson, 'subscription_type'))
 
@@ -217,8 +232,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscriptionType = subscriptionType
         )
 
-    async def __parsePayload(self, payloadJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketPayload]:
-        if not isinstance(payloadJson, Dict) or len(payloadJson) == 0:
+    async def __parsePayload(
+        self,
+        payloadJson: dict[str, Any] | None
+    ) -> TwitchWebsocketPayload | None:
+        if not isinstance(payloadJson, dict) or len(payloadJson) == 0:
             return None
 
         event = await self.parseWebsocketEvent(payloadJson.get('event'))
@@ -231,23 +249,26 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subscription = subscription
         )
 
-    async def __parseTransport(self, transportJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketTransport]:
-        if not isinstance(transportJson, Dict) or len(transportJson) == 0:
+    async def __parseTransport(
+        self,
+        transportJson: dict[str, Any] | None
+    ) -> TwitchWebsocketTransport | None:
+        if not isinstance(transportJson, dict) or len(transportJson) == 0:
             return None
 
-        connectedAt: Optional[SimpleDateTime] = None
+        connectedAt: SimpleDateTime | None = None
         if 'connected_at' in transportJson and utils.isValidStr(transportJson.get('connected_at')):
             connectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'connected_at')))
 
-        disconnectedAt: Optional[SimpleDateTime] = None
+        disconnectedAt: SimpleDateTime | None = None
         if 'disconnected_at' in transportJson and utils.isValidStr(transportJson.get('disconnected_at')):
             disconnectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'disconnected_at')))
 
-        secret: Optional[str] = None
+        secret: str | None = None
         if 'secret' in transportJson and utils.isValidStr(transportJson.get('secret')):
             secret = utils.getStrFromDict(transportJson, 'secret')
 
-        sessionId: Optional[str] = None
+        sessionId: str | None = None
         if 'session_id' in transportJson and utils.isValidBool(transportJson.get('session_id')):
             sessionId = utils.getStrFromDict(transportJson, 'session_id')
 
@@ -261,8 +282,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             method = method
         )
 
-    async def parseWebsocketDataBundle(self, dataBundleJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketDataBundle]:
-        if not isinstance(dataBundleJson, Dict) or len(dataBundleJson) == 0:
+    async def parseWebsocketDataBundle(
+        self,
+        dataBundleJson: dict[str, Any] | None
+    ) -> TwitchWebsocketDataBundle | None:
+        if not isinstance(dataBundleJson, dict) or len(dataBundleJson) == 0:
             return None
 
         metadata = await self.__parseMetadata(dataBundleJson.get('metadata'))
@@ -278,95 +302,98 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             payload = payload
         )
 
-    async def parseWebsocketEvent(self, eventJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketEvent]:
-        if not isinstance(eventJson, Dict) or len(eventJson) == 0:
+    async def parseWebsocketEvent(
+        self,
+        eventJson: dict[str, Any] | None
+    ) -> TwitchWebsocketEvent | None:
+        if not isinstance(eventJson, dict) or len(eventJson) == 0:
             return None
 
-        isAnonymous: Optional[bool] = None
+        isAnonymous: bool | None = None
         if 'is_anonymous' in eventJson and eventJson.get('is_anonymous') is not None:
             isAnonymous = utils.getBoolFromDict(eventJson, 'is_anonymous')
 
-        isGift: Optional[bool] = None
+        isGift: bool | None = None
         if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
             isGift = utils.getBoolFromDict(eventJson, 'is_gift')
 
-        bits: Optional[int] = None
+        bits: int | None = None
         if 'bits' in eventJson and utils.isValidInt(eventJson.get('bits')):
             bits = utils.getIntFromDict(eventJson, 'bits')
 
-        cumulativeMonths: Optional[int] = None
+        cumulativeMonths: int | None = None
         if 'cumulative_months' in eventJson and utils.isValidInt(eventJson.get('cumulative_months')):
             cumulativeMonths = utils.getIntFromDict(eventJson, 'cumulative_months')
 
-        total: Optional[int] = None
+        total: int | None = None
         if 'total' in eventJson and utils.isValidInt(eventJson.get('total')):
             total = utils.getIntFromDict(eventJson, 'total')
 
-        viewers: Optional[int] = None
+        viewers: int | None = None
         if 'viewers' in eventJson and utils.isValidInt(eventJson.get('viewers')):
             viewers = utils.getIntFromDict(eventJson, 'viewers')
 
-        endedAt: Optional[SimpleDateTime] = None
+        endedAt: SimpleDateTime | None = None
         if 'ended_at' in eventJson and utils.isValidStr(eventJson.get('ended_at')):
             endedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ended_at')))
 
-        endsAt: Optional[SimpleDateTime] = None
+        endsAt: SimpleDateTime | None = None
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
             endsAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ends_at')))
 
-        followedAt: Optional[SimpleDateTime] = None
+        followedAt: SimpleDateTime | None = None
         if 'followed_at' in eventJson and utils.isValidStr(eventJson.get('followed_at')):
             followedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'followed_at')))
 
-        lockedAt: Optional[SimpleDateTime] = None
+        lockedAt: SimpleDateTime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
             lockedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'locked_at')))
 
-        locksAt: Optional[SimpleDateTime] = None
+        locksAt: SimpleDateTime | None = None
         if 'locks_at' in eventJson and utils.isValidStr(eventJson.get('locks_at')):
             locksAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'locks_at')))
 
-        redeemedAt: Optional[SimpleDateTime] = None
+        redeemedAt: SimpleDateTime | None = None
         if 'redeemed_at' in eventJson and utils.isValidStr(eventJson.get('redeemed_at')):
             redeemedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'redeemed_at')))
 
-        startedAt: Optional[SimpleDateTime] = None
+        startedAt: SimpleDateTime | None = None
         if 'started_at' in eventJson and utils.isValidStr(eventJson.get('started_at')):
             startedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'started_at')))
 
-        broadcasterUserId: Optional[str] = None
+        broadcasterUserId: str | None = None
         if 'broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_id')):
             broadcasterUserId = utils.getStrFromDict(eventJson, 'broadcaster_user_id')
 
-        broadcasterUserLogin: Optional[str] = None
+        broadcasterUserLogin: str | None = None
         if 'broadcaster_user_login' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_login')):
             broadcasterUserLogin = utils.getStrFromDict(eventJson, 'broadcaster_user_login')
 
-        broadcasterUserName: Optional[str] = None
+        broadcasterUserName: str | None = None
         if 'broadcaster_user_name' in eventJson and utils.isValidStr(eventJson.get('broadcaster_user_name')):
             broadcasterUserName = utils.getStrFromDict(eventJson, 'broadcaster_user_name')
 
-        categoryId: Optional[str] = None
+        categoryId: str | None = None
         if 'category_id' in eventJson and utils.isValidStr(eventJson.get('category_id')):
             categoryId = utils.getStrFromDict(eventJson, 'category_id')
 
-        categoryName: Optional[str] = None
+        categoryName: str | None = None
         if 'category_name' in eventJson and utils.isValidStr(eventJson.get('category_name')):
             categoryName = utils.getStrFromDict(eventJson, 'category_name')
 
-        eventId: Optional[str] = None
+        eventId: str | None = None
         if 'id' in eventJson and utils.isValidStr(eventJson.get('id')):
             eventId = utils.getStrFromDict(eventJson, 'id')
 
-        fromBroadcasterUserId: Optional[str] = None
+        fromBroadcasterUserId: str | None = None
         if 'from_broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('from_broadcaster_user_id')):
             fromBroadcasterUserId = utils.getStrFromDict(eventJson, 'from_broadcaster_user_id')
 
-        fromBroadcasterUserLogin: Optional[str] = None
+        fromBroadcasterUserLogin: str | None = None
         if 'from_broadcaster_user_login' in eventJson and utils.isValidStr(eventJson.get('from_broadcaster_user_login')):
             fromBroadcasterUserLogin = utils.getStrFromDict(eventJson, 'from_broadcaster_user_login')
 
-        fromBroadcasterUserName: Optional[str] = None
+        fromBroadcasterUserName: str | None = None
         if 'from_broadcaster_user_name' in eventJson and utils.isValidStr(eventJson.get('from_broadcaster_user_name')):
             fromBroadcasterUserName = utils.getStrFromDict(eventJson, 'from_broadcaster_user_name')
 
@@ -379,7 +406,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             elif isinstance(messageItem, dict) and utils.isValidStr(messageItem.get('text')):
                 message = utils.getStrFromDict(messageItem, 'text', clean = True)
 
-        rewardId: Optional[str] = None
+        rewardId: str | None = None
         if 'reward_id' in eventJson and utils.isValidStr(eventJson.get('reward_id')):
             rewardId = utils.getStrFromDict(eventJson, 'reward_id')
 
@@ -387,55 +414,55 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'text' in eventJson and utils.isValidStr(eventJson.get('text')):
             text = utils.getStrFromDict(eventJson, 'text')
 
-        title: Optional[str] = None
+        title: str | None = None
         if 'title' in eventJson and utils.isValidStr(eventJson.get('title')):
             title = utils.getStrFromDict(eventJson, 'title')
 
-        toBroadcasterUserId: Optional[str] = None
+        toBroadcasterUserId: str | None = None
         if 'to_broadcaster_user_id' in eventJson and utils.isValidStr(eventJson.get('to_broadcaster_user_id')):
             toBroadcasterUserId = utils.getStrFromDict(eventJson, 'to_broadcaster_user_id')
 
-        toBroadcasterUserLogin: Optional[str] = None
+        toBroadcasterUserLogin: str | None = None
         if 'to_broadcaster_user_login' in eventJson and utils.isValidStr(eventJson.get('to_broadcaster_user_login')):
             toBroadcasterUserLogin = utils.getStrFromDict(eventJson, 'to_broadcaster_user_login')
 
-        toBroadcasterUserName: Optional[str] = None
+        toBroadcasterUserName: str | None = None
         if 'to_broadcaster_user_name' in eventJson and utils.isValidStr(eventJson.get('to_broadcaster_user_name')):
             toBroadcasterUserName = utils.getStrFromDict(eventJson, 'to_broadcaster_user_name')
 
-        userId: Optional[str] = None
+        userId: str | None = None
         if 'user_id' in eventJson and utils.isValidStr(eventJson.get('user_id')):
             userId = utils.getStrFromDict(eventJson, 'user_id')
 
-        userInput: Optional[str] = None
+        userInput: str | None = None
         if 'user_input' in eventJson and utils.isValidStr(eventJson.get('user_input')):
             userInput = utils.getStrFromDict(eventJson, 'user_input')
 
-        userLogin: Optional[str] = None
+        userLogin: str | None = None
         if 'user_login' in eventJson and utils.isValidStr(eventJson.get('user_login')):
             userLogin = utils.getStrFromDict(eventJson, 'user_login')
 
-        userName: Optional[str] = None
+        userName: str | None = None
         if 'user_name' in eventJson and utils.isValidStr(eventJson.get('user_name')):
             userName = utils.getStrFromDict(eventJson, 'user_name')
 
-        winningOutcomeId: Optional[str] = None
+        winningOutcomeId: str | None = None
         if 'winning_outcome_id' in eventJson and utils.isValidStr(eventJson.get('winning_outcome_id')):
             winningOutcomeId = utils.getStrFromDict(eventJson, 'winning_outcome_id')
 
-        tier: Optional[TwitchSubscriberTier] = None
+        tier: TwitchSubscriberTier | None = None
         if 'tier' in eventJson and utils.isValidStr(eventJson.get('tier')):
             tier = TwitchSubscriberTier.fromStr(utils.getStrFromDict(eventJson, 'tier'))
 
-        channelPointsVoting: Optional[TwitchChannelPointsVoting] = None
+        channelPointsVoting: TwitchChannelPointsVoting | None = None
         if 'channel_points_voting' in eventJson:
             channelPointsVoting = await self.parseWebsocketChannelPointsVoting(eventJson.get('channel_points_voting'))
 
-        choices: Optional[List[TwitchPollChoice]] = None
+        choices: list[TwitchPollChoice] | None = None
         if 'choices' in eventJson:
             choicesItem: Any = eventJson.get('choices')
 
-            if isinstance(choicesItem, List) and len(choicesItem) >= 1:
+            if isinstance(choicesItem, list) and len(choicesItem) >= 1:
                 choices = list()
 
                 for choiceItem in choicesItem:
@@ -447,25 +474,25 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 if len(choices) == 0:
                     choices = None
 
-        pollStatus: Optional[TwitchPollStatus] = None
-        rewardRedemptionStatus: Optional[TwitchRewardRedemptionStatus] = None
+        pollStatus: TwitchPollStatus | None = None
+        rewardRedemptionStatus: TwitchRewardRedemptionStatus | None = None
         if 'status' in eventJson and utils.isValidStr(eventJson.get('status')):
             pollStatus = TwitchPollStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
             rewardRedemptionStatus = TwitchRewardRedemptionStatus.fromStr(utils.getStrFromDict(eventJson, 'status'))
 
-        communitySubGift: Optional[TwitchCommunitySubGift] = None
+        communitySubGift: TwitchCommunitySubGift | None = None
         if 'community_sub_gift' in eventJson:
             communitySubGift = await self.parseWebsocketCommunitySubGift(eventJson.get('community_sub_gift'))
 
-        noticeType: Optional[TwitchWebsocketNoticeType] = None
+        noticeType: TwitchWebsocketNoticeType | None = None
         if 'notice_type' in eventJson and utils.isValidStr(eventJson.get('notice_type')):
             noticeType = TwitchWebsocketNoticeType.fromStr(utils.getStrFromDict(eventJson, 'notice_type'))
 
-        outcomes: Optional[List[TwitchOutcome]] = None
+        outcomes: list[TwitchOutcome] | None = None
         if 'outcomes' in eventJson:
             outcomesItem: Any = eventJson.get('outcomes')
 
-            if isinstance(outcomesItem, List) and len(outcomesItem) >= 1:
+            if isinstance(outcomesItem, list) and len(outcomesItem) >= 1:
                 outcomes = list()
 
                 for outcomeItem in outcomesItem:
@@ -477,11 +504,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
                 if len(outcomes) == 0:
                     outcomes = None
 
-        reward: Optional[TwitchReward] = None
+        reward: TwitchReward | None = None
         if 'reward' in eventJson:
             reward = await self.parseWebsocketReward(eventJson.get('reward'))
 
-        subGift: Optional[TwitchSubGift] = None
+        subGift: TwitchSubGift | None = None
         if 'sub_gift' in eventJson:
             subGift = await self.parseWebsocketSubGift(eventJson.get('sub_gift'))
 
@@ -532,8 +559,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subGift = subGift
         )
 
-    async def parseTwitchOutcome(self, outcomeJson: Optional[Dict[str, Any]]) -> Optional[TwitchOutcome]:
-        if not isinstance(outcomeJson, Dict) or len(outcomeJson) == 0:
+    async def parseTwitchOutcome(
+        self,
+        outcomeJson: dict[str, Any] | None
+    ) -> TwitchOutcome | None:
+        if not isinstance(outcomeJson, dict) or len(outcomeJson) == 0:
             return None
 
         channelPoints = utils.getIntFromDict(outcomeJson, 'channel_points', fallback = 0)
@@ -542,11 +572,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         title = utils.getStrFromDict(outcomeJson, 'title')
         color = TwitchOutcomeColor.fromStr(utils.getStrFromDict(outcomeJson, 'color'))
 
-        topPredictors: Optional[List[TwitchOutcomePredictor]] = None
+        topPredictors: list[TwitchOutcomePredictor] | None = None
         if 'top_predictors' in outcomeJson:
             topPredictorsItem: Any = outcomeJson.get('top_predictors')
 
-            if isinstance(topPredictorsItem, List) and len(topPredictorsItem) >= 1:
+            if isinstance(topPredictorsItem, list) and len(topPredictorsItem) >= 1:
                 topPredictors = list()
 
                 for topPredictorItem in topPredictorsItem:
@@ -567,13 +597,16 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             topPredictors = topPredictors
         )
 
-    async def parseTwitchOutcomePredictor(self, predictorJson: Optional[Dict[str, Any]]) -> Optional[TwitchOutcomePredictor]:
-        if not isinstance(predictorJson, Dict) or len(predictorJson) == 0:
+    async def parseTwitchOutcomePredictor(
+        self,
+        predictorJson: dict[str, Any] | None
+    ) -> TwitchOutcomePredictor | None:
+        if not isinstance(predictorJson, dict) or len(predictorJson) == 0:
             return None
 
         channelPointsUsed = utils.getIntFromDict(predictorJson, 'channel_points_used')
 
-        channelPointsWon: Optional[int] = None
+        channelPointsWon: int | None = None
         if 'channel_points_won' in predictorJson and utils.isValidInt(predictorJson.get('channel_points_won')):
             channelPointsWon = utils.getIntFromDict(predictorJson, 'channel_points_won')
 
@@ -589,13 +622,16 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             userName = userName
         )
 
-    async def parseWebsocketReward(self, rewardJson: Optional[Dict[str, Any]]) -> Optional[TwitchReward]:
-        if not isinstance(rewardJson, Dict) or len(rewardJson) == 0:
+    async def parseWebsocketReward(
+        self,
+        rewardJson: dict[str, Any] | None
+    ) -> TwitchReward | None:
+        if not isinstance(rewardJson, dict) or len(rewardJson) == 0:
             return None
 
         cost = utils.getIntFromDict(rewardJson, 'cost')
 
-        prompt: Optional[str] = None
+        prompt: str | None = None
         if 'prompt' in rewardJson and utils.isValidStr(rewardJson.get('prompt')):
             prompt = utils.getStrFromDict(rewardJson, 'prompt')
 
@@ -609,8 +645,11 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             title = title
         )
 
-    async def parseTwitchWebsocketSession(self, sessionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketSession]:
-        if not isinstance(sessionJson, Dict) or len(sessionJson) == 0:
+    async def parseTwitchWebsocketSession(
+        self,
+        sessionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketSession | None:
+        if not isinstance(sessionJson, dict) or len(sessionJson) == 0:
             return None
 
         keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
@@ -618,7 +657,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         sessionId = utils.getStrFromDict(sessionJson, 'id')
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(sessionJson, 'status'))
 
-        reconnectUrl: Optional[str] = None
+        reconnectUrl: str | None = None
         if 'reconnect_url' in sessionJson and utils.isValidUrl(sessionJson.get('reconnect_url')):
             reconnectUrl = utils.getStrFromDict(sessionJson, 'reconnect_url')
 
@@ -630,11 +669,14 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             status = status
         )
 
-    async def parseWebsocketSubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[TwitchSubGift]:
-        if not isinstance(giftJson, Dict) or len(giftJson) == 0:
+    async def parseWebsocketSubGift(
+        self,
+        giftJson: dict[str, Any] | None
+    ) -> TwitchSubGift | None:
+        if not isinstance(giftJson, dict) or len(giftJson) == 0:
             return None
 
-        cumulativeTotal: Optional[int] = None
+        cumulativeTotal: int | None = None
         if 'cumulative_total' in giftJson and utils.isValidInt(giftJson.get('cumulative_total')):
             cumulativeTotal = utils.getIntFromDict(giftJson, 'cumulative_total')
 
@@ -655,7 +697,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             subTier = subTier
         )
 
-    async def parseWebsocketSubscription(self, subscriptionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketSubscription]:
+    async def parseWebsocketSubscription(
+        self,
+        subscriptionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketSubscription | None:
         if not isinstance(subscriptionJson, dict) or len(subscriptionJson) == 0:
             return None
 

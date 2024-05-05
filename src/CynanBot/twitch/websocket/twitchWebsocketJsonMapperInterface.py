@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from CynanBot.twitch.api.twitchCommunitySubGift import TwitchCommunitySubGift
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
@@ -24,49 +24,85 @@ from CynanBot.twitch.api.websocket.twitchWebsocketSubscription import \
 class TwitchWebsocketJsonMapperInterface(ABC):
 
     @abstractmethod
-    async def parseWebsocketChannelPointsVoting(self, channelPointsVotingJson: Optional[Dict[str, Any]]) -> Optional[TwitchChannelPointsVoting]:
+    async def parseWebsocketChannelPointsVoting(
+        self,
+        channelPointsVotingJson: dict[str, Any] | None
+    ) -> TwitchChannelPointsVoting | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketPollChoice(self, choiceJson: Optional[Dict[str, Any]]) -> Optional[TwitchPollChoice]:
+    async def parseWebsocketPollChoice(
+        self,
+        choiceJson: dict[str, Any] | None
+    ) -> TwitchPollChoice | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketCommunitySubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[TwitchCommunitySubGift]:
+    async def parseWebsocketCommunitySubGift(
+        self,
+        giftJson: dict[str, Any] | None
+    ) -> TwitchCommunitySubGift | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketCondition(self, conditionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketCondition]:
+    async def parseWebsocketCondition(
+        self,
+        conditionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketCondition | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketDataBundle(self, dataBundleJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketDataBundle]:
+    async def parseWebsocketDataBundle(
+        self,
+        dataBundleJson: dict[str, Any] | None
+    ) -> TwitchWebsocketDataBundle | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketEvent(self, eventJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketEvent]:
+    async def parseWebsocketEvent(
+        self,
+        eventJson: dict[str, Any] | None
+    ) -> TwitchWebsocketEvent | None:
         pass
 
     @abstractmethod
-    async def parseTwitchOutcome(self, outcomeJson: Optional[Dict[str, Any]]) -> Optional[TwitchOutcome]:
+    async def parseTwitchOutcome(
+        self,
+        outcomeJson: dict[str, Any] | None
+    ) -> TwitchOutcome | None:
         pass
 
     @abstractmethod
-    async def parseTwitchOutcomePredictor(self, predictorJson: Optional[Dict[str, Any]]) -> Optional[TwitchOutcomePredictor]:
+    async def parseTwitchOutcomePredictor(
+        self,
+        predictorJson: dict[str, Any] | None
+    ) -> TwitchOutcomePredictor | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketReward(self, rewardJson: Optional[Dict[str, Any]]) -> Optional[TwitchReward]:
+    async def parseWebsocketReward(
+        self,
+        rewardJson: dict[str, Any] | None
+    ) -> TwitchReward | None:
         pass
 
     @abstractmethod
-    async def parseTwitchWebsocketSession(self, sessionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketSession]:
+    async def parseTwitchWebsocketSession(
+        self,
+        sessionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketSession | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketSubGift(self, giftJson: Optional[Dict[str, Any]]) -> Optional[TwitchSubGift]:
+    async def parseWebsocketSubGift(
+        self,
+        giftJson: dict[str, Any] | None
+    ) -> TwitchSubGift | None:
         pass
 
     @abstractmethod
-    async def parseWebsocketSubscription(self, subscriptionJson: Optional[Dict[str, Any]]) -> Optional[TwitchWebsocketSubscription]:
+    async def parseWebsocketSubscription(
+        self,
+        subscriptionJson: dict[str, Any] | None
+    ) -> TwitchWebsocketSubscription | None:
         pass

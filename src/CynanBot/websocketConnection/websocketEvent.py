@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 
@@ -8,7 +8,7 @@ class WebsocketEvent():
 
     def __init__(
         self,
-        eventData: Dict[str, Any],
+        eventData: dict[str, Any],
         timeZone: timezone = timezone.utc
     ):
         if not utils.hasItems(eventData):
@@ -17,9 +17,9 @@ class WebsocketEvent():
             raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__eventTime: datetime = datetime.now(timeZone)
-        self.__eventData: Dict[str, Any] = eventData
+        self.__eventData: dict[str, Any] = eventData
 
-    def getEventData(self) -> Dict[str, Any]:
+    def getEventData(self) -> dict[str, Any]:
         return self.__eventData
 
     def getEventTime(self) -> datetime:
@@ -29,7 +29,7 @@ class WebsocketEvent():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'eventData': self.__eventData,
             'eventTime': self.__eventTime

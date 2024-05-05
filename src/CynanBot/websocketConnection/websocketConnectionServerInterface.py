@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 from CynanBot.misc.clearable import Clearable
 
@@ -11,7 +11,7 @@ class WebsocketConnectionServerInterface(Clearable):
         self,
         twitchChannel: str,
         eventType: str,
-        eventData: Dict[Any, Any]
+        eventData: dict[Any, Any]
     ):
         pass
 

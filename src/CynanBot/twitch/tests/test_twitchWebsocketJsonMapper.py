@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 
 from CynanBot.timber.timberInterface import TimberInterface
@@ -72,16 +70,12 @@ class TestTwitchWebsocketJsonMapper():
         assert result.getUserLogin() is None
         assert result.getUserName() is None
 
-        broadcasterUserId: Optional[str] = None
-        exception: Optional[Exception] = None
+        broadcasterUserId: str | None = None
 
-        try:
+        with pytest.raises(Exception):
             broadcasterUserId = result.requireBroadcasterUserId()
-        except Exception as e:
-            exception = e
 
         assert broadcasterUserId is None
-        assert isinstance(exception, Exception)
 
     @pytest.mark.asyncio
     async def test_parseWebsocketCondition_withNone(self):
