@@ -166,10 +166,10 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         record = await connection.fetchRow(
             '''
                 SELECT emoteindex FROM triviaemotes
-                WHERE twitchchannel = $1
+                WHERE twitchchannelid = $1
                 LIMIT 1
             ''',
-            twitchChannel
+            twitchChannelId
         )
 
         emoteIndex: int | None = None
@@ -207,11 +207,11 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
         connection = await self.__getDatabaseConnection()
         await connection.execute(
             '''
-                INSERT INTO triviaemotes (emoteindex, twitchchannel)
+                INSERT INTO triviaemotes (emoteindex, twitchchannelid)
                 VALUES ($1, $2)
-                ON CONFLICT (twitchchannel) DO UPDATE SET emoteindex = EXCLUDED.emoteindex
+                ON CONFLICT (twitchchannelid) DO UPDATE SET emoteindex = EXCLUDED.emoteindex
             ''',
-            newEmoteIndex, twitchChannel
+            newEmoteIndex, twitchChannelId
         )
 
         await connection.close()
@@ -248,7 +248,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS triviaemotes (
                         emoteindex smallint DEFAULT 0 NOT NULL,
-                        twitchchannel public.citext NOT NULL PRIMARY KEY
+                        twitchchannelid text NOT NULL PRIMARY KEY
                     )
                 '''
             )
@@ -257,7 +257,7 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS triviaemotes (
                         emoteindex INTEGER NOT NULL DEFAULT 0,
-                        twitchchannel TEXT NOT NULL PRIMARY KEY COLLATE NOCASE
+                        twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
             )
