@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from datetime import tzinfo
 
-from CynanBot.openWeather.openWeatherMomentReport import \
-    OpenWeatherMomentReport
+from CynanBot.openWeather.openWeatherAlert import OpenWeatherAlert
+from CynanBot.openWeather.openWeatherMoment import OpenWeatherMoment
 
 
 @dataclass(frozen = True)
 class OpenWeatherReport():
     latitude: float
     longitude: float
-    current: OpenWeatherMomentReport
+    alerts: list[OpenWeatherAlert] | None
+    current: OpenWeatherMoment
     timeZone: tzinfo

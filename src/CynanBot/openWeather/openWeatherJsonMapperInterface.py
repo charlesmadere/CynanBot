@@ -5,8 +5,10 @@ from CynanBot.openWeather.openWeatherAirPollutionIndex import \
     OpenWeatherAirPollutionIndex
 from CynanBot.openWeather.openWeatherAirPollutionReport import \
     OpenWeatherAirPollutionReport
-from CynanBot.openWeather.openWeatherMomentReport import \
-    OpenWeatherMomentReport
+from CynanBot.openWeather.openWeatherAlert import OpenWeatherAlert
+from CynanBot.openWeather.openWeatherMoment import OpenWeatherMoment
+from CynanBot.openWeather.openWeatherMomentDescription import \
+    OpenWeatherMomentDescription
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 
 
@@ -27,10 +29,24 @@ class OpenWeatherJsonMapperInterface(ABC):
         pass
 
     @abstractmethod
-    async def parseWeatherMomentReport(
+    async def parseAlert(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> OpenWeatherMomentReport | None:
+    ) -> OpenWeatherAlert | None:
+        pass
+
+    @abstractmethod
+    async def parseMomentDescription(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherMomentDescription | None:
+        pass
+
+    @abstractmethod
+    async def parseMoment(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherMoment | None:
         pass
 
     @abstractmethod

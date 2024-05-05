@@ -8,10 +8,12 @@ from CynanBot.openWeather.openWeatherAirPollutionIndex import \
     OpenWeatherAirPollutionIndex
 from CynanBot.openWeather.openWeatherAirPollutionReport import \
     OpenWeatherAirPollutionReport
+from CynanBot.openWeather.openWeatherAlert import OpenWeatherAlert
 from CynanBot.openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
-from CynanBot.openWeather.openWeatherMomentReport import \
-    OpenWeatherMomentReport
+from CynanBot.openWeather.openWeatherMoment import OpenWeatherMoment
+from CynanBot.openWeather.openWeatherMomentDescription import \
+    OpenWeatherMomentDescription
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 from CynanBot.timber.timberInterface import TimberInterface
 
@@ -93,14 +95,55 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             airPollutionIndex = airPollutionIndex
         )
 
-    async def parseWeatherMomentReport(
+    async def parseAlert(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> OpenWeatherMomentReport | None:
+    ) -> OpenWeatherAlert | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        end = utils.getIntFromDict(jsonContents, 'end')
+        start = utils.getIntFromDict(jsonContents, 'start')
+        description = utils.getStrFromDict(jsonContents, 'description')
+        event = utils.getStrFromDict(jsonContents, 'event')
+        senderName = utils.getStrFromDict(jsonContents, 'sender_name')
+
+        return OpenWeatherAlert(
+            end = end,
+            start = start,
+            description = description,
+            event = event,
+            senderName = senderName
+        )
+
+    async def parseMomentDescription(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherMomentDescription | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        description = utils.getStrFromDict(jsonContents, 'description')
+        descriptionId = utils.getStrFromDict(jsonContents, 'id')
+        icon = utils.getStrFromDict(jsonContents, 'icon')
+        main = utils.getStrFromDict(jsonContents, 'main')
+
+        return OpenWeatherMomentDescription(
+            description = description,
+            descriptionId = descriptionId,
+            icon = icon,
+            main = main
+        )
+
+    async def parseMoment(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherMoment | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
         dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
+        dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
         feelsLikeTemperature = utils.getFloatFromDict(jsonContents, 'feels_like')
         temperature = utils.getFloatFromDict(jsonContents, 'temp')
         uvIndex = utils.getFloatFromDict(jsonContents, 'uvi')
@@ -110,8 +153,24 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         sunrise = utils.getIntFromDict(jsonContents, 'sunrise')
         sunset = utils.getIntFromDict(jsonContents, 'sunset')
 
-        return OpenWeatherMomentReport(
+        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
+        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
+            return None
+
+        weatherEntryJson = weatherArray[0]
+        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
+            return None
+
+        description = await self.parseMomentDescription(weatherEntryJson)
+        if description is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
+            return None
+
+        return OpenWeatherMoment(
             dateTime = dateTime,
+            dewPoint = dewPoint,
             feelsLikeTemperature = feelsLikeTemperature,
             temperature = temperature,
             uvIndex = uvIndex,
@@ -119,7 +178,8 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             humidity = humidity,
             pressure = pressure,
             sunrise = sunrise,
-            sunset = sunset
+            sunset = sunset,
+            description = description
         )
 
     async def parseWeatherReport(
@@ -132,7 +192,21 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         latitude = utils.getFloatFromDict(jsonContents, 'lat')
         longitude = utils.getFloatFromDict(jsonContents, 'lon')
 
-        current = await self.parseWeatherMomentReport(jsonContents.get('current'))
+        alertsArray: list[dict[str, Any] | None] | None = jsonContents.get('alerts')
+        alerts: list[OpenWeatherAlert] | None = None
+
+        if isinstance(alertsArray, list) and len(alertsArray) >= 1:
+            alerts = list()
+
+            for index, alertEntryJson in enumerate(alertsArray):
+                alert = await self.parseAlert(alertEntryJson)
+
+                if alert is None:
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"alerts\" data: ({jsonContents=})')
+                else:
+                    alerts.append(alert)
+
+        current = await self.parseMoment(jsonContents.get('current'))
         if current is None:
             self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"current\" data: ({jsonContents=})')
             return None
@@ -143,6 +217,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         return OpenWeatherReport(
             latitude = latitude,
             longitude = longitude,
+            alerts = alerts,
             current = current,
             timeZone = timeZone
         )
