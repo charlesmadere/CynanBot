@@ -2,7 +2,6 @@ import asyncio
 import locale
 import logging
 from asyncio import AbstractEventLoop
-from typing import Optional
 
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
@@ -488,7 +487,7 @@ googleApiService: GoogleApiServiceInterface = GoogleApiService(
     timber = timber
 )
 
-twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
+twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
         backgroundTaskHelper = backgroundTaskHelper,

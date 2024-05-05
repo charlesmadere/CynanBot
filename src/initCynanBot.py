@@ -2,7 +2,6 @@ import asyncio
 import locale
 import logging
 from asyncio import AbstractEventLoop
-from typing import Optional
 
 from CynanBot.administratorProvider import AdministratorProvider
 from CynanBot.administratorProviderInterface import \
@@ -694,14 +693,14 @@ googleTranslationApi: TranslationApi = GoogleTranslationApi(
     timber = timber
 )
 
-translationHelper: Optional[TranslationHelperInterface] = TranslationHelper(
+translationHelper: TranslationHelperInterface | None = TranslationHelper(
     deepLTranslationApi = deepLTranslationApi,
     googleTranslationApi = googleTranslationApi,
     languagesRepository = languagesRepository,
     timber = timber
 )
 
-twitchWebsocketClient: Optional[TwitchWebsocketClientInterface] = None
+twitchWebsocketClient: TwitchWebsocketClientInterface | None = None
 if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
         backgroundTaskHelper = backgroundTaskHelper,
@@ -841,7 +840,7 @@ triviaUtils: TriviaUtilsInterface = TriviaUtils(
     usersRepository = usersRepository
 )
 
-quizApiTriviaQuestionRepository: Optional[QuizApiTriviaQuestionRepository] = None
+quizApiTriviaQuestionRepository: QuizApiTriviaQuestionRepository | None = None
 if authSnapshot.hasQuizApiKey():
     quizApiTriviaQuestionRepository = QuizApiTriviaQuestionRepository(
         networkClientProvider = networkClientProvider,
