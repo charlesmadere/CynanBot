@@ -121,9 +121,9 @@ def copyList(l: list[Any] | None) -> list:
 
 def cToF(celsius: float) -> float:
     if not isValidNum(celsius):
-        raise ValueError(f'celsius argument is malformed: \"{celsius}\"')
+        raise TypeError(f'celsius argument is malformed: \"{celsius}\"')
 
-    return (celsius * (9 / 5)) + 32
+    return (celsius * (9.0 / 5.0)) + 32.0
 
 def formatTime(time) -> str:
     if time is None:

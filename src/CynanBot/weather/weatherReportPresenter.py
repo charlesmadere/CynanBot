@@ -1,4 +1,9 @@
+import CynanBot.misc.utils as utils
+from CynanBot.openWeather.openWeatherAirPollutionIndex import \
+    OpenWeatherAirPollutionIndex
+from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
 from CynanBot.weather.weatherReport import WeatherReport
+from CynanBot.weather.weatherReport2 import WeatherReport2
 from CynanBot.weather.weatherReportPresenterInterface import \
     WeatherReportPresenterInterface
 
@@ -53,6 +58,53 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         conditionIdToIcon['804'] = conditionIdToIcon['801']
 
         return conditionIdToIcon
+
+    async def __getAirQualityString(self, weather: WeatherReport2) -> str | None:
+        if weather.airPollution is None:
+            return None
+
+        airPollutionIndex = weather.airPollution.airPollutionIndex
+
+        if airPollutionIndex is OpenWeatherAirPollutionIndex.GOOD:
+            return None
+        elif airPollutionIndex is OpenWeatherAirPollutionIndex.FAIR:
+            return None
+        elif airPollutionIndex is OpenWeatherAirPollutionIndex.MODERATE:
+            return 'air quality is moderate, '
+        elif airPollutionIndex is OpenWeatherAirPollutionIndex.POOR:
+            return 'air quality is poor, '
+        elif airPollutionIndex is OpenWeatherAirPollutionIndex.VERY_POOR:
+            return 'air quality is very poor, '
+        else:
+            raise RuntimeError(f'OpenWeatherAirPollutionIndex is unknown value: \"{airPollutionIndex}\"')
+
+    async def __getHumidityString(self, weather: WeatherReport2) -> str:
+        return f'humidity is {weather.report.current.humidity}%, '
+
+    async def __getTemperatureString(self, weather: WeatherReport2) -> str:
+        cTemp = int(round(weather.report.current.feelsLikeTemperature))
+        fTemp = int(round(utils.cToF(weather.report.current.feelsLikeTemperature)))
+        return f'🌡️ Temperature is {cTemp}°C ({fTemp}°F), '
+
+    async def __getUvIndexString(self, weather: WeatherReport2) -> str | None:
+        uvIndex = weather.report.current.uvIndex
+
+        if uvIndex <= 2:
+            return None
+        elif uvIndex <= 7:
+            return f'UV index is moderate to high, '
+        else:
+            return f'UV index is very high to extreme, '
+
+    async def toString2(self, weather: WeatherReport2) -> str:
+        if not isinstance(weather, WeatherReport2):
+            raise TypeError(f'weather argument is malformed: \"{weather}\"')
+
+        temperatureStr = await self.__getTemperatureString(weather)
+        humidityStr = await self.__getHumidityString(weather)
+        airQualityStr = await self.__getAirQualityString(weather)
+        uvIndexStr = await self.__getUvIndexString(weather)
+        return ''
 
     async def toString(self, weather: WeatherReport) -> str:
         if not isinstance(weather, WeatherReport):
