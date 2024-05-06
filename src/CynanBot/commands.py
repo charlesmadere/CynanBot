@@ -2338,7 +2338,7 @@ class WeatherCommand(AbsCommand):
 
         try:
             weatherReport = await self.__weatherRepository.fetchWeather(location)
-            weatherReportString = await self.__weatherReportPresenter.present(weatherReport)
+            weatherReportString = await self.__weatherReportPresenter.toString(weatherReport)
             await self.__twitchUtils.safeSend(ctx, weatherReportString)
         except OpenWeatherApiKeyUnavailableException as e:
             self.__timber.log('WeatherCommand', f'Unable to fetch weather for \"{locationId}\" as no OpenWeather API key is available: {e}', e, traceback.format_exc())

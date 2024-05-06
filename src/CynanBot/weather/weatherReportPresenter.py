@@ -54,7 +54,7 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
 
         return conditionIdToIcon
 
-    async def present(self, weather: WeatherReport) -> str:
+    async def toString(self, weather: WeatherReport) -> str:
         if not isinstance(weather, WeatherReport):
             raise TypeError(f'weather argument is malformed: \"{weather}\"')
 

@@ -953,7 +953,7 @@ class CynanBot(
             return
 
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        weatherReportString = await weatherReportPresenter.present(event.getWeatherReport())
+        weatherReportString = await weatherReportPresenter.toString(event.getWeatherReport())
         await self.__twitchUtils.safeSend(twitchChannel, weatherReportString)
 
     async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
