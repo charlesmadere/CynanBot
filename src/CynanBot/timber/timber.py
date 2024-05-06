@@ -8,7 +8,8 @@ import aiofiles.os
 import aiofiles.ospath
 
 import CynanBot.misc.utils as utils
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberEntry import TimberEntry
 from CynanBot.timber.timberInterface import TimberInterface
 

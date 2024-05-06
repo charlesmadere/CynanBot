@@ -65,7 +65,6 @@ from CynanBot.deepL.deepLApiService import DeepLApiService
 from CynanBot.deepL.deepLApiServiceInterface import DeepLApiServiceInterface
 from CynanBot.deepL.deepLJsonMapper import DeepLJsonMapper
 from CynanBot.deepL.deepLJsonMapperInterface import DeepLJsonMapperInterface
-from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
@@ -109,6 +108,8 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.mostRecentChat.mostRecentChatsRepository import \
     MostRecentChatsRepository
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
@@ -406,7 +407,7 @@ locale.setlocale(locale.LC_ALL, 'en_US.utf8')
 
 eventLoop: AbstractEventLoop = asyncio.get_event_loop()
 
-backgroundTaskHelper: BackgroundTaskHelper = BackgroundTaskHelper(
+backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
     eventLoop = eventLoop
 )
 
@@ -705,6 +706,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,
+        timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
         twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
@@ -985,6 +987,7 @@ triviaGameMachine: TriviaGameMachineInterface = TriviaGameMachine(
         triviaSettingsRepository = triviaSettingsRepository
     ),
     timber = timber,
+    timeZoneRepository = timeZoneRepository,
     toxicTriviaHelper = toxicTriviaHelper,
     triviaAnswerChecker = TriviaAnswerChecker(
         timber = timber,
@@ -1270,22 +1273,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
-##############################################
-## Dependency Holder initialization section ##
-##############################################
-
-dependencyHolder = DependencyHolderBuilder(
-    administratorProvider = administratorProvider,
-    backgroundTaskHelper = backgroundTaskHelper,
-    chatLogger = chatLogger,
-    generalSettingsRepository = generalSettingsRepository,
-    sentMessageLogger = sentMessageLogger,
-    timber = timber,
-    twitchUtils = twitchUtils
-)\
-    .build()
-
-
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -1307,7 +1294,6 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = cutenessRepository,
     cutenessUtils = CutenessUtils(),
-    dependencyHolder = dependencyHolder,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,

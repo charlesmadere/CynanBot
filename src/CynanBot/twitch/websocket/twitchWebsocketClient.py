@@ -2,14 +2,17 @@ import asyncio
 import queue
 import traceback
 from collections import OrderedDict, defaultdict
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from queue import SimpleQueue
 from typing import Any
 
 import websockets
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.misc.incrementalJsonBuilder import IncrementalJsonBuilder
 from CynanBot.misc.lruCache import LruCache
 from CynanBot.timber.timberInterface import TimberInterface
@@ -43,8 +46,9 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface,
@@ -69,13 +73,14 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
         },
         twitchWebsocketUrl: str = 'wss://eventsub.wss.twitch.tv/ws',
-        maxMessageAge: timedelta = timedelta(minutes = 3),
-        timeZone: tzinfo = timezone.utc
+        maxMessageAge: timedelta = timedelta(minutes = 3)
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
@@ -106,11 +111,10 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'twitchWebsocketUrl argument is malformed: \"{twitchWebsocketUrl}\"')
         elif not isinstance(maxMessageAge, timedelta):
             raise TypeError(f'maxMessageAge argument is malformed: \"{maxMessageAge}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__twitchWebsocketAllowedUsersRepository: TwitchWebsocketAllowedUsersRepositoryInterface = twitchWebsocketAllowedUsersRepository
@@ -121,7 +125,6 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         self.__websocketSleepTimeSeconds: float = websocketSleepTimeSeconds
         self.__subscriptionTypes: set[TwitchWebsocketSubscriptionType] = subscriptionTypes
         self.__maxMessageAge: timedelta = maxMessageAge
-        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__badSubscriptionTypesFor: dict[TwitchWebsocketUser, set[TwitchWebsocketSubscriptionType]] = defaultdict(lambda: set())
@@ -322,7 +325,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
         # ensure that this message isn't gratuitously old
         messageTimestamp = dataBundle.getMetadata().getMessageTimestamp().getDateTime()
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if now - messageTimestamp >= self.__maxMessageAge:
             self.__timber.log('TwitchWebsocketClient', f'Encountered a message that is too old: \"{dataBundle.getMetadata().getMessageId()}\"')

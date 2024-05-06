@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.language.wordOfTheDayResponse import WordOfTheDayResponse
@@ -14,6 +13,8 @@ from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.recurringActions.mostRecentRecurringActionRepositoryInterface import \
     MostRecentRecurringActionRepositoryInterface
 from CynanBot.recurringActions.recurringAction import RecurringAction
@@ -57,7 +58,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface,
         locationsRepository: LocationsRepositoryInterface,
         mostRecentRecurringActionRepository: MostRecentRecurringActionRepositoryInterface,
@@ -76,7 +77,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         superTriviaCountdownSeconds: int = 5,
         cooldown: timedelta = timedelta(minutes = 3)
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(isLiveOnTwitchRepository, IsLiveOnTwitchRepositoryInterface):
             raise TypeError(f'isLiveOnTwitchRepository argument is malformed: \"{isLiveOnTwitchRepository}\"')
@@ -121,7 +122,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__isLiveOnTwitchRepository: IsLiveOnTwitchRepositoryInterface = isLiveOnTwitchRepository
         self.__locationsRepository: LocationsRepositoryInterface = locationsRepository
         self.__mostRecentRecurringActionsRepository: MostRecentRecurringActionRepositoryInterface = mostRecentRecurringActionRepository

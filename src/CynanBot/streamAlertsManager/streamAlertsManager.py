@@ -4,7 +4,8 @@ import traceback
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerManagerInterface import \
     SoundPlayerManagerInterface
 from CynanBot.streamAlertsManager.currentStreamAlert import CurrentStreamAlert
@@ -22,7 +23,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         soundPlayerManager: SoundPlayerManagerInterface | None,
         streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface,
         timber: TimberInterface,
@@ -30,7 +31,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         queueSleepTimeSeconds: float = 0.2,
         queueTimeoutSeconds: float = 3
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif soundPlayerManager is not None and not isinstance(soundPlayerManager, SoundPlayerManagerInterface):
             raise TypeError(f'soundPlayerManager argument is malformed: \"{soundPlayerManager}\"')
@@ -49,7 +50,7 @@ class StreamAlertsManager(StreamAlertsManagerInterface):
         elif queueTimeoutSeconds < 1 or queueTimeoutSeconds > 3:
             raise ValueError(f'queueTimeoutSeconds argument is out of bounds: {queueTimeoutSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__soundPlayerManager: SoundPlayerManagerInterface | None = soundPlayerManager
         self.__streamAlertsSettingsRepository: StreamAlertsSettingsRepositoryInterface = streamAlertsSettingsRepository
         self.__timber: TimberInterface = timber

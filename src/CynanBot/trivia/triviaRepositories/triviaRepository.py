@@ -5,7 +5,8 @@ import traceback
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.content.triviaContentCode import TriviaContentCode
 from CynanBot.trivia.questionAnswerTriviaConditions import \
@@ -69,7 +70,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         bongoTriviaQuestionRepository: BongoTriviaQuestionRepository,
         funtoonTriviaQuestionRepository: FuntoonTriviaQuestionRepository,
         glacialTriviaQuestionRepository: GlacialTriviaQuestionRepositoryInterface | None,
@@ -94,7 +95,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         spoolerLoopSleepTimeSeconds: float = 120,
         triviaRetrySleepTimeSeconds: float = 0.25
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(bongoTriviaQuestionRepository, BongoTriviaQuestionRepository):
             raise TypeError(f'bongoTriviaQuestionRepository argument is malformed: \"{bongoTriviaQuestionRepository}\"')
@@ -147,7 +148,7 @@ class TriviaRepository(TriviaRepositoryInterface):
         elif triviaRetrySleepTimeSeconds < 0.25 or triviaRetrySleepTimeSeconds > 3:
             raise ValueError(f'triviaRetrySleepTimeSeconds argument is out of bounds: {triviaRetrySleepTimeSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__bongoTriviaQuestionRepository: TriviaQuestionRepositoryInterface = bongoTriviaQuestionRepository
         self.__funtoonTriviaQuestionRepository: TriviaQuestionRepositoryInterface = funtoonTriviaQuestionRepository
         self.__glacialTriviaQuestionRepository: TriviaQuestionRepositoryInterface | None = glacialTriviaQuestionRepository

@@ -16,7 +16,6 @@ from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.channelPointRedemptions.absChannelPointRedemption import \
     AbsChannelPointRedemption
 from CynanBot.channelPointRedemptions.casualGamePollPointRedemption import \
@@ -112,7 +111,6 @@ from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
 from CynanBot.cuteness.cutenessUtilsInterface import CutenessUtilsInterface
-from CynanBot.dependencyHolder import DependencyHolder
 from CynanBot.funtoon.funtoonRepositoryInterface import \
     FuntoonRepositoryInterface
 from CynanBot.funtoon.funtoonTokensRepositoryInterface import \
@@ -126,6 +124,8 @@ from CynanBot.language.wordOfTheDayRepositoryInterface import \
     WordOfTheDayRepositoryInterface
 from CynanBot.location.locationsRepositoryInterface import \
     LocationsRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
     MostRecentChatsRepositoryInterface
 from CynanBot.pkmn.pokepediaRepository import PokepediaRepository
@@ -295,7 +295,7 @@ class CynanBot(
         administratorProvider: AdministratorProviderInterface,
         anivSettingsRepository: AnivSettingsRepositoryInterface | None,
         authRepository: AuthRepository,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         bannedTriviaGameControllersRepository: BannedTriviaGameControllersRepositoryInterface | None,
         bannedWordsRepository: BannedWordsRepositoryInterface | None,
         channelPointSoundHelper: ChannelPointSoundHelperInterface | None,
@@ -306,7 +306,6 @@ class CynanBot(
         cheerActionsRepository: CheerActionsRepositoryInterface | None,
         cutenessRepository: CutenessRepositoryInterface | None,
         cutenessUtils: CutenessUtilsInterface | None,
-        dependencyHolder: DependencyHolder,
         funtoonRepository: FuntoonRepositoryInterface | None,
         funtoonTokensRepository: FuntoonTokensRepositoryInterface | None,
         generalSettingsRepository: GeneralSettingsRepository,
@@ -383,7 +382,7 @@ class CynanBot(
             raise TypeError(f'anivSettingsRepository argument is malformed: \"{anivSettingsRepository}\"')
         elif not isinstance(authRepository, AuthRepository):
             raise TypeError(f'authRepository argument is malformed: \"{authRepository}\"')
-        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        elif not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif bannedTriviaGameControllersRepository is not None and not isinstance(bannedTriviaGameControllersRepository, BannedTriviaGameControllersRepositoryInterface):
             raise TypeError(f'bannedTriviaGameControllersRepository argument is malformed: \"{bannedTriviaGameControllersRepository}\"')
@@ -405,8 +404,6 @@ class CynanBot(
             raise TypeError(f'cutenessRepository argument is malformed: \"{cutenessRepository}\"')
         elif cutenessUtils is not None and not isinstance(cutenessUtils, CutenessUtilsInterface):
             raise TypeError(f'cutenessUtils argument is malformed: \"{cutenessUtils}\"')
-        elif not isinstance(dependencyHolder, DependencyHolder):
-            raise TypeError(f'dependencyHolder argument is malformed: \"{dependencyHolder}\"')
         elif funtoonRepository is not None and not isinstance(funtoonRepository, FuntoonRepositoryInterface):
             raise TypeError(f'funtoonRepository argument is malformed: \"{funtoonRepository}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):

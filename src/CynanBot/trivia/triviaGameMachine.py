@@ -1,13 +1,15 @@
 import asyncio
 import queue
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 from queue import SimpleQueue
 from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.cuteness.cutenessRepositoryInterface import \
     CutenessRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
@@ -109,6 +111,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         shinyTriviaHelper: ShinyTriviaHelper,
         superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface,
         timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         toxicTriviaHelper: ToxicTriviaHelper,
         triviaAnswerChecker: TriviaAnswerCheckerInterface,
         triviaEmoteGenerator: TriviaEmoteGeneratorInterface,
@@ -120,8 +123,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         queueTimeoutSeconds: int = 3,
-        sleepTimeSeconds: float = 0.5,
-        timeZone: tzinfo = timezone.utc
+        sleepTimeSeconds: float = 0.5
     ):
         if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
@@ -135,6 +137,8 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'superTriviaCooldownHelper argument is malformed: \"{superTriviaCooldownHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(toxicTriviaHelper, ToxicTriviaHelper):
             raise TypeError(f'toxicTriviaHelper argument is malformed: \"{toxicTriviaHelper}\"')
         elif not isinstance(triviaAnswerChecker, TriviaAnswerCheckerInterface):
@@ -163,8 +167,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             raise TypeError(f'sleepTimeSeconds argument is malformed: \"{sleepTimeSeconds}\"')
         elif sleepTimeSeconds < 0.25 or sleepTimeSeconds > 3:
             raise ValueError(f'sleepTimeSeconds argument is out of bounds: {sleepTimeSeconds}')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__cutenessRepository: CutenessRepositoryInterface = cutenessRepository
@@ -172,6 +174,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__shinyTriviaHelper: ShinyTriviaHelper = shinyTriviaHelper
         self.__superTriviaCooldownHelper: SuperTriviaCooldownHelperInterface = superTriviaCooldownHelper
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__toxicTriviaHelper: ToxicTriviaHelper = toxicTriviaHelper
         self.__triviaAnswerChecker: TriviaAnswerCheckerInterface = triviaAnswerChecker
         self.__triviaEmoteGenerator: TriviaEmoteGeneratorInterface = triviaEmoteGenerator
@@ -184,7 +187,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__queueTimeoutSeconds: float = queueTimeoutSeconds
         self.__sleepTimeSeconds: float = sleepTimeSeconds
-        self.__timeZone: tzinfo = timeZone
 
         self.__isStarted: bool = False
         self.__eventListener: TriviaEventListener | None = None
@@ -574,7 +576,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.getTriviaActionType() is not TriviaActionType.START_NEW_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_GAME}: \"{action.getTriviaActionType()}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         state = await self.__triviaGameStore.getNormalGame(
             twitchChannelId = action.getTwitchChannelId(),
             userId = action.getUserId()
@@ -666,7 +668,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         elif action.getTriviaActionType() is not TriviaActionType.START_NEW_SUPER_GAME:
             raise RuntimeError(f'TriviaActionType is not {TriviaActionType.START_NEW_SUPER_GAME}: \"{action.getTriviaActionType()}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         superTriviaFirstQuestionDelay = timedelta(
             seconds = await self.__triviaSettingsRepository.getSuperTriviaFirstQuestionDelaySeconds()
         )
@@ -787,7 +789,7 @@ class TriviaGameMachine(TriviaGameMachineInterface):
         await self.__beginQueuedTriviaGames()
 
     async def __removeDeadTriviaGames(self):
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         gameStates = await self.__triviaGameStore.getAll()
         gameStatesToRemove: list[AbsTriviaGameState] = list()
 

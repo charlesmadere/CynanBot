@@ -5,8 +5,11 @@ from datetime import datetime, timedelta
 from queue import SimpleQueue
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.generalSettingsRepository import GeneralSettingsRepository
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.sentMessageLogger.messageMethod import MessageMethod
 from CynanBot.sentMessageLogger.sentMessageLoggerInterface import \
     SentMessageLoggerInterface
@@ -24,7 +27,6 @@ from CynanBot.twitch.twitchHandleProviderInterface import \
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
 from CynanBot.twitch.twitchUtilsInterface import TwitchUtilsInterface
-from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 
@@ -33,7 +35,7 @@ class TwitchUtils(TwitchUtilsInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         generalSettingsRepository: GeneralSettingsRepository,
         sentMessageLogger: SentMessageLoggerInterface,
         timber: TimberInterface,
@@ -47,7 +49,7 @@ class TwitchUtils(TwitchUtilsInterface):
         sleepTimeSeconds: float = 0.5,
         maxRetries: int = 3
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(generalSettingsRepository, GeneralSettingsRepository):
             raise TypeError(f'generalSettingsRepository argument is malformed: \"{generalSettingsRepository}\"')
@@ -82,7 +84,7 @@ class TwitchUtils(TwitchUtilsInterface):
         elif maxRetries < 0 or maxRetries > utils.getIntMaxSafeSize():
             raise ValueError(f'maxRetries argument is out of bounds: {maxRetries}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__generalSettingsRepository: GeneralSettingsRepository = generalSettingsRepository
         self.__sentMessageLogger: SentMessageLoggerInterface = sentMessageLogger
         self.__timber: TimberInterface = timber

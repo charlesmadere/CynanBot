@@ -12,7 +12,8 @@ from CynanBot.chatLogger.absChatMessage import AbsChatMessage
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.chatLogger.chatMessage import ChatMessage
 from CynanBot.chatLogger.raidMessage import RaidMessage
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 
 

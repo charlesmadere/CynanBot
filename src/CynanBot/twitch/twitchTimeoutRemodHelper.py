@@ -1,7 +1,8 @@
 import asyncio
 
 import CynanBot.misc.utils as utils
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
@@ -20,7 +21,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
 
     def __init__(
         self,
-        backgroundTaskHelper: BackgroundTaskHelper,
+        backgroundTaskHelper: BackgroundTaskHelperInterface,
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface,
@@ -28,7 +29,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         userIdsRepository: UserIdsRepositoryInterface,
         queueSleepTimeSeconds: float = 3
     ):
-        if not isinstance(backgroundTaskHelper, BackgroundTaskHelper):
+        if not isinstance(backgroundTaskHelper, BackgroundTaskHelperInterface):
             raise TypeError(f'backgroundTaskHelper argument is malformed: \"{backgroundTaskHelper}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
@@ -45,7 +46,7 @@ class TwitchTimeoutRemodHelper(TwitchTimeoutRemodHelperInterface):
         elif queueSleepTimeSeconds < 1 or queueSleepTimeSeconds > 10:
             raise ValueError(f'queueSleepTimeSeconds argument is out of bounds: {queueSleepTimeSeconds}')
 
-        self.__backgroundTaskHelper: BackgroundTaskHelper = backgroundTaskHelper
+        self.__backgroundTaskHelper: BackgroundTaskHelperInterface = backgroundTaskHelper
         self.__timber: TimberInterface = timber
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchTimeoutRemodRepository: TwitchTimeoutRemodRepositoryInterface = twitchTimeoutRemodRepository
