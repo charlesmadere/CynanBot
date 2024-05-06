@@ -35,6 +35,50 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
         self.__timber: TimberInterface = timber
         self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
+        self.__descriptionIdToEmoji: dict[str, str | None] = self.__createDescriptionIdToEmojiDictionary()
+
+    def __createDescriptionIdToEmojiDictionary(self) -> dict[str, str | None]:
+        dictionary: dict[str, str | None] = dict()
+        dictionary['200'] = '⛈️'
+        dictionary['201'] = dictionary['200']
+        dictionary['202'] = dictionary['200']
+        dictionary['210'] = '🌩️'
+        dictionary['211'] = dictionary['210']
+        dictionary['212'] = dictionary['211']
+        dictionary['221'] = dictionary['200']
+        dictionary['230'] = dictionary['200']
+        dictionary['231'] = dictionary['200']
+        dictionary['232'] = dictionary['200']
+        dictionary['300'] = '☔'
+        dictionary['301'] = dictionary['300']
+        dictionary['310'] = dictionary['300']
+        dictionary['311'] = dictionary['300']
+        dictionary['313'] = dictionary['300']
+        dictionary['500'] = dictionary['300']
+        dictionary['501'] = '🌧️'
+        dictionary['502'] = dictionary['501']
+        dictionary['503'] = dictionary['501']
+        dictionary['504'] = dictionary['501']
+        dictionary['520'] = dictionary['501']
+        dictionary['521'] = dictionary['501']
+        dictionary['522'] = dictionary['501']
+        dictionary['531'] = dictionary['501']
+        dictionary['600'] = '❄️'
+        dictionary['601'] = dictionary['600']
+        dictionary['602'] = '🌨️'
+        dictionary['711'] = '🌫️'
+        dictionary['721'] = dictionary['711']
+        dictionary['731'] = dictionary['711']
+        dictionary['741'] = dictionary['711']
+        dictionary['762'] = '🌋'
+        dictionary['771'] = '🌬️🍃'
+        dictionary['781'] = '🌪️'
+        dictionary['801'] = '☁️'
+        dictionary['802'] = dictionary['801']
+        dictionary['803'] = dictionary['801']
+        dictionary['804'] = dictionary['801']
+
+        return dictionary
 
     async def parseAirPollutionIndex(
         self,
@@ -219,20 +263,19 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         humidity = utils.getIntFromDict(jsonContents, 'humidity')
         pressure = utils.getIntFromDict(jsonContents, 'pressure')
 
-        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
-        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
-            return None
+        descriptionsArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
+        descriptions: list[OpenWeatherMomentDescription] | None = None
 
-        weatherEntryJson = weatherArray[0]
-        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
-            return None
+        if isinstance(descriptionsArray, list) and len(descriptionsArray) >= 1:
+            descriptions = list()
 
-        description = await self.parseMomentDescription(weatherEntryJson)
-        if description is None:
-            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
-            return None
+            for index, descriptionEntryJson in enumerate(descriptionsArray):
+                description = await self.parseMomentDescription(descriptionEntryJson)
+
+                if description is None:
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" data: ({jsonContents=})')
+                else:
+                    descriptions.append(description)
 
         return OpenWeatherMoment(
             dateTime = dateTime,
@@ -245,7 +288,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             windSpeed = windSpeed,
             humidity = humidity,
             pressure = pressure,
-            description = description
+            descriptions = descriptions
         )
 
     async def parseMomentDescription(
@@ -257,12 +300,14 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
         description = utils.getStrFromDict(jsonContents, 'description')
         descriptionId = utils.getStrFromDict(jsonContents, 'id')
+        emoji = self.__descriptionIdToEmoji.get(descriptionId, None)
         icon = utils.getStrFromDict(jsonContents, 'icon')
         main = utils.getStrFromDict(jsonContents, 'main')
 
         return OpenWeatherMomentDescription(
             description = description,
             descriptionId = descriptionId,
+            emoji = emoji,
             icon = icon,
             main = main
         )

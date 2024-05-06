@@ -5,5 +5,6 @@ from dataclasses import dataclass
 class OpenWeatherMomentDescription():
     description: str
     descriptionId: str
+    emoji: str | None
     icon: str
     main: str

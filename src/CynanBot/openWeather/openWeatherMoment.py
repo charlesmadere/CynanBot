@@ -17,4 +17,4 @@ class OpenWeatherMoment():
     windSpeed: float
     humidity: int
     pressure: int
-    description: OpenWeatherMomentDescription
+    descriptions: list[OpenWeatherMomentDescription] | None
