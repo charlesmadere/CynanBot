@@ -9,12 +9,15 @@ from CynanBot.openWeather.openWeatherAirPollutionIndex import \
 from CynanBot.openWeather.openWeatherAirPollutionReport import \
     OpenWeatherAirPollutionReport
 from CynanBot.openWeather.openWeatherAlert import OpenWeatherAlert
+from CynanBot.openWeather.openWeatherDay import OpenWeatherDay
+from CynanBot.openWeather.openWeatherFeelsLike import OpenWeatherFeelsLike
 from CynanBot.openWeather.openWeatherJsonMapperInterface import \
     OpenWeatherJsonMapperInterface
 from CynanBot.openWeather.openWeatherMoment import OpenWeatherMoment
 from CynanBot.openWeather.openWeatherMomentDescription import \
     OpenWeatherMomentDescription
 from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
+from CynanBot.openWeather.openWeatherTemperature import OpenWeatherTemperature
 from CynanBot.timber.timberInterface import TimberInterface
 
 
@@ -116,6 +119,135 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             senderName = senderName
         )
 
+    async def parseDay(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherDay | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
+        moonrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonrise'))
+        moonset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonset'))
+        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'))
+        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'))
+        dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
+        moonPhase = utils.getFloatFromDict(jsonContents, 'moon_phase')
+        uvIndex = utils.getFloatFromDict(jsonContents, 'uvi')
+        windSpeed = utils.getFloatFromDict(jsonContents, 'wind_speed')
+        humidity = utils.getIntFromDict(jsonContents, 'humidity')
+        pressure = utils.getIntFromDict(jsonContents, 'pressure')
+        summary = utils.getStrFromDict(jsonContents, 'summary')
+
+        feelsLike = await self.parseFeelsLike(jsonContents.get('feels_like'))
+        if feelsLike is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"feels_like\" field in JSON data: ({jsonContents=})')
+            return None
+
+        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
+        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
+            return None
+
+        weatherEntryJson = weatherArray[0]
+        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
+            return None
+
+        description = await self.parseMomentDescription(weatherEntryJson)
+        if description is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
+            return None
+
+        temperature = await self.parseTemperature(jsonContents.get('temp'))
+        if temperature is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"temp\" field in JSON data: ({jsonContents=})')
+            return None
+
+        return OpenWeatherDay(
+            dateTime = dateTime,
+            moonrise = moonrise,
+            moonset = moonset,
+            sunrise = sunrise,
+            sunset = sunset,
+            dewPoint = dewPoint,
+            moonPhase = moonPhase,
+            uvIndex = uvIndex,
+            windSpeed = windSpeed,
+            humidity = humidity,
+            pressure = pressure,
+            feelsLike = feelsLike,
+            description = description,
+            temperature = temperature,
+            summary = summary
+        )
+
+    async def parseFeelsLike(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherFeelsLike | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        day = utils.getFloatFromDict(jsonContents, 'day')
+        evening = utils.getFloatFromDict(jsonContents, 'eve')
+        morning = utils.getFloatFromDict(jsonContents, 'morn')
+        night = utils.getFloatFromDict(jsonContents, 'night')
+
+        return OpenWeatherFeelsLike(
+            day = day,
+            evening = evening,
+            morning = morning,
+            night = night
+        )
+
+    async def parseMoment(
+        self,
+        jsonContents: dict[str, Any] | Any | None
+    ) -> OpenWeatherMoment | None:
+        if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
+            return None
+
+        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
+        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'))
+        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'))
+        dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
+        feelsLikeTemperature = utils.getFloatFromDict(jsonContents, 'feels_like')
+        temperature = utils.getFloatFromDict(jsonContents, 'temp')
+        uvIndex = utils.getFloatFromDict(jsonContents, 'uvi')
+        windSpeed = utils.getFloatFromDict(jsonContents, 'wind_speed')
+        humidity = utils.getIntFromDict(jsonContents, 'humidity')
+        pressure = utils.getIntFromDict(jsonContents, 'pressure')
+
+        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
+        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
+            return None
+
+        weatherEntryJson = weatherArray[0]
+        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
+            return None
+
+        description = await self.parseMomentDescription(weatherEntryJson)
+        if description is None:
+            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
+            return None
+
+        return OpenWeatherMoment(
+            dateTime = dateTime,
+            sunrise = sunrise,
+            sunset = sunset,
+            dewPoint = dewPoint,
+            feelsLikeTemperature = feelsLikeTemperature,
+            temperature = temperature,
+            uvIndex = uvIndex,
+            windSpeed = windSpeed,
+            humidity = humidity,
+            pressure = pressure,
+            description = description
+        )
+
     async def parseMomentDescription(
         self,
         jsonContents: dict[str, Any] | Any | None
@@ -135,51 +267,27 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             main = main
         )
 
-    async def parseMoment(
+    async def parseTemperature(
         self,
         jsonContents: dict[str, Any] | Any | None
-    ) -> OpenWeatherMoment | None:
+    ) -> OpenWeatherTemperature | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
 
-        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
-        dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
-        feelsLikeTemperature = utils.getFloatFromDict(jsonContents, 'feels_like')
-        temperature = utils.getFloatFromDict(jsonContents, 'temp')
-        uvIndex = utils.getFloatFromDict(jsonContents, 'uvi')
-        windSpeed = utils.getFloatFromDict(jsonContents, 'wind_speed')
-        humidity = utils.getIntFromDict(jsonContents, 'humidity')
-        pressure = utils.getIntFromDict(jsonContents, 'pressure')
-        sunrise = utils.getIntFromDict(jsonContents, 'sunrise')
-        sunset = utils.getIntFromDict(jsonContents, 'sunset')
+        day = utils.getFloatFromDict(jsonContents, 'day')
+        evening = utils.getFloatFromDict(jsonContents, 'eve')
+        maximum = utils.getFloatFromDict(jsonContents, 'max')
+        minimum = utils.getFloatFromDict(jsonContents, 'min')
+        morning = utils.getFloatFromDict(jsonContents, 'morn')
+        night = utils.getFloatFromDict(jsonContents, 'night')
 
-        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
-        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
-            return None
-
-        weatherEntryJson = weatherArray[0]
-        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
-            return None
-
-        description = await self.parseMomentDescription(weatherEntryJson)
-        if description is None:
-            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
-            return None
-
-        return OpenWeatherMoment(
-            dateTime = dateTime,
-            dewPoint = dewPoint,
-            feelsLikeTemperature = feelsLikeTemperature,
-            temperature = temperature,
-            uvIndex = uvIndex,
-            windSpeed = windSpeed,
-            humidity = humidity,
-            pressure = pressure,
-            sunrise = sunrise,
-            sunset = sunset,
-            description = description
+        return OpenWeatherTemperature(
+            day = day,
+            evening = evening,
+            maximum = maximum,
+            minimum = minimum,
+            morning = morning,
+            night = night
         )
 
     async def parseWeatherReport(
@@ -214,10 +322,29 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
         timeZoneStr = utils.getStrFromDict(jsonContents, 'timezone')
         timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
 
+        dailyArray: list[dict[str, Any]] | None = jsonContents.get('daily')
+        days: list[OpenWeatherDay] | None = None
+
+        if isinstance(dailyArray, list) and len(dailyArray) >= 1:
+            days = list()
+
+            for index, dailyEntryJson in enumerate(dailyArray):
+                day = await self.parseDay(dailyEntryJson)
+
+                if day is None:
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"daily\" data: ({jsonContents=})')
+                else:
+                    days.append(day)
+
+        if days is None or len(days) == 0:
+            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse any \"daily\" data: ({jsonContents=})')
+            return None
+
         return OpenWeatherReport(
             latitude = latitude,
             longitude = longitude,
             alerts = alerts,
+            days = days,
             current = current,
             timeZone = timeZone
         )
