@@ -296,7 +296,7 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
 
         if weatherReport is None:
             return False
-        elif action.isAlertsOnly() and not weatherReport.hasAlerts():
+        elif action.isAlertsOnly() and (weatherReport.alerts is None or len(weatherReport.alerts) == 0):
             return False
 
         await self.__submitEvent(WeatherRecurringEvent(
