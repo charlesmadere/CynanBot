@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import locale
+from dataclasses import dataclass
 
 import CynanBot.misc.utils as utils
 from CynanBot.weather.airQualityIndex import AirQualityIndex
@@ -14,7 +14,7 @@ class WeatherReport():
     tomorrowsLowTemperature: float
     humidity: int
     pressure: int
-    alerts: list[str]
+    alerts: list[str] | None
     conditions: list[str] | None
     tomorrowsConditions: list[str] | None
     locationId: str
