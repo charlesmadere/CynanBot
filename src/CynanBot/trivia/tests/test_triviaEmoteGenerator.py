@@ -3,7 +3,9 @@ from asyncio import AbstractEventLoop
 
 import pytest
 
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBot.timber.timberInterface import TimberInterface
@@ -16,7 +18,7 @@ from CynanBot.trivia.triviaEmoteGeneratorInterface import \
 class TestTriviaEmoteGenerator():
 
     eventLoop: AbstractEventLoop = asyncio.get_event_loop()
-    backgroundTaskHelper = BackgroundTaskHelper(eventLoop = eventLoop)
+    backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(eventLoop = eventLoop)
     backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
     timber: TimberInterface = TimberStub()
     triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
