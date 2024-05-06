@@ -1,7 +1,6 @@
 import asyncio
 from asyncio import AbstractEventLoop
 
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.google.googleApiAccessTokenStorage import \
     GoogleApiAccessTokenStorage
 from CynanBot.google.googleApiAccessTokenStorageInterface import \
@@ -18,6 +17,7 @@ from CynanBot.google.googleTextSynthesisInput import GoogleTextSynthesisInput
 from CynanBot.google.googleTextSynthesizeRequest import \
     GoogleTextSynthesizeRequest
 from CynanBot.google.googleVoiceAudioConfig import GoogleVoiceAudioConfig
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.network.aioHttpClientProvider import AioHttpClientProvider

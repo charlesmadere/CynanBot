@@ -21,7 +21,6 @@ from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.absChatAction import AbsChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
 from CynanBot.chatActions.chatActionsManagerInterface import \
@@ -49,7 +48,6 @@ from CynanBot.contentScanner.contentScanner import ContentScanner
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
 from CynanBot.cynanBot import CynanBot
-from CynanBot.dependencyHolderBuilder import DependencyHolderBuilder
 from CynanBot.emojiHelper.emojiHelper import EmojiHelper
 from CynanBot.emojiHelper.emojiHelperInterface import EmojiHelperInterface
 from CynanBot.emojiHelper.emojiRepository import EmojiRepository
@@ -82,6 +80,7 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.mostRecentChat.mostRecentChatsRepository import \
     MostRecentChatsRepository
 from CynanBot.mostRecentChat.mostRecentChatsRepositoryInterface import \
@@ -492,6 +491,7 @@ if generalSettingsSnapshot.isEventSubEnabled():
     twitchWebsocketClient = TwitchWebsocketClient(
         backgroundTaskHelper = backgroundTaskHelper,
         timber = timber,
+        timeZoneRepository = timeZoneRepository,
         twitchApiService = twitchApiService,
         twitchTokensRepository = twitchTokensRepository,
         twitchWebsocketAllowedUsersRepository = TwitchWebsocketAllowedUsersRepository(
@@ -701,22 +701,6 @@ cheerActionHelper: CheerActionHelperInterface = CheerActionHelper(
 )
 
 
-##############################################
-## Dependency Holder initialization section ##
-##############################################
-
-dependencyHolder = DependencyHolderBuilder(
-    administratorProvider = administratorProvider,
-    backgroundTaskHelper = backgroundTaskHelper,
-    chatLogger = chatLogger,
-    generalSettingsRepository = generalSettingsRepository,
-    sentMessageLogger = sentMessageLogger,
-    timber = timber,
-    twitchUtils = twitchUtils
-)\
-    .build()
-
-
 #####################################
 ## CynanBot initialization section ##
 #####################################
@@ -738,7 +722,6 @@ cynanBot = CynanBot(
     cheerActionsRepository = cheerActionsRepository,
     cutenessRepository = None,
     cutenessUtils = None,
-    dependencyHolder = dependencyHolder,
     funtoonRepository = funtoonRepository,
     funtoonTokensRepository = funtoonTokensRepository,
     generalSettingsRepository = generalSettingsRepository,

@@ -24,7 +24,6 @@ from CynanBot.aniv.mostRecentAnivMessageTimeoutHelper import \
 from CynanBot.aniv.mostRecentAnivMessageTimeoutHelperInterface import \
     MostRecentAnivMessageTimeoutHelperInterface
 from CynanBot.authRepository import AuthRepository
-from CynanBot.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.chatActions.anivCheckChatAction import AnivCheckChatAction
 from CynanBot.chatActions.catJamChatAction import CatJamChatAction
 from CynanBot.chatActions.chatActionsManager import ChatActionsManager
@@ -108,6 +107,7 @@ from CynanBot.location.locationsRepositoryInterface import \
 from CynanBot.location.timeZoneRepository import TimeZoneRepository
 from CynanBot.location.timeZoneRepositoryInterface import \
     TimeZoneRepositoryInterface
+from CynanBot.misc.backgroundTaskHelper import BackgroundTaskHelper
 from CynanBot.misc.backgroundTaskHelperInterface import \
     BackgroundTaskHelperInterface
 from CynanBot.mostRecentChat.mostRecentChatsRepository import \

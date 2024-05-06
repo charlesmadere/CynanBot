@@ -1,7 +1,8 @@
 from asyncio import AbstractEventLoop, Task
 from typing import Coroutine
 
-from CynanBot.misc.backgroundTaskHelperInterface import BackgroundTaskHelperInterface
+from CynanBot.misc.backgroundTaskHelperInterface import \
+    BackgroundTaskHelperInterface
 
 
 class BackgroundTaskHelper(BackgroundTaskHelperInterface):
