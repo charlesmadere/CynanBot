@@ -535,6 +535,7 @@ class CynanBot(
         self.__twitchWebsocketClient: TwitchWebsocketClientInterface | None = twitchWebsocketClient
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
+        self.__weatherReportPresenter: WeatherReportPresenterInterface | None = weatherReportPresenter
         self.__websocketConnectionServer: WebsocketConnectionServerInterface | None = websocketConnectionServer
 
         #######################################
@@ -946,8 +947,14 @@ class CynanBot(
         if not isinstance(event, WeatherRecurringEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
+        weatherReportPresenter = self.__weatherReportPresenter
+
+        if weatherReportPresenter is None:
+            return
+
         twitchChannel = await self.__getChannel(event.getTwitchChannel())
-        await self.__twitchUtils.safeSend(twitchChannel, event.getWeatherReport().toStr())
+        weatherReportString = await weatherReportPresenter.present(event.getWeatherReport())
+        await self.__twitchUtils.safeSend(twitchChannel, weatherReportString)
 
     async def __handleWordOfTheDayRecurringActionEvent(self, event: WordOfTheDayRecurringEvent):
         if not isinstance(event, WordOfTheDayRecurringEvent):
