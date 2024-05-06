@@ -108,7 +108,7 @@ class WeatherRepository(WeatherRepositoryInterface):
         icons['731'] = icons['711']
         icons['741'] = icons['711']
         icons['762'] = '🌋'
-        icons['771'] = '🌬'
+        icons['771'] = '🌬️🍃'
         icons['781'] = '🌪️'
         icons['801'] = '☁️'
         icons['802'] = icons['801']
