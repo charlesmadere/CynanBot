@@ -598,7 +598,8 @@ anivSettingsRepository: AnivSettingsRepositoryInterface = AnivSettingsRepository
 
 mostRecentAnivMessageRepository: MostRecentAnivMessageRepositoryInterface | None = MostRecentAnivMessageRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 mostRecentAnivMessageTimeoutHelper: MostRecentAnivMessageTimeoutHelperInterface | None = None
