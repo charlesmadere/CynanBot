@@ -1,7 +1,6 @@
 from abc import abstractmethod
 
 from CynanBot.misc.clearable import Clearable
-from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
 
 
 class TwitchTokensRepositoryInterface(Clearable):
@@ -40,11 +39,4 @@ class TwitchTokensRepositoryInterface(Clearable):
 
     @abstractmethod
     async def requireAccessTokenById(self, twitchChannelId: str) -> str:
-        pass
-
-    @abstractmethod
-    async def requireTokensDetails(
-        self,
-        twitchChannel: str
-    ) -> TwitchTokensDetails:
         pass

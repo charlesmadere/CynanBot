@@ -14,8 +14,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchTokensDetails import TwitchTokensDetails
-from CynanBot.twitch.exceptions import (NoTwitchTokenDetailsException,
-                                        TwitchAccessTokenMissingException,
+from CynanBot.twitch.exceptions import (TwitchAccessTokenMissingException,
                                         TwitchPasswordChangedException)
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -337,17 +336,6 @@ class TwitchTokensRepository(TwitchTokensRepositoryInterface):
             raise TwitchAccessTokenMissingException(f'Twitch access token is missing ({twitchChannelId=}) ({accessToken=})')
 
         return accessToken
-
-    async def requireTokensDetails(self, twitchChannel: str) -> TwitchTokensDetails:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-
-        tokensDetails = await self.getTokensDetails(twitchChannel)
-
-        if tokensDetails is None:
-            raise NoTwitchTokenDetailsException(f'Twitch tokens details for \"{twitchChannel}\" is missing/unavailable')
-
-        return tokensDetails
 
     async def __setExpirationTime(
         self,
