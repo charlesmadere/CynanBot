@@ -1,9 +1,10 @@
+from datetime import datetime
 import locale
 
 import CynanBot.misc.utils as utils
 from CynanBot.openWeather.openWeatherAirPollutionIndex import \
     OpenWeatherAirPollutionIndex
-from CynanBot.openWeather.openWeatherReport import OpenWeatherReport
+from CynanBot.openWeather.openWeatherDay import OpenWeatherDay
 from CynanBot.weather.weatherReport import WeatherReport
 from CynanBot.weather.weatherReport2 import WeatherReport2
 from CynanBot.weather.weatherReportPresenterInterface import \
@@ -31,6 +32,15 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         else:
             raise RuntimeError(f'OpenWeatherAirPollutionIndex is unknown value: \"{airPollutionIndex}\"')
 
+    async def __getAlertsString(self, weather: WeatherReport2) -> str | None:
+        alerts = weather.report.alerts
+
+        if alerts is None or len(alerts) == 0:
+            return None
+
+        # TODO
+        return None
+
     async def __getConditionsString(self, weather: WeatherReport2) -> str | None:
         weatherDescriptions = weather.report.current.descriptions
 
@@ -57,6 +67,38 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         fTemp = int(round(utils.cToF(weather.report.current.feelsLikeTemperature)))
         return f'🌡️ Temperature is {cTemp}°C ({fTemp}°F), '
 
+    async def __getTomorrowsConditionsString(self, weather: WeatherReport2) -> str | None:
+        tomorrow = await self.__getTomorrowsWeather(weather)
+
+        if tomorrow is None or tomorrow.descriptions is None or len(tomorrow.descriptions) == 0:
+            return None
+
+        tomorrowsConditions: list[str] = list()
+
+        for tomorrowsDescription in tomorrow.descriptions:
+            tomorrowsConditions.append(tomorrowsDescription.description)
+
+        conditionsJoin = ', '.join(tomorrowsConditions)
+        return f'Tomorrow\'s conditions: {conditionsJoin}'
+
+    async def __getTomorrowsTempsString(self, weather: WeatherReport2) -> str | None:
+        tomorrow = await self.__getTomorrowsWeather(weather)
+
+        if tomorrow is None:
+            return None
+
+        # TODO
+        return None
+
+    async def __getTomorrowsWeather(self, weather: WeatherReport2) -> OpenWeatherDay | None:
+        now = datetime.now(weather.report.timeZone)
+
+        for day in weather.report.days:
+            if day.dateTime.day > now.day or day.dateTime.month > now.month or day.dateTime.year > now.year:
+                return day
+
+        return None
+
     async def __getUvIndexString(self, weather: WeatherReport2) -> str | None:
         uvIndex = weather.report.current.uvIndex
 
@@ -77,7 +119,10 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         uvIndexStr = await self.__getUvIndexString(weather)
         pressureStr = await self.__getPressureString(weather)
         conditionsStr = await self.__getConditionsString(weather)
-        return ''
+        tomorrowsTempsStr = await self.__getTomorrowsTempsString(weather)
+        tomorrowsConditionsStr = await self.__getTomorrowsConditionsString(weather)
+        alertsStr = await self.__getAlertsString(weather)
+        return ''.strip()
 
     async def toString(self, weather: WeatherReport) -> str:
         if not isinstance(weather, WeatherReport):

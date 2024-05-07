@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, tzinfo
 from typing import Any
 
 import CynanBot.misc.utils as utils
@@ -100,10 +100,13 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
     async def parseAirPollutionReport(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo
     ) -> OpenWeatherAirPollutionReport | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         coordJson: dict[str, Any] | None = jsonContents.get('coord')
         if not isinstance(coordJson, dict) or len(coordJson) == 0:
@@ -123,7 +126,7 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"list\" JSON data: ({jsonContents=})')
             return None
 
-        dateTime = datetime.fromtimestamp(utils.getIntFromDict(listEntryJson, 'dt'))
+        dateTime = datetime.fromtimestamp(utils.getIntFromDict(listEntryJson, 'dt'), timeZone)
 
         mainJson: dict[str, Any] | None = listEntryJson.get('main')
         if not isinstance(mainJson, dict) or len(mainJson) == 0:
@@ -139,7 +142,8 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             dateTime = dateTime,
             latitude = latitude,
             longitude = longitude,
-            airPollutionIndex = airPollutionIndex
+            airPollutionIndex = airPollutionIndex,
+            timeZone = timeZone
         )
 
     async def parseAlert(
@@ -165,16 +169,19 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
     async def parseDay(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo
     ) -> OpenWeatherDay | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
-        moonrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonrise'))
-        moonset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonset'))
-        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'))
-        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'))
+        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'), timeZone)
+        moonrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonrise'), timeZone)
+        moonset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'moonset'), timeZone)
+        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'), timeZone)
+        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'), timeZone)
         dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
         moonPhase = utils.getFloatFromDict(jsonContents, 'moon_phase')
         uvIndex = utils.getFloatFromDict(jsonContents, 'uvi')
@@ -188,20 +195,19 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"feels_like\" field in JSON data: ({jsonContents=})')
             return None
 
-        weatherArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
-        if not isinstance(weatherArray, list) or len(weatherArray) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid \"weather\" field in JSON data: ({jsonContents=})')
-            return None
+        descriptionsArray: list[dict[str, Any] | None] | None = jsonContents.get('weather')
+        descriptions: list[OpenWeatherMomentDescription] | None = None
 
-        weatherEntryJson = weatherArray[0]
-        if not isinstance(weatherEntryJson, dict) or len(weatherEntryJson) == 0:
-            self.__timber.log('OpenWeatherJsonMapper', f'Encountered missing/invalid entry in \"weather\" JSON data: ({jsonContents=})')
-            return None
+        if isinstance(descriptionsArray, list) and len(descriptionsArray) >= 1:
+            descriptions = list()
 
-        description = await self.parseMomentDescription(weatherEntryJson)
-        if description is None:
-            self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"weather\" data: ({jsonContents=})')
-            return None
+            for index, descriptionEntryJson in enumerate(descriptionsArray):
+                description = await self.parseMomentDescription(descriptionEntryJson)
+
+                if description is None:
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"weather\" data: ({jsonContents=})')
+                else:
+                    descriptions.append(description)
 
         temperature = await self.parseTemperature(jsonContents.get('temp'))
         if temperature is None:
@@ -220,8 +226,8 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             windSpeed = windSpeed,
             humidity = humidity,
             pressure = pressure,
+            descriptions = descriptions,
             feelsLike = feelsLike,
-            description = description,
             temperature = temperature,
             summary = summary
         )
@@ -247,14 +253,17 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
 
     async def parseMoment(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo
     ) -> OpenWeatherMoment | None:
         if not isinstance(jsonContents, dict) or len(jsonContents) == 0:
             return None
+        elif not isinstance(timeZone, tzinfo):
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
-        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'))
-        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'))
-        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'))
+        dateTime = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'dt'), timeZone)
+        sunrise = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunrise'), timeZone)
+        sunset = datetime.fromtimestamp(utils.getIntFromDict(jsonContents, 'sunset'), timeZone)
         dewPoint = utils.getFloatFromDict(jsonContents, 'dew_point')
         feelsLikeTemperature = utils.getFloatFromDict(jsonContents, 'feels_like')
         temperature = utils.getFloatFromDict(jsonContents, 'temp')
@@ -359,13 +368,13 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
                 else:
                     alerts.append(alert)
 
-        current = await self.parseMoment(jsonContents.get('current'))
+        timeZoneStr = utils.getStrFromDict(jsonContents, 'timezone')
+        timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
+
+        current = await self.parseMoment(jsonContents.get('current'), timeZone)
         if current is None:
             self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"current\" data: ({jsonContents=})')
             return None
-
-        timeZoneStr = utils.getStrFromDict(jsonContents, 'timezone')
-        timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
 
         dailyArray: list[dict[str, Any]] | None = jsonContents.get('daily')
         days: list[OpenWeatherDay] | None = None
@@ -374,12 +383,14 @@ class OpenWeatherJsonMapper(OpenWeatherJsonMapperInterface):
             days = list()
 
             for index, dailyEntryJson in enumerate(dailyArray):
-                day = await self.parseDay(dailyEntryJson)
+                day = await self.parseDay(dailyEntryJson, timeZone)
 
                 if day is None:
-                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value for \"daily\" data: ({jsonContents=})')
+                    self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse value at index {index} for \"daily\" data: ({jsonContents=})')
                 else:
                     days.append(day)
+
+            days.sort(key = lambda day: day.dateTime.timestamp())
 
         if days is None or len(days) == 0:
             self.__timber.log('OpenWeatherJsonMapper', f'Unable to parse any \"daily\" data: ({jsonContents=})')

@@ -78,6 +78,7 @@ from CynanBot.chatCommands.superAnswerChatCommand import SuperAnswerChatCommand
 from CynanBot.chatCommands.superTriviaChatCommand import SuperTriviaChatCommand
 from CynanBot.chatCommands.translateChatCommand import TranslateChatCommand
 from CynanBot.chatCommands.triviaScoreChatCommand import TriviaScoreChatCommand
+from CynanBot.chatCommands.weatherChatCommand import WeatherChatCommand
 from CynanBot.chatCommands.wordChatCommand import WordChatCommand
 from CynanBot.chatLogger.chatLoggerInterface import ChatLoggerInterface
 from CynanBot.cheerActions.cheerActionHelperInterface import \
@@ -105,7 +106,7 @@ from CynanBot.commands import (AbsCommand, AddTriviaAnswerCommand,
                                StubCommand, SwQuoteCommand, TimeCommand,
                                TriviaInfoCommand, TtsCommand,
                                TwitchInfoCommand, TwitterCommand,
-                               UnbanTriviaQuestionCommand, WeatherCommand)
+                               UnbanTriviaQuestionCommand)
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
 from CynanBot.cuteness.cutenessRepositoryInterface import \
@@ -675,9 +676,9 @@ class CynanBot(
             self.__ttsCommand: AbsCommand = TtsCommand(administratorProvider, streamAlertsManager, timber, twitchUtils, usersRepository)
 
         if locationsRepository is None or weatherReportPresenter is None or weatherRepository is None:
-            self.__weatherCommand: AbsCommand = StubCommand()
+            self.__weatherCommand: AbsChatCommand = StubChatCommand()
         else:
-            self.__weatherCommand: AbsCommand = WeatherCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
+            self.__weatherCommand: AbsChatCommand = WeatherChatCommand(generalSettingsRepository, locationsRepository, timber, twitchUtils, usersRepository, weatherReportPresenter, weatherRepository)
 
         if wordOfTheDayRepository is None:
             self.__wordCommand: AbsChatCommand = StubChatCommand()
@@ -1415,7 +1416,7 @@ class CynanBot(
     @commands.command(name = 'weather')
     async def command_weather(self, ctx: Context):
         context = self.__twitchConfiguration.getContext(ctx)
-        await self.__weatherCommand.handleCommand(context)
+        await self.__weatherCommand.handleChatCommand(context)
 
     @commands.command(name = 'word')
     async def command_word(self, ctx: Context):

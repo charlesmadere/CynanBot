@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import tzinfo
 from typing import Any
 
 from CynanBot.openWeather.openWeatherAirPollutionIndex import \
@@ -27,7 +28,8 @@ class OpenWeatherJsonMapperInterface(ABC):
     @abstractmethod
     async def parseAirPollutionReport(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo | None
     ) -> OpenWeatherAirPollutionReport | None:
         pass
 
@@ -41,7 +43,8 @@ class OpenWeatherJsonMapperInterface(ABC):
     @abstractmethod
     async def parseDay(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo
     ) -> OpenWeatherDay | None:
         pass
 
@@ -55,7 +58,8 @@ class OpenWeatherJsonMapperInterface(ABC):
     @abstractmethod
     async def parseMoment(
         self,
-        jsonContents: dict[str, Any] | Any | None
+        jsonContents: dict[str, Any] | Any | None,
+        timeZone: tzinfo
     ) -> OpenWeatherMoment | None:
         pass
 

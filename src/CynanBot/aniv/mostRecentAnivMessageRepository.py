@@ -1,9 +1,10 @@
-from datetime import datetime, timezone, tzinfo
+from datetime import datetime
 
 import CynanBot.misc.utils as utils
 from CynanBot.aniv.mostRecentAnivMessage import MostRecentAnivMessage
 from CynanBot.aniv.mostRecentAnivMessageRepositoryInterface import \
     MostRecentAnivMessageRepositoryInterface
+from CynanBot.location.timeZoneRepositoryInterface import TimeZoneRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
@@ -16,18 +17,18 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
         self,
         backingDatabase: BackingDatabase,
         timber: TimberInterface,
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
-        self.__timeZone: tzinfo = timeZone
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
         self.__isDatabaseReady: bool = False
         self.__cache: dict[str, MostRecentAnivMessage | None] = dict()
@@ -123,7 +124,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
                 '''
                     CREATE TABLE IF NOT EXISTS mostrecentanivmessages (
                         datetime TEXT NOT NULL,
-                        message TEXT DEFAULT NULL COLLATE NOCASE,f
+                        message TEXT DEFAULT NULL COLLATE NOCASE,
                         twitchchannelid TEXT NOT NULL PRIMARY KEY
                     )
                 '''
@@ -138,7 +139,7 @@ class MostRecentAnivMessageRepository(MostRecentAnivMessageRepositoryInterface):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
         anivMessage = MostRecentAnivMessage(
-            dateTime = datetime.now(self.__timeZone),
+            dateTime = datetime.now(self.__timeZoneRepository.getDefault()),
             message = message
         )
 

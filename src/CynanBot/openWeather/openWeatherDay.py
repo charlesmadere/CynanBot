@@ -20,7 +20,7 @@ class OpenWeatherDay():
     windSpeed: float
     humidity: int
     pressure: int
+    descriptions: list[OpenWeatherMomentDescription] | None
     feelsLike: OpenWeatherFeelsLike
-    description: OpenWeatherMomentDescription
     temperature: OpenWeatherTemperature
     summary: str

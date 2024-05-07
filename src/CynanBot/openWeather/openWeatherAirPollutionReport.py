@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, tzinfo
 
 from CynanBot.openWeather.openWeatherAirPollutionIndex import \
     OpenWeatherAirPollutionIndex
@@ -11,3 +11,4 @@ class OpenWeatherAirPollutionReport():
     latitude: float
     longitude: float
     airPollutionIndex: OpenWeatherAirPollutionIndex
+    timeZone: tzinfo
