@@ -5,26 +5,27 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
 from CynanBot.timber.timberInterface import TimberInterface
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import \
+    TriviaEmoteRepositoryInterface
 
 
 class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
     def __init__(
         self,
-        backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
+        triviaEmoteRepository: TriviaEmoteRepositoryInterface
     ):
-        if not isinstance(backingDatabase, BackingDatabase):
-            raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
-        elif not isinstance(timber, TimberInterface):
+        if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber arguent is malformed: \"{timber}\"')
+        elif not isinstance(triviaEmoteRepository, TriviaEmoteRepositoryInterface):
+            raise TypeError(f'triviaEmoteRepository argument is malformed: \"{triviaEmoteRepository}\"')
 
-        self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__triviaEmoteRepository: TriviaEmoteRepositoryInterface = triviaEmoteRepository
 
-        self.__isDatabaseReady: bool = False
         self.__emotesDict: dict[str, set[str] | None] = self.__createEmotesDict()
         self.__emotesList: list[str] = list(self.__emotesDict)
 
@@ -131,99 +132,46 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
 
         return emotesDict
 
-    async def getCurrentEmoteFor(
-        self,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> str:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+    async def getCurrentEmoteFor(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        emoteIndex = await self.__getCurrentEmoteIndexFor(
-            twitchChannel = twitchChannel,
-            twitchChannelId = twitchChannelId
-        )
-
-        if emoteIndex < 0 or emoteIndex >= len(self.__emotesList):
-            self.__timber.log('TriviaEmoteGenerator', f'Encountered out of bounds emoteIndex for \"{twitchChannel}\": {emoteIndex}')
-            emoteIndex = 0
-
+        emoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
         return self.__emotesList[emoteIndex]
 
-    async def __getCurrentEmoteIndexFor(
-        self,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> int:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+    async def __getCurrentEmoteIndexFor(self, twitchChannelId: str) -> int:
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        connection = await self.__getDatabaseConnection()
-        record = await connection.fetchRow(
-            '''
-                SELECT emoteindex FROM triviaemotes
-                WHERE twitchchannelid = $1
-                LIMIT 1
-            ''',
-            twitchChannelId
-        )
-
-        emoteIndex: int | None = None
-        if record is not None and len(record) >= 1:
-            emoteIndex = record[0]
-
-        await connection.close()
+        emoteIndex = await self.__triviaEmoteRepository.getEmoteIndexFor(twitchChannelId)
 
         if not utils.isValidInt(emoteIndex) or emoteIndex < 0 or emoteIndex >= len(self.__emotesList):
+            self.__timber.log('TriviaEmoteGenerator', f'emoteIndex value for {twitchChannelId=} is out of bounds or uninitialized ({emoteIndex=})')
             emoteIndex = 0
 
         return emoteIndex
 
-    async def __getDatabaseConnection(self) -> DatabaseConnection:
-        await self.__initDatabaseTable()
-        return await self.__backingDatabase.getConnection()
-
-    async def getNextEmoteFor(
-        self,
-        twitchChannel: str,
-        twitchChannelId: str
-    ) -> str:
-        if not utils.isValidStr(twitchChannel):
-            raise TypeError(f'twitchChannel argument is malformed: \"{twitchChannel}\"')
-        elif not utils.isValidStr(twitchChannelId):
+    async def getNextEmoteFor(self, twitchChannelId: str) -> str:
+        if not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        currentEmoteIndex = await self.__getCurrentEmoteIndexFor(
-            twitchChannel = twitchChannel,
+        currentEmoteIndex = await self.__getCurrentEmoteIndexFor(twitchChannelId)
+        newEmoteIndex = (currentEmoteIndex + 1) % len(self.__emotesList)
+
+        await self.__triviaEmoteRepository.setEmoteIndexFor(
+            emoteIndex = newEmoteIndex,
             twitchChannelId = twitchChannelId
         )
 
-        newEmoteIndex = (currentEmoteIndex + 1) % len(self.__emotesList)
-
-        connection = await self.__getDatabaseConnection()
-        await connection.execute(
-            '''
-                INSERT INTO triviaemotes (emoteindex, twitchchannelid)
-                VALUES ($1, $2)
-                ON CONFLICT (twitchchannelid) DO UPDATE SET emoteindex = EXCLUDED.emoteindex
-            ''',
-            newEmoteIndex, twitchChannelId
-        )
-
-        await connection.close()
         return self.__emotesList[newEmoteIndex]
 
     def getRandomEmote(self) -> str:
         return random.choice(self.__emotesList)
 
-    async def getValidatedAndNormalizedEmote(
-        self,
-        emote: str | None
-    ) -> str | None:
+    async def getValidatedAndNormalizedEmote(self, emote: str | None) -> str | None:
+        if emote is not None and not isinstance(emote, str):
+            raise TypeError(f'emote argument is malformed: \"{emote}\"')
+
         if not utils.isValidStr(emote):
             return None
 
@@ -235,33 +183,3 @@ class TriviaEmoteGenerator(TriviaEmoteGeneratorInterface):
                 return emoteKey
 
         return None
-
-    async def __initDatabaseTable(self):
-        if self.__isDatabaseReady:
-            return
-
-        self.__isDatabaseReady = True
-        connection = await self.__backingDatabase.getConnection()
-
-        if connection.getDatabaseType() is DatabaseType.POSTGRESQL:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS triviaemotes (
-                        emoteindex smallint DEFAULT 0 NOT NULL,
-                        twitchchannelid text NOT NULL PRIMARY KEY
-                    )
-                '''
-            )
-        elif connection.getDatabaseType() is DatabaseType.SQLITE:
-            await connection.createTableIfNotExists(
-                '''
-                    CREATE TABLE IF NOT EXISTS triviaemotes (
-                        emoteindex INTEGER NOT NULL DEFAULT 0,
-                        twitchchannelid TEXT NOT NULL PRIMARY KEY
-                    )
-                '''
-            )
-        else:
-            raise RuntimeError(f'Encountered unexpected DatabaseType when trying to create tables: \"{connection.getDatabaseType()}\"')
-
-        await connection.close()

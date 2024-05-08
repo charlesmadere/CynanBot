@@ -217,6 +217,8 @@ from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
 from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
+from CynanBot.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
@@ -245,8 +247,8 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBot.trivia.triviaGameMachineInterface import \
@@ -735,7 +737,6 @@ openWeatherApiService: OpenWeatherApiServiceInterface = OpenWeatherApiService(
 weatherReportPresenter: WeatherReportPresenterInterface = WeatherReportPresenter()
 
 weatherRepository: WeatherRepositoryInterface = WeatherRepository(
-    networkClientProvider = networkClientProvider,
     openWeatherApiKeyProvider = authRepository,
     openWeatherApiService = openWeatherApiService,
     timber = timber
@@ -793,9 +794,12 @@ triviaContentScanner: TriviaContentScannerInterface = TriviaContentScanner(
     timber = timber,
     triviaSettingsRepository = triviaSettingsRepository
 )
+triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
+    backingDatabase = backingDatabase
+)
 triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
-    backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    triviaEmoteRepository = triviaEmoteRepository
 )
 triviaGameBuilder: TriviaGameBuilderInterface = TriviaGameBuilder(
     triviaGameBuilderSettings = generalSettingsRepository,

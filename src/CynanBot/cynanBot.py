@@ -197,7 +197,7 @@ from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface impo
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaGameMachineInterface import \

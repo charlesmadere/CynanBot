@@ -4,7 +4,7 @@ from CynanBot.generalSettingsRepository import GeneralSettingsRepository
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import \
     TriviaHistoryRepositoryInterface

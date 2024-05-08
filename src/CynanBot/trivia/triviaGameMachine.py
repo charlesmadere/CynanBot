@@ -81,7 +81,7 @@ from CynanBot.trivia.superTriviaCooldownHelperInterface import \
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
     TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaExceptions import (
@@ -595,7 +595,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         emote = await self.__triviaEmoteGenerator.getNextEmoteFor(
-            twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId()
         )
 
@@ -717,7 +716,6 @@ class TriviaGameMachine(TriviaGameMachineInterface):
             return
 
         emote = await self.__triviaEmoteGenerator.getNextEmoteFor(
-            twitchChannel = action.getTwitchChannel(),
             twitchChannelId = action.getTwitchChannelId()
         )
 

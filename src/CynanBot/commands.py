@@ -45,7 +45,7 @@ from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface imp
     TriviaGameControllersRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameGlobalControllersRepositoryInterface import \
     TriviaGameGlobalControllersRepositoryInterface
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaExceptions import (
     AdditionalTriviaAnswerAlreadyExistsException,

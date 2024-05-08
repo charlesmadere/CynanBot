@@ -34,7 +34,7 @@ from CynanBot.trivia.compilers.triviaAnswerCompilerInterface import TriviaAnswer
 from CynanBot.trivia.scraper.triviaScraper import TriviaScraper
 from CynanBot.trivia.scraper.triviaScraperInterface import TriviaScraperInterface
 from CynanBot.trivia.triviaAnswerCheckerInterface import TriviaAnswerCheckerInterface
-from CynanBot.trivia.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaHistoryRepositoryInterface import TriviaHistoryRepositoryInterface
 from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepository import GlacialTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.glacialTriviaQuestionRepositoryInterface import GlacialTriviaQuestionRepositoryInterface
@@ -63,7 +63,7 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
 from CynanBot.trivia.triviaDifficulty import TriviaDifficulty
-from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaFetchOptions import TriviaFetchOptions
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine

@@ -10,20 +10,34 @@ from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.backingSqliteDatabase import BackingSqliteDatabase
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.timber.timberStub import TimberStub
-from CynanBot.trivia.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBot.trivia.triviaEmoteGeneratorInterface import \
+from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
     TriviaEmoteGeneratorInterface
+from CynanBot.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
 
 
 class TestTriviaEmoteGenerator():
 
     eventLoop: AbstractEventLoop = asyncio.get_event_loop()
-    backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(eventLoop = eventLoop)
-    backingDatabase: BackingDatabase = BackingSqliteDatabase(eventLoop = eventLoop)
+
+    backgroundTaskHelper: BackgroundTaskHelperInterface = BackgroundTaskHelper(
+        eventLoop = eventLoop
+    )
+
+    backingDatabase: BackingDatabase = BackingSqliteDatabase(
+        eventLoop = eventLoop
+    )
+
     timber: TimberInterface = TimberStub()
+
+    triviaEmoteRepository: TriviaEmoteRepositoryInterface = TriviaEmoteRepository(
+        backingDatabase = backingDatabase
+    )
+
     triviaEmoteGenerator: TriviaEmoteGeneratorInterface = TriviaEmoteGenerator(
-        backingDatabase = backingDatabase,
-        timber = timber
+        timber = timber,
+        triviaEmoteRepository = triviaEmoteRepository
     )
 
     @pytest.mark.asyncio
