@@ -54,7 +54,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={location.getLatitude()}&lon={location.getLongitude()}'
+                url = f'http://api.openweathermap.org/data/2.5/air_pollution?appid={openWeatherApiKey}&lat={location.latitude}&lon={location.longitude}'
             )
         except GenericNetworkException as e:
             self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())
@@ -70,7 +70,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         airPollutionReport = await self.__openWeatherJsonMapper.parseAirPollutionReport(
             jsonContents = jsonResponse,
-            timeZone = location.getTimeZone()
+            timeZone = location.timeZone
         )
 
         if airPollutionReport is None:
@@ -92,7 +92,7 @@ class OpenWeatherApiService(OpenWeatherApiServiceInterface):
 
         try:
             response = await clientSession.get(
-                url = f'https://api.openweathermap.org/data/3.0/onecall?appid={openWeatherApiKey}&lang=en&lat={location.getLatitude()}&lon={location.getLongitude()}&exclude=minutely,hourly&units=metric'
+                url = f'https://api.openweathermap.org/data/3.0/onecall?appid={openWeatherApiKey}&lang=en&lat={location.latitude}&lon={location.longitude}&exclude=minutely,hourly&units=metric'
             )
         except GenericNetworkException as e:
             self.__timber.log('OpenWeatherApiService', f'Encountererd network error when fetching weather ({location=}): {e}', e, traceback.format_exc())

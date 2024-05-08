@@ -6,23 +6,45 @@ from CynanBot.openWeather.openWeatherAirPollutionIndex import \
     OpenWeatherAirPollutionIndex
 from CynanBot.openWeather.openWeatherDay import OpenWeatherDay
 from CynanBot.weather.weatherReport import WeatherReport
-from CynanBot.weather.weatherReport2 import WeatherReport2
 from CynanBot.weather.weatherReportPresenterInterface import \
     WeatherReportPresenterInterface
 
 
 class WeatherReportPresenter(WeatherReportPresenterInterface):
 
-    async def __getAirQualityString(self, weather: WeatherReport2) -> str | None:
+    def __init__(
+        self,
+        maxAlerts: int = 1,
+        maxConditions: int = 2,
+        maxTomorrowsConditions: int = 1
+    ):
+        if not utils.isValidInt(maxAlerts):
+            raise TypeError(f'maxAlerts argument is malformed: \"{maxAlerts}\"')
+        elif maxAlerts < 1 or maxAlerts > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxAlerts argument is out of bounds: {maxAlerts}')
+        elif not utils.isValidInt(maxConditions):
+            raise TypeError(f'maxConditions argument is malformed: \"{maxConditions}\"')
+        elif maxConditions < 1 or maxConditions > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxConditions argument is out of bounds: {maxConditions}')
+        elif not utils.isValidInt(maxTomorrowsConditions):
+            raise TypeError(f'maxTomorrowsConditions argument is malformed: \"{maxTomorrowsConditions}\"')
+        elif maxTomorrowsConditions < 1 or maxTomorrowsConditions > utils.getIntMaxSafeSize():
+            raise ValueError(f'maxTomorrowsConditions argument is out of bounds: {maxTomorrowsConditions}')
+
+        self.__maxAlerts: int = maxAlerts
+        self.__maxConditions: int = maxConditions
+        self.__maxTomorrowsConditions: int = maxTomorrowsConditions
+
+    async def __getAirQualityString(self, weather: WeatherReport) -> str:
         if weather.airPollution is None:
-            return None
+            return ''
 
         airPollutionIndex = weather.airPollution.airPollutionIndex
 
         if airPollutionIndex is OpenWeatherAirPollutionIndex.GOOD:
-            return None
+            return ''
         elif airPollutionIndex is OpenWeatherAirPollutionIndex.FAIR:
-            return None
+            return ''
         elif airPollutionIndex is OpenWeatherAirPollutionIndex.MODERATE:
             return 'air quality is moderate, '
         elif airPollutionIndex is OpenWeatherAirPollutionIndex.POOR:
@@ -32,65 +54,82 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         else:
             raise RuntimeError(f'OpenWeatherAirPollutionIndex is unknown value: \"{airPollutionIndex}\"')
 
-    async def __getAlertsString(self, weather: WeatherReport2) -> str | None:
+    async def __getAlertsString(self, weather: WeatherReport) -> str:
         alerts = weather.report.alerts
 
         if alerts is None or len(alerts) == 0:
-            return None
+            return ''
 
-        # TODO
-        return None
+        alertStrings: list[str] = list()
 
-    async def __getConditionsString(self, weather: WeatherReport2) -> str | None:
+        for alert in alerts:
+            alertStrings.append(alert.event)
+
+            if len(alertStrings) >= self.__maxAlerts:
+                break
+
+        alertsJoin = ' '.join(alertStrings)
+        return f'🚨 {alertsJoin}'
+
+    async def __getConditionsString(self, weather: WeatherReport) -> str:
         weatherDescriptions = weather.report.current.descriptions
 
         if weatherDescriptions is None or len(weatherDescriptions) == 0:
-            return None
+            return ''
 
-        conditions: list[str] = list()
+        conditionStrings: list[str] = list()
 
         for weatherDescription in weatherDescriptions:
-            conditions.append(weatherDescription.description)
+            conditionStrings.append(weatherDescription.description)
 
-        conditionsJoin = ', '.join(conditions)
+            if len(conditionStrings) >= self.__maxConditions:
+                break
+
+        conditionsJoin = ', '.join(conditionStrings)
         return f'Current conditions: {conditionsJoin}'
 
-    async def __getHumidityString(self, weather: WeatherReport2) -> str:
+    async def __getHumidityString(self, weather: WeatherReport) -> str:
         return f'humidity is {weather.report.current.humidity}%, '
 
-    async def __getPressureString(self, weather: WeatherReport2) -> str:
+    async def __getPressureString(self, weather: WeatherReport) -> str:
         pressureString = locale.format_string("%d", weather.report.current.pressure, grouping = True)
         return f'and pressure is {pressureString} hPa. '
 
-    async def __getTemperatureString(self, weather: WeatherReport2) -> str:
+    async def __getTemperatureString(self, weather: WeatherReport) -> str:
         cTemp = int(round(weather.report.current.feelsLikeTemperature))
         fTemp = int(round(utils.cToF(weather.report.current.feelsLikeTemperature)))
         return f'🌡️ Temperature is {cTemp}°C ({fTemp}°F), '
 
-    async def __getTomorrowsConditionsString(self, weather: WeatherReport2) -> str | None:
+    async def __getTomorrowsConditionsString(self, weather: WeatherReport) -> str:
         tomorrow = await self.__getTomorrowsWeather(weather)
 
         if tomorrow is None or tomorrow.descriptions is None or len(tomorrow.descriptions) == 0:
-            return None
+            return ''
 
-        tomorrowsConditions: list[str] = list()
+        conditionStrings: list[str] = list()
 
         for tomorrowsDescription in tomorrow.descriptions:
-            tomorrowsConditions.append(tomorrowsDescription.description)
+            conditionStrings.append(tomorrowsDescription.description)
 
-        conditionsJoin = ', '.join(tomorrowsConditions)
+            if len(conditionStrings) >= self.__maxTomorrowsConditions:
+                break
+
+        conditionsJoin = ', '.join(conditionStrings)
         return f'Tomorrow\'s conditions: {conditionsJoin}'
 
-    async def __getTomorrowsTempsString(self, weather: WeatherReport2) -> str | None:
+    async def __getTomorrowsTempsString(self, weather: WeatherReport) -> str:
         tomorrow = await self.__getTomorrowsWeather(weather)
 
         if tomorrow is None:
-            return None
+            return ''
 
-        # TODO
-        return None
+        cMax = int(round(tomorrow.temperature.maximum))
+        fMax = int(round(utils.cToF(tomorrow.temperature.maximum)))
+        cMin = int(round(tomorrow.temperature.minimum))
+        fMin = int(round(utils.cToF(tomorrow.temperature.minimum)))
+        return f'Tomorrow has a low of {cMin}°C ({fMin}°F) and a high of {cMax}°C ({fMax}°F). '
 
-    async def __getTomorrowsWeather(self, weather: WeatherReport2) -> OpenWeatherDay | None:
+    async def __getTomorrowsWeather(self, weather: WeatherReport) -> OpenWeatherDay | None:
         now = datetime.now(weather.report.timeZone)
 
         for day in weather.report.days:
@@ -99,18 +138,18 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
 
         return None
 
-    async def __getUvIndexString(self, weather: WeatherReport2) -> str | None:
+    async def __getUvIndexString(self, weather: WeatherReport) -> str:
         uvIndex = weather.report.current.uvIndex
 
         if uvIndex <= 2:
-            return None
+            return ''
         elif uvIndex <= 7:
             return f'UV index is moderate to high, '
         else:
             return f'UV index is very high to extreme, '
 
-    async def toString2(self, weather: WeatherReport2) -> str:
-        if not isinstance(weather, WeatherReport2):
+    async def toString(self, weather: WeatherReport) -> str:
+        if not isinstance(weather, WeatherReport):
             raise TypeError(f'weather argument is malformed: \"{weather}\"')
 
         temperatureStr = await self.__getTemperatureString(weather)
@@ -122,40 +161,6 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
         tomorrowsTempsStr = await self.__getTomorrowsTempsString(weather)
         tomorrowsConditionsStr = await self.__getTomorrowsConditionsString(weather)
         alertsStr = await self.__getAlertsString(weather)
-        return ''.strip()
 
-    async def toString(self, weather: WeatherReport) -> str:
-        if not isinstance(weather, WeatherReport):
-            raise TypeError(f'weather argument is malformed: \"{weather}\"')
-
-        temperatureStr = f'🌡 Temperature is {weather.getTemperatureStr()}°C ({weather.getTemperatureImperialStr()}°F), '
-        humidityStr = f'humidity is {weather.humidity}%, '
-
-        airQualityIndexStr = ''
-        if weather.airQualityIndex is not None:
-            airQualityIndexStr = f'air quality index is {weather.airQualityIndex.toStr()}, '
-
-        uvIndexStr = ''
-        if weather.uvIndex is not None and weather.uvIndex.isNoteworthy():
-            uvIndexStr = f'UV Index is {weather.uvIndex.toStr()}, '
-
-        pressureStr = f'and pressure is {weather.getPressureStr()} hPa. '
-
-        conditionsStr = ''
-        if weather.conditions is not None and len(weather.conditions) >= 1:
-            conditionsJoin = ', '.join(weather.conditions)
-            conditionsStr = f'Current conditions: {conditionsJoin}. '
-
-        tomorrowsTempsStr = f'Tomorrow has a low of {weather.getTomorrowsLowTemperatureStr()}°C ({weather.getTomorrowsLowTemperatureImperialStr()}°F) and a high of {weather.getTomorrowsHighTemperatureStr()}°C ({weather.getTomorrowsHighTemperatureImperialStr()}°F). '
-
-        tomorrowsConditionsStr = ''
-        if weather.tomorrowsConditions is not None and len(weather.tomorrowsConditions) >= 1:
-            tomorrowsConditionsJoin = ', '.join(weather.tomorrowsConditions)
-            tomorrowsConditionsStr = f'Tomorrow\'s conditions: {tomorrowsConditionsJoin}. '
-
-        alertsStr = ''
-        if weather.alerts is not None and len(weather.alerts) >= 1:
-            alertsJoin = ' '.join(weather.alerts)
-            alertsStr = f'🚨 {alertsJoin}'
-
-        return f'{temperatureStr}{humidityStr}{airQualityIndexStr}{uvIndexStr}{pressureStr}{conditionsStr}{tomorrowsTempsStr}{tomorrowsConditionsStr}{alertsStr}'.strip()
+        combinedStr = f'{temperatureStr}{humidityStr}{airQualityStr}{uvIndexStr}{pressureStr}{conditionsStr}{tomorrowsTempsStr}{tomorrowsConditionsStr}{alertsStr}'
+        return utils.cleanStr(combinedStr)

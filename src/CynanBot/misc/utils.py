@@ -94,7 +94,7 @@ def cleanStr(
     if removeCarrots:
         s = carrotRemovalRegEx.sub('', s)
 
-    return s
+    return s.strip()
 
 def containsUrl(s: str | None) -> TypeGuard[str]:
     if not isValidStr(s):

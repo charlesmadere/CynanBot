@@ -71,10 +71,6 @@ from CynanBot.users.modifyUserDataHelper import ModifyUserDataHelper
 from CynanBot.users.userIdsRepositoryInterface import \
     UserIdsRepositoryInterface
 from CynanBot.users.usersRepositoryInterface import UsersRepositoryInterface
-from CynanBot.weather.weatherReportPresenterInterface import \
-    WeatherReportPresenterInterface
-from CynanBot.weather.weatherRepositoryInterface import \
-    WeatherRepositoryInterface
 
 
 class AbsCommand(ABC):

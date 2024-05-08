@@ -39,7 +39,7 @@ class LocationsRepository(LocationsRepositoryInterface):
         if not utils.isValidStr(locationId):
             raise TypeError(f'locationId argument is malformed: \"{locationId}\"')
 
-        locationId = locationId.lower()
+        locationId = locationId.casefold()
         location = self.__cache.get(locationId, None)
 
         if location is not None:
@@ -48,7 +48,7 @@ class LocationsRepository(LocationsRepositoryInterface):
         jsonContents = await self.__readAllJson()
 
         for jsonLocationId, jsonLocationContents in jsonContents.items():
-            if jsonLocationId.lower() == locationId:
+            if jsonLocationId.casefold() == locationId:
                 timeZoneStr = utils.getStrFromDict(jsonLocationContents, 'timeZone')
                 timeZone = self.__timeZoneRepository.getTimeZone(timeZoneStr)
 
@@ -60,7 +60,7 @@ class LocationsRepository(LocationsRepositoryInterface):
                     timeZone = timeZone
                 )
 
-                self.__cache[jsonLocationId.lower()] = location
+                self.__cache[jsonLocationId.casefold()] = location
                 return location
 
         raise RuntimeError(f'Unable to find location with ID \"{locationId}\" in locations file: {self.__locationsJsonReader}')
