@@ -86,7 +86,7 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
                 break
 
         conditionsJoin = ', '.join(conditionStrings)
-        return f'Current conditions: {conditionsJoin}'
+        return f'Current conditions: {conditionsJoin}. '
 
     async def __getHumidityString(self, weather: WeatherReport) -> str:
         return f'humidity is {weather.report.current.humidity}%, '
@@ -115,7 +115,7 @@ class WeatherReportPresenter(WeatherReportPresenterInterface):
                 break
 
         conditionsJoin = ', '.join(conditionStrings)
-        return f'Tomorrow\'s conditions: {conditionsJoin}'
+        return f'Tomorrow\'s conditions: {conditionsJoin}. '
 
     async def __getTomorrowsTempsString(self, weather: WeatherReport) -> str:
         tomorrow = await self.__getTomorrowsWeather(weather)
