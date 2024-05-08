@@ -12,6 +12,7 @@ class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
+        self.__isDatabaseReady: bool = False
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
