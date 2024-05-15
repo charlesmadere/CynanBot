@@ -724,20 +724,25 @@ class CynanBot(
     async def event_channel_join_failure(self, channel: str):
         userId = await self.__userIdsRepository.fetchUserId(channel)
         user: UserInterface | None = None
+        exception: Exception | None = None
 
         try:
             user = await self.__usersRepository.getUserAsync(channel)
-        except Exception:
-            pass
+        except Exception as e:
+            exception = e
 
-        self.__timber.log('CynanBot', f'Failed to join channel \"{channel}\" (userId=\"{userId}\") (user=\"{user}\"), disabling this user...')
+        if user is None or exception is not None:
+            self.__timber.log('CynanBot', f'Failed to join channel, and also failed to retrieve a user for this channel ({channel=}) ({userId=}) ({user=}): {exception}', exception, traceback.format_exc())
+            return
+
+        self.__timber.log('CynanBot', f'Failed to join channel ({channel=}) ({userId=}) ({user=}), disabling this user...')
 
         await self.__usersRepository.setUserEnabled(
             handle = user.getHandle(),
             enabled = False
         )
 
-        self.__timber.log('CynanBot', f'Finished disabling user \"{user}\" due to channel join failure')
+        self.__timber.log('CynanBot', f'Finished disabling user due to channel join failure ({channel=}) ({userId=}) ({user=})')
 
     async def event_command_error(self, context: Context, error: Exception):
         if isinstance(error, CommandNotFound):
