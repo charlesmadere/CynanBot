@@ -1,5 +1,5 @@
-from datetime import datetime
 import locale
+from datetime import datetime
 
 import CynanBot.misc.utils as utils
 from CynanBot.openWeather.openWeatherAirPollutionIndex import \

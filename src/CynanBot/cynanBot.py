@@ -166,6 +166,8 @@ from CynanBot.trivia.banned.triviaBanHelperInterface import \
     TriviaBanHelperInterface
 from CynanBot.trivia.builder.triviaGameBuilderInterface import \
     TriviaGameBuilderInterface
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
@@ -197,8 +199,6 @@ from CynanBot.trivia.specialStatus.shinyTriviaOccurencesRepositoryInterface impo
     ShinyTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface import \
     ToxicTriviaOccurencesRepositoryInterface
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface

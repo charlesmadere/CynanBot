@@ -217,8 +217,12 @@ from CynanBot.trivia.compilers.triviaQuestionCompilerInterface import \
 from CynanBot.trivia.content.triviaContentScanner import TriviaContentScanner
 from CynanBot.trivia.content.triviaContentScannerInterface import \
     TriviaContentScannerInterface
+from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.emotes.triviaEmoteRepository import TriviaEmoteRepository
-from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import \
+    TriviaEmoteRepositoryInterface
 from CynanBot.trivia.gameController.triviaGameControllersRepository import \
     TriviaGameControllersRepository
 from CynanBot.trivia.gameController.triviaGameControllersRepositoryInterface import \
@@ -247,9 +251,6 @@ from CynanBot.trivia.specialStatus.toxicTriviaOccurencesRepositoryInterface impo
     ToxicTriviaOccurencesRepositoryInterface
 from CynanBot.trivia.superTriviaCooldownHelper import SuperTriviaCooldownHelper
 from CynanBot.trivia.triviaAnswerChecker import TriviaAnswerChecker
-from CynanBot.trivia.emotes.triviaEmoteGenerator import TriviaEmoteGenerator
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaGameMachine import TriviaGameMachine
 from CynanBot.trivia.triviaGameMachineInterface import \
     TriviaGameMachineInterface
