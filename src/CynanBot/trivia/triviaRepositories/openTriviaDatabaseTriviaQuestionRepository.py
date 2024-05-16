@@ -108,7 +108,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
 
         self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Fetching trivia question... ({fetchOptions=})')
 
-        sessionToken = await self.__getOrFetchNewSessionToken(fetchOptions.getTwitchChannelId())
+        sessionToken = await self.__getOrFetchNewSessionToken(fetchOptions.twitchChannelId)
         clientSession = await self.__networkClientProvider.get()
 
         try:
@@ -134,7 +134,7 @@ class OpenTriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository, Cl
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to null/empty JSON contents: {jsonResponse}')
             raise MalformedTriviaJsonException(f'Rejecting Open Trivia Database\'s JSON data due to null/empty JSON contents: {jsonResponse}')
         elif utils.getIntFromDict(jsonResponse, 'response_code', fallback = -1) != 0:
-            await self.__removeSessionToken(fetchOptions.getTwitchChannelId())
+            await self.__removeSessionToken(fetchOptions.twitchChannelId)
             self.__timber.log('OpenTriviaDatabaseTriviaQuestionRepository', f'Rejecting Open Trivia Database\'s JSON data due to bad \"response_code\" value: {jsonResponse}')
             raise GenericTriviaNetworkException(self.getTriviaSource())
         elif not isinstance(jsonResponse.get('results'), list):

@@ -83,8 +83,8 @@ class TriviaVerifier(TriviaVerifierInterface):
         contentCode = await self.__triviaHistoryRepository.verify(
             question = question, 
             emote = emote,
-            twitchChannel = triviaFetchOptions.getTwitchChannel(),
-            twitchChannelId = triviaFetchOptions.getTwitchChannelId()
+            twitchChannel = triviaFetchOptions.twitchChannel,
+            twitchChannelId = triviaFetchOptions.twitchChannelId
         )
 
         if contentCode is not TriviaContentCode.OK:
