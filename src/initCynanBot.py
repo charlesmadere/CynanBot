@@ -302,6 +302,7 @@ from CynanBot.trivia.triviaSourceInstabilityHelper import \
 from CynanBot.trivia.triviaUtils import TriviaUtils
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
+from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
 from CynanBot.tts.google.googleFileExtensionHelper import \
@@ -766,6 +767,10 @@ triviaIdGenerator: TriviaIdGeneratorInterface = TriviaIdGenerator()
 triviaSettingsRepository: TriviaSettingsRepositoryInterface = TriviaSettingsRepository(
     settingsJsonReader = JsonFileReader('triviaSettingsRepository.json')
 )
+triviaSourceInstabilityHelper: TriviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
 additionalTriviaAnswersRepository: AdditionalTriviaAnswersRepositoryInterface = AdditionalTriviaAnswersRepository(
     backingDatabase = backingDatabase,
     timber = timber,
@@ -883,6 +888,13 @@ triviaBanHelper: TriviaBanHelperInterface = TriviaBanHelper(
     triviaSettingsRepository = triviaSettingsRepository
 )
 
+triviaVerifier: TriviaVerifierInterface = TriviaVerifier(
+    timber = timber,
+    triviaBanHelper = triviaBanHelper,
+    triviaContentScanner = triviaContentScanner,
+    triviaHistoryRepository = triviaHistoryRepository
+)
+
 triviaScraper: TriviaScraperInterface = TriviaScraper(
     glacialTriviaQuestionRepository = glacialTriviaQuestionRepository,
     timber = timber,
@@ -954,15 +966,8 @@ triviaRepository: TriviaRepositoryInterface = TriviaRepository(
     ),
     triviaScraper = triviaScraper,
     triviaSettingsRepository = triviaSettingsRepository,
-    triviaSourceInstabilityHelper = TriviaSourceInstabilityHelper(
-        timber = timber
-    ),
-    triviaVerifier = TriviaVerifier(
-        timber = timber,
-        triviaBanHelper = triviaBanHelper,
-        triviaContentScanner = triviaContentScanner,
-        triviaHistoryRepository = triviaHistoryRepository
-    ),
+    triviaSourceInstabilityHelper = triviaSourceInstabilityHelper,
+    triviaVerifier = triviaVerifier,
     twitchHandleProvider = authRepository,
     userIdsRepository = userIdsRepository,
     willFryTriviaQuestionRepository = WillFryTriviaQuestionRepository(

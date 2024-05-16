@@ -1,6 +1,8 @@
 from collections import defaultdict
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.questions.triviaSource import TriviaSource
 
@@ -10,19 +12,19 @@ class TriviaSourceInstabilityHelper():
     def __init__(
         self,
         timber: TimberInterface,
-        fallOffTimeDelta: timedelta = timedelta(minutes = 20),
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        fallOffTimeDelta: timedelta = timedelta(minutes = 20)
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(fallOffTimeDelta, timedelta):
             raise TypeError(f'fallOffTimeDelta argument is malformed: \"{fallOffTimeDelta}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__fallOffTimeDelta: timedelta = fallOffTimeDelta
-        self.__timeZone: tzinfo = timeZone
 
         self.__times: dict[TriviaSource, datetime | None] = dict()
         self.__values: dict[TriviaSource, int] = defaultdict(lambda: 0)
@@ -31,7 +33,7 @@ class TriviaSourceInstabilityHelper():
         if not isinstance(key, TriviaSource):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         lastErrorTime = self.__times.get(key, None)
 
         if lastErrorTime is not None and now - lastErrorTime <= self.__fallOffTimeDelta:
@@ -44,7 +46,7 @@ class TriviaSourceInstabilityHelper():
         if not isinstance(key, TriviaSource):
             raise TypeError(f'key argument is malformed: \"{key}\"')
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
         lastErrorTime = self.__times.get(key, None)
         self.__times[key] = now
         newErrorCount = 0
@@ -56,5 +58,5 @@ class TriviaSourceInstabilityHelper():
             newErrorCount = 1
             self.__values[key] = newErrorCount
 
-        self.__timber.log('TriviaSourceInstabilityHelper', f'Incremented error count for {key} to {newErrorCount}')
+        self.__timber.log('TriviaSourceInstabilityHelper', f'Incremented error count ({key=}) ({newErrorCount=})')
         return newErrorCount

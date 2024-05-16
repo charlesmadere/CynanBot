@@ -2,7 +2,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import TriviaEmoteRepositoryInterface
+from CynanBot.trivia.emotes.triviaEmoteRepositoryInterface import \
+    TriviaEmoteRepositoryInterface
 
 
 class TriviaEmoteRepository(TriviaEmoteRepositoryInterface):

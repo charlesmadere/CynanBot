@@ -25,6 +25,8 @@ from CynanBot.trivia.actions.startNewSuperTriviaGameAction import \
 from CynanBot.trivia.actions.startNewTriviaGameAction import \
     StartNewTriviaGameAction
 from CynanBot.trivia.actions.triviaActionType import TriviaActionType
+from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
+    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.events.absTriviaEvent import AbsTriviaEvent
 from CynanBot.trivia.events.clearedSuperTriviaQueueTriviaEvent import \
     ClearedSuperTriviaQueueTriviaEvent
@@ -81,8 +83,6 @@ from CynanBot.trivia.superTriviaCooldownHelperInterface import \
 from CynanBot.trivia.triviaAnswerCheckerInterface import \
     TriviaAnswerCheckerInterface
 from CynanBot.trivia.triviaAnswerCheckResult import TriviaAnswerCheckResult
-from CynanBot.trivia.emotes.triviaEmoteGeneratorInterface import \
-    TriviaEmoteGeneratorInterface
 from CynanBot.trivia.triviaEventListener import TriviaEventListener
 from CynanBot.trivia.triviaExceptions import (
     TooManyTriviaFetchAttemptsException, UnknownTriviaActionTypeException,

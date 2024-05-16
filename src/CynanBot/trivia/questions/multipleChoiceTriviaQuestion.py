@@ -58,7 +58,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         for ordinal in correctAnswerOrdinals:
             correctAnswerChars.append(chr(ord('A') + ordinal))
 
-        if not utils.hasItems(correctAnswerChars):
+        if len(correctAnswerChars) == 0:
             raise RuntimeError(f'Couldn\'t find any correct answer chars within \"{self.__correctAnswers}\"')
         elif len(correctAnswerChars) != len(self.__correctAnswers):
             raise RuntimeError(f'The length of correctAnswerChars \"{correctAnswerChars}\" ({len(correctAnswerChars)}) is not equal to \"{self.__correctAnswers}\" ({len(self.__correctAnswers)})')
@@ -75,7 +75,7 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
                     ordinals.append(index)
                     break
 
-        if not utils.hasItems(ordinals):
+        if len(ordinals) == 0:
             raise RuntimeError(f'Couldn\'t find any correct answer ordinals within \"{self.__correctAnswers}\"!')
         elif len(ordinals) != len(self.__correctAnswers):
             raise RuntimeError(f'The length of ordinals \"{ordinals}\" ({len(ordinals)}) is not equal to \"{self.__correctAnswers}\" ({len(self.__correctAnswers)})')
