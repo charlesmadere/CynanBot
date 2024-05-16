@@ -307,7 +307,15 @@ from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.trivia.triviaVerifier import TriviaVerifier
 from CynanBot.trivia.triviaVerifierInterface import TriviaVerifierInterface
 from CynanBot.tts.decTalk.decTalkFileManager import DecTalkFileManager
+from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
+    DecTalkFileManagerInterface
 from CynanBot.tts.decTalk.decTalkManager import DecTalkManager
+from CynanBot.tts.decTalk.decTalkVoiceChooser import DecTalkVoiceChooser
+from CynanBot.tts.decTalk.decTalkVoiceChooserInterface import \
+    DecTalkVoiceChooserInterface
+from CynanBot.tts.decTalk.decTalkVoiceMapper import DecTalkVoiceMapper
+from CynanBot.tts.decTalk.decTalkVoiceMapperInterface import \
+    DecTalkVoiceMapperInterface
 from CynanBot.tts.google.googleFileExtensionHelper import \
     GoogleFileExtensionHelper
 from CynanBot.tts.google.googleFileExtensionHelperInterface import \
@@ -1142,11 +1150,20 @@ ttsTempFileHelper: TtsTempFileHelperInterface = TtsTempFileHelper(
     timber = timber
 )
 
+decTalkFileManager: DecTalkFileManagerInterface = DecTalkFileManager(
+    backgroundTaskHelper = backgroundTaskHelper,
+    timber = timber
+)
+
+decTalkVoiceMapper: DecTalkVoiceMapperInterface = DecTalkVoiceMapper()
+
+decTalkVoiceChooser: DecTalkVoiceChooserInterface = DecTalkVoiceChooser(
+    decTalkVoiceMapper = decTalkVoiceMapper
+)
+
 decTalkManager: DecTalkManager | None = DecTalkManager(
-    decTalkFileManager = DecTalkFileManager(
-        backgroundTaskHelper = backgroundTaskHelper,
-        timber = timber
-    ),
+    decTalkFileManager = decTalkFileManager,
+    decTalkVoiceChooser = decTalkVoiceChooser,
     timber = timber,
     ttsCommandBuilder = ttsCommandBuilder,
     ttsSettingsRepository = ttsSettingsRepository,

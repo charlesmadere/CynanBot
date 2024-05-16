@@ -11,6 +11,8 @@ import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.decTalk.decTalkFileManagerInterface import \
     DecTalkFileManagerInterface
+from CynanBot.tts.decTalk.decTalkVoiceChooserInterface import \
+    DecTalkVoiceChooserInterface
 from CynanBot.tts.tempFileHelper.ttsTempFileHelperInterface import \
     TtsTempFileHelperInterface
 from CynanBot.tts.ttsCommandBuilderInterface import TtsCommandBuilderInterface
@@ -25,6 +27,7 @@ class DecTalkManager(TtsManagerInterface):
     def __init__(
         self,
         decTalkFileManager: DecTalkFileManagerInterface,
+        decTalkVoiceChooser: DecTalkVoiceChooserInterface,
         timber: TimberInterface,
         ttsCommandBuilder: TtsCommandBuilderInterface,
         ttsSettingsRepository: TtsSettingsRepositoryInterface,
@@ -32,6 +35,8 @@ class DecTalkManager(TtsManagerInterface):
     ):
         if not isinstance(decTalkFileManager, DecTalkFileManagerInterface):
             raise TypeError(f'decTalkFileManager argument is malformed: \"{decTalkFileManager}\"')
+        elif not isinstance(decTalkVoiceChooser, DecTalkVoiceChooserInterface):
+            raise TypeError(f'decTalkVoiceChooser argument is malformed: \"{decTalkVoiceChooser}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(ttsCommandBuilder, TtsCommandBuilderInterface):
@@ -42,12 +47,22 @@ class DecTalkManager(TtsManagerInterface):
             raise TypeError(f'ttsTempFileHelper argument is malformed: \"{ttsTempFileHelper}\"')
 
         self.__decTalkFileManager: DecTalkFileManagerInterface = decTalkFileManager
+        self.__decTalkVoiceChooser: DecTalkVoiceChooserInterface = decTalkVoiceChooser
         self.__timber: TimberInterface = timber
         self.__ttsCommandBuilder: TtsCommandBuilderInterface = ttsCommandBuilder
         self.__ttsSettingsRepository: TtsSettingsRepositoryInterface = ttsSettingsRepository
         self.__ttsTempFileHelper: TtsTempFileHelperInterface = ttsTempFileHelper
 
         self.__isPlaying: bool = False
+
+    async def __applyRandomVoice(self, command: str) -> str:
+        updatedCommand = await self.__decTalkVoiceChooser.choose(command)
+
+        if utils.isValidStr(updatedCommand):
+            self.__timber.log('DecTalkManager', f'Applied random DecTalk voice')
+            return updatedCommand
+        else:
+            return command
 
     async def __executeDecTalkCommand(self, command: str):
         if not utils.isValidStr(command):
@@ -130,6 +145,7 @@ class DecTalkManager(TtsManagerInterface):
             self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a command ({event=})')
             return False
 
+        command = await self.__applyRandomVoice(command)
         fileName = await self.__decTalkFileManager.writeCommandToNewFile(command)
 
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
