@@ -42,7 +42,7 @@ class EmojiHelper(EmojiHelperInterface):
         for index, split in enumerate(splits):
             distinctEmojis = emoji.distinct_emoji_list(split)
 
-            if not utils.hasItems(distinctEmojis):
+            if distinctEmojis is None or len(distinctEmojis) == 0:
                 continue
 
             replacementString = ''

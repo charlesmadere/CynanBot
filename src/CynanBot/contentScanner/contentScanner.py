@@ -102,7 +102,7 @@ class ContentScanner(ContentScannerInterface):
         string = string.lower()
         words = self.__phraseRegEx.findall(string)
 
-        if not utils.hasItems(words):
+        if words is None or len(words) == 0:
             return
 
         phrase = ' '.join(words)
@@ -121,14 +121,14 @@ class ContentScanner(ContentScannerInterface):
 
         splits = string.lower().split()
 
-        if not utils.hasItems(splits):
+        if splits is None or len(splits) == 0:
             return
 
         for split in splits:
             words.add(split)
             characters = self.__wordRegEx.findall(split)
 
-            if not utils.hasItems(characters):
+            if characters is None or len(characters) == 0:
                 continue
 
             word = ''.join(characters)

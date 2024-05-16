@@ -9,7 +9,7 @@ class GoogleGenerateAccessTokenRequest():
         if not isinstance(scopes, set):
             raise TypeError(f'scopes argument is malformed: \"{scopes}\"')
         elif len(scopes) == 0:
-            raise ValueError(f'scopes can\'t be empty: {scopes}')
+            raise ValueError(f'scopes argument is empty: {scopes}')
 
         self.__scopes: set[GoogleScope] = scopes
 

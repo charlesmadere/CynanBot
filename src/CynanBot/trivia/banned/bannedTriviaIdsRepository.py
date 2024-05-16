@@ -90,7 +90,7 @@ class BannedTriviaIdsRepository(BannedTriviaIdsRepositoryInterface):
 
         await connection.close()
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         return BannedTriviaQuestion(

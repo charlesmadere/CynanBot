@@ -6,7 +6,8 @@ import aiosqlite
 import CynanBot.misc.utils as utils
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.storage.exceptions import DatabaseConnectionIsClosedException, DatabaseOperationalError
+from CynanBot.storage.exceptions import (DatabaseConnectionIsClosedException,
+                                         DatabaseOperationalError)
 
 
 class SqliteDatabaseConnection(DatabaseConnection):
@@ -29,7 +30,7 @@ class SqliteDatabaseConnection(DatabaseConnection):
         if not utils.isValidStr(query):
             raise TypeError(f'query argument is malformed: \"{query}\"')
 
-        if utils.hasItems(args):
+        if args is not None and len(args) >= 1:
             await self.execute(query, args)
         else:
             await self.execute(query)

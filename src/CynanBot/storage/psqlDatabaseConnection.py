@@ -34,7 +34,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
 
         self.__requireNotClosed()
 
-        if utils.hasItems(args):
+        if args is not None and len(args) >= 1:
             await self.execute(query, args)
         else:
             await self.execute(query)
@@ -55,7 +55,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__requireNotClosed()
         record = await self.__connection.fetchrow(query, *args)
 
-        if not utils.hasItems(record):
+        if record is None or len(record) == 0:
             return None
 
         return list(record)
@@ -67,7 +67,7 @@ class PsqlDatabaseConnection(DatabaseConnection):
         self.__requireNotClosed()
         records = await self.__connection.fetch(query, *args)
 
-        if not utils.hasItems(records):
+        if records is None or len(records) == 0:
             return None
 
         rows: list[list[Any]] = list()

@@ -54,7 +54,7 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
         twitchChannelName: str | None = None
         chatters: dict[str, SupStreamerChatter | None] = dict()
 
-        if utils.hasItems(records):
+        if records is not None and len(records) >= 1:
             for record in records:
                 mostRecentSup: SimpleDateTime | None = None
 

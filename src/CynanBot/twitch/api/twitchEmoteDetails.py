@@ -15,16 +15,18 @@ class TwitchEmoteDetails():
         emoteType: TwitchEmoteType,
         subscriberTier: TwitchSubscriberTier
     ):
-        if not utils.hasItems(emoteImages):
-            raise ValueError(f'emoteImages argument is malformed: \"{emoteImages}\"')
+        if not isinstance(emoteImages, list):
+            raise TypeError(f'emoteImages argument is malformed: \"{emoteImages}\"')
+        elif len(emoteImages) == 0:
+            raise ValueError(f'emoteImages argument is empty: {emoteImages}')
         elif not utils.isValidStr(emoteId):
-            raise ValueError(f'emoteId argument is malformed: \"{emoteId}\"')
+            raise TypeError(f'emoteId argument is malformed: \"{emoteId}\"')
         elif not utils.isValidStr(emoteName):
-            raise ValueError(f'emoteName argument is malformed: \"{emoteName}\"')
+            raise TypeError(f'emoteName argument is malformed: \"{emoteName}\"')
         elif not isinstance(emoteType, TwitchEmoteType):
-            raise ValueError(f'emoteType argument is malformed: \"{emoteType}\"')
+            raise TypeError(f'emoteType argument is malformed: \"{emoteType}\"')
         elif not isinstance(subscriberTier, TwitchSubscriberTier):
-            raise ValueError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
+            raise TypeError(f'subscriberTier argument is malformed: \"{subscriberTier}\"')
 
         self.__emoteImages: list[TwitchEmoteImage] = emoteImages
         self.__emoteId: str = emoteId

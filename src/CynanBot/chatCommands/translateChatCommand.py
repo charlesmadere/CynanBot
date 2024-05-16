@@ -51,8 +51,8 @@ class TranslateChatCommand(AbsChatCommand):
         self.__lastMessageTimes: TimedDict = TimedDict(cooldown)
 
     async def __determineOptionalLanguageEntry(self, splits: list[str]) -> LanguageEntry | None:
-        if not utils.hasItems(splits):
-            raise ValueError(f'splits argument is malformed: \"{splits}\"')
+        if not isinstance(splits, list) or len(splits) == 0:
+            raise TypeError(f'splits argument is malformed: \"{splits}\"')
 
         if len(splits[1]) >= 3 and splits[1][0:2] == '--':
             return await self.__languagesRepository.getLanguageForCommand(

@@ -84,10 +84,12 @@ class TriviaQuestionCompiler(TriviaQuestionCompilerInterface):
         responses: Collection[str | None] | None,
         htmlUnescape: bool = False
     ) -> list[str]:
-        if not utils.isValidBool(htmlUnescape):
+        if responses is not None and not isinstance(responses, Collection):
+            raise TypeError(f'responses argument is malformed: \"{responses}\"')
+        elif not utils.isValidBool(htmlUnescape):
             raise TypeError(f'htmlUnescape argument is malformed: \"{htmlUnescape}\"')
 
-        if not utils.hasItems(responses):
+        if responses is None or len(responses) == 0:
             return list()
 
         compiledResponses: set[str] = set()
