@@ -1,4 +1,5 @@
 {
+    "scraper_enabled": false,
     "trivia_sources": {
         "bongo": {
             "is_enabled": true,
@@ -9,11 +10,11 @@
             "weight": 1000
         },
         "glacial": {
-            "is_enabled": true,
+            "is_enabled": false,
             "weight": 5
         },
         "j_service": {
-            "is_enabled": true,
+            "is_enabled": false,
             "weight": 100
         },
         "lord_of_the_rings": {
