@@ -260,6 +260,9 @@ from CynanBot.trivia.triviaHistoryRepositoryInterface import \
 from CynanBot.trivia.triviaIdGenerator import TriviaIdGenerator
 from CynanBot.trivia.triviaIdGeneratorInterface import \
     TriviaIdGeneratorInterface
+from CynanBot.trivia.triviaQuestionPresenter import TriviaQuestionPresenter
+from CynanBot.trivia.triviaQuestionPresenterInterface import \
+    TriviaQuestionPresenterInterface
 from CynanBot.trivia.triviaRepositories.bongoTriviaQuestionRepository import \
     BongoTriviaQuestionRepository
 from CynanBot.trivia.triviaRepositories.funtoonTriviaQuestionRepository import \
@@ -841,12 +844,16 @@ triviaHistoryRepository: TriviaHistoryRepositoryInterface = TriviaHistoryReposit
 triviaScoreRepository: TriviaScoreRepositoryInterface = TriviaScoreRepository(
     backingDatabase = backingDatabase
 )
+
+triviaQuestionPresenter: TriviaQuestionPresenterInterface = TriviaQuestionPresenter()
+
 triviaUtils: TriviaUtilsInterface = TriviaUtils(
     administratorProvider = administratorProvider,
     bannedTriviaGameControllersRepository = bannedTriviaGameControllersRepository,
     timber = timber,
     triviaGameControllersRepository = triviaGameControllersRepository,
     triviaGameGlobalControllersRepository = triviaGameGlobalControllersRepository,
+    triviaQuestionPresenter = triviaQuestionPresenter,
     twitchTokensRepository = twitchTokensRepository,
     userIdsRepository = userIdsRepository,
     usersRepository = usersRepository
@@ -1343,6 +1350,7 @@ cynanBot = CynanBot(
     triviaGameMachine = triviaGameMachine,
     triviaHistoryRepository = triviaHistoryRepository,
     triviaIdGenerator = triviaIdGenerator,
+    triviaQuestionPresenter = triviaQuestionPresenter,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,

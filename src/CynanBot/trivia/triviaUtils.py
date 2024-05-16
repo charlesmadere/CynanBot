@@ -28,6 +28,8 @@ from CynanBot.trivia.specialStatus.specialTriviaStatus import \
 from CynanBot.trivia.specialStatus.toxicTriviaPunishmentResult import \
     ToxicTriviaPunishmentResult
 from CynanBot.trivia.specialStatus.toxicTriviaResult import ToxicTriviaResult
+from CynanBot.trivia.triviaQuestionPresenterInterface import \
+    TriviaQuestionPresenterInterface
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.twitch.twitchTokensRepositoryInterface import \
     TwitchTokensRepositoryInterface
@@ -47,6 +49,7 @@ class TriviaUtils(TriviaUtilsInterface):
         timber: TimberInterface,
         triviaGameControllersRepository: TriviaGameControllersRepositoryInterface,
         triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface,
+        triviaQuestionPresenter: TriviaQuestionPresenterInterface,
         twitchTokensRepository: TwitchTokensRepositoryInterface,
         userIdsRepository: UserIdsRepositoryInterface,
         usersRepository: UsersRepositoryInterface
@@ -61,6 +64,8 @@ class TriviaUtils(TriviaUtilsInterface):
             raise TypeError(f'triviaGameControllersRepository argument is malformed: \"{triviaGameControllersRepository}\"')
         elif not isinstance(triviaGameGlobalControllersRepository, TriviaGameGlobalControllersRepositoryInterface):
             raise TypeError(f'triviaGameGlobalControllersRepository argument is malformed: \"{triviaGameGlobalControllersRepository}\"')
+        elif not isinstance(triviaQuestionPresenter, TriviaQuestionPresenterInterface):
+            raise TypeError(f'triviaQuestionPresenter argument is malformed: \"{triviaQuestionPresenter}\"')
         elif not isinstance(twitchTokensRepository, TwitchTokensRepositoryInterface):
             raise TypeError(f'twitchTokensRepository argument is malformed: \"{twitchTokensRepository}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
@@ -73,6 +78,7 @@ class TriviaUtils(TriviaUtilsInterface):
         self.__timber: TimberInterface = timber
         self.__triviaGameControllersRepository: TriviaGameControllersRepositoryInterface = triviaGameControllersRepository
         self.__triviaGameGlobalControllersRepository: TriviaGameGlobalControllersRepositoryInterface = triviaGameGlobalControllersRepository
+        self.__triviaQuestionPresenter: TriviaQuestionPresenterInterface = triviaQuestionPresenter
         self.__twitchTokensRepository: TwitchTokensRepositoryInterface = twitchTokensRepository
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
         self.__usersRepository: UsersRepositoryInterface = usersRepository
@@ -263,13 +269,13 @@ class TriviaUtils(TriviaUtilsInterface):
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
-        correctAnswers = question.getCorrectAnswers()
 
-        if len(correctAnswers) == 1:
-            return f'{prefix} The correct answer is: {correctAnswers[0]}'
-        else:
-            correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} The correct answers are: {correctAnswersStr}'
+        suffix = await self.__triviaQuestionPresenter.getCorrectAnswers(
+            triviaQuestion = question,
+            delimiter = delimiter
+        )
+
+        return f'{prefix} {suffix}'.strip()
 
     async def __getShortToxicTriviaPunishmentMessage(
         self,

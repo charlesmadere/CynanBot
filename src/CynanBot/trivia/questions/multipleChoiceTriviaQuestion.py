@@ -91,6 +91,9 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
 
         return answerStrings
 
+    def getMultipleChoiceResponses(self) -> list[str]:
+        return utils.copyList(self.__multipleChoiceResponses)
+
     def getPrompt(self, delimiter: str = ' ') -> str:
         if not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
@@ -105,8 +108,8 @@ class MultipleChoiceTriviaQuestion(AbsTriviaQuestion):
         responsesStr = delimiter.join(responsesList)
         return f'{self.getQuestion()} {responsesStr}'
 
+    def getRawCorrectAnswers(self) -> list[str]:
+        return utils.copyList(self.__correctAnswers)
+
     def getResponses(self) -> list[str]:
         return utils.copyList(self.__multipleChoiceResponses)
-
-    def getUndecoratedCorrectAnswers(self) -> list[str]:
-        return utils.copyList(self.__correctAnswers)

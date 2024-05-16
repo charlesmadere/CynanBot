@@ -657,7 +657,7 @@ class GlacialTriviaQuestionRepository(
         elif question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
             raise ValueError(f'question class and TriviaQuestionType do not match ({question=}) ({question.getTriviaType()=})')
 
-        for answer in question.getUndecoratedCorrectAnswers():
+        for answer in question.getRawCorrectAnswers():
             await connection.execute_insert(
                 '''
                     INSERT INTO glacialAnswers (answer, originalTriviaSource, triviaId)
