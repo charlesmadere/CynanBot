@@ -1350,7 +1350,6 @@ cynanBot = CynanBot(
     triviaGameMachine = triviaGameMachine,
     triviaHistoryRepository = triviaHistoryRepository,
     triviaIdGenerator = triviaIdGenerator,
-    triviaQuestionPresenter = triviaQuestionPresenter,
     triviaRepository = triviaRepository,
     triviaScoreRepository = triviaScoreRepository,
     triviaSettingsRepository = triviaSettingsRepository,
