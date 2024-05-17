@@ -1,5 +1,3 @@
-import random
-
 import pytest
 
 from CynanBot.tts.decTalk.decTalkVoice import DecTalkVoice
