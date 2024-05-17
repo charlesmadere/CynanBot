@@ -6,7 +6,6 @@ from CynanBot.contentScanner.bannedPhrase import BannedPhrase
 from CynanBot.contentScanner.bannedWord import BannedWord
 from CynanBot.contentScanner.bannedWordsRepositoryInterface import \
     BannedWordsRepositoryInterface
-from CynanBot.contentScanner.bannedWordType import BannedWordType
 from CynanBot.contentScanner.contentCode import ContentCode
 from CynanBot.contentScanner.contentScannerInterface import \
     ContentScannerInterface
@@ -70,21 +69,21 @@ class ContentScanner(ContentScannerInterface):
         absBannedWords = await self.__bannedWordsRepository.getBannedWordsAsync()
 
         for absBannedWord in absBannedWords:
-            if absBannedWord.getType() is BannedWordType.EXACT_WORD and isinstance(absBannedWord, BannedWord):
+            if isinstance(absBannedWord, BannedWord):
                 bannedWord: BannedWord = absBannedWord
 
-                if bannedWord.getWord() in words:
+                if bannedWord.word in words:
                     self.__timber.log('ContentScanner', f'Content contains a banned word ({bannedWord=}) ({phrases=}) ({words=})')
                     return ContentCode.CONTAINS_BANNED_CONTENT
-            elif absBannedWord.getType() is BannedWordType.PHRASE and isinstance(absBannedWord, BannedPhrase):
+            elif isinstance(absBannedWord, BannedPhrase):
                 bannedPhrase: BannedPhrase = absBannedWord
 
                 for phrase in phrases:
-                    if bannedPhrase.getPhrase() in phrase:
+                    if bannedPhrase.phrase in phrase:
                         self.__timber.log('ContentScanner', f'Content contains a banned phrase ({bannedPhrase=}) ({phrases=}) ({words=})')
                         return ContentCode.CONTAINS_BANNED_CONTENT
             else:
-                raise RuntimeError(f'unknown BannedWordType ({absBannedWord}): \"{absBannedWord.getType()}\"')
+                raise RuntimeError(f'unknown BannedWordType ({absBannedWord=})')
 
         return ContentCode.OK
 
@@ -99,7 +98,7 @@ class ContentScanner(ContentScannerInterface):
         if not utils.isValidStr(string):
             return
 
-        string = string.lower()
+        string = string.casefold()
         words = self.__phraseRegEx.findall(string)
 
         if words is None or len(words) == 0:
@@ -119,7 +118,7 @@ class ContentScanner(ContentScannerInterface):
         if not utils.isValidStr(string):
             return
 
-        splits = string.lower().split()
+        splits = string.casefold().split()
 
         if splits is None or len(splits) == 0:
             return

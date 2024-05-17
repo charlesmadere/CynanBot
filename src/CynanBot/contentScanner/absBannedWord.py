@@ -5,6 +5,7 @@ from CynanBot.contentScanner.bannedWordType import BannedWordType
 
 class AbsBannedWord(ABC):
 
+    @property
     @abstractmethod
-    def getType(self) -> BannedWordType:
+    def wordType(self) -> BannedWordType:
         pass

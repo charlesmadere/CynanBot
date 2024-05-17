@@ -105,14 +105,18 @@ class BannedWordsRepository(BannedWordsRepositoryInterface):
         if not utils.isValidStr(line):
             return None
 
-        line = line.strip().lower()
+        line = line.strip().casefold()
 
         if not utils.isValidStr(line):
             return None
 
         exactWordMatch = self.__exactWordRegEx.fullmatch(line)
+        exactWord: str | None = None
 
-        if exactWordMatch is not None and utils.isValidStr(exactWordMatch.group(1)):
-            return BannedWord(exactWordMatch.group(1))
+        if exactWordMatch is not None:
+            exactWord = exactWordMatch.group(1)
+
+        if utils.isValidStr(exactWord):
+            return BannedWord(exactWord.casefold())
         else:
-            return BannedPhrase(line)
+            return BannedPhrase(line.casefold())

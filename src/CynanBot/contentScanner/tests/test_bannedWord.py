@@ -26,4 +26,4 @@ class TestBannedWord():
 
     def test_getType(self):
         word = BannedWord('hello')
-        assert word.getType() is BannedWordType.EXACT_WORD
+        assert word.wordType is BannedWordType.EXACT_WORD

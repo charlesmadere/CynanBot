@@ -139,18 +139,18 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             if isinstance(absBannedWord, BannedWord):
                 bannedWord: BannedWord = absBannedWord
 
-                if bannedWord.getWord() in words:
-                    self.__timber.log('TriviaContentScanner', f'Trivia content contains a banned word ({absBannedWord}): \"{bannedWord.getWord()}\"')
+                if bannedWord.word in words:
+                    self.__timber.log('TriviaContentScanner', f'Trivia content contains a banned word ({absBannedWord}) ({question=})')
                     return TriviaContentCode.CONTAINS_BANNED_CONTENT
             elif isinstance(absBannedWord, BannedPhrase):
                 bannedPhrase: BannedPhrase = absBannedWord
 
                 for phrase in phrases:
-                    if bannedPhrase.getPhrase() in phrase:
-                        self.__timber.log('TriviaContentScanner', f'Trivia content contains a banned phrase ({absBannedWord}): \"{phrase}\"')
+                    if bannedPhrase.phrase in phrase:
+                        self.__timber.log('TriviaContentScanner', f'Trivia content contains a banned phrase ({absBannedWord}) ({question=})')
                         return TriviaContentCode.CONTAINS_BANNED_CONTENT
             else:
-                raise RuntimeError(f'unknown BannedWordType ({absBannedWord}): \"{absBannedWord.getType()}\"')
+                raise RuntimeError(f'unknown BannedWordType ({absBannedWord=})')
 
         return TriviaContentCode.OK
 

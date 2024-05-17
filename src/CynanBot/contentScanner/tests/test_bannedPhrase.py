@@ -26,4 +26,4 @@ class TestBannedPhrase():
 
     def test_getType(self):
         phrase = BannedPhrase('hello')
-        assert phrase.getType() is BannedWordType.PHRASE
+        assert phrase.wordType is BannedWordType.PHRASE
