@@ -47,9 +47,9 @@ class TestTwitchEventSubRequest():
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.getMethod().toStr()
+        assert dictionary['transport']['method'] == transport.method.toStr()
         assert 'session_id' in dictionary['transport']
-        assert dictionary['transport']['session_id'] == transport.getSessionId()
+        assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
         assert dictionary['type'] == subscriptionType.toStr()
@@ -91,9 +91,9 @@ class TestTwitchEventSubRequest():
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.getMethod().toStr()
+        assert dictionary['transport']['method'] == transport.method.toStr()
         assert 'session_id' in dictionary['transport']
-        assert dictionary['transport']['session_id'] == transport.getSessionId()
+        assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
         assert dictionary['type'] == subscriptionType.toStr()
@@ -137,9 +137,9 @@ class TestTwitchEventSubRequest():
 
         assert 'transport' in dictionary
         assert 'method' in dictionary['transport']
-        assert dictionary['transport']['method'] == transport.getMethod().toStr()
+        assert dictionary['transport']['method'] == transport.method.toStr()
         assert 'session_id' in dictionary['transport']
-        assert dictionary['transport']['session_id'] == transport.getSessionId()
+        assert dictionary['transport']['session_id'] == transport.sessionId
 
         assert 'type' in dictionary
         assert dictionary['type'] == subscriptionType.toStr()

@@ -8,7 +8,7 @@ class TestTriviaSource():
     def test_fromStr_withEmptyString(self):
         result: TriviaSource | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = TriviaSource.fromStr('')
 
         assert result is None
@@ -16,8 +16,8 @@ class TestTriviaSource():
     def test_fromStr_withNone(self):
         result: TriviaSource | None = None
 
-        with pytest.raises(ValueError):
-            result = TriviaSource.fromStr(None)  # type: ignore
+        with pytest.raises(TypeError):
+            result = TriviaSource.fromStr(None) # type: ignore
 
         assert result is None
 
@@ -83,7 +83,7 @@ class TestTriviaSource():
     def test_fromStr_withWhitespaceString(self):
         result: TriviaSource | None = None
 
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             result = TriviaSource.fromStr(' ')
 
         assert result is None
