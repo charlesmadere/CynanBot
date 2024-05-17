@@ -189,12 +189,6 @@ class ChatActionsManager(ChatActionsManagerInterface):
             user = user
         )
 
-        await self.__handleSimpleMessageChatActions(
-            mostRecentChat = mostRecentChat,
-            message = message,
-            user = user
-        )
-
     async def __handleSimpleMessageChatActions(
         self,
         mostRecentChat: MostRecentChat | None,
