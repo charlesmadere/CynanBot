@@ -123,8 +123,7 @@ from CynanBot.streamAlertsManager.streamAlertsSettingsRepository import \
     StreamAlertsSettingsRepository
 from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import \
     StreamAlertsSettingsRepositoryInterface
-from CynanBot.supStreamer.supStreamerRepository import \
-    SupStreamerRepository
+from CynanBot.supStreamer.supStreamerRepository import SupStreamerRepository
 from CynanBot.supStreamer.supStreamerRepositoryInterface import \
     SupStreamerRepositoryInterface
 from CynanBot.systemCommandHelper.systemCommandHelper import \
