@@ -112,11 +112,11 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         if not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.getPayload()
+        payload = dataBundle.payload
         if payload is None:
             return
 
-        event = payload.getEvent()
+        event = payload.event
         if event is None:
             return
 
@@ -140,7 +140,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         await self.__persistUserInfo(event)
         user = await self.__usersRepository.getUserAsync(userLogin)
-        subscriptionType = dataBundle.getMetadata().getSubscriptionType()
+        subscriptionType = dataBundle.metadata.subscriptionType
 
         if await self.__isChannelPointsRedemptionType(subscriptionType):
             channelPointRedemptionHandler = self.__channelPointRedemptionHandler
