@@ -230,10 +230,10 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsCheerDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.getType() is not TtsDonationType.CHEER:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\" ({donation=})')
+        elif donation.donationType is not TtsDonationType.CHEER:
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.donationType}\" ({donation=})')
 
-        return f'{event.userName} cheered {donation.getBits()}!'
+        return f'{event.userName} cheered {donation.bits}!'
 
     async def __processDonationPrefix(self, event: TtsEvent) -> str | None:
         if not isinstance(event, TtsEvent):
@@ -266,17 +266,17 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(donation, TtsSubscriptionDonation):
             raise TypeError(f'donation argument is malformed: \"{donation}\"')
-        elif donation.getType() is not TtsDonationType.SUBSCRIPTION:
-            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.getType()}\" ({donation=})')
+        elif donation.donationType is not TtsDonationType.SUBSCRIPTION:
+            raise TypeError(f'TtsDonationType is not {TtsDonationType.SUBSCRIPTION}: \"{donation.donationType}\" ({donation=})')
 
         # I don't think it makes sense for a subscription to be anonymous, and also not a gift?
 
-        if donation.getGiftType() is TtsSubscriptionDonationGiftType.GIVER:
-            if donation.isAnonymous():
+        if donation.giftType is TtsSubscriptionDonationGiftType.GIVER:
+            if donation.isAnonymous:
                 return 'anonymous gifted a sub!'
             else:
                 return f'{event.userName} gifted a sub!'
-        elif donation.getGiftType() is TtsSubscriptionDonationGiftType.RECEIVER:
+        elif donation.giftType is TtsSubscriptionDonationGiftType.RECEIVER:
             return f'{event.userName} received a sub gift!'
         else:
             return f'{event.userName} subscribed!'

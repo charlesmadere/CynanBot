@@ -1,6 +1,5 @@
-from typing import Any, Dict, Optional
+from dataclasses import dataclass
 
-import CynanBot.misc.utils as utils
 from CynanBot.tts.ttsDonation import TtsDonation
 from CynanBot.tts.ttsDonationType import TtsDonationType
 from CynanBot.tts.ttsSubscriptionDonationGiftType import \
@@ -8,45 +7,12 @@ from CynanBot.tts.ttsSubscriptionDonationGiftType import \
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
 
+@dataclass(frozen = True)
 class TtsSubscriptionDonation(TtsDonation):
+    isAnonymous: bool
+    giftType: TtsSubscriptionDonationGiftType | None
+    tier: TwitchSubscriberTier
 
-    def __init__(
-        self,
-        isAnonymous: bool,
-        giftType: Optional[TtsSubscriptionDonationGiftType],
-        tier: TwitchSubscriberTier
-    ):
-        if not utils.isValidBool(isAnonymous):
-            raise TypeError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
-        elif giftType is not None and not isinstance(giftType, TtsSubscriptionDonationGiftType):
-            raise TypeError(f'giftType argument is malformed: \"{giftType}\"')
-        elif not isinstance(tier, TwitchSubscriberTier):
-            raise TypeError(f'tier argument is malformed: \"{tier}\"')
-
-        self.__isAnonymous: bool = isAnonymous
-        self.__giftType: Optional[TtsSubscriptionDonationGiftType] = giftType
-        self.__tier: TwitchSubscriberTier = tier
-
-    def getGiftType(self) -> Optional[TtsSubscriptionDonationGiftType]:
-        return self.__giftType
-
-    def getTier(self) -> TwitchSubscriberTier:
-        return self.__tier
-
-    def getType(self) -> TtsDonationType:
+    @property
+    def donationType(self) -> TtsDonationType:
         return TtsDonationType.SUBSCRIPTION
-
-    def isAnonymous(self) -> bool:
-        return self.__isAnonymous
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> Dict[str, Any]:
-        return {
-            'giftType': self.__giftType,
-            'isAnonymous': self.__isAnonymous,
-            'tier': self.__tier,
-            'type': self.getType()
-        }
