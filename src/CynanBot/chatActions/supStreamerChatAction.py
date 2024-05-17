@@ -72,15 +72,15 @@ class SupStreamerChatAction(AbsChatAction):
         elif chatMessage != supStreamerMessage:
             return False
 
-        supStreamerChatData = await supStreamerRepository.getChatter(
+        supStreamerChatData = await supStreamerRepository.get(
             chatterUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId()
         )
 
-        if supStreamerChatData.mostRecentSup is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
+        if supStreamerChatData is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
             return False
 
-        await supStreamerRepository.updateChatter(
+        await supStreamerRepository.set(
             chatterUserId = message.getAuthorId(),
             twitchChannelId = await message.getTwitchChannelId()
         )

@@ -7,15 +7,15 @@ from CynanBot.supStreamer.supStreamerChatter import SupStreamerChatter
 class SupStreamerRepositoryInterface(Clearable):
 
     @abstractmethod
-    async def getChatter(
+    async def get(
         self,
         chatterUserId: str,
         twitchChannelId: str
-    ) -> SupStreamerChatter:
+    ) -> SupStreamerChatter | None:
         pass
 
     @abstractmethod
-    async def updateChatter(
+    async def set(
         self,
         chatterUserId: str,
         twitchChannelId: str

@@ -595,7 +595,8 @@ locationsRepository: LocationsRepositoryInterface = LocationsRepository(
 
 mostRecentChatsRepository: MostRecentChatsRepositoryInterface = MostRecentChatsRepository(
     backingDatabase = backingDatabase,
-    timber = timber
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
 )
 
 pokepediaRepository = PokepediaRepository(

@@ -4,6 +4,6 @@ from datetime import datetime
 
 @dataclass(frozen = True)
 class SupStreamerChatter():
-    mostRecentSup: datetime | None
+    mostRecentSup: datetime
     twitchChannelId: str
     userId: str
