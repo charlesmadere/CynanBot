@@ -217,7 +217,10 @@ from CynanBot.trivia.triviaSettingsRepositoryInterface import \
 from CynanBot.trivia.triviaUtilsInterface import TriviaUtilsInterface
 from CynanBot.tts.ttsSettingsRepositoryInterface import \
     TtsSettingsRepositoryInterface
+from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
+    AbsTwitchChannelPointRedemptionHandler
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
@@ -241,6 +244,8 @@ from CynanBot.twitch.configuration.twitchChannelProvider import \
 from CynanBot.twitch.configuration.twitchCheerHandler import TwitchCheerHandler
 from CynanBot.twitch.configuration.twitchConfiguration import \
     TwitchConfiguration
+from CynanBot.twitch.configuration.twitchFollowHandler import \
+    TwitchFollowHandler
 from CynanBot.twitch.configuration.twitchPollHandler import TwitchPollHandler
 from CynanBot.twitch.configuration.twitchPredictionHandler import \
     TwitchPredictionHandler
@@ -534,6 +539,7 @@ class CynanBot(
         self.__triviaUtils: TriviaUtilsInterface | None = triviaUtils
         self.__twitchChannelJoinHelper: TwitchChannelJoinHelperInterface = twitchChannelJoinHelper
         self.__twitchConfiguration: TwitchConfiguration = twitchConfiguration
+        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
         self.__twitchPredictionWebsocketUtils: TwitchPredictionWebsocketUtilsInterface | None = twitchPredictionWebsocketUtils
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface | None = twitchTimeoutRemodHelper
         self.__twitchTokensUtils: TwitchTokensUtilsInterface = twitchTokensUtils
@@ -868,6 +874,21 @@ class CynanBot(
         generalSettings = await self.__generalSettingsRepository.getAllAsync()
 
         if generalSettings.isEventSubEnabled() and self.__twitchWebsocketClient is not None:
+            channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = TwitchChannelPointRedemptionHandler(
+                casualGamePollPointRedemption = self.__casualGamePollPointRedemption,
+                cutenessPointRedemption = self.__cutenessPointRedemption,
+                pkmnBattlePointRedemption = self.__pkmnBattlePointRedemption,
+                pkmnCatchPointRedemption = self.__pkmnCatchPointRedemption,
+                pkmnEvolvePointRedemption = self.__pkmnEvolvePointRedemption,
+                pkmnShinyPointRedemption = self.__pkmnShinyPointRedemption,
+                soundAlertPointRedemption = self.__soundAlertPointRedemption,
+                superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
+                triviaGamePointRedemption = self.__triviaGamePointRedemption,
+                timber = self.__timber,
+                twitchChannelProvider = self,
+                userIdsRepository = self.__userIdsRepository
+            )
+
             cheerHandler: AbsTwitchCheerHandler | None = TwitchCheerHandler(
                 cheerActionHelper = self.__cheerActionHelper,
                 streamAlertsManager = self.__streamAlertsManager,
@@ -876,6 +897,14 @@ class CynanBot(
                 triviaGameMachine = self.__triviaGameMachine,
                 twitchChannelProvider = self
             )
+
+            followHandler: AbsTwitchFollowHandler | None = None
+            if self.__twitchFollowingStatusRepository is not None:
+                followHandler = TwitchFollowHandler(
+                    timber = self.__timber,
+                    twitchChannelProvider = self,
+                    twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
+                )
 
             pollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
                 streamAlertsManager = self.__streamAlertsManager,
@@ -905,21 +934,9 @@ class CynanBot(
             )
 
             self.__twitchWebsocketClient.setDataBundleListener(TwitchWebsocketDataBundleHandler(
-                channelPointRedemptionHandler = TwitchChannelPointRedemptionHandler(
-                    casualGamePollPointRedemption = self.__casualGamePollPointRedemption,
-                    cutenessPointRedemption = self.__cutenessPointRedemption,
-                    pkmnBattlePointRedemption = self.__pkmnBattlePointRedemption,
-                    pkmnCatchPointRedemption = self.__pkmnCatchPointRedemption,
-                    pkmnEvolvePointRedemption = self.__pkmnEvolvePointRedemption,
-                    pkmnShinyPointRedemption = self.__pkmnShinyPointRedemption,
-                    soundAlertPointRedemption = self.__soundAlertPointRedemption,
-                    superTriviaGamePointRedemption = self.__superTriviaGamePointRedemption,
-                    triviaGamePointRedemption = self.__triviaGamePointRedemption,
-                    timber = self.__timber,
-                    twitchChannelProvider = self,
-                    userIdsRepository = self.__userIdsRepository
-                ),
+                channelPointRedemptionHandler = channelPointRedemptionHandler,
                 cheerHandler = cheerHandler,
+                followHandler = followHandler,
                 pollHandler = pollHandler,
                 predictionHandler = predictionHandler,
                 raidHandler = raidHandler,

@@ -3,6 +3,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchChannelPointRedemptionHandler import \
     AbsTwitchChannelPointRedemptionHandler
 from CynanBot.twitch.absTwitchCheerHandler import AbsTwitchCheerHandler
+from CynanBot.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
 from CynanBot.twitch.absTwitchPollHandler import AbsTwitchPollHandler
 from CynanBot.twitch.absTwitchPredictionHandler import \
     AbsTwitchPredictionHandler
@@ -28,6 +29,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         self,
         channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None,
         cheerHandler: AbsTwitchCheerHandler | None,
+        followHandler: AbsTwitchFollowHandler | None,
         pollHandler: AbsTwitchPollHandler | None,
         predictionHandler: AbsTwitchPredictionHandler | None,
         raidHandler: AbsTwitchRaidHandler | None,
@@ -40,6 +42,8 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
             raise TypeError(f'channelPointRedemptionHandler argument is malformed: \"{channelPointRedemptionHandler}\"')
         elif cheerHandler is not None and not isinstance(cheerHandler, AbsTwitchCheerHandler):
             raise TypeError(f'cheerHandler argument is malformed: \"{cheerHandler}\"')
+        elif followHandler is not None and not isinstance(followHandler, AbsTwitchFollowHandler):
+            raise TypeError(f'followHandler argument is malformed: \"{followHandler}\"')
         elif pollHandler is not None and not isinstance(pollHandler, AbsTwitchPollHandler):
             raise TypeError(f'pollHandler argument is malformed: \"{pollHandler}\"')
         elif predictionHandler is not None and not isinstance(predictionHandler, AbsTwitchPredictionHandler):
@@ -57,6 +61,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
         self.__channelPointRedemptionHandler: AbsTwitchChannelPointRedemptionHandler | None = channelPointRedemptionHandler
         self.__cheerHandler: AbsTwitchCheerHandler | None = cheerHandler
+        self.__followHandler: AbsTwitchFollowHandler | None = followHandler
         self.__pollHandler: AbsTwitchPollHandler | None = pollHandler
         self.__predictionHandler: AbsTwitchPredictionHandler | None = predictionHandler
         self.__raidHandler: AbsTwitchRaidHandler | None = raidHandler
@@ -76,6 +81,12 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         subscriptionType: TwitchWebsocketSubscriptionType | None
     ) -> bool:
         return subscriptionType is TwitchWebsocketSubscriptionType.CHEER
+
+    async def __isFollowType(
+        self,
+        subscriptionType: TwitchWebsocketSubscriptionType | None
+    ) -> bool:
+        return subscriptionType is TwitchWebsocketSubscriptionType.FOLLOW
 
     async def __isPollType(
         self,
@@ -156,6 +167,15 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
 
             if cheerHandler is not None:
                 await cheerHandler.onNewCheer(
+                    userId = userId,
+                    user = user,
+                    dataBundle = dataBundle
+                )
+        elif await self.__isFollowType(subscriptionType):
+            followHandler = self.__followHandler
+
+            if followHandler is not None:
+                await followHandler.onNewFollow(
                     userId = userId,
                     user = user,
                     dataBundle = dataBundle
