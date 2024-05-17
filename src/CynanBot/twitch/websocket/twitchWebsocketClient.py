@@ -250,7 +250,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         if payload is None:
             return
 
-        session = payload.getSession()
+        session = payload.session
 
         if session is None:
             return

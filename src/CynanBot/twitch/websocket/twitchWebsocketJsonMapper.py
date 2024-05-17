@@ -257,13 +257,13 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if not isinstance(transportJson, dict) or len(transportJson) == 0:
             return None
 
-        connectedAt: SimpleDateTime | None = None
+        connectedAt: datetime | None = None
         if 'connected_at' in transportJson and utils.isValidStr(transportJson.get('connected_at')):
-            connectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'connected_at')))
+            connectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'connected_at'))
 
-        disconnectedAt: SimpleDateTime | None = None
+        disconnectedAt: datetime | None = None
         if 'disconnected_at' in transportJson and utils.isValidStr(transportJson.get('disconnected_at')):
-            disconnectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'disconnected_at')))
+            disconnectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'disconnected_at'))
 
         secret: str | None = None
         if 'secret' in transportJson and utils.isValidStr(transportJson.get('secret')):
