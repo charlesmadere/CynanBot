@@ -69,7 +69,7 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif chatMessage != supStreamerMessage:
+        elif chatMessage.casefold() != supStreamerMessage.casefold():
             return False
 
         supStreamerChatData = await supStreamerRepository.get(
