@@ -126,12 +126,12 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         triviaQuestion: QuestionAnswerTriviaQuestion
     ) -> str:
         category = triviaQuestion.getCategory()
+
         categoryPrompt = ''
-
         if utils.isValidStr(category):
-            categoryPrompt = f'(category is \"{category}\")'
+            categoryPrompt = f'— category is {category} '
 
-        return f'{categoryPrompt} {triviaQuestion.getQuestion()}'.strip()
+        return f'{categoryPrompt} — {triviaQuestion.getQuestion()}'.strip()
 
     async def __getPromptTrueFalse(
         self,

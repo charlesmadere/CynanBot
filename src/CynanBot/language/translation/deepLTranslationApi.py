@@ -86,7 +86,7 @@ class DeepLTranslationApi(TranslationApi):
                 translationApiSource = self.getTranslationApiSource()
             )
 
-        translations = response.getTranslations()
+        translations = response.translations
 
         if translations is None or len(translations) == 0:
             self.__timber.log('DeepLTranslationApi', f'Received no translations from DeepL when translating ({request=})')
@@ -97,9 +97,9 @@ class DeepLTranslationApi(TranslationApi):
             )
 
         return TranslationResponse(
-            originalLanguage = translations[0].getDetectedSourceLanguage(),
+            originalLanguage = translations[0].detectedSourceLanguage,
             translatedLanguage = targetLanguage,
             originalText = text,
-            translatedText = translations[0].getText(),
+            translatedText = translations[0].text,
             translationApiSource = self.getTranslationApiSource()
         )

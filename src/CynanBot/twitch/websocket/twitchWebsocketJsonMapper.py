@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any
 
 import CynanBot.misc.utils as utils
@@ -212,7 +213,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if not isinstance(metadataJson, dict) or len(metadataJson) == 0:
             return None
 
-        messageTimestamp = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(metadataJson, 'message_timestamp')))
+        messageTimestamp = datetime.fromisoformat(utils.getStrFromDict(metadataJson, 'message_timestamp'))
         messageId = utils.getStrFromDict(metadataJson, 'message_id')
         messageType = TwitchWebsocketMessageType.fromStr(utils.getStrFromDict(metadataJson, 'message_type'))
 
@@ -653,7 +654,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         keepAliveTimeoutSeconds = utils.getIntFromDict(sessionJson, 'keepalive_timeout_seconds')
-        connectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(sessionJson, 'connected_at')))
+        connectedAt = datetime.fromisoformat(utils.getStrFromDict(sessionJson, 'connected_at'))
         sessionId = utils.getStrFromDict(sessionJson, 'id')
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(sessionJson, 'status'))
 
@@ -705,7 +706,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
             return None
 
         cost = utils.getIntFromDict(subscriptionJson, 'cost')
-        createdAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(subscriptionJson, 'created_at')))
+        createdAt = datetime.fromisoformat(utils.getStrFromDict(subscriptionJson, 'created_at'))
         subscriptionId = utils.getStrFromDict(subscriptionJson, 'id')
         version = utils.getStrFromDict(subscriptionJson, 'version')
         condition = await self.parseWebsocketCondition(subscriptionJson.get('condition'))

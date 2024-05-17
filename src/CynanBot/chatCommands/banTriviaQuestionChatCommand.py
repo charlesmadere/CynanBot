@@ -94,12 +94,12 @@ class BanTriviaQuestionChatCommand(AbsChatCommand):
             return
 
         await self.__triviaBanHelper.ban(
-            triviaId = reference.getTriviaId(),
+            triviaId = reference.triviaId,
             userId = ctx.getAuthorId(),
-            originalTriviaSource = reference.getOriginalTriviaSource(),
-            triviaSource = reference.getTriviaSource()
+            originalTriviaSource = reference.originalTriviaSource,
+            triviaSource = reference.triviaSource
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} Banned trivia question {reference.getTriviaSource().toStr()} — {reference.getTriviaId()}')
-        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was banned)')
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} Banned trivia question {reference.triviaSource.toStr()} — {reference.triviaId}')
+        self.__timber.log('BanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.triviaSource.toStr()}:{reference.triviaId} was banned)')
 

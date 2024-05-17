@@ -48,9 +48,6 @@ class TestTwitchWebsocketNoticeType():
         result = TwitchWebsocketNoticeType.fromStr('resub')
         assert result is TwitchWebsocketNoticeType.RE_SUB
 
-        result = TwitchWebsocketNoticeType.fromStr('re_sub')
-        assert result is TwitchWebsocketNoticeType.RE_SUB
-
     def test_fromStr_withSubString(self):
         result = TwitchWebsocketNoticeType.fromStr('sub')
         assert result is TwitchWebsocketNoticeType.SUB
@@ -61,9 +58,6 @@ class TestTwitchWebsocketNoticeType():
 
     def test_fromStr_withUnraidString(self):
         result = TwitchWebsocketNoticeType.fromStr('unraid')
-        assert result is TwitchWebsocketNoticeType.UN_RAID
-
-        result = TwitchWebsocketNoticeType.fromStr('un_raid')
         assert result is TwitchWebsocketNoticeType.UN_RAID
 
     def test_fromStr_withWhitespaceString(self):

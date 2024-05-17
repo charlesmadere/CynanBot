@@ -1,5 +1,3 @@
-from typing import Optional
-
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.configuration.twitchConfigurationType import \
     TwitchConfigurationType
@@ -11,7 +9,7 @@ class TwitchChannelPointsMessage():
     def __init__(
         self,
         eventId: str,
-        redemptionMessage: Optional[str],
+        redemptionMessage: str | None,
         rewardId: str,
         twitchUser: UserInterface,
         userId: str,
@@ -31,7 +29,7 @@ class TwitchChannelPointsMessage():
             raise TypeError(f'userName argument is malformed: \"{userName}\"')
 
         self.__eventId: str = eventId
-        self.__redemptionMessage: Optional[str] = redemptionMessage
+        self.__redemptionMessage: str | None = redemptionMessage
         self.__rewardId: str = rewardId
         self.__twitchUser: UserInterface = twitchUser
         self.__userId: str = userId
@@ -40,7 +38,7 @@ class TwitchChannelPointsMessage():
     def getEventId(self) -> str:
         return self.__eventId
 
-    def getRedemptionMessage(self) -> Optional[str]:
+    def getRedemptionMessage(self) -> str | None:
         return self.__redemptionMessage
 
     def getRewardId(self) -> str:

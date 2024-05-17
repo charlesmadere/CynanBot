@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -13,21 +12,16 @@ class TwitchWebsocketMessageType(Enum):
     WELCOME = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: str | None):
         if not utils.isValidStr(text):
             return None
 
         text = text.lower()
 
-        if text == 'session_keepalive':
-            return TwitchWebsocketMessageType.KEEP_ALIVE
-        elif text == 'notification':
-            return TwitchWebsocketMessageType.NOTIFICATION
-        elif text == 'session_reconnect':
-            return TwitchWebsocketMessageType.RECONNECT
-        elif text == 'revocation':
-            return TwitchWebsocketMessageType.REVOCATION
-        elif text == 'session_welcome':
-            return TwitchWebsocketMessageType.WELCOME
-        else:
-            return None
+        match text:
+            case 'session_keepalive': return TwitchWebsocketMessageType.KEEP_ALIVE
+            case 'notification': return TwitchWebsocketMessageType.NOTIFICATION
+            case 'session_reconnect': return TwitchWebsocketMessageType.RECONNECT
+            case 'revocation': return TwitchWebsocketMessageType.REVOCATION
+            case 'session_welcome': return TwitchWebsocketMessageType.WELCOME
+            case _: return None

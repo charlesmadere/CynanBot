@@ -90,6 +90,6 @@ class DeepLJsonMapper(DeepLJsonMapperInterface):
             raise TypeError(f'request argument is malformed: \"{request}\"')
 
         return {
-            'target_lang': request.getTargetLanguage().requireIso6391Code(),
-            'text': [ request.getText() ]
+            'target_lang': request.targetLanguage.requireIso6391Code(),
+            'text': [ request.text ]
         }

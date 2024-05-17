@@ -27,45 +27,31 @@ class TriviaSource(EnumWithToFromStr):
     @classmethod
     def fromStr(cls, text: str):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 
-        if text == 'open_trivia':
-            return TriviaSource.OPEN_TRIVIA_DATABASE
-        elif text == 'will_fry_trivia_api':
-            return TriviaSource.WILL_FRY_TRIVIA
-        return super().fromStr(text)
+        match text:
+            case 'open_trivia': return TriviaSource.OPEN_TRIVIA_DATABASE
+            case 'will_fry_trivia_api': return TriviaSource.WILL_FRY_TRIVIA
+            case _: return super().fromStr(text)
 
     def isLocal(self) -> bool:
-        if self is TriviaSource.BONGO:
-            return False
-        elif self is TriviaSource.FUNTOON:
-            return False
-        elif self is TriviaSource.GLACIAL:
-            return True
-        elif self is TriviaSource.J_SERVICE:
-            return False
-        elif self is TriviaSource.LORD_OF_THE_RINGS:
-            return True
-        elif self is TriviaSource.MILLIONAIRE:
-            return True
-        elif self is TriviaSource.OPEN_TRIVIA_DATABASE:
-            return False
-        elif self is TriviaSource.OPEN_TRIVIA_QA:
-            return True
-        elif self is TriviaSource.POKE_API:
-            return False
-        elif self is TriviaSource.THE_QUESTION_CO:
-            return True
-        elif self is TriviaSource.TRIVIA_DATABASE:
-            return True
-        elif self is TriviaSource.WILL_FRY_TRIVIA:
-            return False
-        elif self is TriviaSource.WWTBAM:
-            return True
-        else:
-            raise RuntimeError(f'unknown TriviaSource: \"{self}\"')
+        match self:
+            case TriviaSource.BONGO: return False
+            case TriviaSource.FUNTOON: return False
+            case TriviaSource.GLACIAL: return True
+            case TriviaSource.J_SERVICE: return False
+            case TriviaSource.LORD_OF_THE_RINGS: return True
+            case TriviaSource.MILLIONAIRE: return True
+            case TriviaSource.OPEN_TRIVIA_DATABASE: return False
+            case TriviaSource.OPEN_TRIVIA_QA: return True
+            case TriviaSource.POKE_API: return False
+            case TriviaSource.THE_QUESTION_CO: return True
+            case TriviaSource.TRIVIA_DATABASE: return True
+            case TriviaSource.WILL_FRY_TRIVIA: return False
+            case TriviaSource.WWTBAM: return True
+            case _: raise RuntimeError(f'unknown TriviaSource: \"{self}\"')
 
     @override
     def toStr(self) -> str:

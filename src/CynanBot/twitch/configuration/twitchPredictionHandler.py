@@ -62,10 +62,10 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
-        event = payload.getEvent()
+        event = payload.event
 
         if event is None:
-            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         broadcasterUserId = event.getBroadcasterUserId()
@@ -76,7 +76,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             self.__timber.log('TwitchPredictionHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({outcomes=})')
             return
 
-        subscriptionType = payload.requireSubscription().getSubscriptionType()
+        subscriptionType = payload.requireSubscription().subscriptionType
         self.__timber.log('TwitchPredictionHandler', f'\"{user.getHandle()}\" received prediction event ({title=}) ({outcomes=}) ({subscriptionType=})')
 
         await self.__processTtsEvent(
@@ -130,6 +130,7 @@ class TwitchPredictionHandler(AbsTwitchPredictionHandler):
             ttsEvent = TtsEvent(
                 message = f'A new prediction has begun! \"{title}\"',
                 twitchChannel = user.getHandle(),
+                twitchChannelId = broadcasterUserId,
                 userId = userId,
                 userName = user.getHandle(),
                 donation = None,

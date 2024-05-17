@@ -362,6 +362,7 @@ class CheerActionHelper(CheerActionHelperInterface):
                 ttsEvent = TtsEvent(
                     message = message,
                     twitchChannel = user.getHandle(),
+                    twitchChannelId = twitchChannelId,
                     userId = cheerUserId,
                     userName = cheerUserName,
                     donation = None,

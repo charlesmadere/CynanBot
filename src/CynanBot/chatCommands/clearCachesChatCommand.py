@@ -24,6 +24,8 @@ from CynanBot.soundPlayerManager.channelPoint.channelPointSoundHelperInterface i
     ChannelPointSoundHelperInterface
 from CynanBot.soundPlayerManager.soundPlayerSettingsRepositoryInterface import \
     SoundPlayerSettingsRepositoryInterface
+from CynanBot.supStreamer.supStreamerRepositoryInterface import \
+    SupStreamerRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.trivia.triviaRepositories.openTriviaDatabaseTriviaQuestionRepository import \
     OpenTriviaDatabaseTriviaQuestionRepository
@@ -68,6 +70,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         mostRecentChatsRepository: MostRecentChatsRepositoryInterface | None,
         openTriviaDatabaseTriviaQuestionRepository: OpenTriviaDatabaseTriviaQuestionRepository | None,
         soundPlayerSettingsRepository: SoundPlayerSettingsRepositoryInterface | None,
+        supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
         triviaSettingsRepository: TriviaSettingsRepositoryInterface | None,
         ttsSettingsRepository: TtsSettingsRepositoryInterface | None,
@@ -110,6 +113,8 @@ class ClearCachesChatCommand(AbsChatCommand):
             raise TypeError(f'openTriviaDatabaseTriviaQuestionRepository argument is malformed: \"{openTriviaDatabaseTriviaQuestionRepository}\"')
         elif soundPlayerSettingsRepository is not None and not isinstance(soundPlayerSettingsRepository, SoundPlayerSettingsRepositoryInterface):
             raise TypeError(f'soundPlayerSettingsRepository argument is malformed: \"{soundPlayerSettingsRepository}\"')
+        elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
+            raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif triviaSettingsRepository is not None and not isinstance(triviaSettingsRepository, TriviaSettingsRepositoryInterface):
@@ -153,6 +158,7 @@ class ClearCachesChatCommand(AbsChatCommand):
         self.__clearables.append(mostRecentChatsRepository)
         self.__clearables.append(openTriviaDatabaseTriviaQuestionRepository)
         self.__clearables.append(soundPlayerSettingsRepository)
+        self.__clearables.append(supStreamerRepository)
         self.__clearables.append(triviaSettingsRepository)
         self.__clearables.append(ttsSettingsRepository)
         self.__clearables.append(twitchFollowingStatusRepository)

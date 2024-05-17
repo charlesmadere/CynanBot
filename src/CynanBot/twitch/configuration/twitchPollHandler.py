@@ -42,10 +42,10 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
-        event = payload.getEvent()
+        event = payload.event
 
         if event is None:
-            self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchPollHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         broadcasterUserId = event.getBroadcasterUserId()
@@ -56,7 +56,7 @@ class TwitchPollHandler(AbsTwitchPollHandler):
             self.__timber.log('TwitchPollHandler', f'Received a data bundle that is missing crucial data: (channel=\"{user.getHandle()}\") ({dataBundle=}) ({broadcasterUserId=}) ({title=}) ({choices=})')
             return
 
-        subscriptionType = payload.requireSubscription().getSubscriptionType()
+        subscriptionType = payload.requireSubscription().subscriptionType
         self.__timber.log('TwitchPollHandler', f'\"{user.getHandle()}\" received poll event ({title=}) ({choices=}) ({subscriptionType=})')
 
         await self.__processTtsEvent(
@@ -86,20 +86,23 @@ class TwitchPollHandler(AbsTwitchPollHandler):
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
+        streamAlertsManager = self.__streamAlertsManager
+
         if subscriptionType is not TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
             return
-        elif self.__streamAlertsManager is None:
+        elif streamAlertsManager is None:
             return
         elif not user.isTtsEnabled():
             return
 
-        self.__streamAlertsManager.submitAlert(StreamAlert(
+        streamAlertsManager.submitAlert(StreamAlert(
             soundAlert = None,
             twitchChannel = user.getHandle(),
             twitchChannelId = broadcasterUserId,
             ttsEvent = TtsEvent(
                 message = f'A new poll has begun! \"{title}\"',
                 twitchChannel = user.getHandle(),
+                twitchChannelId = broadcasterUserId,
                 userId = userId,
                 userName = user.getHandle(),
                 donation = None,

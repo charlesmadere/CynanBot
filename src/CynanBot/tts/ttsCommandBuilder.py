@@ -55,11 +55,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             return None
 
         prefix = await self.__processDonationPrefix(event)
-        message = event.getMessage()
+        message = event.message
 
         if utils.isValidStr(message):
             message = await self.buildAndCleanMessage(
-                provider = event.getProvider(),
+                provider = event.provider,
                 message = message
             )
 
@@ -233,13 +233,13 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
         elif donation.getType() is not TtsDonationType.CHEER:
             raise TypeError(f'TtsDonationType is not {TtsDonationType.CHEER}: \"{donation.getType()}\" ({donation=})')
 
-        return f'{event.getUserName()} cheered {donation.getBits()}!'
+        return f'{event.userName} cheered {donation.getBits()}!'
 
     async def __processDonationPrefix(self, event: TtsEvent) -> str | None:
         if not isinstance(event, TtsEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
 
-        donation = event.getDonation()
+        donation = event.donation
 
         if donation is None:
             return None
@@ -275,11 +275,11 @@ class TtsCommandBuilder(TtsCommandBuilderInterface):
             if donation.isAnonymous():
                 return 'anonymous gifted a sub!'
             else:
-                return f'{event.getUserName()} gifted a sub!'
+                return f'{event.userName} gifted a sub!'
         elif donation.getGiftType() is TtsSubscriptionDonationGiftType.RECEIVER:
-            return f'{event.getUserName()} received a sub gift!'
+            return f'{event.userName} received a sub gift!'
         else:
-            return f'{event.getUserName()} subscribed!'
+            return f'{event.userName} subscribed!'
 
     async def __purgeCheers(self, message: str | None) -> str | None:
         if not utils.isValidStr(message):

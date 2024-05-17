@@ -121,7 +121,7 @@ class TriviaGameGlobalControllersRepository(TriviaGameGlobalControllersRepositor
                 userName = record[1]
             ))
 
-        controllers.sort(key = lambda controller: controller.getUserName().casefold())
+        controllers.sort(key = lambda controller: controller.userName.casefold())
         return controllers
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:

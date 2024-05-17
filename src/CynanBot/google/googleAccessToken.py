@@ -1,36 +1,8 @@
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
-
-import CynanBot.misc.utils as utils
 
 
+@dataclass(frozen = True)
 class GoogleAccessToken():
-
-    def __init__(
-        self,
-        expireTime: datetime,
-        accessToken: str
-    ):
-        if not isinstance(expireTime, datetime):
-            raise TypeError(f'expireTime argument is malformed: \"{expireTime}\"')
-        elif not utils.isValidStr(accessToken):
-            raise TypeError(f'accessToken argument is malformed: \"{accessToken}\"')
-
-        self.__expireTime: datetime = expireTime
-        self.__accessToken: str = accessToken
-
-    def getAccessToken(self) -> str:
-        return self.__accessToken
-
-    def getExpireTime(self) -> datetime:
-        return self.__expireTime
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'accessToken': self.__accessToken,
-            'expireTime': self.__expireTime
-        }
+    expireTime: datetime
+    accessToken: str

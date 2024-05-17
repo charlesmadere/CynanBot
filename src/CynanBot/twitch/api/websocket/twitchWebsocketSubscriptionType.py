@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -23,109 +22,96 @@ class TwitchWebsocketSubscriptionType(Enum):
     SUBSCRIPTION_MESSAGE = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: str | None):
         if not utils.isValidStr(text):
             return None
 
         text = text.lower()
 
-        if text == 'channel.channel_points_custom_reward_redemption.add':
-            return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
-        elif text == 'channel.poll.begin':
-            return TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN
-        elif text == 'channel.poll.end':
-            return TwitchWebsocketSubscriptionType.CHANNEL_POLL_END
-        elif text == 'channel.poll.progress':
-            return TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
-        elif text == 'channel.prediction.begin':
-            return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
-        elif text == 'channel.prediction.end':
-            return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END
-        elif text == 'channel.prediction.lock':
-            return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK
-        elif text == 'channel.prediction.progress':
-            return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
-        elif text == 'channel.update':
-            return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
-        elif text == 'channel.cheer':
-            return TwitchWebsocketSubscriptionType.CHEER
-        elif text == 'channel.follow':
-            return TwitchWebsocketSubscriptionType.FOLLOW
-        elif text == 'channel.raid':
-            return TwitchWebsocketSubscriptionType.RAID
-        elif text == 'channel.subscribe':
-            return TwitchWebsocketSubscriptionType.SUBSCRIBE
-        elif text == 'channel.subscription.gift':
-            return TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT
-        elif text == 'channel.subscription.message':
-            return TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
-        else:
-            return None
+        match text:
+            case 'channel.channel_points_custom_reward_redemption.add':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION
+            case 'channel.poll.begin':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN
+            case 'channel.poll.end':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_END
+            case 'channel.poll.progress':
+                return TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS
+            case 'channel.prediction.begin':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN
+            case 'channel.prediction.end':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END
+            case 'channel.prediction.lock':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK
+            case 'channel.prediction.progress':
+                return TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS
+            case 'channel.update':
+                return TwitchWebsocketSubscriptionType.CHANNEL_UPDATE
+            case 'channel.cheer':
+                return TwitchWebsocketSubscriptionType.CHEER
+            case 'channel.follow':
+                return TwitchWebsocketSubscriptionType.FOLLOW
+            case 'channel.raid':
+                return TwitchWebsocketSubscriptionType.RAID
+            case 'channel.subscribe':
+                return TwitchWebsocketSubscriptionType.SUBSCRIBE
+            case 'channel.subscription.gift':
+                return TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT
+            case 'channel.subscription.message':
+                return TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE
+            case _:
+                return None
 
     def getVersion(self) -> str:
-        if self is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
-            return '2'
-        elif self is TwitchWebsocketSubscriptionType.CHEER:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.FOLLOW:
-            return '2'
-        elif self is TwitchWebsocketSubscriptionType.RAID:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIBE:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
-            return '1'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
-            return '1'
-        else:
-            raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')
+        match self:
+            case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_END: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS: return '1'
+            case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE: return '2'
+            case TwitchWebsocketSubscriptionType.CHEER: return '1'
+            case TwitchWebsocketSubscriptionType.FOLLOW: return '2'
+            case TwitchWebsocketSubscriptionType.RAID: return '1'
+            case TwitchWebsocketSubscriptionType.SUBSCRIBE: return '1'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT: return '1'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE: return '1'
+            case _: raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')
 
     def toStr(self) -> str:
-        if self is TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
-            return 'channel.channel_points_custom_reward_redemption.add'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
-            return 'channel.poll.begin'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
-            return 'channel.poll.end'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
-            return 'channel.poll.progress'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
-            return 'channel.prediction.begin'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
-            return 'channel.prediction.end'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
-            return 'channel.prediction.lock'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
-            return 'channel.prediction.progress'
-        elif self is TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
-            return 'channel.update'
-        elif self is TwitchWebsocketSubscriptionType.CHEER:
-            return 'channel.cheer'
-        elif self is TwitchWebsocketSubscriptionType.FOLLOW:
-            return 'channel.follow'
-        elif self is TwitchWebsocketSubscriptionType.RAID:
-            return 'channel.raid'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIBE:
-            return 'channel.subscribe'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
-            return 'channel.subscription.gift'
-        elif self is TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
-            return 'channel.subscription.message'
-        else:
-            raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')
+        match self:
+            case TwitchWebsocketSubscriptionType.CHANNEL_POINTS_REDEMPTION:
+                return 'channel.channel_points_custom_reward_redemption.add'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_BEGIN:
+                return 'channel.poll.begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_END:
+                return 'channel.poll.end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_POLL_PROGRESS:
+                return 'channel.poll.progress'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+                return 'channel.prediction.begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
+                return 'channel.prediction.end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
+                return 'channel.prediction.lock'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
+                return 'channel.prediction.progress'
+            case TwitchWebsocketSubscriptionType.CHANNEL_UPDATE:
+                return 'channel.update'
+            case TwitchWebsocketSubscriptionType.CHEER:
+                return 'channel.cheer'
+            case TwitchWebsocketSubscriptionType.FOLLOW:
+                return 'channel.follow'
+            case TwitchWebsocketSubscriptionType.RAID:
+                return 'channel.raid'
+            case TwitchWebsocketSubscriptionType.SUBSCRIBE:
+                return 'channel.subscribe'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT:
+                return 'channel.subscription.gift'
+            case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
+                return 'channel.subscription.message'
+            case _:
+                raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')

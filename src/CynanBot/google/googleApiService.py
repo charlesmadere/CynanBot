@@ -118,7 +118,7 @@ class GoogleApiService(GoogleApiServiceInterface):
                 url = 'https://texttospeech.googleapis.com/v1/text:synthesize',
                 headers = {
                     'Accept': self.__contentType,
-                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
+                    'Authorization': f'Bearer {googleAccessToken.accessToken}',
                     'Content-Type': self.__contentType,
                     'x-goog-user-project': googleProjectId
                 },
@@ -166,7 +166,7 @@ class GoogleApiService(GoogleApiServiceInterface):
                 url = f'https://translate.googleapis.com/v3/projects/{googleProjectId}:translateText',
                 headers = {
                     'Accept': self.__contentType,
-                    'Authorization': f'Bearer {googleAccessToken.getAccessToken()}',
+                    'Authorization': f'Bearer {googleAccessToken.accessToken}',
                     'Content-Type': self.__contentType,
                     'x-goog-user-project': googleProjectId,
                 },

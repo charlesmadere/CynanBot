@@ -123,6 +123,10 @@ from CynanBot.streamAlertsManager.streamAlertsSettingsRepository import \
     StreamAlertsSettingsRepository
 from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import \
     StreamAlertsSettingsRepositoryInterface
+from CynanBot.supStreamer.supStreamerRepository import \
+    SupStreamerRepository
+from CynanBot.supStreamer.supStreamerRepositoryInterface import \
+    SupStreamerRepositoryInterface
 from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
@@ -662,11 +666,19 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
     )
 
+supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 supStreamerChatAction: AbsChatAction | None = None
 if streamAlertsManager is not None:
     supStreamerChatAction = SupStreamerChatAction(
         streamAlertsManager = streamAlertsManager,
-        timber = timber
+        supStreamerRepository = supStreamerRepository,
+        timber = timber,
+        timeZoneRepository = timeZoneRepository
     )
 
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
@@ -765,6 +777,7 @@ cynanBot = CynanBot(
     soundPlayerSettingsRepository = soundPlayerSettingsRepository,
     starWarsQuotesRepository = None,
     streamAlertsManager = streamAlertsManager,
+    supStreamerRepository = supStreamerRepository,
     timber = timber,
     toxicTriviaOccurencesRepository = None,
     translationHelper = None,

@@ -41,10 +41,10 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.requirePayload().getEvent()
+        event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchRaidHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         fromUserId = event.getFromBroadcasterUserId()
@@ -108,6 +108,7 @@ class TwitchRaidHandler(AbsTwitchRaidHandler):
             ttsEvent = TtsEvent(
                 message = f'Hello everyone from {fromUserName}\'s stream, welcome in. Thanks for the raid of {viewers}!',
                 twitchChannel = user.getHandle(),
+                twitchChannelId = broadcasterUserId,
                 userId = userId,
                 userName = fromUserName,
                 donation = None,

@@ -142,17 +142,17 @@ class DecTalkManager(TtsManagerInterface):
         command = await self.__ttsCommandBuilder.buildAndCleanEvent(event)
 
         if not utils.isValidStr(command):
-            self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.getTwitchChannel()}\" into a command ({event=})')
+            self.__timber.log('DecTalkManager', f'Failed to parse TTS message in \"{event.twitchChannel}\" into a command ({event=})')
             return False
 
         command = await self.__applyRandomVoice(command)
         fileName = await self.__decTalkFileManager.writeCommandToNewFile(command)
 
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to temporary file ({event=}) ({command=}) ({fileName=})')
+            self.__timber.log('DecTalkManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to temporary file ({event=}) ({command=}) ({fileName=})')
             return False
 
-        self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.getTwitchChannel()}\"...')
+        self.__timber.log('DecTalkManager', f'Executing TTS message in \"{event.twitchChannel}\"...')
         pathToDecTalk = utils.cleanPath(await self.__ttsSettingsRepository.requireDecTalkPath())
         await self.__executeDecTalkCommand(f'{pathToDecTalk} -pre \"[:phone on]\" < \"{fileName}\"')
         await self.__ttsTempFileHelper.registerTempFile(fileName)

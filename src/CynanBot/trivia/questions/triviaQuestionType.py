@@ -26,11 +26,8 @@ class TriviaQuestionType(Enum):
             raise ValueError(f'unknown TriviaType: \"{text}\"')
 
     def toStr(self) -> str:
-        if self is TriviaQuestionType.MULTIPLE_CHOICE:
-            return 'multiple-choice'
-        elif self is TriviaQuestionType.QUESTION_ANSWER:
-            return 'question-answer'
-        elif self is TriviaQuestionType.TRUE_FALSE:
-            return 'true-false'
-        else:
-            raise RuntimeError(f'unknown TriviaType: \"{self}\"')
+        match self:
+            case TriviaQuestionType.MULTIPLE_CHOICE: return 'multiple-choice'
+            case TriviaQuestionType.QUESTION_ANSWER: return 'question-answer'
+            case TriviaQuestionType.TRUE_FALSE: return 'true-false'
+            case _: raise RuntimeError(f'unknown TriviaType: \"{self}\"')

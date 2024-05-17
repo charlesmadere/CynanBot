@@ -19,5 +19,4 @@ class DecTalkVoiceMapper(DecTalkVoiceMapperInterface):
             case DecTalkVoice.RITA: return '[:nr]'
             case DecTalkVoice.URSULA: return '[:nu]'
             case DecTalkVoice.WENDY: return '[:nw]'
-
-        raise RuntimeError(f'voice is an unknown value: \"{voice}\"')
+            case _: raise RuntimeError(f'voice is an unknown value: \"{voice}\"')

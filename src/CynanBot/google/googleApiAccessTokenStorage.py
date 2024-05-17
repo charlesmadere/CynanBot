@@ -34,7 +34,7 @@ class GoogleApiAccessTokenStorage(GoogleApiAccessTokenStorageInterface):
             return None
 
         now = datetime.now(self.__timeZone)
-        expireTime = accessToken.getExpireTime()
+        expireTime = accessToken.expireTime
 
         if (now + self.__expireTimeBuffer) < expireTime:
             return accessToken

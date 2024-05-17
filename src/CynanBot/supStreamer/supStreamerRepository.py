@@ -1,9 +1,16 @@
+from __future__ import annotations
+
+from collections import defaultdict
+from datetime import datetime
+
+from lru import LRU
+
 import CynanBot.misc.utils as utils
-from CynanBot.misc.simpleDateTime import SimpleDateTime
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.storage.backingDatabase import BackingDatabase
 from CynanBot.storage.databaseConnection import DatabaseConnection
 from CynanBot.storage.databaseType import DatabaseType
-from CynanBot.supStreamer.supStreamerAction import SupStreamerAction
 from CynanBot.supStreamer.supStreamerChatter import SupStreamerChatter
 from CynanBot.supStreamer.supStreamerRepositoryInterface import \
     SupStreamerRepositoryInterface
@@ -15,73 +22,74 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
     def __init__(
         self,
         backingDatabase: BackingDatabase,
-        timber: TimberInterface
+        timber: TimberInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        cacheSize: int = 100
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
+        elif not utils.isValidInt(cacheSize):
+            raise TypeError(f'cacheSize argument is malformed: \"{cacheSize}\"')
+        elif cacheSize < 8 or cacheSize > utils.getIntMaxSafeSize():
+            raise ValueError(f'cacheSize argument is out of bounds: {cacheSize}')
 
         self.__backingDatabase: BackingDatabase = backingDatabase
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
 
-        self.__cache: dict[str, SupStreamerAction | None] = dict()
         self.__isDatabaseReady: bool = False
+        self.__caches: dict[str, LRU[str, SupStreamerChatter | None]] = defaultdict(lambda: LRU(cacheSize))
 
     async def clearCaches(self):
-        self.__cache.clear()
+        self.__caches.clear()
         self.__timber.log('SupStreamerRepository', 'Caches cleared')
 
-    async def get(self, twitchChannelId: str) -> SupStreamerAction | None:
-        if not utils.isValidStr(twitchChannelId):
+    async def getChatter(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ) -> SupStreamerChatter:
+        if not utils.isValidStr(chatterUserId):
+            raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
+        elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        if twitchChannelId in self.__cache:
-            return self.__cache[twitchChannelId]
+        chatter = self.__caches[twitchChannelId].get(chatterUserId, None)
+
+        if chatter is not None:
+            return chatter
 
         connection = await self.__getDatabaseConnection()
-        records = await connection.fetchRows(
+        record = await connection.fetchRow(
             '''
-                SELECT supstreamerchatters.mostrecentsup, supstreamerchatters.chatteruserid, userids.username FROM supstreamerchatters
-                INNER JOIN userids ON supstreamerchatters.twitchchannelid = userids.userid
-                ORDER BY supstreamerchatters.mostrecentsup ASC
-                WHERE supstreamerchatters.twitchchannelid = $1
+                SELECT mostrecentsup FROM supstreamerchatters
+                WHERE chatteruserid = $1 AND twitchchannelid = $2
+                LIMIT 1
             ''',
-            twitchChannelId
+            chatterUserId, twitchChannelId
         )
 
         await connection.close()
-        twitchChannelName: str | None = None
-        chatters: dict[str, SupStreamerChatter | None] = dict()
 
-        if records is not None and len(records) >= 1:
-            for record in records:
-                mostRecentSup: SimpleDateTime | None = None
-
-                if utils.isValidStr(record[0]):
-                    mostRecentSup = SimpleDateTime(utils.getDateTimeFromStr(mostRecentSup))
-
-                chatterUserId: str = record[1]
-
-                chatters[chatterUserId] = SupStreamerChatter(
-                    mostRecentSup = mostRecentSup,
-                    userId = chatterUserId
-                )
-
-                if not utils.isValidStr(twitchChannelName):
-                    twitchChannelName = record[2]
-
-        action: SupStreamerAction | None = None
-
-        if utils.isValidStr(twitchChannelName):
-            action = SupStreamerAction(
-                chatters = chatters,
-                broadcasterUserId = twitchChannelId,
-                broadcasterUserName = twitchChannelName
+        if record is None or len(record) == 0:
+            chatter = SupStreamerChatter(
+                mostRecentSup = None,
+                twitchChannelId = twitchChannelId,
+                userId = chatterUserId
+            )
+        else:
+            chatter = SupStreamerChatter(
+                mostRecentSup = datetime.fromisoformat(record[0]),
+                twitchChannelId = twitchChannelId,
+                userId = chatterUserId
             )
 
-        self.__cache[twitchChannelId] = action
-        return action
+        self.__caches[twitchChannelId][chatterUserId] = chatter
+        return chatter
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:
         await self.__initDatabaseTable()
@@ -119,13 +127,17 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
 
         await connection.close()
 
-    async def update(self, chatterUserId: str, twitchChannelId: str):
+    async def updateChatter(
+        self,
+        chatterUserId: str,
+        twitchChannelId: str
+    ):
         if not utils.isValidStr(chatterUserId):
             raise TypeError(f'chatterUserId argument is malformed: \"{chatterUserId}\"')
         elif not utils.isValidStr(twitchChannelId):
             raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
 
-        now = SimpleDateTime()
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -134,16 +146,13 @@ class SupStreamerRepository(SupStreamerRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (mostrecentsup, chatteruserid, twitchchannelid) DO UPDATE SET mostrecentsup = EXCLUDED.mostrecentsup
             ''',
-            now.getIsoFormatStr(), chatterUserId, twitchChannelId
+            now.isoformat(), chatterUserId, twitchChannelId
         )
 
         await connection.close()
-        action = await self.get(twitchChannelId)
 
-        if action is None:
-            return
-
-        action.updateChatter(SupStreamerChatter(
+        self.__caches[twitchChannelId][chatterUserId] = SupStreamerChatter(
             mostRecentSup = now,
+            twitchChannelId = twitchChannelId,
             userId = chatterUserId
-        ))
+        )

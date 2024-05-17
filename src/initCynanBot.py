@@ -183,6 +183,10 @@ from CynanBot.streamAlertsManager.streamAlertsSettingsRepository import \
     StreamAlertsSettingsRepository
 from CynanBot.streamAlertsManager.streamAlertsSettingsRepositoryInterface import \
     StreamAlertsSettingsRepositoryInterface
+from CynanBot.supStreamer.supStreamerRepository import \
+    SupStreamerRepository
+from CynanBot.supStreamer.supStreamerRepositoryInterface import \
+    SupStreamerRepositoryInterface
 from CynanBot.systemCommandHelper.systemCommandHelper import \
     SystemCommandHelper
 from CynanBot.systemCommandHelper.systemCommandHelperInterface import \
@@ -1230,6 +1234,12 @@ if mostRecentAnivMessageRepository is not None:
         mostRecentAnivMessageRepository = mostRecentAnivMessageRepository
     )
 
+supStreamerRepository: SupStreamerRepositoryInterface = SupStreamerRepository(
+    backingDatabase = backingDatabase,
+    timber = timber,
+    timeZoneRepository = timeZoneRepository
+)
+
 chatActionsManager: ChatActionsManagerInterface = ChatActionsManager(
     anivCheckChatAction = AnivCheckChatAction(
         anivContentScanner = anivContentScanner,
@@ -1356,6 +1366,7 @@ cynanBot = CynanBot(
         quotesJsonReader = JsonFileReader('starWarsQuotesRepository.json')
     ),
     streamAlertsManager = streamAlertsManager,
+    supStreamerRepository = supStreamerRepository,
     timber = timber,
     toxicTriviaOccurencesRepository = toxicTriviaOccurencesRepository,
     translationHelper = translationHelper,

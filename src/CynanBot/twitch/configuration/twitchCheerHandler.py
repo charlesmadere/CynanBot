@@ -68,10 +68,10 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.requirePayload().getEvent()
+        event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchCheerHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
         bits = event.getBits()
@@ -247,6 +247,7 @@ class TwitchCheerHandler(AbsTwitchCheerHandler):
             ttsEvent = TtsEvent(
                 message = message,
                 twitchChannel = user.getHandle(),
+                twitchChannelId = broadcasterUserId,
                 userId = cheerUserId,
                 userName = cheerUserLogin,
                 donation = donation,

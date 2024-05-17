@@ -87,6 +87,7 @@ class TriviaHistoryRepository(TriviaHistoryRepositoryInterface):
             emote = record[0],
             triviaId = record[2],
             twitchChannel = twitchChannel,
+            twitchChannelId = twitchChannelId,
             originalTriviaSource = originalTriviaSource,
             triviaSource = TriviaSource.fromStr(record[3]),
             triviaType = TriviaQuestionType.fromStr(record[4])

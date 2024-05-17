@@ -144,7 +144,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as not enough arguments were given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt')
             return
 
-        emote: Optional[str] = splits[1]
+        emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -163,7 +163,7 @@ class AddTriviaAnswerCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ No trivia question reference was found with emote \"{emote}\" (normalized: \"{normalizedEmote}\")')
             return
 
-        additionalAnswer: Optional[str] = ' '.join(splits[2:])
+        additionalAnswer: str | None = ' '.join(splits[2:])
         if not utils.isValidStr(additionalAnswer):
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but an invalid additional answer was given: \"{additionalAnswer}\"')
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to add additional trivia answer as an invalid answer argument was given. Example: !addtriviaanswer {self.__triviaEmoteGenerator.getRandomEmote()} Theodore Roosevelt')
@@ -172,26 +172,26 @@ class AddTriviaAnswerCommand(AbsCommand):
         try:
             result = await self.__additionalTriviaAnswersRepository.addAdditionalTriviaAnswer(
                 additionalAnswer = additionalAnswer,
-                triviaId = reference.getTriviaId(),
+                triviaId = reference.triviaId,
                 userId = ctx.getAuthorId(),
-                triviaSource = reference.getTriviaSource(),
-                triviaType = reference.getTriviaType()
+                triviaSource = reference.triviaSource,
+                triviaType = reference.triviaType
             )
 
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Added additional trivia answer for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
             self.__timber.log('AddTriviaAnswerCommand', f'Added additional trivia answer for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}: \"{additionalAnswer}\"')
         except AdditionalTriviaAnswerAlreadyExistsException as e:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as it already exists')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as it already exists')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer already exists: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsMalformedException as e:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as it is malformed')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as it is malformed')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the additional answer is malformed: \"{additionalAnswer}\"', e, traceback.format_exc())
         except AdditionalTriviaAnswerIsUnsupportedTriviaTypeException as e:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as the question is an unsupported type ({reference.getTriviaType().toStr()})')
-            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.getTriviaType().toStr()}\"', e, traceback.format_exc())
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as the question is an unsupported type ({reference.triviaType.toStr()})')
+            self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question is an unsupported type: \"{reference.triviaType.toStr()}\"', e, traceback.format_exc())
         except TooManyAdditionalTriviaAnswersException as e:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Unable to add additional trivia answer for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} as the question has too many additional answers ({reference.getTriviaType().toStr()})')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Unable to add additional trivia answer for {reference.triviaSource.toStr()}:{reference.triviaId} as the question has too many additional answers ({reference.triviaType.toStr()})')
             self.__timber.log('AddTriviaAnswerCommand', f'Attempted to handle command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}, but the question has too many additional answers', e, traceback.format_exc())
 
         self.__timber.log('AddTriviaAnswerCommand', f'Handled !addtriviaanswer command with for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
@@ -744,16 +744,16 @@ class DeleteTriviaAnswersCommand(AbsCommand):
             return
 
         result = await self.__additionalTriviaAnswersRepository.deleteAdditionalTriviaAnswers(
-            triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource(),
-            triviaType = reference.getTriviaType()
+            triviaId = reference.triviaId,
+            triviaSource = reference.triviaSource,
+            triviaType = reference.triviaType
         )
 
         if result is None:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} There are no additional trivia answers for {reference.triviaSource.toStr()}:{reference.triviaId}')
         else:
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Deleted additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
         self.__timber.log('DeleteTriviaAnswersCommand', f'Handled !deletetriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -987,16 +987,16 @@ class GetTriviaAnswersCommand(AbsCommand):
             return
 
         result = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
-            triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource(),
-            triviaType = reference.getTriviaType()
+            triviaId = reference.triviaId,
+            triviaSource = reference.triviaSource,
+            triviaType = reference.triviaType
         )
 
         if result is None:
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} There are no additional trivia answers for {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} There are no additional trivia answers for {reference.triviaSource.toStr()}:{reference.triviaId}')
         else:
             additionalAnswers = self.__answerDelimiter.join(result.getAdditionalAnswersStrs())
-            await self.__twitchUtils.safeSend(ctx, f'{reference.getEmote()} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
+            await self.__twitchUtils.safeSend(ctx, f'{reference.emote} Additional trivia answers for {result.getTriviaSource().toStr()}:{result.getTriviaId()} — {additionalAnswers}')
 
         self.__timber.log('GetTriviaAnswersCommand', f'Handled !gettriviaanswers command with {result} for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
@@ -1973,16 +1973,16 @@ class TriviaInfoCommand(AbsCommand):
             return
 
         additionalAnswers = await self.__additionalTriviaAnswersRepository.getAdditionalTriviaAnswers(
-            triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource(),
-            triviaType = reference.getTriviaType()
+            triviaId = reference.triviaId,
+            triviaSource = reference.triviaSource,
+            triviaType = reference.triviaType
         )
 
         additionalAnswersLen = 0
         if additionalAnswers is not None:
             additionalAnswersLen = len(additionalAnswers.getAdditionalAnswers())
 
-        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.getTriviaSource().toStr()}:{reference.getTriviaId()} triviaType:{reference.getTriviaType().toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.getTriviaSource().isLocal()).lower()}')
+        await self.__twitchUtils.safeSend(ctx, f'{normalizedEmote} {reference.triviaSource.toStr()}:{reference.triviaId} triviaType:{reference.triviaType.toStr()} additionalAnswers:{additionalAnswersLen} isLocal:{str(reference.triviaSource.isLocal()).lower()}')
         self.__timber.log('TriviaInfoCommand', f'Handled !triviainfo command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()}')
 
 
@@ -2047,6 +2047,7 @@ class TtsCommand(AbsCommand):
             ttsEvent = TtsEvent(
                 message = message,
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await ctx.getTwitchChannelId(),
                 userId = ctx.getAuthorId(),
                 userName = ctx.getAuthorName(),
                 donation = None,
@@ -2248,7 +2249,7 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             await self.__twitchUtils.safeSend(ctx, f'⚠ Unable to unban trivia question as no emote argument was given. Example: !unbantriviaquestion {self.__triviaEmoteGenerator.getRandomEmote()}')
             return
 
-        emote: Optional[str] = splits[1]
+        emote: str | None = splits[1]
         normalizedEmote = await self.__triviaEmoteGenerator.getValidatedAndNormalizedEmote(emote)
 
         if not utils.isValidStr(normalizedEmote):
@@ -2268,9 +2269,9 @@ class UnbanTriviaQuestionCommand(AbsCommand):
             return
 
         await self.__triviaBanHelper.unban(
-            triviaId = reference.getTriviaId(),
-            triviaSource = reference.getTriviaSource()
+            triviaId = reference.triviaId,
+            triviaSource = reference.triviaSource
         )
 
-        await self.__twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.getTriviaSource().toStr()}:{reference.getTriviaId()}')
-        self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.getTriviaSource().toStr()}:{reference.getTriviaId()} was unbanned)')
+        await self.__twitchUtils.safeSend(ctx, f'ⓘ Unbanned trivia question {normalizedEmote} — {reference.triviaSource.toStr()}:{reference.triviaId}')
+        self.__timber.log('UnbanTriviaQuestionCommand', f'Handled command for {ctx.getAuthorName()}:{ctx.getAuthorId()} in {user.getHandle()} ({normalizedEmote}) ({reference.triviaSource.toStr()}:{reference.triviaId} was unbanned)')

@@ -75,15 +75,15 @@ class TwitchApiService(TwitchApiServiceInterface):
         timeZone: tzinfo = timezone.utc
     ):
         if not isinstance(networkClientProvider, NetworkClientProvider):
-            raise ValueError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
+            raise TypeError(f'networkClientProvider argument is malformed: \"{networkClientProvider}\"')
         elif not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchCredentialsProvider, TwitchCredentialsProviderInterface):
-            raise ValueError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
+            raise TypeError(f'twitchCredentialsProvider argument is malformed: \"{twitchCredentialsProvider}\"')
         elif not isinstance(twitchWebsocketJsonMapper, TwitchWebsocketJsonMapperInterface):
-            raise ValueError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
+            raise TypeError(f'twitchWebsocketJsonMapper argument is malformed: \"{twitchWebsocketJsonMapper}\"')
         elif not isinstance(timeZone, tzinfo):
-            raise ValueError(f'timeZone argument is malformed: \"{timeZone}\"')
+            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__networkClientProvider: NetworkClientProvider = networkClientProvider
         self.__timber: TimberInterface = timber
@@ -271,7 +271,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         transport = TwitchWebsocketTransport(
-            connectedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(transportJson, 'connected_at'))),
+            connectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'connected_at')),
             sessionId = utils.getStrFromDict(transportJson, 'session_id'),
             method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
         )

@@ -82,14 +82,14 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         payload = dataBundle.requirePayload()
-        event = payload.getEvent()
-        subscription = payload.getSubscription()
+        event = payload.event
+        subscription = payload.subscription
 
         if event is None or subscription is None:
-            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event: (channel=\"{user.getHandle()}\") ({dataBundle=})')
+            self.__timber.log('TwitchSubscriptionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        subscriptionType = subscription.getSubscriptionType()
+        subscriptionType = subscription.subscriptionType
         isAnonymous = event.isAnonymous()
         isGift = event.isGift()
         communitySubGift = event.getCommunitySubGift()
@@ -277,6 +277,7 @@ class TwitchSubscriptionHandler(AbsTwitchSubscriptionHandler):
         ttsEvent = TtsEvent(
             message = actualMessage,
             twitchChannel = user.getHandle(),
+            twitchChannelId = broadcasterUserId,
             userId = actualUserId,
             userName = actualUserName,
             donation = donation,

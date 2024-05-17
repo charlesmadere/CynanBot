@@ -201,21 +201,16 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        if jsonString == 'ALAW':
-            return GoogleVoiceAudioEncoding.ALAW
-        elif jsonString == 'AUDIO_ENCODING_UNSPECIFIED':
-            return GoogleVoiceAudioEncoding.UNSPECIFIED
-        elif jsonString == 'LINEAR16':
-            return GoogleVoiceAudioEncoding.LINEAR_16
-        elif jsonString == 'MP3':
-            return GoogleVoiceAudioEncoding.MP3
-        elif jsonString == 'MULAW':
-            return GoogleVoiceAudioEncoding.MULAW
-        elif jsonString == 'OGG_OPUS':
-            return GoogleVoiceAudioEncoding.OGG_OPUS
-        else:
-            self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceAudioEncoding value: \"{jsonString}\"')
-            return None
+        match jsonString:
+            case 'ALAW': return GoogleVoiceAudioEncoding.ALAW
+            case 'AUDIO_ENCODING_UNSPECIFIED': return GoogleVoiceAudioEncoding.UNSPECIFIED
+            case 'LINEAR16': return GoogleVoiceAudioEncoding.LINEAR_16
+            case 'MP3': return GoogleVoiceAudioEncoding.MP3
+            case 'MULAW': return GoogleVoiceAudioEncoding.MULAW
+            case 'OGG_OPUS': return GoogleVoiceAudioEncoding.OGG_OPUS
+            case _:
+                self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceAudioEncoding value: \"{jsonString}\"')
+                return None
 
     async def parseVoiceGender(
         self,
@@ -224,15 +219,13 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not utils.isValidStr(jsonString):
             return None
 
-        if jsonString == 'FEMALE':
-            return GoogleVoiceGender.FEMALE
-        elif jsonString == 'MALE':
-            return GoogleVoiceGender.MALE
-        elif jsonString == 'SSML_VOICE_GENDER_UNSPECIFIED':
-            return GoogleVoiceGender.UNSPECIFIED
-        else:
-            self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceGender value: \"{jsonString}\"')
-            return None
+        match jsonString:
+            case 'FEMALE': return GoogleVoiceGender.FEMALE
+            case 'MALE': return GoogleVoiceGender.MALE
+            case 'SSML_VOICE_GENDER_UNSPECIFIED': return GoogleVoiceGender.UNSPECIFIED
+            case _:
+                self.__timber.log('GoogleJsonMapper', f'Encountered unknown GoogleVoiceGender value: \"{jsonString}\"')
+                return None
 
     async def serializeGlossaryConfig(
         self,
@@ -242,11 +235,11 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
             raise TypeError(f'glossaryConfig argument is malformed: \"{glossaryConfig}\"')
 
         dictionary: dict[str, Any] = {
-            'ignoreCase': glossaryConfig.getIgnoreCase()
+            'ignoreCase': glossaryConfig.ignoreCase
         }
 
-        if utils.isValidStr(glossaryConfig.getGlossary()):
-            dictionary['glossary'] = glossaryConfig.getGlossary()
+        if utils.isValidStr(glossaryConfig.glossary):
+            dictionary['glossary'] = glossaryConfig.glossary
 
         return dictionary
 
@@ -398,14 +391,12 @@ class GoogleJsonMapper(GoogleJsonMapperInterface):
         if not isinstance(voiceGender, GoogleVoiceGender):
             raise TypeError(f'voiceGender argument is malformed: \"{voiceGender}\"')
 
-        if voiceGender is GoogleVoiceGender.FEMALE:
-            return 'FEMALE'
-        elif voiceGender is GoogleVoiceGender.MALE:
-            return 'MALE'
-        elif voiceGender is GoogleVoiceGender.UNSPECIFIED:
-            return 'SSML_VOICE_GENDER_UNSPECIFIED'
-        else:
-            raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
+        match voiceGender:
+            case GoogleVoiceGender.FEMALE: return 'FEMALE'
+            case GoogleVoiceGender.MALE: return 'MALE'
+            case GoogleVoiceGender.UNSPECIFIED: return 'SSML_VOICE_GENDER_UNSPECIFIED'
+            case _:
+                raise ValueError(f'The given GoogleVoiceGender value is unknown: \"{voiceGender}\"')
 
     async def serializeVoiceSelectionParams(
         self,

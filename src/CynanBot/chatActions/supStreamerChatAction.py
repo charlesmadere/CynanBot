@@ -1,11 +1,15 @@
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
 from CynanBot.chatActions.absChatAction import AbsChatAction
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.mostRecentChat.mostRecentChat import MostRecentChat
 from CynanBot.streamAlertsManager.streamAlert import StreamAlert
 from CynanBot.streamAlertsManager.streamAlertsManagerInterface import \
     StreamAlertsManagerInterface
+from CynanBot.supStreamer.supStreamerRepositoryInterface import \
+    SupStreamerRepositoryInterface
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.tts.ttsEvent import TtsEvent
 from CynanBot.tts.ttsProvider import TtsProvider
@@ -18,23 +22,27 @@ class SupStreamerChatAction(AbsChatAction):
     def __init__(
         self,
         streamAlertsManager: StreamAlertsManagerInterface | None,
+        supStreamerRepository: SupStreamerRepositoryInterface | None,
         timber: TimberInterface,
-        cooldown: timedelta = timedelta(hours = 6),
-        timeZone: tzinfo = timezone.utc
+        timeZoneRepository: TimeZoneRepositoryInterface,
+        cooldown: timedelta = timedelta(hours = 6)
     ):
         if streamAlertsManager is not None and not isinstance(streamAlertsManager, StreamAlertsManagerInterface):
             raise TypeError(f'streamAlertsManager argument is malformed: \"{streamAlertsManager}\"')
+        elif supStreamerRepository is not None and not isinstance(supStreamerRepository, SupStreamerRepositoryInterface):
+            raise TypeError(f'supStreamerRepository argument is malformed: \"{supStreamerRepository}\"')
         elif not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(cooldown, timedelta):
             raise TypeError(f'cooldown argument is malformed: \"{cooldown}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__streamAlertsManager: StreamAlertsManagerInterface | None = streamAlertsManager
+        self.__supStreamerRepository: SupStreamerRepositoryInterface | None = supStreamerRepository
         self.__timber: TimberInterface = timber
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__cooldown: timedelta = cooldown
-        self.__timeZone: tzinfo = timeZone
 
     async def handleChat(
         self,
@@ -46,11 +54,12 @@ class SupStreamerChatAction(AbsChatAction):
             return False
 
         streamAlertsManager = self.__streamAlertsManager
+        supStreamerRepository = self.__supStreamerRepository
 
-        if streamAlertsManager is None:
+        if streamAlertsManager is None or supStreamerRepository is None:
             return False
 
-        now = datetime.now(self.__timeZone)
+        now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if mostRecentChat is not None and (mostRecentChat.mostRecentChat + self.__cooldown) > now:
             return False
@@ -60,8 +69,21 @@ class SupStreamerChatAction(AbsChatAction):
 
         if not utils.isValidStr(chatMessage) or not utils.isValidStr(supStreamerMessage):
             return False
-        elif chatMessage.casefold() != supStreamerMessage.casefold():
+        elif chatMessage != supStreamerMessage:
             return False
+
+        supStreamerChatData = await supStreamerRepository.getChatter(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
+
+        if supStreamerChatData.mostRecentSup is not None and (supStreamerChatData.mostRecentSup + self.__cooldown) > now:
+            return False
+
+        await supStreamerRepository.updateChatter(
+            chatterUserId = message.getAuthorId(),
+            twitchChannelId = await message.getTwitchChannelId()
+        )
 
         self.__timber.log('SupStreamerChatAction', f'Encountered sup streamer chat message from {message.getAuthorName()}:{message.getAuthorId()} in {user.getHandle()}')
 
@@ -72,6 +94,7 @@ class SupStreamerChatAction(AbsChatAction):
             ttsEvent = TtsEvent(
                 message = f'{message.getAuthorName()} sup',
                 twitchChannel = user.getHandle(),
+                twitchChannelId = await message.getTwitchChannelId(),
                 userId = message.getAuthorId(),
                 userName = message.getAuthorName(),
                 donation = None,

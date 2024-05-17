@@ -60,21 +60,20 @@ class TtsManager(TtsManagerInterface):
             self.__timber.log('TtsManager', f'Will not play the given TTS event as there is one already an ongoing! ({event=})')
             return False
 
-        provider = event.getProvider()
         decTalkManager = self.__decTalkManager
         googleTtsManager = self.__googleTtsManager
         ttsMonsterManager = self.__ttsMonsterManager
         proceed = False
 
-        if provider is TtsProvider.DEC_TALK and decTalkManager is not None:
+        if event.provider is TtsProvider.DEC_TALK and decTalkManager is not None:
             if await decTalkManager.playTtsEvent(event):
                 self.__currentTtsManager = decTalkManager
                 proceed = True
-        elif provider is TtsProvider.GOOGLE and googleTtsManager is not None:
+        elif event.provider is TtsProvider.GOOGLE and googleTtsManager is not None:
             if await googleTtsManager.playTtsEvent(event):
                 self.__currentTtsManager = googleTtsManager
                 proceed = True
-        elif provider is TtsProvider.TTS_MONSTER and ttsMonsterManager is not None:
+        elif event.provider is TtsProvider.TTS_MONSTER and ttsMonsterManager is not None:
             if await ttsMonsterManager.playTtsEvent(event):
                 self.__currentTtsManager = ttsMonsterManager
                 proceed = True
@@ -83,7 +82,7 @@ class TtsManager(TtsManagerInterface):
             await self.__ttsTempFileHelper.deleteOldTempFiles()
             return True
         else:
-            self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({provider=})')
+            self.__timber.log('TtsManager', f'Unable to play the given TTS event via the requested TTS provider ({event=}) ({event.provider=})')
             return False
 
     def __repr__(self) -> str:

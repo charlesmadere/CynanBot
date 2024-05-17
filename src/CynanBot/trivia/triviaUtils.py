@@ -129,13 +129,12 @@ class TriviaUtils(TriviaUtilsInterface):
         if twitchUser.isCutenessEnabled():
             infix = f'Your new cuteness is {newCuteness.getCutenessStr()}.'
 
-        correctAnswers = question.getCorrectAnswers()
+        correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
+            triviaQuestion = question,
+            delimiter = delimiter
+        )
 
-        if len(correctAnswers) == 1:
-            return f'{prefix} 🎉 {infix} 🎉 The correct answer was: {correctAnswers[0]}'
-        else:
-            correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
+        return f'{prefix} 🎉 {infix} 🎉 {correctAnswers}'.strip()
 
     async def getIncorrectAnswerReveal(
         self,
@@ -163,13 +162,13 @@ class TriviaUtils(TriviaUtilsInterface):
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, that\'s incorrect. {utils.getRandomSadEmoji()}'
-        correctAnswers = question.getCorrectAnswers()
 
-        if len(correctAnswers) == 1:
-            return f'{prefix} The correct answer is: {correctAnswers[0]}'
-        else:
-            correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} The correct answers are: {correctAnswersStr}'
+        correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
+            triviaQuestion = question,
+            delimiter = delimiter
+        )
+
+        return f'{prefix} {correctAnswers}'.strip()
 
     async def getInvalidAnswerInputPrompt(
         self,
@@ -270,12 +269,12 @@ class TriviaUtils(TriviaUtilsInterface):
 
         prefix = f'{emotePrompt} Sorry @{userNameThatRedeemed}, you\'re out of time. {utils.getRandomSadEmoji()}'
 
-        suffix = await self.__triviaQuestionPresenter.getCorrectAnswers(
+        correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
             triviaQuestion = question,
             delimiter = delimiter
         )
 
-        return f'{prefix} {suffix}'.strip()
+        return f'{prefix} {correctAnswers}'.strip()
 
     async def __getShortToxicTriviaPunishmentMessage(
         self,
@@ -353,13 +352,12 @@ class TriviaUtils(TriviaUtilsInterface):
         if twitchUser.isCutenessEnabled():
             infix = f'You earned {pointsStr} cuteness, so your new cuteness is {newCuteness.getCutenessStr()}.'
 
-        correctAnswers = question.getCorrectAnswers()
+        correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
+            triviaQuestion = question,
+            delimiter = delimiter
+        )
 
-        if len(correctAnswers) == 1:
-            return f'{prefix} 🎉 {infix} 🎉 The correct answer was: {correctAnswers[0]}'
-        else:
-            correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} 🎉 {infix} 🎉 The correct answers were: {correctAnswersStr}'
+        return f'{prefix} 🎉 {infix} 🎉 {correctAnswers}'.strip()
 
     async def getSuperTriviaLaunchpadPrompt(self, remainingQueueSize: int) -> str | None:
         if not utils.isValidInt(remainingQueueSize):
@@ -395,14 +393,14 @@ class TriviaUtils(TriviaUtilsInterface):
         elif specialTriviaStatus is SpecialTriviaStatus.TOXIC:
             emotePrompt = f'☠️☠️{emote}☠️☠️'
 
-        prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()} …'
-        correctAnswers = question.getCorrectAnswers()
+        prefix = f'{emotePrompt} Sorry everyone, y\'all are out of time… {utils.getRandomSadEmoji()}'
 
-        if len(correctAnswers) == 1:
-            return f'{prefix} The correct answer is: {correctAnswers[0]}'
-        else:
-            correctAnswersStr = delimiter.join(correctAnswers)
-            return f'{prefix} The correct answers are: {correctAnswersStr}'
+        correctAnswers = await self.__triviaQuestionPresenter.getCorrectAnswers(
+            triviaQuestion = question,
+            delimiter = delimiter
+        )
+
+        return f'{prefix} {correctAnswers}'.strip()
 
     async def getSuperTriviaGameQuestionPrompt(
         self,
@@ -446,13 +444,12 @@ class TriviaUtils(TriviaUtilsInterface):
             pointsStr = locale.format_string("%d", points, grouping = True)
             cutenessPrompt = f'for {pointsStr} cuteness '
 
-        questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and utils.isValidStr(triviaQuestion.getCategory()):
-            questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
-        else:
-            questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
+        questionPrompt = await self.__triviaQuestionPresenter.getPrompt(
+            triviaQuestion = triviaQuestion,
+            delimiter = delimiter
+        )
 
-        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s {cutenessPrompt}{questionPrompt}'
+        return f'{emotePrompt} EVERYONE can play, !superanswer in {delaySecondsStr}s {cutenessPrompt} {questionPrompt}'.strip()
 
     async def getToxicTriviaPunishmentMessage(
         self,
@@ -497,10 +494,12 @@ class TriviaUtils(TriviaUtilsInterface):
         bannedControllers: list[BannedTriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
+        if bannedControllers is not None and not isinstance(bannedControllers, list):
+            raise TypeError(f'bannedControllers argument is malformed: \"{bannedControllers}\"')
+        elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not utils.hasItems(bannedControllers):
+        if bannedControllers is None or len(bannedControllers) == 0:
             return f'ⓘ There are no banned trivia game controllers.'
 
         bannedControllersNames: list[str] = list()
@@ -515,15 +514,17 @@ class TriviaUtils(TriviaUtilsInterface):
         gameControllers: list[TriviaGameController] | None,
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
+        if gameControllers is not None and not isinstance(gameControllers, list):
+            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
+        elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not utils.hasItems(gameControllers):
+        if gameControllers is None or len(gameControllers) == 0:
             return f'ⓘ Your channel has no trivia game controllers.'
 
         gameControllersNames: list[str] = list()
         for gameController in gameControllers:
-            gameControllersNames.append(gameController.getUserName())
+            gameControllersNames.append(gameController.userName)
 
         gameControllersStr = delimiter.join(gameControllersNames)
         return f'ⓘ Your trivia game controllers — {gameControllersStr}'
@@ -533,15 +534,17 @@ class TriviaUtils(TriviaUtilsInterface):
         gameControllers: list[TriviaGameGlobalController] | None,
         delimiter: str = ', '
     ) -> str:
-        if not isinstance(delimiter, str):
+        if gameControllers is not None and not isinstance(gameControllers, list):
+            raise TypeError(f'gameControllers argument is malformed: \"{gameControllers}\"')
+        elif not isinstance(delimiter, str):
             raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
 
-        if not utils.hasItems(gameControllers):
+        if gameControllers is None or len(gameControllers) == 0:
             return f'ⓘ There are no global trivia game controllers.'
 
         gameControllersNames: list[str] = list()
         for gameController in gameControllers:
-            gameControllersNames.append(gameController.getUserName())
+            gameControllersNames.append(gameController.userName)
 
         gameControllersStr = delimiter.join(gameControllersNames)
         return f'ⓘ Global trivia game controllers — {gameControllersStr}'
@@ -591,13 +594,12 @@ class TriviaUtils(TriviaUtilsInterface):
             pointsStr = locale.format_string("%d", points, grouping = True)
             cutenessPrompt = f'for {pointsStr} cuteness '
 
-        questionPrompt = ''
-        if triviaQuestion.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and utils.isValidStr(triviaQuestion.getCategory()):
-            questionPrompt = f'— category is {triviaQuestion.getCategory()} — {triviaQuestion.getQuestion()}'
-        else:
-            questionPrompt = f'— {triviaQuestion.getPrompt(delimiter)}'
+        questionPrompt = await self.__triviaQuestionPresenter.getPrompt(
+            triviaQuestion = triviaQuestion,
+            delimiter = delimiter
+        )
 
-        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s {cutenessPrompt}{questionPrompt}'
+        return f'{emotePrompt} @{userNameThatRedeemed} !answer in {delaySecondsStr}s {cutenessPrompt} {questionPrompt}'.strip()
 
     async def getTriviaScoreMessage(
         self,
@@ -619,6 +621,7 @@ class TriviaUtils(TriviaUtilsInterface):
             return f'{utils.getRandomSadEmoji()} @{userName} has not played any trivia games…'
 
         introStr = f'ⓘ @{userName} has'
+        needsSemicolon = False
 
         triviaStr = ''
         if triviaResult.getTotal() >= 1:
@@ -635,26 +638,43 @@ class TriviaUtils(TriviaUtilsInterface):
             elif triviaResult.getStreak() <= -3:
                 triviaStr = f'{triviaStr}, and is on a {triviaResult.getAbsStreakStr()} game losing streak 🙀'
 
+            needsSemicolon = True
+
         superTriviaStr = ''
         if triviaResult.getSuperTriviaWins() >= 1:
-            if triviaResult.getSuperTriviaWins() == 1:
-                superTriviaStr = f' {triviaResult.getSuperTriviaWinsStr()} super trivia win'
+            if needsSemicolon:
+                superTriviaStr = ';'
             else:
-                superTriviaStr = f' {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
+                needsSemicolon = True
+
+            if triviaResult.getSuperTriviaWins() == 1:
+                superTriviaStr = f'{superTriviaStr} {triviaResult.getSuperTriviaWinsStr()} super trivia win'
+            else:
+                superTriviaStr = f'{superTriviaStr} {triviaResult.getSuperTriviaWinsStr()} super trivia wins'
 
         shinyStr = ''
         if shinyResult.getNewShinyCount() >= 1:
-            if shinyResult.getNewShinyCount() == 1:
-                shinyStr = f'; {shinyResult.getNewShinyCountStr()} shiny'
+            if needsSemicolon:
+                shinyStr = ';'
             else:
-                shinyStr = f'; {shinyResult.getNewShinyCountStr()} shinies'
+                needsSemicolon = True
+
+            if shinyResult.getNewShinyCount() == 1:
+                shinyStr = f'{shinyStr} {shinyResult.getNewShinyCountStr()} shiny'
+            else:
+                shinyStr = f'{shinyStr} {shinyResult.getNewShinyCountStr()} shinies'
 
         toxicStr = ''
         if toxicResult.getNewToxicCount() >= 1:
-            if toxicResult.getNewToxicCount() == 1:
-                toxicStr = f'; {toxicResult.getNewToxicCountStr()} toxic'
+            if needsSemicolon:
+                toxicStr = ';'
             else:
-                toxicStr = f'; {toxicResult.getNewToxicCountStr()} toxics'
+                needsSemicolon = True
+
+            if toxicResult.getNewToxicCount() == 1:
+                toxicStr = f'{toxicStr} {toxicResult.getNewToxicCountStr()} toxic'
+            else:
+                toxicStr = f'{toxicStr} {toxicResult.getNewToxicCountStr()} toxics'
 
         return f'{introStr}{triviaStr}{superTriviaStr}{shinyStr}{toxicStr}'.strip()
 
@@ -699,12 +719,12 @@ class TriviaUtils(TriviaUtilsInterface):
         )
 
         for gameController in gameControllers:
-            if userId == gameController.getUserId():
+            if userId == gameController.userId:
                 return True
 
         globalGameControllers = await self.__triviaGameGlobalControllersRepository.getControllers()
         for globalGameController in globalGameControllers:
-            if userId == globalGameController.getUserId():
+            if userId == globalGameController.userId:
                 return True
 
         administratorUserId = await self.__administratorProvider.getAdministratorUserId()

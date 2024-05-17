@@ -15,28 +15,25 @@ class DecTalkVoiceChooser(DecTalkVoiceChooserInterface):
     def __init__(
         self,
         decTalkVoiceMapper: DecTalkVoiceMapperInterface,
-        oddsOfDefaultVoice: float = 0.8,
+        probabilityOfDefaultVoice: float = 0.8,
         voices: set[DecTalkVoice] = {
             DecTalkVoice.BETTY,
             DecTalkVoice.DENNIS,
             DecTalkVoice.FRANK,
             DecTalkVoice.HARRY,
             DecTalkVoice.RITA,
-            DecTalkVoice.URSULA,
-            DecTalkVoice.WENDY
+            DecTalkVoice.URSULA
         }
     ):
         if not isinstance(decTalkVoiceMapper, DecTalkVoiceMapperInterface):
             raise TypeError(f'decTalkVoiceMapper argument is malformed: \"{decTalkVoiceMapper}\"')
-        if not utils.isValidNum(oddsOfDefaultVoice):
-            raise TypeError(f'oddsOfDefaultVoice argument is malformed: \"{oddsOfDefaultVoice}\"')
+        if not utils.isValidNum(probabilityOfDefaultVoice):
+            raise TypeError(f'probabilityOfDefaultVoice argument is malformed: \"{probabilityOfDefaultVoice}\"')
         if not isinstance(voices, set):
             raise TypeError(f'voices argument is malformed: \"{voices}\"')
-        elif len(voices) == 0:
-            raise ValueError(f'voices argument is empty: \"{voices}\"')
 
         self.__decTalkVoiceMapper: DecTalkVoiceMapperInterface = decTalkVoiceMapper
-        self.__oddsOfDefaultVoice: float = oddsOfDefaultVoice
+        self.__probabilityOfDefaultVoice: float = probabilityOfDefaultVoice
         self.__voices: set[DecTalkVoice] = voices
         self.__voiceRegEx: Pattern = re.compile(r'\[:n\w\]', re.IGNORECASE)
 
@@ -47,9 +44,11 @@ class DecTalkVoiceChooser(DecTalkVoiceChooserInterface):
         if messageText is not None and not isinstance(messageText, str):
             raise TypeError(f'messageText argument is malformed: \"{messageText}\"')
 
-        if not utils.isValidStr(messageText):
+        if len(self.__voices) == 0:
             return None
-        elif random.random() <= self.__oddsOfDefaultVoice:
+        elif not utils.isValidStr(messageText):
+            return None
+        elif random.random() <= self.__probabilityOfDefaultVoice:
             return None
         elif await self.__isVoicePatternAlreadyInMessage(messageText):
             return None

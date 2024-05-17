@@ -94,11 +94,11 @@ class GoogleTtsManager(TtsManagerInterface):
         fileName = await self.__processTtsEvent(event)
 
         if not utils.isValidStr(fileName) or not await aiofiles.ospath.exists(fileName):
-            self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.getTwitchChannel()}\" to a temporary file ({event=}) ({fileName=})')
+            self.__timber.log('GoogleTtsManager', f'Failed to write TTS message in \"{event.twitchChannel}\" to a temporary file ({event=}) ({fileName=})')
             self.__isLoading = False
             return False
 
-        self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.getTwitchChannel()}\" from \"{fileName}\"...')
+        self.__timber.log('GoogleTtsManager', f'Playing TTS message in \"{event.twitchChannel}\" from \"{fileName}\"...')
         await self.__soundPlayerManager.playSoundFile(fileName)
         await self.__ttsTempFileHelper.registerTempFile(fileName)
         self.__isLoading = False

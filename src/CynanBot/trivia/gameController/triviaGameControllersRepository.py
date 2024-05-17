@@ -130,12 +130,13 @@ class TriviaGameControllersRepository(TriviaGameControllersRepositoryInterface):
 
         for record in records:
             controllers.append(TriviaGameController(
-                twitchChannel = record[0],
+                twitchChannel = twitchChannel,
+                twitchChannelId = record[0],
                 userId = record[1],
                 userName = record[2]
             ))
 
-        controllers.sort(key = lambda controller: controller.getUserName().casefold())
+        controllers.sort(key = lambda controller: controller.userName.casefold())
         return controllers
 
     async def __getDatabaseConnection(self) -> DatabaseConnection:

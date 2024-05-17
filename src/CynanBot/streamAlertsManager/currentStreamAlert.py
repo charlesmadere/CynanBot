@@ -19,16 +19,16 @@ class CurrentStreamAlert():
         return self.__alertState
 
     def getSoundAlert(self) -> SoundAlert | None:
-        return self.__streamAlert.getSoundAlert()
+        return self.__streamAlert.soundAlert
 
     def getStreamAlert(self) -> StreamAlert:
         return self.__streamAlert
 
     def getTtsEvent(self) -> TtsEvent | None:
-        return self.__streamAlert.getTtsEvent()
+        return self.__streamAlert.ttsEvent
 
     def getTwitchChannel(self) -> str:
-        return self.__streamAlert.getTwitchChannel()
+        return self.__streamAlert.twitchChannel
 
     def __repr__(self) -> str:
         dictionary = self.toDictionary()

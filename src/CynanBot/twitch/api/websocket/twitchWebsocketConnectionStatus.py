@@ -19,17 +19,11 @@ class TwitchWebsocketConnectionStatus(Enum):
 
         text = text.lower()
 
-        if text == 'connected':
-            return TwitchWebsocketConnectionStatus.CONNECTED
-        elif text == 'enabled':
-            return TwitchWebsocketConnectionStatus.ENABLED
-        elif text == 'reconnecting':
-            return TwitchWebsocketConnectionStatus.RECONNECTING
-        elif text == 'authorization_revoked':
-            return TwitchWebsocketConnectionStatus.REVOKED
-        elif text == 'user_removed':
-            return TwitchWebsocketConnectionStatus.USER_REMOVED
-        elif text == 'version_removed':
-            return TwitchWebsocketConnectionStatus.VERSION_REMOVED
-        else:
-            return None
+        match text:
+            case 'connected': return TwitchWebsocketConnectionStatus.CONNECTED
+            case 'enabled': return TwitchWebsocketConnectionStatus.ENABLED
+            case 'reconnecting': return TwitchWebsocketConnectionStatus.RECONNECTING
+            case 'authorization_revoked': return TwitchWebsocketConnectionStatus.REVOKED
+            case 'user_removed': return TwitchWebsocketConnectionStatus.USER_REMOVED
+            case 'version_removed': return TwitchWebsocketConnectionStatus.VERSION_REMOVED
+            case _: return None

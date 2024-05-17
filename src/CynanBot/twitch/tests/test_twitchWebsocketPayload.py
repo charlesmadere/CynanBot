@@ -1,4 +1,5 @@
-from CynanBot.misc.simpleDateTime import SimpleDateTime
+from datetime import datetime, timezone
+
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketConnectionStatus import \
@@ -23,18 +24,22 @@ class TestTwitchWebsocketPayload():
         return TwitchWebsocketEvent()
 
     def __createSession(self) -> TwitchWebsocketSession:
+        connectedAt = datetime.now(timezone.utc)
+
         return TwitchWebsocketSession(
             keepAliveTimeoutSeconds = 100,
-            connectedAt = SimpleDateTime(),
+            connectedAt = connectedAt,
             reconnectUrl = None,
             sessionId = 'abc123',
             status = TwitchWebsocketConnectionStatus.CONNECTED
         )
 
     def __createSubscription(self) -> TwitchWebsocketSubscription:
+        createdAt = datetime.now(timezone.utc)
+
         return TwitchWebsocketSubscription(
             cost = 100,
-            createdAt = SimpleDateTime(),
+            createdAt = createdAt,
             subscriptionId = 'qwerty',
             version = '1',
             condition = TwitchWebsocketCondition(),

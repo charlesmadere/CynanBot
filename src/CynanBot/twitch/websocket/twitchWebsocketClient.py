@@ -245,7 +245,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        payload = dataBundle.getPayload()
+        payload = dataBundle.payload
 
         if payload is None:
             return
@@ -256,7 +256,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             return
 
         oldTwitchWebsocketUrl = self.__twitchWebsocketUrlFor[user]
-        newTwitchWebsocketUrl = session.getReconnectUrl()
+        newTwitchWebsocketUrl = session.reconnectUrl
 
         if utils.isValidUrl(newTwitchWebsocketUrl) and oldTwitchWebsocketUrl != newTwitchWebsocketUrl:
             await self.__handleNewTwitchWebsocketUrlFor(
@@ -266,7 +266,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             )
 
         oldSessionId = self.__sessionIdFor[user]
-        newSessionId = session.getSessionId()
+        newSessionId = session.sessionId
 
         if oldSessionId != newSessionId:
             await self.__handleNewSessionIdFor(
@@ -317,18 +317,18 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
         # ensure that this isn't a message we've seen before
-        if self.__messageIdCache.contains(dataBundle.getMetadata().getMessageId()):
-            self.__timber.log('TwitchWebsocketClient', f'Encountered a message ID that has already been seen: \"{dataBundle.getMetadata().getMessageId()}\"')
+        if self.__messageIdCache.contains(dataBundle.metadata.messageId):
+            self.__timber.log('TwitchWebsocketClient', f'Encountered a message ID that has already been seen: \"{dataBundle.metadata.messageId}\"')
             return False
 
-        self.__messageIdCache.put(dataBundle.getMetadata().getMessageId())
+        self.__messageIdCache.put(dataBundle.metadata.messageId)
 
         # ensure that this message isn't gratuitously old
-        messageTimestamp = dataBundle.getMetadata().getMessageTimestamp().getDateTime()
+        messageTimestamp = dataBundle.metadata.messageTimestamp
         now = datetime.now(self.__timeZoneRepository.getDefault())
 
         if now - messageTimestamp >= self.__maxMessageAge:
-            self.__timber.log('TwitchWebsocketClient', f'Encountered a message that is too old: \"{dataBundle.getMetadata().getMessageId()}\"')
+            self.__timber.log('TwitchWebsocketClient', f'Encountered a message that is too old: \"{dataBundle.metadata.messageId}\"')
             return False
 
         return True

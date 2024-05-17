@@ -103,13 +103,13 @@ class TwitchChannelPointRedemptionHandler(AbsTwitchChannelPointRedemptionHandler
         elif not isinstance(dataBundle, TwitchWebsocketDataBundle):
             raise TypeError(f'dataBundle argument is malformed: \"{dataBundle}\"')
 
-        event = dataBundle.requirePayload().getEvent()
+        event = dataBundle.requirePayload().event
 
         if event is None:
-            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event: \"{dataBundle}\"')
+            self.__timber.log('TwitchChannelPointRedemptionHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        eventId = dataBundle.getMetadata().getMessageId()
+        eventId = dataBundle.metadata.messageId
         reward = event.getReward()
         redemptionUserId = event.getUserId()
         redemptionUserInput = event.getUserInput()

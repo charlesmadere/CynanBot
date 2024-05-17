@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
@@ -20,11 +20,11 @@ class TwitchEventSubRequest():
         transport: TwitchWebsocketTransport
     ):
         if not isinstance(condition, TwitchWebsocketCondition):
-            raise ValueError(f'condition argument is malformed: \"{condition}\"')
+            raise TypeError(f'condition argument is malformed: \"{condition}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
-            raise ValueError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
+            raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
         elif not isinstance(transport, TwitchWebsocketTransport):
-            raise ValueError(f'transport argument is malformed: \"{transport}\"')
+            raise TypeError(f'transport argument is malformed: \"{transport}\"')
 
         self.__condition: TwitchWebsocketCondition = condition
         self.__subscriptionType: TwitchWebsocketSubscriptionType = subscriptionType
@@ -43,24 +43,24 @@ class TwitchEventSubRequest():
         dictionary = self.toDictionary()
         return str(dictionary)
 
-    def toDictionary(self) -> Dict[str, Any]:
+    def toDictionary(self) -> dict[str, Any]:
         return {
             'condition': self.__condition.toDictionary(),
             'subscriptionType': self.__subscriptionType,
             'transport': self.__transport.toDictionary(),
         }
 
-    def toJson(self) -> Dict[str, Any]:
-        dictionary: Dict[str, Any] = {
+    def toJson(self) -> dict[str, Any]:
+        dictionary: dict[str, Any] = {
             'transport': {
-                'method': self.__transport.getMethod().toStr(),
+                'method': self.__transport.method.toStr(),
                 'session_id': self.__transport.requireSessionId()
             },
             'type': self.__subscriptionType.toStr(),
             'version': self.__subscriptionType.getVersion()
         }
 
-        condition: Dict[str, Any] = dict()
+        condition: dict[str, Any] = dict()
         dictionary['condition'] = condition
 
         if utils.isValidStr(self.__condition.getBroadcasterUserId()):

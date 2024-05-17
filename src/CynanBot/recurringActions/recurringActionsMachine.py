@@ -173,23 +173,27 @@ class RecurringActionsMachine(RecurringActionsMachineInterface):
             actionType = random.choice(actionTypes)
             actionTypes.remove(actionType)
 
-            if actionType is RecurringActionType.SUPER_TRIVIA:
-                action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
-                    twitchChannel = user.getHandle(),
-                    twitchChannelId = twitchChannelId
-                )
-            elif actionType is RecurringActionType.WEATHER:
-                action = await self.__recurringActionsRepository.getWeatherRecurringAction(
-                    twitchChannel = user.getHandle(),
-                    twitchChannelId = twitchChannelId
-                )
-            elif actionType is RecurringActionType.WORD_OF_THE_DAY:
-                action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
-                    twitchChannel = user.getHandle(),
-                    twitchChannelId = twitchChannelId
-                )
-            else:
-                raise RuntimeError(f'Unknown RecurringActionType: \"{actionType}\"')
+            match actionType:
+                case RecurringActionType.SUPER_TRIVIA:
+                    action = await self.__recurringActionsRepository.getSuperTriviaRecurringAction(
+                        twitchChannel = user.getHandle(),
+                        twitchChannelId = twitchChannelId
+                    )
+
+                case RecurringActionType.WEATHER:
+                    action = await self.__recurringActionsRepository.getWeatherRecurringAction(
+                        twitchChannel = user.getHandle(),
+                        twitchChannelId = twitchChannelId
+                    )
+
+                case RecurringActionType.WORD_OF_THE_DAY:
+                    action = await self.__recurringActionsRepository.getWordOfTheDayRecurringAction(
+                        twitchChannel = user.getHandle(),
+                        twitchChannelId = twitchChannelId
+                    )
+
+                case _:
+                    raise RuntimeError(f'Unknown RecurringActionType: \"{actionType}\"')
 
             if action is not None and not action.isEnabled():
                 action = None
