@@ -1,5 +1,4 @@
 from enum import Enum, auto
-from typing import Optional
 
 import CynanBot.misc.utils as utils
 
@@ -12,19 +11,15 @@ class TwitchSubscriberTier(Enum):
     TIER_THREE = auto()
 
     @classmethod
-    def fromStr(cls, text: Optional[str]):
+    def fromStr(cls, text: str | None):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 
-        if text == 'prime':
-            return TwitchSubscriberTier.PRIME
-        elif text == '1000':
-            return TwitchSubscriberTier.TIER_ONE
-        elif text == '2000':
-            return TwitchSubscriberTier.TIER_TWO
-        elif text == '3000':
-            return TwitchSubscriberTier.TIER_THREE
-        else:
-            raise ValueError(f'unknown TwitchSubscriberTier: \"{text}\"')
+        match text:
+            case 'prime': return TwitchSubscriberTier.PRIME
+            case '1000': return TwitchSubscriberTier.TIER_ONE
+            case '2000': return TwitchSubscriberTier.TIER_TWO
+            case '3000': return TwitchSubscriberTier.TIER_THREE
+            case _: raise ValueError(f'unknown TwitchSubscriberTier: \"{text}\"')
