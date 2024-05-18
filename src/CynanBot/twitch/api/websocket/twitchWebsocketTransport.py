@@ -17,7 +17,7 @@ class TwitchWebsocketTransport():
 
     def requireSessionId(self) -> str:
         if not utils.isValidStr(self.sessionId):
-            raise RuntimeError(f'this TwitchWebsocketTransport has no sessionId: ({self})')
+            raise RuntimeError(f'this TwitchWebsocketTransport has no sessionId ({self})')
 
         return self.sessionId
 

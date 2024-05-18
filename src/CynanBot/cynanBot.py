@@ -898,13 +898,11 @@ class CynanBot(
                 twitchChannelProvider = self
             )
 
-            followHandler: AbsTwitchFollowHandler | None = None
-            if self.__twitchFollowingStatusRepository is not None:
-                followHandler = TwitchFollowHandler(
-                    timber = self.__timber,
-                    twitchChannelProvider = self,
-                    twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
-                )
+            followHandler: AbsTwitchFollowHandler | None = TwitchFollowHandler(
+                timber = self.__timber,
+                twitchChannelProvider = self,
+                twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
+            )
 
             pollHandler: AbsTwitchPollHandler | None = TwitchPollHandler(
                 streamAlertsManager = self.__streamAlertsManager,

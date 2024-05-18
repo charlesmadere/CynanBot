@@ -31,7 +31,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
         timber: TimberInterface,
         twitchApiService: TwitchApiServiceInterface,
         userIdsRepository: UserIdsRepositoryInterface,
-        cacheSize: int = 16
+        cacheSize: int = 32
     ):
         if not isinstance(backingDatabase, BackingDatabase):
             raise TypeError(f'backingDatabase argument is malformed: \"{backingDatabase}\"')
@@ -96,7 +96,12 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
             self.__timber.log('TwitchFollowingStatusRepository', f'Failed to fetch Twitch following status ({followingStatus=}) ({twitchChannelId=}) ({userId=})')
             return None
 
-        await self.__saveToDatabase(followingStatus)
+        await self.persistFollowingStatus(
+            followedAt = followingStatus.followedAt,
+            twitchChannelId = followingStatus.twitchChannelId,
+            userId = followingStatus.userId
+        )
+
         self.__caches[twitchChannelId][userId] = followingStatus
         return followingStatus
 
@@ -213,9 +218,18 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
 
         await connection.close()
 
-    async def __saveToDatabase(self, followingStatus: TwitchFollowingStatus):
-        if not isinstance(followingStatus, TwitchFollowingStatus):
-            raise TypeError(f'followingStatus argument is malformed: \"{followingStatus}\"')
+    async def persistFollowingStatus(
+        self,
+        followedAt: datetime,
+        twitchChannelId: str,
+        userId: str
+    ):
+        if not isinstance(followedAt, datetime):
+            raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
+        elif not utils.isValidStr(twitchChannelId):
+            raise TypeError(f'twitchChannelId argument is malformed: \"{twitchChannelId}\"')
+        elif not utils.isValidStr(userId):
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         connection = await self.__getDatabaseConnection()
         await connection.execute(
@@ -224,7 +238,7 @@ class TwitchFollowingStatusRepository(TwitchFollowingStatusRepositoryInterface):
                 VALUES ($1, $2, $3)
                 ON CONFLICT (twitchchannelid, userid) DO UPDATE SET datetime = EXCLUDED.datetime
             ''',
-            followingStatus.followedAt.isoformat(), followingStatus.twitchChannelId, followingStatus.userId
+            followedAt.isoformat(), twitchChannelId, userId
         )
 
         await connection.close()

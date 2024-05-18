@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import CynanBot.misc.utils as utils
@@ -23,13 +24,13 @@ class TwitchWebsocketEvent():
         self,
         isAnonymous: Optional[bool] = None,
         isGift: Optional[bool] = None,
+        followedAt: Optional[datetime] = None,
         bits: Optional[int] = None,
         cumulativeMonths: Optional[int] = None,
         total: Optional[int] = None,
         viewers: Optional[int] = None,
         endedAt: Optional[SimpleDateTime] = None,
         endsAt: Optional[SimpleDateTime] = None,
-        followedAt: Optional[SimpleDateTime] = None,
         lockedAt: Optional[SimpleDateTime] = None,
         locksAt: Optional[SimpleDateTime] = None,
         redeemedAt: Optional[SimpleDateTime] = None,
@@ -70,6 +71,8 @@ class TwitchWebsocketEvent():
             raise ValueError(f'isAnonymous argument is malformed: \"{isAnonymous}\"')
         elif isGift is not None and not utils.isValidBool(isGift):
             raise ValueError(f'isGift argument is malformed: \"{isGift}\'')
+        elif followedAt is not None and not isinstance(followedAt, datetime):
+            raise TypeError(f'followedAt argument is malformed: \"{followedAt}\"')
         elif bits is not None and not utils.isValidInt(bits):
             raise ValueError(f'bits argument is malformed: \"{bits}\"')
         elif cumulativeMonths is not None and not utils.isValidInt(cumulativeMonths):
@@ -82,8 +85,6 @@ class TwitchWebsocketEvent():
             raise ValueError(f'endedAt argument is malformed: \"{endedAt}\"')
         elif endsAt is not None and not isinstance(endsAt, SimpleDateTime):
             raise ValueError(f'endsAt argument is malformed: \"{endsAt}\"')
-        elif followedAt is not None and not isinstance(followedAt, SimpleDateTime):
-            raise ValueError(f'followedAt argument is malformed: \"{followedAt}\"')
         elif lockedAt is not None and not isinstance(lockedAt, SimpleDateTime):
             raise ValueError(f'lockedAt argument is malformed: \"{lockedAt}\"')
         elif locksAt is not None and not isinstance(locksAt, SimpleDateTime):
@@ -157,13 +158,13 @@ class TwitchWebsocketEvent():
 
         self.__isAnonymous: Optional[bool] = isAnonymous
         self.__isGift: Optional[bool] = isGift
+        self.__followedAt: Optional[datetime] = followedAt
         self.__bits: Optional[int] = bits
         self.__cumulativeMonths: Optional[int] = cumulativeMonths
         self.__total: Optional[int] = total
         self.__viewers: Optional[int] = viewers
         self.__endedAt: Optional[SimpleDateTime] = endedAt
         self.__endsAt: Optional[SimpleDateTime] = endsAt
-        self.__followedAt: Optional[SimpleDateTime] = followedAt
         self.__lockedAt: Optional[SimpleDateTime] = lockedAt
         self.__locksAt: Optional[SimpleDateTime] = locksAt
         self.__redeemedAt: Optional[SimpleDateTime] = redeemedAt
@@ -239,7 +240,7 @@ class TwitchWebsocketEvent():
     def getEventId(self) -> Optional[str]:
         return self.__eventId
 
-    def getFollowedAt(self) -> Optional[SimpleDateTime]:
+    def getFollowedAt(self) -> Optional[datetime]:
         return self.__followedAt
 
     def getFromBroadcasterUserId(self) -> Optional[str]:

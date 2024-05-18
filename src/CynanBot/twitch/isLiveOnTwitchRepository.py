@@ -92,9 +92,9 @@ class IsLiveOnTwitchRepository(IsLiveOnTwitchRepositoryInterface):
         )
 
         for liveUserDetail in liveUserDetails:
-            isLive = liveUserDetail.getStreamType() is TwitchStreamType.LIVE
-            twitchChannelIdToLiveStatus[liveUserDetail.getUserId()] = isLive
-            self.__cache[liveUserDetail.getUserId()] = isLive
+            isLive = liveUserDetail.streamType is TwitchStreamType.LIVE
+            twitchChannelIdToLiveStatus[liveUserDetail.userId] = isLive
+            self.__cache[liveUserDetail.userId] = isLive
 
         for twitchChannelId in twitchChannelIds:
             if twitchChannelId not in twitchChannelIdToLiveStatus:

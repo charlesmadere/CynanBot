@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import CynanBot.misc.utils as utils
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.absTwitchFollowHandler import AbsTwitchFollowHandler
@@ -16,18 +18,18 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
         self,
         timber: TimberInterface,
         twitchChannelProvider: TwitchChannelProvider,
-        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface
+        twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(twitchChannelProvider, TwitchChannelProvider):
             raise TypeError(f'twitchChannelProvider argument is malformed: \"{twitchChannelProvider}\"')
-        elif not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
+        elif twitchFollowingStatusRepository is not None and not isinstance(twitchFollowingStatusRepository, TwitchFollowingStatusRepositoryInterface):
             raise TypeError(f'twitchFollowingStatusRepository argument is malformed: \"{twitchFollowingStatusRepository}\"')
 
         self.__timber: TimberInterface = timber
         self.__twitchChannelProvider: TwitchChannelProvider = twitchChannelProvider
-        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface = twitchFollowingStatusRepository
+        self.__twitchFollowingStatusRepository: TwitchFollowingStatusRepositoryInterface | None = twitchFollowingStatusRepository
 
     async def onNewFollow(
         self,
@@ -48,4 +50,31 @@ class TwitchFollowHandler(AbsTwitchFollowHandler):
             self.__timber.log('TwitchFollowHandler', f'Received a data bundle that has no event (channel=\"{user.getHandle()}\") ({dataBundle=})')
             return
 
-        # TODO
+        followedAt = event.getFollowedAt()
+        followerUserId = event.getUserId()
+
+        await self.__persistFollowingStatus(
+            followedAt = followedAt,
+            broadcasterUserId = userId,
+            followerUserId = followerUserId
+        )
+
+    async def __persistFollowingStatus(
+        self,
+        followedAt: datetime | None,
+        broadcasterUserId: str,
+        followerUserId: str | None
+    ):
+        if followedAt is None or not utils.isValidStr(followerUserId):
+            return
+
+        twitchFollowingStatusRepository = self.__twitchFollowingStatusRepository
+
+        if twitchFollowingStatusRepository is None:
+            return
+
+        await twitchFollowingStatusRepository.persistFollowingStatus(
+            followedAt = followedAt,
+            twitchChannelId = broadcasterUserId,
+            userId = followerUserId
+        )

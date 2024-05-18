@@ -209,9 +209,9 @@ class TwitchApiService(TwitchApiServiceInterface):
         eventSubRequest: TwitchEventSubRequest
     ) -> TwitchEventSubResponse:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not isinstance(eventSubRequest, TwitchEventSubRequest):
-            raise ValueError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
+            raise TypeError(f'eventSubRequest argument is malformed: \"{eventSubRequest}\"')
 
         self.__timber.log('TwitchApiService', f'Creating EventSub subscription... ({twitchAccessToken=}) ({eventSubRequest=})')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
@@ -234,49 +234,53 @@ class TwitchApiService(TwitchApiServiceInterface):
         jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
-        if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
+        if not isinstance(jsonResponse, dict) or len(jsonResponse) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
         elif responseStatusCode != 202:
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchStatusCodeException(f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        data: list[dict[str, Any]] | None = jsonResponse.get('data')
-        if not utils.hasItems(data):
+        data: list[dict[str, Any] | Any | None] | None = jsonResponse.get('data')
+        if not isinstance(data, list) or len(data) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        dataJson: dict[str, Any] = data[0]
-        if not utils.hasItems(dataJson):
+        dataJson: dict[str, Any] | None = data[0]
+        if not isinstance(dataJson, dict) or len(dataJson) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty first \"data\" field element in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty first \"data\" field element in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         cost = utils.getIntFromDict(dataJson, 'cost')
-        createdAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(dataJson, 'created_at')))
+        createdAt = utils.getDateTimeFromDict(dataJson, 'created_at')
         subscriptionId = utils.getStrFromDict(dataJson, 'id')
         version = utils.getStrFromDict(dataJson, 'version')
-        subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
-        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
 
-        conditionJson: dict[str, Any] | None = dataJson.get('condition')
-        if not utils.hasItems(conditionJson):
-            self.__timber.log('TwitchApiService', f'Received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
-            raise TwitchJsonException(f'TwitchApiService received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+        subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
+        if subscriptionType is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketSubscriptionType instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketSubscriptionType instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+
+        status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
+        if status is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketConnectionStatus instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         condition = await self.__twitchWebsocketJsonMapper.parseWebsocketCondition(dataJson.get('condition'))
+        if condition is None:
+            self.__timber.log('TwitchApiService', f'Unable to parse TwitchWebsocketCondition instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
+            raise TwitchJsonException(f'TwitchApiService was unable to parse TwitchWebsocketCondition instance from the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         transportJson: dict[str, Any] | None = dataJson.get('transport')
-        if not utils.hasItems(transportJson):
+        if not isinstance(transportJson, dict) or len(transportJson) == 0:
             self.__timber.log('TwitchApiService', f'Received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         transport = TwitchWebsocketTransport(
-            connectedAt = datetime.fromisoformat(utils.getStrFromDict(transportJson, 'connected_at')),
+            connectedAt = utils.getDateTimeFromDict(transportJson, 'connected_at'),
             sessionId = utils.getStrFromDict(transportJson, 'session_id'),
             method = TwitchWebsocketTransportMethod.fromStr(utils.getStrFromDict(transportJson, 'method'))
         )
-
-        assert condition and subscriptionType and status, f"{condition=} {subscriptionType=} {status=}"
 
         return TwitchEventSubResponse(
             cost = cost,
@@ -641,7 +645,7 @@ class TwitchApiService(TwitchApiServiceInterface):
                 streamType = TwitchStreamType.fromStr(utils.getStrFromDict(dataEntry, 'type', fallback = ''))
             ))
 
-        users.sort(key = lambda user: user.getUserName().casefold())
+        users.sort(key = lambda user: user.userName.casefold())
         return users
 
     async def fetchModerator(

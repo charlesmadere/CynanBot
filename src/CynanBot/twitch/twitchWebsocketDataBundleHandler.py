@@ -255,7 +255,7 @@ class TwitchWebsocketDataBundleHandler(TwitchWebsocketDataBundleListener):
         outcomes = event.getOutcomes()
         if outcomes is not None and len(outcomes) >= 1:
             for outcome in outcomes:
-                topPredictors = outcome.getTopPredictors()
+                topPredictors = outcome.topPredictors
 
                 if topPredictors is not None and len(topPredictors) >= 1:
                     for topPredictor in topPredictors:

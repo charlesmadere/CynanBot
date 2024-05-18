@@ -19,6 +19,7 @@ from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
     TwitchApiServiceInterface
 from CynanBot.twitch.api.twitchEventSubRequest import TwitchEventSubRequest
+from CynanBot.twitch.api.twitchEventSubResponse import TwitchEventSubResponse
 from CynanBot.twitch.api.websocket.twitchWebsocketCondition import \
     TwitchWebsocketCondition
 from CynanBot.twitch.api.websocket.twitchWebsocketDataBundle import \
@@ -67,6 +68,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK,
             TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS,
             TwitchWebsocketSubscriptionType.CHEER,
+            TwitchWebsocketSubscriptionType.FOLLOW,
             TwitchWebsocketSubscriptionType.RAID,
             TwitchWebsocketSubscriptionType.SUBSCRIBE,
             TwitchWebsocketSubscriptionType.SUBSCRIPTION_GIFT,
@@ -165,10 +167,11 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
                 transport = transport
             )
 
+            response: TwitchEventSubResponse | None = None
             exception: Exception | None = None
 
             try:
-                await self.__twitchApiService.createEventSubSubscription(
+                response = await self.__twitchApiService.createEventSubSubscription(
                     twitchAccessToken = twitchAccessToken,
                     eventSubRequest = eventSubRequest
                 )
@@ -177,7 +180,7 @@ class TwitchWebsocketClient(TwitchWebsocketClientInterface):
 
             results[subscriptionType] = exception
 
-            if exception is not None:
+            if response is None or exception is not None:
                 self.__badSubscriptionTypesFor[user].add(subscriptionType)
 
         self.__timber.log('TwitchWebsocketClient', f'Finished creating EventSub subscription(s) for {user}: {results}')

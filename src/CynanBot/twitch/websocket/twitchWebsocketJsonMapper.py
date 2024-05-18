@@ -51,7 +51,7 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
 
     def __init__(self, timber: TimberInterface):
         if not isinstance(timber, TimberInterface):
-            raise ValueError(f'timber argument is malformed: \"{timber}\"')
+            raise TypeError(f'timber argument is malformed: \"{timber}\"')
 
         self.__timber: TimberInterface = timber
 
@@ -318,6 +318,10 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         if 'is_gift' in eventJson and eventJson.get('is_gift') is not None:
             isGift = utils.getBoolFromDict(eventJson, 'is_gift')
 
+        followedAt: datetime | None = None
+        if 'followed_at' in eventJson and utils.isValidStr(eventJson.get('followed_at')):
+            followedAt = utils.getDateTimeFromDict(eventJson, 'followed_at')
+
         bits: int | None = None
         if 'bits' in eventJson and utils.isValidInt(eventJson.get('bits')):
             bits = utils.getIntFromDict(eventJson, 'bits')
@@ -341,10 +345,6 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         endsAt: SimpleDateTime | None = None
         if 'ends_at' in eventJson and utils.isValidStr(eventJson.get('ends_at')):
             endsAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'ends_at')))
-
-        followedAt: SimpleDateTime | None = None
-        if 'followed_at' in eventJson and utils.isValidStr(eventJson.get('followed_at')):
-            followedAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(eventJson, 'followed_at')))
 
         lockedAt: SimpleDateTime | None = None
         if 'locked_at' in eventJson and utils.isValidStr(eventJson.get('locked_at')):
@@ -516,13 +516,13 @@ class TwitchWebsocketJsonMapper(TwitchWebsocketJsonMapperInterface):
         return TwitchWebsocketEvent(
             isAnonymous = isAnonymous,
             isGift = isGift,
+            followedAt = followedAt,
             bits = bits,
             cumulativeMonths = cumulativeMonths,
             total = total,
             viewers = viewers,
             endedAt = endedAt,
             endsAt = endsAt,
-            followedAt = followedAt,
             lockedAt = lockedAt,
             locksAt = locksAt,
             redeemedAt = redeemedAt,
