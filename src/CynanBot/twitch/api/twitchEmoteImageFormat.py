@@ -16,9 +16,7 @@ class TwitchEmoteImageFormat(Enum):
 
         text = text.lower()
 
-        if text == 'animated':
-            return TwitchEmoteImageFormat.ANIMATED
-        elif text == 'static':
-            return TwitchEmoteImageFormat.STATIC
-        else:
-            return TwitchEmoteImageFormat.DEFAULT
+        match text:
+            case 'animated': return TwitchEmoteImageFormat.ANIMATED
+            case 'static': return TwitchEmoteImageFormat.STATIC
+            case _: return TwitchEmoteImageFormat.DEFAULT

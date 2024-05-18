@@ -1,6 +1,6 @@
 import traceback
 from datetime import datetime, timedelta, timezone, tzinfo
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.misc.simpleDateTime import SimpleDateTime
@@ -175,7 +175,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received a null/empty/invalid JSON response when banning user ({banRequest=}) ({jsonResponse=})')
             raise TwitchJsonException(f'Recieved a null/empty JSON response when banning user ({banRequest=}) ({jsonResponse=})')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
         if not utils.hasItems(data) or not utils.hasItems(data[0]):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when banning user ({banRequest=}) ({jsonResponse=})')
@@ -183,7 +183,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         entry = data[0]
 
-        endTime: Optional[SimpleDateTime] = None
+        endTime: SimpleDateTime | None = None
         if 'end_time' in entry and utils.isValidStr(entry.get('end_time')):
             endTime = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(entry, 'end_time')))
 
@@ -195,7 +195,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             userId = utils.getStrFromDict(entry, 'user_id')
         )
 
-    async def __calculateExpirationTime(self, expiresInSeconds: Optional[int]) -> datetime:
+    async def __calculateExpirationTime(self, expiresInSeconds: int | None) -> datetime:
         nowDateTime = datetime.now(self.__timeZone)
 
         if utils.isValidInt(expiresInSeconds) and expiresInSeconds > 0:
@@ -231,7 +231,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Optional[dict[str, Any]] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -241,7 +241,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchStatusCodeException(f'TwitchApiService encountered non-202 HTTP status code ({responseStatusCode}) when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
-        data: Optional[list[dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"data\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
@@ -258,14 +258,14 @@ class TwitchApiService(TwitchApiServiceInterface):
         subscriptionType = TwitchWebsocketSubscriptionType.fromStr(utils.getStrFromDict(dataJson, 'type'))
         status = TwitchWebsocketConnectionStatus.fromStr(utils.getStrFromDict(dataJson, 'status'))
 
-        conditionJson: Optional[Dict[str, Any]] = dataJson.get('condition')
+        conditionJson: dict[str, Any] | None = dataJson.get('condition')
         if not utils.hasItems(conditionJson):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"condition\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
 
         condition = await self.__twitchWebsocketJsonMapper.parseWebsocketCondition(dataJson.get('condition'))
 
-        transportJson: Optional[Dict[str, Any]] = dataJson.get('transport')
+        transportJson: dict[str, Any] | None = dataJson.get('transport')
         if not utils.hasItems(transportJson):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"transport\" field in the JSON response when creating EventSub subscription ({twitchAccessToken=}) ({eventSubRequest=}): {jsonResponse}')
@@ -298,17 +298,17 @@ class TwitchApiService(TwitchApiServiceInterface):
         bannedUserRequest: TwitchBannedUserRequest
     ) -> TwitchBannedUsersResponse:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise ValueError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
+            raise TypeError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching banned users... {bannedUserRequest=}')
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
         clientSession = await self.__networkClientProvider.get()
 
         firstFetch = True
-        currentPagination: Optional[TwitchPaginationResponse] = None
-        pages: List[TwitchBannedUsersPageResponse] = list()
+        currentPagination: TwitchPaginationResponse | None = None
+        pages: list[TwitchBannedUsersPageResponse] = list()
 
         while firstFetch or currentPagination is not None:
             if firstFetch:
@@ -326,17 +326,17 @@ class TwitchApiService(TwitchApiServiceInterface):
                 currentPagination = None
             else:
                 pages.append(page)
-                currentPagination = page.getPagination()
+                currentPagination = page.pagination
 
-        allUsers: List[TwitchBannedUser] = list()
+        allUsers: list[TwitchBannedUser] = list()
 
         for page in pages:
-            usersPage = page.getUsers()
+            usersPage = page.users
 
             if usersPage is not None and len(usersPage) >= 1:
                 allUsers.extend(usersPage)
 
-        allUsers.sort(key = lambda user: user.getUserLogin().lower())
+        allUsers.sort(key = lambda user: user.userLogin.casefold())
 
         return TwitchBannedUsersResponse(
             users = allUsers,
@@ -350,18 +350,18 @@ class TwitchApiService(TwitchApiServiceInterface):
         twitchAccessToken: str,
         twitchClientId: str,
         bannedUserRequest: TwitchBannedUserRequest,
-        currentPagination: Optional[TwitchPaginationResponse]
+        currentPagination: TwitchPaginationResponse | None
     ) -> TwitchBannedUsersPageResponse:
         if not isinstance(clientSession, NetworkHandle):
-            raise ValueError(f'clientSession argument is malformed: \"{clientSession}\"')
+            raise TypeError(f'clientSession argument is malformed: \"{clientSession}\"')
         elif not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(twitchClientId):
-            raise ValueError(f'twitchClientId argument is malformed: \"{twitchClientId}\"')
+            raise TypeError(f'twitchClientId argument is malformed: \"{twitchClientId}\"')
         elif not isinstance(bannedUserRequest, TwitchBannedUserRequest):
-            raise ValueError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
+            raise TypeError(f'bannedUserRequest argument is malformed: \"{bannedUserRequest}\"')
         elif currentPagination is not None and not isinstance(currentPagination, TwitchPaginationResponse):
-            raise ValueError(f'currentPagination argument is malformed: \"{currentPagination}\"')
+            raise TypeError(f'currentPagination argument is malformed: \"{currentPagination}\"')
 
         url = f'https://api.twitch.tv/helix/moderation/banned?broadcaster_id={bannedUserRequest.getBroadcasterId()}&first=100'
 
@@ -369,7 +369,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             url = f'{url}&user_id={bannedUserRequest.getRequestedUserId()}'
 
         if currentPagination is not None:
-            url = f'{url}&first={currentPagination.getCursor()}'
+            url = f'{url}&first={currentPagination.cursor}'
 
         try:
             response = await clientSession.get(
@@ -384,7 +384,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: Dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -397,26 +397,26 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching banned users ({twitchAccessToken=}) ({bannedUserRequest=}): {responseStatusCode}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
         if not utils.hasItems(data):
             return TwitchBannedUsersPageResponse(
                 users = None,
                 pagination = None
             )
 
-        users: List[TwitchBannedUser] = list()
+        users: list[TwitchBannedUser] = list()
 
         for bannedUserJson in data:
-            expiresAt: Optional[SimpleDateTime] = None
+            expiresAt: datetime | None = None
             if 'expires_at' in bannedUserJson and utils.isValidStr(bannedUserJson.get('expires_at')):
-                expiresAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(bannedUserJson, 'expires_at')))
+                expiresAt = datetime.fromisoformat(utils.getStrFromDict(bannedUserJson, 'expires_at'))
 
-            reason: Optional[str] = None
+            reason: str | None = None
             if 'reason' in bannedUserJson and utils.isValidStr(bannedUserJson.get('reason')):
                 reason = utils.getStrFromDict(bannedUserJson, 'reason')
 
             users.append(TwitchBannedUser(
-                createdAt = SimpleDateTime(utils.getDateTimeFromStr(utils.getStrFromDict(bannedUserJson, 'created_at'))),
+                createdAt = datetime.fromisoformat(utils.getStrFromDict(bannedUserJson, 'created_at')),
                 expiresAt = expiresAt,
                 moderatorId = utils.getStrFromDict(bannedUserJson, 'moderator_id'),
                 moderatorLogin = utils.getStrFromDict(bannedUserJson, 'moderator_login'),
@@ -427,12 +427,12 @@ class TwitchApiService(TwitchApiServiceInterface):
                 userName = utils.getStrFromDict(bannedUserJson, 'user_name')
             ))
 
-        users.sort(key = lambda user: user.getUserLogin().lower())
+        users.sort(key = lambda user: user.userLogin.casefold())
 
-        paginationJson: Optional[Dict[str, Any]] = jsonResponse.get('pagination')
-        pagination: Optional[TwitchPaginationResponse] = None
+        paginationJson: dict[str, Any] | None = jsonResponse.get('pagination')
+        pagination: TwitchPaginationResponse | None = None
 
-        if isinstance(paginationJson, Dict) and utils.isValidStr(paginationJson.get('cursor')):
+        if isinstance(paginationJson, dict) and utils.isValidStr(paginationJson.get('cursor')):
             pagination = TwitchPaginationResponse(
                 cursor = utils.getStrFromDict(paginationJson, 'cursor')
             )
@@ -606,7 +606,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching user details ({twitchChannelIds=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -673,7 +673,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching when fetching moderator ({broadcasterId=}) ({userId=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -718,7 +718,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching tokens (code=\"{code}\"): {response.getStatusCode()}')
 
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -752,11 +752,11 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchUserDetails]:
+    ) -> TwitchUserDetails | None:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not utils.isValidStr(userId):
-            raise ValueError(f'userId argument is malformed: \"{userId}\"')
+            raise TypeError(f'userId argument is malformed: \"{userId}\"')
 
         self.__timber.log('TwitchApiService', f'Fetching user details... ({userId=})')
 
@@ -779,7 +779,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details ({userId=}): {response.getStatusCode()}')
 
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -789,13 +789,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user details ({userId=}): {jsonResponse}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user details ({userId=}): {jsonResponse}')
             return None
 
-        entry: Optional[Dict[str, Any]] = None
+        entry: dict[str, Any] | None = None
 
         for dataEntry in data:
             if utils.getStrFromDict(dataEntry, 'id').lower() == userId:
@@ -846,7 +846,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user details (userName=\"{userName}\"): {response.getStatusCode()}')
 
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -886,7 +886,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchUserSubscriptionDetails]:
+    ) -> TwitchUserSubscriptionDetails | None:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
@@ -915,7 +915,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {response.getStatusCode()}')
 
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -925,13 +925,13 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Received an error of some kind when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             raise TwitchErrorException(f'TwitchApiService received an error of some kind when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
 
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in JSON response when fetching user subscription details (broadcasterId=\"{broadcasterId}\") (userId=\"{userId}\"): {jsonResponse}')
             return None
 
-        entry: Optional[Dict[str, Any]] = None
+        entry: dict[str, Any] | None = None
 
         for dataEntry in data:
             if dataEntry.get('user_id') == userId:
@@ -1093,7 +1093,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         clientSession = await self.__networkClientProvider.get()
         twitchClientId = await self.__twitchCredentialsProvider.getTwitchClientId()
-        response: Optional[NetworkResponse] = None
+        response: NetworkResponse | None = None
 
         try:
             response = await clientSession.delete(
@@ -1145,7 +1145,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when refreshing tokens ({twitchAccessToken=}): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):

@@ -95,14 +95,14 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         if bannedUsersResponse is None:
             return False
 
-        bannedUsers = bannedUsersResponse.getUsers()
+        bannedUsers = bannedUsersResponse.users
 
         if bannedUsers is None or len(bannedUsers) == 0:
             return False
 
         for bannedUser in bannedUsers:
-            if bannedUser.getUserId() == userIdToTimeout:
-                if bannedUser.getExpiresAt() is None:
+            if bannedUser.userId == userIdToTimeout:
+                if bannedUser.expiresAt is None:
                     self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is banned: ({bannedUser=}) ({twitchChannelId=}) ({userIdToTimeout=})')
                 else:
                     self.__timber.log('TwitchTimeoutHelper', f'The given user ID will not be timed out as this user is already timed out: ({bannedUser=}) ({twitchChannelId=}) ({userIdToTimeout=})')
