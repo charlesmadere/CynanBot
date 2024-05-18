@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
@@ -17,7 +17,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         self,
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         if not isinstance(event, TwitchWebsocketEvent):
             raise TypeError(f'event argument is malformed: \"{event}\"')
         elif not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
@@ -47,16 +47,16 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
     async def websocketOutcomesToColorsArray(
         self,
-        outcomes: List[TwitchOutcome]
-    ) -> List[Dict[str, int]]:
-        if not isinstance(outcomes, List) or len(outcomes) == 0:
+        outcomes: list[TwitchOutcome]
+    ) -> list[dict[str, int]]:
+        if not isinstance(outcomes, list) or len(outcomes) == 0:
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
-        colors: List[Dict[str, int]] = list()
+        colors: list[dict[str, int]] = list()
 
         if len(outcomes) <= 2:
             for outcome in outcomes:
-                colors.append(await self.outcomeColorToEventData(outcome.getColor()))
+                colors.append(await self.outcomeColorToEventData(outcome.color))
         else:
             for index, outcome in enumerate(outcomes):
                 if index == 0:
@@ -139,7 +139,7 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
     async def outcomeColorToEventData(
         self,
         color: TwitchOutcomeColor
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         if not isinstance(color, TwitchOutcomeColor):
             raise TypeError(f'color argument is malformed: \"{color}\"')
 
@@ -160,23 +160,23 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
 
     async def outcomesToEventDataArray(
         self,
-        outcomes: List[TwitchOutcome]
-    ) -> List[Dict[str, Any]]:
-        if not isinstance(outcomes, List) or len(outcomes) == 0:
+        outcomes: list[TwitchOutcome]
+    ) -> list[dict[str, Any]]:
+        if not isinstance(outcomes, list) or len(outcomes) == 0:
             raise TypeError(f'outcomes argument is malformed: \"{outcomes}\"')
 
-        sortedOutcomes = sorted(outcomes, key = lambda outcome: outcome.getTitle().lower())
+        sortedOutcomes = sorted(outcomes, key = lambda outcome: outcome.title.lower())
         colors = await self.websocketOutcomesToColorsArray(outcomes)
 
-        events: List[Dict[str, Any]] = list()
+        events: list[dict[str, Any]] = list()
 
         for index, outcome in enumerate(sortedOutcomes):
             events.append({
-                'channelPoints': outcome.getChannelPoints(),
+                'channelPoints': outcome.channelPoints,
                 'color': colors[index],
-                'outcomeId': outcome.getOutcomeId(),
-                'title': outcome.getTitle(),
-                'users': outcome.getUsers()
+                'outcomeId': outcome.outcomeId,
+                'title': outcome.title,
+                'users': outcome.users
             })
 
         return events
@@ -188,13 +188,14 @@ class TwitchPredictionWebsocketUtils(TwitchPredictionWebsocketUtilsInterface):
         if not isinstance(subscriptionType, TwitchWebsocketSubscriptionType):
             raise TypeError(f'subscriptionType argument is malformed: \"{subscriptionType}\"')
 
-        if subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
-            return 'prediction_begin'
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
-            return 'prediction_end'
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
-            return 'prediction_lock'
-        elif subscriptionType is TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
-            return 'prediction_progress'
-        else:
-            raise ValueError(f'Can\'t convert the given WebsocketSubscriptionType (\"{subscriptionType}\") into a string!')
+        match subscriptionType:
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_BEGIN:
+                return 'prediction_begin'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_END:
+                return 'prediction_end'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_LOCK:
+                return 'prediction_lock'
+            case TwitchWebsocketSubscriptionType.CHANNEL_PREDICTION_PROGRESS:
+                return 'prediction_progress'
+            case _:
+                raise ValueError(f'Can\'t convert the given WebsocketSubscriptionType (\"{subscriptionType}\") into a string!')

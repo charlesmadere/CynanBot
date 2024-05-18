@@ -114,4 +114,4 @@ class TwitchWebsocketSubscriptionType(Enum):
             case TwitchWebsocketSubscriptionType.SUBSCRIPTION_MESSAGE:
                 return 'channel.subscription.message'
             case _:
-                raise RuntimeError(f'unknown WebsocketSubscriptionType: \"{self}\"')
+                raise RuntimeError(f'unknown TwitchWebsocketSubscriptionType: \"{self}\"')

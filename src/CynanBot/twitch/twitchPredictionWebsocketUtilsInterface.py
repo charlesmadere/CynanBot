@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from CynanBot.twitch.api.twitchOutcome import TwitchOutcome
 from CynanBot.twitch.api.twitchOutcomeColor import TwitchOutcomeColor
@@ -16,21 +16,21 @@ class TwitchPredictionWebsocketUtilsInterface(ABC):
         self,
         event: TwitchWebsocketEvent,
         subscriptionType: TwitchWebsocketSubscriptionType
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         pass
 
     @abstractmethod
     async def outcomeColorToEventData(
         self,
         color: TwitchOutcomeColor
-    ) -> Dict[str, int]:
+    ) -> dict[str, int]:
         pass
 
     @abstractmethod
     async def outcomesToEventDataArray(
         self,
-        outcomes: List[TwitchOutcome]
-    ) -> List[Dict[str, Any]]:
+        outcomes: list[TwitchOutcome]
+    ) -> list[dict[str, Any]]:
         pass
 
     @abstractmethod
