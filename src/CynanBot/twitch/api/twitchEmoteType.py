@@ -12,15 +12,12 @@ class TwitchEmoteType(Enum):
     @classmethod
     def fromStr(cls, text: str):
         if not utils.isValidStr(text):
-            raise ValueError(f'text argument is malformed: \"{text}\"')
+            raise TypeError(f'text argument is malformed: \"{text}\"')
 
         text = text.lower()
 
-        if text == 'bitstier':
-            return TwitchEmoteType.BITS
-        elif text == 'follower':
-            return TwitchEmoteType.FOLLOWER
-        elif text == 'subscriptions':
-            return TwitchEmoteType.SUBSCRIPTIONS
-        else:
-            raise RuntimeError(f'unknown TwitchEmoteType: \"{text}\"')
+        match text:
+            case 'bitstier': return TwitchEmoteType.BITS
+            case 'follower': return TwitchEmoteType.FOLLOWER
+            case 'subscriptions': return TwitchEmoteType.SUBSCRIPTIONS
+            case _: raise ValueError(f'unknown TwitchEmoteType: \"{text}\"')

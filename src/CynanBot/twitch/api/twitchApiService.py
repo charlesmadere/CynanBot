@@ -446,7 +446,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         self,
         broadcasterId: str,
         twitchAccessToken: str
-    ) -> List[TwitchEmoteDetails]:
+    ) -> list[TwitchEmoteDetails]:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         if not utils.isValidStr(twitchAccessToken):
@@ -469,7 +469,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             raise GenericNetworkException(f'TwitchApiService encountered network error when fetching emote details (broadcasterId=\"{broadcasterId}\") (twitchAccessToken=\"{twitchAccessToken}\"): {e}')
 
         responseStatusCode = response.getStatusCode()
-        jsonResponse: dict[str, Any] | Any = await response.json()
+        jsonResponse: dict[str, Any] | Any | None = await response.json()
         await response.close()
 
         if not (isinstance(jsonResponse, dict) and utils.hasItems(jsonResponse)):
@@ -482,16 +482,16 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching emote details (broadcasterId=\"{broadcasterId}\"): {responseStatusCode}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
         if not utils.hasItems(data):
             self.__timber.log('TwitchApiService', f'Received a null/empty \"data\" field in the JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
             raise TwitchJsonException(f'TwitchApiService received a null/empty \"data\" field in the JSON response when fetching emote details (broadcasterId=\"{broadcasterId}\"): {jsonResponse}')
 
-        emoteDetailsList: List[TwitchEmoteDetails] = list()
+        emoteDetailsList: list[TwitchEmoteDetails] = list()
 
         for emoteJson in data:
-            imagesJson: Dict[str, str] = emoteJson['images']
-            emoteImages: List[TwitchEmoteImage] = list()
+            imagesJson: dict[str, str] = emoteJson['images']
+            emoteImages: list[TwitchEmoteImage] = list()
 
             for imageJsonKey, imageJsonValue in imagesJson:
                 emoteImages.append(TwitchEmoteImage(
