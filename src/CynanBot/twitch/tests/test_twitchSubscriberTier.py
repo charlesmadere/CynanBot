@@ -1,4 +1,4 @@
-from typing import Optional
+import pytest
 
 from CynanBot.twitch.api.twitchSubscriberTier import TwitchSubscriberTier
 
@@ -22,40 +22,25 @@ class TestTwitchSubscriberTier():
         assert result is TwitchSubscriberTier.TIER_THREE
 
     def test_fromStr_withEmptyString(self):
-        result: Optional[TwitchSubscriberTier] = None
-        exception: Optional[Exception] = None
+        result: TwitchSubscriberTier | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = TwitchSubscriberTier.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withNone(self):
-        result: Optional[TwitchSubscriberTier] = None
-        exception: Optional[Exception] = None
+        result: TwitchSubscriberTier | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = TwitchSubscriberTier.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
 
     def test_fromStr_withWhitespaceString(self):
-        result: Optional[TwitchSubscriberTier] = None
-        exception: Optional[Exception] = None
+        result: TwitchSubscriberTier | None = None
 
-        try:
+        with pytest.raises(TypeError):
             result = TwitchSubscriberTier.fromStr('')
-        except Exception as e:
-            exception = e
 
         assert result is None
-        assert exception is not None
-        assert isinstance(exception, ValueError)
