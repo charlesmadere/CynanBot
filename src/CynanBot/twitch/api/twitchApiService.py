@@ -139,9 +139,9 @@ class TwitchApiService(TwitchApiServiceInterface):
         banRequest: TwitchBanRequest
     ) -> TwitchBanResponse:
         if not utils.isValidStr(twitchAccessToken):
-            raise ValueError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
+            raise TypeError(f'twitchAccessToken argument is malformed: \"{twitchAccessToken}\"')
         elif not isinstance(banRequest, TwitchBanRequest):
-            raise ValueError(f'banRequest argument is malformed: \"{banRequest}\"')
+            raise TypeError(f'banRequest argument is malformed: \"{banRequest}\"')
 
         self.__timber.log('TwitchApiService', f'Banning user... ({twitchAccessToken=}) ({banRequest=})')
         clientSession = await self.__networkClientProvider.get()
@@ -149,7 +149,7 @@ class TwitchApiService(TwitchApiServiceInterface):
 
         try:
             response = await clientSession.post(
-                url = f'https://api.twitch.tv/helix/moderation/bans?broadcaster_id={banRequest.getBroadcasterUserId()}&moderator_id={banRequest.getModeratorUserId()}',
+                url = f'https://api.twitch.tv/helix/moderation/bans?broadcaster_id={banRequest.broadcasterUserId}&moderator_id={banRequest.moderatorUserId}',
                 headers = {
                     'Authorization': f'Bearer {twitchAccessToken}',
                     'Client-Id': twitchClientId

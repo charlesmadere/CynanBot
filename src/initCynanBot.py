@@ -654,6 +654,7 @@ timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface =  Timeo
 twitchTimeoutHelper: TwitchTimeoutHelperInterface = TwitchTimeoutHelper(
     timber = timber,
     timeoutImmuneUserIdsRepository = timeoutImmuneUserIdsRepository,
+    timeZoneRepository = timeZoneRepository,
     twitchApiService = twitchApiService,
     twitchConstants = twitchUtils,
     twitchHandleProvider = authRepository,

@@ -1,7 +1,9 @@
 import traceback
-from datetime import datetime, timedelta, timezone, tzinfo
+from datetime import datetime, timedelta
 
 import CynanBot.misc.utils as utils
+from CynanBot.location.timeZoneRepositoryInterface import \
+    TimeZoneRepositoryInterface
 from CynanBot.misc.simpleDateTime import SimpleDateTime
 from CynanBot.timber.timberInterface import TimberInterface
 from CynanBot.twitch.api.twitchApiServiceInterface import \
@@ -32,17 +34,19 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
         self,
         timber: TimberInterface,
         timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface,
+        timeZoneRepository: TimeZoneRepositoryInterface,
         twitchApiService: TwitchApiServiceInterface,
         twitchConstants: TwitchConstantsInterface,
         twitchHandleProvider: TwitchHandleProviderInterface,
         twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface,
-        userIdsRepository: UserIdsRepositoryInterface,
-        timeZone: tzinfo = timezone.utc
+        userIdsRepository: UserIdsRepositoryInterface
     ):
         if not isinstance(timber, TimberInterface):
             raise TypeError(f'timber argument is malformed: \"{timber}\"')
         elif not isinstance(timeoutImmuneUserIdsRepository, TimeoutImmuneUserIdsRepositoryInterface):
             raise TypeError(f'timeoutImmuneUserIdsRepository argument is malformed: \"{timeoutImmuneUserIdsRepository}\"')
+        elif not isinstance(timeZoneRepository, TimeZoneRepositoryInterface):
+            raise TypeError(f'timeZoneRepository argument is malformed: \"{timeZoneRepository}\"')
         elif not isinstance(twitchApiService, TwitchApiServiceInterface):
             raise TypeError(f'twitchApiService argument is malformed: \"{twitchApiService}\"')
         elif not isinstance(twitchConstants, TwitchConstantsInterface):
@@ -53,17 +57,15 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             raise TypeError(f'twitchTimeoutRemodHelper argument is malformed: \"{twitchTimeoutRemodHelper}\"')
         elif not isinstance(userIdsRepository, UserIdsRepositoryInterface):
             raise TypeError(f'userIdsRepository argument is malformed: \"{userIdsRepository}\"')
-        elif not isinstance(timeZone, tzinfo):
-            raise TypeError(f'timeZone argument is malformed: \"{timeZone}\"')
 
         self.__timber: TimberInterface = timber
         self.__timeoutImmuneUserIdsRepository: TimeoutImmuneUserIdsRepositoryInterface = timeoutImmuneUserIdsRepository
+        self.__timeZoneRepository: TimeZoneRepositoryInterface = timeZoneRepository
         self.__twitchApiService: TwitchApiServiceInterface = twitchApiService
         self.__twitchConstants: TwitchConstantsInterface = twitchConstants
         self.__twitchHandleProvider: TwitchHandleProviderInterface = twitchHandleProvider
         self.__twitchTimeoutRemodHelper: TwitchTimeoutRemodHelperInterface = twitchTimeoutRemodHelper
         self.__userIdsRepository: UserIdsRepositoryInterface = userIdsRepository
-        self.__timeZone: tzinfo = timeZone
 
     async def __isAlreadyCurrentlyBannedOrTimedOut(
         self,
@@ -212,7 +214,7 @@ class TwitchTimeoutHelper(TwitchTimeoutHelperInterface):
             return False
 
         if mustRemod:
-            remodDateTime = datetime.now(self.__timeZone) + timedelta(seconds = durationSeconds)
+            remodDateTime = datetime.now(self.__timeZoneRepository.getDefault()) + timedelta(seconds = durationSeconds)
 
             await self.__twitchTimeoutRemodHelper.submitRemodData(TwitchTimeoutRemodData(
                 remodDateTime = SimpleDateTime(remodDateTime),
