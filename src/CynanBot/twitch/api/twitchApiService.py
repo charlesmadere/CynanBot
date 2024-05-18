@@ -649,7 +649,7 @@ class TwitchApiService(TwitchApiServiceInterface):
         broadcasterId: str,
         twitchAccessToken: str,
         userId: str
-    ) -> Optional[TwitchModUser]:
+    ) -> TwitchModUser | None:
         if not utils.isValidStr(broadcasterId):
             raise ValueError(f'broadcasterId argument is malformed: \"{broadcasterId}\"')
         elif not utils.isValidStr(twitchAccessToken):
@@ -686,7 +686,7 @@ class TwitchApiService(TwitchApiServiceInterface):
             self.__timber.log('TwitchApiService', f'Encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
             raise GenericNetworkException(f'TwitchApiService encountered non-200 HTTP status code when fetching moderator ({broadcasterId=}) ({userId=}): {responseStatusCode}')
 
-        data: Optional[List[Dict[str, Any]]] = jsonResponse.get('data')
+        data: list[dict[str, Any]] | None = jsonResponse.get('data')
         if not utils.hasItems(data):
             return None
 
