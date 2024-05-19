@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 import CynanBot.misc.utils as utils
 from CynanBot.trivia.questions.triviaQuestionType import TriviaQuestionType
@@ -22,8 +21,7 @@ class AbsTriviaQuestion(ABC):
         triviaId: str,
         triviaDifficulty: TriviaDifficulty,
         originalTriviaSource: TriviaSource | None,
-        triviaSource: TriviaSource,
-        triviaType: TriviaQuestionType
+        triviaSource: TriviaSource
     ):
         if not utils.isValidStr(question):
             raise NoTriviaQuestionException(f'question argument is malformed: \"{question}\"')
@@ -35,8 +33,6 @@ class AbsTriviaQuestion(ABC):
             raise BadTriviaSourceException(f'originalTriviaSource argument is malformed: \"{triviaSource}\"')
         elif not isinstance(triviaSource, TriviaSource):
             raise BadTriviaSourceException(f'triviaSource argument is malformed: \"{triviaSource}\"')
-        elif not isinstance(triviaType, TriviaQuestionType):
-            raise BadTriviaTypeException(f'triviaType argument is malformed: \"{triviaType}\"')
 
         self.__category: str | None = category
         self.__categoryId: str | None = categoryId
@@ -45,55 +41,46 @@ class AbsTriviaQuestion(ABC):
         self.__triviaDifficulty: TriviaDifficulty = triviaDifficulty
         self.__originalTriviaSource: TriviaSource | None = originalTriviaSource
         self.__triviaSource: TriviaSource = triviaSource
-        self.__triviaType: TriviaQuestionType = triviaType
 
-    def getCategory(self) -> str | None:
+    @property
+    def category(self) -> str | None:
         return self.__category
 
-    def getCategoryId(self) -> str | None:
+    @property
+    def categoryId(self) -> str | None:
         return self.__categoryId
 
+    @property
     @abstractmethod
-    def getCorrectAnswers(self) -> list[str]:
+    def correctAnswers(self) -> list[str]:
         pass
 
-    def getOriginalTriviaSource(self) -> TriviaSource | None:
+    @property
+    def originalTriviaSource(self) -> TriviaSource | None:
         return self.__originalTriviaSource
 
-    @abstractmethod
-    def getPrompt(self, delimiter: str = ' ') -> str:
-        pass
-
-    def getQuestion(self) -> str:
+    @property
+    def question(self) -> str:
         return self.__question
 
+    @property
     @abstractmethod
-    def getResponses(self) -> list[str]:
+    def responses(self) -> list[str]:
         pass
 
-    def getTriviaDifficulty(self) -> TriviaDifficulty:
+    @property
+    def triviaDifficulty(self) -> TriviaDifficulty:
         return self.__triviaDifficulty
 
-    def getTriviaId(self) -> str:
+    @property
+    def triviaId(self) -> str:
         return self.__triviaId
 
-    def getTriviaSource(self) -> TriviaSource:
+    @property
+    def triviaSource(self) -> TriviaSource:
         return self.__triviaSource
 
-    def getTriviaType(self) -> TriviaQuestionType:
-        return self.__triviaType
-
-    def __repr__(self) -> str:
-        dictionary = self.toDictionary()
-        return str(dictionary)
-
-    def toDictionary(self) -> dict[str, Any]:
-        return {
-            'category': self.__category,
-            'categoryId': self.__categoryId,
-            'question': self.__question,
-            'triviaDifficulty': self.__triviaDifficulty,
-            'triviaId': self.__triviaId,
-            'triviaSource': self.__triviaSource,
-            'triviaType': self.__triviaType
-        }
+    @property
+    @abstractmethod
+    def triviaType(self) -> TriviaQuestionType:
+        pass

@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import aiofiles
 import aiofiles.ospath
@@ -46,7 +46,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         self.__triviaQuestionCompiler: TriviaQuestionCompilerInterface = triviaQuestionCompiler
         self.__triviaDatabaseFile: str = triviaDatabaseFile
 
-        self.__hasQuestionSetAvailable: Optional[bool] = None
+        self.__hasQuestionSetAvailable: bool | None = None
 
     async def fetchTriviaQuestion(self, fetchOptions: TriviaFetchOptions) -> AbsTriviaQuestion:
         if not isinstance(fetchOptions, TriviaFetchOptions):
@@ -71,7 +71,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
             correctAnswer = await self.__triviaQuestionCompiler.compileResponse(
                 response = utils.getStrFromDict(triviaDict, 'correctAnswer')
             )
-            correctAnswerStrings: List[str] = list()
+            correctAnswerStrings: list[str] = list()
             correctAnswerStrings.append(correctAnswer)
 
             wrongAnswers = await self.__triviaQuestionCompiler.compileResponses(triviaDict['wrongAnswers'])
@@ -94,11 +94,9 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
             )
         elif triviaType is TriviaQuestionType.TRUE_FALSE:
             correctAnswer = utils.getBoolFromDict(triviaDict, 'correctAnswer')
-            correctAnswerBools: List[bool] = list()
-            correctAnswerBools.append(correctAnswer)
 
             return TrueFalseTriviaQuestion(
-                correctAnswers = correctAnswerBools,
+                correctAnswer = correctAnswer,
                 category = category,
                 categoryId = None,
                 question = question,
@@ -110,7 +108,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Trivia Database: {triviaDict}')
 
-    async def __fetchTriviaQuestionDict(self) -> Dict[str, Any]:
+    async def __fetchTriviaQuestionDict(self) -> dict[str, Any]:
         if not await aiofiles.ospath.exists(self.__triviaDatabaseFile):
             raise FileNotFoundError(f'Trivia Database trivia database file not found: \"{self.__triviaDatabaseFile}\"')
 
@@ -127,7 +125,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         if not utils.hasItems(row) or len(row) != 9:
             raise RuntimeError(f'Received malformed data from {self.getTriviaSource()} database: {row}')
 
-        triviaQuestionDict: Dict[str, Any] = {
+        triviaQuestionDict: dict[str, Any] = {
             'category': row[0],
             'correctAnswer': row[1],
             'difficulty': row[2],
@@ -141,7 +139,7 @@ class TriviaDatabaseTriviaQuestionRepository(AbsTriviaQuestionRepository):
         await connection.close()
         return triviaQuestionDict
 
-    def getSupportedTriviaTypes(self) -> Set[TriviaQuestionType]:
+    def getSupportedTriviaTypes(self) -> set[TriviaQuestionType]:
         return { TriviaQuestionType.MULTIPLE_CHOICE, TriviaQuestionType.TRUE_FALSE }
 
     def getTriviaSource(self) -> TriviaSource:

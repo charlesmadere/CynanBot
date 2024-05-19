@@ -27,8 +27,7 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             triviaSource = triviaSource,
-            originalTriviaSource = originalTriviaSource,
-            triviaType = TriviaQuestionType.QUESTION_ANSWER
+            originalTriviaSource = originalTriviaSource
         )
 
         if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
@@ -39,20 +38,18 @@ class QuestionAnswerTriviaQuestion(AbsTriviaQuestion):
         self.__correctAnswers: list[str] = correctAnswers
         self.__cleanedCorrectAnswers: list[str] = cleanedCorrectAnswers
 
-    def getCorrectAnswers(self) -> list[str]:
-        return utils.copyList(self.__correctAnswers)
-
-    def getCleanedCorrectAnswers(self) -> list[str]:
+    @property
+    def cleanedCorrectAnswers(self) -> list[str]:
         return utils.copyList(self.__cleanedCorrectAnswers)
 
-    def getPrompt(self, delimiter: str = ' ') -> str:
-        if not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
+    @property
+    def correctAnswers(self) -> list[str]:
+        return utils.copyList(self.__correctAnswers)
 
-        if utils.isValidStr(self.getCategory()):
-            return f'(category is \"{self.getCategory()}\") {self.getQuestion()}'
-        else:
-            return self.getQuestion()
-
-    def getResponses(self) -> list[str]:
+    @property
+    def responses(self) -> list[str]:
         return list()
+
+    @property
+    def triviaType(self) -> TriviaQuestionType:
+        return TriviaQuestionType.QUESTION_ANSWER

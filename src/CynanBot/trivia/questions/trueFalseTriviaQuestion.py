@@ -10,7 +10,7 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
 
     def __init__(
         self,
-        correctAnswers: list[bool],
+        correctAnswer: bool,
         category: str | None,
         categoryId: str | None,
         question: str,
@@ -26,31 +26,26 @@ class TrueFalseTriviaQuestion(AbsTriviaQuestion):
             triviaId = triviaId,
             triviaDifficulty = triviaDifficulty,
             originalTriviaSource = originalTriviaSource,
-            triviaSource = triviaSource,
-            triviaType = TriviaQuestionType.TRUE_FALSE
+            triviaSource = triviaSource
         )
 
-        if not isinstance(correctAnswers, list) or len(correctAnswers) == 0:
-            raise NoTriviaCorrectAnswersException(f'correctAnswers argument is malformed: \"{correctAnswers}\"')
+        if not utils.isValidBool(correctAnswer):
+            raise NoTriviaCorrectAnswersException(f'correctAnswer argument is malformed: \"{correctAnswer}\"')
 
-        self.__correctAnswers: list[bool] = correctAnswers
+        self.__correctAnswer: bool = correctAnswer
 
-    def getCorrectAnswers(self) -> list[str]:
-        correctAnswers: list[str] = list()
+    @property
+    def correctAnswer(self) -> bool:
+        return self.__correctAnswer
 
-        for correctAnswer in self.__correctAnswers:
-            correctAnswers.append(str(correctAnswer).lower())
+    @property
+    def correctAnswers(self) -> list[str]:
+        return [ str(self.__correctAnswer).lower() ]
 
-        return correctAnswers
-
-    def getCorrectAnswerBools(self) -> list[bool]:
-        return utils.copyList(self.__correctAnswers)
-
-    def getPrompt(self, delimiter: str = ' ') -> str:
-        if not isinstance(delimiter, str):
-            raise TypeError(f'delimiter argument is malformed: \"{delimiter}\"')
-
-        return f'True or false! {self.getQuestion()}'
-
-    def getResponses(self) -> list[str]:
+    @property
+    def responses(self) -> list[str]:
         return [ str(True).lower(), str(False).lower() ]
+
+    @property
+    def triviaType(self) -> TriviaQuestionType:
+        return TriviaQuestionType.TRUE_FALSE

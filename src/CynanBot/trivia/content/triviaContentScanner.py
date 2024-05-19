@@ -43,14 +43,13 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
         phrases: set[str] = set()
-        await self.__contentScanner.updatePhrasesContent(phrases, question.getQuestion())
-        await self.__contentScanner.updatePhrasesContent(phrases, question.getPrompt())
-        await self.__contentScanner.updatePhrasesContent(phrases, question.getCategory())
+        await self.__contentScanner.updatePhrasesContent(phrases, question.question)
+        await self.__contentScanner.updatePhrasesContent(phrases, question.category)
 
-        for correctAnswer in question.getCorrectAnswers():
+        for correctAnswer in question.correctAnswers:
             await self.__contentScanner.updatePhrasesContent(phrases, correctAnswer)
 
-        for response in question.getResponses():
+        for response in question.responses:
             await self.__contentScanner.updatePhrasesContent(phrases, response)
 
         return phrases
@@ -60,14 +59,13 @@ class TriviaContentScanner(TriviaContentScannerInterface):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
         words: set[str] = set()
-        await self.__contentScanner.updateWordsContent(words, question.getQuestion())
-        await self.__contentScanner.updateWordsContent(words, question.getPrompt())
-        await self.__contentScanner.updateWordsContent(words, question.getCategory())
+        await self.__contentScanner.updateWordsContent(words, question.question)
+        await self.__contentScanner.updateWordsContent(words, question.category)
 
-        for correctAnswer in question.getCorrectAnswers():
+        for correctAnswer in question.correctAnswers:
             await self.__contentScanner.updateWordsContent(words, correctAnswer)
 
-        for response in question.getResponses():
+        for response in question.responses:
             await self.__contentScanner.updateWordsContent(words, response)
 
         return words
@@ -106,23 +104,23 @@ class TriviaContentScanner(TriviaContentScannerInterface):
 
         maxQuestionLength = await self.__triviaSettingsRepository.getMaxQuestionLength()
 
-        if len(question.getQuestion()) >= maxQuestionLength:
-            self.__timber.log('TriviaContentScanner', f'Trivia question is too long (max is {maxQuestionLength}): {question.getQuestion()}')
+        if len(question.question) >= maxQuestionLength:
+            self.__timber.log('TriviaContentScanner', f'Trivia question is too long (max is {maxQuestionLength}): {question.question}')
             return TriviaContentCode.QUESTION_TOO_LONG
 
         maxPhraseAnswerLength = await self.__triviaSettingsRepository.getMaxPhraseAnswerLength()
 
-        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER:
-            for correctAnswer in question.getCorrectAnswers():
+        if question.triviaType is TriviaQuestionType.QUESTION_ANSWER:
+            for correctAnswer in question.correctAnswers:
                 if len(correctAnswer) >= maxPhraseAnswerLength:
-                    self.__timber.log('TriviaContentScanner', f'Trivia answer is too long (max is {maxPhraseAnswerLength}): {question.getCorrectAnswers()}')
+                    self.__timber.log('TriviaContentScanner', f'Trivia answer is too long (max is {maxPhraseAnswerLength}): {question.correctAnswers}')
                     return TriviaContentCode.ANSWER_TOO_LONG
 
         maxAnswerLength = await self.__triviaSettingsRepository.getMaxAnswerLength()
 
-        for response in question.getResponses():
+        for response in question.responses:
             if len(response) >= maxAnswerLength:
-                self.__timber.log('TriviaContentScanner', f'Trivia response is too long (max is {maxAnswerLength}): {question.getResponses()}')
+                self.__timber.log('TriviaContentScanner', f'Trivia response is too long (max is {maxAnswerLength}): {question.responses}')
                 return TriviaContentCode.ANSWER_TOO_LONG
 
         return TriviaContentCode.OK
@@ -158,17 +156,17 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if not utils.isValidStr(question.getQuestion()):
-            self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.getQuestion()}\"')
+        if not utils.isValidStr(question.question):
+            self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty question: \"{question.question}\"')
             return TriviaContentCode.CONTAINS_EMPTY_STR
 
-        if question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER and not utils.isValidStr(question.getCategory()):
+        if question.triviaType is TriviaQuestionType.QUESTION_ANSWER and not utils.isValidStr(question.category):
             # This means that we are requiring "question-answer" style trivia questions to have
             # a category, which I think is probably fine? (this is an opinion situation)
-            self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty category: \"{question.getCategory()}\"')
+            self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty category: \"{question.category}\"')
             return TriviaContentCode.CONTAINS_EMPTY_STR
 
-        for response in question.getResponses():
+        for response in question.responses:
             if not utils.isValidStr(response):
                 self.__timber.log('TriviaContentScanner', f'Trivia question ({question}) contains an empty response: \"{response}\"')
                 return TriviaContentCode.CONTAINS_EMPTY_STR
@@ -179,15 +177,15 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if utils.containsUrl(question.getQuestion()):
-            self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) question contains a URL: \"{question.getQuestion()}\"')
+        if utils.containsUrl(question.question):
+            self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) question contains a URL: \"{question.question}\"')
             return TriviaContentCode.CONTAINS_URL
 
-        if utils.containsUrl(question.getCategory()):
-            self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) category contains a URL: \"{question.getCategory()}\"')
+        if utils.containsUrl(question.category):
+            self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) category contains a URL: \"{question.category}\"')
             return TriviaContentCode.CONTAINS_URL
 
-        for response in question.getResponses():
+        for response in question.responses:
             if utils.containsUrl(response):
                 self.__timber.log('TriviaContentScanner', f'Trivia question\'s ({question}) response contains a URL: \"{response}\"')
                 return TriviaContentCode.CONTAINS_URL
@@ -198,10 +196,10 @@ class TriviaContentScanner(TriviaContentScannerInterface):
         if not isinstance(question, AbsTriviaQuestion):
             raise TypeError(f'question argument is malformed: \"{question}\"')
 
-        if question.getTriviaType() is not TriviaQuestionType.MULTIPLE_CHOICE:
+        if question.triviaType is not TriviaQuestionType.MULTIPLE_CHOICE:
             return TriviaContentCode.OK
 
-        responses = question.getResponses()
+        responses = question.responses
         minMultipleChoiceResponses = await self.__triviaSettingsRepository.getMinMultipleChoiceResponses()
 
         if not utils.hasItems(responses) or len(responses) < minMultipleChoiceResponses:

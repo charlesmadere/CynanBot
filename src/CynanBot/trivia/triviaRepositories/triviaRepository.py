@@ -438,7 +438,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.getTriviaType() is not TriviaQuestionType.QUESTION_ANSWER or not isinstance(question, QuestionAnswerTriviaQuestion):
+        elif question.triviaType is not TriviaQuestionType.QUESTION_ANSWER or not isinstance(question, QuestionAnswerTriviaQuestion):
             self.__timber.log('TriviaRepository', f'Encountered unexpected super trivia question type ({question}) when spooling a super trivia question')
             return
 
@@ -484,7 +484,7 @@ class TriviaRepository(TriviaRepositoryInterface):
 
         if question is None:
             return
-        elif question.getTriviaType() is TriviaQuestionType.QUESTION_ANSWER or isinstance(question, QuestionAnswerTriviaQuestion):
+        elif question.triviaType is TriviaQuestionType.QUESTION_ANSWER or isinstance(question, QuestionAnswerTriviaQuestion):
             self.__timber.log('TriviaRepository', f'Encountered unexpected trivia question type ({question}) when spooling a trivia question')
             return
 

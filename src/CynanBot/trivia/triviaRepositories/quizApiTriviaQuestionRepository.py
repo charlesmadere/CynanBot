@@ -149,7 +149,7 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
                     triviaId = triviaId,
                     triviaDifficulty = triviaDifficulty,
                     originalTriviaSource = None,
-                    triviaSource = TriviaSource.QUIZ_API
+                    triviaSource = self.getTriviaSource()
                 )
             else:
                 self.__timber.log('QuizApiTriviaQuestionRepository', 'Encountered a multiple choice question that is better suited for true/false')
@@ -157,14 +157,14 @@ class QuizApiTriviaQuestionRepository(AbsTriviaQuestionRepository):
 
         if triviaType is TriviaQuestionType.TRUE_FALSE:
             return TrueFalseTriviaQuestion(
-                correctAnswers = utils.strsToBools(correctAnswers),
+                correctAnswer = utils.strictStrToBool(correctAnswers[0]),
                 category = category,
                 categoryId = None,
                 question = question,
                 triviaId = triviaId,
                 triviaDifficulty = triviaDifficulty,
                 originalTriviaSource = None,
-                triviaSource = TriviaSource.QUIZ_API
+                triviaSource = self.getTriviaSource()
             )
 
         raise UnsupportedTriviaTypeException(f'triviaType \"{triviaType}\" is not supported for Quiz API: {jsonResponse}')
