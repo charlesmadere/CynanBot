@@ -119,7 +119,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
             ordinalCharacter = chr(ord(ordinalCharacter) + 1)
 
         responsesString = delimiter.join(responses)
-        return f'{triviaQuestion.getQuestion()} {responsesString}'
+        return f'— {triviaQuestion.getQuestion()} {responsesString}'.strip()
 
     async def __getPromptQuestionAnswer(
         self,
@@ -137,7 +137,7 @@ class TriviaQuestionPresenter(TriviaQuestionPresenterInterface):
         self,
         triviaQuestion: TrueFalseTriviaQuestion
     ) -> str:
-        return f'True or false! {triviaQuestion.getQuestion()}'
+        return f'— True or false! {triviaQuestion.getQuestion()}'.strip()
 
     async def getResponses(self, triviaQuestion: AbsTriviaQuestion) -> list[str]:
         if not isinstance(triviaQuestion, AbsTriviaQuestion):
